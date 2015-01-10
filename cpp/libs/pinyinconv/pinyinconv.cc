@@ -101,8 +101,7 @@ bool PinyinConverter::addFile(const std::wstring &path)
     return false;
   //fin.imbue(UTF8_LOCALE);
 
-  std::string line;
-  while (std::getline(fin, line))
+  for (std::string line; std::getline(fin, line);)
     if (line.size() >= 3 && line[0] != CH_COMMENT) {
       std::string pinyin;
       int order;

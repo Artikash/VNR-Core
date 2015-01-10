@@ -23,7 +23,8 @@ import '../share' as Share
 
 Item { id: root_
 
-  signal yakuAt(string text, string language, int x, int y) // popup honyaku of text at (x, y)
+  signal yakuAt(string text, string language, int x, int y, string json) // popup honyaku of text at (x, y)
+
   signal loadPosRequested
   signal savePosRequested
   //signal resetPosRequested
@@ -42,7 +43,9 @@ Item { id: root_
   //property bool copiesText: false
   property alias locked: lockAct_.checked
 
-  property color fontColor //: 'snow'
+  //property color fontColor //: 'snow'
+  property string fontColor //: 'snow'
+
   property alias shadowColor: shadow_.color
   property color textColor //: '#aa007f' // dark magenta
   property color commentColor //: '#2d5f5f' // dark green
@@ -266,7 +269,7 @@ Item { id: root_
       largeSize: Math.round(root_._zoomFactor * 28) + 'px'
       hugeSize: Math.round(root_._zoomFactor * 40) + 'px'
 
-      hrefStyle: "color:snow"
+      hrefStyle: "color:" + root_.fontColor
       urlStyle: hrefStyle
     }
   }
@@ -1066,16 +1069,20 @@ Item { id: root_
                 lastSelectedText = t
                 //var gp = Util.itemGlobalPos(parent)
                 var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                root_.yakuAt(t, model.language, gp.x, gp.y)
+                root_.yakuAt(t, model.language, gp.x, gp.y, link)
               }
             }
 
           onClicked: {
             var link = textEdit_.linkAt(mouse.x, mouse.y)
-            if (link) { // CHECKPOINT: check if link starts with http
-              growl_.showMessage(My.tr("Open in external browser"))
-              Qt.openUrlExternally(link)
-              return
+            if (link) {
+              if (link.indexOf('json://') === 0)
+                link = link.replace('json://', '')
+              else {
+                growl_.showMessage(My.tr("Open in external browser"))
+                Qt.openUrlExternally(link)
+                return
+              }
             }
             //mouse.accepted = false // no effect due to Qt Bug
             if (root_.mouseLocked)
@@ -1085,14 +1092,16 @@ Item { id: root_
               textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
               textEdit_.selectWord()
               var t = textEdit_.selectedText
-              if (t) {
-                lastSelectedText = t
-                //if (root_.copyEnabled)
-                textEdit_.copy()
-                if (!root_.hoverEnabled && root_.popupEnabled && textItem_.canPopup) {
+              if (t || link) {
+                if (t) {
+                  lastSelectedText = t
+                  //if (root_.copyEnabled)
+                  textEdit_.copy()
+                }
+                if (link || (!root_.hoverEnabled && root_.popupEnabled && textItem_.canPopup)) {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                  root_.yakuAt(t, model.language, gp.x, gp.y)
+                  root_.yakuAt(t, model.language, gp.x, gp.y, link)
                 }
                 //if (root_.readEnabled && model.language === 'ja')
                 if ((model.type === 'text' || model.type !== 'name')
@@ -1254,6 +1263,8 @@ Item { id: root_
               ((model.type === 'text' || model.type === 'name') ?
                root_.rubyTextEnabled : root_.rubyTranslationEnabled))
             t = root_.renderRuby(t, model.language, textItem_.hover)
+          else if (~t.indexOf("</a>"))
+            t = '<style>a{color:"' + root_.fontColor + '"}</style>' + t
           return t || ""
           //return !t ? "" : root_.shadowEnabled ? t :
           //  '<span style="background-color:rgba(0,0,0,10)">' + t + '</span>'

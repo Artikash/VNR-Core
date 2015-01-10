@@ -346,7 +346,8 @@ class sakurakit(QObject):
       self.tr("Reference"),
       self.tr("References"),
       self.tr("Regular Expression"), self.tr("Regular expression"), self.tr("regular expression"),
-      self.tr("regex"), self.tr("regexp"),
+      self.tr("Regex"), self.tr("regex"),
+      self.tr("Regexp"), self.tr("regexp"),
       self.tr("Rate"),
       self.tr("Rating"),
       self.tr("Release"),
@@ -399,10 +400,8 @@ class sakurakit(QObject):
       self.tr("Zoom Out"), self.tr("Zoom out"),
 
       # Status
-      self.tr("Yes"),
-      self.tr("yes"),
-      self.tr("No"),
-      self.tr("no"),
+      self.tr("Yes"), self.tr("yes"),
+      self.tr("No"), self.tr("no"),
       self.tr("Online"), self.tr("online"),
       self.tr("Offline"), self.tr("offline"),
       self.tr("Read-only"), self.tr("read-only"),

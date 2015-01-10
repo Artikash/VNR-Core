@@ -7,6 +7,20 @@ from sakurakit.sktr import tr_, utr_
 from mytr import my, mytr_
 import config, defs
 
+## Translation
+
+def autotr_(t):
+  """
+  @param  t  unicode or str
+  @return  unicode
+  """
+  if isinstance(t, unicode):
+    t = t.encode('utf8', errors='ignore')
+  r = tr_(t)
+  if r == t:
+    r = mytr_(t)
+  return r
+
 ## Names ##
 
 LANGUAGE_NAMES = {
@@ -58,6 +72,14 @@ def topic_type_name(type):
   if isinstance(type, unicode):
     return utr_(type)
   return ''
+
+def term_type_name(type):
+  """
+  @param  type  str
+  @return  unicode
+  """
+  import dataman
+  return dataman.Term.typeName(type)
 
 def font_family(lang):
   return config.FONTS.get(lang) or ''

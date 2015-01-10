@@ -3,13 +3,15 @@
 
 #include "trscript/trscript.h"
 #include "cpputil/cpplocale.h"
+#include "cppjson/jsonescape.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 #include <cstdint>
-#include <list> // instead of QList which is slow that stores pointers instead of elements
-#include <tuple>
+#include <cstdlib>
 #include <fstream>
+#include <list>
+#include <vector>
 
 #define SK_NO_QT
 #define DEBUG "trscript.cc"
@@ -19,11 +21,11 @@
 
 #define SCRIPT_CACHE_REGEX // enable caching regex
 
-#define SCRIPT_CH_COMMENT   '#' // indicate the beginning of a line comment
-#define SCRIPT_CH_REGEX     'r'
+#define SCRIPT_CH_COMMENT   L'#' // indicate the beginning of a line comment
+#define SCRIPT_CH_DELIM     L'\t' // deliminator of the rule pair
+#define SCRIPT_CH_REGEX     L'r'
 
-#define SCRIPT_RULE_DELIM   '\t' // deliminator of the rule pair
-enum { SCRIPT_RULE_DELIM_LEN = 1 };
+//enum { SCRIPT_RULE_DELIM_LEN = 1 };
 //enum { SCRIPT_RULE_DELIM_LEN = (sizeof(SCRIPT_RULE_DELIM)  - 1) }; // strlen
 
 /** Helpers */
@@ -32,14 +34,19 @@ namespace { // unnamed
 
 const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
-// Force inlining text rendering functions to avoid copying std::wstring on return
-#define _underline_text(text) \
-  (L"<span style=\"text-decoration:underline\">" + (text) + L"</span>")
+struct TranslationScriptRow
+{
+  std::wstring id,
+               source,
+               target;
+  bool regex;
 
-#define render_text(text, underline) \
-  ((text).empty() ? std::wstring(): (underline) ? _underline_text((text)) : (text))
+  TranslationScriptRow() {}
+  TranslationScriptRow(const std::wstring &id, const std::wstring &source, const std::wstring target, bool regex)
+    : id(id), source(source), target(target), regex(regex) {}
+};
 
-class TranslationScriptRule
+struct TranslationScriptRule
 {
   enum Flag : uint8_t { RegexFlag = 1 };
 
@@ -51,7 +58,8 @@ class TranslationScriptRule
 #endif // SCRIPT_CACHE_REGEX;
 
 public:
-  std::wstring source,
+  std::wstring id,
+               source,
                target;
 
   TranslationScriptRule()
@@ -70,40 +78,69 @@ public:
 
   bool isValid() const { return valid; }
 
-  void init(const std::wstring &s, const std::wstring &t, bool regex)
+  void init(const TranslationScriptRow &row)
   {
-    if (regex) {
+    id = row.id;
+//#ifdef SCRIPT_CACHE_REGEX
+//    if (!row.regex)
+//#endif // SCRIPT_CACHE_REGEX
+    source = row.source;
+    target = row.target;
+
+    if (row.regex) {
       flags |= RegexFlag;
       try {
 #ifdef SCRIPT_CACHE_REGEX
-        sourceRe = new boost::wregex(s);
+        sourceRe = new boost::wregex(row.source);
 #else
         boost::wregex(s);
 #endif // SCRIPT_CACHE_REGEX
       } catch (...) { // boost::bad_pattern
-        DWOUT("invalid regex pattern:" << s);
+        DWOUT("invalid term: " << row.id << ", regex pattern: " << row.source);
         valid = false;
       }
     }
-
-#ifdef SCRIPT_CACHE_REGEX
-    if (!regex)
-#endif // SCRIPT_CACHE_REGEX
-      source = s;
-
-    target = t;
 
     valid = true;
   }
 
   // Replacement
 private:
+  std::wstring render_target() const
+  {
+    std::wstring ret = L"{\"type\":\"term\"";
+    ret.append(L",\"id\":")
+       .append(id);
+    if (!source.empty() && !::isdigit(source[0])) // do not save escaped floating number
+      ret.append(L",\"source\":\"")
+         .append(cpp_json::escape_basic_string(source))
+         .push_back('"');
+    if (!target.empty())
+      ret.append(L",\"target\":\"")
+         .append(cpp_json::escape_basic_string(target))
+         .push_back('"');
+    ret.push_back('}');
+
+    ret.insert(0, L"<a href='json://");
+    ret.push_back('\'');
+
+    //if (!linkStyle.empty())
+    //  ret.append(" style=\"")
+    //     .append(linkStyle)
+    //     .append("\"");
+    ret.push_back('>');
+    ret.append(target)
+       .append(L"</a>");
+    return ret;
+  }
+
   void string_replace(std::wstring &ret, bool link) const
   {
     if (target.empty())
       boost::erase_all(ret, source);
     else
-      boost::replace_all(ret, source, render_text(target, link));
+      boost::replace_all(ret, source,
+          target.empty() ? std::wstring() : !link ? target : render_target());
   }
 
   void regex_replace(std::wstring &ret, bool link) const
@@ -119,7 +156,8 @@ private:
       boost::wregex re(source);
 #endif // SCRIPT_CACHE_REGEX
       if (boost::regex_search(ret, m, re))
-        ret = boost::regex_replace(ret, re, render_text(target, link),
+        ret = boost::regex_replace(ret, re,
+            target.empty() ? std::wstring() : !link ? target : render_target(),
             boost::match_default|boost::format_all);
     } catch (...) {
       DWOUT("invalid regex expression:" << target);
@@ -151,6 +189,7 @@ public:
   size_t ruleCount;
 
   bool link;
+  std::wstring linkStyle;
 
   TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0), link(false) {}
   ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
@@ -190,6 +229,9 @@ bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
 void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
 
+std::wstring TranslationScriptManager::linkStyle() const { return d_->linkStyle; }
+void TranslationScriptManager::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+
 void TranslationScriptManager::clear() { d_->clear(); }
 
 // Initialization
@@ -207,41 +249,48 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   }
   fin.imbue(UTF8_LOCALE);
 
-  std::list<std::tuple<std::wstring, std::wstring, bool> > lines; // pattern, text, regex
-
+  TranslationScriptRow row;
+  std::list<TranslationScriptRow> rows; // id, pattern, text, regex
+  std::vector<std::wstring>;
   for (std::wstring line; std::getline(fin, line);)
-    if (!line.empty()) {
-      bool regex = false;
-      size_t textStartIndex = 1; // index of the text after flags, +1 to skip \t
+    if (line.size()> 3) {
+      size_t pos = 0;
       switch (line[0]) {
       case SCRIPT_CH_COMMENT: continue;
-      case SCRIPT_CH_REGEX: regex = true; textStartIndex++; break;
+      case SCRIPT_CH_REGEX: row.regex = true; pos++; break;
+      default: row.regex = false;
       }
-      std::wstring left, right;
-      auto index = line.find(SCRIPT_RULE_DELIM, textStartIndex);
-      if (index == std::wstring::npos)
-        left = line.substr(textStartIndex);
-      else {
-        left = line.substr(textStartIndex, index - textStartIndex); //.trimmed()
-        right = line.substr(index + SCRIPT_RULE_DELIM_LEN);
+      //line.pop_back(); // remove trailing '\n'
+      wchar_t *cur;
+      long id = ::wcstol(line.c_str() + pos, &cur, 10);
+      if (id && *cur++) { // skip first delim
+        row.id = std::to_wstring((long long)id);
+        if (wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
+          row.source.assign(cur, delim - cur);
+          row.target.assign(delim + 1);
+        } else {
+          row.source.assign(cur);
+          row.target.clear();
+        }
+        if (!row.source.empty())
+          rows.push_back(row);
       }
-      if (!left.empty())
-        lines.push_back(std::make_tuple(left, right, regex));
+      //qDebug() << row.id << QString::fromStdWString(row.source) << QString::fromStdWString(row.target);
     }
 
   fin.close();
 
-  if (lines.empty()) {
+  if (rows.empty()) {
     d_->clear();
     return false;
   }
 
   //QWriteLocker locker(&d_->lock);
-  d_->reset(lines.size());
+  d_->reset(rows.size());
 
   size_t i = 0;
-  BOOST_FOREACH (const auto &it, lines)
-    d_->rules[i++].init(std::get<0>(it), std::get<1>(it), std::get<2>(it));
+  BOOST_FOREACH (const auto &it, rows)
+    d_->rules[i++].init(it);
 
   return true;
 }
@@ -257,6 +306,7 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
   if (d_->ruleCount && d_->rules)
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
+      //qDebug() << rule.id << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
       if (rule.isValid())
         rule.replace(ret, d_->link);
 

@@ -127,6 +127,34 @@ static PyObject* Sbk_TranslationScriptManagerFunc_isLinkEnabled(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_TranslationScriptManagerFunc_linkStyle(PyObject* self)
+{
+    ::TranslationScriptManager* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::TranslationScriptManager*)Shiboken::Conversions::cppPointer(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTMANAGER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // linkStyle()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            std::wstring cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->linkStyle();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObject* pyArg)
 {
     ::TranslationScriptManager* cppSelf = 0;
@@ -218,6 +246,50 @@ static PyObject* Sbk_TranslationScriptManagerFunc_setLinkEnabled(PyObject* self,
         return 0;
 }
 
+static PyObject* Sbk_TranslationScriptManagerFunc_setLinkStyle(PyObject* self, PyObject* pyArg)
+{
+    ::TranslationScriptManager* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::TranslationScriptManager*)Shiboken::Conversions::cppPointer(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTMANAGER_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setLinkStyle(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // setLinkStyle(std::wstring)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_TranslationScriptManagerFunc_setLinkStyle_TypeError;
+
+    // Call function/method
+    {
+        ::std::wstring cppArg0 = ::std::wstring();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setLinkStyle(std::wstring)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setLinkStyle(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_TranslationScriptManagerFunc_setLinkStyle_TypeError:
+        const char* overloads[] = {"std::wstring", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.setLinkStyle", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_TranslationScriptManagerFunc_size(PyObject* self)
 {
     ::TranslationScriptManager* cppSelf = 0;
@@ -297,8 +369,10 @@ static PyMethodDef Sbk_TranslationScriptManager_methods[] = {
     {"clear", (PyCFunction)Sbk_TranslationScriptManagerFunc_clear, METH_NOARGS},
     {"isEmpty", (PyCFunction)Sbk_TranslationScriptManagerFunc_isEmpty, METH_NOARGS},
     {"isLinkEnabled", (PyCFunction)Sbk_TranslationScriptManagerFunc_isLinkEnabled, METH_NOARGS},
+    {"linkStyle", (PyCFunction)Sbk_TranslationScriptManagerFunc_linkStyle, METH_NOARGS},
     {"loadFile", (PyCFunction)Sbk_TranslationScriptManagerFunc_loadFile, METH_O},
     {"setLinkEnabled", (PyCFunction)Sbk_TranslationScriptManagerFunc_setLinkEnabled, METH_O},
+    {"setLinkStyle", (PyCFunction)Sbk_TranslationScriptManagerFunc_setLinkStyle, METH_O},
     {"size", (PyCFunction)Sbk_TranslationScriptManagerFunc_size, METH_NOARGS},
     {"translate", (PyCFunction)Sbk_TranslationScriptManagerFunc_translate, METH_O},
 

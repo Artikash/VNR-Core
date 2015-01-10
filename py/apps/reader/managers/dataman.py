@@ -118,6 +118,10 @@ class User(object):
   def isMale(self): return self.gender == 'm'
   def isFemale(self): return self.gender == 'f'
 
+  @property
+  def avatarUrl(self): # -> string
+    return manager().queryUserAvatarUrl(self.userId, cache=True)
+
 ADMIN_USER_ID = 2
 GUEST_USER_ID = 4
 GUEST = User(id=GUEST_USER_ID, name='guest', password='guest', language='en')
@@ -9597,6 +9601,24 @@ class DataManager(QObject):
     @return  [Term]
     """
     return self.__d.terms
+
+  def queryTerm(self, id):
+    """
+    @param  id  long
+    @return  Term
+    """
+    for it in self.__d.terms:
+      if it.d.id == id:
+        return it
+
+  def queryTermData(self, *args, **kwargs):
+    """
+    @param  id  long
+    @return  _Term
+    """
+    t = self.queryTerm(*args, **kwargs)
+    if t:
+      return t.d
 
   #def sortedTerms(self):
   #  """Used by termman
