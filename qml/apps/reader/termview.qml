@@ -13,7 +13,7 @@ import 'termview' as TermView
 //Share.View { id: root_
 Item { id: root_
   //implicitWidth: 480; implicitHeight: 360
-  width: 900; height: 500
+  width: 950; height: 500
 
   // Window properties
   property string windowTitle: title() ///< window title
@@ -148,6 +148,7 @@ Item { id: root_
     model: ListModel {
       Component.onCompleted: {
         append({text:Sk.tr("All"), value:''})
+        append({text:"ID", value:'id'})
         append({text:Sk.tr("User"), value:'user'})
         append({text:Sk.tr("Game"), value:'game'})
         //append({text:Sk.tr("Type"), value:'type'})
