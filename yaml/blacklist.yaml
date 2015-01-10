@@ -195,6 +195,7 @@ processes:
   - wmplayer.exe        # Windows media player
   - XMP.exe             # Xunlei KanKan
   - YahooMessenger.exe  # Yahoo
+  - Yomikaku.exe        # 読取革命
   - YoukuDesktop.exe    # Youku
   # Unsupported games
   - KanColleViewer.exe  # http://grabacr.net/kancolleviewer

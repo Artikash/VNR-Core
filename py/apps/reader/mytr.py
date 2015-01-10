@@ -163,6 +163,7 @@ class reader(QObject):
       self.tr("Hook code"),
 
       self.tr("Update reason"),
+      self.tr("Update comment"),
 
       self.tr("Fill color"),
       self.tr("Background shadow"),

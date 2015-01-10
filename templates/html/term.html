@@ -1,6 +1,7 @@
 {# term.html 11/25/2012 jichi
  # @param  td  _Term
  # @param* userName  unicode
+ # @param* updateUserName  unicode
  # @param* source  unicode
  # @param* target  unicode
  # @param  i18n  module
@@ -42,6 +43,14 @@ a{color:lightblue}
 %endif
 			</tr>
 			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Language')}}: </td>
+%if td.language == 'ja'
+				<td class="pp-value">{{tr('All')}}</td>
+%else
+				<td class="pp-value">{{i18n.language_name(td.language)}}</td>
+%endif
+			</tr>
+			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Type')}}: </td>
 				<td class="pp-value">{{i18n.term_type_name(td.type)}}</td>
 			</tr>
@@ -56,6 +65,14 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Game-specific')}}: </td>
 %if td.special
+				<td class="pp-value">{{tr('yes')}}</td>
+%else
+				<td class="pp-value">{{tr('no')}}</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Private')}}: </td>
+%if td.private
 				<td class="pp-value">{{tr('yes')}}</td>
 %else
 				<td class="pp-value">{{tr('no')}}</td>
@@ -78,9 +95,30 @@ a{color:lightblue}
 %endif
 			</tr>
 			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Comment')}}: </td>
+%if td.comment
+				<td class="pp-value">{{td.comment}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('none')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Update')}}: </td>
-%if td.updateTimestamp
-				<td class="pp-value">{{i18n.timestamp2datetime(td.updateTimestamp)}}</td>
+%if updateUserName and td.updateTimestamp > td.timestamp
+				<td class="pp-value">
+%	if td.updateUserId != td.userId
+					@{{updateUserName|e}},{{' '}}
+%	endif
+					{{i18n.timestamp2datetime(td.updateTimestamp)}}
+				</td>
+%else
+				<td class="pp-value pp-empty">({{tr('none')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Update comment')}}: </td>
+%if td.updateComment
+				<td class="pp-value">{{td.updateComment}}</td>
 %else
 				<td class="pp-value pp-empty">({{tr('none')}})</td>
 %endif

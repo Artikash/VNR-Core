@@ -78,9 +78,11 @@ class _ShioriBean:
       td = dm.queryTermData(id)
       if td:
         userName = dm.queryUserName(td.userId)
+        updateUserName = dm.queryUserName(td.updateUserId) if td.updateUserId else None
         return rc.jinja_template('html/term').render({
           'td': td,
           'userName': userName,
+          'updateUserName': updateUserName,
           'source': source,
           'target': target,
           'i18n': i18n,
