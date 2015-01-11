@@ -1827,6 +1827,10 @@ class MainObject(QObject):
       termview.search(**kwargs)
     self.showTermView()
 
+  def showTerm(self, id): # long ->
+    import termview
+    termview.showterm(id=id)
+
   def showSpringBoard(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.springBoardDialog))
   def showVoiceSettings(self):
@@ -2383,6 +2387,9 @@ class MainObjectProxy(QObject):
   def showUserWithId(self, id): manager().showUserView(id=id)
   @Slot(long, long)
   def showUserWithHash(self, id, hash): manager().showUserView(id=id, hash=hash)
+
+  @Slot(long)
+  def showTermWithId(self, id): manager().showTerm(id=id)
 
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)

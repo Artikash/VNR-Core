@@ -10,6 +10,7 @@ __all__ = (
   'SkWidgetLayout', 'SkLayoutWidget',
   'SkRadioButtonGrid',
   'SkTabPane',
+  'SkTextEditWithAnchor',
   'SkTitlelessDockWidget',
   'SkStyleView',
 )
@@ -468,6 +469,30 @@ class SkContainerWidget(QtWidgets.QStackedWidget):
     if index == -1:
       index = self.addWidget(widget)
     self.setCurrentWidget(widget)
+
+## TextEdit ##
+
+class SkTextEditWithAnchor(QtWidgets.QTextEdit):
+  def __init__(self, *args, **kwargs):
+    super(SkTextEditWithAnchor, self).__init__(*args, **kwargs)
+    #self.setMouseTracking(True) # needed for over event
+
+  anchorClicked = QtCore.Signal(unicode, int, int) # anchor, x, y
+
+  def mouseReleaseEvent(self, ev):
+    """@reimp"""
+    anchor = self.anchorAt(ev.pos())
+    if anchor:
+      self.anchorClicked.emit(anchor, ev.globalX(), ev.globalY())
+    super(SkTextEditWithAnchor, self).mouseReleaseEvent(ev)
+
+  #def mouseMoveEvent(self, ev):
+  #  """@reimp"""
+  #  if self.anchorAt(ev.pos()):
+  #    QtWidgets.QApplication.setOverrideCursor(Qt.PointingHandCursor)
+  #  else:
+  #    QtWidgets.QApplication.restoreOverrideCursor()
+  #  super(SkTextEditWithAnchor, self).mouseMoveEvent(ev)
 
 # EOF
 

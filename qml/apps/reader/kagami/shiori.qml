@@ -89,8 +89,10 @@ Rectangle { id: root_
   //color: '#eef4f5fa' // light blue, the same as the website
 
   Plugin.ShioriBean { id: bean_
-    Component.onCompleted:
-      bean_.popup.connect(root_.popup)
+    Component.onCompleted: {
+      bean_.popupText.connect(root_.popupText)
+      bean_.popupJson.connect(root_.popupJson)
+    }
   }
 
   //Plugin.Tts { id: ttsPlugin_ }
@@ -319,10 +321,11 @@ Rectangle { id: root_
 
   property bool locked: false
   function popup(text, language, x, y, json) { // string, string, int, int, string
-    if (!root_.enabled || root_.locked)
+    if (root_.locked ||
+        !root_.enabled && !json)
       return
     root_.locked = true
-    var html = bean_.render(text, language, json)
+    var html = json ? bean_.renderJson(json) : bean_.renderText(text, language)
     if (!html) { // thread contention, ignore
       root_.locked = false
       return
@@ -334,6 +337,14 @@ Rectangle { id: root_
     ensureVisible()
     show()
     root_.locked = false
+  }
+
+  function popupJson(json, x, y) { // string, int, int ->
+    popup('', '', x, y, json)
+  }
+
+  function popupText(text, language, x, y) { // string, string, int, int
+    popup(text, language, x, y)
   }
 
   // So that the popup will not be out of screen

@@ -108,10 +108,9 @@ public:
   // Replacement
 private:
 
-  static std::wstring escape(const std::wstring &t)
+  static std::string escape(const std::wstring &t)
   {
-    enum { escape_all_char = true }; // escape not only wchar, but also char
-    std::wstring r = cpp_json::escape_basic_string(t, escape_all_char);
+    std::string r = cpp_json::escape_basic_string(t, true); // true = escape all chars
     boost::replace_all(r, "'", "\\'");
     return r;
   }
@@ -135,15 +134,19 @@ private:
     std::wstring ret = L"{\"type\":\"term\"";
     ret.append(L",\"id\":")
        .append(id);
-    if (!isRegex()) { // regex pattern could mess up replacement
-      if (!source.empty() && !::isdigit(source[0])) // do not save escaped floating number
+    if (!isRegex()) { // do not save regex pattern to save memory
+      if (!source.empty() && !::isdigit(source[0])) { // do not save escaped floating number
+        std::string s = escape(source);
         ret.append(L",\"source\":\"")
-           .append(escape(source))
+           .append(s.cbegin(), s.cend())
            .push_back('"');
-      if (!target.empty())
+      }
+      if (!target.empty()) {
+        std::string s = escape(target);
         ret.append(L",\"target\":\"")
-           .append(escape(target))
+           .append(s.cbegin(), s.cend())
            .push_back('"');
+      }
     }
     ret.push_back('}');
 

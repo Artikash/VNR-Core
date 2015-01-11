@@ -45,10 +45,12 @@ inline const char *escape_special_char(int ch)
  *  @param* escape_all  whether encode ascii char as well
  */
 template <typename _CharT, typename _Traits, typename _Alloc>
-inline std::basic_string<_CharT, _Traits, _Alloc> escape_basic_string(const std::basic_string<_CharT, _Traits, _Alloc> &input, bool escape_all = false)
+inline std::string escape_basic_string(const std::basic_string<_CharT, _Traits, _Alloc> &input, bool escape_all = false)
+//inline std::basic_string<_CharT, _Traits, _Alloc> escape_basic_string(const std::basic_string<_CharT, _Traits, _Alloc> &input, bool escape_all = false)
 {
   // See: http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
-  std::basic_ostringstream<_CharT, _Traits, _Alloc> is;
+  //std::basic_ostringstream<_CharT, _Traits, _Alloc> is;
+  std::ostringstream is;
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     auto ch = *it;
     if (escape_all) {
@@ -56,7 +58,7 @@ inline std::basic_string<_CharT, _Traits, _Alloc> escape_basic_string(const std:
         is << s;
       else
         is << "\\u"
-           << std::setfill(_CharT('0')) << std::setw(4) // force 4 width for unicode, which might be wrong for 3 bit unicode
+           << std::setfill('0') << std::setw(4) // force 4 width for unicode, which might be wrong for 3 bit unicode
            << std::hex << (unsigned int)ch;
 
     } else {
@@ -68,7 +70,7 @@ inline std::basic_string<_CharT, _Traits, _Alloc> escape_basic_string(const std:
 
       } else
         is << "\\u"
-           << std::setfill(_CharT('0')) << std::setw(4) // force 4 width for unicode, which might be wrong for 3 bit unicode
+           << std::setfill('0') << std::setw(4) // force 4 width for unicode, which might be wrong for 3 bit unicode
            << std::hex << (unsigned int)ch;
     }
   }
