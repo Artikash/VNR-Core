@@ -6,6 +6,7 @@ DEFINES += WITH_LIB_CPPUTIL
 DEPENDPATH += $$PWD
 
 HEADERS += \
+    $$PWD/cppcstring.h \
     $$PWD/cpplocale.h \
     $$PWD/cppmarshal.h \
     $$PWD/cpppath.h \

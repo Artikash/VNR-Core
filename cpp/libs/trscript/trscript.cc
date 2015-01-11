@@ -20,7 +20,7 @@
 
 //#define DEBUG_RULE // output the rule that is applied
 
-#define SCRIPT_CACHE_REGEX // enable caching regex
+#define SCRIPT_CACHE_REGEX // enable caching compiled regex, 10 times faster but cost more memory
 
 #define SCRIPT_CH_COMMENT   L'#' // indicate the beginning of a line comment
 #define SCRIPT_CH_DELIM     L'\t' // deliminator of the rule pair
@@ -111,7 +111,8 @@ private:
   static std::string escape(const std::wstring &t)
   {
     std::string r = cpp_json::escape_basic_string(t, true); // true = escape all chars
-    boost::replace_all(r, "'", "\\'");
+    if (r.find('\'') != std::string::npos)
+      boost::replace_all(r, "'", "\\'");
     return r;
   }
 
@@ -129,6 +130,8 @@ private:
 
   bool isRegex() const { return flags & RegexFlag; }
 
+  // A sample expected output without escape:
+  // <a href='json://{"type":"term","id":12345,"source":"pattern","target":"text"}'>pattern</a>
   std::wstring render_target() const
   {
     std::wstring ret = L"{\"type\":\"term\"";
@@ -157,6 +160,7 @@ private:
     //  ret.append(" style=\"")
     //     .append(linkStyle)
     //     .append("\"");
+
     ret.push_back('>');
     ret.append(target)
        .append(L"</a>");
@@ -165,11 +169,13 @@ private:
 
   void string_replace(std::wstring &ret, bool link) const
   {
-    if (target.empty())
-      boost::erase_all(ret, source);
-    else
-      boost::replace_all(ret, source,
-          target.empty() ? std::wstring() : !link ? target : render_target());
+    if (boost::algorithm::contains(ret, source)) { // do not render_target if no match
+      if (target.empty())
+        boost::erase_all(ret, source);
+      else
+        boost::replace_all(ret, source,
+            target.empty() ? std::wstring() : !link ? target : render_target());
+    }
   }
 
   void regex_replace(std::wstring &ret, bool link) const

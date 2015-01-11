@@ -588,8 +588,13 @@ bool DetermineNoEngine()
   //  ConsoleOutput("vnreng: IGNORE Unity");
   //  return true;
   //}
-  if (IthCheckFile(L"bsz_Data\\Managed\\UnityEngine.dll") || IthCheckFile(L"bsz2_Data\\Managed\\UnityEngine.dll")) {
-    ConsoleOutput("vnreng: IGNORE Unity");
+  //if (IthCheckFile(L"bsz_Data\\Managed\\UnityEngine.dll") || IthCheckFile(L"bsz2_Data\\Managed\\UnityEngine.dll")) {
+  //  ConsoleOutput("vnreng: IGNORE Unity");
+  //  return true;
+  //}
+
+  if (IthCheckFile(L"AdvHD.exe")) {
+    ConsoleOutput("vnreng: IGNORE Adv Player HD");
     return true;
   }
 

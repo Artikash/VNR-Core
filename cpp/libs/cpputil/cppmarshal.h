@@ -5,7 +5,7 @@
 // 10/12/2014 jichi
 //
 // Functions are by default big-endian, the same as memory layout.
-#include "cpputil/cppstring.h"
+#include "cpputil/cppcstring.h"
 #include "cpputil/cpptype.h"
 #include <cstring>
 
