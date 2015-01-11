@@ -8,7 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-#from sakurakit.skprof import SkProfiler
+from sakurakit.skprof import SkProfiler
 
 from ctypes import c_longlong
 from functools import partial
@@ -639,20 +639,23 @@ class _TextManager(object):
 
     q.contextChanged.emit()
 
+    matched_sub = None # dataman.Subtitle or None
+    matched_sub_texts = set() # [unicode]
+
+    #with SkProfiler("query subs"): # jichi 1/11/2015: 0.0007 sec for MuvLuv
     if dm.hasSubtitles():
-      subs = set()
       h = hashutil.hashtext(textutil.remove_text_name(text))
-      l = dm.querySubtitles(hash=h)
-      if l:
-        for s in l:
-          if s.sub not in subs:
-            subs.add(s.sub)
-            self._showSubtitle(s)
-            self._onGameSubtitle(s.text, s.subLang)
-            self._updateTtsSubtitle(s.text, s.subLang)
+      s = dm.queryBestSubtitle(hash=h)
+      if s:
+        matched_sub = s
+        matched_sub_texts.add(s.sub)
+        self._showSubtitle(s)
+        self._onGameSubtitle(s.text, s.subLang)
+        self._updateTtsSubtitle(s.text, s.subLang)
 
     # Profiler: 1e-4
 
+    #with SkProfiler("query comments"): # jichi 1/11/2015: 0.0003 sec for MuvLuv
     userId = dm.user().id
     if dm.hasComments():
       hitCommentIds = set() # comments that have been shown
@@ -672,8 +675,12 @@ class _TextManager(object):
               c.context = cur_ctx
           #if c.contextSize >= h_index +1: # saved context size is larger
           if not cd.deleted and not cd.disabled:
-            self._showComment(c)
             hitCommentIds.add(cd.id)
+            if cd.type == 'subtitle':
+              if cd.text in matched_sub_texts or matched_sub and matched_sub.equalSub(cd.text, exact=False):
+                continue
+              matched_sub_texts.add(cd.text)
+            self._showComment(c)
             if cd.type == 'subtitle':
               self._onGameSubtitle(cd.text, cd.language)
               self._updateTtsSubtitle(cd.text, cd.language)
@@ -684,8 +691,12 @@ class _TextManager(object):
         for c in dm.queryComments(hash2=h):
           cd = c.d
           if not cd.deleted and not cd.disabled and cd.id not in hitCommentIds:
-            self._showComment(c)
             hitCommentIds.add(cd.id)
+            if cd.type == 'subtitle':
+              if cd.text in matched_sub_texts or matched_sub and matched_sub.equalSub(cd.text, exact=False):
+                continue
+              matched_sub_texts.add(cd.text)
+            self._showComment(c)
             if cd.type == 'subtitle':
               self._onGameSubtitle(cd.text, cd.language)
               self._updateTtsSubtitle(cd.text, cd.language)
