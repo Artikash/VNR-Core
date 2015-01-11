@@ -111,7 +111,8 @@ private:
   static std::string escape(const std::wstring &t)
   {
     std::string r = cpp_json::escape_basic_string(t, true); // true = escape all chars
-    boost::replace_all(r, "'", "\\'");
+    if (r.find('\'') != std::string::npos)
+      boost::replace_all(r, "'", "\\'");
     return r;
   }
 
