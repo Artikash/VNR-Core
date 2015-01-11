@@ -4,7 +4,7 @@
 #include "trscript/trscript.h"
 #include "cppjson/jsonescape.h"
 #include "cpputil/cpplocale.h"
-#include "cpputil/cppstring.h"
+//#include "cpputil/cppstring.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
@@ -110,16 +110,23 @@ private:
 
   static std::wstring escape(const std::wstring &t)
   {
-    std::wstring r = cpp_json::escape_basic_string(t);
+    enum { escape_all_char = true }; // escape not only wchar, but also char
+    std::wstring r = cpp_json::escape_basic_string(t, escape_all_char);
     boost::replace_all(r, "'", "\\'");
     return r;
   }
 
-  static bool requires_escape(const std::wstring &t)
-  {
-    static const std::wstring s = ::cpp_wstring_of(CPPJSON_ESCAPE_STRING).append(L"'");
-    return t.find_first_of(s) != std::wstring::npos;
-  }
+  //static bool requires_escape(const std::wstring &t)
+  //{
+  //  //static const std::wstring s = ::cpp_wstring_of(CPPJSON_ESCAPE_STRING).append(L"'");
+  //  //return t.find_first_of(s) != std::wstring::npos;
+  //  for(const wchar_t *it = t.c_str(); *it; ++it) {
+  //    auto ch = *it;
+  //    if (!isascii(ch) || ch == '\'' || cpp_json::escape_special_char(ch))
+  //      return false;
+  //  }
+  //  return true;
+  //}
 
   bool isRegex() const { return flags & RegexFlag; }
 
@@ -131,11 +138,11 @@ private:
     if (!isRegex()) { // regex pattern could mess up replacement
       if (!source.empty() && !::isdigit(source[0])) // do not save escaped floating number
         ret.append(L",\"source\":\"")
-           .append(requires_escape(source) ? escape(source) : source)
+           .append(escape(source))
            .push_back('"');
       if (!target.empty())
         ret.append(L",\"target\":\"")
-           .append(requires_escape(target) ? escape(target) : target)
+           .append(escape(target))
            .push_back('"');
     }
     ret.push_back('}');
@@ -270,7 +277,6 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 
   TranslationScriptRow row;
   std::list<TranslationScriptRow> rows; // id, pattern, text, regex
-  std::vector<std::wstring>;
   for (std::wstring line; std::getline(fin, line);)
     if (line.size()> 3) {
       size_t pos = 0;

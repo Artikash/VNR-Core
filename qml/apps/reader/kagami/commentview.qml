@@ -4,6 +4,7 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
@@ -291,10 +292,7 @@ Item { id: root_
         textFormat: TextEdit.RichText
         //readOnly: true
 
-        onLinkActivated: {
-          growl_.showMessage(My.tr("Open in external browser"))
-          Qt.openUrlExternally(link)
-        }
+        onLinkActivated: Eval.evalLink(link)
 
         wrapMode: TextEdit.Wrap
         verticalAlignment: TextEdit.AlignVCenter

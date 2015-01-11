@@ -7,6 +7,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../imports/qmlhelper' as Helper
 import '../../js/sakurakit.min.js' as Sk
+import '../../js/eval.min.js' as Eval
 //import '../../js/reader.min.js' as My
 import 'comet' as Comet
 import 'kagami' as Kagami
@@ -94,14 +95,22 @@ Item { id: root_
 
   Component.onCompleted: {
     //console.log("kagami.qml: taskbar height =", taskBar_.height)
+    initScriptContext()
     loadSettings()
     qApp.aboutToQuit.connect(saveSettings)
-    console.log("kagami.qml: pass")
 
+    console.log("kagami.qml: pass")
   }
 
   Component.onDestruction: {
     console.log("kagami.qml:destroy: pass")
+  }
+
+  function initScriptContext() {
+    var ctx = Eval.scriptContext
+    ctx.main = mainPlugin_
+    ctx.growl = growl_
+    //ctx.clipboard = clipboardPlugin_
   }
 
   function loadSettings() {

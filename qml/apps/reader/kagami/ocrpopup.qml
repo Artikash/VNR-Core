@@ -5,6 +5,7 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
@@ -420,10 +421,8 @@ Item { id: root_
           // Not working, which cause textedit width to shrink
           //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
 
-          onLinkActivated: {
-            growl_.showMessage(My.tr("Open in external browser"))
-            Qt.openUrlExternally(link)
-          }
+          onLinkActivated: Eval.evalLink(link)
+
           //console.log("shiori.qml: link activated:", link)
 
           effect: Share.TextEffect {}

@@ -10,35 +10,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 
-// Helpers
-namespace { // unamed
-
-  ///  Return escaped special string if succeed
-  const char *escapeSpecialChar(ushort ch)
-  {
-    switch (ch) {
-    case '\\': return "\\\\";
-    case '"': return "\\\"";
-    case '\n': return "\\n";
-    case '\r': return "\\r";
-    case '\t': return "\\t";
-    case '\b': return "\\b";
-    case '\f': return "\\f";
-    default: return nullptr;
-    }
-  }
-
-  ///  Return \uXXXX
-  QString escapeUnicode(ushort ch)
-  {
-    QString r = QString::number(ch, 16);
-    while (r.size() < 4)
-      r.prepend('0');
-    return "\\u" + r;
-  }
-
-} // namespace unamed
-
 // Stringify
 
 QString QtJson::stringify(const QVariant &v)

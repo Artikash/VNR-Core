@@ -98,9 +98,11 @@ class TermView(SkDeclarativeView):
       ))
     self.setWindowIcon(rc.icon('window-dict'))
 
+    root = self.rootObject()
+
     ctx = 'termComet',
     for k in ctx:
-      obj = self.rootObject().findChild(QObject, k)
+      obj = root.findChild(QObject, k)
       assert obj
       setattr(self, k, obj)
 

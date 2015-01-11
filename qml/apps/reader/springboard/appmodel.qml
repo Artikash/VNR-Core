@@ -60,7 +60,7 @@ Plugin.MainObjectProxy { \
       , searchText: "Shared Dictionary" + "\n" + My.tr("Shared Dictionary")
       , icon: 'image://rc/dock-dict'
       , toolTip: qsTr("Shared dictionary for machine translation")
-      , qml: qmlrun('showTermView')
+      , qml: qmlrun('showDictionary')
     })
 
     append({ name: Sk.tr("Machine Translation")

@@ -1807,13 +1807,25 @@ class MainObject(QObject):
     d.kagamiWindow.setMirageVisible(True)
     d.mirage.show()
 
-  def showTermView(self):
+  def showTermView(self, search=None):
+    """
+    @param  seach  dict
+    """
     d = self.__d
     #if d.termManager.isLocked():
     #  growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
     #else:
     d.dataManager.setTermsEditable(True)
+    if search:
+      import termview
+      termview.search(**search)
     skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
+
+  def searchTermView(self, **kwargs):
+    if kwargs:
+      import termview
+      termview.search(**kwargs)
+    self.showTermView()
 
   def showSpringBoard(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.springBoardDialog))
@@ -2309,8 +2321,12 @@ class MainObjectProxy(QObject):
   def checkUpdate(self): manager().checkUpdate()
   @Slot()
   def openRunningGame(self): manager().openRunningGame()
+  #@Slot()
+  #def showTermView(self): manager().showTermView()
   @Slot()
-  def showTermView(self): manager().showTermView()
+  def showDictionary(self): manager().showTermView() # alias
+  @Slot(unicode, unicode)
+  def searchDictionary(self, text, col): manager().searchTermView(text=text, col=col)
   @Slot()
   def showGameFinder(self): manager().showGameFinder()
   @Slot()
@@ -2357,7 +2373,9 @@ class MainObjectProxy(QObject):
   #@Slot(long, long, unicode)
   #def showUserView(self, id, hash, name): manager().showUserView(id, hash, name)
   @Slot(unicode)
-  def showUserWithName(self, name): manager().showUserView(name=id)
+  def showUser(self, name): manager().showUserView(name=name) # use name by default
+  @Slot(unicode)
+  def showUserWithName(self, name): manager().showUserView(name=name)
   @Slot(long)
   def showUserWithId(self, id): manager().showUserView(id=id)
   @Slot(long, long)

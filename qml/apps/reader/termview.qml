@@ -30,7 +30,19 @@ Item { id: root_
 
   clip: true
 
-  Component.onCompleted: console.log("termview.qml: pass")
+  Component.onCompleted: {
+    var col = bean_.getSearchCol()
+    var text = bean_.getSearchText()
+    if (col)
+      searchCol_.setValue(col)
+    if (text) {
+      searchBox_.text = text
+      searchBox_.accepted()
+    }
+
+    console.log("termview.qml: pass")
+  }
+
   Component.onDestruction: console.log("termview.qml:destroy: pass")
 
   Plugin.MainObjectProxy { id: mainPlugin_ }
@@ -46,6 +58,18 @@ Item { id: root_
   property int userId: statusPlugin_.online ? statusPlugin_.userId : 0
   property alias userLevel: statusPlugin_.userTermLevel
 
+  Plugin.TermViewBean { id: bean_
+    Component.onCompleted:
+      searchRequested.connect(root_.search)
+  }
+
+  function search(text, col) {
+    console.log("termview.qml:search: col =", col)
+    searchCol_.setValue(col)
+    searchToolBar_.clear()
+    searchBox_.text = text
+    searchBox_.accepted()
+  }
 
   //function loadSettings() {
   //  mainToolBar_.enabled = settings_.termEnabled
@@ -161,6 +185,16 @@ Item { id: root_
 
     property string value
     onSelectedIndexChanged: value = model.get(selectedIndex).value
+
+    function setValue(col) {
+      if (!col)
+        col = '' // for null
+      for (var i = 0; i < model.count; ++i)
+        if (model.get(i).value == col) {
+          selectedIndex = i
+          return
+        }
+    }
   }
 
   Share.SearchBox { id: searchBox_
