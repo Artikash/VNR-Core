@@ -95,7 +95,7 @@ Item { id: root_
 
   Component.onCompleted: {
     //console.log("kagami.qml: taskbar height =", taskBar_.height)
-    initScriptContext()
+    initEvalContext()
     loadSettings()
     qApp.aboutToQuit.connect(saveSettings)
 
@@ -106,7 +106,7 @@ Item { id: root_
     console.log("kagami.qml:destroy: pass")
   }
 
-  function initScriptContext() {
+  function initEvalContext() {
     var ctx = Eval.scriptContext
     ctx.main = mainPlugin_
     ctx.growl = growl_

@@ -14,6 +14,7 @@
  */
 import QtQuick 1.1
 import org.sakuradite.reader 1.0 as Plugin
+import '../../js/eval.min.js' as Eval
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/reader.min.js' as My
 import '../../js/util.min.js' as Util
@@ -48,7 +49,17 @@ Item { id: root_
   //property int topMargin: drawer_.drawerHeight / 3
   property int topMargin: 0
 
-  Component.onCompleted: console.log("springboard.qml: pass")
+  Component.onCompleted: {
+    initEvalContext()
+    console.log("springboard.qml: pass")
+  }
+
+  function initEvalContext() {
+    var ctx = Eval.scriptContext
+    ctx.main = mainPlugin_
+    ctx.growl = growlPlugin_
+    //ctx.clipboard = clipboardPlugin_
+  }
 
   property string searchText: Util.trim(searchBar_.text) // cached
 
