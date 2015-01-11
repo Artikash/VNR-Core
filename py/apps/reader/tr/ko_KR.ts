@@ -1586,9 +1586,9 @@ It color will be used to render your shared subtitles visible to others.
 &lt;h4&gt;About the gender&lt;/h4&gt;
 In TTS, may I call you お兄ちゃん or 姉うえ? &amp;gt; &amp;lt;
 
-&lt;h4&gt;About 超能力&lt;/h4&gt;
+&lt;h4&gt;About user privilege&lt;/h4&gt;
 VNR is standing on the shoulder of a large amount of user-shared contributions.
-超能力 describes what you can do to other users&apos; efforts (like subs) with/without their permissions.</source>
+User privilege describes what you can do to other users&apos; efforts (like subs) with/without their permissions.</source>
         <translation>&lt;h4&gt;계정에 대해서&lt;/h4&gt;
 기계번역과 다른사람의 번역에 접근하는데 계정이 필요하지 않습니다.&lt;br/&gt;
 &lt;br/&gt;
@@ -1612,9 +1612,9 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 &lt;h4&gt;성별에 대해서&lt;/h4&gt;
 TTS 음성합성 엔진에서, お兄ちゃん라 부를지 姉うえ라 부를지 결정합니다. &amp;gt; &amp;lt;
 
-&lt;h4&gt;초능력超能力에 대해서&lt;/h4&gt;
+&lt;h4&gt;초능력특권에 대해서&lt;/h4&gt;
 VNR은 많은양의 사용자 기여를 받아왔습니다.
-초능력超能力은 번역문과 같이 다른 사용자를 위한 노력을 설명합니다.</translation>
+초능력특권은 번역문과 같이 다른 사용자를 위한 노력을 설명합니다.</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="5871"/>

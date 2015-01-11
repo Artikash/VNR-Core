@@ -54,9 +54,9 @@ It color will be used to render your shared subtitles visible to others.
 <h4>About the gender</h4>
 In TTS, may I call you お兄ちゃん or 姉うえ? &gt; &lt;
 
-<h4>About 超能力</h4>
+<h4>About user privilege</h4>
 VNR is standing on the shoulder of a large amount of user-shared contributions.
-超能力 describes what you can do to other users' efforts (like subs) with/without their permissions.""")
+User privilege describes what you can do to other users' efforts (like subs) with/without their permissions.""")
 % ("http://sakuradite.com", "http://sakuradite.com"))
 
 def renderGameAgentHelp():
