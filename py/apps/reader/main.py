@@ -1574,11 +1574,8 @@ class MainObject(QObject):
 
   #def isDebug(self): return self.__d.debug
 
-  def run(self, args):
-    """Starting point for the entire app
-    @param  args  [unicode]  QCoreApplication.arguments()
-    """
-    dprint("enter: args =", args)
+  def init(self):
+    dprint("enter")
     d = self.__d
 
     dprint("show top window")
@@ -1678,7 +1675,21 @@ class MainObject(QObject):
     #  dprint("warm up dictionary terms")
     #  d.termManager.warmup()
 
-    dprint("login later")
+    dprint("enter")
+
+  def run(self, args):
+    """Starting point for the entire app
+    @param  args  [unicode]  QCoreApplication.arguments()
+    """
+    dprint("enter: args =", args)
+
+    d = self.__d
+    dm = d.dataManager
+    gm = d.gameManager
+
+    online = self.isOnline()
+
+    dprint("schedule to login later")
     skevents.runlater(dm.reloadUser)
 
     if online:

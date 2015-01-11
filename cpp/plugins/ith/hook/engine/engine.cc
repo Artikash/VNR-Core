@@ -20,7 +20,7 @@
 #include "ntinspect/ntinspect.h"
 #include "disasm/disasm.h"
 #include "winversion/winversion.h"
-#include "cpputil/cppstring.h"
+#include "cpputil/cppcstring.h"
 #include "ccutil/ccmacro.h"
 //#include <cctype>
 

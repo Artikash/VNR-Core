@@ -163,14 +163,11 @@ def main():
   dprint("autosync settings")
   ss.autoSync() # Load before qapplication is created
 
-  dprint("show splash screen")
-  from PySide.QtGui import QPixmap
-  from Qt5.QtWidgets import QSplashScreen
-  import rc
-  splashImage = QPixmap(rc.image_path('splash-wait'))
-  splash = QSplashScreen(splashImage)
+  dprint("show splash")
+  from splashscreen import StartupSplashScreen
+  splash = StartupSplashScreen()
   splash.show()
-  a.processEvents()
+  a.processEvents() # process event to make it show
 
   #dprint("cache fonts")
   #import fonts
@@ -196,6 +193,7 @@ def main():
   #dprint('init directories')
   #from PySide.QtCore import QDir
 
+  import rc
   from sakurakit import skfileio
   dprint("remove broken caches")
   for it in rc.DIR_APP_TMP,:
@@ -339,6 +337,11 @@ def main():
 
   import main
   m = main.MainObject(a)
+  m.init()
+
+  dprint("schedule to finish splash")
+  splash.finishLater(1000)
+
   m.run(a.arguments())
 
   #import netman
@@ -346,15 +349,6 @@ def main():
 
   #import hashutil
   #print hashutil.md5sum('/Users/jichi/tmp/t.cpp')
-
-  dprint("schedule to hide splash")
-  # Disabled which is too slow
-  #splashImage = QPixmap(rc.image_path('splash-ready'))
-  #splash.setPixmap(splashImage)
-  from functools import partial
-  from sakurakit import skevents
-  skevents.runlater(partial(
-      splash.finish, m.topWindow()))
 
   dprint("exec")
   returnCode = a.exec_()
