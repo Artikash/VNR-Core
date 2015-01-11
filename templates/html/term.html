@@ -12,6 +12,10 @@
 		<style type="text/css">
 a{color:lightblue}
 .pp-name{color:silver}
+.text-error{background-color:rgba(255,0,0,40%)}
+.text-success{background-color:rgba(128,225,0,40%)}
+.id a,
+.user a,a.user{font-weight:bold}
 		</style>
 	</head>
 	<body align="center">
@@ -19,8 +23,8 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('ID')}}: </td>
 %if td.id
-				<td class="pp-value">
-					<a href="javascript://main.searchDictionary('{{td.id}}','id')">{{td.id}}</a>
+				<td class="pp-value id">
+					{{td.id}}
 					{{' '}}<a href="javascript://main.searchDictionary('{{td.id}}','id')">({{tr('Show')}})</a>
 				</td>
 %else
@@ -30,7 +34,10 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Pattern')}}: </td>
 %if td.pattern
-				<td class="pp-value">{{td.pattern|e}}</td>
+				<td class="pp-value">
+					{{td.pattern|e}}
+					{{' '}}<a href="javascript://main.searchDictionary('{{td.pattern|e}}','pattern')">({{tr('Search')}})</a>
+				</td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
@@ -42,7 +49,10 @@ a{color:lightblue}
 %elif td.text == td.pattern
 				<td class="pp-value pp-empty">({{tr('equal')}})</td>
 %else
-				<td class="pp-value">{{td.text|e}}</td>
+				<td class="pp-value">
+					{{td.text|e}}
+					{{' '}}<a href="javascript://main.searchDictionary('{{td.text|e}}','text')">({{tr('Search')}})</a>
+				</td>
 %endif
 			</tr>
 			<tr class="pp-row">
@@ -60,7 +70,7 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Regex')}}: </td>
 %if td.regex
-				<td class="pp-value">{{tr('yes')}}</td>
+				<td class="pp-value text-error">{{tr('yes')}}</td>
 %else
 				<td class="pp-value">{{tr('no')}}</td>
 %endif
@@ -68,7 +78,7 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Game-specific')}}: </td>
 %if td.special
-				<td class="pp-value">{{tr('yes')}}</td>
+				<td class="pp-value text-error">{{tr('yes')}}</td>
 %else
 				<td class="pp-value">{{tr('no')}}</td>
 %endif
@@ -76,15 +86,16 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Private')}}: </td>
 %if td.private
-				<td class="pp-value">{{tr('yes')}}</td>
+				<td class="pp-value text-error">{{tr('yes')}}</td>
 %else
 				<td class="pp-value">{{tr('no')}}</td>
 %endif
 			</tr>
+			<hr>
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('User')}}: </td>
 %if userName
-				<td class="pp-value"><a href="javascript://main.showUser('{{userName|e}}')">@{{userName|e}}</a></td>
+				<td class="pp-value user"><a href="javascript://main.showUser('{{userName|e}}')">@{{userName|e}}</a></td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
@@ -110,8 +121,8 @@ a{color:lightblue}
 %if updateUserName and td.updateTimestamp > td.timestamp
 				<td class="pp-value">
 %	if td.updateUserId != td.userId
-					<a href="javascript://main.showUser('{{updateUserName|e}}')">@{{updateUserName|e}}</a>
-					,{{' '}}
+					<a class="user" href="javascript://main.showUser('{{updateUserName|e}}')">@{{updateUserName|e}}</a>
+					{{' '}}
 %	endif
 					{{i18n.timestamp2datetime(td.updateTimestamp)}}
 				</td>
@@ -119,19 +130,20 @@ a{color:lightblue}
 				<td class="pp-value pp-empty">({{tr('none')}})</td>
 %endif
 			</tr>
+%if td.updateComment
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Update comment')}}: </td>
-%if td.updateComment
 				<td class="pp-value">{{td.updateComment}}</td>
-%else
-				<td class="pp-value pp-empty">({{tr('none')}})</td>
-%endif
 			</tr>
+%endif
 			<hr>
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Matched text')}}: </td>
 %if source
-				<td class="pp-value">{{source|e}}</td>
+				<td class="pp-value">
+					{{source|e}}
+					{{' '}}<a href="javascript://main.searchDictionary('{{source|e}}','pattern')">({{tr('Search')}})</a>
+				</td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
@@ -139,7 +151,10 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Replaced text')}}: </td>
 %if target
-				<td class="pp-value">{{target|e}}</td>
+				<td class="pp-value">
+					{{target|e}}
+					{{' '}}<a href="javascript://main.searchDictionary('{{target|e}}','text')">({{tr('Search')}})</a>
+				</td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
