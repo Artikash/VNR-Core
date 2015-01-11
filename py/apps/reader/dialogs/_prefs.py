@@ -165,7 +165,7 @@ class _UserTab(object):
     grid.addLayout(row, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(u"超能力:"), r, 0)
+    grid.addWidget(QtWidgets.QLabel(tr_("Privilege") + ":"), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.userLevelLabel)
     self._refreshUserLevel()

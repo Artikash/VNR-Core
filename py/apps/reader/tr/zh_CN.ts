@@ -1586,9 +1586,9 @@ It color will be used to render your shared subtitles visible to others.
 &lt;h4&gt;About the gender&lt;/h4&gt;
 In TTS, may I call you お兄ちゃん or 姉うえ? &amp;gt; &amp;lt;
 
-&lt;h4&gt;About 超能力&lt;/h4&gt;
+&lt;h4&gt;About user privilege&lt;/h4&gt;
 VNR is standing on the shoulder of a large amount of user-shared contributions.
-超能力 describes what you can do to other users&apos; efforts (like subs) with/without their permissions.</source>
+User privilege describes what you can do to other users&apos; efforts (like subs) with/without their permissions.</source>
         <translation>&lt;h4&gt;关于账户&lt;/h4&gt;
 只使用机翻功能的话并不需要账户。&lt;br/&gt;
 &lt;br/&gt;
@@ -1612,9 +1612,9 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 &lt;h4&gt;关于性别&lt;/h4&gt;
 在语音合成中，应该称呼你お兄ちゃん呢还是姉うえ呢? &amp;gt; &amp;lt;
 
-&lt;h4&gt;关于超能力&lt;/h4&gt;
+&lt;h4&gt;关于特权&lt;/h4&gt;
 没有来自其他同学贡献的时间和努力，就不会有VNR。
-如果你有超能力，你也许可以在经过/未经其他同学允许的情况下，改进来自其他同学的贡献（比如字幕）。</translation>
+如果你有特权，你也许可以在经过/未经其他同学允许的情况下，改进来自其他同学的贡献（比如字幕）。</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="5871"/>
