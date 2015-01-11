@@ -18,7 +18,6 @@ class _ShioriBean:
     self.enabled = True
     self._renderMutex = QMutex()
 
-
   def renderKorean(self, text):
     """
     @param  text  unicode
@@ -112,22 +111,29 @@ class ShioriBean(QObject):
   enabledChanged = Signal(bool)
   enabled = Property(bool, isEnabled, setEnabled, notify=enabledChanged)
 
-  @Slot(unicode, unicode, unicode, result=unicode)
-  def render(self, text, language, json):
+  @Slot(unicode, unicode, result=unicode)
+  def renderText(self, text, language):
     """
     @param  text  Japanese phrase
     @param  language
     @return  unicode not None  html
     """
-    if json:
-      return self.__d.renderJson(json)
     if language == 'ja':
       return self.__d.renderJapanese(text)
     if language == 'ko':
       return self.__d.renderKorean(text)
     return ''
 
-  popup = Signal(unicode, unicode, int, int)  # text, language, x, y
+  @Slot(unicode, result=unicode)
+  def renderJson(self, json):
+    """
+    @param  json  term
+    @return  unicode not None  html
+    """
+    return self.__d.renderJson(json)
+
+  popupText = Signal(unicode, unicode, int, int)  # text, language, x, y
+  popupJson = Signal(unicode, int, int)  # json, x, y
 
 def popupshiori(text, language, x, y):
   """
@@ -138,7 +144,39 @@ def popupshiori(text, language, x, y):
   #dprint("x = %s, y = %s" % (x,y))
   if ShioriBean.instance.isEnabled():
     qmldialog.Kagami.instance.raise_()
-    ShioriBean.instance.popup.emit(text, language, x, y)
+    ShioriBean.instance.popupText.emit(text, language, x, y)
+
+def showjsonat(data, x, y):
+  """
+  @param  data  str
+  @param  x  int
+  @param  y  int
+  """
+  #if ShioriBean.instance.isEnabled():
+  qmldialog.Kagami.instance.raise_()
+  ShioriBean.instance.popupJson.emit(data, x, y)
+
+def showjson(data):
+  """
+  @param  data  str
+  """
+  from sakurakit import skos, skwin
+  #if ShioriBean.instance.isEnabled():
+  if skos.WIN:
+    try: x, y = skwin.get_mouse_pos()
+    except Exception, e:
+      dwarn(e)
+      return
+    showjsonat(data, x, y)
+
+def showterm(id):
+  """
+  @param  id  long
+  """
+  showjson(json.dumps({
+    'type': 'term',
+    'id': id,
+  }))
 
 #@QmlObject
 class ShioriQmlProxy(QObject):

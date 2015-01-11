@@ -14,12 +14,12 @@ if __name__ == '__main__':
 from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
-from sakurakit import skqss
+from sakurakit import skqss, skwidgets
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, i18n, rc, settings, textutil, termman, trman, trtraits
+import config, evalutil, i18n, rc, settings, textutil, termman, trman, trtraits
 
 class MTTester(QtWidgets.QDialog):
 
@@ -478,7 +478,9 @@ class _MTTester(object):
     @return  QTextEdit
     """
     if rich:
-      ret = QtWidgets.QTextEdit(_EMPTY_TEXT)
+      #ret = QtWidgets.QTextEdit(_EMPTY_TEXT)
+      ret = skwidgets.SkTextEditWithAnchor(_EMPTY_TEXT)
+      ret.anchorClicked.connect(evalutil.evalurl)
     else:
       ret = QtWidgets.QPlainTextEdit(_EMPTY_TEXT)
     ret.setMinimumWidth(_TEXTEDIT_MINWIDTH)
