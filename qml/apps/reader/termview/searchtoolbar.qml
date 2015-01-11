@@ -12,6 +12,12 @@ Row { id: root_ // Theme refers to Bootstrap.label
   signal triggered(string text)
   property alias displaysDuplicateRows: duplicateButton_.checked // bool
 
+  function clear() {
+    for (var i = 0; i < children.length; ++i)
+      if (children[i].checked)
+        children[i].checked = false
+  }
+
   // - Private -
   spacing: 2
 

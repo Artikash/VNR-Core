@@ -19,7 +19,10 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('ID')}}: </td>
 %if td.id
-				<td class="pp-value">{{td.id}}</td>
+				<td class="pp-value">
+					<a href="javascript://main.searchDictionary('{{td.id}}','id')">{{td.id}}</a>
+                    <a href="javascript://main.searchDictionary('{{td.id}}','id')">({{tr('Show')}})</a>
+				</td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
@@ -81,7 +84,7 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('User')}}: </td>
 %if userName
-				<td class="pp-value">@{{userName|e}}</td>
+				<td class="pp-value"><a href="javascript://main.showUser('{{userName|e}}')">@{{userName|e}}</a></td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
@@ -107,7 +110,8 @@ a{color:lightblue}
 %if updateUserName and td.updateTimestamp > td.timestamp
 				<td class="pp-value">
 %	if td.updateUserId != td.userId
-					@{{updateUserName|e}},{{' '}}
+					<a href="javascript://main.showUser('{{updateUserName|e}}')">@{{updateUserName|e}}</a>
+					,{{' '}}
 %	endif
 					{{i18n.timestamp2datetime(td.updateTimestamp)}}
 				</td>

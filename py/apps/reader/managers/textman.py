@@ -586,6 +586,8 @@ class _TextManager(object):
     #text = u"で、でも"
     #text = u"じゃあ、よろしくね～"
     #text = u"な～に、よろしくね～"
+    #text = u"「うん……それにしても、湊の向上心は思ったより高かったんだな。随分とデザインに対してアクティブじゃないか」"
+
     if not text:
       return
     if not agent: # only repair text for ITH

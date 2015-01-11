@@ -12,7 +12,7 @@
 # I have to disable existing plugins before adding new one.
 # This can be done by merging plugin manager with main plugin
 #
-# Two extra plugins can be added.
+# One extra plugin can be added.
 
 from Qt5.QtQml import qmlRegisterType
 import features
@@ -96,6 +96,9 @@ reg(growl.GrowlQmlProxy, 'Growl')
 import shiori
 reg(shiori.ShioriBean, 'ShioriBean')
 reg(shiori.ShioriQmlProxy, 'ShioriProxy')
+
+import termview
+reg(termview.TermViewBean, 'TermViewBean')
 
 #import ocrman
 #reg(ocrman.OcrQmlBean, 'OcrBean')

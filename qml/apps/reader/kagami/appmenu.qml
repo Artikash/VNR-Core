@@ -57,7 +57,7 @@ Item {
 
     Desktop.MenuItem {
       text: My.tr("Shared Dictionary")
-      onTriggered: mainPlugin_.showTermView()
+      onTriggered: mainPlugin_.showDictionary()
     }
 
     Desktop.MenuItem {

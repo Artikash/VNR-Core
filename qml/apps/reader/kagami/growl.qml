@@ -311,6 +311,11 @@ Item { id: root_
   function showError(text) { addText(text, 'error'); showMe() }
   function showNotification(text) { addText(text, 'note'); showMe() }
 
+  function msg(text) { showMessage(text) }
+  function warn(text) { showWarning(text) }
+  function error(text) { showError(text) }
+  function notify(text) { showNotification(text) }
+
   // Insert a page break
   function pageBreak() {
     if (_pageIndex !== listModel_.count) {

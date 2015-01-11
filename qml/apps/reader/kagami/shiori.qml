@@ -5,8 +5,10 @@ import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 //import '../../../imports/qmleffects' as Effects
+import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/util.min.js' as Util
 //import '../../../js/util.min.js' as Util
 import '../../../components' as Components
 import '../../../components/qt5' as Qt5
@@ -44,7 +46,7 @@ Rectangle { id: root_
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_HEIGHT: 200 * _zoomFactor
+  property int _MAX_HEIGHT: 250 * _zoomFactor
 
   //property int _DEFAULT_WIDTH: 300 * zoomFactor
   property int _MIN_WIDTH: 50 * _zoomFactor
@@ -238,10 +240,8 @@ Rectangle { id: root_
 
         onClicked: {
           var link = textEdit_.linkAt(mouse.x, mouse.y)
-          if (link) {
-            growl_.showMessage(My.tr("Open in external browser"))
-            Qt.openUrlExternally(link)
-          }
+          if (link)
+            Eval.evalLink(link)
         }
 
         onDoubleClicked: {
