@@ -1870,6 +1870,78 @@ class Subtitle(object):
     self._userName = None # str  cached
     self._q = None # Qt
 
+  def equalText(self, text, exact=False):
+    """
+    @param  text  unicode
+    @param* exact  bool
+    @return  bool
+    """
+    if not exact or not self.textName:
+      diffcount = len(text) - len(self.text)
+      if not diffcount:
+        return text == self.text
+      elif diffcount == 2:
+        if text.startswith(u"「") and text.endswith(u"」"):
+          return text[1:-1] == self.text
+      elif not exact and diffcount == -2:
+        if self.text.startswith(u"「") and self.text.endswith(u"」"):
+          return self.text[1:-1] == text
+    if self.textName:
+      if not exact and text.startswith(u"「") and text.endswith(u"」"):
+        text = text[1:-1]
+      diffcount = len(text) - len(self.textName) - len(self.text)
+      if not diffcount:
+        return text.startswith(self.textName) and text.endswith(self.text)
+        #return self.textName + self.text == text
+      elif diffcount == 2:
+        if text.startswith(u"【"):
+          return text == (u"【%s】%s" % (self.textName, text))
+        if text.startswith(u"「"):
+          return text == (u"%s「%s」" % (self.textName, text))
+      elif diffcount == 4:
+        if text.startswith(u"【") and text.endswith(u"」"):
+          return text == (u"【%s】「%s」" % (self.textName, text))
+    return False
+
+  def equalSub(self, text, exact=False): # unicode, bool -> bool
+    """
+    @param  text  unicode
+    @param* exact  bool
+    @return  bool
+    """
+    if not exact or not self.subName:
+      diffcount = len(text) - len(self.sub)
+      if not diffcount:
+        return text == self.sub
+      elif diffcount == 2:
+        if text.startswith(u"「") and text.endswith(u"」"):
+          return text[1:-1] == self.sub
+      elif not exact and diffcount == -2:
+        if self.sub.startswith(u"「") and self.sub.endswith(u"」"):
+          return self.sub[1:-1] == text
+      elif not exact and diffcount < 0: # sub is longer
+        if self.sub.startswith(u"【") and self.sub.endswith(u"」"):
+          if text.startswith(u"「") and text.endswith(u"」"):
+            return self.sub.endswith(u"】" + text)
+          else:
+            return self.sub.endswith(u"】「%s」" % text)
+    if self.subName:
+      if not exact and text.startswith(u"「") and text.endswith(u"」"):
+        text = text[1:-1]
+      diffcount = len(text) - len(self.subName) - len(self.sub)
+      if not diffcount:
+        return text.startswith(self.subName) and text.endswith(self.sub)
+        #return self.subName + self.sub == text
+      elif diffcount == 2:
+        if text.startswith(u"【"):
+          return text == (u"【%s】%s" % (self.subName, sub))
+        if text.startswith(u"「"):
+          return text == (u"%s「%s」" % (self.subName, sub))
+      elif diffcount == 4:
+        if text.startswith(u"【") and text.endswith(u"」"):
+          return text == (u"【%s】「%s」" % (self.subName, sub))
+    return False
+
   @property
   def userName(self):
     if self._userName is None:
@@ -8367,6 +8439,19 @@ class DataManager(QObject):
     @return  [Subtitle] or None
     """
     return self.__d.subtitleIndex.get(hash)
+
+  def queryBestSubtitle(self, hash, text=""):
+    """
+    @param  hash  long
+    @param* text  unicode
+    @return  Subtitle or None
+    """
+    l = self.__d.subtitleIndex.get(hash)
+    if l:
+      for sub in l:
+        if sub.equalText(text, exact=True):
+          return sub
+      return l[0]
 
   def hasSubtitles(self): # -> bool
     return bool(self.__d.subtitleIndex)
