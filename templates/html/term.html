@@ -21,7 +21,7 @@ a{color:lightblue}
 %if td.id
 				<td class="pp-value">
 					<a href="javascript://main.searchDictionary('{{td.id}}','id')">{{td.id}}</a>
-                    <a href="javascript://main.searchDictionary('{{td.id}}','id')">({{tr('Show')}})</a>
+					{{' '}}<a href="javascript://main.searchDictionary('{{td.id}}','id')">({{tr('Show')}})</a>
 				</td>
 %else
 				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
