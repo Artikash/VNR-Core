@@ -4,6 +4,7 @@
  */
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
+import '../../../js/eval.min.js' as Eval
 import '../../../components' as Components
 import '../share' as Share
 
@@ -20,18 +21,29 @@ Item { id: root_
   // - Private -
   //Component.onCompleted: console.log("springboard:dashboard.qml: pass")
 
-  function runQml(qml, owner) {
-    if (qml) {
-      var q = Qt.createQmlObject(qml, owner ? owner : root_, 'runDashboardApp')
-      if (q !== null) { // && 'run' in q) {
-        console.log('dashboard.qml:runQml: running')
-        q.run()
-        console.log('dashboard.qml:runQml: destroying')
-        q.destroy()
-        console.log('dashboard.qml:runQml: pass')
-      }
-    }
-  }
+  //function evalQml(qml, owner) { // string, item ->
+  //  if (qml) {
+  //    var q = Qt.createQmlObject(qml, owner ? owner : root_, 'runDashboardApp')
+  //    if (q !== null) { // && 'run' in q) {
+  //      console.log('dashboard.qml:evalQml: running')
+  //      q.run()
+  //      console.log('dashboard.qml:evalQml: destroying')
+  //      q.destroy()
+  //      console.log('dashboard.qml:evalQml: pass')
+  //    }
+  //  }
+  //}
+
+  //function evalModel(model) { // dict ->
+  //  var qml = model.qml
+  //  if (qml) {
+  //    evalQml(qml, owner)
+  //    return
+  //  }
+  //  var link = model.link
+  //  if (link)
+  //    Eval.evalLink(link)
+  //}
 
   GridView { id: grid_
     anchors.fill: parent
@@ -47,13 +59,13 @@ Item { id: root_
     //    currentIndex = count ? 1 : 0
 
     Keys.onPressed: {
-      // ENTER || SHIFT+ENTER
+      // ENTER
       if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) &&
           !event.modifiers) {
         event.accepted = true
         var modelData = grid_.model.get(grid_.currentIndex)
         if (modelData)
-          runQml(modelData.qml)
+          Eval.evalLink(modelData.link)
       }
     }
 
@@ -164,7 +176,8 @@ Item { id: root_
         onDoubleClicked: {
           delegateItem_.focusMe() // ensure focus for double click
           if (mouse.button === Qt.LeftButton)
-            runQml(model.qml, delegateItem_)
+            Eval.evalLink(model.link)
+            //evalModel(model, delegateItem_)
         }
       }
 

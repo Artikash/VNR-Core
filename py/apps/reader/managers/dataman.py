@@ -45,6 +45,13 @@ def _is_protected_data(d):
   """
   return d.userId == GUEST_USER_ID and d.timestamp < skdatetime.CURRENT_UNIXTIME - defs.PROTECTED_INTERVAL
 
+def create_game_link(path, launchPath=''): # unicode, unicode -> unicode
+  if not path:
+    return ''
+  return 'javascript://main.launchGameWithLaunchPath("%s", "%s")' % (
+      QDir.fromNativeSeparators(path) if path else '',
+      QDir.fromNativeSeparators(launchPath) if launchPath else '')
+
 ## Data types ##
 
 class UserDigest(object):
@@ -1662,13 +1669,18 @@ class GameObject(QObject):
         d.launchPath = game.launchPath
       except AttributeError: pass
 
-  qml = Property(unicode,
-    lambda self:
-      rc.jinja_template('qml/opengame').render({
-        'path': QDir.fromNativeSeparators(self.path) if self.path else "",
-        'launchPath': QDir.fromNativeSeparators(self.launchPath) if self.launchPath else "",
-      }),
-    )
+  #qml = Property(unicode,
+  #  lambda self:
+  #    rc.jinja_template('qml/opengame').render({
+  #      'path': QDir.fromNativeSeparators(self.path) if self.path else "",
+  #      'launchPath': QDir.fromNativeSeparators(self.launchPath) if self.launchPath else "",
+  #    }),
+  #  )
+
+  linkChanged = Signal(unicode)
+  link = Property(unicode,
+    lambda self: create_game_link(self.__d.path, self.__d.launchPath),
+    notify=linkChanged)
 
   idChanged = Signal(int)
   id = Property(int,
@@ -3834,7 +3846,7 @@ GAME_ICON_ROLE = Qt.DecorationRole
 GAME_NAME_ROLE = Qt.DisplayRole
 GAME_TOOLTIP_ROLE = Qt.ToolTipRole
 GAME_MD5_ROLE = Qt.UserRole
-GAME_QML_ROLE = Qt.UserRole +1
+GAME_LINK_ROLE = Qt.UserRole +1
 GAME_SEARCHTEXT_ROLE = Qt.UserRole +2
 GAME_STYLEHINT_ROLE = Qt.UserRole +3
 GAME_ROLES = {
@@ -3842,7 +3854,7 @@ GAME_ROLES = {
   GAME_NAME_ROLE: 'name',
   GAME_TOOLTIP_ROLE: 'toolTip',
   GAME_MD5_ROLE: 'md5',
-  GAME_QML_ROLE: 'qml',
+  GAME_LINK_ROLE: 'link',
   GAME_SEARCHTEXT_ROLE: 'searchText',
   GAME_STYLEHINT_ROLE: 'styleHint',
 }
@@ -4025,11 +4037,8 @@ class GameModel(QAbstractListModel):
     if role == GAME_STYLEHINT_ROLE:
       return game['gameType']
 
-    if role == GAME_QML_ROLE:
-      return rc.jinja_template('qml/opengame').render({
-        'path': game['path'],
-        'launchPath': game['launchPath'],
-      })
+    if role == GAME_LINK_ROLE:
+      return create_game_link(game['path'], game['launchPath'])
 
     if role == GAME_SEARCHTEXT_ROLE:
       return "\n".join(game[key] or ''

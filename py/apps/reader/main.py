@@ -2255,6 +2255,9 @@ class MainObject(QObject):
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")
 
+  def openExistingGame(self, path, launchPath=''): # unicode, unicode ->
+    self.__d.gameManager.openExecutable(path, launchPath=launchPath)
+
 #@QmlObject
 class MainObjectProxy(QObject):
   def __init__(self, parent=None):
@@ -2389,6 +2392,11 @@ class MainObjectProxy(QObject):
 
   @Slot(unicode)
   def openWiki(self, text): manager().openWiki(text)
+
+  @Slot(unicode)
+  def launchGameWithPath(self, path): manager().openExistingGame(path)
+  @Slot(unicode, unicode)
+  def launchGameWithLaunchPath(self, path, launchPath): manager().openExistingGame(path, launchPath=launchPath)
 
   #@Slot(int)
   #def showGameSubtitles(self, gameId): manager().showSubtitleView(gameId=gameId)
