@@ -180,32 +180,32 @@ class TermWriter:
             if escape_source:
               esc = defs.NAME_ESCAPE + " " # padding space
               for i,it in enumerate(titles):
-                f.write(self._renderLine(
+                self._writeLine(f,
                     td.id,
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     esc % (priority, titleCount - i),
-                    regex or it.regex))
+                    regex or it.regex)
             elif escape_target:
               esc = defs.NAME_ESCAPE
               for i,it in enumerate(titles):
-                f.write(self._renderLine(
+                self._writeLine(f,
                     td.id,
                     esc % (priority, titleCount - i),
                     repl + it.text + (" " if padding else ""), # it will be escaped in C++
                     #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
-                    regex)) # no padding space for Chinese names
+                    regex) # no padding space for Chinese names
             else:
               #assert padding # this is supposed to be always true
               for it in titles:
-                f.write(self._renderLine(
+                self._writeLine(f,
                     td.id,
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     repl + it.text + " ",
-                    regex or it.regex)) # padding space for Japanese names
+                    regex or it.regex) # padding space for Japanese names
 
           if padding:
             repl += " "
-          f.write(self._renderLine(td.id, pattern, repl, regex))
+          self._writeLine(f, td.id, pattern, repl, regex)
 
           empty = False
 
@@ -218,17 +218,23 @@ class TermWriter:
     skfileio.removefile(path) # Remove file when failed
     return False
 
-  def _renderLine(self, tid, pattern, repl, regex):
+  @staticmethod
+  def _writeLine(f, tid, pattern, repl, regex):
     """
+    @param  f  file
     @param  tid  long
     @param  pattern  unicode
     @param  repl  unicode
     @param  regex  bool
-    @return  unicode
+    @return  unicode or None
     """
+    if '\n' in pattern or '\n' in repl:
+      dwarn("skip new line in term: id = %s" % tid)
+      return
     ret = '\t'.join((str(tid), pattern, repl) if repl else (str(tid), pattern))
     ret = "\t%s\n" % ret
-    return 'r' + ret if regex else ret
+    line = 'r' + ret if regex else ret
+    f.write(line)
 
   def _renderHeader(self, type, language):
     """
