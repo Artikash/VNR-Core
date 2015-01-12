@@ -115,7 +115,7 @@ Item { id: root_
     case 11: return qsTr("Long")    // W_LONG
     case 20: return qsTr("Missing") // W_MISSING_TEXT
     case 30: return Sk.tr("Game")   // W_NOT_GAME
-    case 31: return Sk.tr("Input")  // W_NOT_GAME
+    case 31: return Sk.tr("Input")  // W_NOT_INPUT
     case 50: return Sk.tr("Kanji")  // W_CHINESE_KANJI
     case 51: return Sk.tr("zhs")    // W_CHINESE_SIMPLIFIED
     case 52: return Sk.tr("zht")    // W_CHINESE_TRADITIONAL
