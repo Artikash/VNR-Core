@@ -2456,7 +2456,7 @@ class _Term(object):
       return self.E_EMPTY_PATTERN
 
     # E_USELESS
-    if ((self.language not in ('zhs', 'zht', 'ja', 'ko')
+    if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
           or self.type not in ('escape', 'title', 'name', 'yomi'))
         and self.pattern == self.text):
       return self.E_USELESS
