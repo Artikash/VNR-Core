@@ -2449,6 +2449,7 @@ class _Term(object):
   #  return self._errorString
 
   _RE_HIRAGANA = re.compile(u'[あ-ん]')
+  _RE_LATIN_WORD = re.compile('^[0-9a-zA-Z ]+$')
   def _getErrorType(self): # -> int not None
     # E_EMPTY_PATTERN
     if not self.pattern:
@@ -2484,9 +2485,13 @@ class _Term(object):
       #if opencc.containsja(self.text): # not checked as it might have Japanese chars such as 桜
       #  return self.W_CHINESE_KANJI
 
-    # W_GAME
+    # W_NOT_INPUT
+    if self.language == 'en' and self.type == 'source' and self.text and self._RE_LATIN_WORD.match(self.text):
+      return self.W_NOT_INPUT
+
+    # W_NOT_GAME
     if not self.regex and self.type == 'origin' and self.text and unichars.isascii(self.text):
-      return self.W_GAME
+      return self.W_NOT_GAME
 
     # W_MISSING_TEXT
     if not self.text and len(self.pattern) > 3 and self.type in ('escape', 'name', 'yomi'):
@@ -2534,7 +2539,8 @@ class _Term(object):
   W_SHORT = 10              # being too short
   W_LONG = 11               # being too long
   W_MISSING_TEXT = 20       # text is empty
-  W_GAME = 30               # should not use game type
+  W_NOT_GAME = 30           # should not use game type
+  W_NOT_INPUT = 31          # should not use input type
   W_CHINESE_KANJI = 50      # having Japanese characters in kanji
   W_CHINESE_SIMPLIFIED = 51 # should not use simplified chinese
   W_CHINESE_TRADITIONAL = 52 # should not use traditional chinese

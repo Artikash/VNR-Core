@@ -816,36 +816,41 @@
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="112"/>
+        <source>Type should not translation instead of input</source>
+        <translation>词条类型应该是翻译而不应该是输入</translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="113"/>
         <source>Having Japanese kanji in Chinese translation</source>
         <translation>中文翻译中包含日本汉字</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="113"/>
+        <location filename="../termview/inspector.qml" line="114"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>翻译不包含简体字的词条的语言应该是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="114"/>
+        <location filename="../termview/inspector.qml" line="115"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>翻译包含简体字的词条的语言不应该中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="115"/>
+        <location filename="../termview/inspector.qml" line="116"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>正则表达式中的括号可能不匹配</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="116"/>
+        <location filename="../termview/inspector.qml" line="117"/>
         <source>This rule is useless that has no effect</source>
         <translation>这个词条是没有作用的</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="117"/>
+        <location filename="../termview/inspector.qml" line="118"/>
         <source>Pattern does not need enabling regex</source>
         <translation>匹配的文本不需要开启正则表达</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="118"/>
+        <location filename="../termview/inspector.qml" line="119"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
@@ -1355,23 +1360,23 @@
         <translation>缺失</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="121"/>
+        <location filename="../termview/table.qml" line="122"/>
         <source>Brackets</source>
         <translation>括号</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="122"/>
+        <location filename="../termview/table.qml" line="123"/>
         <source>Useless</source>
         <translation>无用</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="123"/>
-        <location filename="../termview/table.qml" line="436"/>
+        <location filename="../termview/table.qml" line="124"/>
+        <location filename="../termview/table.qml" line="437"/>
         <source>Regex</source>
         <translation>正则表达</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="508"/>
+        <location filename="../termview/table.qml" line="509"/>
         <source>Series</source>
         <translation>系列专用</translation>
     </message>

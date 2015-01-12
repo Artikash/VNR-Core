@@ -111,13 +111,14 @@ Item { id: root_
   function getErrorText(v) { // int -> string
     switch (v) {
     case 0: return 'OK' // OK
-    case 10: return qsTr("Short") // W_SHORT
-    case 11: return qsTr("Long") // W_LONG
+    case 10: return qsTr("Short")   // W_SHORT
+    case 11: return qsTr("Long")    // W_LONG
     case 20: return qsTr("Missing") // W_MISSING_TEXT
-    //case 30: // W_GAME
-    case 50: return Sk.tr("Kanji") // W_CHINESE_KANJI
-    case 51: return Sk.tr("zhs") // W_CHINESE_SIMPLIFIED
-    case 52: return Sk.tr("zht") // W_CHINESE_TRADITIONAL
+    case 30: return Sk.tr("Game")   // W_NOT_GAME
+    case 31: return Sk.tr("Input")  // W_NOT_GAME
+    case 50: return Sk.tr("Kanji")  // W_CHINESE_KANJI
+    case 51: return Sk.tr("zhs")    // W_CHINESE_SIMPLIFIED
+    case 52: return Sk.tr("zht")    // W_CHINESE_TRADITIONAL
     case 100: return qsTr("Brackets") // W_BAD_REGEX
     case -100: return qsTr("Useless") // E_USELESS
     case -101: return qsTr("Regex") // E_USELESS_REGEX
