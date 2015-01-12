@@ -149,12 +149,16 @@ if __name__ == '__main__':
 
     #t = u"里面"
     t = u"我方"
-    t = opencc.zhs2zht(t)
+    t = u"轻轻地"
+    #t = opencc.zhs2zht(t)
+    t = opencc.containszhs(t)
     #t = opencc.zht2tw(t)
+    print t
+    return
 
     a = app()
     from Qt5.QtWidgets import QLabel
-    w = QLabel(t)
+    w = QLabel("%s" % t)
     w.show()
     a.exec_()
 
@@ -175,6 +179,8 @@ if __name__ == '__main__':
 
     a.exec_()
 
-  test_phonon()
+  #test_phonon()
+
+  test_cc()
 
 # EOF

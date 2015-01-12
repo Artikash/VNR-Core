@@ -167,10 +167,11 @@ def replaceimgurls(h, fun):
 # Validate
 
 # http://stackoverflow.com/questions/6701853/parentheses-pairing-issue
-def checkpair(text, pair=("<({[", ">)}]")):
+def checkpair(text, pair=("({[",")}]"), escape='\\'):
   """
   @param  text  unicode
   @param* pair  (unicode open, unicode close)
+  @param* escape  unicode  prefix chars for escape, such as "\\" for regex
   @return  bool
   """
   pushChars, popChars = pair
@@ -181,6 +182,12 @@ def checkpair(text, pair=("<({[", ">)}]")):
       break
   if not needcheck:
     return True
+  if escape:
+    for x in escape:
+      if x in text:
+        text = text.replace(x + x, '')
+        for c in (pushChars + popChars):
+          text = text.replace(x + c, '')
   stack = []
   for c in text:
     if c in pushChars:

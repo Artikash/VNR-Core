@@ -102,6 +102,21 @@ def zhs2ko(text): return zht2ko(zhs2zht(text))
 def ja2zhs(text): return zht2zhs(ja2zht(text))
 def ko2zhs(text): return zht2zhs(ko2zht(text))
 
+def contains(text, fr, to=TYPE_ZHT):
+  """
+  @param  text  unicode
+  @param  fr  int
+  @param  to  int  dummy
+  @return  bool
+  """
+  try: return getconverter(fr, to).needsConvert(text)
+  except: return False
+
+def containszhs(text): return contains(text, TYPE_ZHS)
+def containszht(text): return contains(text, TYPE_ZHT, TYPE_ZHS)
+def containsja(text): return contains(text, TYPE_JA)
+def containsko(text): return contains(text, TYPE_KO)
+
 # Aliases
 
 zh2zht = zhs2zht

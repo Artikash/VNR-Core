@@ -37,6 +37,9 @@ public:
 
   // Replace the characters according to the script, thread-safe
   std::wstring convert(const std::wstring &text) const;
+
+  // Return if it includes characters to convert
+  bool needsConvert(const std::wstring &text) const;
 };
 
 #endif // SIMPLECC_H

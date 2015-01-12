@@ -24,6 +24,8 @@ from sakurakit.skdebug import dprint, dwarn, derror
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
 from convutil import wide2thin, zhs2zht
+from unitraits import jpchars, unichars
+from opencc import opencc
 from mytr import my, mytr_
 import cacheman, config, csvutil, defs, features, gameman, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
@@ -2323,6 +2325,8 @@ class _Term(object):
     'syntax',
 
     'selected',
+    '_errorType',
+    #'_errorString',
 
     'dirtyProperties',
 
@@ -2359,6 +2363,9 @@ class _Term(object):
 
     self.selected = False       # bool
 
+    self._errorType = None      # None or int
+    #self._errorString = None   # None or unicode
+
     #self.patternRe = None # compiled re or None
     #self.bbcodeText = None # unicode or None  cached BBCode
 
@@ -2377,6 +2384,9 @@ class _Term(object):
 
     if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
       termman.manager().invalidateCache() # invalidate term cache when any term is changed
+
+    if self._errorType is not None and name in ('pattern', 'text', 'type', 'language', 'regex', 'syntax', 'special'):
+      self.recheckError()
 
     #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
     #  manager().invalidateSortedTerms()
@@ -2414,6 +2424,81 @@ class _Term(object):
   @gameItemId.setter
   def gameItemId(self, val): self._gameItemId = val
 
+  def recheckError(self):
+    v = self._getErrorType()
+    if v != self._errorType:
+      self._errorType = v
+      if self.init:
+        self.q.errorTypeChanged.emit(v)
+    #v = self._getErrorString()
+    #if v != self._errorString:
+    #  self._errorString = v
+    #  if self.init:
+    #    self.q.errorStringChanged.emit(v)
+
+  @property
+  def errorType(self):
+    if self._errorType is None:
+      self._errorType = self._getErrorType()
+    return self._errorType
+
+  #@property
+  #def errorString(self):
+  #  if self._errorString is None:
+  #    self._errorString = self._getErrorString()
+  #  return self._errorString
+
+  _RE_HIRAGANA = re.compile(u'[あ-ん]')
+  def _getErrorType(self): # -> int not None
+    # E_EMPTY_PATTERN
+    if not self.pattern:
+      return self.E_EMPTY_PATTERN
+
+    # E_USELESS
+    if ((self.language not in ('zhs', 'zht', 'ja', 'ko')
+          or self.type not in ('escape', 'title', 'name', 'yomi'))
+        and self.pattern == self.text):
+      return self.E_USELESS
+
+    # W_BAD_REGEX
+    if (self.regex and (
+        not textutil.validate_regex(self.pattern)
+        or not textutil.validate_macro(self.text))):
+      return self.W_BAD_REGEX
+
+    # W_CHINESE_KANJI
+    if self.language.startswith('zh') and self.text:
+
+      # W_CHINESE_TRADITIONAL
+      if self.language == 'zht' and opencc.containszhs(self.text):
+        return self.W_CHINESE_TRADITIONAL
+
+      # W_CHINESE_SIMPLIFIED
+      if self.language == 'zhs' and not opencc.containszhs(self.text):
+        return self.W_CHINESE_SIMPLIFIED
+
+      #if opencc.containsja(self.text): # not checked as it might have Japanese chars such as 桜
+      #  return self.W_CHINESE_KANJI
+
+    # W_GAME
+    if not self.regex and self.type == 'origin' and self.text and unichars.isascii(self.text):
+      return self.W_GAME
+
+    # W_MISSING_TEXT
+    if not self.text and len(self.pattern) > 3 and self.type in ('escape', 'name', 'yomi'):
+      return self.W_MISSING_TEXT
+
+    # W_LONG
+    if not self.regex and not self.syntax and len(self.pattern) > 25:
+      return self.W_LONG
+
+    # W_SHORT
+    if (len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
+        not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1])):
+      return self.W_SHORT
+
+    return self.OK
+
   @staticmethod
   def synthesize(name, type, sync=False):
     """
@@ -2439,6 +2524,19 @@ class _Term(object):
 
   TYPES = 'escape', 'source', 'target', 'name', 'yomi', 'title', 'origin', 'speech', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
+
+  # Errors, the larger (warning) or smaller (error) the worse
+  OK = 0
+  W_SHORT = 10              # being too short
+  W_LONG = 11               # being too long
+  W_MISSING_TEXT = 20       # text is empty
+  W_GAME = 30               # should not use game type
+  W_CHINESE_KANJI = 50      # having Japanese characters in kanji
+  W_CHINESE_SIMPLIFIED = 51 # should not use simplified chinese
+  W_CHINESE_TRADITIONAL = 52 # should not use traditional chinese
+  W_BAD_REGEX = 100         # mismatch regex
+  E_USELESS = -100          # translation has no effect
+  E_EMPTY_PATTERN = -1000   # pattern is empty
 
 class Term(QObject):
   __D = _Term
@@ -2580,6 +2678,11 @@ class Term(QObject):
   protected = Property(bool,
       lambda self: _is_protected_data(self.__d),
       notify=proptectedChanged)
+
+  errorTypeChanged = Signal(int)
+  errorType = Property(int,
+      lambda self: self.__d.errorType,
+      notify=errorTypeChanged)
 
   @property
   def gameMd5(self): return self.__d.gameMd5
@@ -4389,6 +4492,7 @@ class _TermModel(object):
     'selected',
     'modifiedTimestamp', # row, default
     'id',
+    'errorType',
     'disabled',
     'private',
     'type',
