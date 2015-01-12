@@ -100,6 +100,7 @@ class sakurakit(QObject):
       self.tr("Cancel"),
       self.tr("Category"),
       self.tr("Chat"), self.tr("chat"),
+      self.tr("Check"),
       self.tr("Clear"),
       self.tr("Close"),
       self.tr("Cluster"),
@@ -390,6 +391,7 @@ class sakurakit(QObject):
       self.tr("Username"),
       self.tr("Volume"),
       self.tr("Wallpaper"),
+      self.tr("Warn"),
       self.tr("Warning"),
       self.tr("Width"),
       self.tr("Window"),
@@ -438,6 +440,9 @@ class sakurakit(QObject):
       self.tr("Press Enter to submit"),
 
       self.tr("Unknown"), self.tr("unknown"),
+
+      self.tr("Unknown error"),
+      self.tr("Unknown warning"),
 
       self.tr("Administrator"),
       self.tr("Not administrator"),

@@ -161,7 +161,15 @@ def validate_regex(text):
   @param  text  unicode
   @return  bool
   """
+  #text = text.replace('[^', '[\\')
   return not text or skstr.checkpair(text)
+
+def validate_macro(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return not text or skstr.checkpair(text, pair=('{','}'))
 
 if __name__ == '__main__':
   t = u"かたがな"

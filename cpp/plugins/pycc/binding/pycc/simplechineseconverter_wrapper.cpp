@@ -226,6 +226,53 @@ static PyObject* Sbk_SimpleChineseConverterFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_SimpleChineseConverterFunc_needsConvert(PyObject* self, PyObject* pyArg)
+{
+    ::SimpleChineseConverter* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::SimpleChineseConverter*)Shiboken::Conversions::cppPointer(SbkpyccTypes[SBK_SIMPLECHINESECONVERTER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: needsConvert(std::wstring)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpyccTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // needsConvert(std::wstring)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_SimpleChineseConverterFunc_needsConvert_TypeError;
+
+    // Call function/method
+    {
+        ::std::wstring cppArg0 = ::std::wstring();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // needsConvert(std::wstring)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = const_cast<const ::SimpleChineseConverter*>(cppSelf)->needsConvert(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_SimpleChineseConverterFunc_needsConvert_TypeError:
+        const char* overloads[] = {"std::wstring", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pycc.SimpleChineseConverter.needsConvert", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_SimpleChineseConverterFunc_size(PyObject* self)
 {
     ::SimpleChineseConverter* cppSelf = 0;
@@ -259,6 +306,7 @@ static PyMethodDef Sbk_SimpleChineseConverter_methods[] = {
     {"clear", (PyCFunction)Sbk_SimpleChineseConverterFunc_clear, METH_NOARGS},
     {"convert", (PyCFunction)Sbk_SimpleChineseConverterFunc_convert, METH_O},
     {"isEmpty", (PyCFunction)Sbk_SimpleChineseConverterFunc_isEmpty, METH_NOARGS},
+    {"needsConvert", (PyCFunction)Sbk_SimpleChineseConverterFunc_needsConvert, METH_O},
     {"size", (PyCFunction)Sbk_SimpleChineseConverterFunc_size, METH_NOARGS},
 
     {0} // Sentinel

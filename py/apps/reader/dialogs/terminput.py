@@ -316,6 +316,7 @@ class _TermInput(object):
 
   def _isUseless(self): # -> bool  has no effect
     pattern = self.patternEdit.text().strip()
+    #if self._getLanguage() not in ('zhs', 'zht', 'ko') or # allow people to force save sth
     if self._getType() not in ('escape', 'title', 'name', 'yomi'):
       text = self.textEdit.text().strip()
       if pattern == text:
@@ -410,7 +411,7 @@ class _TermInput(object):
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))
     elif (self.regexButton.isChecked() or self._getType() == 'macro') and (
         not textutil.validate_regex(pattern)
-        or not textutil.validate_regex(self.textEdit.text().strip())
+        or not textutil.validate_macro(self.textEdit.text().strip())
       ):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("Parentheses in the regular expression might not match.")))

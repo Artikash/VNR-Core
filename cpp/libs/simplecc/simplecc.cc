@@ -29,6 +29,12 @@ class SimpleChineseConverterPrivate
 public:
   typedef std::unordered_map<wchar_t, wchar_t> map_type;
   map_type map;
+
+  void add(wchar_t key, wchar_t value)
+  {
+    if (key != value)
+      map[key] = value;
+  }
 };
 
 /** Public class */
@@ -64,12 +70,12 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
     if (u32line.size() >= 3 && u32line[0] != CH_COMMENT && !cpp_u32high(u32line[0])) {
       if (reverse) {
         if (!cpp_u32high(u32line[2]))
-          d_->map[u32line[2]] = u32line[0];
+          d_->add(u32line[2], u32line[0]);
         if (line.size() >= 5 && !cpp_u32high(u32line[4]))
-          d_->map[u32line[4]] = u32line[0];
+          d_->add(u32line[4], u32line[0]);
       } else
         if (!cpp_u32high(u32line[2]))
-          d_->map[u32line[0]] = u32line[2];
+          d_->add(u32line[0], u32line[2]);
     }
   }
 
@@ -79,13 +85,28 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
 
 // Conversion
 
+bool SimpleChineseConverter::needsConvert(const std::wstring &text) const
+{
+  if (text.empty() || d_->map.empty())
+    return false;
+
+  D::map_type::const_iterator p;
+  for (size_t i = 0; i < text.size(); i++)
+    if (!isascii(text[i])) { // only convert kanji
+      p = d_->map.find(text[i]);
+      if (p != d_->map.end())
+        return true;
+    }
+  return false;
+}
+
 std::wstring SimpleChineseConverter::convert(const std::wstring &text) const
 {
   if (text.empty() || d_->map.empty())
     return text;
 
   std::wstring ret = text;
-  D::map_type::iterator p;
+  D::map_type::const_iterator p;
   for (size_t i = 0; i < text.size(); i++)
     if (!isascii(text[i])) { // only convert kanji
       p = d_->map.find(text[i]);

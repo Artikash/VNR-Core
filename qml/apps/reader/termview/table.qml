@@ -102,6 +102,29 @@ Item { id: root_
     return '[' + s + '] ' + n + " (" + id + ")"
   }
 
+  function getErrorColor(v) { // int -> string
+    return v == 0 ? 'green'
+         : v > 0 ? 'orange'
+         : 'red';
+  }
+
+  function getErrorText(v) { // int -> string
+    switch (v) {
+    case 0: return 'OK' // OK
+    case 10: return qsTr("Short") // W_SHORT
+    case 11: return qsTr("Long") // W_LONG
+    case 20: return qsTr("Missing") // W_MISSING_TEXT
+    //case 30: // W_GAME
+    case 50: return Sk.tr("Kanji") // W_CHINESE_KANJI
+    case 51: return Sk.tr("zhs") // W_CHINESE_SIMPLIFIED
+    case 52: return Sk.tr("zht") // W_CHINESE_TRADITIONAL
+    case 100: return qsTr("Brackets") // W_BAD_REGEX
+    case -100: return qsTr("Useless") // E_USELESS
+    //case -1000: // E_EMPTY_PATTERN
+    default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
+    }
+  }
+
   property int _MIN_TEXT_LENGTH: 1
   property int _MAX_TEXT_LENGTH: 255
 
@@ -186,6 +209,25 @@ Item { id: root_
         font.strikeout: !itemSelected && itemValue.disabled
         font.bold: itemValue.regex || itemValue.syntax
         text: itemValue.id == 0 ? root_._UNSAVED_RICH_TEXT : String(itemValue.id)
+      }
+    }
+
+    // Column: error
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Check") // Sk.tr("ID")
+      // role: 'id'; title: "ID" // Sk.tr("ID")
+      width: 40
+      delegate: Text {
+        //anchors { fill: parent; leftMargin: table_.cellSpacing }
+        height: table_.cellHeight
+        //textFormat: itemValue.id == 0 ? Text.PlainText : Text.RichText
+        textFormat: Text.PlainText
+        clip: true
+        verticalAlignment: Text.AlignVCenter
+        color: itemSelected ? 'white' : root_.getErrorColor(itemValue.errorType)
+        font.strikeout: !itemSelected && itemValue.disabled
+        font.bold: itemValue.regex || itemValue.syntax
+        text: root_.getErrorText(itemValue.errorType)
       }
     }
 
@@ -557,7 +599,7 @@ Item { id: root_
     // Column: Pattern
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Pattern")
-      width: 130
+      width: 120
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -606,7 +648,7 @@ Item { id: root_
     // Column: Text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Translation")
-      width: 100
+      width: 90
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -654,7 +696,7 @@ Item { id: root_
     // Column: Comment
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Comment")
-      width: 80
+      width: 60
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)

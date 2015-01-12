@@ -32,6 +32,15 @@ def anykata(text): return unichars.ordany(text, unichars.ORD_KATA_FIRST, unichar
 def allhira(text): return unichars.ordall(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira_all.match(text))
 def allkata(text): return unichars.ordall(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata_all.match(text))
 
+def allkana(text): return allhira(text) or allkata(text)
+def anykana(text): return anyhira(text) or anykata(text)
+
+def ishirachar(ch): return len(ch) == 1 and unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST
+def iskatachar(ch): return len(ch) == 1 and unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST
+def iskanachar(ch): return len(ch) == 1 and (
+    unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST or
+    unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST)
+
 #re_not_hira = re.compile(r"[^%s]" % s_hira)
 #re_not_kata = re.compile(r"[^%s]" % s_kata)
 

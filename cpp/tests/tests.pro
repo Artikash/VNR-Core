@@ -7,6 +7,7 @@ SUBDIRS += test
 
 SUBDIRS += \
   avtest \
+  cctest \
   hanjatest \
   hashtest \
   jsontest \

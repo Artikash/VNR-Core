@@ -45,4 +45,11 @@ def ordall(text, start, stop):
       return False
   return True
 
+def isascii(s):
+  """
+  @param  s  unicode
+  @return  bool
+  """
+  return all(ord(c) < 128 for c in s)
+
 # EOF
