@@ -832,7 +832,7 @@
     <message>
         <location filename="../termview/inspector.qml" line="115"/>
         <source>Language should be Simplified Chinese not Chinese</source>
-        <translation>翻译包含简体字的词条的语言不应该中文</translation>
+        <translation>如果翻译包含简体字，那么词条的语言不应该是中文</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="116"/>

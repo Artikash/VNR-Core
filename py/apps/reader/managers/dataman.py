@@ -2474,10 +2474,6 @@ class _Term(object):
     # W_CHINESE_KANJI
     if self.language.startswith('zh') and self.text:
 
-      # W_CHINESE_TRADITIONAL
-      if self.language == 'zht' and opencc.containszhs(self.text):
-        return self.W_CHINESE_TRADITIONAL
-
       # W_CHINESE_SIMPLIFIED
       if self.language == 'zhs' and not opencc.containszhs(self.text):
         return self.W_CHINESE_SIMPLIFIED
@@ -2505,6 +2501,10 @@ class _Term(object):
     if (len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
         not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1])):
       return self.W_SHORT
+
+    # W_CHINESE_TRADITIONAL
+    if self.language == 'zht' and opencc.containszhs(self.text):
+      return self.W_CHINESE_TRADITIONAL
 
     return self.OK
 
@@ -2536,14 +2536,14 @@ class _Term(object):
 
   # Errors, the larger (warning) or smaller (error) the worse
   OK = 0
-  W_SHORT = 10              # being too short
-  W_LONG = 11               # being too long
+  W_CHINESE_TRADITIONAL = 5 # should not use traditional chinese
+  W_SHORT = 11              # being too short
+  W_LONG = 12               # being too long
   W_MISSING_TEXT = 20       # text is empty
   W_NOT_GAME = 30           # should not use game type
   W_NOT_INPUT = 31          # should not use input type
   W_CHINESE_KANJI = 50      # having Japanese characters in kanji
   W_CHINESE_SIMPLIFIED = 51 # should not use simplified chinese
-  W_CHINESE_TRADITIONAL = 52 # should not use traditional chinese
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
   E_USELESS_REGEX = -101    # regex flag is redundant
