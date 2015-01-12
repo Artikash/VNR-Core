@@ -5,6 +5,14 @@ import re
 from functools import partial
 from skdebug import dwarn
 
+REGEX_SPECIAL_CHARS = r'()[]^$|\?!*+.'
+
+RE_SPECIAL_CHARS = re.compile(r"[%s]" % re.escape(
+  r'()[]^$|\?!*+.'
+))
+def contains_re_chars(text): # unicode -> bool
+  return bool(RE_SPECIAL_CHARS.search(text))
+
 # http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii
 def isascii(s):
   try: s.decode('ascii'); return True

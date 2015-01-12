@@ -66,7 +66,7 @@ private:
     foreach (const QChar &c, s)
       switch (c.unicode()) {
       case '(': case ')': case '[': case ']': case '^': case '$':
-      case '|': case '\\': case '?': case '!': case '*': case '.':
+      case '|': case '\\': case '?': case '!': case '+': case '*': case '.':
       //case ':': case '{': case '}':
         return true;
       }
