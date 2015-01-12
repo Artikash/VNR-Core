@@ -43,6 +43,8 @@ processes:
   - 7zG.exe             # 7-zip
   - 7zFM.exe            # 7-zip
   - agth.exe            # AGTH
+  - AlphaROM Cracker Build20121001.exe  # AlphaROM
+  - AlphaROMdiE.exe     # AlphaROM
   - AppUpdate.exe       # JBeijing
   - Atlas.exe           # Atlas
   - Apoint.exe          # Dell
