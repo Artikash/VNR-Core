@@ -19,7 +19,7 @@ from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, convutil, dataman, growl, i18n, rc
+import config, convutil, dataman, growl, i18n, rc, textutil
 
 #COMBOBOX_MAXWIDTH = 100
 COMBOBOX_MAXWIDTH = 80
@@ -149,7 +149,7 @@ class _TermInput(object):
   @memoizedproperty
   def typeLabel(self):
     ret = QtWidgets.QLabel()
-    skqss.class_(ret, 'text-info')
+    skqss.class_(ret, 'text-primary')
     return ret
 
   def _refreshTypeLabel(self):
@@ -238,7 +238,7 @@ class _TermInput(object):
   @memoizedproperty
   def yomiEdit(self):
     ret = QtWidgets.QLineEdit()
-    #skqss(ret, 'text-info')
+    #skqss(ret, 'text-primary')
     ret.setToolTip(my.tr("Yomigana of translation"))
     ret.setReadOnly(True)
     #ret.setWordWrap(True)
@@ -247,7 +247,7 @@ class _TermInput(object):
   @memoizedproperty
   def kanjiEdit(self):
     ret = QtWidgets.QLineEdit()
-    #skqss(ret, 'text-info')
+    #skqss(ret, 'text-primary')
     ret.setToolTip(my.tr("Guessed kanji of pattern using MSIME"))
     ret.setReadOnly(True)
     #ret.setWordWrap(True)
@@ -403,11 +403,17 @@ class _TermInput(object):
     w = self.statusLabel
     pattern = self.patternEdit.text().strip()
     if not pattern:
-      skqss.class_(w, 'text-info')
+      skqss.class_(w, 'text-primary')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Missing pattern")))
     elif self._isUseless():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))
+    elif (self.regexButton.isChecked() or self._getType() == 'macro') and (
+        not textutil.validate_regex(pattern)
+        or not textutil.validate_regex(self.textEdit.text().strip())
+      ):
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s" % (tr_("Warning"), my.tr("Parentheses in the regular expression might not match.")))
     elif len(pattern) < 3 and not self.specialButton.isChecked():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is kind of short. You might want to turn on the series-specific option.")))
@@ -432,7 +438,7 @@ class _TermInput(object):
     if self._getType() == 'yomi':
       text = self.textEdit.text().strip()
       if text:
-        skqss.class_(w, 'text-info')
+        skqss.class_(w, 'text-primary')
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2yomi(text, lang), tr_(lang))
@@ -455,7 +461,7 @@ class _TermInput(object):
         if kanji:
           if kanji != text:
             w.setText(kanji)
-            skqss.class_(w, 'text-info')
+            skqss.class_(w, 'text-primary')
             w.setEnabled(True)
           else:
             w.setText("(%s)" % tr_("Equal"))

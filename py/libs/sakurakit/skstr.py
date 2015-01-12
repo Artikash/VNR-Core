@@ -164,6 +164,39 @@ def replaceimgurls(h, fun):
   """
   return replacefun1(_rx_img, fun, h)
 
+# Validate
+
+# http://stackoverflow.com/questions/6701853/parentheses-pairing-issue
+def checkpair(text, pair=("<({[", ">)}]")):
+  """
+  @param  text  unicode
+  @param* pair  (unicode open, unicode close)
+  @return  bool
+  """
+  pushChars, popChars = pair
+  needcheck = False
+  for c in text:
+    if c in pushChars or c in popChars:
+      needcheck = True
+      break
+  if not needcheck:
+    return True
+  stack = []
+  for c in text:
+    if c in pushChars:
+      stack.append(c)
+    elif c in popChars:
+      if not stack:
+        return False
+      else:
+        stackTop = stack.pop()
+        balancingBracket = pushChars[popChars.index(c)]
+        if stackTop != balancingBracket:
+          return False
+    #else:
+    #  return False
+  return not stack
+
 if __name__ == '__main__':
   #print urlencode('hello world')
   #print multireplacer({
