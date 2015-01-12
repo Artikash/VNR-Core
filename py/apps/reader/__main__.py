@@ -340,9 +340,14 @@ def main():
   m.init()
 
   dprint("schedule to finish splash")
-  splash.finishLater(1000)
+  splash.finishLater(1500) # hide after 1.5 seconds
 
-  m.run(a.arguments())
+  from functools import partial
+  from sakurakit import skevents
+  skevents.runlater(partial(
+      m.run, a.arguments()),
+      50)
+  #m.run(a.arguments())
 
   #import netman
   #netman.manager().queryComments(gameId=183)
