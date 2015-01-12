@@ -46,7 +46,7 @@ Rectangle { id: root_
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_HEIGHT: 250 * _zoomFactor
+  property int _MAX_HEIGHT: 240 * _zoomFactor
 
   //property int _DEFAULT_WIDTH: 300 * zoomFactor
   property int _MIN_WIDTH: 50 * _zoomFactor

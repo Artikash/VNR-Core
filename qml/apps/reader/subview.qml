@@ -4,6 +4,7 @@
 import QtQuick 1.1
 //import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+//import '../../js/eval.min.js' as Eval
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/util.min.js' as Util
 import 'share' as Share
@@ -30,8 +31,20 @@ Share.View { id: root_
 
   // - Private -
 
-  Component.onCompleted: console.log("subview.qml: pass")
+  Component.onCompleted: {
+    //initEvalContext()
+    console.log("subview.qml: pass")
+  }
+
   Component.onDestruction: console.log("subview.qml:destroy: pass")
+
+  //function initEvalContext() {
+  //  var ctx = Eval.scriptContext
+  //  ctx.main = mainPlugin_
+  //  ctx.growl = growlPlugin_
+  //  //ctx.clipboard = clipboardPlugin_
+  //}
+  //Plugin.Growl { id: growlPlugin_ }
 
   Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.DataManagerProxy { id: datamanPlugin_ }

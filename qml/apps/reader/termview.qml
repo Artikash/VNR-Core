@@ -40,8 +40,8 @@ Item { id: root_
 
   Component.onDestruction: console.log("termview.qml:destroy: pass")
 
-  Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.DataManagerProxy { id: datamanPlugin_ }
+  //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.CometManagerProxy { id: cometPlugin_ }
 
   Plugin.Settings { id: settings_

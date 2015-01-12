@@ -20,7 +20,7 @@ from sakurakit.sktr import tr_
 from sakurakit.skwidgets import SkLayoutWidget
 from opencc import opencc
 from mytr import my, mytr_
-import rc
+import rc, growl
 
 _RE_NAME_SPLIT = re.compile(u"[ \u3000・=＝]")
 def _split_name(s): # unicode -> [unicode]
@@ -69,14 +69,16 @@ class NameInputManager:
     """
     if not info:
       import dataman
-      info = dataman.queryGameInfo(itemId=itemId, id=gameId, cache=True)
+      info = dataman.manager().queryGameInfo(itemId=itemId, id=tokenId, cache=True)
       if info and not tokenId:
         tokenId = info.gameId
 
     if not info or not tokenId:
       growl.notify(my.tr("Unknown game"))
+      return
     if not info.hasNames():
       growl.notify(my.tr("Game character names not found"))
+      return
 
     w = self.__d.getDialog(tokenId)
     if w and w.isVisible() and w.tokenId() == tokenId:

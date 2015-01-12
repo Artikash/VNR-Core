@@ -3,8 +3,10 @@
  */
 import QtQuick 1.1
 import org.sakuradite.reader 1.0 as Plugin
+import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/underscore.min.js' as Underscore
 import '../../../js/util.min.js' as Util
 import '../share' as Share
 import '.' as TermView
@@ -39,11 +41,12 @@ Item { id: root_
       leftMargin: 9; rightMargin: 9
       topMargin: 3
     }
-    textFormat: TextEdit.PlainText
+    textFormat: TextEdit.RichText
     font.pixelSize: 12
 
     wrapMode: TextEdit.WordWrap
     selectByMouse: true
+    onLinkActivated: Eval.evalLink(link)
 
     text: summary()
   }
@@ -54,8 +57,8 @@ Item { id: root_
     if (!currentItem)
       return ""
 
-    var pattern = currentItem.pattern // cached
-    var text = currentItem.text
+    var pattern = Underscore.escape(currentItem.pattern) // cached
+    var text = Underscore.escape(currentItem.text)
     var type = currentItem.type
     var lang = currentItem.language
 
@@ -64,10 +67,10 @@ Item { id: root_
       ret = Sk.tr("Check") + ": " + errorMessage(currentItem.errorType)
 
     if (ret)
-      ret += "\n"
+      ret += "<br/>"
     ret += Sk.tr("Pattern") + ": " + pattern
 
-    ret += "\n" + Sk.tr("Translation") + ": "
+    ret += "<br/>" + Sk.tr("Translation") + ": "
     if (!text)
       ret += "(" + Sk.tr("Delete") + ")"
     else if (text == pattern)
@@ -76,22 +79,25 @@ Item { id: root_
       ret += text
 
     if (text && type == 'yomi')
-      ret += "\n" + My.tr("Yomi") + ": " + renderYomi(text)
+      ret += "<br/>" + My.tr("Yomi") + ": " + renderYomi(text)
 
     if (text && (type == 'escape' || type == 'target' || type == 'name' || type == 'title') && lang != 'en' && lang != 'ja')
-      ret += "\n" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
+      ret += "<br/>" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
+
+    if (currentItem.gameId > 0)
+      ret += "<br/>" + Sk.tr("Game") + ": " + gameSummary(currentItem.gameId)
 
     var ts = Util.timestampToString(currentItem.timestamp)
-    ret += "\n" + Sk.tr("Creation") + ": @" + currentItem.userName + " (" + ts + ")"
+    ret += "<br/>" + Sk.tr("Creation") + ": " + renderUser(currentItem.userName) + " (" + ts + ")"
     if (currentItem.comment)
-      ret += ": " + currentItem.comment
+      ret += ": " + renderComment(currentItem.comment)
 
     if (currentItem.updateUserId) {
-      ret += "\n"
+      ret += "<br/>"
       ts = Util.timestampToString(currentItem.updateTimestamp)
-      ret += Sk.tr("Update") + ": @" + currentItem.updateUserName + " (" + ts + ")"
+      ret += Sk.tr("Update") + ": " + renderUser(currentItem.updateUserName) + " (" + ts + ")"
       if (currentItem.updateComment)
-        ret += ": " + currentItem.updateComment
+        ret += ": " + renderComment(currentItem.updateComment)
     }
     return ret
   }
@@ -100,6 +106,48 @@ Item { id: root_
     return jlp_.kana2yomi(text, '') + ' (' + Sk.tr('romaji') +  '), '
          + jlp_.kana2yomi(text, 'ko') + ' (' + Sk.tr('ko') +  '), '
          + jlp_.kana2yomi(text, 'th') + ' (' + Sk.tr('th') +  ')'
+  }
+
+  function gameSummary(id) {
+    if (id <= 0)
+      return ""
+    var itemId = datamanPlugin_.queryGameItemId(id)
+
+    var ret = Sk.tr("File") + "ID: " + id
+    if (itemId)
+      ret = Sk.tr("Game") + "ID: " + itemId + ", " + ret
+    ret = "(" + ret + ")"
+
+    var n = datamanPlugin_.queryGameName(id)
+    if (!n)
+      return ret
+    n = Underscore.escape(n)
+    n = '<a href="javascript://main.showGameView(' + id + ')">' + n + '</a>'
+    ret = n + " " + ret
+
+    //if (itemId) // slow to compute
+    //  ret += ' <a href="javascript://main.showGameNames(' + itemId + ')">+' + My.tr("Names") + '</a>'
+
+    var s = datamanPlugin_.queryGameSeries(id)
+    if (!s)
+      return ret
+    s = Underscore.escape(s)
+    ret = '[' + s + '] ' + n + ret
+    return ret
+  }
+
+  function renderUser(name) { // string -> string
+    name = Underscore.escape(name)
+    return '<a href="javascript://main.showUser(\'' + name + '\')">@' + name + '</a>'
+  }
+
+  function renderComment(text) { // string -> string
+    text = Underscore.escape(text)
+    if (~text.indexOf('@'))
+      text = text.replace(/@(\w+)/g,
+        '<a href="javascript://main.showUser(\'$1\')">@$1</a>'
+      )
+    return text
   }
 
   function errorMessage(v) { // int -> string

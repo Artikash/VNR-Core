@@ -39,7 +39,7 @@ Item { id: root_
     if (visible)
       postList_.refresh()
 
-  Plugin.MainObjectProxy { id: mainPlugin_ }
+  //Plugin.MainObjectProxy { id: mainPlugin_ }
 
   PostView.PostEditor { id: postEditor_
     // Invisible item
