@@ -156,6 +156,13 @@ def remove_html_tags(text):
   """
   return __html_tag_re.sub('', text.replace('<br/>', '\n'))
 
+def validate_regex(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return not text or skstr.checkpair(text)
+
 if __name__ == '__main__':
   t = u"かたがな"
   print match_kata_hira_punc(t)
