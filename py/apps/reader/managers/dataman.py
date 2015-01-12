@@ -2471,16 +2471,6 @@ class _Term(object):
         or not textutil.validate_macro(self.text))):
       return self.W_BAD_REGEX
 
-    # W_CHINESE_KANJI
-    if self.language.startswith('zh') and self.text:
-
-      # W_CHINESE_SIMPLIFIED
-      if self.language == 'zhs' and not opencc.containszhs(self.text):
-        return self.W_CHINESE_SIMPLIFIED
-
-      #if opencc.containsja(self.text): # not checked as it might have Japanese chars such as 桜
-      #  return self.W_CHINESE_KANJI
-
     # W_NOT_INPUT
     if self.language == 'en' and self.type == 'source' and self.text and self._RE_LATIN_WORD.match(self.text):
       return self.W_NOT_INPUT
@@ -2502,9 +2492,19 @@ class _Term(object):
         not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1])):
       return self.W_SHORT
 
-    # W_CHINESE_TRADITIONAL
-    if self.language == 'zht' and opencc.containszhs(self.text):
-      return self.W_CHINESE_TRADITIONAL
+    # W_CHINESE_KANJI
+    if self.language.startswith('zh') and self.text:
+
+      # W_CHINESE_SIMPLIFIED
+      if self.language == 'zhs' and not opencc.containszhs(self.text):
+        return self.W_CHINESE_SIMPLIFIED
+
+      # W_CHINESE_TRADITIONAL
+      if self.language == 'zht' and opencc.containszhs(self.text):
+        return self.W_CHINESE_TRADITIONAL
+
+      #if opencc.containsja(self.text): # not checked as it might have Japanese chars such as 桜
+      #  return self.W_CHINESE_KANJI
 
     return self.OK
 
@@ -2537,13 +2537,13 @@ class _Term(object):
   # Errors, the larger (warning) or smaller (error) the worse
   OK = 0
   W_CHINESE_TRADITIONAL = 5 # should not use traditional chinese
+  W_CHINESE_SIMPLIFIED = 6  # should not use simplified chinese
+  #W_CHINESE_KANJI = 7       # having Japanese characters in kanji
   W_SHORT = 11              # being too short
   W_LONG = 12               # being too long
   W_MISSING_TEXT = 20       # text is empty
   W_NOT_GAME = 30           # should not use game type
   W_NOT_INPUT = 31          # should not use input type
-  W_CHINESE_KANJI = 50      # having Japanese characters in kanji
-  W_CHINESE_SIMPLIFIED = 51 # should not use simplified chinese
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
   E_USELESS_REGEX = -101    # regex flag is redundant
