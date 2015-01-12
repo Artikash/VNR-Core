@@ -740,117 +740,116 @@
 <context>
     <name>inspector</name>
     <message>
-        <location filename="../springboard/inspector.qml" line="160"/>
+        <location filename="../springboard/inspector.qml" line="163"/>
         <source>Launch the game, or attach to the running game</source>
         <translation>게임을 실행하거나, 실행 중인 게임과 연동합니다</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="194"/>
+        <location filename="../springboard/inspector.qml" line="197"/>
         <source>Edit shared subtitles</source>
         <translation>공유자막 수정</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="211"/>
+        <location filename="../springboard/inspector.qml" line="214"/>
         <source>Show the game folder</source>
         <translation>게임폴더 열기</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="169"/>
+        <location filename="../springboard/inspector.qml" line="172"/>
         <source>Edit game properties</source>
         <translation>게임속성 수정</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="47"/>
         <source>Click to copy the game information to the clipboard</source>
-        <translation>클릭해서 클립보드에 게임 정보 복사</translation>
+        <translation type="obsolete">클릭해서 클립보드에 게임 정보 복사</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="159"/>
+        <location filename="../springboard/inspector.qml" line="162"/>
         <source>Launch</source>
         <translation>실행</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="168"/>
+        <location filename="../springboard/inspector.qml" line="171"/>
         <source>Edit</source>
         <translation>수정</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="202"/>
+        <location filename="../springboard/inspector.qml" line="205"/>
         <source>Show game information</source>
         <translation>게임 정보 표시</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="210"/>
+        <location filename="../springboard/inspector.qml" line="213"/>
         <source>Browse</source>
         <translation>찾기</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="219"/>
+        <location filename="../springboard/inspector.qml" line="222"/>
         <source>Remove</source>
         <translation>제거</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="220"/>
+        <location filename="../springboard/inspector.qml" line="223"/>
         <source>Remove this game from the dashboard</source>
         <translation>Dashboard에서 이 게임 제거</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="108"/>
+        <location filename="../termview/inspector.qml" line="160"/>
         <source>Pattern is too short</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="109"/>
+        <location filename="../termview/inspector.qml" line="161"/>
         <source>Pattern or translation is very long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="110"/>
+        <location filename="../termview/inspector.qml" line="162"/>
         <source>Translation is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="111"/>
+        <location filename="../termview/inspector.qml" line="163"/>
         <source>Game type should not be used for translation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="112"/>
+        <location filename="../termview/inspector.qml" line="164"/>
         <source>Type should not translation instead of input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="113"/>
-        <source>Having Japanese kanji in Chinese translation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../termview/inspector.qml" line="114"/>
+        <location filename="../termview/inspector.qml" line="158"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="115"/>
+        <location filename="../termview/inspector.qml" line="157"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="116"/>
+        <location filename="../termview/inspector.qml" line="165"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="117"/>
+        <location filename="../termview/inspector.qml" line="166"/>
         <source>This rule is useless that has no effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="118"/>
+        <location filename="../termview/inspector.qml" line="167"/>
         <source>Pattern does not need enabling regex</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="119"/>
+        <location filename="../termview/inspector.qml" line="168"/>
+        <source>New line characters are not allowed in text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="169"/>
         <source>Missing pattern</source>
         <translation type="unfinished"></translation>
     </message>
@@ -937,19 +936,19 @@
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="130"/>
-        <location filename="../termview/maintoolbar.qml" line="143"/>
+        <location filename="../termview/maintoolbar.qml" line="157"/>
         <source>Plot statistics charts</source>
         <translation>통계차트 그리기</translation>
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="137"/>
-        <location filename="../termview/maintoolbar.qml" line="150"/>
+        <location filename="../termview/maintoolbar.qml" line="164"/>
         <source>Save entries in Excel CSV format to the Desktop</source>
         <translation>항목을 바탕화면에 Excel CSV포맷으로 저장</translation>
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="144"/>
-        <location filename="../termview/maintoolbar.qml" line="164"/>
+        <location filename="../termview/maintoolbar.qml" line="178"/>
         <source>Update entries online</source>
         <translation>온라인으로 항목 업데이트</translation>
     </message>
@@ -959,12 +958,12 @@
         <translation>새로운 항목 추기</translation>
     </message>
     <message>
-        <location filename="../termview/maintoolbar.qml" line="111"/>
+        <location filename="../termview/maintoolbar.qml" line="125"/>
         <source>Whether use user-defined terms to improve machine translation</source>
         <translation>기계번역 향상을 위해 사용자정의 용어 사용여부</translation>
     </message>
     <message>
-        <location filename="../termview/maintoolbar.qml" line="157"/>
+        <location filename="../termview/maintoolbar.qml" line="171"/>
         <source>Browse current enabled rules</source>
         <translation>현재 활성화된 규칙 찾아보기</translation>
     </message>
@@ -1203,7 +1202,7 @@
 <context>
     <name>refview</name>
     <message>
-        <location filename="../refview.qml" line="117"/>
+        <location filename="../refview.qml" line="130"/>
         <source>Type part of the title, user, etc.</source>
         <translation>찾으려는 게임이름, 사용자이름 등을 입력하세요.</translation>
     </message>
@@ -1337,7 +1336,7 @@
 <context>
     <name>subview</name>
     <message>
-        <location filename="../subview.qml" line="165"/>
+        <location filename="../subview.qml" line="178"/>
         <source>Type part of the text, context, user, language, etc, and press Enter to search</source>
         <translation>텍스트, 문맥, 사용자이름, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
     </message>
@@ -1345,17 +1344,17 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="114"/>
+        <location filename="../termview/table.qml" line="117"/>
         <source>Short</source>
         <translation type="unfinished">단축키</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="115"/>
+        <location filename="../termview/table.qml" line="118"/>
         <source>Long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="116"/>
+        <location filename="../termview/table.qml" line="119"/>
         <source>Missing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1371,12 +1370,12 @@
     </message>
     <message>
         <location filename="../termview/table.qml" line="124"/>
-        <location filename="../termview/table.qml" line="437"/>
+        <location filename="../termview/table.qml" line="438"/>
         <source>Regex</source>
         <translation>정규표현식</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="509"/>
+        <location filename="../termview/table.qml" line="510"/>
         <source>Series</source>
         <translation>시리즈</translation>
     </message>

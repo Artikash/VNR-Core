@@ -122,6 +122,7 @@ Item { id: root_
     case 100: return qsTr("Brackets") // W_BAD_REGEX
     case -100: return qsTr("Useless") // E_USELESS
     case -101: return qsTr("Regex") // E_USELESS_REGEX
+    case -900: return "\\n" // E_NEWLINE
     //case -1000: // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
     }

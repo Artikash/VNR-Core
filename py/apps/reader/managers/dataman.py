@@ -2458,6 +2458,10 @@ class _Term(object):
     if not self.pattern:
       return self.E_EMPTY_PATTERN
 
+    # E_NEWLINE
+    if '\n' in self.pattern or self.text and '\n' in self.text:
+      return self.E_NEWLINE
+
     # E_USELESS
     if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
           or self.type not in ('escape', 'title', 'name', 'yomi'))
@@ -2550,6 +2554,7 @@ class _Term(object):
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
   E_USELESS_REGEX = -101    # regex flag is redundant
+  E_NEWLINE = -900          # having new line characters in pattern or repl
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
 class Term(QObject):
