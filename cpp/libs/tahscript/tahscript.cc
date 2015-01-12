@@ -67,6 +67,7 @@ private:
       switch (c.unicode()) {
       case '(': case ')': case '[': case ']': case '^': case '$':
       case '|': case '\\': case '?': case '!': case '*': case '.':
+      //case ':': case '{': case '}':
         return true;
       }
     return false;
