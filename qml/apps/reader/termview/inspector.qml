@@ -114,6 +114,7 @@ Item { id: root_
     case 52:  return qsTr("Language should be Simplified Chinese not Chinese") // W_CHINESE_TRADITIONAL
     case 100: return qsTr("Parentheses or bracks mismatch in regular expression") // W_BAD_REGEX
     case -100: return qsTr("This rule is useless that has no effect") // E_USELESS
+    case -101: return qsTr("Pattern does not need enabling regex") // E_USELESS_REGEX
     case -1000: return qsTr("Missing pattern") // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr("Unknown warning") : Sk.tr("Unknown error")
     }

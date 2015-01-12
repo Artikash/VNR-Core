@@ -156,6 +156,14 @@ def remove_html_tags(text):
   """
   return __html_tag_re.sub('', text.replace('<br/>', '\n'))
 
+__re_chars = re.compile(r'[()\[\]^$|\?!*.{}]') # the same as regex except {}
+def mightbe_regex(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(__re_chars.search(text))
+
 def validate_regex(text):
   """
   @param  text  unicode
