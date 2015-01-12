@@ -21,6 +21,7 @@ Item { id: root_
   property alias filterText: model_.filterText
   property alias filterTypes: model_.filterTypes
   property alias filterColumn: model_.filterColumn
+  property alias filterLanguage: model_.filterLanguage
   property alias currentCount: model_.currentCount
   property alias count: model_.count
 
@@ -38,6 +39,8 @@ Item { id: root_
   function updateMaximumPageNumber() {
     root_.maximumPageNumber = Math.ceil(model_.currentCount / model_.pageSize) // assume pageSize != 0
   }
+
+  function refresh() { model_.refresh() }
 
   property int _GUEST_USER_ID: 4
   property int _SUPER_USER_ID: 2

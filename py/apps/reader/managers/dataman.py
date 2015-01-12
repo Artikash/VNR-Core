@@ -4410,13 +4410,14 @@ class _TermModel(object):
   DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
-    self.filterTypes = "" # str
-    self.filterColumn = "" # str
-    self._filterText = "" # unicode
-    self._filterRe = None # compiled re
-    self._filterData = None # [Term]
-    self._sortedData = None # [Term]
-    self._duplicateData = None # [Term]
+    self.filterLanguage = ""    # str
+    self.filterTypes = ""       # str
+    self.filterColumn = ""      # str
+    self._filterText = ""       # unicode
+    self._filterRe = None       # compiled re
+    self._filterData = None     # [Term]
+    self._sortedData = None     # [Term]
+    self._duplicateData = None  # [Term]
 
     self.sortingColumn = self.DEFAULT_SORTING_COLUMN
     self.sortingReverse = False
@@ -4446,7 +4447,9 @@ class _TermModel(object):
     """
     @return  [Term]
     """
-    return self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN else self.filterData if self.filterText or self.filterTypes else self.duplicateData if self.duplicate else self.sourceData
+    return (self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN
+        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage
+        else self.duplicateData if self.duplicate else self.sourceData)
 
   @staticproperty
   def sourceData(): return manager().terms() # -> list not None
@@ -4523,7 +4526,9 @@ class _TermModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = self.filterData if self.filterText or self.filterTypes else self.duplicateData if self.duplicate else self.sourceData
+      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage
+          else self.duplicateData if self.duplicate
+          else self.sourceData)
       if not data:
         self._sortedData = []
       elif self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
@@ -4576,7 +4581,13 @@ class _TermModel(object):
     if self.filterTypes:
       if td.type not in self.filterTypes:
         return False
-      if not self.filterText:
+      if not self.filterText and not self.filterLanguage:
+        return True
+
+    if self.filterLanguage:
+      if not td.language.startswith(self.filterLanguage):
+        return False
+      if not self.filterText: #and not self.filterTypes:
         return True
 
     t = self.filterText
@@ -4648,7 +4659,12 @@ class TermModel(QAbstractListModel):
     self.setRoleNames(TERM_ROLES)
     d = self.__d = _TermModel()
 
-    for sig in self.filterTypesChanged, self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged, self.pageSizeChanged, self.pageNumberChanged, self.duplicateChanged:
+    for sig in (
+        #self.filterTypesChanged, self.filterLanguageChanged, self.filterTextChanged,
+        self.sortingColumnChanged, self.sortingReverseChanged,
+        self.pageSizeChanged, self.pageNumberChanged,
+        self.duplicateChanged
+      ):
       sig.connect(self.reset)
 
     manager().termsChanged.connect(lambda:
@@ -4656,7 +4672,9 @@ class TermModel(QAbstractListModel):
     manager().termsEditableChanged.connect(lambda t:
         t and self.reset())
 
-  #@Slot()
+  @Slot()
+  def refresh(self): self.reset()
+
   def reset(self):
     d = self.__d
     d.filterData = None
@@ -4705,12 +4723,22 @@ class TermModel(QAbstractListModel):
       self.__d.filterTypes = value
       d = self.__d
       self.filterTypesChanged.emit(value)
-
   filterTypesChanged = Signal(str)
   filterTypes = Property(str,
       lambda self: self.__d.filterTypes,
       setFilterTypes,
       notify=filterTypesChanged)
+
+  def setFilterLanguage(self, value):
+    if value != self.__d.filterLanguage:
+      self.__d.filterLanguage = value
+      d = self.__d
+      self.filterLanguageChanged.emit(value)
+  filterLanguageChanged = Signal(str)
+  filterLanguage = Property(str,
+      lambda self: self.__d.filterLanguage,
+      setFilterLanguage,
+      notify=filterLanguageChanged)
 
   def setFilterColumn(self, value):
     if value != self.__d.filterColumn:
