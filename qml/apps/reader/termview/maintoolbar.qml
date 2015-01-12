@@ -80,11 +80,25 @@ Item { id: root_
       Desktop.ToolButton {
         text: Sk.tr("Game")
         tooltip: Sk.tr("Show {0}").replace('{0}'), Sk.tr("game information")
-        visible: !!root_.currentItem && root_.currentItem.gameId
+        visible: !!(root_.currentItem && root_.currentItem.gameId)
         onClicked:
           if (root_.currentItem)
             mainPlugin_.showGameView(root_.currentItem.gameId)
       }
+      //Desktop.ToolButton { // TOO slow to compute
+      //  text: Sk.tr("Name")
+      //  tooltip: Sk.tr("Show {0}").replace('{0}'), My.tr("names")
+      //  visible: !!(root_.currentItem && currentItem.gameId && datamanPlugin_.queryGameItemId(currentItem.gameId))
+      //  onClicked:
+      //    if (root_.currentItem) {
+      //      var id = currentItem.gameId
+      //      if (id) {
+      //        id = datamanPlugin_.queryGameItemId(id)
+      //        if (id)
+      //          mainPlugin_.showGameNames(id)
+      //      }
+      //    }
+      //}
       //Desktop.ToolButton {
       //  text: currentItem && currentItem.disabled ? Sk.tr("Enable") : Sk.tr("Disable")
       //  tooltip: qsTr("Enable or disable the selected entry")

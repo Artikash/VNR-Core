@@ -81,7 +81,6 @@ public:
 
   void init(const TranslationScriptRow &row)
   {
-    valid = true;
     id = row.id;
 //#ifdef SCRIPT_CACHE_REGEX
 //    if (!row.regex)
@@ -100,8 +99,10 @@ public:
       } catch (...) { // boost::bad_pattern
         DWOUT("invalid term: " << row.id << ", regex pattern: " << row.source);
         valid = false;
+        return;
       }
     }
+    valid = true; // must do this at the end
   }
 
   // Replacement
@@ -239,14 +240,11 @@ public:
 
   void reset(size_t size)
   {
-    //DOUT(size);
-    //Q_ASSERT(size > 0);
-    //if (ruleCount != size) {
-    ruleCount = size;
+    clear(); // clear first for thread-safety
     if (rules)
       delete[] rules;
     rules = new TranslationScriptRule[size];
-    //}
+    ruleCount = size;
   }
 };
 

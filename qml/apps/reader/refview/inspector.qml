@@ -4,6 +4,7 @@
 import QtQuick 1.1
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/underscore.min.js' as Underscore
 import '../../../js/util.min.js' as Util
 import '../share' as Share
 
@@ -50,16 +51,16 @@ Item { id: root_
     var ret = ""
     if (currentItem) {
       var ts = Util.timestampToString(currentItem.timestamp)
-      ret += Sk.tr("Creation") + ": @" + currentItem.userName + " (" + ts + ")"
+      ret += Sk.tr("Creation") + ": " + renderUser(currentItem.userName) + " (" + ts + ")"
       if (currentItem.comment)
-        ret += ": " + currentItem.comment
+        ret += ": " + Util.escape(currentItem.comment)
 
       if (currentItem.updateUserId) {
-        ret += "\n"
+        ret += "<br/>"
         ts = Util.timestampToString(currentItem.updateTimestamp)
-        ret += Sk.tr("Update") + ": @" + currentItem.updateUserName + " (" + ts + ")"
+        ret += Sk.tr("Update") + ": " + renderUser(currentItem.updateUserName) + " (" + ts + ")"
         if (currentItem.updateComment)
-          ret += ": " + currentItem.updateComment
+          ret += ": " + Util.escape(currentItem.updateComment)
       }
     }
     return ret
@@ -167,5 +168,10 @@ Item { id: root_
 
   function formatText(name, url, item) { // string, string, Reference -> string
     return '<a style="color:' + (item ? 'green' : 'brown') + '" href="' + (item ? item.url : url) + '">' + name + '</a>'
+  }
+
+  function renderUser(name) {
+    name = Underscore.escape(name)
+    return '<a href="javascript://main.showUser(\'' + name + '\')">@' + name + '</a>'
   }
 }

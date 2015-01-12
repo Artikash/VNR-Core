@@ -176,8 +176,8 @@ class reader(QObject):
       self.tr("Transp"),
 
       # Terms
-      self.tr("Name"),
-      self.tr("name"), # used in Text Settings
+      self.tr("Name"), self.tr("name"), # used in Text Settings
+      self.tr("Names"), self.tr("names"),
       self.tr("Yomi"),
       self.tr("Suffix"),
 

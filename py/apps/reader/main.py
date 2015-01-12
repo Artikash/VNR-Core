@@ -2375,6 +2375,8 @@ class MainObjectProxy(QObject):
   def showCurrentGameView(self): manager().showGameView()
   @Slot(int)
   def showGameView(self, gameId): manager().showGameView(gameId)
+  @Slot(int)
+  def showGameNames(self, itemId): manager().showGameNames(itemId=itemId)
   @Slot(QObject) # dataman.Comment
   def showSubtitleEditor(self, comment): manager().showSubtitleEditor(comment)
 

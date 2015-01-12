@@ -2442,6 +2442,9 @@ class _Term(object):
       self._errorType = self._getErrorType()
     return self._errorType
 
+  def getGameSeries(self): return manager().queryItemSeries(self.gameItemId)
+  def getGameName(self): return manager().queryGameName(id=self.gameId)
+
   #@property
   #def errorString(self):
   #  if self._errorString is None:
@@ -2704,10 +2707,10 @@ class Term(QObject):
   def gameItemId(self): return self.__d.gameItemId
 
   @property
-  def gameSeries(self): return manager().queryItemSeries(self.__d.gameItemId)
+  def gameSeries(self): return self.__d.getGameSeries()
 
   @property
-  def gameName(self): return manager().queryGameName(id=self.__d.gameId)
+  def gameName(self): return self.__d.getGameName()
 
   def setGameId(self, value):
     d = self.__d
@@ -10576,6 +10579,10 @@ class DataManagerProxy(QObject):
   @Slot(long, result=unicode)
   def queryItemSeries(self, id):
     return manager().queryItemSeries(id=id)
+
+  @Slot(long, result=long)
+  def queryGameItemId(self, id):
+    return manager().queryGameItemId(id=id)
 
   @Slot(long, result=unicode)
   def queryGameName(self, id):

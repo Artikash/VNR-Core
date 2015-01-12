@@ -65,6 +65,12 @@ a{color:lightblue}
 				<td class="pp-name" align="right">{{tr('Type')}}: </td>
 				<td class="pp-value">{{i18n.term_type_name(td.type)}}</td>
 			</tr>
+%if td.private
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Private')}}: </td>
+				<td class="pp-value text-error">{{tr('yes')}}</td>
+			</tr>
+%endif
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Regex')}}: </td>
 %if td.regex
@@ -82,11 +88,11 @@ a{color:lightblue}
 %endif
 			</tr>
 			<tr class="pp-row">
-				<td class="pp-name" align="right">{{tr('Private')}}: </td>
-%if td.private
-				<td class="pp-value text-error">{{tr('yes')}}</td>
+				<td class="pp-name" align="right">{{tr('Game')}}: </td>
+%if td.gameId
+				<td class="pp-value"><a href="javascript://main.showGameView({{td.gameId}})">{{td.getGameName()|e}}</a></td>
 %else
-				<td class="pp-value">{{tr('no')}}</td>
+				<td class="pp-value">{{tr('empty')}}</td>
 %endif
 			</tr>
 			<hr>
@@ -109,7 +115,7 @@ a{color:lightblue}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Comment')}}: </td>
 %if td.comment
-				<td class="pp-value">{{td.comment}}</td>
+				<td class="pp-value">{{td.comment|e}}</td>
 %else
 				<td class="pp-value pp-empty">({{tr('none')}})</td>
 %endif
@@ -131,7 +137,7 @@ a{color:lightblue}
 %if td.updateComment
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Update comment')}}: </td>
-				<td class="pp-value">{{td.updateComment}}</td>
+				<td class="pp-value">{{td.updateComment|e}}</td>
 			</tr>
 %endif
 			<hr>

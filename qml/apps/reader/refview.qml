@@ -4,6 +4,7 @@
 import QtQuick 1.1
 //import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../js/eval.min.js' as Eval
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/util.min.js' as Util
 import 'share' as Share
@@ -40,9 +41,21 @@ Share.View { id: root_
 
   property int gameId
 
-  Component.onCompleted: console.log("refview.qml: pass")
+  Component.onCompleted: {
+    initEvalContext()
+    console.log("refview.qml: pass")
+  }
+
   Component.onDestruction: console.log("refview.qml:destroy: pass")
 
+  function initEvalContext() {
+    var ctx = Eval.scriptContext
+    ctx.main = mainPlugin_
+    ctx.growl = growlPlugin_
+    //ctx.clipboard = clipboardPlugin_
+  }
+
+  Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.DataManagerProxy { id: datamanPlugin_ }
 
   Plugin.ReferenceModel { id: model_

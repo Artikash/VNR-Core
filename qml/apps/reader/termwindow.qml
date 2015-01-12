@@ -4,6 +4,7 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../js/eval.min.js' as Eval
 import 'comet' as Comet
 import 'share' as Share
 import '.' as Main
@@ -19,8 +20,18 @@ Share.View { id: root_
 
   // - Private -
 
+  Component.onCompleted: initEvalContext()
+
+  function initEvalContext() {
+    var ctx = Eval.scriptContext
+    ctx.main = mainPlugin_
+    ctx.growl = growlPlugin_
+    //ctx.clipboard = clipboardPlugin_
+  }
+
   Plugin.SystemStatus { id: statusPlugin_ }
   Plugin.Growl { id: growlPlugin_ }
+  Plugin.MainObjectProxy { id: mainPlugin_ }
 
   Comet.TermComet { id: termComet_
     active: windowVisible && statusPlugin_.online
