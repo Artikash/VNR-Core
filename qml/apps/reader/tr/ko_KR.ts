@@ -816,36 +816,41 @@
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="112"/>
-        <source>Having Japanese kanji in Chinese translation</source>
+        <source>Type should not translation instead of input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="113"/>
-        <source>Language should be Chinese not Simplified Chinese</source>
+        <source>Having Japanese kanji in Chinese translation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="114"/>
-        <source>Language should be Simplified Chinese not Chinese</source>
+        <source>Language should be Chinese not Simplified Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="115"/>
-        <source>Parentheses or bracks mismatch in regular expression</source>
+        <source>Language should be Simplified Chinese not Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="116"/>
-        <source>This rule is useless that has no effect</source>
+        <source>Parentheses or bracks mismatch in regular expression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="117"/>
-        <source>Pattern does not need enabling regex</source>
+        <source>This rule is useless that has no effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="118"/>
+        <source>Pattern does not need enabling regex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="119"/>
         <source>Missing pattern</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1355,23 +1360,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="121"/>
+        <location filename="../termview/table.qml" line="122"/>
         <source>Brackets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="122"/>
+        <location filename="../termview/table.qml" line="123"/>
         <source>Useless</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="123"/>
-        <location filename="../termview/table.qml" line="436"/>
+        <location filename="../termview/table.qml" line="124"/>
+        <location filename="../termview/table.qml" line="437"/>
         <source>Regex</source>
         <translation>정규표현식</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="508"/>
+        <location filename="../termview/table.qml" line="509"/>
         <source>Series</source>
         <translation>시리즈</translation>
     </message>
