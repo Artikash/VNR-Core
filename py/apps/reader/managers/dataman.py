@@ -2460,6 +2460,10 @@ class _Term(object):
         and self.pattern == self.text):
       return self.E_USELESS
 
+    # E_USELESS
+    if self.regex and not textutil.mightbe_regex(self.pattern):
+      return self.E_USELESS_REGEX
+
     # W_BAD_REGEX
     if (self.regex and (
         not textutil.validate_regex(self.pattern)
@@ -2536,6 +2540,7 @@ class _Term(object):
   W_CHINESE_TRADITIONAL = 52 # should not use traditional chinese
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
+  E_USELESS_REGEX = -101    # regex flag is redundant
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
 class Term(QObject):

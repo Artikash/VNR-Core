@@ -120,6 +120,7 @@ Item { id: root_
     case 52: return Sk.tr("zht") // W_CHINESE_TRADITIONAL
     case 100: return qsTr("Brackets") // W_BAD_REGEX
     case -100: return qsTr("Useless") // E_USELESS
+    case -101: return qsTr("Regex") // E_USELESS_REGEX
     //case -1000: // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
     }

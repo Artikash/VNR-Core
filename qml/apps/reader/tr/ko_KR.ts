@@ -841,6 +841,11 @@
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="117"/>
+        <source>Pattern does not need enabling regex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="118"/>
         <source>Missing pattern</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1360,12 +1365,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="435"/>
+        <location filename="../termview/table.qml" line="123"/>
+        <location filename="../termview/table.qml" line="436"/>
         <source>Regex</source>
         <translation>정규표현식</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="507"/>
+        <location filename="../termview/table.qml" line="508"/>
         <source>Series</source>
         <translation>시리즈</translation>
     </message>

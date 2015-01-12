@@ -841,6 +841,11 @@
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="117"/>
+        <source>Pattern does not need enabling regex</source>
+        <translation>匹配的文字不需要開啟正則表達</translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="118"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文字</translation>
     </message>
@@ -1360,12 +1365,13 @@
         <translation>無用</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="435"/>
+        <location filename="../termview/table.qml" line="123"/>
+        <location filename="../termview/table.qml" line="436"/>
         <source>Regex</source>
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="507"/>
+        <location filename="../termview/table.qml" line="508"/>
         <source>Series</source>
         <translation>系列專用</translation>
     </message>
