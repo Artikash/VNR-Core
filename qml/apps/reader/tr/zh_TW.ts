@@ -1165,7 +1165,7 @@
     <message>
         <location filename="../subview/searchtoolbar.qml" line="67"/>
         <location filename="../termview/searchtoolbar.qml" line="68"/>
-        <source>Dup</source>
+        <source>dup</source>
         <translation>重複</translation>
     </message>
     <message>

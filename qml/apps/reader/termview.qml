@@ -31,15 +31,10 @@ Item { id: root_
   clip: true
 
   Component.onCompleted: {
+    var lang = bean_.getSearchLanguage()
     var col = bean_.getSearchCol()
     var text = bean_.getSearchText()
-    if (col)
-      searchCol_.setValue(col)
-    if (text) {
-      searchBox_.text = text
-      searchBox_.accepted()
-    }
-
+    search(text, col, lang)
     console.log("termview.qml: pass")
   }
 
@@ -63,12 +58,18 @@ Item { id: root_
       searchRequested.connect(root_.search)
   }
 
-  function search(text, col) {
-    console.log("termview.qml:search: col =", col)
-    searchCol_.setValue(col)
+  function search(text, col, lang) {
     searchToolBar_.clear()
-    searchBox_.text = text
-    searchBox_.accepted()
+    //console.log("termview.qml:search: col =", col)
+    var changed = false
+    changed = searchLang_.setValue(lang) || changed
+    changed = searchCol_.setValue(col) || changed
+    if (searchBox_.text != text) {
+      searchBox_.text = text
+      changed = true
+    }
+    if (changed)
+      searchBox_.accepted()
   }
 
   //function loadSettings() {
@@ -109,6 +110,7 @@ Item { id: root_
     displaysDuplicateRows: searchToolBar_.displaysDuplicateRows
 
     filterColumn: searchCol_.value
+    filterLanguage: searchLang_.value
     filterTypes: filterToolBar_.values
 
     Share.Blocker {
@@ -165,13 +167,13 @@ Item { id: root_
       left: paginator_.right
       leftMargin: 5
     }
-    width: 72
+    width: 60
 
     tooltip: Sk.tr("Column")
 
     model: ListModel {
       Component.onCompleted: {
-        append({text:Sk.tr("All"), value:''})
+        append({text:Sk.tr("Type"), value:''})
         append({text:"ID", value:'id'})
         append({text:Sk.tr("User"), value:'user'})
         append({text:Sk.tr("Game"), value:'game'})
@@ -186,20 +188,60 @@ Item { id: root_
     property string value
     onSelectedIndexChanged: value = model.get(selectedIndex).value
 
-    function setValue(col) {
-      if (!col)
-        col = '' // for null
+    function setValue(v) { // string -> bool  whether changed
+      if (!v)
+        v = '' // for null
+      if (v == value)
+        return false
       for (var i = 0; i < model.count; ++i)
-        if (model.get(i).value == col) {
+        if (model.get(i).value == v) {
           selectedIndex = i
-          return
+          return true
         }
+      return false
+    }
+  }
+
+  Desktop.ComboBox { id: searchLang_
+    anchors {
+      verticalCenter: searchCol_.verticalCenter
+      left: searchCol_.right
+      leftMargin: 2
+    }
+    width: 60
+
+    tooltip: Sk.tr("Language")
+
+    model: ListModel {
+      Component.onCompleted: {
+        append({value:'', text:Sk.tr("Lang")})
+        for (var i in Util.LANGUAGES) {
+          var lang = Util.LANGUAGES[i]
+          append({value:lang, text:Sk.tr(lang)})
+        }
+      }
+    }
+
+    property string value
+    onSelectedIndexChanged: value = model.get(selectedIndex).value
+
+    function setValue(v) { // string -> bool  whether changed
+      if (!v)
+        v = '' // for null
+      if (v == value)
+        return false
+      for (var i = 0; i < model.count; ++i)
+        if (model.get(i).value == v) {
+          selectedIndex = i
+          return true
+        }
+      return false
     }
   }
 
   Share.SearchBox { id: searchBox_
     anchors {
-      left: searchCol_.right
+      left: searchLang_.right
       //left: parent.left
       right: searchToolBar_.left
       bottom: inspector_.top
@@ -210,11 +252,16 @@ Item { id: root_
     totalCount: table_.count
     currentCount: table_.currentCount
     toolTip: qsTr("Type part of the pattern, text, user, language, etc, and press Enter to search")
-    onAccepted: table_.filterText = Util.trim(text)
+           + " (" + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
 
-    placeholderText: Sk.tr("Search") + " ... (" + holder() + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
+    onAccepted: {
+      table_.filterText = Util.trim(text)
+      table_.refresh()
+    }
+
+    placeholderText: Sk.tr("Search") + " ... (" + holder() + ")"
     function holder() {
-      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " //+ '#' + Sk.tr("game") + "ID, "
+      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") //+ '#' + Sk.tr("game") + "ID, "
     }
   }
 

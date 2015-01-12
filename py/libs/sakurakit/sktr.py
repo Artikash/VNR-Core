@@ -314,6 +314,7 @@ class sakurakit(QObject):
       self.tr("Keyboard"),
       self.tr("Keyword"),
       self.tr("Keywords"),
+      self.tr("Lang"), self.tr("lang"),
       self.tr("Language"), self.tr("language"),
       self.tr("Languages"), self.tr("languages"),
       self.tr("Local"),

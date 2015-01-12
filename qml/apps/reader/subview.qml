@@ -163,11 +163,15 @@ Share.View { id: root_
     totalCount: model_.count
     currentCount: model_.currentCount
     toolTip: qsTr("Type part of the text, context, user, language, etc, and press Enter to search")
-    onAccepted: model_.filterText = Util.trim(text)
+           + " (" + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
+    onAccepted: {
+      model_.filterText = Util.trim(text)
+      //model_.refresh()
+    }
 
-    placeholderText: Sk.tr("Search") + " ... (" + holder() + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
+    placeholderText: Sk.tr("Search") + " ... (" + holder() + ")"
     function holder() {
-      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " + '#' + Sk.tr("game") + "ID, "
+      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " + '#' + Sk.tr("game")
     }
   }
 

@@ -64,7 +64,7 @@ Row { id: root_ // Theme refers to Bootstrap.label
     width: parent.cellWidth; height: parent.cellHeight
     styleClass: checked ? 'btn btn-success' : 'btn btn-default'
     checkable: true
-    text: qsTr("Dup")
+    text: qsTr("dup")
     toolTip: qsTr("Display duplicate rows which should be avoided")
   }
 }
