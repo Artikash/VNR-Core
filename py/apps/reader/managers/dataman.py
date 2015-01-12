@@ -962,7 +962,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.digiket:
+    for r in self.getchu, self.digiket, self.dlsite:
       if r and r.characterDescription:
         yield r
 
@@ -3431,7 +3431,7 @@ class DLsiteReference(Reference): #(object):
       type='dlsite',
       image='', price=0, ecchi=True, otome=False, homepage='',
       artist='', writer='', musician='',
-      description='', review='', filesize=0,
+      description='', characterDescription='', review='', filesize=0,
       sampleImages=[], tags=[], rpg=False,
       **kwargs):
     super(DLsiteReference, self).__init__(parent=parent,
@@ -3442,6 +3442,7 @@ class DLsiteReference(Reference): #(object):
     self.otome = otome # bool
     self.homepage = homepage # str
     self.description = description # unicode
+    self.characterDescription = characterDescription # unicode
     self.review = review # unicode
     self.sampleImages = sampleImages # [str url]
     self.rpg = rpg # bool
@@ -3487,10 +3488,23 @@ class DLsiteReference(Reference): #(object):
       it = proxy.get_dlsite_url(it)
       yield cacheman.cache_image_url(it) if cache else it
 
+  _rx_desc_size = re.compile(r'width="[0-9]+" height="[0-9]+"')  # remove image size, use large image
   def hasDescriptions(self): return bool(self.description)
   def iterDescriptions(self):
-    if self.description:
-      yield cacheman.cache_html(self.description)
+    t = self.description
+    if t:
+      t = proxy.replace_dlsite_html(t)
+      t = t.replace("<h2>", "<b>").replace("</h2>", "</b>") # reduce font size
+      t = self._rx_desc_size.sub('', t)
+      yield cacheman.cache_html(t)
+
+  # Example: <a href="//img.dlsite.jp/modpub/images2/parts/RJ080000/RJ079473/RJ079473_PTS0000000168_3.jpg"
+  def renderCharacterDescription(self): # -> unicode
+    t = self.characterDescription
+    if not t:
+      return ''
+    t = proxy.replace_dlsite_html(t)
+    return cacheman.cache_html(t)
 
 class GetchuReference(Reference): #(object):
   def __init__(self, parent=None,
@@ -3609,17 +3623,20 @@ class GetchuReference(Reference): #(object):
     t = cls._rx_desc_title.sub(ur'<div class="tabletitle">【\1】</div>', t)
     t = cls._rx_desc_size.sub('', t)
     t = t.replace('_s.jpg', '.jpg')
+    t = proxy.replace_getchu_html(t)
     return cacheman.cache_html(t)
 
   def renderCharacterDescription(self): # -> unicode
     t = self.characterDescription
-    if t:
-      t = self._rx_desc_title.sub('', t)
-      t = self._rx_desc_size.sub('', t)
-      t = t.replace('_s.jpg', '.jpg')
-      t = t.replace('width="1%"', 'width="25%"') # <TD valign="middle" width="1%"> for img
-      t = t.replace('valign="middle"', 'valign="top"')
-      t = t.replace('vertical-align:middle', 'vertical-align:top')
+    if not t:
+      return ''
+    t = self._rx_desc_title.sub('', t)
+    t = self._rx_desc_size.sub('', t)
+    t = t.replace('_s.jpg', '.jpg')
+    t = t.replace('width="1%"', 'width="25%"') # <TD valign="middle" width="1%"> for img
+    t = t.replace('valign="middle"', 'valign="top"')
+    t = t.replace('vertical-align:middle', 'vertical-align:top')
+    t = proxy.replace_getchu_html(t)
     return cacheman.cache_html(t)
 
   def iterNameYomi(self):

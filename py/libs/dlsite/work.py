@@ -61,6 +61,7 @@ class WorkApi(object):
         'ecchi': self._parseecchi(h), # bool not None
         'homepage': self._parsehp(h),   # str or None
         'description': self._parsesec(self._rx_sec_desc, h), # unicode or None
+        'characterDescription': self._parsecharasec(h), # unicode
         'title': self._parsetitle(h), # unicode or None
         'brand': self._parsebrand(h), # unicode or None
         'series': self._parseseries(h), # unicode or None
@@ -269,15 +270,31 @@ class WorkApi(object):
     """
     m = rx.search(h)
     if m:
-      return m.group()
+      return m.group().replace('="//', '="http://')
 
   _rx_sec_review = __makesectionrx('work_review_list')
 
   #_rx_sec_desc = __makesectionrx('work_story')
-  _rx_sec_desc = re.compile(r'.*?'.join((
+  _rx_sec_desc = re.compile(r'.*'.join(( # use .* instead of .*? to keep text as much as possible
     re.escape(r'<div itemprop="description"'),
-    re.escape(r'<!-- /work_story -->'),
+    r'(?:<!-- spec -->|<!-- /work_story -->)', # sample game: http://www.dlsite.com/maniax/work/=/product_id/RJ143025
   )), re.DOTALL)
+
+  # Example: www.dlsite.com/maniax/work/=/product_id/RJ079473.html
+  _rx_sec_chara = re.compile(r'(.*?)'.join((
+    ur'<div class="[^"]*?"><h.>キャラクター紹介</h.></div>',
+    r"(?:<!--|<script)", # stop before next section or script
+  )), re.DOTALL)
+  def _parsecharasec(self, h):
+    """
+    @param  h  unicode  html
+    @return  str or None
+    """
+    m = self._rx_sec_chara.search(h)
+    if m:
+      ret = m.group(1).rstrip()
+      ret = ret.replace('="//', '="http://')
+      return ret
 
   # Example
   # <p class="float_l review_count">レビュー数&nbsp;:&nbsp;<span class="review_work_count">9件</span></p>
@@ -359,6 +376,8 @@ if __name__ == '__main__':
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ004288.html'
   url = 'http://www.dlsite.com/girls/work/=/product_id/RJ091967.html'
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ006763.html'
+  url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ079473.html' # for testing chara
+  url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ143025' # Rondo DUO
   q = api.query(url)
   #print q['description']
   #print q['review'].encode('utf8')
@@ -376,5 +395,8 @@ if __name__ == '__main__':
   print q['date']
   for it in q['tags']:
     print it
+  print '-' * 10
+  print q['characterDescription']
+  print q['description']
 
 # EOF
