@@ -4775,7 +4775,7 @@ class TermModel(QAbstractListModel):
     d = self.__d = _TermModel()
 
     for sig in (
-        #self.filterTypesChanged, self.filterLanguageChanged, self.filterTextChanged,
+        self.filterTypesChanged, #self.filterLanguageChanged, self.filterTextChanged,
         self.sortingColumnChanged, self.sortingReverseChanged,
         self.pageSizeChanged, self.pageNumberChanged,
         self.duplicateChanged

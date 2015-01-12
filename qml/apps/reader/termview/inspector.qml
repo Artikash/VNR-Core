@@ -31,7 +31,7 @@ Item { id: root_
     userHash: currentItem ? currentItem.userHash : 0
   }
 
-  Text { id: text_
+  TextEdit { id: text_
     anchors {
       top: parent.top //; bottom: parent.bottom
       right: parent.right
@@ -39,10 +39,11 @@ Item { id: root_
       leftMargin: 9; rightMargin: 9
       topMargin: 3
     }
-    textFormat: Text.PlainText
+    textFormat: TextEdit.PlainText
     font.pixelSize: 12
 
-    wrapMode: Text.WordWrap
+    wrapMode: TextEdit.WordWrap
+    selectByMouse: true
 
     text: summary()
   }

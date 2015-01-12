@@ -7,7 +7,8 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"ルナ様";
+  //wchar_t ws[] = L"ルナ様";
+  wchar_t ws[] = L"澪さん";
   //QString text = QString::fromWCharArray(ws);
   std::wstring text = ws;
 
