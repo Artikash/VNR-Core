@@ -2461,7 +2461,7 @@ class _Term(object):
       return self.E_USELESS
 
     # E_USELESS
-    if self.regex and not textutil.mightbe_regex(self.pattern):
+    if self.regex and self.type != 'macro' and not textutil.mightbe_regex(self.pattern):
       return self.E_USELESS_REGEX
 
     # W_BAD_REGEX
