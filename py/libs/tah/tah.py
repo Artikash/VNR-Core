@@ -12,10 +12,13 @@ if __name__ == '__main__':
 
 import os, re
 from sakurakit.skdebug import dwarn
+from sakurakit import skstr
 
 COMMENT_CHARS = '#', '*'
 MACRO_CHAR = '$'
 SPLIT_CHAR = '\t'
+
+_isregex = skstr.contains_re_chars
 
 def _iterreadfile(path):
   """
@@ -187,16 +190,6 @@ def writefile(path, rules):
   except Exception, e:
     dwarn(e)
     return False
-
-_RE_CH = re.compile(r"[%s]" % re.escape(
-  r'()[]^$|\?!*.'
-))
-def _isregex(text):
-  """
-  @param  unicode
-  @return  bool
-  """
-  return _RE_CH.search(text)
 
 def _verify(k, v):
   """
