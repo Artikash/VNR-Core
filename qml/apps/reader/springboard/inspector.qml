@@ -40,33 +40,33 @@ Rectangle { id: root_
   Plugin.GameEditorManagerProxy { id: gameedit_ }
   //Plugin.GameViewManagerProxy { id: gameview_ }
 
-  Desktop.TooltipArea { id: toolTip_
-    anchors.fill: parent
-    //text: game ? (game.launchPath ? game.launchPath : game.path) : ""
-    //text: qsTr("Click to copy the game information to the clipboard and read the text using TTS")
-    text: qsTr("Click to copy the game information to the clipboard")
-  }
+  //Desktop.TooltipArea { id: toolTip_
+  //  anchors.fill: parent
+  //  //text: game ? (game.launchPath ? game.launchPath : game.path) : ""
+  //  //text: qsTr("Click to copy the game information to the clipboard and read the text using TTS")
+  //  text: qsTr("Click to copy the game information to the clipboard")
+  //}
 
   // - Label -
 
-  MouseArea {
-    anchors.fill: parent
-    acceptedButtons: Qt.LeftButton
-    onPressed:
-      if (game) {
-        var t = game.name
-        if (t) {
-          var l = [t]
-          t = game.brand
-          if (t) l.push(t)
-          //t = game.tags
-          //if (t) l.push(t)
-          t = l.join("、")
-          clipboardPlugin_.text = t
-          //ttsPlugin_.speak(t, 'ja')
-        }
-      }
-  }
+  //MouseArea {
+  //  anchors.fill: parent
+  //  acceptedButtons: Qt.LeftButton
+  //  onPressed:
+  //    if (game) {
+  //      var t = game.name
+  //      if (t) {
+  //        var l = [t]
+  //        t = game.brand
+  //        if (t) l.push(t)
+  //        //t = game.tags
+  //        //if (t) l.push(t)
+  //        t = l.join("、")
+  //        clipboardPlugin_.text = t
+  //        //ttsPlugin_.speak(t, 'ja')
+  //      }
+  //    }
+  //}
 
   // Top region
   Item { id: topRegion_
@@ -91,7 +91,7 @@ Rectangle { id: root_
       source: game ? 'image://file/' + game.path : '' //'image://rc/game'
     }
 
-    Text { id: nameLabel_
+    TextEdit { id: nameLabel_
       anchors {
         verticalCenter: parent.verticalCenter
         left: gameIcon_.right
@@ -104,9 +104,12 @@ Rectangle { id: root_
       //font.bold: root_.containsMouse
       //color: root_.containsMouse ? 'snow' : 'black'
       effect: Share.TextEffect {} // highlight: root_.containsMouse }
-      wrapMode: Text.WordWrap
-      textFormat: Text.RichText
+      wrapMode: TextEdit.WordWrap
+      textFormat: TextEdit.RichText
       text: !game ? '' : renderGame(game)
+
+      selectByMouse: true
+      //readOnly: true
 
       function renderGame(g) { // game -> string
         var ret = g.name
