@@ -81,6 +81,7 @@ public:
 
   void init(const TranslationScriptRow &row)
   {
+    valid = true;
     id = row.id;
 //#ifdef SCRIPT_CACHE_REGEX
 //    if (!row.regex)
@@ -101,8 +102,6 @@ public:
         valid = false;
       }
     }
-
-    valid = true;
   }
 
   // Replacement
