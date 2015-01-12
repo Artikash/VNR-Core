@@ -173,7 +173,7 @@ Item { id: root_
 
     model: ListModel {
       Component.onCompleted: {
-        append({text:Sk.tr("Type"), value:''})
+        append({text:Sk.tr("Column"), value:''})
         append({text:"ID", value:'id'})
         append({text:Sk.tr("User"), value:'user'})
         append({text:Sk.tr("Game"), value:'game'})
