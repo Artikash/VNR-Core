@@ -4,7 +4,6 @@
 #include "trscript/trscript.h"
 #include "trscript/trrule.h"
 #include "cpputil/cpplocale.h"
-#include <boost/foreach.hpp>
 #include <fstream>
 //#include <QDebug>
 
@@ -97,8 +96,9 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   }
   fin.imbue(UTF8_LOCALE);
 
-  TranslationScriptParam param;
-  std::list<TranslationScriptParam> params; // id, pattern, text, regex
+  TranslationScriptRule::param_type param;
+  TranslationScriptRule::param_list params; // id, pattern, text, regex
+  size_t parentCount = 0;
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != SCRIPT_CH_COMMENT) {
       param.clear_flags();
@@ -106,16 +106,16 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
       for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
         switch (line[pos]) {
         case SCRIPT_CH_REGEX: param.f_regex = true; break;
-        case SCRIPT_CH_NAME: param.f_name = true; break;
-        case SCRIPT_CH_SUFFIX: param.f_suffix = true; break;
+        case SCRIPT_CH_NAME: param.f_parent = true; break;
+        case SCRIPT_CH_SUFFIX: param.f_child = true; break;
         }
       if (pos == line.size())
         continue;
       //line.pop_back(); // remove trailing '\n'
       wchar_t *cur;
       long id = ::wcstol(line.c_str() + pos, &cur, 10); // base 10
-      if (id && *cur++) { // skip first delim
-        param.id = std::to_wstring((long long)id);
+      if (cur != line.c_str() && *cur++) { // skip first delim
+        param.id = id ? std::to_wstring((long long)id) : std::wstring();
         if (wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
           param.source.assign(cur, delim - cur);
           param.target.assign(delim + 1);
@@ -123,8 +123,11 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
           param.source.assign(cur);
           param.target.clear();
         }
-        if (!param.source.empty())
+        if (!param.source.empty()) {
+          if (!param.f_child)
+            parentCount++;
           params.push_back(param);
+        }
       }
       //qDebug() << param.id << QString::fromStdWString(param.source) << QString::fromStdWString(param.target);
     }
@@ -137,11 +140,18 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   }
 
   //QWriteLocker locker(&d_->lock);
-  d_->reset(params.size());
+  d_->reset(parentCount);
 
   size_t i = 0;
-  BOOST_FOREACH (const auto &it, params)
-    d_->rules[i++].init(it);
+  for (auto p = params.cbegin(), q = params.cend(); p != params.cend(); ++p)
+    if (p->f_child) {
+      if (q == params.cend())
+        q = p;
+    } else if (p->f_parent && q != params.cend()) {
+      d_->rules[i++].init_list(*p, q, p);
+      q = params.cend();
+    } else
+      d_->rules[i++].init(*p);
 
   return true;
 }

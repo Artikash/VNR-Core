@@ -184,7 +184,8 @@ class TermWriter:
                     td.id,
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     esc % (priority, titleCount - i),
-                    regex or it.regex)
+                    regex or it.regex,
+                    nameindex=len(titles) - i - 1)
             elif escape_target:
               esc = defs.NAME_ESCAPE
               for i,it in enumerate(titles):
@@ -196,12 +197,13 @@ class TermWriter:
                     regex) # no padding space for Chinese names
             else:
               #assert padding # this is supposed to be always true
-              for it in titles:
+              for i,it in enumerate(titles):
                 self._writeLine(f,
                     td.id,
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     repl + it.text + " ",
-                    regex or it.regex) # padding space for Japanese names
+                    regex or it.regex,
+                    nameindex=len(titles) - i - 1) # padding space for Japanese names
 
           if padding:
             repl += " "
@@ -219,13 +221,14 @@ class TermWriter:
     return False
 
   @staticmethod
-  def _writeLine(f, tid, pattern, repl, regex):
+  def _writeLine(f, tid, pattern, repl, regex, nameindex=None):
     """
     @param  f  file
     @param  tid  long
     @param  pattern  unicode
     @param  repl  unicode
     @param  regex  bool
+    @param  nameindex  int or None
     @return  unicode or None
     """
     if '\n' in pattern or '\n' in repl:
@@ -233,8 +236,14 @@ class TermWriter:
       return
     ret = '\t'.join((str(tid), pattern, repl) if repl else (str(tid), pattern))
     ret = "\t%s\n" % ret
-    line = 'r' + ret if regex else ret
-    f.write(line)
+    if regex:
+      ret = 'r' + ret
+    if nameindex is not None:
+      if nameindex == 0:
+        ret = 'n' + ret # a name without suffix
+      else:
+        ret = 's' + ret # a name with suffix
+    f.write(ret)
 
   def _renderHeader(self, type, language):
     """
