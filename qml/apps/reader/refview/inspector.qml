@@ -2,6 +2,7 @@
  *  2/21/2013 jichi
  */
 import QtQuick 1.1
+import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/underscore.min.js' as Underscore
@@ -43,6 +44,7 @@ Item { id: root_
 
     wrapMode: TextEdit.WordWrap
     selectByMouse: true
+    onLinkActivated: Eval.evalLink(link)
 
     text: summary()
   }
