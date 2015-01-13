@@ -27,14 +27,12 @@ struct TranslationScriptRule
 
   uint8_t flags;
   mutable bool valid;
-
-  boost::wregex *sourceRe; // cached compiled regex
-
-public:
   std::wstring id,
                source,
                target;
+  boost::wregex *sourceRe; // cached compiled regex
 
+public:
   TranslationScriptRule()
     : flags(0)
     , valid(false)

@@ -7,7 +7,7 @@
 #include <boost/foreach.hpp>
 #include <fstream>
 #include <list>
-#include <QDebug>
+//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trscript.cc"
@@ -15,9 +15,11 @@
 
 //#define DEBUG_RULE // output the rule that is applied
 
-#define SCRIPT_CH_COMMENT   L'#' // indicate the beginning of a line comment
-#define SCRIPT_CH_DELIM     L'\t' // deliminator of the rule pair
-#define SCRIPT_CH_REGEX     L'r'
+#define SCRIPT_CH_COMMENT   L'#'    // indicate the beginning of a line comment
+#define SCRIPT_CH_DELIM     L'\t'   // deliminator of the rule pair
+#define SCRIPT_CH_REGEX     L'r'    // a regex rule
+#define SCRIPT_CH_NAME      L'n'    // a name without suffix
+#define SCRIPT_CH_SUFFIX    L's'    // a name with suffix
 
 /** Helpers */
 
@@ -99,16 +101,18 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   TranslationScriptParam param;
   std::list<TranslationScriptParam> params; // id, pattern, text, regex
   for (std::wstring line; std::getline(fin, line);)
-    if (line.size()> 3) {
+    if (!line.empty() && line[0] != SCRIPT_CH_COMMENT) {
+      param.regex = false;
       size_t pos = 0;
-      switch (line[0]) {
-      case SCRIPT_CH_COMMENT: continue;
-      case SCRIPT_CH_REGEX: param.regex = true; pos++; break;
-      default: param.regex = false;
-      }
+      for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
+        switch (line[pos]) {
+        case SCRIPT_CH_REGEX: param.regex = true; break;
+        }
+      if (pos == line.size())
+        continue;
       //line.pop_back(); // remove trailing '\n'
       wchar_t *cur;
-      long id = ::wcstol(line.c_str() + pos, &cur, 10);
+      long id = ::wcstol(line.c_str() + pos, &cur, 10); // base 10
       if (id && *cur++) { // skip first delim
         param.id = std::to_wstring((long long)id);
         if (wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
