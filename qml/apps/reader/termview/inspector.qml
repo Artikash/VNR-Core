@@ -157,8 +157,8 @@ Item { id: root_
     case 5:   return qsTr("Language should be Simplified Chinese not Chinese") // W_CHINESE_TRADITIONAL
     case 6:   return qsTr("Language should be Chinese not Simplified Chinese") // W_CHINESE_SIMPLIFIED
     //case 7:   return qsTr("Having Japanese kanji in Chinese translation") // W_CHINESE_KANJI
-    case 11:  return qsTr("Pattern is too short") // W_SHORT
-    case 12:  return qsTr("Pattern or translation is very long") // W_LONG
+    case 11:  return qsTr("Pattern or translation is very long") // W_LONG
+    case 12:  return qsTr("Pattern is too short") // W_SHORT
     case 20:  return qsTr("Translation is empty") // W_MISSING_TEXT
     case 30:  return qsTr("Game type should not be used for translation") // W_NOT_GAME
     case 31:  return qsTr("Type should not translation instead of input") // W_NOT_INPUT
