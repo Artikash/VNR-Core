@@ -2490,14 +2490,14 @@ class _Term(object):
     if not self.text and len(self.pattern) > 3 and self.type in ('escape', 'name', 'yomi'):
       return self.W_MISSING_TEXT
 
-    # W_LONG
-    if not self.regex and not self.syntax and len(self.pattern) > 25:
-      return self.W_LONG
-
     # W_SHORT
     if (len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
         not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1])):
       return self.W_SHORT
+
+    # W_LONG
+    if not self.regex and not self.syntax and len(self.pattern) > 25:
+      return self.W_LONG
 
     # W_CHINESE_KANJI
     if self.language.startswith('zh') and self.text:
@@ -2546,8 +2546,8 @@ class _Term(object):
   W_CHINESE_TRADITIONAL = 5 # should not use traditional chinese
   W_CHINESE_SIMPLIFIED = 6  # should not use simplified chinese
   #W_CHINESE_KANJI = 7       # having Japanese characters in kanji
-  W_SHORT = 11              # being too short
-  W_LONG = 12               # being too long
+  W_LONG = 11               # being too long
+  W_SHORT = 12              # being too short
   W_MISSING_TEXT = 20       # text is empty
   W_NOT_GAME = 30           # should not use game type
   W_NOT_INPUT = 31          # should not use input type
