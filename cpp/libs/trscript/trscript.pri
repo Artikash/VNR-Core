@@ -9,7 +9,12 @@ LIBS += -lboost_regex$$BOOST_VARIANT
 
 #QT += core
 
-HEADERS += $$PWD/trscript.h
-SOURCES += $$PWD/trscript.cc
+HEADERS += \
+  $$PWD/trrule.h \
+  $$PWD/trscript.h
+
+SOURCES += \
+  $$PWD/trrule.cc \
+  $$PWD/trscript.cc
 
 # EOF
