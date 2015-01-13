@@ -67,6 +67,7 @@ processes:
   - chrome.exe          # Google
   - CHROME.EXE          # Google
   - ComicsViewer.exe    # ComicsViewer
+  - devcpp.exe          # Dev-Cpp
   - DTLite.exe          # Daemon Tools
   - Dwm.exe             # Windows
   - dwm.exe             # Windows

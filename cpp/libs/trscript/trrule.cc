@@ -23,18 +23,18 @@ inline std::string escape(const std::wstring &t)
 
 // Construction
 
-void TranslationScriptRule::init(const TranslationScriptParam &Param)
+void TranslationScriptRule::init(const TranslationScriptParam &param)
 {
-  id = Param.id;
-  source = Param.source;
-  target = Param.target;
+  id = param.id;
+  source = param.source;
+  target = param.target;
 
-  if (Param.regex) {
+  if (param.f_regex) {
     flags |= RegexFlag;
     try {
-      sourceRe = new boost::wregex(Param.source);
+      source_re = new boost::wregex(param.source);
     } catch (...) { // boost::bad_pattern
-      DWOUT("invalid term: " << Param.id << ", regex pattern: " << Param.source);
+      DWOUT("invalid term: " << param.id << ", regex pattern: " << param.source);
       valid = false;
       return;
     }
@@ -51,7 +51,7 @@ std::wstring TranslationScriptRule::render_target() const
   std::wstring ret = L"{\"type\":\"term\"";
   ret.append(L",\"id\":")
      .append(id);
-  if (!isRegex()) { // do not save regex pattern to save memory
+  if (!is_regex()) { // do not save regex pattern to save memory
     if (!source.empty() && !::isdigit(source[0])) { // do not save escaped floating number
       std::string s = escape(source);
       ret.append(L",\"source\":\"")
@@ -96,12 +96,12 @@ void TranslationScriptRule::string_replace(std::wstring &ret, bool link) const
 
 void TranslationScriptRule::regex_replace(std::wstring &ret, bool link) const
 {
-  //Q_ASSERT(sourceRe);
+  //Q_ASSERT(source_re);
   try  {
     boost::wsmatch m; // search first, which has less opportunity to happen
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
-    const auto &re = *sourceRe;
+    const auto &re = *source_re;
     if (boost::regex_search(ret, m, re))
       ret = boost::regex_replace(ret, re,
           target.empty() ? std::wstring() : !link ? target : render_target(),

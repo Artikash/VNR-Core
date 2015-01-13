@@ -6,7 +6,6 @@
 #include "cpputil/cpplocale.h"
 #include <boost/foreach.hpp>
 #include <fstream>
-#include <list>
 //#include <QDebug>
 
 #define SK_NO_QT
@@ -102,11 +101,13 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   std::list<TranslationScriptParam> params; // id, pattern, text, regex
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != SCRIPT_CH_COMMENT) {
-      param.regex = false;
+      param.clear_flags();
       size_t pos = 0;
       for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
         switch (line[pos]) {
-        case SCRIPT_CH_REGEX: param.regex = true; break;
+        case SCRIPT_CH_REGEX: param.f_regex = true; break;
+        case SCRIPT_CH_NAME: param.f_name = true; break;
+        case SCRIPT_CH_SUFFIX: param.f_suffix = true; break;
         }
       if (pos == line.size())
         continue;
@@ -157,7 +158,7 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       //qDebug() << rule.id << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
-      if (rule.isValid())
+      if (rule.is_valid())
         rule.replace(ret, d_->link);
 
 #ifdef DEBUG_RULE
