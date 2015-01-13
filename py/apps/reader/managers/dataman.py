@@ -2483,7 +2483,7 @@ class _Term(object):
       return self.W_NOT_INPUT
 
     # W_NOT_GAME
-    if not self.regex and self.type == 'origin' and self.text and unichars.isascii(self.text):
+    if not self.regex and self.type == 'origin' and self.text and unichars.isascii(self.text) and not unichars.isascii(self.pattern):
       return self.W_NOT_GAME
 
     # W_MISSING_TEXT
