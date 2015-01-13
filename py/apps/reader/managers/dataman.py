@@ -2491,8 +2491,9 @@ class _Term(object):
       return self.W_MISSING_TEXT
 
     # W_SHORT
-    if (len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
-        not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1])):
+    if (self.type not in ('title', 'ocr', 'macro') and (
+        len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
+        not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1]))):
       return self.W_SHORT
 
     # W_LONG
