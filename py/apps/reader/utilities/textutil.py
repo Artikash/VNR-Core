@@ -6,6 +6,7 @@ import re
 from sakurakit import skstr
 from sakurakit.skunicode import u
 from unitraits import jpchars
+import defs
 
 ## Encoding ##
 
@@ -55,7 +56,8 @@ def is_illegal_text(text):
   return bool(__illegal_re.search(text))
 
 # At most 16 characters
-__name_re = re.compile(ur'【(.*?)】|(.*?)「')
+__name_re = re.compile(ur'【(.{0,%s}?)】|(.{0,%s}?)「'
+    % (defs.MAX_NAME_LENGTH, defs.MAX_NAME_LENGTH))
 def guess_text_name(text):
   """
   @param  text  unicode
@@ -67,13 +69,25 @@ def guess_text_name(text):
     if r:
       return r.strip()
 
-__noname_re = re.compile(ur'^(?:【.{0,16}?】|.{0,16}?(?=「))(.*)$')
+#__noname_re = re.compile(ur'^(?:【.{0,%s}?】|.{0,%s}?(?=「))(.*)$'
+#    % (defs.MAX_NAME_LENGTH, defs.MAX_NAME_LENGTH))
 def remove_text_name(text):
   """
   @param  text  unicode
   @return  unicode not None
   """
-  return __noname_re.sub('\\1', text)
+  #return __noname_re.sub('\\1', text)
+  # Avoid using regex for better performance
+  if not text:
+    return ""
+  i = text.find(u'「')
+  if i > 0 and i < defs.MAX_NAME_LENGTH:
+    return text[i:]
+  if text[0] == u'【':
+    i = text.find(u'】')
+    if i > 0 and i < defs.MAX_NAME_LENGTH:
+      return text[i+1:].lstrip()
+  return text
 
 __beauty_text_re = re.compile(ur'([。？！」】])(?![。！？」]|$)')
 def beautify_text(text):

@@ -275,6 +275,30 @@ function removeHtmlTags(str) {
   return str.replace(/<[^>]*>/g, '');
 }
 
+/**
+ *  @param  text  string
+ *  @param* limit  max name length
+ *  @return  string
+ */
+//var MAX_NAME_LENGTH = 16; // max name length not forced
+function removeTextName(text, limit) {
+  // http://stackoverflow.com/questions/1979884/how-to-use-javascript-regex-over-multiple-lines
+  //return text.replace(/^[\s\S]+?「/, '「') // remove text before 「
+  //           .replace(/^【[^】]*】/, '')  // remove text in 【】
+  // Do not use regex for better performance
+  if (!text)
+    return text;
+  var i = text.indexOf('「');
+  if (i > 0 && (!limit || i < limit))
+    return text.substr(i);
+  if (text[0] == '【') {
+    i = text.indexOf('】');
+    if (i > 0 && (!limit || i < limit))
+      return text.substr(i+1);
+  }
+  return text;
+}
+
 // - Datetime -
 
 // See: http://www.electrictoolbox.com/unix-timestamp-javascript/

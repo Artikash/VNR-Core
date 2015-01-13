@@ -1242,7 +1242,10 @@ Item { id: root_
           else if (model.sub)
             t = root_.renderSub(model.sub)
           else if (model.text) {
-            t = root_.nameVisible ? model.text : removeName(model.text)
+            t = root_.nameVisible ? model.text
+              : Util.removeTextName(model.text, model.type === 'text' ? 16 : 0) // max name limit
+            if (!t)
+              return ""
             if (model.language === 'ja' && (model.type === 'text' || model.type === 'name')) {
               if (root_.removesTextNewLine && ~t.indexOf("\n"))
                 t = t.replace(/\n/g, '')
@@ -1438,12 +1441,6 @@ Item { id: root_
     root_.highlightVisible = false
     modelLocked = false
     console.log("grimoire.qml:clear: pass")
-  }
-
-  function removeName(text) {
-    // http://stackoverflow.com/questions/1979884/how-to-use-javascript-regex-over-multiple-lines
-    return text.replace(/^[\s\S]+?「/, '「')
-    //return text.replace(/^【.*?】/, '')
   }
 
   // - Context Menu -

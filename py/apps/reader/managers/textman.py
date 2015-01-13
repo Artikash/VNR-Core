@@ -461,11 +461,11 @@ class _TextManager(object):
         self._flushAgentScenario()
       if role == NAME_THREAD_TYPE:
         #self.showNameText(text=text, agent=True)
-        if len(text) > defs.MAX_NAME_LENGTH:
+        if len(text) > defs.MAX_NAME_THREAD_LENGTH:
           self.agentNameBuffer = ''
         else:
           self.agentNameBuffer = text
-        #if len(self.agentNameBuffer) > defs.MAX_NAME_LENGTH:
+        #if len(self.agentNameBuffer) > defs.MAX_NAME_THREAD_LENGTH:
         #  self._cancelAgentName()
         #else:
         #  waitTime = 50 if not needsTranslation else settings.global_().embeddedTranslationWaitTime() * 3 # must be the same as the scenario
@@ -740,7 +740,7 @@ class _TextManager(object):
     """
     if not text and data:
       dataSize = len(data)
-      if dataSize > defs.MAX_NAME_LENGTH:
+      if dataSize > defs.MAX_NAME_THREAD_LENGTH:
         dwarn("ignore long name text, size = %i" % dataSize)
         return
       text = self._decodeText(data).strip()

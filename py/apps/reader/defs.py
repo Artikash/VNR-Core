@@ -41,8 +41,7 @@ OTHER_TEXT_ROLE = 3
 
 #MIRAGE_MAX_TEXT_LENGTH = 512
 
-MAX_NAME_LENGTH = 64
-MAX_NAME_LENGTH *= 3 # increased due to repetition removal
+MAX_NAME_THREAD_LENGTH = 64 * 3 # *3 increased due to repetition removal
 
 MAX_TEXT_LENGTH = 255
 MD5_HEX_LENGTH = 32
@@ -154,6 +153,8 @@ NAME_ESCAPE = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
 
 TERM_MACRO_BEGIN = '{{'
 TERM_MACRO_END = '}}'
+
+MAX_NAME_LENGTH = 16 # maximum number of characters in text
 
 # Game info
 OKAZU_TAGS = [
