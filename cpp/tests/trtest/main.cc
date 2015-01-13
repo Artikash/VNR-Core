@@ -14,8 +14,9 @@ int main()
 
   std::wstring path;
   //path = L"../cpp/libs/trscript/example.txt";
-  path = L"/Users/jichi/stream/Caches/tmp/reader/dict/zhs/escape_input.txt";
+  //path = L"/Users/jichi/stream/Caches/tmp/reader/dict/zhs/escape_input.txt";
   //path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
+  path = L"/Users/jichi/tmp/escape_input.txt";
 
   TranslationScriptManager m;
   m.setLinkEnabled(true);
