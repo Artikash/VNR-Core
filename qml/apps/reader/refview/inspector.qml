@@ -38,7 +38,7 @@ Item { id: root_
       leftMargin: 9; rightMargin: 9
       topMargin: 3
     }
-    textFormat: TextEdit.PlainText
+    textFormat: TextEdit.RichText
     font.pixelSize: 12
 
     wrapMode: TextEdit.WordWrap
