@@ -161,7 +161,7 @@ class _ReferenceInput(object):
   @memoizedproperty
   def searchTimer(self):
     ret = QTimer(self.q)
-    ret.setInterval(1000)
+    ret.setInterval(3000)
     ret.timeout.connect(self._search)
     ret.setSingleShot(True)
     return ret
