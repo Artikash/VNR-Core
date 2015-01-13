@@ -176,8 +176,10 @@ class TermWriter:
           #    pattern += r")"
           #    repl += " " # padding space
 
+          name = None
           if titleCount and td.type in ('name', 'yomi'):
             if escape_source:
+              name = True
               esc = defs.NAME_ESCAPE + " " # padding space
               for i,it in enumerate(titles):
                 self._writeLine(f,
@@ -185,7 +187,7 @@ class TermWriter:
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     esc % (priority, titleCount - i),
                     regex or it.regex,
-                    nameindex=len(titles) - i - 1)
+                    name=False)
             elif escape_target:
               esc = defs.NAME_ESCAPE
               for i,it in enumerate(titles):
@@ -196,18 +198,19 @@ class TermWriter:
                     #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
                     regex) # no padding space for Chinese names
             else:
+              name = True
               #assert padding # this is supposed to be always true
-              for i,it in enumerate(titles):
+              for it in titles:
                 self._writeLine(f,
                     td.id,
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     repl + it.text + " ",
                     regex or it.regex,
-                    nameindex=len(titles) - i - 1) # padding space for Japanese names
+                    name=False) # padding space for Japanese names
 
           if padding:
             repl += " "
-          self._writeLine(f, td.id, pattern, repl, regex)
+          self._writeLine(f, td.id, pattern, repl, regex, name=name)
 
           empty = False
 
@@ -221,14 +224,14 @@ class TermWriter:
     return False
 
   @staticmethod
-  def _writeLine(f, tid, pattern, repl, regex, nameindex=None):
+  def _writeLine(f, tid, pattern, repl, regex, name=None):
     """
     @param  f  file
     @param  tid  long
     @param  pattern  unicode
     @param  repl  unicode
     @param  regex  bool
-    @param  nameindex  int or None
+    @param  name  True (name) of False (suffix) or None
     @return  unicode or None
     """
     if '\n' in pattern or '\n' in repl:
@@ -238,8 +241,8 @@ class TermWriter:
     ret = "\t%s\n" % ret
     if regex:
       ret = 'r' + ret
-    if nameindex is not None:
-      if nameindex == 0:
+    if name is not None:
+      if name:
         ret = 'n' + ret # a name without suffix
       else:
         ret = 's' + ret # a name with suffix
