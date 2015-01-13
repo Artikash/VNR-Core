@@ -1717,6 +1717,9 @@ class MainObject(QObject):
       #  dprint("update translate scripts later")
       #  skevents.runlater(dm.updateTranslationScripts)
 
+    #self.showReferenceView()
+    #return
+
     #dprint("warm up translators")
     #d.translatorManager.warmup()
     dprint("schedule to warm up translators")
@@ -1796,7 +1799,6 @@ class MainObject(QObject):
     dprint("leave")
 
     #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
-    #self.showReferenceView()
     #  import jsonapi
     #  jsonapi.gameinfo()
     #  d.dump()
