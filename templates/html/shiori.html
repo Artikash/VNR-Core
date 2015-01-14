@@ -48,12 +48,6 @@ u,.edict .role{background-color:rgba(128,0,128,80%)}
 		</p>
 %	endfor
 %endif
-%if eb_strings
-		<hr/>
-%	for s in eb_strings
-		<p class="s">{{s}}</p>
-%	endfor
-%endif
 %if edict_tuples
 		<hr/>
 %	for word,reading,trans in edict_tuples
@@ -68,6 +62,12 @@ u,.edict .role{background-color:rgba(128,0,128,80%)}
 			</div>
 			<div class="tt edict">{{trans}}</div>
 		</p>
+%	endfor
+%endif
+%if eb_strings
+		<hr/>
+%	for s in eb_strings
+		<p class="s">{{s}}</p>
 %	endfor
 %endif
 	</body>
