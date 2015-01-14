@@ -75,6 +75,13 @@ ListModel {
       , link: createLink('showMachineTranslationTester')
     })
 
+    append({ name: My.tr("Japanese Dictionary")
+      , searchText: "Japanese Dictionary" + "\n" + Sk.tr("Japanese Dictionary")
+      , icon: 'image://rc/dock-jdict'
+      , toolTip: qsTr("Japanese word dictionary")
+      , link: createLink('showDictionaryTester')
+    })
+
     append({ name: My.tr("Japanese Syntax Tree")
       , searchText: "Japanese Syntax Tree" + "\n" + My.tr("Japanese Syntax Tree")
       , icon: 'image://rc/dock-syntax'
@@ -87,13 +94,6 @@ ListModel {
       , icon: 'image://rc/dock-srtest'
       , toolTip: My.tr("Test speech recognition")
       , link: createLink('showSpeechRecognitionTester')
-    })
-
-    append({ name: My.tr("Japanese Dictionary")
-      , searchText: "Japanese Dictionary" + "\n" + Sk.tr("Japanese Dictionary")
-      , icon: 'image://rc/dock-jdict'
-      , toolTip: qsTr("Japanese word dictionary")
-      , link: createLink('showDictionaryTester')
     })
 
     if (!statusPlugin_.wine)

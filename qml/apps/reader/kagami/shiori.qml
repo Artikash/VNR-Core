@@ -84,7 +84,8 @@ Rectangle { id: root_
   //}
 
   //color: '#dd000000' // black
-  color: '#aa000000' // black
+  //color: '#aa000000' // black
+  color: '#bb000000' // black
   //color: '#eeffffff' // white
   //color: '#eef4f5fa' // light blue, the same as the website
 

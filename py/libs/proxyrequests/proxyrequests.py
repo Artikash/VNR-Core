@@ -1,6 +1,7 @@
 # coding: utf8
 # proxyrequests.py
 # 1/2/2015 jichi
+# See: https://groups.google.com/forum/#!forum/pxuu
 
 __all__ = 'Session'
 
