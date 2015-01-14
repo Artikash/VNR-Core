@@ -4745,6 +4745,13 @@ class _TermModel(object):
         elif col == 'user':
           q = term.userName,
         elif col == 'game':
+          try:
+            tid = int(t)
+            if tid == td.gameId or tid == term.gameItemId:
+              return True
+            if len(t) >= 4:
+              return False
+          except ValueError: pass
           q = term.gameSeries, term.gameName
         elif col == 'language':
           q = td.language, i18n.language_name(td.language)
@@ -4774,8 +4781,14 @@ class _TermModel(object):
             return False
           if t[0] == '#':
             t = t[1:]
-            if t == str(td.gameId):
-              return True
+            try:
+              tid = int(t)
+              if tid == td.gameId or tid == term.gameItemId:
+                return True
+              if len(t) >= 4:
+                return False
+            except ValueError: pass
+
             rx = re.compile(t, re.IGNORECASE)
             it = term.gameSeries or term.gameName
             return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
