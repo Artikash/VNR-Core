@@ -113,9 +113,12 @@ Item { id: root_
       return ""
     var itemId = datamanPlugin_.queryGameItemId(id)
 
-    var ret = Sk.tr("File") + "ID: " + id
+    var ret = Sk.tr("File") + "ID: "
+            + '<a href="javascript://main.searchDictionary(' + id + ',\'game\')">' + id + '</a>'
     if (itemId)
-      ret = Sk.tr("Game") + "ID: " + itemId + ", " + ret
+      ret = Sk.tr("Game") + "ID: "
+          + '<a href="javascript://main.searchDictionary(' + itemId + ',\'game\')">' + itemId + '</a>'
+          + ", " + ret
     ret = "(" + ret + ")"
 
     var n = datamanPlugin_.queryGameName(id)
