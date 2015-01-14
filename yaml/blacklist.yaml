@@ -87,6 +87,8 @@ processes:
   - googledrivesync.exe # Google
   - GoogleIMEJaConverter.exe # Google
   - GoogleIMEJaRenderer.exe  # Google
+  - GOM.EXE             # GOM Player
+  - GOM.exe             # GOM Player
   - gvim.exe            # GVIM
   - HaoZip.exe          # HaoYa
   - HD-Agent.exe        # BlueStacks
