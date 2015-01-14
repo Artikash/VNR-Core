@@ -77,8 +77,6 @@ processes:
   - Evernote.exe        # Evernote
   - EvernoteTray.exe    # Evernote
   - EXCEL.EXE           # Microsoft Office
-  - iesandbox.exe       # Kuwo
-  - IESandBox.exe       # Kuwo
   - firefox.exe         # Mozilla
   - flashget.exe        # Flashget
   - "Foxit Reader.exe"  # Foxit Reader
@@ -96,6 +94,8 @@ processes:
   - hidfind.exe         # Dell
   - idaq.exe            # IDA
   - idea.exe            # Intelij IDEA
+  - iesandbox.exe       # Kuwo
+  - IESandBox.exe       # Kuwo
   - iexplore.exe        # Windows
   - IEXPLORE.EXE        # Windows
   - IMJPDUS.EXE         # Microsoft
@@ -108,6 +108,7 @@ processes:
   - JCT.exe             # JBeijing
   - jct.exe             # JBeijing
   - JCTchs.exe          # JBeijing
+  - JOCR.exe            # JOCR
   - KHALMNPR.exe        # Logitech
   - KuGou.exe           # Kugou
   - MacDrive.exe        # MacDrive
