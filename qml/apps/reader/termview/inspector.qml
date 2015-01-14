@@ -114,10 +114,10 @@ Item { id: root_
     var itemId = datamanPlugin_.queryGameItemId(id)
 
     var ret = Sk.tr("File") + "ID: "
-            + '<a href="javascript://main.searchDictionary(' + id + ',\'game\')">' + id + '</a>'
-    if (itemId)
+            + "<a href=\"javascript://main.searchDictionary(" + id + ",'game')\">" + id + "</a>"
+    if (itemId > 0)
       ret = Sk.tr("Game") + "ID: "
-          + '<a href="javascript://main.searchDictionary(' + itemId + ',\'game\')">' + itemId + '</a>'
+          + "<a href=\"javascript://main.searchDictionary(" + itemId + ",'game')\">" + itemId + "</a>"
           + ", " + ret
     ret = "(" + ret + ")"
 
@@ -125,7 +125,7 @@ Item { id: root_
     if (!n)
       return ret
     n = Underscore.escape(n)
-    n = '<a href="javascript://main.showGameView(' + id + ')">' + n + '</a>'
+    n = "<a href=\"javascript://main.showGameView(" + id + ")\">" + n + "</a>"
     ret = n + " " + ret
 
     //if (itemId) // slow to compute
@@ -135,20 +135,21 @@ Item { id: root_
     if (!s)
       return ret
     s = Underscore.escape(s)
-    ret = '[' + s + '] ' + n + ret
+    ret = "[<a href=\"javascript://main.searchDictionary('" + s + "','game')\">" + s + "</a>] "
+        + ret
     return ret
   }
 
   function renderUser(name) { // string -> string
     name = Underscore.escape(name)
-    return '<a href="javascript://main.showUser(\'' + name + '\')">@' + name + '</a>'
+    return "<a href=\"javascript://main.showUser('" + name + "')\">@" + name + "</a>"
   }
 
   function renderComment(text) { // string -> string
     text = Underscore.escape(text)
     if (~text.indexOf('@'))
       text = text.replace(/@(\w+)/g,
-        '<a href="javascript://main.showUser(\'$1\')">@$1</a>'
+        "<a href=\"javascript://main.showUser('$1')\">@$1</a>"
       )
     return text
   }

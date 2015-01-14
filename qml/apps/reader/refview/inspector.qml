@@ -174,6 +174,6 @@ Item { id: root_
 
   function renderUser(name) {
     name = Underscore.escape(name)
-    return '<a href="javascript://main.showUser(\'' + name + '\')">@' + name + '</a>'
+    return "<a href=\"javascript://main.showUser('" + name + "')\">@" + name + "</a>"
   }
 }

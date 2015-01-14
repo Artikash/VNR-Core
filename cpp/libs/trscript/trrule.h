@@ -15,8 +15,6 @@
 
 struct TranslationScriptParam
 {
-  typedef TranslationScriptParam Self;
-
   std::wstring id,
                source,
                target;
@@ -29,7 +27,7 @@ struct TranslationScriptParam
   void clear_flags() { f_regex = f_parent = f_child = 0; }
 };
 
-struct TranslationScriptRule
+class TranslationScriptRule
 {
   typedef TranslationScriptRule Self;
 
