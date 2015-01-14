@@ -30,18 +30,18 @@ class _DictionaryManager:
     @param  limit  int
     @yield  (unicode word, unicode reading, unicode translation)
     """
-    if settings.global_().isEdictEnabled():
-      for it in dicts.edict().lookup(text, limit=limit):
-        trans = _dictman.render_edict(it.Translation)
-        surface = it.Headword
-        reading = it.Reading
-        if reading == surface:
-          reading = None
-        if reading:
-          roman = convutil.kana2romaji(reading)
-          if roman and roman != reading:
-            reading = "%s, %s" % (reading, roman)
-        yield surface, reading, trans
+    #if settings.global_().isEdictEnabled():
+    for it in dicts.edict().lookup(text, limit=limit):
+      trans = _dictman.render_edict(it.Translation)
+      surface = it.Headword
+      reading = it.Reading
+      if reading == surface:
+        reading = None
+      if reading:
+        roman = convutil.kana2romaji(reading)
+        if roman and roman != reading:
+          reading = "%s, %s" % (reading, roman)
+      yield surface, reading, trans
 
   def _iterEB(self):
     """
@@ -216,7 +216,7 @@ class DictionaryManager:
         'language': 'ja',
         'text': text,
         'feature': feature,
-        'edict_tuples': d.lookupEdict(text),
+        'edict_tuples': d.lookupEdict(text) if settings.global_().isEdictEnabled() else None,
         'ld_tuples': d.lookupLD(text),
         'eb_strings': d.lookupEB(text),
         #'google': google,
