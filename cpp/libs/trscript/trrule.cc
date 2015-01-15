@@ -148,7 +148,7 @@ bool TranslationScriptRule::children_replace(std::wstring &ret, bool link) const
   if (child_count && children)
     for (size_t i = 0; i < child_count; i++) {
       const auto &c = children[i];
-      if (c.is_valid() && c.replace(ret, link))
+      if (c.is_valid() && c.replace(ret, link) && !exists(ret))
         return true;
     }
   return false;

@@ -85,9 +85,12 @@ private:
   bool children_replace(std::wstring &ret, bool link) const;
 
 public:
+  bool exists(const std::wstring &text) const
+  { return is_regex() ? regex_exists(text) : string_exists(text); }
+
   bool replace(std::wstring &ret, bool link) const
   {
-    if (!(is_regex() ? regex_exists(ret) : string_exists(ret)))
+    if (!exists(ret))
       return false;
     if (!is_list() || !children_replace(ret, link)) {
       if (is_regex())

@@ -149,6 +149,8 @@ NAME_ESCAPE = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
 #NAME_ESCAPE_PREFIX = "9%i"
 #NAME_ESCAPE_SUFFIX = "58"
 
+JITTER_ESCAPE = "341.143"
+
 #CHARA_ESCAPE = "9%i.%i48" # ESCAPE of character names from getchu
 
 TERM_MACRO_BEGIN = '{{'
