@@ -56,6 +56,7 @@ s_punct = u"\
 ー─～〜\
 ×\
 　\
+，《》‘’“”\
 "
 
 set_punct = frozenset(s_punct)
@@ -83,5 +84,12 @@ def allpunct(text):
   @return  bool
   """
   return bool(re_all_punct.match(text))
+
+def ispunct(ch):
+  """
+  @param  ch  unicode
+  @return  bool
+  """
+  return ch in s_punct
 
 # EOF

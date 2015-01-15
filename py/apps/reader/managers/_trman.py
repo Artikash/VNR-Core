@@ -21,7 +21,16 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
-import config, growl, mecabman, termman, textutil, trman, trcache, tahscript
+from unitraits import unichars, jpchars, jpmacros
+import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
+
+_re_jitter = re.compile(jpmacros.boc + ur'([あ-んア-ヴ])(?=[、…]\1)')
+
+isspace = unichars.isspace
+
+_S_PUNCT = unichars.s_ascii_punct + jpchars.s_punct
+def ispunct(ch):
+  return ch in _S_PUNCT
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -411,6 +420,8 @@ class MachineTranslator(Translator):
 
     t = text
     #with SkProfiler(): # 9/26/2014: C++ 0.015 seconds, Python: 0.05 seconds
+    if self._needsJitter(to, fr):
+      text = self._escapeJitter(text, to, fr)
     text = tm.prepareEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedText(text)
@@ -420,10 +431,11 @@ class MachineTranslator(Translator):
       self.emitSplitTexts(l)
     return text
 
-  def _unescapeTranslation(self, text, to, emit):
+  def _unescapeTranslation(self, text, to, fr, emit):
     """
     @param  text  unicode
     @param  to  str  language
+    @param  fr  str  language
     @param* emit  bool
     @return  unicode
     """
@@ -443,6 +455,8 @@ class MachineTranslator(Translator):
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyTargetTerms(text, to)
+    if self._needsJitter(to, fr):
+      text = self._unescapeJitter(text, to, fr)
     if emit and text != t:
       self.emitTargetTranslation(text)
     #text = text.replace("( ", '(')
@@ -454,6 +468,48 @@ class MachineTranslator(Translator):
         text = textutil.capitalize_sentence(text)
       text = textutil.beautify_subtitle(text)
     return text.strip() # escape could produce trailing " "
+
+  # Jitter for CJK
+  def _needsJitter(self, to, fr):
+    """
+    @param  to  str  language
+    @param  fr  str  language
+    @return  bool
+    """
+    return fr == 'ja' and (to.startswith('zh') or to == 'ko')
+
+  def _escapeJitter(self, text, to, fr):
+    """
+    @param  text  unicode
+    @param  to  str  unused
+    @param  fr  str  unused
+    @return  unicode
+    """
+    return _re_jitter.sub(defs.JITTER_ESCAPE, text)
+
+  def _unescapeJitter(self, text, to, fr):
+    """
+    @param  text  unicode
+    @param  to  str  unused
+    @param  fr  str  unused
+    @return  unicode
+    """
+    i = text.rfind(defs.JITTER_ESCAPE)
+    while i >= 0:
+      jitter = '' # jittered char
+      j = i + len(defs.JITTER_ESCAPE)
+      while j < len(text):
+        ch = text[j]
+        if ch == '<':
+          while j < len(text) and text[j] != '>':
+            j += 1
+        elif not isspace(ch) and not ispunct(ch):
+          jitter = ch
+          break
+        j += 1
+      text = text[:i] + jitter + text[i+len(defs.JITTER_ESCAPE):]
+      i = text.rfind(defs.JITTER_ESCAPE)
+    return text
 
 class OfflineMachineTranslator(MachineTranslator):
   persistentCaching = False # bool  disable sqlite
@@ -544,7 +600,7 @@ class AtlasTranslator(OfflineMachineTranslator):
         if repl:
           # ATLAS always try to append period at the end
           repl = wide2thin(repl) #.replace(u". 。", ". ").replace(u"。", ". ").replace(u" 」", u"」").rstrip()
-          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
           repl = repl.replace(u" 」", u"」") # remove the trailing space
           self.cache.update(text, repl)
           return repl, to, self.key
@@ -628,7 +684,7 @@ class LecTranslator(OfflineMachineTranslator):
             to, fr, async)
         if repl:
           repl = wide2thin(repl) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
-          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
           self.cache.update(text, repl)
           return repl, to, self.key
       #except RuntimeError, e:
@@ -712,7 +768,7 @@ class EzTranslator(OfflineMachineTranslator):
             to, fr, async)
         if repl:
           repl = self.__ez_repl_after(repl)
-          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
           self.cache.update(text, repl)
           return repl, to, self.key
       #except RuntimeError, e:
@@ -823,7 +879,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
         if repl:
           #with SkProfiler():
           repl = wide2thin_digit(repl) # convert wide digits to thin digits
-          repl = self._unescapeTranslation(repl, to=to, emit=emit) # 0.1 seconds
+          repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit) # 0.1 seconds
           self.cache.update(text, repl)
           return repl, to, self.key
       #except RuntimeError, e:
@@ -993,7 +1049,7 @@ class FastAITTranslator(OfflineMachineTranslator):
           if repl:
             if fr == 'ja':
               repl = self.__ja_repl_after(repl)
-            repl = self._unescapeTranslation(repl, to=to, emit=emit)
+            repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
             self.cache.update(text, repl)
             return repl, to, self.key
         #except RuntimeError, e:
@@ -1094,7 +1150,7 @@ class DreyeTranslator(OfflineMachineTranslator):
           #sub = self._applySentenceTransformation(sub)
           #sub = self.__dreye_repl_after(sub)
           #sub = sub.replace(']', u'】')
-          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
           self.cache.update(text, repl)
           return repl, to, self.key
       #except RuntimeError, e:
@@ -1140,7 +1196,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
 
@@ -1187,7 +1243,7 @@ class ExciteTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
 
@@ -1233,7 +1289,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
 
@@ -1274,7 +1330,7 @@ class TransruTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
 
@@ -1319,7 +1375,7 @@ class GoogleTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         if to.startswith('zh'):
           repl = repl.replace("...", u'…')
         self.cache.update(text, repl)
@@ -1373,7 +1429,7 @@ class BingTranslator(OnlineMachineTranslator):
           to, fr, async)
       if repl:
         repl = self.__fix_escape.sub('.', repl)
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
 
@@ -1454,7 +1510,7 @@ class BaiduTranslator(OnlineMachineTranslator):
           #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
           repl = zhs2zht(repl)
         repl = self.__baidu_repl_after(repl)
-        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
 
