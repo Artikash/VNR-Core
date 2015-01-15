@@ -93,6 +93,12 @@ class WbWebView(skwebkit.SkWebView):
     self.titleChanged.connect(self.setWindowTitle)
     self.onCreateWindow = None # -> QWebView
 
+    #l = self.findChildren(QtWidgets.QScrollBar) # does not exist
+    #background-color: transparent
+    #&::sub-page,
+    #&::add-page
+    #  background-color: transparent
+
   def __del__(self):
     dprint("pass") # For debug usage
 

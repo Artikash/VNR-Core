@@ -4,13 +4,13 @@
 
 __all__ = 'MainWindow',
 
-#from itertools import imap
+from itertools import imap
 from PySide.QtCore import QTimer
 from sakurakit import skos, skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.sktr import tr_
 from browserui import WebBrowser
-import rc, ui
+import config, rc, ui
 
 @Q_Q
 class _MainWindow(object):
@@ -26,7 +26,7 @@ class _MainWindow(object):
 
   @staticmethod
   def styleClass(): # -> str
-    ret = 'main'
+    ret = 'main texture-inverse'
 
     if skos.MAC:
       ret += ' mac'
@@ -41,10 +41,10 @@ class _MainWindow(object):
       elif skos.WIN8:
         ret += ' win8'
 
-    if ui.DWM_ENABLED:
-      ret += ' aero'
-    else:
-      ret += ' notaero'
+    #if ui.DWM_ENABLED:
+    #  ret += ' aero'
+    #else:
+    #  ret += ' notaero'
     return ret
 
 class MainWindow(WebBrowser):
@@ -60,16 +60,16 @@ class MainWindow(WebBrowser):
     super(MainWindow, self).__init__(parent)
     skqss.addclass(self, _MainWindow.styleClass())
 
-    #self.setStyleSheet(''.join(imap(rc.qss, config.QT_STYLESHEETS)))
-    self.setStyleSheet(rc.qss('browser'))
+    self.setStyleSheet(''.join(imap(rc.qss, config.QT_STYLESHEETS)))
+    #self.setStyleSheet(rc.qss('browser'))
 
     self.setWindowTitle(u"Kagami (α)")
     self.setWindowIcon(rc.icon('logo-browser'))
-    ui.glassifyWidget(self)
+    #ui.glassifyWidget(self)
     self.__d = _MainWindow(self)
 
     b = self.statusBar()
-    b.setGraphicsEffect(ui.glowEffect(b))
+    b.setGraphicsEffect(ui.createGlowEffect(b))
 
     self.messageReceived.connect(self.showStatusMessage)
     #self.showStatusMessage(tr_("Ready"))
