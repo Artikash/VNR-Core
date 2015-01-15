@@ -23,7 +23,7 @@
 - id: {{it.textId}}
   subLang: {{it.subLang}}
   text: {{ys(it.text)}}
-{%- if it.textNamej %}
+{%- if it.textName %}
   textName: {{ys(it.textName)}}
 {%- endif %}
   sub: {{ys(it.sub)}}
