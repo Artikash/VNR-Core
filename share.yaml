@@ -780,6 +780,7 @@ images:
   stripes:          $PWD/images/stripes.png
   wallpaper:        $PWD/images/wallpaper/desktop.jpg
   background:       $PWD/images/textures/marble.jpg
+  background-black: $PWD/images/textures/marble-black.jpg
   #texture-white:    $PWD/images/textures/white.jpg
   #texture-black:    $PWD/images/textures/black.jpg
 

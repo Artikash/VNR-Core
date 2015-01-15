@@ -46,6 +46,7 @@ class WebBrowser(SkDraggableMainWindow):
     #)
     super(WebBrowser, self).__init__(parent)
     self.__d = _WebBrowser(self)
+    skqss.class_(self, 'webkit')
 
   def showStatusMessage(self, t, type='message'):
     """
@@ -235,7 +236,7 @@ class _WebBrowser(object):
     ret = WbTabBar()
     skqss.class_(ret, 'webkit')
     # FIXME: Enable glowing effect will cause issue for Flash
-    #ret.setGraphicsEffect(ui.glowEffect(ret))
+    #ret.setGraphicsEffect(ui.createGlowEffect(ret))
     #ret.doubleClickedAt.connect(self.newTabAfter)
     return ret
 
@@ -245,7 +246,7 @@ class _WebBrowser(object):
     row.addWidget(self.navigationToolBar)
     row.addWidget(self.addressEdit, 1)
     row.addWidget(self.optionToolBar)
-    row.setContentsMargins(2, 2, 2, 2)
+    row.setContentsMargins(4, 5, 4, 2)
     ret = QtWidgets.QWidget()
     ret.setLayout(row)
     return ret
@@ -253,7 +254,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def addressEdit(self):
     ret = WbAddressEdit()
-    ret.setGraphicsEffect(ui.glowEffect(ret))
+    ret.setGraphicsEffect(ui.createGlowEffect(ret))
     skqss.class_(ret, 'webkit address')
     # Not sure why that global shortcut does not work
     ret.textEntered.connect(self.openUnknown)
@@ -263,7 +264,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def newTabButton(self):
     ret = QtWidgets.QPushButton()
-    ret.setGraphicsEffect(ui.glowEffect(ret))
+    ret.setGraphicsEffect(ui.createGlowEffect(ret))
     skqss.class_(ret, 'webkit btn-tab-corner')
     ret.setText("+")
     #ret.setToolTip(tr_("New Tab"))
@@ -274,7 +275,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def navigationToolBar(self):
     ret = QtWidgets.QToolBar()
-    ret.setGraphicsEffect(ui.glowEffect(ret))
+    ret.setGraphicsEffect(ui.createGlowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-nav')
 
     a = ret.addAction(u"\u25c0") # left triangle
@@ -307,7 +308,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def optionToolBar(self):
     ret = QtWidgets.QToolBar()
-    ret.setGraphicsEffect(ui.glowEffect(ret))
+    ret.setGraphicsEffect(ui.createGlowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-opt')
 
     a = self.siteAct = ret.addAction(u"遊")
