@@ -1066,7 +1066,7 @@ Item { id: root_
                 lastSelectedText = t
                 //var gp = Util.itemGlobalPos(parent)
                 var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                root_.yakuAt(t, model.language, gp.x, gp.y, link)
+                root_.yakuAt(t, model.language, gp.x, gp.y, '')
               }
             }
 
