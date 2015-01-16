@@ -24,7 +24,8 @@ from mytr import my, mytr_
 from unitraits import unichars, jpchars, jpmacros
 import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
 
-_re_jitter = re.compile(jpmacros.boc + ur'([あ-んア-ヴ])(?=[、…]\1)')
+_re_jitter = re.compile(jpmacros.applymacros(
+    ur'{{boc}}({{kana}})(?=[、…]\1)'))
 
 isspace = unichars.isspace
 
