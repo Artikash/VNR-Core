@@ -66,6 +66,7 @@ processes:
   - chromeplus.exe      # Google?
   - chrome.exe          # Google
   - CHROME.EXE          # Google
+  - CliphookerEX.exe    # CliphookerEX
   - ComicsViewer.exe    # ComicsViewer
   - devcpp.exe          # Dev-Cpp
   - DTLite.exe          # Daemon Tools
