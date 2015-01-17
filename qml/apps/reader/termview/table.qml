@@ -71,7 +71,7 @@ Item { id: root_
   }
 
   function shouldHighlight(term) {
-    return term.private_ || term.language === 'ja' || term.type === 'origin' || term.type === 'macro'
+    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'origin' || term.type === 'macro'
   }
 
   function itemColor(term) {
