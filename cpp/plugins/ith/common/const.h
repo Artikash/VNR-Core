@@ -52,7 +52,7 @@ enum { MAX_HOOK = 32 }; // must be larger than HookFunCount
 //enum { HOOK_SECTION_SIZE = 0x2000 }; // default ITH value
 // jichi 1/16/2015: Change to a very large number to prevent crash
 //enum { MAX_HOOK = 0x100 }; // must be larger than HookFunCount
-enum { HOOK_SECTION_SIZE = MAX_HOOK * 0x100 }; // = 64KB, default ITH value is 0x2000 for 32 hook (0x100 per hook)
+enum { HOOK_SECTION_SIZE = MAX_HOOK * 0x100 }; // default ITH value is 0x2000 for 32 hook (0x100 per hook)
 
 // jichi 375/2014: Add offset of pusha/pushad
 // http://faydoc.tripod.com/cpu/pushad.htm
@@ -85,7 +85,10 @@ enum IhfNotificationType {
   , IHF_NOTIFICATION_NEWHOOK = 1
 };
 
-// jichi 9/8/2013: The meaning are gussed
+// jichi 9/8/2013: The meaning are guessed
+// Values must be within DWORD
+// Unused values are as follows:
+// - 0x100
 enum HookParamType : unsigned long {
   USING_STRING      = 0x1     // type(data) is char* or wchar_t* and has length
   , USING_UTF8 = USING_STRING // jichi 10/21/2014: temporarily handled the same way as USING_STRING
