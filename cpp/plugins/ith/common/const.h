@@ -47,7 +47,12 @@ enum HookFunType {
   , DrawTextExW
 
 enum { HOOK_FUN_COUNT = HookFunCount };
+// jichi 1/16/2015: Though called max hook, it means max number of text threads
 enum { MAX_HOOK = 32 }; // must be larger than HookFunCount
+//enum { HOOK_SECTION_SIZE = 0x2000 }; // default ITH value
+// jichi 1/16/2015: Change to a very large number to prevent crash
+//enum { MAX_HOOK = 0x100 }; // must be larger than HookFunCount
+enum { HOOK_SECTION_SIZE = MAX_HOOK * 0x100 }; // = 64KB, default ITH value is 0x2000 for 32 hook (0x100 per hook)
 
 // jichi 375/2014: Add offset of pusha/pushad
 // http://faydoc.tripod.com/cpu/pushad.htm

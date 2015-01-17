@@ -4233,6 +4233,8 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
   ConsoleOutput("vnreng: INSERT MalieHook2");
   NewHook(hp, L"Malie");
   //RegisterEngineType(ENGINE_MALIE);
+  ConsoleOutput("vnreng:Malie2: disable GDI hooks");
+  DisableGDIHooks();
   return true;
 }
 
@@ -4430,6 +4432,8 @@ bool InsertMalie3Hook()
   hp.type = USING_UNICODE|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, L"Malie3");
+  ConsoleOutput("vnreng:Malie3: disable GDI hooks");
+  DisableGDIHooks();
   return true;
 }
 

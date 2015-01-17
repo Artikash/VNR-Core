@@ -131,6 +131,10 @@ private:
          recv_threads[MAX_REGISTER + 1];
   WORD register_count,
        new_thread_number;
+
+  // jichi 1/16/2014: Stop adding new threads when full
+  bool IsFull() const; // { return new_thread_number >= MAX_HOOK; }
+  bool IsEmpty() const { return !new_thread_number; }
 };
 
 // EOF
