@@ -442,7 +442,7 @@ class _TermInput(object):
         skqss.class_(w, 'text-primary')
         w.setEnabled(True)
         t = ', '.join((
-          "%s (%s)" % (convutil.kana2yomi(text, lang), tr_(lang))
+          "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
           #for lang in ('romaji', 'ko', 'th')
           for lang in ('romaji', 'ko')
         ))

@@ -112,6 +112,21 @@ def capitalizeromaji(text):
   """
   return _re_capitalize(text.title())
 
+_u_prefix = "\
+おこそとのほもよろを\
+ごぞどぼぽ\
+ょ\
+"#ゅ
+_re_u = re.compile(ur"(?<=[%s])う" % _u_prefix)
+def simplify_kana_name(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if text and len(text) > 3:
+    text = _re_u.sub('', text)
+  return text
+
 if __name__ == '__main__':
   #t = u"ウェブサイトツール"
   #t = u"うぇぶさいとつーる"
