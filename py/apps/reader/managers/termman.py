@@ -19,7 +19,7 @@ from rbmt import api as rbmt
 from sakurakit import skfileio, skos, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-from convutil import kana2yomi, zhs2zht
+from convutil import kana2name, zhs2zht
 import config, cabochaman, dataman, defs, i18n, rc
 
 if skos.WIN:
@@ -122,7 +122,7 @@ class TermWriter:
               if z:
                 repl = zhs2zht(repl)
               if td.type == 'yomi':
-                repl = kana2yomi(repl, language) or repl
+                repl = kana2name(repl, language) or repl
 
               #elif config.is_latin_language(td.language):
               #  repl += " "

@@ -103,9 +103,9 @@ Item { id: root_
   }
 
   function renderYomi(text) { // string -> string
-    return jlp_.kana2yomi(text, '') + ' (' + Sk.tr('romaji') +  '), '
-         + jlp_.kana2yomi(text, 'ko') + ' (' + Sk.tr('ko') +  '), '
-         + jlp_.kana2yomi(text, 'th') + ' (' + Sk.tr('th') +  ')'
+    return jlp_.kana2name(text, '') + ' (' + Sk.tr('romaji') +  '), '
+         + jlp_.kana2name(text, 'ko') + ' (' + Sk.tr('ko') +  '), '
+         + jlp_.kana2name(text, 'th') + ' (' + Sk.tr('th') +  ')'
   }
 
   function gameSummary(id) {

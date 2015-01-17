@@ -8862,7 +8862,7 @@ static bool HorkEyeFilter(LPVOID data, DWORD *size, HookParam *hp)
   // Remove [n]
   enum { skip_len = 3 }; // = length of "[n]"
   while (len >= skip_len &&
-         (start = ::cpp_strnstr(str, "[n]", len)) &&
+         (start = cpp_strnstr(str, "[n]", len)) &&
          (len -= skip_len))
     ::memmove(start, start + skip_len, len - (start - str));
 
