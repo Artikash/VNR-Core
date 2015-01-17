@@ -190,7 +190,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       swprintf(hm_section, ITH_SECTION_ L"%d", current_process_id);
 
       // jichi 9/25/2013: Interprocedural communication with vnrsrv.
-      hSection = IthCreateSection(hm_section, 0x2000, PAGE_EXECUTE_READWRITE);
+      hSection = IthCreateSection(hm_section, HOOK_SECTION_SIZE, PAGE_EXECUTE_READWRITE);
       ::hookman = nullptr;
       NtMapViewOfSection(hSection, NtCurrentProcess(),
           (LPVOID *)&::hookman, 0, hook_buff_len, 0, &hook_buff_len, ViewUnmap, 0,

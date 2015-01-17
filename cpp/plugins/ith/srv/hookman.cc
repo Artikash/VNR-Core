@@ -17,7 +17,7 @@
 //#include <emmintrin.h>
 
 namespace { // unnamed
-enum { MAX_ENTRY = 0x40 };
+//enum { MAX_ENTRY = 0x40 };
 
 #define HM_LOCK win_mutex_lock<HookManager::mutex_type> d_locker(hmcs) // Synchronized scope for accessing private data
 // jichi 9/23/2013: wine deficenciy on mapping sections
@@ -492,9 +492,10 @@ void HookManager::RegisterProcess(DWORD pid, DWORD hookman, DWORD module)
   record[register_count - 1].module_register = module;
   //record[register_count - 1].engine_register = engine;
   swprintf(str, ITH_SECTION_ L"%d", pid);
-  HANDLE hSection = IthCreateSection(str, 0x2000, PAGE_READONLY);
+  HANDLE hSection = IthCreateSection(str, HOOK_SECTION_SIZE, PAGE_READONLY);
   LPVOID map = nullptr;
-  DWORD map_size = 0x1000;
+  //DWORD map_size = 0x1000;
+  DWORD map_size = HOOK_SECTION_SIZE / 2; // jichi 1/16/2015: Changed to half to hook section size
   //if (::ith_has_section)
   NtMapViewOfSection(hSection, NtCurrentProcess(),
       &map, 0, map_size, 0, &map_size, ViewUnmap, 0,
@@ -703,6 +704,13 @@ void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD re
     if (TreeNode<ThreadParameter *,DWORD> *in = Search(&tp)) {
       DWORD number = in->data;
       it = thread_table->FindThread(number);
+    } else if (IsFull()) { // jichi 1/16/2015: Skip adding threads when full
+      static bool once = true; // output only once
+      if (once) {
+        once = false;
+        ConsoleOutput("vnrsrv:DispatchText: so many new threads, skip");
+      }
+      return;
     } else { // New thread
       Insert(&tp, new_thread_number);
       it = new TextThread(pid, hook, retn, spl, new_thread_number);
@@ -922,5 +930,8 @@ void GetCode(const HookParam &hp, LPWSTR buffer, DWORD pid)
   else
     ptr += swprintf(ptr, L"@%X", hp.addr);
 }
+
+// jichi 1/16/2015
+bool HookManager::IsFull() const { return new_thread_number >= MAX_HOOK; }
 
 // EOF
