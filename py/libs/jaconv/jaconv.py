@@ -123,7 +123,7 @@ def simplify_kana_name(text):
   @param  text  unicode
   @return  unicode
   """
-  if text and len(text) > 3:
+  if text and len(text) > 3 and u'う' in text:
     text = _re_u.sub('', text)
   return text
 
