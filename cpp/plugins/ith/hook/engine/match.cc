@@ -598,6 +598,11 @@ bool DetermineNoEngine()
     return true;
   }
 
+  if (IthCheckFile(L"nnnConfig2.exe")) {
+    ConsoleOutput("vnreng: IGNORE Nya NNNConfig");
+    return true;
+  }
+
   //if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
   //  ConsoleOutput("vnreng: IGNORE Eushully");
   //  return true;
