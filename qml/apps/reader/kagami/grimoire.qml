@@ -212,7 +212,7 @@ Item { id: root_
   }
 
   function renderRuby(text, lang, colorize) { // string, string, bool -> string
-    var chwidth = lang == 'ko' ? 14
+    var chwidth = lang == 'ko' ? 13
                 //: lang === 'ja' ? 22
                 : lang.indexOf('zh') === 0 ? 18
                 : 10
