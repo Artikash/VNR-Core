@@ -17,7 +17,8 @@ import features
   #    print i, '------'
   #    print info
 
-DISABLED = features.WINXP and not features.WINE # bool
+#DISABLED = features.WINXP and not features.WINE # bool
+DISABLED = True # 1/19/2015: Always disabled until offline ASR is implemented
 if not DISABLED:
   try:
     from pyaudio import PyAudio # Not sure if this might hang on Windows XP
