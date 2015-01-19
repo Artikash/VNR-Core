@@ -5557,17 +5557,169 @@ bool InsertC4Hook()
   //RegisterEngineType(ENGINE_C4);
   return true;
 }
+
+/** 1/18/2015 jichi Add new WillPlus
+ *  The old hook no longer works for new game.
+ *  Sample game: [150129] [honeybee] RE:BIRTHDAY SONG
+ *
+ *  Note, WillPlus engine is migrating to UTF16 using GetGlyphOutlineW such as:
+ *      [141218] [Guily] 手籠めにされる九人の堕女
+ *  This engine does not work for GetGlyphOutlineW, which, however, does not need a H-code.
+ *
+ *  See: http://sakuradite.com/topic/615
+ *
+ *  There WillPlus games have many hookable threads.
+ *  But it is kind of important to find the best one.
+ *
+ *  By inserting hw point:
+ *  - There is a clean text thread with fixed memory address.
+ *    However, it cannot extract character name like GetGlyphOutlineA.
+ *  - This is a non-clean text thread, but it contains garbage such as %LC.
+ *
+ *  By backtracking from GetGlyphOutlineA:
+ *  - GetGlyphOutlineA sometimes can extract all text, sometimes not.
+ *  - There are two GetGlyphOutlineA functions.
+ *    Both of them are called statically in the same function.
+ *    That function is hooked.
+ *
+ *  Hooked function:
+ *  0041820c   cc               int3
+ *  0041820d   cc               int3
+ *  0041820e   cc               int3
+ *  0041820f   cc               int3
+ *  00418210   81ec b4000000    sub esp,0xb4
+ *  00418216   8b8424 c4000000  mov eax,dword ptr ss:[esp+0xc4]
+ *  0041821d   53               push ebx
+ *  0041821e   8b9c24 d0000000  mov ebx,dword ptr ss:[esp+0xd0]
+ *  00418225   55               push ebp
+ *  00418226   33ed             xor ebp,ebp
+ *  00418228   56               push esi
+ *  00418229   8bb424 dc000000  mov esi,dword ptr ss:[esp+0xdc]
+ *  00418230   03c3             add eax,ebx
+ *  00418232   57               push edi
+ *  00418233   8bbc24 d8000000  mov edi,dword ptr ss:[esp+0xd8]
+ *  0041823a   896c24 14        mov dword ptr ss:[esp+0x14],ebp
+ *  0041823e   894424 4c        mov dword ptr ss:[esp+0x4c],eax
+ *  00418242   896c24 24        mov dword ptr ss:[esp+0x24],ebp
+ *  00418246   39ac24 e8000000  cmp dword ptr ss:[esp+0xe8],ebp
+ *  0041824d   75 29            jnz short .00418278
+ *  0041824f   c74424 24 010000>mov dword ptr ss:[esp+0x24],0x1
+ *
+ *  ...
+ *
+ *  00418400   56               push esi
+ *  00418401   52               push edx
+ *  00418402   ff15 64c04b00    call dword ptr ds:[0x4bc064]             ; gdi32.getglyphoutlinea
+ *  00418408   8bf8             mov edi,eax
+ *
+ *  The old WillPlus engine can also be inserted to the new games.
+ *  But it has no effects.
+ *
+ *  A split value is used to get saving message out.
+ *
+ *  Runtime stack for the scenario thread:
+ *  0012d9ec   00417371  return to .00417371 from .00418210
+ *  0012d9f0   00000003  1
+ *  0012d9f4   00000000  2
+ *  0012d9f8   00000130  3
+ *  0012d9fc   0000001a  4
+ *  0012da00   0000000b  5
+ *  0012da04   00000016  6
+ *  0012da08   0092fc00  .0092fc00 ms gothic ; jichi: here's font
+ *  0012da0c   00500aa0  .00500aa0 shun ; jichi: text is here in arg8
+ *  0012da10   0217dcc0
+ *
+ *  Runtime stack for name:
+ *  0012d9ec   00417371  return to .00417371 from .00418210
+ *  0012d9f0   00000003
+ *  0012d9f4   00000000
+ *  0012d9f8   00000130
+ *  0012d9fc   0000001a
+ *  0012da00   0000000b
+ *  0012da04   00000016
+ *  0012da08   0092fc00  .0092fc00
+ *  0012da0c   00500aa0  .00500aa0
+ *  0012da10   0217dcc0
+ *  0012da14   00000000
+ *  0012da18   00000000
+ *
+ *  Runtime stack for non-dialog scenario text.
+ *  0012e5bc   00438c1b  return to .00438c1b from .00418210
+ *  0012e5c0   00000006
+ *  0012e5c4   00000000
+ *  0012e5c8   000001ae
+ *  0012e5cc   000000c8
+ *  0012e5d0   0000000c
+ *  0012e5d4   00000018
+ *  0012e5d8   0092fc00  .0092fc00
+ *  0012e5dc   0012e628
+ *  0012e5e0   0b0d0020
+ *  0012e5e4   004fda98  .004fda98
+ *
+ *  Runtime stack for saving message
+ *  0012ed44   00426003  return to .00426003 from .00418210
+ *  0012ed48   000003c7
+ *  0012ed4c   00000000
+ *  0012ed50   000000d8
+ *  0012ed54   0000012f
+ *  0012ed58   00000008
+ *  0012ed5c   00000010
+ *  0012ed60   0092fc00  .0092fc00
+ *  0012ed64   00951d88  ascii "2015/01/18"
+ */
+
+#if 0
+static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:WillPlus2: failed to get memory range");
+    return false;
+  }
+
+  // The following won't work after inserting WillPlus1, which also produces int3
+  //ULONG addr = MemDbg::findCallerAddressAfterInt3((DWORD)::GetGlyphOutlineA, startAddress, stopAddress);
+
+  // 00418210   81ec b4000000    sub esp,0xb4
+  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
+  ULONG addr = MemDbg::findCallerAddress((ULONG)::GetGlyphOutlineA, sub_esp, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:WillPlus2: could not find caller of GetGlyphOutlineA");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.off = 4 * 8; // arg8, address of text
+
+  // Strategy 1: Use caller's address as split
+  //hp.type = USING_STRING; // merge different scenario threads
+
+  // Strategy 2: use arg1 as split
+  hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT; // merge different scenario threads
+  hp.split = 4 * 1; // arg1 as split to get rid of saving message
+
+  // Strategy 3: merge all threads
+  //hp.type = USING_STRING|NO_CONTEXT|FIXING_SPLIT; // merge different scenario threads
+
+  ConsoleOutput("vnreng: INSERT WillPlus2");
+  NewHook(hp, L"WillPlus2");
+  return true;
+}
+#endif // 0
+
 static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  static DWORD detect_offset;
-  if (detect_offset) return;
+  //static DWORD detect_offset; // jichi 1/18/2015: this makes sure it only runs once
+  //if (detect_offset)
+  //  return;
   DWORD i,l;
-  union{
+  union {
     DWORD retn;
     WORD *pw;
     BYTE *pb;
   };
-  retn = *(DWORD*)esp_base;
+  retn = *(DWORD *)esp_base; // jichi 1/18/2015: dynamically find function return address
   i = 0;
   while (*pw != 0xc483) { //add esp, $
     l = ::disasm(pb);
@@ -5577,17 +5729,35 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
     retn += l;
   }
   if (*pw == 0xc483) {
+    ConsoleOutput("vnreng: WillPlus1 pattern found");
+    // jichi 1/18/2015:
+    // By studying [honeybee] RE:BIRTHDAY SONG, it seems the scenario text is at fixed address
+    // This offset might be used to find fixed address
+    // However, this method cannot extract character name like GetGlyphOutlineA
     hp->off = *(pb + 2) - 8;
+
+    // Still extract the first text
     //hp->type ^= EXTERN_HOOK;
-    hp->text_fun = nullptr;
-    char* str = *(char**)(esp_base + hp->off);
+    char *str = *(char **)(esp_base + hp->off);
     *data = (DWORD)str;
     *len = strlen(str);
     *split = 0; // 8/3/2014 jichi: use return address as split
+
+  } else { // jichi 1/19/2015: Try willplus2
+    ConsoleOutput("vnreng: WillPlus1 pattern not found, try WillPlus2 instead");
+    hp->off = 4 * 8; // arg8, address of text
+    hp->type = USING_STRING|NO_CONTEXT|USING_SPLIT; // merge different scenario threads
+    hp->split = 4 * 1; // arg1 as split to get rid of saving message
+    // The first text is skipped here
+    //char *str = *(char **)(esp_base + hp->off);
+    //*data = (DWORD)str;
+    //*len = ::strlen(str);
   }
-  detect_offset = 1;
+  hp->text_fun = nullptr; // stop using text_fun any more
+  //detect_offset = 1;
 }
 
+// Although the new hook also works for the old game, the old hook is still used by default for compatibility
 bool InsertWillPlusHook()
 {
   //__debugbreak();
@@ -8842,6 +9012,12 @@ bool InsertExpHook()
  *  023B66D0  82 C8 82 C7 82 A8 8D 5C 82 A2 82 C8 82 B5 81 63  などお構いなし…
  *
  *  There are garbage in character name.
+ *
+ *  1/15/2015
+ *  Alternative hook that might not need a text filter:
+ *  http://www.hongfire.com/forum/showthread.php/36807-AGTH-text-extraction-tool-for-games-translation/page753
+ *  /HA-4@552B5:姉小路直子と銀色の死神.exe
+ *  If this hook no longer works, try that one instead.
  */
 // Skip text between "," and "】", and remove [n]
 // ex:【夏凜,S005_B_0002】「バーテック
