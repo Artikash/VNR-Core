@@ -16,7 +16,7 @@ function evalLink(link) { // string ->
 }
 
 function openExternalUrl(link) { // string ->
-  scriptContext.growl.msg(My.tr("Open in external browser"));
+  //scriptContext.growl.msg(My.tr("Open in external browser")); // My is not defined
   Qt.openUrlExternally(link);
 }
 
