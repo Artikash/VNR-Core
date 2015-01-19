@@ -476,6 +476,12 @@ bool DetermineEngineOther()
 {
   if (InsertAliceHook())
     return true;
+  // jichi 1/19/2015: Disable inserting Lstr for System40
+  // See: http://sakuradite.com/topic/618
+  if (IthCheckFile(L"System40.ini")) {
+    ConsoleOutput("vnreng: IGNORE old System40.ini");
+    return true;
+  }
   // jichi 12/26/2013: Add this after alicehook
   if (IthCheckFile(L"AliceStart.ini")) {
     InsertSystem43Hook();
