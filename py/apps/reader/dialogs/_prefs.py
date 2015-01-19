@@ -7558,7 +7558,7 @@ class EngineTab(QtWidgets.QDialog):
 #  def _createWindowsEngineEdit(engine, voices):
 #    """
 #    @param  engine  unicode
-#    @param  voices  [wintts.WinTtsVocie]
+#    @param  voices  [wintts.WinTtsVoice]
 #    @return  QComboBox
 #    """
 #    ret = QtWidgets.QComboBox()
