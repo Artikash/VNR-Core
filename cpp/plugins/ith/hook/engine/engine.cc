@@ -1159,7 +1159,7 @@ bool InsertBGI1Hook()
 //  return r;
 //}
 //
-//static void SpecialHookBGI2(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+//static void SpecialHookBGI2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 //{
 //  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->off);
 //  if (text) {
@@ -2806,7 +2806,7 @@ rUGP hook:
   characters. It's determining if ebp contains a SHIFT-JIS character. This function is not likely
   to be used in other ways. We simply search for this instruction and place hook around.
 ********************************************************************************************/
-void SpecialHookRUGP1(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD *stack = (DWORD *)esp_base;
   DWORD i,val;
@@ -3338,7 +3338,7 @@ ShinaRio hook:
 
   New ShinaRio engine (>=2.48) uses different approach.
 ********************************************************************************************/
-static void SpecialHookShina(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookShina(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   DWORD ptr = *(DWORD*)(esp_base-0x20);
@@ -4488,7 +4488,7 @@ bool InsertEMEHook()
   //else ConsoleOutput("Unknown EmonEngine engine");
   return true;
 }
-static void SpecialRunrunEngine(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialRunrunEngine(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   CC_UNUSED(split);
@@ -4923,7 +4923,7 @@ Apricot hook:
   Only name and text data is needed.
 
 ********************************************************************************************/
-static void SpecialHookApricoT(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookApricoT(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   DWORD reg_esi = *(DWORD *)(esp_base - 0x20);
@@ -5069,7 +5069,7 @@ bool IsPensilSetup()
   NtFreeVirtualMemory(NtCurrentProcess(), &buffer, &info.AllocationSize.LowPart, MEM_RELEASE);
   return ret;
 }
-static void SpecialHookDebonosu(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(split);
   DWORD retn = *(DWORD*)esp_base;
@@ -5121,7 +5121,7 @@ bool InsertDebonosuHook()
   return false;
 }
 
-static void SpecialHookSofthouse(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD i;
   union {
@@ -5192,7 +5192,7 @@ void InsertSoftHouseHook()
   SwitchTrigger(true);
 }
 
-static void SpecialHookCaramelBox(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookCaramelBox(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD reg_ecx = *(DWORD*)(esp_base + hp->off);
   BYTE *ptr = (BYTE *)reg_ecx;
@@ -5223,7 +5223,7 @@ static void SpecialHookCaramelBox(DWORD esp_base, HookParam* hp, DWORD* data, DW
 // jichi 10/1/2013: Change return type to bool
 bool InsertCaramelBoxHook()
 {
-  union { DWORD i; BYTE* pb; WORD* pw; DWORD* pd; };
+  union { DWORD i; BYTE* pb; WORD* pw; DWORD *pd; };
   DWORD reg = -1;
   for (i = module_base_ + 0x1000; i < module_limit_ - 4; i++) {
     if (*pd == 0x7ff3d) // cmp eax, 7ff
@@ -5557,7 +5557,7 @@ bool InsertC4Hook()
   //RegisterEngineType(ENGINE_C4);
   return true;
 }
-static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   static DWORD detect_offset;
   if (detect_offset) return;
@@ -5646,7 +5646,7 @@ bool InsertTanukiHook()
   ConsoleOutput("vnreng:TanukiSoft: failed");
   return false;
 }
-static void SpecialHookRyokucha(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookRyokucha(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(split);
   const DWORD *base = (const DWORD *)esp_base;
@@ -5881,7 +5881,7 @@ BYTE JIS_tableL[0x80] = {
   0x98,0x99,0x9a,0x9b,0x9c,0x9d,0x9e,0x00,
 };
 
-void SpecialHookAnex86(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+void SpecialHookAnex86(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   __asm
   {
@@ -5939,7 +5939,7 @@ bool InsertAnex86Hook()
 //static char* ShinyDaysQueueString[0x10];
 //static int ShinyDaysQueueStringLen[0x10];
 //static int ShinyDaysQueueIndex, ShinyDaysQueueNext;
-static void SpecialHookShinyDays(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookShinyDays(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   static int ShinyDaysQueueStringLen;
   LPWSTR fun_str;
