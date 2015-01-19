@@ -149,7 +149,7 @@ Item { id: root_
   function renderComment(text) { // string -> string
     text = Underscore.escape(text, '/') // do not escape '/'
     if (~text.indexOf('//')) {
-      text = text.replace(/([^:\/])\/\/([^\/])/g, '$1<br/>//$2')
+      text = text.replace(/([^:\/])\/\/([^\/])/g, '$1<br/>//$2') // replace // with <br/>//
       text = Linkify.parse(text)
     }
     if (~text.indexOf('@'))
