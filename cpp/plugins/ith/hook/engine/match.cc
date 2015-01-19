@@ -593,7 +593,7 @@ bool DetermineNoEngine()
   //  return true;
   //}
 
-  if (IthCheckFile(L"AdvHD.exe")) {
+  if (IthCheckFile(L"AdvHD.exe") || IthCheckFile(L"AdvHD.dll")) {
     ConsoleOutput("vnreng: IGNORE Adv Player HD");
     return true;
   }

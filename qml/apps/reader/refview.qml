@@ -4,8 +4,8 @@
 import QtQuick 1.1
 //import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
-import '../../js/eval.min.js' as Eval
 import '../../js/sakurakit.min.js' as Sk
+import '../../js/eval.min.js' as Eval
 import '../../js/util.min.js' as Util
 import 'share' as Share
 import 'refview' as RefView

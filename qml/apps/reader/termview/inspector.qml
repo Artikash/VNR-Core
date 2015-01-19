@@ -3,9 +3,10 @@
  */
 import QtQuick 1.1
 import org.sakuradite.reader 1.0 as Plugin
-import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/eval.min.js' as Eval
+import '../../../js/linkify.min.js' as Linkify
 import '../../../js/underscore.min.js' as Underscore
 import '../../../js/util.min.js' as Util
 import '../share' as Share
@@ -146,7 +147,8 @@ Item { id: root_
   }
 
   function renderComment(text) { // string -> string
-    text = Underscore.escape(text)
+    text = Underscore.escape(text, '/') // do not escape '/'
+    text = Linkify.parse(text)
     if (~text.indexOf('@'))
       text = text.replace(/@(\w+)/g,
         "<a href=\"javascript://main.showUser('$1')\">@$1</a>"

@@ -14,9 +14,9 @@
  */
 import QtQuick 1.1
 import org.sakuradite.reader 1.0 as Plugin
-import '../../js/eval.min.js' as Eval
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/reader.min.js' as My
+import '../../js/eval.min.js' as Eval
 import '../../js/util.min.js' as Util
 import 'comet' as Comet
 import 'share' as Share
