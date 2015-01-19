@@ -74,7 +74,7 @@ var entityMap = {
     '>': '&gt;',
     '"': '&quot;',
     "'": '&#x27;',
-    '/': '&#x2F;'
+    '/': '&#x2f;'
   }
 };
 entityMap.unescape = invert(entityMap.escape);
@@ -84,19 +84,21 @@ var entityRegexes = {
   unescape: new RegExp('(' + keys(entityMap.unescape).join('|') + ')', 'g')
 };
 
-function escape(string) {
+function escape(string, safe) {
   //if (string == null) return '';
   //return ('' + string)
   return string.replace(entityRegexes.escape, function(match) {
-    return entityMap.escape[match];
+    //return entityMap.escape[match];
+    return safe && (safe.length === 1 && match === safe || match.indexOf(safe) !== -1) ? match : entityMap.escape[match];
   });
 }
 
-function unescape(string) {
+function unescape(string, safe) {
   //if (string == null) return '';
   //return ('' + string)
   return string.replace(entityRegexes.unescape, function(match) {
-    return entityMap.unescape[match];
+    //return entityMap.unescape[match];
+    return safe && (safe.length === 1 && match === safe || match.indexOf(safe) !== -1) ? match : entityMap.unescape[match];
   });
 }
 

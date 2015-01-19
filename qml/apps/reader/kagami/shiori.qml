@@ -5,9 +5,9 @@ import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 //import '../../../imports/qmleffects' as Effects
-import '../../../js/eval.min.js' as Eval
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/eval.min.js' as Eval
 import '../../../js/util.min.js' as Util
 //import '../../../js/util.min.js' as Util
 import '../../../components' as Components
