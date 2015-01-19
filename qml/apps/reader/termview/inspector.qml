@@ -148,7 +148,10 @@ Item { id: root_
 
   function renderComment(text) { // string -> string
     text = Underscore.escape(text, '/') // do not escape '/'
-    text = Linkify.parse(text)
+    if (~text.indexOf('//')) {
+      text = text.replace(/([^:\/])\/\/([^\/])/g, '$1<br/>//$2')
+      text = Linkify.parse(text)
+    }
     if (~text.indexOf('@'))
       text = text.replace(/@(\w+)/g,
         "<a href=\"javascript://main.showUser('$1')\">@$1</a>"
