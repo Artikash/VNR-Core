@@ -57,7 +57,7 @@ class _PrefsDialog(object):
     self.textTab = _prefs.TextTab()
     self.ttsTab = _prefs.TtsTab()
     self.ocrTab = _prefs.OcrTab()
-    self.srTab = _prefs.SrTab()
+    #self.srTab = _prefs.SrTab()
     self.gameTab = _prefs.GameTab()
     self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
@@ -210,12 +210,12 @@ class _PrefsDialog(object):
           'display': mytr_("Text-To-Speech"),
           'toolTip': mytr_("Text-To-Speech") + " (TTS)",
         },
-        { 'widget': self.srTab,
-          'user': self._indexWidget(self.srTab),
-          'decoration': rc.icon('pref-sr'),
-          'display': u"%s (α)" % mytr_("ASR"),
-          'toolTip': mytr_("Automatic speech recognition") + " (ASR)",
-        },
+        #{ 'widget': self.srTab,
+        #  'user': self._indexWidget(self.srTab),
+        #  'decoration': rc.icon('pref-sr'),
+        #  'display': u"%s (α)" % mytr_("ASR"),
+        #  'toolTip': mytr_("Automatic speech recognition") + " (ASR)",
+        #},
         { 'widget': self.ocrTab,
           'user': self._indexWidget(self.ocrTab),
           'decoration': rc.icon('pref-ocr'),
@@ -322,7 +322,7 @@ class _PrefsDialog(object):
     yield self.uiTab
     yield self.ttsTab
     yield self.ocrTab
-    yield self.srTab
+    #yield self.srTab
     yield self.gameTab
     yield self.shortcutsTab
     yield self.recordingsTab
