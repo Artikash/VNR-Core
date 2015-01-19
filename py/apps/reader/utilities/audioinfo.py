@@ -56,7 +56,7 @@ if not DISABLED:
     DISABLED = True
 
 if DISABLED:
-  dwarn("audio device is not recognized on this platform")
+  #dwarn("audio device is not recognized on this platform")
 
   AUDIO = None
   HOST_INFO = None
