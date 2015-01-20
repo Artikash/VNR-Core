@@ -20,6 +20,7 @@ TYPE_GREEK = 9
 RB_KATA = 'kata'
 RB_HIRA = 'hira'
 RB_ROMAJI = 'romaji'
+RB_ROMAJI_RU = 'romaji.ru'
 #RB_KANJI = 'kanji'
 RB_HANGUL = 'ko'
 RB_THAI = 'th'

@@ -3499,6 +3499,8 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.hiraganaButton)
     layout.addWidget(self.kataganaButton)
     layout.addWidget(self.romajiButton)
+    if 'ru' not in blans:
+      layout.addWidget(self.romajiRuButton)
     #if 'en' not in blans:
     layout.addWidget(self.trButton)
     if 'ko' not in blans:
@@ -3545,6 +3547,14 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def romajiRuButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (tr_("Russian"), my.tr("like this"), u"可愛い（каваий）"))
+    ret.toggled.connect(self._saveFurigana)
+    return ret
+
+  @memoizedproperty
   def hangulButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
@@ -3580,6 +3590,7 @@ class _DictionaryTranslationTab(object):
   def _loadFurigana(self):
     t = settings.global_().rubyType()
     b = (self.romajiButton if t == defs.FURI_ROMAJI else
+         self.romajiRuButton if t == defs.FURI_ROMAJI_RU else
          self.hangulButton if t == defs.FURI_HANGUL else
          self.thaiButton if t == defs.FURI_THAI else
          self.trButton if t == defs.FURI_TR else
@@ -3591,6 +3602,7 @@ class _DictionaryTranslationTab(object):
 
   def _saveFurigana(self):
     t = (defs.FURI_ROMAJI if self.romajiButton.isChecked() else
+         defs.FURI_ROMAJI_RU if self.romajiRuButton.isChecked() else
          defs.FURI_HANGUL if self.hangulButton.isChecked() else
          defs.FURI_THAI if self.thaiButton.isChecked() else
          defs.FURI_TR if self.trButton.isChecked() else
