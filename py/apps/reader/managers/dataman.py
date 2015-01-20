@@ -686,7 +686,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def fileSize(self): # long not None
-    try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite) if it)
+    try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite, self.freem) if it)
     except ValueError: return 0
 
   @staticmethod
@@ -941,7 +941,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.amazon, self.digiket, self.dlsite, self.dmm:
+    for r in self.getchu, self.amazon, self.digiket, self.dlsite, self.dmm, self.freem:
       if r and r.hasDescriptions():
         yield r
 
@@ -1056,6 +1056,7 @@ class GameInfo(object):
         (self.getchu, 'getchu'),
         (self.dlsite, 'dlsite'),
         (self.digiket, 'digiket'),
+        (self.freem, 'freem'),
 
         #(self.gyutto, 'gyutto'),   # crash Qt!
         #(self.tokuten, 'tokuten'),   # crash Qt!
@@ -1225,7 +1226,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def slogan(self): # str or None
-    for r in self.scape, self.holyseal, self.getchu, self.digiket, self.gyutto:
+    for r in self.scape, self.freem, self.holyseal, self.getchu, self.digiket, self.gyutto:
       if r and r.slogan:
         return wide2thin(r.slogan)
 
@@ -1265,7 +1266,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket: #, self.tokuten:
+    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket, self.freem: #, self.tokuten:
       if r and r.hasSampleImages():
         yield r
 
@@ -3559,6 +3560,12 @@ class FreemReference(Reference): #(object):
       for vid in self.videos:
         img = host + '/vi/' + vid + '/0.jpg'
         yield vid, cacheman.cache_image_url(img) if cache else img
+
+  def hasDescriptions(self): return bool(self.description)
+  def iterDescriptions(self):
+    t = self.description
+    if t:
+      yield t
 
   def hasSampleImages(self): return bool(self.sampleImages)
 

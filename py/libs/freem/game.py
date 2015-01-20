@@ -148,7 +148,7 @@ class GameApi(object):
     """
     m = self._re_size.search(h)
     if m:
-      try: return long(m.group(1).replace(',', ''))
+      try: return 1024 * long(m.group(1).replace(',', ''))
       except: pass
     return 0
 
