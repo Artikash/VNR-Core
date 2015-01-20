@@ -24,19 +24,12 @@ def sethost(url):
   api.API = api.HOST + _QUERY_PATH
 
 class SearchApi(object):
-  HOST = DEFAULT_HOST
-  API = HOST + _QUERY_PATH  # contains picture
-  #API = HOST + "/php/nsearch.phtml" # no picture
-
-  ENCODING = 'euc-jp'
-  #COOKIES = {'getchu_adalt_flag': 'getchu.com'}
-
-  #GENRES = 'all', 'pc_soft', 'doujin', 'all_lady'
-  PC_GAME_GENRES = 'pc_soft', 'doujin', 'all_lady'
+  API = "http://www.freem.ne.jp/search"
+  ENCODING = 'utf8'
 
   session = None # requests.Session or None
 
-  def _makereq(self, text, genre, sort, sort2):
+  def _makereq(self, text):
     """
     @param  text  str
     @param  genre  str
@@ -45,7 +38,7 @@ class SearchApi(object):
     @return  kw
     """
     text = text.encode(self.ENCODING, errors='ignore')
-    return {'search_keyword':text, 'genre':genre, 'sort':sort, 'sort2':sort2}
+    return {'keyword':text}
 
   def _fetch(self, **params):
     """
@@ -54,15 +47,11 @@ class SearchApi(object):
     """
     return sknetio.getdata(self.API, gzip=True, params=params, session=self.session) #, cookies=self.COOKIES)
 
-  def query(self, text, genre='all', sort='release_date', sort2='down'):
+  def query(self, text):
     """
-    @param  id  str or int  softId
-    @param  genre  str  such as 'all', 'pc_soft', 'doujin', 'all_lady'
-    @param  sort  str  such as 'release_date'
-    @param  sort2  str  such as 'up' or 'down'
-    @yield  {kw} or None
+    @param  text  unicode
     """
-    req = self._makereq(text, genre=genre, sort=sort, sort2=sort2)
+    req = self._makereq(text)
     h = self._fetch(**req)
     if h:
       h = h.decode(self.ENCODING, errors='ignore')
@@ -70,80 +59,61 @@ class SearchApi(object):
         return self._iterparse(h)
 
   # Example:
-  # http://www.getchu.com/php/nsearch.phtml?genre=all&search_keyword=レミニセンス
+  # http://www.freem.ne.jp/search/?keyword=冒険
   #
-  # <A HREF="../soft.phtml?id=718587" class="blueb">レミニセンス 初回限定版</A><a href="https://order.zams.biz/comike/mypage/af_wish_list.phtml?action=add&id=718587" title="お気に入りに追加"><img class="lazy" src="/common/images/space.gif" data-original="/common/images/favorite.gif" class="favorite"></a><a href="/php/nsearch.phtml?search_reference_id=718587" title="この商品の関連を開く"><img class="lazy" src="/common/images/space.gif" data-original="/common/images/relation.gif" class="relation"></a>
-  # </TD></TR>
-  # <TR><TD align="left" valign="top" width="100%" style="line-height:1.35;">
-  # <p><span class="orangeb">[PCゲーム・アダルト]</span><br>
-  # 発売日：2013/05/31<!--発売日--><BR>
-  # ブランド名： <A href="http://www.tigresoft.com/" class="blue" target="_blank" >てぃ～ぐる</A><!--BRAND--><BR>
-  # メディア： DVD-ROM<!--MEDIA--><BR>
-  # 定価： 税込￥9,240(税抜￥8,800)<!--PRICE--></p>
-  # <p>
-  # 価格：<SPAN class="redb">￥6,980</SPAN><SPAN class="black">　コムポイント：209</SPAN>
-  # </p>
+  # <div class="section01"> <h4><a href="/win/game/8371">ロボネコの冒険2</a></h4> <div class="photo"><a href="/win/game/8371"><img src="http://pic.freem.ne.jp/win/8371s.jpg" alt="ロボネコの冒険2" /></a></div> <div class="text"> <p class="">忘れ物、届けます。</p> <p class="">【容量】6,962KB<br /> 【制作者】<a href="/brand/4754">モコネコ</a><br /> 【公開日】2015-01-18<br /> <img src="/img/addtomylist.gif" style="width:7px;height:10px;"> <a href="/mypage/wishlist_add/8371">マイリストへ保存</a></p> </div> </div><!--End of .section01--><div class="section02"> <h4><a href="/win/game/5919">&quot;Tkl Online&quot; Demo version</a></h4> <div class="photo"><a href="/win/game/5919"><img src="http://pic.freem.ne.jp/win/5919s.jpg" alt="&quot;Tkl Online&quot; Demo version" /></a></div> <div class="text"> <p class="">RPGツクールVXで制作した、MMO風RPGです。</p> <p class="">【容量】113,243KB<br /> 【制作者】<a href="/brand/3487">takapi</a><br /> 【公開日】2013-12-04<br /> <img src="/img/addtomylist.gif" style="width:7px;height:10px;"> <a href="/mypage/wishlist_add/5919">マイリストへ保存</a></p> </div> </div><!--End of .section02--><div class="section01"> <h4><a href="/win/game/7621">RPGを初めて遊ぶ人のためのRPG ver1.32</a></h4> <div class="photo"><a href="/win/game/7621"><img src="http://pic.freem.ne.jp/win/7621s.jpg" alt="RPGを初めて遊ぶ人のためのRPG ver1.32" /></a></div> <div class="text"> <p class="">妖精ペックがご案内！初心者対応ゆるさくRPG。</p> <p class="">【容量】31,401KB<br /> 【制作者】<a href="/brand/4394">えあてき</a><br /> 【公開日】2014-10-03<br /> <img src="/img/addtomylist.gif" style="width:7px;height:10px;"> <a href="/mypage/wishlist_add/7621">マイリストへ保存</a></p> </div> </div><!--End of .section01--><div class="section02">
   #
+  # Single item:
+  # <img src="http://pic.freem.ne.jp/win/8371s.jpg" alt="ロボネコの冒険2" /></a></div> <div class="text"> <p class="">忘れ物、届けます。</p> <p class="">【容量】6,962KB<br /> 【制作者】<a href="/brand/4754">モコネコ</a><br /> 【公開日】2015-01-18<br /> <img src="/img/addtomylist.gif"
   _rx_parse = re.compile(
-    r'/soft.phtml\?id=([0-9]+?)" class="blueb">([^<]+?)</A>'
+    r'src="http://pic.freem.ne.jp/win/(\d+)s.jpg" alt="([^"]*)"'
     r'.*?'
-    r'<!--PRICE-->'
-  , re.IGNORECASE|re.DOTALL)
-  _rx_media = re.compile(ur'メディア：([^<]+?)<!--MEDIA-->')
-  _rx_date = re.compile(ur'発売日：([0-9/]+)<!--発売日-->')
-  _rx_price = re.compile(ur'定価：\s*￥([0-9,]+)')
-  _rx_brand = re.compile(ur'ブランド名：(.*?)<!--BRAND-->')
-  _rx_brand2 = re.compile(r'>([^<]+)<')
+    r'/img/addtomylist.gif'
+  )
+  _rx_brand = re.compile(r'"/brand/\d+">([^<]+)<')
+  _rx_date = re.compile(ur'【公開日】([0-9-]+)')
   def _iterparse(self, h):
     """
     @param  h  unicode
     @yield  {kw}
     """
     for m in self._rx_parse.finditer(h):
-      key = m.group(1)
+      id = m.group(1)
       title = m.group(2)
-      if key and title:
-        url = "http://getchu.com/soft.phtml?id=%s" % key
-        img = '/brandnew/%s/c%spackage' % (key, key)
-        img = self.HOST + img + '.jpg' if img in h else ''
+      if id and title:
+        url = "http://freem.ne.jp/win/game/%s" % id
+        img = 'http://pic.freem.ne.jp/win/%s.jpg' % id
 
         item = {
-          'id': key,
+          'id': id,
           'url': url,
           'img': img,
           'title': unescapehtml(title),
         }
 
         hh = m.group()
-        mm = self._rx_media.search(hh)
-        item['media'] = unescapehtml(mm.group(1)).strip() if mm else '' # strip
+        mm = self._rx_brand.search(hh)
+        item['brand'] = unescapehtml(mm.group(1)) if mm else ''
 
         mm = self._rx_date.search(hh)
         item['date'] = mm.group(1) or ''
 
-        mm = self._rx_price.search(hh)
-        try: item['price'] = int(mm.group(1).replace(',', ''))
-        except (KeyError, ValueError, AttributeError): item['price'] = 0
-
-        mm = self._rx_brand.search(hh)
-        brand = mm.group(1) if mm else ''
-        if brand:
-          mm = self._rx_brand2.search(brand)
-          if mm:
-            brand = mm.group(1)
-        item['brand'] = unescapehtml(brand).strip() if brand else '' # strip
         yield item
+
+  # Example: RPGを初めて遊ぶ人のためのRPG ver1.32
+  _re_fixtitle = re.compile(' ver[0-9. ]+$')
+  def _fixtitle(self, t):
+    """
+    @param  t  unicode
+    @return  unicode
+    """
+    return self._re_fixtitle.sub('', t)
 
 if __name__ == '__main__':
   api = SearchApi()
-  t = u"幻創のイデア"
-  t = 'id=718587'
-  t = u"暁の護衛"
-  t = u"レミニセンス"
-  genre = 'all_lady'
-  genre = 'doujin'
-  genre = 'pc_soft'
-  for it in api.query(t, genre=genre, sort2='down'): # reverse order
+  t = u'あなたが呪われて'
+  t = u'冒険'
+  for it in api.query(t):
     print '-' * 10
     for k,v in it.iteritems():
       print k, ':', v

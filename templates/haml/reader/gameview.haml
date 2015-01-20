@@ -118,6 +118,13 @@
                 .row.price
                   %label.control-label.col-xs-2 #{tr('Price')}
                   .form-control-static.col-xs-10 ￥#{game.price}
+              -elif game.freem
+                .row.price
+                  %label.control-label.col-xs-2 #{tr('Price')}
+                  .form-control-static.col-xs-10
+                    -set url = game.freem.url
+                    %a.text-danger(href="#{url}",title="#{url}")
+                      無料
               .row.type
                 -set typeName = '乙女' if game.otome else '抜き' if game.okazu else '純愛'
                 %label.control-label.col-xs-2 #{tr('Type')}

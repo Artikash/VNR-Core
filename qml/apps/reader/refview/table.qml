@@ -192,6 +192,7 @@ Item { id: root_
               case 'dlsite': return "DLsite"
               case 'dmm': return "DMM"
               case 'amazon': return "Amazon"
+              case 'freem': return "FreeM"
               default: return Sk.tr("Unknown")
             }
           }

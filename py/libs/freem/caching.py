@@ -9,7 +9,7 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 #from search import SearchApi
-from soft import GameApi
+from game import GameApi
 
 def _htmlcacher(cls):
   from restful.offline import DataCacher
@@ -19,12 +19,11 @@ def _htmlcacher(cls):
 CachingGameApi = _htmlcacher(GameApi)
 
 if __name__ == '__main__':
-  # http://www.freem.ne.jp/win/game/8329
-  # http://www.freem.ne.jp/win/game/3055
   cachedir = 'tmp'
   api = CachingGameApi(cachedir=cachedir, expiretime=86400)
-  k = 748164
-  k = 779363
+  k = 8329 # http://www.freem.ne.jp/win/game/8329
+  k = 3055 # http://www.freem.ne.jp/win/game/3055
+  k = 7190 # http://www.freem.ne.jp/win/game/7190
   q = api.query(k)
   print q['title']
   print q['date']

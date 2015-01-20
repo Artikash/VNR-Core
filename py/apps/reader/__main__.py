@@ -218,6 +218,7 @@ def main():
     rc.DIR_CACHE_IMAGE,
     rc.DIR_CACHE_DMM,
     rc.DIR_CACHE_TOKUTEN,
+    rc.DIR_CACHE_FREEM,
     rc.DIR_CACHE_GETCHU,
     rc.DIR_CACHE_GYUTTO,
     rc.DIR_CACHE_DIGIKET,
@@ -392,6 +393,23 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+
+    if ss_version <= 1421736204: # This is not really needed though
+      for it in ( # delete all existing references
+          rc.DIR_CACHE_AWS,
+          rc.DIR_CACHE_DMM,
+          rc.DIR_CACHE_GETCHU,
+          rc.DIR_CACHE_GYUTTO,
+          rc.DIR_CACHE_DIGIKET,
+          rc.DIR_CACHE_DLSITE,
+          rc.DIR_CACHE_HOLYSEAL,
+          rc.DIR_CACHE_TRAILERS,
+          rc.DIR_CACHE_SCAPE,
+        ):
+        if os.path.exists(it):
+          skfileio.removetree(it)
+          skfileio.makedirs(it)
+
     if ss_version <= 1419101101:
       xmlfile = rc.xml_path('terms')
       skfileio.removefile(xmlfile)
@@ -469,19 +487,19 @@ def migrate(ss_version): # long ->
         skfileio.removetree(path)
         skfileio.makedirs(path)
 
-      for it in ( # delete all existing references
-          rc.DIR_CACHE_DMM,
-          rc.DIR_CACHE_GETCHU,
-          rc.DIR_CACHE_GYUTTO,
-          rc.DIR_CACHE_DIGIKET,
-          rc.DIR_CACHE_DLSITE,
-          rc.DIR_CACHE_HOLYSEAL,
-          rc.DIR_CACHE_TRAILERS,
-          #rc.DIR_CACHE_SCAPE,
-        ):
-        if os.path.exists(it):
-          skfileio.removetree(it)
-          skfileio.makedirs(it)
+      #for it in ( # delete all existing references
+      #    rc.DIR_CACHE_DMM,
+      #    rc.DIR_CACHE_GETCHU,
+      #    rc.DIR_CACHE_GYUTTO,
+      #    rc.DIR_CACHE_DIGIKET,
+      #    rc.DIR_CACHE_DLSITE,
+      #    rc.DIR_CACHE_HOLYSEAL,
+      #    rc.DIR_CACHE_TRAILERS,
+      #    #rc.DIR_CACHE_SCAPE,
+      #  ):
+      #  if os.path.exists(it):
+      #    skfileio.removetree(it)
+      #    skfileio.makedirs(it)
 
       path = rc.DIR_CACHE_IMAGE
       if os.path.exists(path):

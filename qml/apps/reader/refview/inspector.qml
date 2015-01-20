@@ -166,6 +166,15 @@ Item { id: root_
       onLinkActivated: root_.openUrl(link)
       text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem)
     }
+
+    Text {
+      //width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: root_.openUrl(link)
+      text: root_.formatText('FreeM', 'freem.ne.jp', model.freemItem)
+    }
   }
 
   function formatText(name, url, item) { // string, string, Reference -> string

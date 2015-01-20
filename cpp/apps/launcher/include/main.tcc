@@ -56,11 +56,11 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _In
 
   DOUT(QString::fromStdWString(app));
 
-  STARTUPINFOW siStartupInfo = {0};
+  STARTUPINFOW siStartupInfo = {};
   //::memset(&siStartupInfo, 0, sizeof(siStartupInfo));
   siStartupInfo.cb = sizeof(siStartupInfo);
 
-  PROCESS_INFORMATION piProcessInfo = {0};
+  PROCESS_INFORMATION piProcessInfo = {};
   //::memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 
   LPVOID lpEnvironment = nullptr; // TODO: Use AppLocale to load updater?

@@ -118,6 +118,7 @@ class _ReferenceInput(object):
     shortcut('alt+7', self.dlsiteButton.click, parent=q)
     shortcut('alt+8', self.digiketButton.click, parent=q)
     shortcut('alt+9', self.gyuttoButton.click, parent=q)
+    shortcut('alt+0', self.freemButton.click, parent=q)
 
   def _createUi(self, q, readonly):
 
@@ -142,6 +143,7 @@ class _ReferenceInput(object):
     grid.addWidget(self.dlsiteButton, 1, 1)
     grid.addWidget(self.digiketButton, 1, 2)
     grid.addWidget(self.gyuttoButton, 1, 3)
+    grid.addWidget(self.freemButton, 1, 4)
     layout.addLayout(grid)
 
     # Body
@@ -230,6 +232,13 @@ class _ReferenceInput(object):
     ret.toggled.connect(self._searchLater)
     return ret
 
+  @memoizedproperty
+  def freemButton(self):
+    ret = QtWidgets.QRadioButton("FreeM")
+    ret.setToolTip("gyutto.com (Alt+0)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
   def _selectedType(self):
     return (
         'trailers' if self.trailersButton.isChecked() else
@@ -241,6 +250,7 @@ class _ReferenceInput(object):
         'amazon' if self.amazonButton.isChecked() else
         'dlsite' if self.dlsiteButton.isChecked() else
         'digiket' if self.digiketButton.isChecked() else
+        'freem' if self.freemButton.isChecked() else
         None) # This should never happen
 
   @memoizedproperty
