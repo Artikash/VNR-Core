@@ -11,14 +11,14 @@ if __name__ == '__main__': # DEBUG
 import re
 from sakurakit import sknetio
 from sakurakit.skcontainer import uniquelist
-from sakurakit.skstr import multireplacer, unescapehtml
+from sakurakit.skstr import unescapehtml
 #from sakurakit.skdebug import dwarn
 
 class GameApi(object):
-  HOST = "http://www.freem.ne.jp"
+  QUERY_HOST = "http://www.freem.ne.jp"
   QUERY_PATH = "/win/game/%s"
 
-  API = HOST + QUERY_PATH
+  API = QUERY_HOST + QUERY_PATH
   ENCODING = 'utf8'
 
   session = None # requests.Session or None
@@ -58,9 +58,11 @@ class GameApi(object):
         if ret:
           ret['id'] = long(id)
           ret['url'] = "http://freem.ne.jp/win/game/%s" % id # strip off www.
-          img = "brandnew/%s/c%spackage.jpg" % (id, id)    # str, example: www.getchu.com/brandnew/756396/c756396package.jpg
-          ret['img'] = self.HOST + img if img in h else '' # str
-          #self._patch(ret, id)
+
+          img = 'http://pic.freem.ne.jp/win/%s.jpg' % id
+          ret['img'] = img if img in h else ''
+
+          ret['sampleImages'] = list(self._iterparsesampleimages(h, id)) # [unicode]
           return ret
 
   def _parse(self, h):
@@ -68,76 +70,139 @@ class GameApi(object):
     @param  h  unicode  html
     @return  {kw}
     """
-    meta = self._parsemetadesc(h)
-    if meta:
-      title = meta.get(u"タイトル")
-      if not title:
-        title = self._parsetitle(h)
+    title, slogan = self._parsemetadesc(h)
+    if title:
+      title = self._fixtitle(title)
+      otome = u'ＢＬゲーム' in h
+      bl = u'女性向' in h
+      ecchi = u'全年齢' in h
+      return {
+        'title': title, # unicode
+        'slogan': slogan, # unicode or None
+        'otome': otome or bl, # bool
+        'ecchi': ecchi, # bool
+        'brand': self._parsebrand(h), # unicode or None
+        'date': self._parsedate(h),  # str or None, such as 2013-10-25
+        'filesize': self._parsesize(h), # int
+        'description': self._parsedesc(h), # unicode or None
+        'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
+      }
+
+  # Example: RPGを初めて遊ぶ人のためのRPG ver1.32
+  _re_fixtitle = re.compile(' ver[0-9. ]+$')
+  def _fixtitle(self, t):
+    """
+    @param  t  unicode
+    @return  unicode
+    """
+    return self._re_fixtitle.sub('', t)
+
+  # Example: <meta name="description" content="「赤い森の魔女」：樵の少年と魔女のお話" />
+  _re_meta = re.compile(ur'<meta name="description" content="「([^」]+)」(?:：([^"]+))?"')
+  def _parsemetadesc(self, h):
+    """
+    @param  h  unicode  html
+    @return  (unicode title, unicode slogan)
+    """
+    title = slogan = None
+    m = self._re_meta.search(h)
+    if m:
+      title = m.group(1)
+      slogan = m.group(2)
       if title:
-        title = self._fixtitle(title)
-        try: price = int(self._parseprice(h))
-        except (ValueError, TypeError): price = 0
+        title = unescapehtml(title)
+        if slogan:
+          slogan = unescapehtml(slogan)
+    return title, slogan
 
-        # Use fillter.bool to remove empty scenario
-        try: writers = filter(bool, meta[u"シナリオ"].replace(u"、他", '').split(u'、'))
-        except Exception: writers = []
+  # Example: <p><a href="/brand/1666">mint wings</a></p>
+  _re_brand = re.compile(r'href="/brand/\d+">([^<]+)<')
+  def _parsebrand(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._re_brand.search(h)
+    if m:
+      return unescapehtml(m.group(1))
 
-        artists = []
-        sdartists = []
-        t = meta.get(u"原画")
-        if t:
-          sd1 = u"（SD原画）"
-          sd2 = u"（アバター）"
-          for it in t.split(u'、'):
-            if it and it != u"他":
-              if it.endswith(sd1):
-                it = it.replace(sd1, '')
-                sdartists.append(it)
-              elif it.endswith(sd2):
-                it = it.replace(sd2, '')
-                sdartists.append(it)
-              else:
-                artists.append(it)
+  # Example: ■登録日<br />2015-01-11<br />
+  _re_date = re.compile(ur'■登録日<br />([0-9-]+)<')
+  def _parsedate(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._re_date.search(h)
+    if m:
+      return m.group(1)
 
-        # See: http://www.getchu.com/pc/genre.html
-        subgenres = uniquelist(self._iterparsesubgenres(h))
-        categories = uniquelist(self._iterparsecateories(h))
-        return {
-          'title': title, # unicode or None
-          'writers': writers, # [unicode]
-          'artists': artists, # [unicode]
-          'sdartists': sdartists, # [unicode]
-          'musicians': list(self._iterparsemusicians(h)), # [unicode]
-          'brand': self._fixbrand(meta.get(u"ブランド") or meta.get(u"サークル")), # unicode or None
-          'genre': self._parsegenre(h), # unicode or None
-          'subgenres': subgenres, # [unicode]
-          'categories': categories, # [unicode]
-          'otome': u"乙女ゲー" in categories, # bool
-          'price': price,                     # int
-          'date': self._parsedate(h),         # str or None, such as 2013/10/25
-          #'imageCount': self._parseimagecount(h),
-          'sampleImages': list(self._iterparsesampleimages(h)), # [kw]
-          'descriptions': list(self._iterparsedescriptions(h)), # [unicode]
-          'characterDescription': self._parsecharadesc(h), # unicode
-          #'comics': list(self._iterparsecomics(h)),   # [kw]
-          'banners': list(self._iterparsebanners(h)), # [kw]
-          'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
+  # Example:
+  # ■容量<br />
+  # 16,121 KByte<br />
+  _re_size = re.compile(ur'■容量<br />\n*\r*\s*([0-9,]*) KByte')
+  def _parsesize(self, h):
+    """
+    @param  h  unicode  html
+    @return  long not None
+    """
+    m = self._re_size.search(h)
+    if m:
+      try: return long(m.group(1).replace(',', ''))
+      except: pass
+    return 0
 
-          # Disabled
-          'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
-          #'characters': [],
-        }
+  # Example: http://pic.freem.ne.jp/win/123_2.jpg
+  def _iterparsesampleimages(self, h, id):
+    """
+    @param  h  unicode  html
+    @param  id  long
+    @yield  unicode
+    """
+    x = re.compile(r"http://pic.freem.ne.jp/win/%s_\d+.jpg" % id)
+    for m in x.finditer(h):
+      yield m.group()
+
+  # Example: https://www.youtube.com/watch?v=-Xsa47nj8uk
+  _re_youtube = re.compile(r'youtube.com/watch\?v=([0-9a-zA-Z_-]+)')
+  def _iterparsevideos(self, h): # the method apply to all case
+    """
+    @param  h  unicode  html
+    @yield  unicode
+    """
+    if 'youtube.com' in h:
+      for m in self._re_youtube.finditer(h):
+        yield m.group(1)
+
+  # Example:
+  # <!-- ■ゲーム説明スペース開始 -->
+  # <div id="gameExplain">
+  # </div>
+  # <!-- //□ゲーム説明スペース終了 -->
+  _re_desc = re.compile(
+    ur'<!-- ■ゲーム説明スペース開始 -->'
+    r'(.*?)'
+    ur'<!-- //□ゲーム説明スペース終了 -->'
+  , re.DOTALL)
+  def _parsedesc(self, h):
+    """
+    @param  h  unicode  html
+    @param  id  long
+    @yield  unicode or None
+    """
+    m = self._re_desc.search(h)
+    if m:
+      return m.group(1)
 
 if __name__ == '__main__':
   api = GameApi()
-  # http://www.freem.ne.jp/win/game/8329
-  k = 8329
-  # http://www.freem.ne.jp/win/game/3055
-  k = 3055
+  k = 8329 # http://www.freem.ne.jp/win/game/8329
+  k = 3055 # http://www.freem.ne.jp/win/game/3055
+  k = 7190 # http://www.freem.ne.jp/win/game/7190
+  # Youtube Video
   print '-' * 10
   q = api.query(k)
-  for it in q['characters']:
-    for k,v in it.iteritems():
-      print k,':',v
+  for k,v in q.iteritems():
+    print k, ':', v
 
 # EOF
