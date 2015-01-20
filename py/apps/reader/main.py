@@ -26,7 +26,7 @@ import config, defs, features, growl, libman, prompt, qmldialog, rc, settings, w
 
 EXITED = False # whether the application is existing
 
-def _parserargs(args):
+def _parseargs(args):
   """Parse command line arguments
   @param  args  [str]
   @return  kw not None
@@ -36,6 +36,10 @@ def _parserargs(args):
     for i, it in enumerate(args):
       if it == '--pid':
         ret['pid'] = long(args[i+1])
+      elif it == '--minimize':
+        ret['minimize'] = True
+      elif it == '--nosplash':
+        ret['nosplash'] = True
   except Exception, e:
     dwarn("failed to parse command line option", e)
   return ret
@@ -1731,29 +1735,33 @@ class MainObject(QObject):
     #self.showTermChart()
 
     dprint("parse command line arguments")
-    kwargs = _parserargs(args)
+    kwargs = _parseargs(args)
     dprint("args =", kwargs)
-    argumentPid = kwargs.get('pid') or 0
+
+    opt_pid = kwargs.get('pid') or 0
+    opt_minimize = bool(kwargs.get('minimize'))
+    opt_nosplash = bool(kwargs.get('nosplash'))
+    delayDisplayKagami = False
 
     dprint("search for running game")
-    g = gm.findRunningGame(pid=argumentPid)
+    g = gm.findRunningGame(pid=opt_pid)
     if g:
       foundGame = True
       dprint("find running game")
       growl.msg(my.tr("Found running game") + ":" "<br/>" + g.name)
       skevents.runlater(partial(
-          gm.openGame, game=g, pid=argumentPid),
+          gm.openGame, game=g, pid=opt_pid),
           500)
     else:
       path = None
       if dm.hasGameFiles() and settings.global_().isGameDetectionEnabled():
-        path = gm.findRunningGamePathByMd5(pid=argumentPid)
+        path = gm.findRunningGamePathByMd5(pid=opt_pid)
       if path:
         dprint("find running new game")
         growl.msg(my.tr("Found new game") + ":" "<br/>" + path)
         if online:
           skevents.runlater(partial(
-              gm.openNewGame, path=path, pid=argumentPid),
+              gm.openNewGame, path=path, pid=opt_pid),
               500)
         else:
           d.springBoardDialog
@@ -1762,8 +1770,11 @@ class MainObject(QObject):
           growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
       else:
         #self.showSpringBoard()
-        d.springBoardDialog
-        skevents.runlater(self.showSpringBoard, 300)
+        if not opt_minimize:
+          d.springBoardDialog
+          skevents.runlater(self.showSpringBoard, 300)
+        elif opt_nosplash:
+          delayDisplayKagami = True
 
         #if not dm.hasGames():
         #  #self.showGameWizard()
@@ -1786,8 +1797,12 @@ class MainObject(QObject):
     #  dprint("warm up dictionary terms")
     #  d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
 
-    dprint("show windows")
-    skevents.runlater(self.showKagami)
+    t = 10000 if delayDisplayKagami else 0
+    if t:
+      dprint("delay displaying kagami")
+    else:
+      dprint("show kagami at once")
+    skevents.runlater(self.showKagami, t)
 
     dprint("start game detection")
     d.gameDetectionTimer.start()
