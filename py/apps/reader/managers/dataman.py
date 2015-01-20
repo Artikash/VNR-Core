@@ -281,6 +281,17 @@ class GameInfo(object):
           return DmmReference(**kw)
 
   @memoizedproperty
+  def freem(self):
+    """Online
+    @return  FreemReference or None
+    """
+    for it in self.referenceData:
+      if it.type == 'freem':
+        kw = refman.manager().queryOne(key=it.key, type=it.type, async=self.async)
+        if kw:
+          return FreemReference(**kw)
+
+  @memoizedproperty
   def trailers(self):
     """Online
     @return  TrailersReference or None
@@ -644,7 +655,7 @@ class GameInfo(object):
     """
     @return  bool
     """
-    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape) #or self.tokutenUrl
+    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape or self.freem) #or self.tokutenUrl
 
   def iterLinks(self):
     """
@@ -657,7 +668,7 @@ class GameInfo(object):
        url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
        yield url, 'gyutto'
 
-    for r in self.amazon, self.digiket, self.dlsite, self.dmm, self.trailers:
+    for r in self.amazon, self.digiket, self.dlsite, self.dmm, self.freem, self.trailers:
       if r:
         yield r.url, r.type
 
@@ -730,7 +741,7 @@ class GameInfo(object):
     ret = self.brand0
     if ret:
       return ret
-    for r in self.trailers, self.digiket, self.dmm, self.amazon, self.getchu, self.gyutto, self.dlsite:
+    for r in self.trailers, self.freem, self.digiket, self.dmm, self.amazon, self.getchu, self.gyutto, self.dlsite:
       if r:
         ret = r.brand
         if ret:
@@ -785,14 +796,14 @@ class GameInfo(object):
   def otome(self): # bool not None
     if self.otome0:
       return True
-    for r in self.trailersItem, self.getchu, self.gyutto, self.digiket, self.dlsite, self.dmm:
+    for r in self.trailersItem, self.freem, self.getchu, self.gyutto, self.digiket, self.dlsite, self.dmm:
       if r and r.otome:
         return True
     return False
 
   @property
   def ecchi(self): # bool not None
-    for r in self.trailers, self.holyseal, self.dmm, self.amazon, self.dlsite:
+    for r in self.trailers, self.freem, self.holyseal, self.dmm, self.amazon, self.dlsite:
       if r:
         return r.ecchi
     return True
@@ -1090,6 +1101,10 @@ class GameInfo(object):
       if r.videos:
         for vid,img in r.iterVideoIdsWithImage(cache=cache):
           yield img, 'youtube_%s' % vid
+    r = self.freem
+    if r and r.videos:
+      for vid,img in r.iterVideoIdsWithImage(cache=cache):
+        yield img, 'youtube_%s' % vid
 
     r = self.digiket
     if r:
@@ -1115,7 +1130,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    l = [self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket]
+    l = [self.getchu, self.freem, self.dlsite, self.amazon, self.dmm, self.digiket]
     if features.MAINLAND_CHINA and self.dlsite: # disable dlsite in MAINLAND_CHINA
       l.remove(self.dlsite)
     for r in l:
@@ -1154,6 +1169,7 @@ class GameInfo(object):
         'gyutto.com' in img or
         'dlsite.jp' in img or
         'digiket.net' in img or
+        'freem.ne.jp' in img or
         self.otome0 and 'images-amazon.com' in img)
 
   @property
@@ -1339,9 +1355,9 @@ class GameInfo(object):
     """
     @return  bool
     """
-    r = self.getchu
-    if r and r.videos:
-      return True
+    for r in self.getchu, self.freem:
+      if r and r.videos:
+        return True
     r = self.trailers
     if r and r.videoCount:
       return True
@@ -1361,15 +1377,15 @@ class GameInfo(object):
           vids.add(vid)
           #it['img'] = proxy.make_ytimg_url(vid)
           yield it
-    r = self.getchu
-    if r and r.videos:
-      for index,vid in enumerate(it for it in r.videos if it not in vids):
-        yield {
-          'vid': vid,
-          'title': u"動画 #%s" % (index+1) if index else u"動画",
-          #'img': proxy.make_ytimg_url(vid),
-          #'date': '', # unknown
-        }
+    for r in self.getchu, self.freem:
+      if r and r.videos:
+        for index,vid in enumerate(it for it in r.videos if it not in vids):
+          yield {
+            'vid': vid,
+            'title': u"動画 #%s" % (index+1) if index else u"動画",
+            #'img': proxy.make_ytimg_url(vid),
+            #'date': '', # unknown
+          }
 
   def iterVideoIds(self):
     """
@@ -1384,11 +1400,11 @@ class GameInfo(object):
           vid = it['vid']
           vids.add(vid)
           yield vid
-    r = self.getchu
-    if r and r.videos:
-      for vid in r.videos:
-        if vid not in vids:
-          yield vid
+    for r in self.getchu, self.freem:
+      if r and r.videos:
+        for vid in r.videos:
+          if vid not in vids:
+            yield vid
 
 class GameItem(object):
   __slots__ = (
@@ -3117,8 +3133,8 @@ class _Reference(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite'
-  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite'
+  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite', 'freem'
+  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite', 'FreeM'
 
 class Reference(QObject):
   __D = _Reference
@@ -3179,6 +3195,8 @@ class Reference(QObject):
       cls = DmmReference
     elif type == 'dlsite':
       cls = DLsiteReference
+    elif type == 'freem':
+      cls = FreemReference
     else:
       dwarn("unknown type: %s" % type)
       cls = Reference
@@ -3512,6 +3530,46 @@ class DLsiteReference(Reference): #(object):
     t = proxy.replace_dlsite_html(t)
     return cacheman.cache_html(t)
 
+class FreemReference(Reference): #(object):
+  def __init__(self, parent=None,
+      type='freem',
+      image="", slogan="",
+      otome=False, ecchi=True,
+      description='',
+      videos=[],
+      sampleImages=[],
+      **kwargs):
+    super(FreemReference, self).__init__(parent=parent,
+        type=type, **kwargs)
+    self.largeImage = image # str
+    self.otome = otome # bool
+    self.ecchi = ecchi # bool
+    self.slogan = slogan or '' # str
+    self.description = description # [unicode]
+    self.sampleImages = sampleImages # [str url]
+    self.videos = videos    # [str]
+
+  def iterVideoIdsWithImage(self, cache=True):
+    """
+    @param  cache  bool
+    @yield  (str vid, str url)
+    """
+    if self.videos:
+      host = proxy.manager().ytimg_i
+      for vid in self.videos:
+        img = host + '/vi/' + vid + '/0.jpg'
+        yield vid, cacheman.cache_image_url(img) if cache else img
+
+  def hasSampleImages(self): return bool(self.sampleImages)
+
+  def iterSampleImageUrls(self, cache=True):
+    """
+    @yield  str  url
+    """
+    #if self.hasSampleImages():
+    for it in self.sampleImages:
+      yield cacheman.cache_image_url(it) if cache else it
+
 class GetchuReference(Reference): #(object):
   def __init__(self, parent=None,
       type='getchu',
@@ -3813,7 +3871,7 @@ class AmazonReference(Reference):
 class GyuttoReference(Reference): #(object), images will crash Python2
   def __init__(self, parent=None,
       type='gyutto',
-      series="", brand="",
+      series="",
       image="", # not used
       #price=0, # not exist price though
       #writers[], artists=[], musicians=[],
@@ -3827,7 +3885,6 @@ class GyuttoReference(Reference): #(object), images will crash Python2
     super(GyuttoReference, self).__init__(parent=parent,
         type=type, **kwargs)
     self.largeImage = image # str
-    self.brand = brand
     self.series = series
     self.slogan = theme
     self.fileSize = filesize
@@ -6028,6 +6085,11 @@ class ReferenceModel(QAbstractListModel):
   #def showChart(self):
   #  d = self.__d
   #  main.manager().showReferenceChart(d.sourceData, d.md5)
+
+  freemItemChanged = Signal(QObject)
+  freemItem = Property(QObject,
+      lambda self: self.__d.findItem(type='freem'),
+      notify=freemItemChanged)
 
   getchuItemChanged = Signal(QObject)
   getchuItem = Property(QObject,

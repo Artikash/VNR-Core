@@ -95,6 +95,7 @@ SITE_NAMES = {
   'amazon': "Amazon", #u"アマゾン",
   'digiket': "DiGiket",
   'dmm': "DMM",
+  'freem': "FreeM",
   'getchu': "Getchu", #u"げっちゅ屋",
   'gyutto': "Gyutto", #u"ギュット!",
   'dlsite': "DLsite",

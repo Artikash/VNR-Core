@@ -419,6 +419,101 @@ class HolysealApi(object):
     dprint("leave: count = %s" % len(ret))
     return ret
 
+## Freem API ##
+
+class FreemApi(object):
+
+  def __init__(self, online=True):
+    """
+    @param* online  bool
+    """
+    self.online = online
+
+  def setOnline(self, v):
+    if self.online !=  v:
+      self.online = v
+      if hasmemoizedproperty(self, 'cachingGameApi'):
+        self.cachingGameApi.online = v
+
+  @memoizedproperty
+  def cachingGameApi(self):
+    from freem.caching import CachingGameApi
+    return CachingGameApi(
+        cachedir=rc.DIR_CACHE_FREEM,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  @memoizedproperty
+  def searchApi(self):
+    from freem.search import SearchApi
+    return SearchApi()
+
+  def _search(self, text=None, key=None, cache=True):
+    """
+    @param  cache  bool  not used
+    @yield  kw
+    """
+    dprint("key, text =", key, text)
+    if key:
+      kw = self.cachingGameApi.query(key)
+      if kw:
+        yield kw
+    elif text:
+      q = self.searchApi.query(text)
+      if q:
+        for it in q:
+          yield it
+
+  def cache(self, text=None, key=None):
+    if key:
+      dprint("enter")
+      self.cachingGameApi.cache(key)
+      dprint("leave")
+
+  @staticmethod
+  def _parsekey(url):
+    """
+    @param  url  unicode
+    @return  unicode or None
+    """
+    if url:
+      m = re.search(r"/([0-9]+)", url)
+      if m:
+        return m.group(1)
+
+  # See: https://affiliate.dmm.com/api/reference/r18/pcgame/
+  def query(self, key=None, text=None, **kwargs):
+    """
+    @return  iter not None
+    """
+    dprint("enter")
+    ret = []
+    if not key and text:
+      if text.isdigit():
+        key = text
+      elif text.startswith('http://') or text.startswith('www.'):
+        k = self._parsekey(text)
+        if k:
+          key = k
+    s = self._search(key=key, text=text, **kwargs)
+    try:
+      for item in s:
+        k = str(item.pop('id'))
+        item['key'] = k
+        d = item['date'] or 0 # int
+        if d:
+          try:
+            d = datetime.strptime(d, '%Y-%m-%d')
+            d = skdatetime.date2timestamp(d)
+          except: dwarn("failed to parse date")
+        item['date'] = d
+        item['image'] = item['img']
+
+        ret.append(item)
+    except Exception, e: dwarn(e)
+    dprint("leave: count = %s" % len(ret))
+    return ret
+
 ## Getchu API ##
 
 class GetchuApi(object):
@@ -1406,7 +1501,7 @@ class AsyncApi:
 
 class _ReferenceManager(object):
   # The same as dataman.Reference.TYPES
-  API_TYPES = frozenset(('trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
+  API_TYPES = frozenset(('trailers', 'scape', 'freem', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
 
   def __init__(self):
     self.online = True
@@ -1431,6 +1526,9 @@ class _ReferenceManager(object):
 
   @memoizedproperty
   def dlsiteApi(self): return self._createApi(DLsiteApi)
+
+  @memoizedproperty
+  def freemApi(self): return self._createApi(FreemApi)
 
   @memoizedproperty
   def holysealApi(self): return self._createApi(HolysealApi)
