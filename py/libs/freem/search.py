@@ -67,7 +67,7 @@ class SearchApi(object):
   # <img src="http://pic.freem.ne.jp/win/8371s.jpg" alt="ロボネコの冒険2" /></a></div> <div class="text"> <p class="">忘れ物、届けます。</p> <p class="">【容量】6,962KB<br /> 【制作者】<a href="/brand/4754">モコネコ</a><br /> 【公開日】2015-01-18<br /> <img src="/img/addtomylist.gif"
   _rx_parse = re.compile(
     r'src="http://pic.freem.ne.jp/win/(\d+)s.jpg" alt="([^"]*)"'
-    r'.*'
+    r'.*?'
     r'/img/addtomylist.gif'
   )
   _rx_brand = re.compile(r'"/brand/\d+">([^<]+)<')
@@ -93,7 +93,7 @@ class SearchApi(object):
 
         hh = m.group()
         mm = self._rx_brand.search(hh)
-        item['media'] = unescapehtml(mm.group(1)) if mm else ''
+        item['brand'] = unescapehtml(mm.group(1)) if mm else ''
 
         mm = self._rx_date.search(hh)
         item['date'] = mm.group(1) or ''
@@ -112,6 +112,7 @@ class SearchApi(object):
 if __name__ == '__main__':
   api = SearchApi()
   t = u'あなたが呪われて'
+  t = u'冒険'
   for it in api.query(t):
     print '-' * 10
     for k,v in it.iteritems():
