@@ -127,6 +127,7 @@ class MeCabParser:
     furitrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
                  convutil.hira2kata if furiType == defs.FURI_KATA else
                  convutil.kana2romaji if furiType == defs.FURI_ROMAJI else
+                 convutil.kana2ru if furiType == defs.FURI_ROMAJI_RU else
                  convutil.kana2hangul if furiType == defs.FURI_HANGUL else
                  convutil.kana2thai if furiType == defs.FURI_THAI else
                  #convutil.kana2kanji if furiType == defs.FURI_KANJI else
@@ -178,6 +179,7 @@ class MeCabParser:
                    convutil.kata2hangul if furiType == defs.FURI_HANGUL else
                    convutil.kata2thai if furiType == defs.FURI_THAI else
                    #convutil.kata2kanji if furiType == defs.FURI_KANJI else
+                   convutil.kata2ru if furiType == defs.FURI_ROMAJI_RU else
                    convutil.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR) else
                    None)
       if termEnabled:
@@ -185,8 +187,9 @@ class MeCabParser:
                      convutil.hira2kata if furiType == defs.FURI_KATA else
                      convutil.kana2hangul if furiType == defs.FURI_HANGUL else
                      convutil.kana2thai if furiType == defs.FURI_THAI else
+                     convutil.kana2ru if furiType == defs.FURI_ROMAJI_RU else
                      convutil.kana2romaji)
-      if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI): # , defs.FURI_KANJI
+      if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_HANGUL, defs.FURI_THAI): # , defs.FURI_KANJI
         readingTypes = None
     encoding = mecabdef.DICT_ENCODING
     feature2katana = fmt.getkata
@@ -235,8 +238,12 @@ class MeCabParser:
                         if yomigana:
                           if furiType == defs.FURI_HIRA:
                             pass
-                          elif furiType == defs.FURI_ROMAJI:
-                            yomigana = convutil.wide2thin(convutil.kata2romaji(yomigana))
+                          elif furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU):
+                            if furiType == defs.FURI_ROMAJI_RU:
+                              conv = convutil.kata2ru
+                            else:
+                              conv = convutil.kata2romaji
+                            yomigana = convutil.wide2thin(conv(yomigana))
                             if yomigana == surface:
                               yomigana = None
                               unknownYomi = False

@@ -5,9 +5,9 @@
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin, wide2thin_digit
 from unidecode import unidecode
 from jaconv import jaconv
-from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
-                        , kata2romaji, kata2hangul, kata2thai \
-                        , kana2romaji, kana2hangul, kana2thai \
+from jaconv.jaconv import hira2romaji, hira2ru, hira2hangul, hira2thai \
+                        , kata2romaji, kata2ru, kata2hangul, kata2thai \
+                        , kana2romaji, kana2ru, kana2hangul, kana2thai \
                         , capitalizeromaji
 from opencc.opencc import zht2zhs #, ja2zht
 from ccman import zhs2zht, zht2zhx
@@ -25,8 +25,10 @@ def kana2yomi(text, lang):
   """
   if lang == 'ko':
     return kana2hangul(text)
-  elif lang == 'th':
-    return kana2thai(text)
+  #elif lang == 'th':
+  #  return kana2thai(text)
+  elif lang == 'ru':
+    return capitalizeromaji(kana2ru(text))
   else:
     return capitalizeromaji(kana2romaji(text))
 

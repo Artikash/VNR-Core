@@ -59,9 +59,9 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
                  jaconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  jaconv.kata2thai if ruby == mecabdef.RB_THAI else
                  #jaconv.kata2kanji if ruby == mecabdef.RB_KANJI else
-                 jaconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_TR) else
+                 jaconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_TR) else
                  None)
-    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
+    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
       readingTypes = None
   encoding = mecabdef.DICT_ENCODING
   feature2katana = fmt.getkata
@@ -105,8 +105,12 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
                     if yomigana:
                       if ruby == mecabdef.RB_HIRA:
                         pass
-                      elif ruby == mecabdef.RB_ROMAJI:
-                        yomigana = uniconv.wide2thin(jaconv.kata2romaji(yomigana))
+                      elif ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU):
+                        if ruby == mecabdef.RB_ROMAJI_RU:
+                          conv = jaconv.kata2ru
+                        else:
+                          conv = jaconv.kata2romaji
+                        yomigana = uniconv.wide2thin(conv(yomigana))
                         if yomigana == surface:
                           yomigana = None
                           unknownYomi = False

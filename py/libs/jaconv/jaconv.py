@@ -93,24 +93,30 @@ def kana2thai(text): return _convert(text, _TYPE_KANA, _TYPE_THAI)
 
 # repair romaji
 import re
-_re_romaji = re.compile(ur"っ([a-z])")
+_re_romaji = re.compile(ur"っ([bcdfghjklmnprstvxz])")
 def _repair_romaji(text): # unicode -> unicode  repair xtu
   """
   @param  text
   @return  unicode
   """
-  return _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-')
+  return _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-') if u'っ' in text else text
 
-_ru_u = u"ауэояё"
-_re_ru_u = re.compile(ur"(?<=[%s])и" % _ru_u)
+_ru_i_vowel = u"ауэояё"
+_re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
+_re_ru_ii = re.compile(ur"(?<=[%s])й(и+)" % _ru_i_vowel)
 _re_ru_z = re.compile(ur"\bэ")
+_re_ru_tsu = re.compile(ur"っ([бвгдзклмнпрстфхцчшщъыь])")
 def _repair_romaji_ru(text): # unicode -> unicode  repair xtu
   """
   @param  text
   @return  unicode
   """
+  if u'っ' in text:
+    text = _re_ru_tsu.sub(r'\1\1', text)
   if u'и' in text:
-    text = _re_ru_u.sub(u'й', text)
+    text = _re_ru_i.sub(u'й', text)
+    if u'йи' in text:
+      text = _re_ru_ii.sub(ur'\1й', text) # push i to the end
   if u'з' in text:
     text = _re_ru_z.sub(u'дз', text)
   return text
@@ -170,8 +176,13 @@ if __name__ == '__main__':
   t = u'さま'
   t = u'ひろすえ'
   t = u'ちゃん'
+  print hira2ru(t)
+  assert hira2ru(t) == u'чан'
+
   t = u'せんせい'
-  print hira2ru(t) # сэнсэй
+  print hira2ru(t)
+  assert hira2ru(t) == u'сэнсэй'
+
   t = u'イイズミ-ちゃん'
   print kana2ru(t) # ийдзуми-чан, supposed to be Иизуми-чан
   t = u'ぱっつぁん'
@@ -183,6 +194,15 @@ if __name__ == '__main__':
   print hira2ru(t)
   t = u'ソフトクリーム'
   print kata2ru(t) # correct translation is Софуто-куриму
+
+  t = u'ジャケット'
+  print kata2ru(t) # дзякэтто
+  assert kata2ru(t) == u'дзякэтто'
+
+  # http://ru.wikipedia.org/wiki/Каваий
+  t = u'かわいい'
+  print hira2ru(t) # дзякэтто
+  assert hira2ru(t) == u'каваий'
 
 # EOF
 
