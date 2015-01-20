@@ -14,7 +14,10 @@ from sakurakit.skstr import unescapehtml
 
 class ProductApi(object):
 
-  API = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s"
+  #QUERY_HOST = "http://holyseal.net"
+  QUERY_HOST = "http://holyseal.homeip.net"
+  QUERY_PATH = "/cgi-bin/mlistview.cgi?prdcode=%s"
+  API = QUERY_HOST + QUERY_PATH
   ENCODING = 'sjis'
 
   session = None # requests.Session or None
@@ -53,6 +56,7 @@ class ProductApi(object):
         ret = self._parse(h)
         if ret:
           ret['id'] = long(id)
+          url = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % id # reset url
           ret['url'] = url
           return ret
 

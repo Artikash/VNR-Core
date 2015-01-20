@@ -15,7 +15,10 @@ from sakurakit.skstr import unescapehtml
 
 class SearchApi(object):
 
-  API = "http://holyseal.net/cgi-bin/mlistview.cgi?word=%s"
+  #QUERY_HOST = "http://holyseal.net"
+  QUERY_HOST = "http://holyseal.homeip.net"
+  QUERY_PATH = "/cgi-bin/mlistview.cgi?word=%s"
+  API = QUERY_HOST + QUERY_PATH
   ENCODING = 'sjis'
 
   session = None # requests.Session or None
