@@ -3539,6 +3539,7 @@ class FreemReference(Reference): #(object):
       description='',
       videos=[],
       sampleImages=[],
+      filesize=0,
       **kwargs):
     super(FreemReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -3549,6 +3550,7 @@ class FreemReference(Reference): #(object):
     self.description = description # [unicode]
     self.sampleImages = sampleImages # [str url]
     self.videos = videos    # [str]
+    self.fileSize = filesize # int
 
   def iterVideoIdsWithImage(self, cache=True):
     """
