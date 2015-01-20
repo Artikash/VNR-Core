@@ -34,7 +34,7 @@ HIRA = u"""
 すぁ	すぃ	すぅ	すぇ	すぉ
 つぁ	つぃ	つぅ	つぇ	つぉ
 とぁ	とぃ	とぅ	とぇ	とぉ
-ふぁ	ふぃ	ふっ	ふぇ	ふぉ
+ふぁ	ふぃ	ふぅ	ふぇ	ふぉ
 
 ゔぁ	ゔぃ	ゔ	ゔぇ	ゔぉ
 どぁ	どぃ	どぅ	どぇ	どぉ
@@ -146,7 +146,7 @@ wha	whi		whe	who
 swa	swi	swu	swe	swo
 tsa	tsi	tsu	the	tho
 twa	twi	twu	twe	two
-fa	fi	fwu	fe	fo
+fa	fi	fuu	fe	fo
 
 va	vi	vu	ve	vo
 dwa	dwi	dwu	dwe	dwo
@@ -174,6 +174,112 @@ ya		yu		yo
 wa
 ka			ke
 っ
+-
+"""
+
+# http://en.wikipedia.org/wiki/Russian_alphabet
+# http://ru.wikipedia.org/wiki/Кана
+# http://ru.wikipedia.org/wiki/Хирагана
+# http://ru.wikipedia.org/wiki/Катакана
+#
+# a: а
+# i: и(individual), not й(composite, delay to fix later after ауэояё
+# e: э
+# o: о
+#
+# u: у except yu
+# yu: ю
+#
+# k: к
+# ts: ц
+# s: с
+# ch: ч
+# sh: с  or ш
+#
+# m: м
+# n: н
+# t: т
+# h: х
+# r: р
+# f: ф
+# p: п
+# g: г
+# z: З
+# d: д
+# b: б
+# p: п
+# v: иэ
+#
+# wa: ва
+#
+# ji: зи
+# ya: я
+# yo: ё
+# ye: йё
+#
+# wh: у
+# sw: су
+# tw: ту
+# dw: до
+# th: ц / тэ
+# dh: дэ
+#
+# Definitions different from wiki:
+# - cha/chu/cho: ча/чу/чо is used instead of тя/тю/тё
+# - з is used instead of дз
+ROMAJI_RU = u"""
+а	и	у	э	о
+ка	ки	ку	кэ	ко
+са	си	су	сэ	со
+та	ти	цу	тэ	то
+на	ни	ну	нэ	но
+ха	хи	фу	хэ	хо
+ма	ми	му	мэ	мо
+я		ю		ё
+ра	ри	ру	рэ	ро
+ва				о
+	ви		вэ
+н
+
+га	ги	гу	гэ	го
+дза	дзй	дзу	дзэ	дзо
+да	дзй	дзу	дэ	до
+ба	би	бу	бэ	бо
+па	пи	пу	пэ	по
+
+			йё
+уа	уи		уэ	уо
+суа	суй	суу	суэ	суо
+ца	ци	цу	цэ	цо
+туа	туй	туу	туэ	туо
+фа	фи	фуу	фэ	фо
+
+ва	ви	ву	вэ	во
+доа	дой	доу	доэ	доо
+
+кя	кий	кю	киэ	кё
+ся	ши	сю	шэ	сё
+ча	чи	чу	чэ	чо
+тэа	тэй	тэю	тээ	тэё
+ня	ний	ню	ниэ	нё
+хя	хий	хю	хиэ	хё
+фуя		фую		фуё
+мя	мий	мю	миэ	мё
+ря	рий	рю	риэ	рё
+
+уя		вю		вё
+гя	гий	гю	гиэ	гё
+дзя	дзий	дзю	зиэ	дзё
+дзя	дзий	дзю	зиэ	дзё
+дэа	дэй	дэю	дээ	дэё
+бя	бий	бю	биэ	бё
+пя	пий	пю	пиэ	пё
+
+а	и	у	э	о
+я		ю		й
+wа
+ка			кэ
+-
 -
 """
 

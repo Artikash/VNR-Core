@@ -23,12 +23,15 @@ _TYPE_ROMAJI = 6
 _TYPE_HANGUL = 7
 _TYPE_THAI = 8
 
+_TYPE_ROMAJI_RU = 10
+
 _DEFS = { # {int type:unicode}
   _TYPE_HIRA: jadef.HIRA,
   _TYPE_KATA: jadef.KATA,
   _TYPE_HIRA_N: jadef.HIRA + jadef.HIRA_N,
   _TYPE_KATA_N: jadef.KATA + jadef.KATA_N,
   _TYPE_ROMAJI: jadef.ROMAJI,
+  _TYPE_ROMAJI_RU: jadef.ROMAJI_RU,
   _TYPE_HANGUL: jadef.HANGUL + jadef.HANGUL_N,
   _TYPE_THAI: jadef.THAI,
 }
@@ -76,6 +79,10 @@ def hira2romaji(text): return _repair_romaji(_convert(text, _TYPE_HIRA, _TYPE_RO
 def kata2romaji(text): return _repair_romaji(_convert(text, _TYPE_KATA, _TYPE_ROMAJI))
 def kana2romaji(text): return _repair_romaji(_convert(text, _TYPE_KANA, _TYPE_ROMAJI))
 
+def hira2ru(text): return _repair_romaji_ru(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI_RU))
+def kata2ru(text): return _repair_romaji_ru(_convert(text, _TYPE_KATA, _TYPE_ROMAJI_RU))
+def kana2ru(text): return _repair_romaji_ru(_convert(text, _TYPE_KANA, _TYPE_ROMAJI_RU))
+
 def hira2hangul(text): return _convert(text, _TYPE_HIRA_N, _TYPE_HANGUL)
 def kata2hangul(text): return _convert(text, _TYPE_KATA_N, _TYPE_HANGUL)
 def kana2hangul(text): return _convert(text, _TYPE_KANA_N, _TYPE_HANGUL)
@@ -90,8 +97,23 @@ _re_romaji = re.compile(ur"っ([a-z])")
 def _repair_romaji(text): # unicode -> unicode  repair xtu
   """
   @param  text
+  @return  unicode
   """
   return _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-')
+
+_ru_u = u"ауэояё"
+_re_ru_u = re.compile(ur"(?<=[%s])и" % _ru_u)
+_re_ru_z = re.compile(ur"\bэ")
+def _repair_romaji_ru(text): # unicode -> unicode  repair xtu
+  """
+  @param  text
+  @return  unicode
+  """
+  if u'и' in text:
+    text = _re_ru_u.sub(u'й', text)
+  if u'з' in text:
+    text = _re_ru_z.sub(u'дз', text)
+  return text
 
 from sakurakit import skstr
 _re_capitalize = skstr.multireplacer({
@@ -144,6 +166,23 @@ if __name__ == '__main__':
   def test(text):
     return JapaneseTransliterator(text).transliterate_from_hrkt_to_latn()
   print test(t)
+
+  t = u'さま'
+  t = u'ひろすえ'
+  t = u'ちゃん'
+  t = u'せんせい'
+  print hira2ru(t) # сэнсэй
+  t = u'イイズミ-ちゃん'
+  print kana2ru(t) # ийдзуми-чан, supposed to be Иизуми-чан
+  t = u'ぱっつぁん'
+  print hira2hangul(t)
+  print hira2romaji(t)
+  print hira2ru(t)
+
+  t = u'みなとそふと'
+  print hira2ru(t)
+  t = u'ソフトクリーム'
+  print kata2ru(t) # correct translation is Софуто-куриму
 
 # EOF
 
