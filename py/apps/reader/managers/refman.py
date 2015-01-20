@@ -216,7 +216,7 @@ class ScapeApi(object):
 
     import settings
     ss = settings.global_()
-    self.setProxyEnabled(ss.proxyScape)
+    self.setProxyEnabled(ss.proxyScape())
     ss.proxyScapeChanged.connect(self.setProxyEnabled)
 
   def setProxyEnabled(self, t):

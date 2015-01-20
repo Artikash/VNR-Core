@@ -509,7 +509,7 @@ class GameInfo(object):
     return g.scapeMedian if g else 0
 
   def _iterReferences(self):
-    for it in self.trailers, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon:
+    for it in self.trailers, self.freem, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon:
       if it:
         yield it
 
