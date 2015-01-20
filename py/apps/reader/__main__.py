@@ -17,6 +17,8 @@ See (zh): http://sakuradite.com/wiki/zh/VNR/Command_Line
 options:
   --debug       Print debug output
   --help        Print help
+  --minimize    Minimize to tray after launch
+  --nosplash    Do not display splash screen
   --pid PID     Attach to the process with PID"""
 
 def main():
@@ -163,10 +165,14 @@ def main():
   dprint("autosync settings")
   ss.autoSync() # Load before qapplication is created
 
-  dprint("show splash")
-  from splashscreen import StartupSplashScreen
-  splash = StartupSplashScreen()
-  splash.show()
+  opt_splash = '--nosplash' not in sys.argv
+
+  if opt_splash:
+    dprint("show splash")
+    from splashscreen import StartupSplashScreen
+    splash = StartupSplashScreen()
+    splash.show()
+
   a.processEvents() # process event to make it show
 
   #dprint("cache fonts")
@@ -339,8 +345,9 @@ def main():
   m = main.MainObject(a)
   m.init()
 
-  dprint("schedule to finish splash")
-  splash.finishLater(1500) # hide after 1.5 seconds
+  if opt_splash:
+    dprint("schedule to finish splash")
+    splash.finishLater(1500) # hide after 1.5 seconds
 
   from functools import partial
   from sakurakit import skevents
