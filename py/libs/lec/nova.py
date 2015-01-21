@@ -10,11 +10,12 @@ if __name__ == '__main__': # DEBUG
 import ctypes, os
 #from sakurakit import msvcrt
 from sakurakit.skdebug import dprint, dwarn
+import lecdef
+
+BUFFER_SIZE = lecdef.DLL_BUFFER_SIZE
 
 ENGINE_DLL = 'EngineDll_je'   # Nova/JaEn/EngineDll_je.dll
 ENGINE_ENCODING = 'sjis'
-
-BUFFER_SIZE = 10000 # output buffer size
 
 class _Loader(object):
 
