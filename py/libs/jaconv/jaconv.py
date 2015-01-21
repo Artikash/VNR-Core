@@ -104,7 +104,7 @@ def _repair_romaji(text): # unicode -> unicode  repair xtu
 _ru_i_vowel = u"ауэояё"
 _re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
 _re_ru_ii = re.compile(ur"(?<=[%s])й(и+)" % _ru_i_vowel)
-_re_ru_z = re.compile(ur"\bэ")
+_re_ru_z = re.compile(ur'\bз', re.UNICODE)
 _re_ru_tsu = re.compile(ur"っ([бвгдзклмнпрстфхцчшщъыь])")
 def _repair_romaji_ru(text): # unicode -> unicode  repair xtu
   """
