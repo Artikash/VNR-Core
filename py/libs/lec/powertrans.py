@@ -9,36 +9,75 @@ from sakurakit.skdebug import dprint, dwarn
 
 class _Engine(object):
   def __init__(self):
-    self.dllLoaded = False
     self.pathLoaded = False
 
-  @memoizedproperty
-  def nova(self):
-    import nova
-    return nova.Loader()
+    self.engines = {} # {key, Loader}
 
-  def loadDll(self):
-    self.nova.init()
-    self.dllLoaded = self.nova.isInitialized()
-    dprint("ok = %s" % self.dllLoaded)
+  def getEngine(self, key):
+    """
+    @param  key  str
+    @return  Loader
+    """
+    ret = self.engines.get(key)
+    if not ret:
+      if key == 'nova':
+        import nova
+        ret = nova.Loader()
+      elif key == 'pars':
+        import pars
+        ret = pars.Loader()
+      dprint("key = %s" % key)
+      if ret and ret.init():
+        self.engines[key] = ret
+      else:
+        dwarn("failed to load key = %s" % key)
+        ret = None
+    return ret
+
+  def getEngines(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  [Loader]
+    """
+    if fr == 'en' and to == 'ru':
+      pars = self.getEngine('pars')
+      if pars:
+        return pars,
+    elif fr == 'ja' and to == 'en':
+      nova = self.getEngine('nova')
+      if nova:
+        return nova,
+    elif fr == 'ja' and to == 'ru':
+      nova = self.getEngine('nova')
+      if nova:
+        pars = self.getEngine('pars')
+        if pars:
+          return nova, pars
+        else:
+          return nova,
 
   def loadPath(self):
-    rpath = self.registryLocation()
-    epath = self.environLocation()
-    if rpath:
-      path = os.path.join(rpath, r"Nova\JaEn")
-      if os.path.exists(path):
-        skpaths.append_path(path)
-    if epath and epath != rpath:
-      path = os.path.join(epath, r"Nova\JaEn")
-      if os.path.exists(path):
-        skpaths.append_path(path)
+    paths = { # use set for uniqueness
+      self.registryLocation(),
+      self.environLocation(),
+    }
+    l = []
+    for path in paths:
+      for k in (r"Nova\JaEn", r"PARS\EnRu"):
+        v = os.path.join(path, k)
+        if os.path.exists(v):
+          l.append(v)
+    if l:
+      skpaths.append_paths(l)
     self.pathLoaded = True
 
   def destroy(self):
-    if self.dllLoaded:
-      self.nova.destroy()
-      dprint("pass")
+    if self.engines:
+      for eng in self.engines.itervalues():
+        ret.destroy()
+      self.engines.clear()
+    dprint("pass")
 
   @staticmethod
   def registryLocation():
@@ -72,34 +111,42 @@ class Engine(object):
     self.destroy()
 
   def destroy(self): self.__d.destroy()
-  def isLoaded(self): return self.__d.dllLoaded
+  def isLoaded(self): return bool(self.__d.engines)
 
-  def load(self):
+  def load(self, to='en', fr='ja'):
     """
+    @param* to  str
+    @param* fr  str
     @return  bool
     """
     d = self.__d
     if not d.pathLoaded:
       d.loadPath()
-    if not d.dllLoaded:
-      d.loadDll()
-    return self.isLoaded()
+    if not d.engines:
+      d.getEngine('nova')
+      if to == 'ru':
+        d.getEngine('pars')
+    return bool(d.engines)
 
-  def translate(self, text):
+  def translate(self, text, to='en', fr='ja'):
     """
     @param  text  unicode or str
+    @param* to  str
+    @param* fr  str
     @return   unicode not None
     @throw  RuntimeError
     """
-    if not self.isLoaded():
-      self.load()
-      if not self.isLoaded():
-        raise RuntimeError("Failed to load Power Translator dll")
-    return self.__d.nova.translate(text) #if text else ""
+    l = self.__d.getEngines(to, fr)
+    if not l:
+      raise RuntimeError("Failed to load Power Translator dll")
+    for eng in l:
+      if text:
+        text = eng.translate(text)
+    return text
 
-  def warmup(self):
+  def warmup(self, to='en', fr='ja'):
     #try: self.translate(u" ")
-    try: self.translate(u"あ")
+    try: self.translate(u"あ", to=to, fr=fr)
     except Exception, e: dwarn(e)
 
   @staticmethod

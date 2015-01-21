@@ -59,7 +59,9 @@ def main():
   # - Through file
   #   See: http://stackoverflow.com/questions/380870/python-single-instance-of-program
   dprint("check single instance")
+
   from lockfile import lockfile
+
   app_mutex = lockfile.SingleProcessMutex()
   single_app = app_mutex.tryLock()
   if not single_app:
@@ -69,9 +71,9 @@ def main():
   #dprint("rootdir = %s" % rootdir)
   #dprint("mecabrc = %s" % mecabrc_path)
 
+  from sakurakit import skos
   # Must be set before any GUI is showing up
   # http://stackoverflow.com/questions/1551605/how-to-set-applications-taskbar-icon-in-windows-7
-  from sakurakit import skos
   if skos.WIN:
     dprint("set app id")
     from sakurakit import skwin
@@ -79,6 +81,7 @@ def main():
 
   # Detect user language
   import settings
+
   ss = settings.global_()
   lang = ss.userLanguage()
   if not lang:
@@ -251,9 +254,15 @@ def main():
     ss.zunkoLocation(),
     ss.localeEmulatorLocation(),
     ss.ntleasLocation(),
-    os.path.join(ss.lecLocation(), r"Nova\JaEn") if ss.lecLocation() else "",
     os.path.join(ss.dreyeLocation(), r"DreyeMT\SDK\bin") if ss.dreyeLocation() else "",
   ))
+
+  path = ss.lecLocation()
+  if path:
+    skpaths.append_paths((
+      os.path.join(path, r"Nova\JaEn"),
+      os.path.join(path, r"PARS\EnRU"),
+    ))
 
   path = ss.fastaitLocation()
   if path:
@@ -644,3 +653,19 @@ if __name__ == '__main__':
   #assert False, "unreachable"
 
 # EOF
+
+#def test_lec():
+#  import os
+#  lecpath = r"C:\Program Files\Power Translator 15"
+#  #lecpath = r"Z:\Local\Windows\Applications\Power Translator 15"
+#  enginepath = lecpath + r"\PARS\EnRu"
+#  os.environ['PATH'] += os.pathsep + enginepath
+#  from lec.pars import Loader
+#  l = Loader()
+#  l.init()
+#  t = "hello world"
+#  ret = l.translate(t)
+#  l.destroy()
+#  print type(ret)
+#  print ret
+#

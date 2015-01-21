@@ -10,11 +10,12 @@ if __name__ == '__main__': # DEBUG
 import ctypes, os
 #from sakurakit import msvcrt
 from sakurakit.skdebug import dprint, dwarn
+import lecdef
+
+BUFFER_SIZE = lecdef.DLL_BUFFER_SIZE
 
 ENGINE_DLL = 'EngineDll_je'   # Nova/JaEn/EngineDll_je.dll
 ENGINE_ENCODING = 'sjis'
-
-BUFFER_SIZE = 10000 # output buffer size
 
 class _Loader(object):
 
@@ -133,14 +134,14 @@ class Loader(object):
 
   def init(self):
     d = self.__d
-    if d.initialized:
-      return
-    try:
-      if d.init():
-        d.initialized = True
-      else:
-        d.end()
-    except (WindowsError, AttributeError): pass
+    if not d.initialized:
+      try:
+        if d.init():
+          d.initialized = True
+        else:
+          d.end()
+      except (WindowsError, AttributeError): pass
+    return d.initialized
 
   def isInitialized(self): return self.__d.initialized
 
@@ -181,6 +182,7 @@ if __name__ == '__main__': # DEBUG
   print ret
   t = u"「「寝る「「１つ次の時間帯へ「「どれもやめとく"
   ret = l.translate(t)
+  print type(ret)
   print ret
   l.destroy()
 

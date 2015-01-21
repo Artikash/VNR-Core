@@ -2779,6 +2779,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       grid.addWidget(self.atlasBrowseButton, r, 0)
       grid.addWidget(self.atlasButton, r, 1)
 
+    if 'en' not in blans or 'ru' not in blans:
       r += 1
       grid.addWidget(self.lecBrowseButton, r, 0)
       grid.addWidget(self.lecButton, r, 1)
@@ -2970,7 +2971,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   @memoizedproperty
   def lecButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("LEC English translator"))
+    ret = QtWidgets.QCheckBox(my.tr("LEC English/Russian translator"))
     ret.setChecked(settings.global_().isLecEnabled())
     ret.toggled.connect(settings.global_().setLecEnabled)
     return ret
@@ -3011,6 +3012,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       self.atlasButton.setEnabled(t)
       self.atlasBrowseButton.setEnabled(t)
 
+    if 'en' not in blans or 'ru' not in blans:
       t = ss.isLecEnabled() or bool(libman.lec().location())
       self.lecButton.setEnabled(t)
       self.lecBrowseButton.setEnabled(t)
@@ -5267,6 +5269,7 @@ class _TranslatorLibraryTab(object):
       layout.addWidget(self.ezTransGroup)
     if 'en' not in blans:
       layout.addWidget(self.atlasGroup)
+    if 'en' not in blans or 'ru' not in blans:
       layout.addWidget(self.lecGroup)
     layout.addStretch()
     q.setLayout(layout)
@@ -5832,10 +5835,10 @@ You can get a free version of Atlas here from Fujitsu:
 
     url = libman.Lec.URL
     self.lecInfoEdit.setHtml(my.tr(
-"""LEC Power Translator v15 is used for <span style="color:purple">offline Japanese-English</span> translation.<br/>
+"""LEC Power Translator v15 is used for <span style="color:purple">offline Japanese-English/European</span> translation.<br/>
 Power Translator is detected on your system at the above location.""")
     if ok else my.tr(
-"""LEC Power Translator v15 is needed by <span style="color:purple">offline Japanese-English</span> translation.
+"""LEC Power Translator v15 is needed by <span style="color:purple">offline Japanese-English/European</span> translation.
 It is <span style="color:purple">not free</span>, and you can purchase one here from LEC:
 <center><a href="%s">%s</a></center>""") % (url, url))
 

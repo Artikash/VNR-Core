@@ -23,6 +23,7 @@ win32: SUBDIRS += \
   fastaittest \
   imetest \
   ocrtest \
+  parstest \
   sehtest \
   srtest \
   ttstest \

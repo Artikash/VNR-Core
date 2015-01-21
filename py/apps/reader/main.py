@@ -1727,7 +1727,10 @@ class MainObject(QObject):
     #dprint("warm up translators")
     #d.translatorManager.warmup()
     dprint("schedule to warm up translators")
-    skevents.runlater(d.translatorManager.warmup, 1000) # warm up after 1 seconds to avoid blocking on the startup
+    lang =  settings.global_().userLanguage()
+    skevents.runlater(partial(
+        d.translatorManager.warmup, to=lang)
+        , 1000) # warm up after 1 seconds to avoid blocking on the startup
 
     dprint("start rpc server")
     d.rpcServer.start()
