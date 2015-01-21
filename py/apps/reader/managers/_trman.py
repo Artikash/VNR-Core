@@ -25,7 +25,7 @@ from unitraits import unichars, jpchars, jpmacros
 import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
-    ur'{{boc}}({{kana}})(?=[、…]\1)'))
+    ur'{{boc}}({{kana}})[っッ]?(?=[、…]\1)'))
 
 isspace = unichars.isspace
 
