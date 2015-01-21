@@ -134,14 +134,14 @@ class Loader(object):
 
   def init(self):
     d = self.__d
-    if d.initialized:
-      return
-    try:
-      if d.init():
-        d.initialized = True
-      else:
-        d.end()
-    except (WindowsError, AttributeError): pass
+    if not d.initialized:
+      try:
+        if d.init():
+          d.initialized = True
+        else:
+          d.end()
+      except (WindowsError, AttributeError): pass
+    return d.initialized
 
   def isInitialized(self): return self.__d.initialized
 

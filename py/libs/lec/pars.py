@@ -361,10 +361,14 @@ class _Loader(object):
     DWORD __stdcall InitContext(BYTE arg1=0, const char *path, BYTE arg3=0, BYTE arg4=0, BYTE arg5=0, int arg6=1, int arg7=0, BYTE arg8=1);
     """
     dprint("enter")
-    path = self._initPath()
+    path = self._initPath() + r'\DIC\gen_'
+    #path = os.path.join(path, r'DIC\gen_')
+    #path = r'.\DIC\gen_'
+    #dprint(path)
+    #path = r'C:\Program Files\Power Translator 15\PARS\EnRu\DIC\gen_'
     res = self.dll.InitContext(
       0, # arg1
-      os.path.join(path, r'DIC\gen_'),
+      path, #ctypes.c_char_p(path), # arg2  must be str instead of unicode
       0, # arg3
       0, # arg4
       0, # arg5
@@ -411,14 +415,12 @@ class Loader(object):
   def __del__(self):
     self.destroy()
 
-  def init(self):
+  def init(self): # -> bool
     d = self.__d
-    if d.initialized:
-      return
-    try:
-      if d.init():
-        d.initialized = True
-    except (WindowsError, AttributeError): pass
+    if not d.initialized:
+      try: d.initialized = d.init()
+      except (WindowsError, AttributeError): pass
+    return d.initialized
 
   def isInitialized(self): return self.__d.initialized
 
@@ -447,6 +449,7 @@ class Loader(object):
 
 if __name__ == '__main__': # DEBUG
   lecpath = r"C:\Program Files\Power Translator 15"
+  #lecpath = r"Z:\Local\Windows\Applications\Power Translator 15"
   enginepath = lecpath + r"\PARS\EnRu"
   os.environ['PATH'] += os.pathsep + enginepath
   l = Loader()

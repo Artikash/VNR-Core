@@ -630,7 +630,7 @@ class LecTranslator(OfflineMachineTranslator):
   def createengine():
     from lec import powertrans
     ret = powertrans.create_engine()
-    ok = ret.load()
+    ok = ret.load() # no language is given here
     #import atexit
     #atexit.register(ret.destroy)
     if ok:
@@ -642,7 +642,10 @@ class LecTranslator(OfflineMachineTranslator):
   # This would cause issue?
   def warmup(self, to='', fr=''):
     """@reimp"""
-    self.engine.warmup(to=to, fr=fr)
+    if fr + to in ('jaen', 'jaru', 'enru'):
+      self.engine.warmup(to=to, fr=fr)
+    else:
+      self.engine.warmup()
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -651,6 +654,7 @@ class LecTranslator(OfflineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
@@ -661,12 +665,22 @@ class LecTranslator(OfflineMachineTranslator):
   #def _translateApi(self, text, fr='', to=''): # unicode -> unicode
   #  return self.engine.translate(text)
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
-    """@reimp"""
+  @staticmethod
+  def _checkLanguages(to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  str to, str fr
+    """
     if to not in ('en', 'ru'):
       to = 'en'
     if fr not in ('en', 'ja'):
       fr = 'ja'
+    return to, fr
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     #if fr != 'ja':

@@ -26,8 +26,12 @@ class _Engine(object):
       elif key == 'pars':
         import pars
         ret = pars.Loader()
-      if ret and ret.isInitialized():
+      dprint("key = %s" % key)
+      if ret and ret.init():
         self.engines[key] = ret
+      else:
+        dwarn("failed to load key = %s" % key)
+        ret = None
     return ret
 
   def getEngines(self, to, fr):
@@ -58,11 +62,14 @@ class _Engine(object):
       self.registryLocation(),
       self.environLocation(),
     }
+    l = []
     for path in paths:
       for k in (r"Nova\JaEn", r"PARS\EnRu"):
         v = os.path.join(path, k)
         if os.path.exists(v):
-          skpaths.append_path(v)
+          l.append(v)
+    if l:
+      skpaths.append_paths(l)
     self.pathLoaded = True
 
   def destroy(self):
