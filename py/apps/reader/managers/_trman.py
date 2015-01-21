@@ -92,7 +92,7 @@ class Translator(object):
 
   def clearCache(self): pass
 
-  def warmup(self): pass
+  def warmup(self, to='', fr=''): pass
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -553,7 +553,7 @@ class AtlasTranslator(OfflineMachineTranslator):
     return ret
 
   # This would cause issue?
-  def warmup(self):
+  def warmup(self, to='', fr=''):
     """@reimp"""
     self.engine.warmup()
 
@@ -640,9 +640,9 @@ class LecTranslator(OfflineMachineTranslator):
     return ret
 
   # This would cause issue?
-  def warmup(self):
+  def warmup(self, to='', fr=''):
     """@reimp"""
-    self.engine.warmup()
+    self.engine.warmup(to=to, fr=fr)
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -658,21 +658,24 @@ class LecTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
-    return self.engine.translate(text)
+  #def _translateApi(self, text, fr='', to=''): # unicode -> unicode
+  #  return self.engine.translate(text)
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
-    to = 'en'
+    if to not in ('en', 'ru'):
+      to = 'en'
+    if fr not in ('en', 'ja'):
+      fr = 'ja'
     if emit:
-      self.emitLanguages(fr='ja', to=to)
-    if fr != 'ja':
-      return None, None, None
+      self.emitLanguages(fr=fr, to=to)
+    #if fr != 'ja':
+    #  return None, None, None
     if not emit:
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    if scriptEnabled and to == 'en' and fr == 'ja':
+    if scriptEnabled and fr == 'ja':
       t = text
       text = tahscript.manager().apply(text, self.key)
       if emit and text != t:
@@ -681,7 +684,7 @@ class LecTranslator(OfflineMachineTranslator):
     if repl:
       try:
         repl = self._translate(emit, repl,
-            self._translateApi,
+            self.engine.translate,
             to, fr, async)
         if repl:
           repl = wide2thin(repl) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
@@ -719,7 +722,7 @@ class EzTranslator(OfflineMachineTranslator):
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")))
     return ret
 
-  def warmup(self):
+  def warmup(self, to='', fr=''):
     """@reimp"""
     self.engine.warmup()
 
@@ -833,7 +836,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("JBeijing")))
     return ret
 
-  def warmup(self):
+  def warmup(self, to='', fr=''):
     """@reimp"""
     self.engine.warmup()
 
@@ -1012,7 +1015,7 @@ class FastAITTranslator(OfflineMachineTranslator):
     return ''
 
   # Ignored
-  #def warmup(self):
+  #def warmup(self, to='', fr=''):
   #  """@reimp"""
   #  self.ecEngine.warmup()
   #  self.jcEngine.warmup()
@@ -1119,7 +1122,7 @@ class DreyeTranslator(OfflineMachineTranslator):
       return ''
 
   # Ignored
-  #def warmup(self):
+  #def warmup(self, to='', fr=''):
   #  """@reimp"""
   #  self.ecEngine.warmup()
   #  self.jcEngine.warmup()

@@ -303,11 +303,11 @@ class TranslatorManager(QObject):
 
   ## Queries ##
 
-  def warmup(self):
+  def warmup(self, to='', fr='ja'):
     if features.MACHINE_TRANSLATION:
       for it in self.__d.iterOfflineTranslators():
         dprint("warm up %s" % it.key)
-        it.warmup()
+        it.warmup(to=to, fr=fr)
 
   def hasOnlineTranslators(self):
     """

@@ -251,9 +251,15 @@ def main():
     ss.zunkoLocation(),
     ss.localeEmulatorLocation(),
     ss.ntleasLocation(),
-    os.path.join(ss.lecLocation(), r"Nova\JaEn") if ss.lecLocation() else "",
     os.path.join(ss.dreyeLocation(), r"DreyeMT\SDK\bin") if ss.dreyeLocation() else "",
   ))
+
+  path = ss.lecLocation()
+  if path:
+    skpaths.append_paths((
+      os.path.join(path, r"Nova\JaEn"),
+      os.path.join(path, r"PARS\EnRU"),
+    ))
 
   path = ss.fastaitLocation()
   if path:

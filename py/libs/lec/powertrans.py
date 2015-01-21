@@ -129,7 +129,7 @@ class Engine(object):
     @return   unicode not None
     @throw  RuntimeError
     """
-    l = self.getEngines(to, fr)
+    l = self.__d.getEngines(to, fr)
     if not l:
       raise RuntimeError("Failed to load Power Translator dll")
     for eng in l:
