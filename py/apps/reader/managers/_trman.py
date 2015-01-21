@@ -655,7 +655,7 @@ class LecTranslator(OfflineMachineTranslator):
     @return  unicode sub
     """
     to, fr = self._checkLanguages(to, fr)
-    try: return self._translateTest(self.engine.translate, text, async=async)
+    try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("LEC")),
@@ -670,7 +670,7 @@ class LecTranslator(OfflineMachineTranslator):
     """
     @param  to  str
     @param  fr  str
-    @return  str to, str fr
+    @return  (str to, str fr)
     """
     if to not in ('en', 'ru'):
       to = 'en'

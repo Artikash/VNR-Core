@@ -361,7 +361,7 @@ class _Loader(object):
     DWORD __stdcall InitContext(BYTE arg1=0, const char *path, BYTE arg3=0, BYTE arg4=0, BYTE arg5=0, int arg6=1, int arg7=0, BYTE arg8=1);
     """
     dprint("enter")
-    path = self._initPath() + r'\DIC\gen_'
+    path = os.path.join(self._initPath(), r'DIC\gen_')
     #path = os.path.join(path, r'DIC\gen_')
     #path = r'.\DIC\gen_'
     #dprint(path)
@@ -457,6 +457,7 @@ if __name__ == '__main__': # DEBUG
   t = "hello world"
   ret = l.translate(t)
   l.destroy()
+  print type(ret)
   print ret
 
 # EOF

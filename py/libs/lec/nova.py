@@ -182,6 +182,7 @@ if __name__ == '__main__': # DEBUG
   print ret
   t = u"「「寝る「「１つ次の時間帯へ「「どれもやめとく"
   ret = l.translate(t)
+  print type(ret)
   print ret
   l.destroy()
 

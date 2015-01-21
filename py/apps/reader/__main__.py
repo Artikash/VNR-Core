@@ -21,6 +21,21 @@ options:
   --nosplash    Do not display splash screen
   --pid PID     Attach to the process with PID"""
 
+def test_lec():
+  import os
+  lecpath = r"C:\Program Files\Power Translator 15"
+  #lecpath = r"Z:\Local\Windows\Applications\Power Translator 15"
+  enginepath = lecpath + r"\PARS\EnRu"
+  os.environ['PATH'] += os.pathsep + enginepath
+  from lec.pars import Loader
+  l = Loader()
+  l.init()
+  t = "hello world"
+  ret = l.translate(t)
+  l.destroy()
+  print type(ret)
+  print ret
+
 def main():
   """
   @return  int
@@ -59,7 +74,9 @@ def main():
   # - Through file
   #   See: http://stackoverflow.com/questions/380870/python-single-instance-of-program
   dprint("check single instance")
+
   from lockfile import lockfile
+
   app_mutex = lockfile.SingleProcessMutex()
   single_app = app_mutex.tryLock()
   if not single_app:
@@ -69,9 +86,9 @@ def main():
   #dprint("rootdir = %s" % rootdir)
   #dprint("mecabrc = %s" % mecabrc_path)
 
+  from sakurakit import skos
   # Must be set before any GUI is showing up
   # http://stackoverflow.com/questions/1551605/how-to-set-applications-taskbar-icon-in-windows-7
-  from sakurakit import skos
   if skos.WIN:
     dprint("set app id")
     from sakurakit import skwin
@@ -79,6 +96,7 @@ def main():
 
   # Detect user language
   import settings
+
   ss = settings.global_()
   lang = ss.userLanguage()
   if not lang:
@@ -648,5 +666,6 @@ if __name__ == '__main__':
   print >> sys.stderr, "reader: leave, ret =", ret
   sys.exit(ret)
   #assert False, "unreachable"
+
 
 # EOF

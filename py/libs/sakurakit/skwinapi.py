@@ -208,6 +208,13 @@ try:
 except AttributeError:
   def SetCurrentProcessExplicitAppUserModelID(appId): return 0
 
+try:
+  GetCurrentProcessExplicitAppUserModelID = shell32.GetCurrentProcessExplicitAppUserModelID
+  GetCurrentProcessExplicitAppUserModelID.restype = HRESULT
+  GetCurrentProcessExplicitAppUserModelID.argtype = POINTER(LPWSTR)
+except AttributeError:
+  def GetCurrentProcessExplicitAppUserModelID(appId): return 0
+
 # Windows 7+
 MSGFLT_ALLOW = 1
 MSGFLT_DISALLOW = 2
