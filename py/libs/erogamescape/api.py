@@ -192,6 +192,7 @@ if __name__ == '__main__':
   t = 17716
   t = 2294
   t = 15986
+  t = 7868
   def test_game():
     q = api.query(t)
     #print q
@@ -201,6 +202,7 @@ if __name__ == '__main__':
       print it['digiket']
       print it['erogametokuten']
       print it['gyutto_id']
+      print it['dlsite_domain']
       #print it['twitter_data_widget_id_before']
 
   def test_review():
@@ -214,6 +216,16 @@ if __name__ == '__main__':
       print it['memo']
       print it['timestamp']
 
-  test_review()
+  def test_proxy():
+    import requests
+    s = requests.Session()
+    from proxyrequests import proxyconfig, proxyrequests
+    site = proxyconfig.WEBPROXY_CONFIG
+    #site = proxyconfig.WEBSERVER_CONFIG
+    s = proxyrequests.Session(site, session=s, allows_caching=True)
+    GameTableApi.session = s
+
+  #test_proxy()
+  test_game()
 
 # EOF
