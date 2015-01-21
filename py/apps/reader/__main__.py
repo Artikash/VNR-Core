@@ -21,21 +21,6 @@ options:
   --nosplash    Do not display splash screen
   --pid PID     Attach to the process with PID"""
 
-def test_lec():
-  import os
-  lecpath = r"C:\Program Files\Power Translator 15"
-  #lecpath = r"Z:\Local\Windows\Applications\Power Translator 15"
-  enginepath = lecpath + r"\PARS\EnRu"
-  os.environ['PATH'] += os.pathsep + enginepath
-  from lec.pars import Loader
-  l = Loader()
-  l.init()
-  t = "hello world"
-  ret = l.translate(t)
-  l.destroy()
-  print type(ret)
-  print ret
-
 def main():
   """
   @return  int
@@ -667,5 +652,20 @@ if __name__ == '__main__':
   sys.exit(ret)
   #assert False, "unreachable"
 
-
 # EOF
+
+#def test_lec():
+#  import os
+#  lecpath = r"C:\Program Files\Power Translator 15"
+#  #lecpath = r"Z:\Local\Windows\Applications\Power Translator 15"
+#  enginepath = lecpath + r"\PARS\EnRu"
+#  os.environ['PATH'] += os.pathsep + enginepath
+#  from lec.pars import Loader
+#  l = Loader()
+#  l.init()
+#  t = "hello world"
+#  ret = l.translate(t)
+#  l.destroy()
+#  print type(ret)
+#  print ret
+#
