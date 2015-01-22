@@ -46,14 +46,14 @@ def translate(appId, text, to='en', fr='ja'):
       }
     )
 
-    ret = r.content
+    ret = r.content # unicode not used since json can do that
     if r.ok and len(ret) > 20:
       i = ret.index('[')
       if i >= 0:
         ret = ret[i:] # skip leading JSONP function name
         l = json.loads(ret)
         if len(l) == 1:
-           ret = l[0]['TranslatedText']
+          ret = l[0]['TranslatedText']
         else:
           ret = '\n'.join(it['TranslatedText'] for it in l)
         ret = unescapehtml(ret)

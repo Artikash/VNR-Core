@@ -30,10 +30,19 @@ def _gunzip(data):
   return _zlib_decomp.decompress(data)
 
 class Response:
+  encoding = 'utf8'
+
   def __init__(self, ok=True, content='', url=''):
     self.ok = ok # bool
     self.content = content # str
     self.url = url # unicode
+
+  @property
+  def text(self):
+    if self.content and isinstance(self.content, str):
+      return self.content.decode(self.encoding) # this might throw
+    else:
+      return self.content
 
 class _Session:
   encoding = 'utf8'

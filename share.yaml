@@ -60,8 +60,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   bootstrap2: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js
   bootstrap2.css: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css
 
-  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js
-  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css
+  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js
+  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css
 
   #font-awesome.css: http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
   font-awesome3.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
@@ -70,7 +70,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   twitter.widgets: http://platform.twitter.com/widgets.js
 
   # Microsoft CDN: http://www.asp.net/ajaxlibrary/cdn.ashx#Third-Party_Files_on_the_CDN_21
-  jquery: http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js
+  jquery: http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.3.min.js
   #jquery: $PWD/../AJAX/jquery/2.0.3/jquery-2.0.3.min.js
 
   # Google CDN: https://developers.google.com/speed/libraries/devguide
@@ -247,7 +247,7 @@ proxies:
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
   googlesr:     http://153.121.52.138/proxy/gg/speech/v2/recognize
-  googletrans:  http://153.121.52.138/proxy/gg/trans/m
+  googletrans:  http://153.121.52.138/proxy/gg/trans/translate_a/t
   googletts:    http://153.121.52.138/proxy/gg/trans/translate_tts
   ytimg:
     i:          http://153.121.52.138/proxy/ytimg/i2

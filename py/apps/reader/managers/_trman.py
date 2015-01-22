@@ -116,6 +116,15 @@ class Translator(object):
     """
     return None, to, self.key
 
+  @staticmethod
+  def languageNeedsEscape(to, fr='ja'):
+    """
+    @param  to  str  language
+    @param* fr  str  language
+    @return  bool
+    """
+    return to[:2] in ('ko', 'zh') and fr == 'ja'
+
   # Emits
 
   def emitLanguages(self, fr, to):
@@ -229,7 +238,6 @@ class YueTranslator(Translator):
 
   def __init__(self, session=None, abortSignal=None):
     self.abortSignal = abortSignal
-    self.session = session
 
     from baidu import baidufanyi
     baidufanyi.session = session or requests.Session()
@@ -1365,22 +1373,27 @@ class TransruTranslator(OnlineMachineTranslator):
 
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
-  asyncSupported = True # override  enable async
+  #asyncSupported = True # override  enable async
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
 
-    from google import googletrans
+    import googleman
+    googleman.setsession(session or requests.Session())
+
     # Session is not used, or it could get blocked by Google
     #googletrans.session = requests.Session()
-    self.engine = googletrans
+    self.engine = googleman.manager()
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
   #  '...': u'…',
   #}))
+  # Fix numbers such as 929,005.678。
+  __re_term_fix = re.compile(r'(?<=\d),(?=\d{3})')
   def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
-    async = True # force enable async
+    #async = True # force enable async
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1393,6 +1406,8 @@ class GoogleTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
+        if self.languageNeedsEscape(to, fr):
+          repl = self.__re_term_fix.sub('', repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         if to.startswith('zh'):
           repl = repl.replace("...", u'…')
@@ -1406,7 +1421,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
-    async = True # force enable async
+    #async = True # force enable async
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
     except Exception, e: dwarn(e); return ''
@@ -1417,10 +1432,9 @@ class BingTranslator(OnlineMachineTranslator):
 
   def __init__(self, session=None, **kwargs):
     super(BingTranslator, self).__init__(**kwargs)
-    self.session = session # requests session
 
     from microsoft import bingtrans
-    bingtrans.session = self.session or requests.Session()
+    bingtrans.session = session or requests.Session()
 
     import bingman
     self.engine = bingman.manager()

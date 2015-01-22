@@ -156,9 +156,10 @@ def main():
 
   if reader.isMainlandChina():
     dprint("set up proxy")
-    from google import googletts, googletrans
+    from google import googletts
     googletts.setapi(config.PROXY_GOOGLE_TTS)
-    googletrans.setapi(config.PROXY_GOOGLE_TRANS)
+    import googleman
+    googleman.setapi(config.PROXY_GOOGLE_TRANS)
 
   dprint("create main object")
   import main
