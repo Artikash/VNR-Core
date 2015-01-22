@@ -823,10 +823,10 @@ class GoogleTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
 
-    from google import googletrans
-    # Session is not used, or it could get blocked by Google
-    #googletrans.session = requests.Session()
-    self.engine = googletrans
+    import googleman
+    # Not sure if using session could get blocked by Google
+    googleman.setsession(requests.Session())
+    self.engine = googleman.manager()
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
   #  '...': u'…',

@@ -60,10 +60,12 @@ def setMainlandChina(value):
     if not value:
       for it in googlesr, googletts:
         it.setapi(it.defaultapi())
+
       for it in  getchu.soft, getchu.search, dlsite.search, dmm.game, erogamescape.api:
         it.resethost()
-      import requests
-      googletrans.session = requests
+
+      import googleman
+      googleman.resetapi()
 
       if PROXY_CONFIG:
         from proxyrequests import proxyconfig
@@ -77,13 +79,17 @@ def setMainlandChina(value):
       erogamescape.api.sethost(config.PROXY_EROGAMESCAPE) # temporarily disabled
       dmm.game.sethost(config.PROXY_DMM_JP)
       dlsite.search.sethost(config.PROXY_DLSITE)
+
       for it in getchu.soft, getchu.search:
         it.sethost(config.PROXY_GETCHU)
+
+      import googleman
+      googleman.setapi(config.PROXY_GOOGLE_TRANS)
 
       if PROXY_CONFIG:
         PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
 
-      googletrans.session = make_proxy_session(allows_caching=True)
+      #googletrans.session = make_proxy_session(allows_caching=True)
 
 # Proxies
 

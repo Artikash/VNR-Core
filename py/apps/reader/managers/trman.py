@@ -100,7 +100,7 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def googleTranslator(self):
-    return self._newtr(_trman.GoogleTranslator(abortSignal=self.abortSignal, postprocess=self.postprocess)) # , session=self.session # not work sync https redirect
+    return self._newtr(_trman.GoogleTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
 
   @memoizedproperty
   def baiduTranslator(self):
