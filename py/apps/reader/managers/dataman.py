@@ -2325,6 +2325,7 @@ class _Term(object):
     'userId',
     'userHash',
     'type',
+    'host',
     'language',
     'timestamp',
     'updateTimestamp',
@@ -2351,7 +2352,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
+      id, gameId, gameMd5, userId, userHash, type, host, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
     #self.priority = 0 # int  assigned after sorting
     self.init = False           # bool
     self.id = id                # long
@@ -2360,6 +2361,7 @@ class _Term(object):
     self.userId = userId        # long
     self.userHash = userHash    # long
     self.type = type            # in TYPES
+    self.host = host            # str
     self.language = language    # str
     self.timestamp = timestamp  # long
     self.updateTimestamp = updateTimestamp # long
@@ -2402,7 +2404,7 @@ class _Term(object):
     if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
       termman.manager().invalidateCache() # invalidate term cache when any term is changed
 
-    if self._errorType is not None and name in ('pattern', 'text', 'type', 'language', 'regex', 'syntax', 'special'):
+    if self._errorType is not None and name in ('pattern', 'text', 'type', 'host', 'language', 'regex', 'syntax', 'special'):
       self.recheckError()
 
     #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
@@ -2559,6 +2561,9 @@ class _Term(object):
   TYPES = 'escape', 'source', 'target', 'name', 'yomi', 'title', 'origin', 'speech', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
+  HOSTS = 'google', 'bing', 'baidu', 'excite', 'infoseek', 'lecol', 'transru', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
+  TR_HOSTS = 'Google', 'Bing', 'Baidu', 'Excite', 'Infoseek', 'lecol', 'transru', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
+
   # Errors, the larger (warning) or smaller (error) the worse
   OK = 0
   W_CHINESE_TRADITIONAL = 5 # should not use traditional chinese
@@ -2598,14 +2603,14 @@ class Term(QObject):
 
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
-      type="", language="", timestamp=0, text="",
+      type="", host="", language="", timestamp=0, text="",
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
+      id, gameId, gameMd5, userId, userHash, type, host, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
     if init:
       self.init(parent)
 
@@ -2642,7 +2647,7 @@ class Term(QObject):
       regex=d.regex,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
-      type=d.type, language=d.language, text=d.text, pattern=d.pattern)
+      type=d.type, host=d.host, language=d.language, text=d.text, pattern=d.pattern)
 
   ## Dirty ##
 
@@ -2672,6 +2677,7 @@ class Term(QObject):
   updateTimestamp, updateTimestampChanged = __D.synthesize('updateTimestamp', int)
 
   type, typeChanged = __D.synthesize('type', str, sync=True)
+  host, hostChanged = __D.synthesize('host', str, sync=True)
   language, languageChanged = __D.synthesize('language', str, sync=True)
   pattern, patternChanged = __D.synthesize('pattern', unicode, sync=True)
   text, textChanged = __D.synthesize('text', unicode, sync=True)
@@ -8410,7 +8416,7 @@ class _DataManager(object):
           if path == 3: # grimoire/terms/term
             tag = elem.tag
             text = elem.text
-            if tag in ('language', 'pattern', 'text', 'comment', 'updateComment'):
+            if tag in ('language', 'host', 'pattern', 'text', 'comment', 'updateComment'):
               kw[tag] = text or ''
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):

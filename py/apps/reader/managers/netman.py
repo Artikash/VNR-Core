@@ -1473,6 +1473,7 @@ class _NetworkManager(object):
               kw = {
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
+                'host': elem.get('host') or '',
                 'deleted': elem.get('deleted') == 'true',
               }
           else:
@@ -1534,6 +1535,8 @@ class _NetworkManager(object):
       'lang': td.language,
       'type': td.type,
     }
+    if td.host:
+      params['host'] = td.host
     if td.gameId:
       params['gameid'] = td.gameId
     elif td.gameMd5:
