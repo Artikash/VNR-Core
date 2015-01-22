@@ -112,24 +112,27 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
       if (pos == line.size())
         continue;
       //line.pop_back(); // remove trailing '\n'
-      wchar_t *cur;
-      long id = ::wcstol(line.c_str() + pos, &cur, 10); // base 10
-      if (cur != line.c_str() && *cur++) { // skip first delim
-        param.id = id ? std::to_wstring((long long)id) : std::wstring();
-        if (wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
-          param.source.assign(cur, delim - cur);
-          param.target.assign(delim + 1);
-        } else {
-          param.source.assign(cur);
-          param.target.clear();
-        }
-        if (!param.source.empty()) {
-          if (!param.f_child)
-            parentCount++;
-          params.push_back(param);
+      const wchar_t *cur = line.c_str() + pos;
+      long id = ::wcstol(cur, const_cast<wchar_t **>(&cur), 10); // base 10
+      if (cur && *cur++) { // skip first delim
+        param.category = ::wcstol(cur, const_cast<wchar_t **>(&cur), 10); // base 10
+        if (cur && *cur++) {
+          param.id = id ? std::to_wstring((long long)id) : std::wstring();
+          if (const wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
+            param.source.assign(cur, delim - cur);
+            param.target.assign(delim + 1);
+          } else {
+            param.source.assign(cur);
+            param.target.clear();
+          }
+          if (!param.source.empty()) {
+            if (!param.f_child)
+              parentCount++;
+            params.push_back(param);
+            //qDebug() << QString::fromStdWString(param.id) << param.category << QString::fromStdWString(param.source) << QString::fromStdWString(param.target);
+          }
         }
       }
-      //qDebug() << param.id << QString::fromStdWString(param.source) << QString::fromStdWString(param.target);
     }
 
   fin.close();
@@ -157,7 +160,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 }
 
 // Translation
-std::wstring TranslationScriptManager::translate(const std::wstring &text) const
+std::wstring TranslationScriptManager::translate(const std::wstring &text, int category) const
 {
   //QReadLocker locker(&d_->lock);
   std::wstring ret = text;
@@ -167,8 +170,8 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
   if (d_->ruleCount && d_->rules)
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
-      //qDebug() << rule.id << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
-      if (rule.is_valid())
+      //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
+      if (rule.is_valid() && rule.match_category(category))
         rule.replace(ret, d_->link);
 
 #ifdef DEBUG_RULE

@@ -29,7 +29,13 @@ if skos.WIN:
 def manager(): return TermManager()
 
 _re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
-def _remove_marks(text): return _re_marks.sub('', text)
+def _remove_marks(text): return _re_marks.sub('', text) # unicode -> unicode
+
+def _translator_category(host): # str -> int
+  if host:
+    try: return dataman.Term.HOSTS.index(host) + 1
+    except: pass
+  return 0
 
 SCRIPT_KEY_SEP = ',' # Separator of script manager key
 
@@ -191,6 +197,7 @@ class TermWriter:
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     esc % (priority, titleCount - i),
                     regex or it.regex,
+                    td.host,
                     name=False)
             elif escape_target:
               esc = defs.NAME_ESCAPE
@@ -200,7 +207,8 @@ class TermWriter:
                     esc % (priority, titleCount - i),
                     repl + it.text + (" " if padding else ""), # it will be escaped in C++
                     #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
-                    regex) # no padding space for Chinese names
+                    regex, # no padding space for Chinese names
+                    td.host)
             else:
               name = True
               #assert padding # this is supposed to be always true
@@ -210,11 +218,12 @@ class TermWriter:
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     repl + it.text + " ",
                     regex or it.regex,
+                    td.host,
                     name=False) # padding space for Japanese names
 
           if padding:
             repl += " "
-          self._writeLine(f, td.id, pattern, repl, regex, name=name)
+          self._writeLine(f, td.id, pattern, repl, regex, td.host, name=name)
 
           empty = False
 
@@ -228,21 +237,26 @@ class TermWriter:
     return False
 
   @staticmethod
-  def _writeLine(f, tid, pattern, repl, regex, name=None):
+  def _writeLine(f, tid, pattern, repl, regex, host, name=None):
     """
     @param  f  file
     @param  tid  long
     @param  pattern  unicode
     @param  repl  unicode
     @param  regex  bool
+    @param  host  str
     @param  name  True (name) of False (suffix) or None
     @return  unicode or None
     """
     if '\n' in pattern or '\n' in repl:
       dwarn("skip new line in term: id = %s" % tid)
       return
-    ret = '\t'.join((str(tid), pattern, repl) if repl else (str(tid), pattern))
-    ret = "\t%s\n" % ret
+    cat = _translator_category(host)
+    cols = [str(tid), str(cat), pattern]
+    if repl:
+      cols.append(repl)
+    ret = '\t'.join(cols)
+    ret = "\t%s\n" % ret # add leading/trailing spaces
     if regex:
       ret = 'r' + ret
     if name is not None:
@@ -565,11 +579,12 @@ class _TermManager:
         times[scriptKey] = createTime
     dprint("leave")
 
-  def applyTerms(self, text, type, language):
+  def applyTerms(self, text, type, language, host=''):
     """
     @param  text  unicode
     @param  type  str
     @param  language  str
+    @param* key  str
     """
     # TODO: Schedule to update terms when man is missing
     key = SCRIPT_KEY_SEP.join((type, language))
@@ -577,7 +592,8 @@ class _TermManager:
     if man is None:
       self.scriptTimes[key] = 0
       self.rebuildCacheLater()
-    return man.translate(text) if man and not man.isEmpty() else text
+    category = _translator_category(host)
+    return man.translate(text, category) if man and not man.isEmpty() else text
 
 class TermManager(QObject):
 
@@ -707,22 +723,6 @@ class TermManager(QObject):
   #  """
   #  return self.__d.iterTerms(terms, language)
 
-  def applyTargetTerms(self, text, language):
-    """
-    @param  text  unicode
-    @param  language  unicode
-    @return  unicode
-    """
-    d = self.__d
-    # 9/25/2014: Qt 0.0003 seconds
-    # 9/26/2014: Boost 0.0005 seconds, underline = True
-    #with SkProfiler():
-    return d.applyTerms(text, 'target', language) if d.enabled else text
-    #if d.marked and language.startswith('zh'):
-    #  ret = ret.replace('> ', '>')
-    #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
-    #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
-
   def applyOriginTerms(self, text, language):
     """
     @param  text  unicode
@@ -762,17 +762,35 @@ class TermManager(QObject):
     d = self.__d
     return d.applyTerms(text, 'ocr', language or d.targetLanguage) if d.enabled else text
 
-  def applySourceTerms(self, text, language):
+  def applyTargetTerms(self, text, language, host=''):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param  language  str
+    @param* host  str
+    @return  unicode
+    """
+    d = self.__d
+    # 9/25/2014: Qt 0.0003 seconds
+    # 9/26/2014: Boost 0.0005 seconds, underline = True
+    #with SkProfiler():
+    return d.applyTerms(text, 'target', language, host=host) if d.enabled else text
+    #if d.marked and language.startswith('zh'):
+    #  ret = ret.replace('> ', '>')
+    #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
+    #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
+
+  def applySourceTerms(self, text, language, host=''):
+    """
+    @param  text  unicode
+    @param  language  str
+    @param* host  str
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 0.0005 seconds
     # 9/26/2014: Boost 0.001 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'source', language) if d.enabled else text
+    return d.applyTerms(text, 'source', language, host=host) if d.enabled else text
     #dm = dataman.manager()
     #d = self.__d
     #text = d.applyTerms(dm.iterSourceTerms(), text, language)
@@ -784,10 +802,11 @@ class TermManager(QObject):
     #  except Exception, e: dwarn(e)
     #  text = text.rstrip() # remove trailing spaces
 
-  def prepareEscapeTerms(self, text, language):
+  def prepareEscapeTerms(self, text, language, host=''):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param  language  str
+    @param* host  str
     @return  unicode
     """
     d = self.__d
@@ -797,12 +816,13 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'escape_source', language)
+    return d.applyTerms(text, 'escape_source', language, host=host)
 
-  def applyEscapeTerms(self, text, language):
+  def applyEscapeTerms(self, text, language, host=''):
     """
     @param  text  unicode
     @param  language  unicode
+    @param* host  str
     @return  unicode
     """
     d = self.__d
@@ -812,7 +832,7 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
-    ret = d.applyTerms(text, 'escape_target', language)
+    ret = d.applyTerms(text, 'escape_target', language, host=host)
     if d.marked and language.startswith('zh'):
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")

@@ -160,7 +160,7 @@ class LougoTranslator(Translator):
 
     tm = termman.manager()
     t = text
-    text = tm.applySourceTerms(text, 'en')
+    text = tm.applySourceTerms(text, 'en', host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
     sub = mecabman.tolou(text)
@@ -203,7 +203,7 @@ class HanVietTranslator(Translator):
 
     tm = termman.manager()
     t = text
-    text = tm.applySourceTerms(text, 'zhs')
+    text = tm.applySourceTerms(text, 'zhs', host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
 
@@ -415,7 +415,7 @@ class MachineTranslator(Translator):
     tm = termman.manager()
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applySourceTerms(text, to)
+    text = tm.applySourceTerms(text, to, host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
 
@@ -423,7 +423,7 @@ class MachineTranslator(Translator):
     #with SkProfiler(): # 9/26/2014: C++ 0.015 seconds, Python: 0.05 seconds
     if self._needsJitter(to, fr):
       text = self._escapeJitter(text, to, fr)
-    text = tm.prepareEscapeTerms(text, to)
+    text = tm.prepareEscapeTerms(text, to, host=self.key)
     if emit and text != t:
       self.emitEscapedText(text)
 
@@ -450,12 +450,12 @@ class MachineTranslator(Translator):
     #text = self.__google_repl_after(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
-    text = tm.applyEscapeTerms(text, to)
+    text = tm.applyEscapeTerms(text, to, host=self.key)
     if emit and text != t:
       self.emitEscapedTranslation(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applyTargetTerms(text, to)
+    text = tm.applyTargetTerms(text, to, host=self.key)
     if self._needsJitter(to, fr):
       text = self._unescapeJitter(text, to, fr)
     if emit and text != t:
@@ -1579,8 +1579,8 @@ class BaiduTranslator(OnlineMachineTranslator):
 #    #if lang not in ('zhs', 'zht', 'ja', 'en', 'fr', 'ko', 'ru', 'es'):
 #    #  return None, None, None
 #    tm = termman.manager()
-#    text = tm.applySourceTerms(text, lang)
-#    text = tm.prepareEscapeTerms(text, lang)
+#    text = tm.applySourceTerms(text, lang, host=self.key)
+#    text = tm.prepareEscapeTerms(text, lang, host=self.key)
 #    #text = self._prepareSentenceTransformation(text)
 #    text = self.__youdao_repl_before(text)
 #    sub = self._translateByParagraph(text, youdaofanyi.translate,
@@ -1594,8 +1594,8 @@ class BaiduTranslator(OnlineMachineTranslator):
 #      if lang == 'zht':
 #        sub = zhs2zht(sub)
 #      sub = self.__youdao_repl_after(sub)
-#      sub = tm.applyEscapeTerms(sub, lang)
-#      sub = tm.applyTargetTerms(sub, lang)
+#      sub = tm.applyEscapeTerms(sub, lang, host=self.key)
+#      sub = tm.applyTargetTerms(sub, lang, host=self.key)
 #      sub = textutil.beautify_subtitle(sub)
 #    return sub, lang, self.key
 #

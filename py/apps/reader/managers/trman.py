@@ -529,28 +529,3 @@ class TranslatorQmlBean(QObject):
     return manager().translate(text, engine=engine, fr=language, async=True) or ''
 
 # EOF
-
-#  def _translateOnlineByBing(self, text):
-#    """
-#    @param  text  unicode
-#    @return  unicode sub, unicode lang, unicode provider
-#    """
-#    lang = self.language
-#    text = self._applySourceTerms(text, lang)
-#    text = self._prepareEscapeTerms(text, lang)
-#    text = self._prepareSentenceTransformation(text)
-#    sub = skthreads.runsync(partial(
-#      bingtrans.translate, text, to=lang),
-#    )
-#    if sub:
-#      if bingtrans.bad_translation(sub):
-#        growl.error(self.parent.tr(
-#"""So many users are using Microsoft translator this month that
-#VNR has run out of free monthly quota TT
-#Please try a different translator in Preferences instead.
-#"""))
-#        sub = ""
-#      else:
-#        sub = self._applyEscapeTerms(sub, lang)
-#        sub = self._applyTargetTerms(sub, lang)
-#    return sub, lang, mytr_("Bing")
