@@ -16,6 +16,9 @@
 %		if it.userHash
 			<userHash>{{it.userHash}}</userHash>
 %		endif
+%		if it.host
+			<host>{{it.host}}</host>
+%		endif
 			<language>{{it.language}}</language>
 			<timestamp>{{it.timestamp}}</timestamp>
 %		if it.updateTimestamp

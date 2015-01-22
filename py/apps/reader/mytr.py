@@ -39,6 +39,8 @@ class reader(QObject):
       self.tr("Japanese Dictionary"),
       self.tr("Text Reader"),
 
+      self.tr("Translator"),
+
       self.tr("YouTube Downloader"),
       self.tr("Download YouTube Videos"), self.tr("Download YouTube videos"),
 

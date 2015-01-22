@@ -2137,7 +2137,7 @@ class Comment(QObject):
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Comment.TYPES[i] : _Comment.TR_TYPES[i] for i in xrange(len(_Comment.TYPES))}
+  TYPE_NAMES = dict(zip(_Comment.TYPES, _Comment.TR_TYPES))
 
   @classmethod
   def typeName(cls, t):
@@ -2325,6 +2325,7 @@ class _Term(object):
     'userId',
     'userHash',
     'type',
+    'host',
     'language',
     'timestamp',
     'updateTimestamp',
@@ -2351,7 +2352,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
+      id, gameId, gameMd5, userId, userHash, type, host, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
     #self.priority = 0 # int  assigned after sorting
     self.init = False           # bool
     self.id = id                # long
@@ -2360,6 +2361,7 @@ class _Term(object):
     self.userId = userId        # long
     self.userHash = userHash    # long
     self.type = type            # in TYPES
+    self.host = host            # str
     self.language = language    # str
     self.timestamp = timestamp  # long
     self.updateTimestamp = updateTimestamp # long
@@ -2402,7 +2404,7 @@ class _Term(object):
     if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
       termman.manager().invalidateCache() # invalidate term cache when any term is changed
 
-    if self._errorType is not None and name in ('pattern', 'text', 'type', 'language', 'regex', 'syntax', 'special'):
+    if self._errorType is not None and name in ('pattern', 'text', 'type', 'host', 'language', 'regex', 'syntax', 'special'):
       self.recheckError()
 
     #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
@@ -2478,6 +2480,10 @@ class _Term(object):
     # E_NEWLINE
     if '\n' in self.pattern or self.text and '\n' in self.text:
       return self.E_NEWLINE
+
+    # E_BAD_HOST
+    if self.host and self.type not in self.HOST_TYPES:
+      return self.E_BAD_HOST
 
     # E_USELESS
     if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
@@ -2559,6 +2565,9 @@ class _Term(object):
   TYPES = 'escape', 'source', 'target', 'name', 'yomi', 'title', 'origin', 'speech', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
+  HOSTS = 'bing', 'google', 'lecol', 'excite', 'transru', 'infoseek', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
+  TR_HOSTS = "Bing.com", "Google.com", mytr_("LEC Online"), "Infoseek.co.jp", "Excite.co.jp", "Translate.Ru", mytr_("Baidu") + '.com', mytr_("JBeijing"), mytr_("FastAIT"), "Dr.eye", "ezTrans XP", "Atlas", "LEC"
+
   # Errors, the larger (warning) or smaller (error) the worse
   OK = 0
   W_CHINESE_TRADITIONAL = 5 # should not use traditional chinese
@@ -2572,15 +2581,23 @@ class _Term(object):
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
   E_USELESS_REGEX = -101    # regex flag is redundant
+  E_BAD_HOST = -800         # having new line characters in pattern or repl
   E_NEWLINE = -900          # having new line characters in pattern or repl
   E_EMPTY_PATTERN = -1000   # pattern is empty
+
+  HOST_TYPES = 'source', 'target', 'escape', 'name', 'yomi' # types allow host
 
 class Term(QObject):
   __D = _Term
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Term.TYPES[i] : _Term.TR_TYPES[i] for i in xrange(len(_Term.TYPES))}
+  TYPE_NAMES = dict(zip(_Term.TYPES, _Term.TR_TYPES))
+
+  HOSTS = __D.HOSTS
+  TR_HOSTS = __D.TR_HOSTS
+  HOST_NAMES = dict(zip(_Term.HOSTS, _Term.TR_HOSTS))
+  HOST_TYPES = __D.HOST_TYPES
 
   @classmethod
   def typeName(cls, t):
@@ -2590,6 +2607,17 @@ class Term(QObject):
     """
     return cls.TYPE_NAMES.get(t) or ""
 
+  #@staticmethod
+  #def typeAllowsHost(t): return t in self.HOST_TYPES
+
+  #@classmethod
+  #def hostName(cls, t):
+  #  """
+  #  @param  t  unicode
+  #  @return  unicode not None
+  #  """
+  #  return cls.HOST_NAMES.get(t) or ""
+
   @property
   def d(self): return self.__d
 
@@ -2598,14 +2626,14 @@ class Term(QObject):
 
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
-      type="", language="", timestamp=0, text="",
+      type="", host="", language="", timestamp=0, text="",
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
+      id, gameId, gameMd5, userId, userHash, type, host, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
     if init:
       self.init(parent)
 
@@ -2642,7 +2670,7 @@ class Term(QObject):
       regex=d.regex,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
-      type=d.type, language=d.language, text=d.text, pattern=d.pattern)
+      type=d.type, host=d.host, language=d.language, text=d.text, pattern=d.pattern)
 
   ## Dirty ##
 
@@ -2672,6 +2700,7 @@ class Term(QObject):
   updateTimestamp, updateTimestampChanged = __D.synthesize('updateTimestamp', int)
 
   type, typeChanged = __D.synthesize('type', str, sync=True)
+  host, hostChanged = __D.synthesize('host', str, sync=True)
   language, languageChanged = __D.synthesize('language', str, sync=True)
   pattern, patternChanged = __D.synthesize('pattern', unicode, sync=True)
   text, textChanged = __D.synthesize('text', unicode, sync=True)
@@ -3142,7 +3171,7 @@ class Reference(QObject):
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Reference.TYPES[i] : _Reference.TR_TYPES[i] for i in xrange(len(_Reference.TYPES))}
+  TYPE_NAMES = dict(zip(_Reference.TYPES, _Reference.TR_TYPES))
 
   @classmethod
   def typeName(cls, t):
@@ -4598,8 +4627,9 @@ class _TermModel(object):
     'errorType',
     'disabled',
     'private',
-    'type',
     'language',
+    'type',
+    'host',
     'syntax',
     'regex',
     'hentai',
@@ -4618,6 +4648,7 @@ class _TermModel(object):
 
   def __init__(self):
     self.filterLanguage = ""    # str
+    self.filterHost = ""        # str
     self.filterTypes = ""       # str
     self.filterColumn = ""      # str
     self._filterText = ""       # unicode
@@ -4655,7 +4686,7 @@ class _TermModel(object):
     @return  [Term]
     """
     return (self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN
-        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage
+        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
         else self.duplicateData if self.duplicate else self.sourceData)
 
   @staticproperty
@@ -4733,7 +4764,7 @@ class _TermModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage
+      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
           else self.duplicateData if self.duplicate
           else self.sourceData)
       if not data:
@@ -4788,13 +4819,19 @@ class _TermModel(object):
     if self.filterTypes:
       if td.type not in self.filterTypes:
         return False
-      if not self.filterText and not self.filterLanguage:
+      if not self.filterText and not self.filterLanguage and not self.filterHost:
         return True
 
     if self.filterLanguage:
       if not td.language.startswith(self.filterLanguage):
         return False
-      if not self.filterText: #and not self.filterTypes:
+      if not self.filterText and not self.filterHost: #and not self.filterTypes:
+        return True
+
+    if self.filterHost:
+      if td.host != self.filterHost:
+        return False
+      if not self.filterText:
         return True
 
     t = self.filterText
@@ -4819,16 +4856,16 @@ class _TermModel(object):
               return False
           except ValueError: pass
           q = term.gameSeries, term.gameName
-        elif col == 'language':
-          q = td.language, i18n.language_name(td.language)
-        elif col == 'type':
-          q = td.type, Term.typeName(td.type)
+        #elif col == 'language':
+        #  q = td.language, i18n.language_name(td.language)
+        #elif col == 'type':
+        #  q = td.type, Term.typeName(td.type)
         elif col == 'pattern':
           q = td.pattern,
         elif col == 'text':
           q = td.text,
         elif col == 'comment':
-          q = td.comment,
+          q = td.comment, td.updateComment
       else: # search all columns
         if len(t) > 2:
           try:
@@ -4880,7 +4917,7 @@ class TermModel(QAbstractListModel):
     d = self.__d = _TermModel()
 
     for sig in (
-        self.filterTypesChanged, #self.filterLanguageChanged, self.filterTextChanged,
+        self.filterTypesChanged, #self.filterLanguageChanged, self.filterHostChanged, self.filterTextChanged,
         self.sortingColumnChanged, self.sortingReverseChanged,
         self.pageSizeChanged, self.pageNumberChanged,
         self.duplicateChanged
@@ -4948,6 +4985,17 @@ class TermModel(QAbstractListModel):
       lambda self: self.__d.filterTypes,
       setFilterTypes,
       notify=filterTypesChanged)
+
+  def setFilterHost(self, value):
+    if value != self.__d.filterHost:
+      self.__d.filterHost = value
+      d = self.__d
+      self.filterHostChanged.emit(value)
+  filterHostChanged = Signal(str)
+  filterHost = Property(str,
+      lambda self: self.__d.filterHost,
+      setFilterHost,
+      notify=filterHostChanged)
 
   def setFilterLanguage(self, value):
     if value != self.__d.filterLanguage:
@@ -8410,7 +8458,7 @@ class _DataManager(object):
           if path == 3: # grimoire/terms/term
             tag = elem.tag
             text = elem.text
-            if tag in ('language', 'pattern', 'text', 'comment', 'updateComment'):
+            if tag in ('language', 'host', 'pattern', 'text', 'comment', 'updateComment'):
               kw[tag] = text or ''
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):

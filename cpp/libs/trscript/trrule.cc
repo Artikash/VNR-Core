@@ -26,6 +26,7 @@ inline std::string escape(const std::wstring &t)
 void TranslationScriptRule::init(const param_type &param, bool precompile_regex)
 {
   id = param.id;
+  category = param.category;
   source = param.source;
   target = param.target;
 

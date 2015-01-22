@@ -18,6 +18,7 @@ struct TranslationScriptParam
   std::wstring id,
                source,
                target;
+  int category;
   uint8_t f_regex,  // this is a regex
           f_parent, // this is a name
           f_child;  // this is a name
@@ -40,6 +41,7 @@ class TranslationScriptRule
   std::wstring id,
                source,
                target;
+  int category;
   Self *children;
   size_t child_count;
   mutable bool valid; // whether the object is valid
@@ -51,6 +53,7 @@ public:
 
   TranslationScriptRule()
     : flags(0)
+    , category(0)
     , children(nullptr)
     , child_count(0)
     , valid(false)
@@ -64,6 +67,8 @@ public:
   }
 
   bool is_valid() const { return valid; }
+
+  bool match_category(int v) const { return !v || !category || v == category; }
 
   void init(const param_type &param, bool precompile_regex = true);
   void init_list(const param_type &param,

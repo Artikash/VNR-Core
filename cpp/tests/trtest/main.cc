@@ -8,15 +8,16 @@ int main()
   qDebug() << "enter";
 
   //wchar_t ws[] = L"ルナ様";
-  wchar_t ws[] = L"澪様";
+  wchar_t ws[] = L"「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」【綾波レイ】";
   //QString text = QString::fromWCharArray(ws);
   std::wstring text = ws;
 
   std::wstring path;
   //path = L"../cpp/libs/trscript/example.txt";
   //path = L"/Users/jichi/stream/Caches/tmp/reader/dict/zhs/escape_input.txt";
+  path = L"/Users/jichi/stream/Caches/tmp/reader/dict/ja/game.txt";
   //path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
-  path = L"/Users/jichi/tmp/escape_input.txt";
+  //path = L"/Users/jichi/tmp/escape_input.txt";
 
   TranslationScriptManager m;
   m.setLinkEnabled(true);
@@ -25,7 +26,7 @@ int main()
 
   if (!m.isEmpty()) {
     qDebug() << QString::fromStdWString(text);
-    text = m.translate(text);
+    text = m.translate(text, 2);
     qDebug() << QString::fromStdWString(text);
   }
 
