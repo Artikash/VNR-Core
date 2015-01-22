@@ -64,6 +64,7 @@ Item { id: root_
     var changed = false
     changed = searchLang_.setValue(lang) || changed
     changed = searchCol_.setValue(col) || changed
+    //changed = searchHost_.setValue(host) || changed
     if (searchBox_.text != text) {
       searchBox_.text = text
       changed = true
@@ -111,6 +112,7 @@ Item { id: root_
 
     filterColumn: searchCol_.value
     filterLanguage: searchLang_.value
+    filterHost: searchHost_.value
     filterTypes: filterToolBar_.values
 
     Share.Blocker {
@@ -178,7 +180,7 @@ Item { id: root_
         append({text:Sk.tr("User"), value:'user'})
         append({text:Sk.tr("Game"), value:'game'})
         //append({text:Sk.tr("Type"), value:'type'})
-        append({text:Sk.tr("Language"), value:'language'})
+        //append({text:Sk.tr("Language"), value:'language'})
         append({text:Sk.tr("Pattern"), value:'pattern'})
         append({text:Sk.tr("Translation"), value:'text'})
         append({text:Sk.tr("Comment"), value:'comment'})
@@ -230,18 +232,59 @@ Item { id: root_
         v = '' // for null
       if (v == value)
         return false
-      for (var i = 0; i < model.count; ++i)
-        if (model.get(i).value == v) {
-          selectedIndex = i
-          return true
-        }
+      var i = Util.LANGUAGES.indexOf(v)
+      if (i !== -1) {
+        selectedIndex = i
+        return true
+      }
+      //for (var i = 0; i < model.count; ++i)
+      //  if (model.get(i).value == v) {
+      //    selectedIndex = i
+      //    return true
+      //  }
       return false
     }
   }
 
+  Desktop.ComboBox { id: searchHost_
+    anchors {
+      verticalCenter: searchLang_.verticalCenter
+      left: searchLang_.right
+      leftMargin: 2
+    }
+    width: 60
+
+    tooltip: My.tr("Translator")
+
+    model: ListModel {
+      Component.onCompleted: {
+        append({value:'', text:"*"})
+        for (var i in Util.TRANSLATOR_HOST_KEYS) {
+          var key = Util.TRANSLATOR_HOST_KEYS[i]
+          append({value:key, text:Util.translatorName(key)})
+        }
+      }
+    }
+
+    property string value
+    onSelectedIndexChanged: value = model.get(selectedIndex).value
+
+    // This function is not used
+    //function setValue(v) { // string -> bool  whether changed
+    //  if (!v)
+    //    v = '' // for null
+    //  for (var i = 0; i < model.count; ++i)
+    //    if (model.get(i).value == v) {
+    //      selectedIndex = i
+    //      return true
+    //    }
+    //  return false
+    //}
+  }
+
   Share.SearchBox { id: searchBox_
     anchors {
-      left: searchLang_.right
+      left: searchHost_.right
       //left: parent.left
       right: searchToolBar_.left
       bottom: inspector_.top

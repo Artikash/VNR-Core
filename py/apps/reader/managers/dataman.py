@@ -2481,6 +2481,10 @@ class _Term(object):
     if '\n' in self.pattern or self.text and '\n' in self.text:
       return self.E_NEWLINE
 
+    # E_BAD_HOST
+    if self.host and self.type not in self.HOST_TYPES:
+      return self.E_BAD_HOST
+
     # E_USELESS
     if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
           or self.type not in ('escape', 'title', 'name', 'yomi'))
@@ -2577,10 +2581,11 @@ class _Term(object):
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
   E_USELESS_REGEX = -101    # regex flag is redundant
+  E_BAD_HOST = -800         # having new line characters in pattern or repl
   E_NEWLINE = -900          # having new line characters in pattern or repl
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
-  HOST_TYPES = 'escape', 'title', 'name', 'yomi' # allowed types
+  HOST_TYPES = 'source', 'target', 'escape', 'name', 'yomi' # types allow host
 
 class Term(QObject):
   __D = _Term
@@ -4622,8 +4627,9 @@ class _TermModel(object):
     'errorType',
     'disabled',
     'private',
-    'type',
     'language',
+    'type',
+    'host',
     'syntax',
     'regex',
     'hentai',
@@ -4642,6 +4648,7 @@ class _TermModel(object):
 
   def __init__(self):
     self.filterLanguage = ""    # str
+    self.filterHost = ""        # str
     self.filterTypes = ""       # str
     self.filterColumn = ""      # str
     self._filterText = ""       # unicode
@@ -4679,7 +4686,7 @@ class _TermModel(object):
     @return  [Term]
     """
     return (self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN
-        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage
+        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
         else self.duplicateData if self.duplicate else self.sourceData)
 
   @staticproperty
@@ -4757,7 +4764,7 @@ class _TermModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage
+      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
           else self.duplicateData if self.duplicate
           else self.sourceData)
       if not data:
@@ -4812,13 +4819,19 @@ class _TermModel(object):
     if self.filterTypes:
       if td.type not in self.filterTypes:
         return False
-      if not self.filterText and not self.filterLanguage:
+      if not self.filterText and not self.filterLanguage and not self.filterHost:
         return True
 
     if self.filterLanguage:
       if not td.language.startswith(self.filterLanguage):
         return False
-      if not self.filterText: #and not self.filterTypes:
+      if not self.filterText and not self.filterHost: #and not self.filterTypes:
+        return True
+
+    if self.filterHost:
+      if td.host != self.filterHost:
+        return False
+      if not self.filterText:
         return True
 
     t = self.filterText
@@ -4843,16 +4856,16 @@ class _TermModel(object):
               return False
           except ValueError: pass
           q = term.gameSeries, term.gameName
-        elif col == 'language':
-          q = td.language, i18n.language_name(td.language)
-        elif col == 'type':
-          q = td.type, Term.typeName(td.type)
+        #elif col == 'language':
+        #  q = td.language, i18n.language_name(td.language)
+        #elif col == 'type':
+        #  q = td.type, Term.typeName(td.type)
         elif col == 'pattern':
           q = td.pattern,
         elif col == 'text':
           q = td.text,
         elif col == 'comment':
-          q = td.comment,
+          q = td.comment, td.updateComment
       else: # search all columns
         if len(t) > 2:
           try:
@@ -4904,7 +4917,7 @@ class TermModel(QAbstractListModel):
     d = self.__d = _TermModel()
 
     for sig in (
-        self.filterTypesChanged, #self.filterLanguageChanged, self.filterTextChanged,
+        self.filterTypesChanged, #self.filterLanguageChanged, self.filterHostChanged, self.filterTextChanged,
         self.sortingColumnChanged, self.sortingReverseChanged,
         self.pageSizeChanged, self.pageNumberChanged,
         self.duplicateChanged
@@ -4972,6 +4985,17 @@ class TermModel(QAbstractListModel):
       lambda self: self.__d.filterTypes,
       setFilterTypes,
       notify=filterTypesChanged)
+
+  def setFilterHost(self, value):
+    if value != self.__d.filterHost:
+      self.__d.filterHost = value
+      d = self.__d
+      self.filterHostChanged.emit(value)
+  filterHostChanged = Signal(str)
+  filterHost = Property(str,
+      lambda self: self.__d.filterHost,
+      setFilterHost,
+      notify=filterHostChanged)
 
   def setFilterLanguage(self, value):
     if value != self.__d.filterLanguage:

@@ -22,6 +22,7 @@ Item { id: root_
   property alias filterTypes: model_.filterTypes
   property alias filterColumn: model_.filterColumn
   property alias filterLanguage: model_.filterLanguage
+  property alias filterHost: model_.filterHost
   property alias currentCount: model_.currentCount
   property alias count: model_.count
 
@@ -55,42 +56,51 @@ Item { id: root_
   property string _UNSAVED_RICH_TEXT: // cached
        '<span style="background-color:red">' + Sk.tr("Unsaved") + '</span>'
 
-  function canEdit(term) {
+  function canEdit(term) { // object -> bool
     return !!term && !!userId && (userId === _SUPER_USER_ID
         || term.userId === userId && !term.protected
         || term.userId === _GUEST_USER_ID && userLevel > 0)
   }
 
-  function canImprove(term) {
+  function canImprove(term) { // object -> bool
     return !!term && !!userId && (term.userId === userId && !term.protected
         || !!userId && userId !== _GUEST_USER_ID)
   }
 
-  function canSelect(term) {
+  function canSelect(term) { // object -> bool
     return canImprove(term)
   }
 
-  function shouldHighlight(term) {
+  function shouldHighlight(term) { // object -> bool
     return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'origin' || term.type === 'macro'
   }
 
-  function itemColor(term) {
+  function itemColor(term) { // object -> string
     return shouldHighlight(term) ? _HIGHLIGHT_COLOR :
       datamanPlugin_.queryUserColor(term.userId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
   }
 
-  function commentColor(term) {
+  function commentColor(term) { // object -> string
     return datamanPlugin_.queryUserColor(term.userId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
   }
 
-  function updateCommentColor(term) {
+  function updateCommentColor(term) { // object -> string
     return datamanPlugin_.queryUserColor(term.updateUserId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
   }
 
-  function gameSummary(id) {
+  function typeAllowsHost(type) { // string -> bool
+    switch (type) {
+    case 'source': case 'target': case 'escape':
+    case 'name': case 'yomi':
+      return true
+    default: return false
+    }
+  }
+
+  function gameSummary(id) { // int -> string
     if (id <= 0)
       return ""
     var n = datamanPlugin_.queryGameName(id)
@@ -122,10 +132,27 @@ Item { id: root_
     case 100: return qsTr("Brackets") // W_BAD_REGEX
     case -100: return qsTr("Useless") // E_USELESS
     case -101: return qsTr("Regex") // E_USELESS_REGEX
+    case -800: return My.tr("Translator") // E_BAD_HOST
     case -900: return "\\n" // E_NEWLINE
     //case -1000: // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
     }
+  }
+
+  property variant _TYPE_NAMES: {
+    escape: Sk.tr("Translation")
+    , source: My.tr("Input")
+    , target: My.tr("Output")
+    , name: My.tr("Name")
+    , yomi: My.tr("Yomi")
+    , title: My.tr("Suffix")
+    , origin: Sk.tr("Game")
+    , speech: My.tr("TTS")
+    , ocr: My.tr("OCR")
+    , macro: Sk.tr("Macro")
+  }
+  function typeName(type) {
+    return _TYPE_NAMES[type] // string -> string
   }
 
   property int _MIN_TEXT_LENGTH: 1
@@ -274,93 +301,9 @@ Item { id: root_
       }
     }
 
-    // Column: Type
-    Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Type")
-      width: 60
-      delegate: Item {
-        height: table_.cellHeight
-        property bool editable: canEdit(itemValue)
-        Text {
-          anchors { fill: parent; leftMargin: table_.cellSpacing }
-          textFormat: Text.PlainText
-          clip: true
-          verticalAlignment: Text.AlignVCenter
-          text: {
-            switch (itemValue.type) {
-            case 'escape': return Sk.tr("Translation")
-            case 'source': return My.tr("Input")
-            case 'target': return My.tr("Output")
-            case 'name': return My.tr("Name")
-            case 'yomi': return My.tr("Yomi")
-            case 'title': return My.tr("Suffix")
-            case 'origin': return Sk.tr("Game")
-            case 'speech': return My.tr("TTS")
-            case 'ocr': return My.tr("OCR")
-            case 'macro': return Sk.tr("Macro")
-            default: return Sk.tr("Translation")
-            }
-          }
-          visible: !itemSelected || !editable
-          color: itemSelected ? 'white' : itemColor(itemValue)
-          font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
-        }
-        Desktop.ComboBox {
-          anchors { fill: parent; leftMargin: table_.cellSpacing }
-          model: ListModel { //id: typeModel_
-            Component.onCompleted: {
-              append({value:'escape', text:Sk.tr("Translation")})
-              append({value:'source', text:My.tr("Input")})
-              append({value:'target', text:My.tr("Output")})
-              append({value:'name', text:My.tr("Name")})
-              append({value:'yomi', text:My.tr("Yomi")})
-              append({value:'title', text:My.tr("Suffix")})
-              append({value:'origin', text:Sk.tr("Game")})
-              append({value:'speech', text:My.tr("TTS")})
-              append({value:'ocr', text:My.tr("OCR")})
-              append({value:'macro', text:Sk.tr("Macro")})
-            }
-          }
-
-          tooltip: Sk.tr("Type")
-          visible: itemSelected && editable
-
-          onSelectedIndexChanged:
-            if (editable) {
-              var t = model.get(selectedIndex).value
-              if (t !== itemValue.type) {
-                itemValue.type = t
-                if (t === 'macro' && !itemValue.regex)
-                  itemValue.regex = true
-                itemValue.updateUserId = root_.userId
-                itemValue.updateTimestamp = Util.currentUnixTime()
-              }
-            }
-
-          selectedText: model.get(selectedIndex).text
-          Component.onCompleted: {
-            switch (itemValue.type) { // Must be consistent with the model
-            case 'escape': selectedIndex = 0; break
-            case 'source': selectedIndex = 1; break
-            case 'target': selectedIndex = 2; break
-            case 'name': selectedIndex = 3; break
-            case 'yomi': selectedIndex = 4; break
-            case 'title': selectedIndex = 5; break
-            case 'origin': selectedIndex = 6; break
-            case 'speech': selectedIndex = 7; break
-            case 'ocr': selectedIndex = 8; break
-            case 'macro': selectedIndex = 9; break
-            default: selectedIndex = 0 // this should never happend
-            }
-          }
-        }
-      }
-    }
-
     // Column: Language
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Language")
+      role: 'object'; title: Sk.tr("Lang")
       width: 40
       delegate: Item {
         height: table_.cellHeight
@@ -411,6 +354,121 @@ Item { id: root_
             for (var i = 0; i < model.count; ++i)
               if (model.get(i).value === itemValue.language)
                 selectedIndex = i
+          }
+        }
+      }
+    }
+
+    // Column: Type
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Type")
+      width: 60
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          text: root_.typeName(itemValue.type) || Sk.tr("Unknown")
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : itemColor(itemValue)
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex || itemValue.syntax
+        }
+        Desktop.ComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          model: ListModel { //id: typeModel_
+            Component.onCompleted: {
+              for (var i in Util.TERM_TYPES) {
+                var type = Util.TERM_TYPES[i]
+                append({value:type, text:root_.typeName(type)})
+              }
+            }
+          }
+
+          tooltip: Sk.tr("Type")
+          visible: itemSelected && editable
+
+          onSelectedIndexChanged:
+            if (editable) {
+              var t = model.get(selectedIndex).value
+              if (t !== itemValue.type) {
+                itemValue.type = t
+                if (t === 'macro' && !itemValue.regex)
+                  itemValue.regex = true
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+
+          selectedText: model.get(selectedIndex).text
+          Component.onCompleted:
+            selectedIndex = Util.TERM_TYPES.indexOf(itemValue.type) || 0
+
+        }
+      }
+    }
+
+    // Column: Host
+    Desktop.TableColumn {
+      role: 'object'; title: My.tr("Translator")
+      width: 50
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+                             && (!!itemValue.host || root_.typeAllowsHost(itemValue.type))
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          text: itemValue.host ? Util.translatorName(itemValue.host) || ('(' + itemValue.host + ')')
+              : root_.typeAllowsHost(itemValue.type) ? '*' : '-'
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : root_.typeAllowsHost(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex || itemValue.syntax
+        }
+        Desktop.ComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          model: ListModel { //id: typeModel_
+            Component.onCompleted: {
+              append({value:'', text:'*'})
+              for (var i in Util.TRANSLATOR_HOST_KEYS) {
+                var key = Util.TRANSLATOR_HOST_KEYS[i]
+                append({value:key, text:Util.translatorName(key)})
+              }
+              append({value:null, text:'(' + Sk.tr('Unknown') + ')'})
+            }
+          }
+
+          tooltip: My.tr("Translator")
+          visible: itemSelected && editable
+
+          onSelectedIndexChanged:
+            if (editable && selectedIndex !== Util.TRANSLATOR_HOST_KEYS.length + 1) {
+              var host = model.get(selectedIndex).value
+              if (host !== itemValue.host) {
+                itemValue.host = host
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+
+          selectedText: model.get(selectedIndex).text
+          Component.onCompleted: {
+            var host = itemValue.host
+            if (!host)
+              selectedIndex = 0
+            else {
+              var i = Util.TRANSLATOR_HOST_KEYS.indexOf(host)
+              if (i !== -1)
+                selectedIndex = i + 1
+              else
+                selectedIndex = Util.TRANSLATOR_HOST_KEYS.length + 1
+            }
           }
         }
       }
@@ -598,11 +656,10 @@ Item { id: root_
       }
     }
 
-
     // Column: Pattern
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Pattern")
-      width: 120
+      width: 80
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -651,7 +708,7 @@ Item { id: root_
     // Column: Text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Translation")
-      width: 90
+      width: 80
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -699,7 +756,7 @@ Item { id: root_
     // Column: Comment
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Comment")
-      width: 60
+      width: 70
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)

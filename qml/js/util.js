@@ -138,13 +138,29 @@ var LANGUAGE_FONT = {
  */
 function fontFamilyForLanguage(lang) { return LANGUAGE_FONT[lang] || ''; }
 
+var TRANSLATOR_HOST_KEYS = [
+  'bing'
+  , 'google'
+  , 'lecol'
+  , 'infoseek'
+  , 'excite'
+  , 'transru'
+  , 'baidu'
+  , 'jbeijing'
+  , 'fastait'
+  , 'dreye'
+  , 'eztrans'
+  , 'atlas'
+  , 'lec'
+];
+
 var TRANSLATOR_NAME = {
-  infoseek: "Infoseek"
-  , excite: "Excite"
-  , bing: "Bing"
-  , google: "Google"
-  , baidu: "百度"
-  //, youdao: "有道"
+  infoseek: "Infoseek.co.jp"
+  , excite: "Excite.co.jp"
+  , bing: "Bing.com"
+  , google: "Google.com"
+  , baidu: "百度.com"
+  //, youdao: "有道.com"
   , jbeijing: "J北京"
   , fastait: "金山快譯"
   , dreye: "Dr.eye"
@@ -157,6 +173,21 @@ var TRANSLATOR_NAME = {
   , lou: "ルー語"
 };
 function translatorName(tr) { return TRANSLATOR_NAME[tr]; }
+
+// - Type constants -
+
+var TERM_TYPES = [
+  'escape'   // trans
+  , 'source' // input
+  , 'target' // output
+  , 'name'
+  , 'yomi'
+  , 'title'  // suffix
+  , 'origin' // game
+  , 'speech' // tts
+  , 'ocr'
+  , 'macro'
+];
 
 // - Cast -
 

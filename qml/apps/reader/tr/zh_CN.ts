@@ -28,7 +28,7 @@
         <translation>为机器翻译使用的辞书</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="95"/>
+        <location filename="../springboard/appmodel.qml" line="81"/>
         <source>Japanese word dictionary</source>
         <translation>日文单词字典</translation>
     </message>
@@ -649,7 +649,7 @@
         <translation>你可以拖动这里来移动文本。</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1708"/>
+        <location filename="../kagami/grimoire.qml" line="1705"/>
         <source>Hide text box</source>
         <translation>隐藏文本</translation>
     </message>
@@ -689,37 +689,37 @@
         <translation>可以拖动这里的！</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1526"/>
+        <location filename="../kagami/grimoire.qml" line="1523"/>
         <source>Add to the Shared Dictionary</source>
         <translation>添加到共享辞书</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1656"/>
+        <location filename="../kagami/grimoire.qml" line="1653"/>
         <source>Read Current</source>
         <translation>读出当前</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1662"/>
+        <location filename="../kagami/grimoire.qml" line="1659"/>
         <source>Scroll to the Beginning</source>
         <translation>滚动到首页</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1667"/>
+        <location filename="../kagami/grimoire.qml" line="1664"/>
         <source>Scroll to the End</source>
         <translation>滚动到尾页</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1680"/>
+        <location filename="../kagami/grimoire.qml" line="1677"/>
         <source>Lock Position</source>
         <translation>锁定位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1686"/>
+        <location filename="../kagami/grimoire.qml" line="1683"/>
         <source>Save Position</source>
         <translation>保存位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1691"/>
+        <location filename="../kagami/grimoire.qml" line="1688"/>
         <source>Load Position</source>
         <translation>载入位置</translation>
     </message>
@@ -794,27 +794,27 @@
         <translation>从Dashboard中移除这个游戏</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="160"/>
+        <location filename="../termview/inspector.qml" line="170"/>
         <source>Pattern is too short</source>
         <translation>匹配的文本太短了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="161"/>
+        <location filename="../termview/inspector.qml" line="169"/>
         <source>Pattern or translation is very long</source>
         <translation>匹配或翻译的文本很长</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="162"/>
+        <location filename="../termview/inspector.qml" line="171"/>
         <source>Translation is empty</source>
         <translation>翻译被删掉了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="163"/>
+        <location filename="../termview/inspector.qml" line="172"/>
         <source>Game type should not be used for translation</source>
         <translation>不应该用游戏词条来做翻译</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="164"/>
+        <location filename="../termview/inspector.qml" line="173"/>
         <source>Type should not translation instead of input</source>
         <translation>词条类型应该是翻译而不应该是输入</translation>
     </message>
@@ -823,37 +823,42 @@
         <translation type="obsolete">中文翻译中包含日本汉字</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="158"/>
+        <location filename="../termview/inspector.qml" line="167"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>翻译不包含简体字的词条的语言应该是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="157"/>
+        <location filename="../termview/inspector.qml" line="166"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>如果翻译包含简体字，那么词条的语言不应该是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="165"/>
+        <location filename="../termview/inspector.qml" line="174"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>正则表达式中的括号可能不匹配</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="166"/>
+        <location filename="../termview/inspector.qml" line="175"/>
         <source>This rule is useless that has no effect</source>
         <translation>这个词条是没有作用的</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="167"/>
+        <location filename="../termview/inspector.qml" line="176"/>
         <source>Pattern does not need enabling regex</source>
         <translation>匹配的文本不需要开启正则表达</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="168"/>
+        <location filename="../termview/inspector.qml" line="177"/>
+        <source>Entry type does not allow being translator-specific</source>
+        <translation>词条类型不允许指定翻译器</translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="178"/>
         <source>New line characters are not allowed in text</source>
         <translation>词条不可以包含\n字符</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="169"/>
+        <location filename="../termview/inspector.qml" line="179"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
@@ -1283,17 +1288,17 @@
 <context>
     <name>shiori</name>
     <message>
-        <location filename="../kagami/shiori.qml" line="116"/>
+        <location filename="../kagami/shiori.qml" line="117"/>
         <source>You can drag the border to move the text box</source>
         <translation>你可以通过拖动四周的边框来移动文本框</translation>
     </message>
     <message>
-        <location filename="../kagami/shiori.qml" line="416"/>
+        <location filename="../kagami/shiori.qml" line="417"/>
         <source>Lookup Selection</source>
         <translation>翻译下面的单词</translation>
     </message>
     <message>
-        <location filename="../kagami/shiori.qml" line="426"/>
+        <location filename="../kagami/shiori.qml" line="427"/>
         <source>Read Selection</source>
         <translation>读出下面的文本</translation>
     </message>
@@ -1348,38 +1353,38 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="117"/>
+        <location filename="../termview/table.qml" line="127"/>
         <source>Short</source>
         <translation>太短</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="118"/>
+        <location filename="../termview/table.qml" line="126"/>
         <source>Long</source>
         <translation>很长</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="119"/>
+        <location filename="../termview/table.qml" line="128"/>
         <source>Missing</source>
         <translation>缺失</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="122"/>
+        <location filename="../termview/table.qml" line="131"/>
         <source>Brackets</source>
         <translation>括号</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="123"/>
+        <location filename="../termview/table.qml" line="132"/>
         <source>Useless</source>
         <translation>无用</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="124"/>
-        <location filename="../termview/table.qml" line="438"/>
+        <location filename="../termview/table.qml" line="133"/>
+        <location filename="../termview/table.qml" line="495"/>
         <source>Regex</source>
         <translation>正则表达</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="510"/>
+        <location filename="../termview/table.qml" line="567"/>
         <source>Series</source>
         <translation>系列专用</translation>
     </message>

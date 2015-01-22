@@ -1636,7 +1636,7 @@ class _NetworkManager(object):
       if 'language' in pty:     params['lang'] = td.language
       if 'disabled' in pty:     params['disable'] = td.disabled
 
-      for k in 'gameId', 'type', 'special', 'private', 'syntax', 'hentai', 'regex':
+      for k in 'gameId', 'type', 'host', 'special', 'private', 'syntax', 'hentai', 'regex':
         if k in pty:
           params[k.lower()] = getattr(term, k)
 
