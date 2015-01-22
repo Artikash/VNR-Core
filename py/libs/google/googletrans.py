@@ -5,6 +5,15 @@
 # See:
 # http://stackoverflow.com/questions/5871710/translate-url-with-google-translate-from-python-script
 # https://github.com/mouuff/Google-Translate-API/blob/master/gtranslate.py
+# https://github.com/alexbft/chiitrans/blob/master/ChiitransLite/www/js/translators.coffee
+#
+# Example 1/21/2015:
+# http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
+# [[["Pretty girl","かわいい女の子","","Kawaī on'nanoko"]],,"ja",,[["Pretty girl",[1],true,false,1000,0,2,0]],[["かわいい 女の子",1,[["Pretty girl",1000,true,false],["Cute girl",0,true,false],["Pretty girls",0,true,false],["Cute girls",0,true,false],["A pretty girl",0,true,false]],[[0,7]],"かわいい女の子"]],,,[["ja"]],19]
+#
+# http:translate.google.com/translate_a/t?client=t&text=私は日本人ではない&sl=ja&tl=en
+# [[["I am not a Japanese","私は日本人ではない","","Watashi wa nihonjinde wanai"]],,"ja",,[["I am not a",[1],true,false,502,0,4,0],["Japanese",[2],true,false,502,4,5,0]],[["私 は ない は で",1,[["I am not a",502,true,false],["I am not the",0,true,false],["I am not",0,true,false]],[[0,2],[5,9]],"私は日本人ではない"],["日本人",2,[["Japanese",502,true,false],["the Japanese",0,true,false],["Japanese people",0,true,false],["Japan",0,true,false],["a Japanese",0,true,false]],[[2,5]],""]],,,[["ja"]],65]
+
 if __name__ == '__main__':
   import sys
   sys.path.append('..')

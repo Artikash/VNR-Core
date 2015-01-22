@@ -5,13 +5,13 @@
 from mytr import mytr_
 
 TRAITS = [ # [TranslatorTraits]
-  {'key':'bing',    'online':True, 'name':mytr_("Bing")},
-  {'key':'google',  'online':True, 'name':mytr_("Google")},
+  {'key':'bing',    'online':True, 'name':"Bing.com"},
+  {'key':'google',  'online':True, 'name':"Google.com"},
   {'key':'lecol',   'online':True, 'name':mytr_("LEC Online")},
-  {'key':'infoseek','online':True, 'name':mytr_("Infoseek")},
-  {'key':'excite',  'online':True, 'name':mytr_("Excite")},
-  {'key':'transru', 'online':True, 'name':mytr_("Translate.Ru")},
-  {'key':'baidu',   'online':True, 'name':mytr_("Baidu")},
+  {'key':'infoseek','online':True, 'name':"Infoseek.co.jp"},
+  {'key':'excite',  'online':True, 'name':"Excite.co.jp"},
+  {'key':'transru', 'online':True, 'name':"Translate.Ru"},
+  {'key':'baidu',   'online':True, 'name':mytr_("Baidu") + '.com'},
   {'key':'jbeijing','online':False, 'name':mytr_("JBeijing")},
   {'key':'fastait', 'online':False, 'name':mytr_("FastAIT")},
   {'key':'dreye',   'online':False, 'name':mytr_("Dr.eye")},

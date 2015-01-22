@@ -2137,7 +2137,7 @@ class Comment(QObject):
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Comment.TYPES[i] : _Comment.TR_TYPES[i] for i in xrange(len(_Comment.TYPES))}
+  TYPE_NAMES = dict(zip(_Comment.TYPES, _Comment.TR_TYPES))
 
   @classmethod
   def typeName(cls, t):
@@ -2561,8 +2561,8 @@ class _Term(object):
   TYPES = 'escape', 'source', 'target', 'name', 'yomi', 'title', 'origin', 'speech', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
-  HOSTS = 'google', 'bing', 'baidu', 'excite', 'infoseek', 'lecol', 'transru', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
-  TR_HOSTS = 'Google', 'Bing', 'Baidu', 'Excite', 'Infoseek', 'lecol', 'transru', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
+  HOSTS = 'bing', 'google', 'lecol', 'excite', 'transru', 'infoseek', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
+  TR_HOSTS = "Bing.com", "Google.com", mytr_("LEC Online"), "Infoseek.co.jp", "Excite.co.jp", "Translate.Ru", mytr_("Baidu") + '.com', mytr_("JBeijing"), mytr_("FastAIT"), "Dr.eye", "ezTrans XP", "Atlas", "LEC"
 
   # Errors, the larger (warning) or smaller (error) the worse
   OK = 0
@@ -2580,12 +2580,19 @@ class _Term(object):
   E_NEWLINE = -900          # having new line characters in pattern or repl
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
+  HOST_TYPES = 'escape', 'title', 'name', 'yomi' # allowed types
+
 class Term(QObject):
   __D = _Term
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Term.TYPES[i] : _Term.TR_TYPES[i] for i in xrange(len(_Term.TYPES))}
+  TYPE_NAMES = dict(zip(_Term.TYPES, _Term.TR_TYPES))
+
+  HOSTS = __D.HOSTS
+  TR_HOSTS = __D.TR_HOSTS
+  HOST_NAMES = dict(zip(_Term.HOSTS, _Term.TR_HOSTS))
+  HOST_TYPES = __D.HOST_TYPES
 
   @classmethod
   def typeName(cls, t):
@@ -2594,6 +2601,17 @@ class Term(QObject):
     @return  unicode not None
     """
     return cls.TYPE_NAMES.get(t) or ""
+
+  #@staticmethod
+  #def typeAllowsHost(t): return t in self.HOST_TYPES
+
+  #@classmethod
+  #def hostName(cls, t):
+  #  """
+  #  @param  t  unicode
+  #  @return  unicode not None
+  #  """
+  #  return cls.HOST_NAMES.get(t) or ""
 
   @property
   def d(self): return self.__d
@@ -3148,7 +3166,7 @@ class Reference(QObject):
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Reference.TYPES[i] : _Reference.TR_TYPES[i] for i in xrange(len(_Reference.TYPES))}
+  TYPE_NAMES = dict(zip(_Reference.TYPES, _Reference.TR_TYPES))
 
   @classmethod
   def typeName(cls, t):

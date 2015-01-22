@@ -49,6 +49,13 @@ class _TermInput(object):
     grid.addLayout(row, r, 1)
     r += 1
 
+    grid.addWidget(QtWidgets.QLabel(mytr_("Translator") + ":"), r, 0)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.hostEdit)
+    row.addStretch()
+    grid.addLayout(row, r, 1)
+    r += 1
+
     grid.addWidget(QtWidgets.QLabel(tr_("Options") + ":"), r, 0)
     grid.addWidget(self.specialButton, r, 1)
     r += 1
@@ -133,6 +140,18 @@ class _TermInput(object):
     ret.setDefault(True)
     skqss.class_(ret, 'btn btn-primary')
     ret.clicked.connect(self.save)
+    return ret
+
+  @memoizedproperty
+  def hostEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItem(tr_('All'))
+    ret.addItems(dataman.Term.TR_HOSTS)
+    #ret.setCurrentIndex(0) # default index
+    ret.setMaxVisibleItems(ret.count())
+    ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
+    ret.currentIndexChanged.connect(self.refresh)
     return ret
 
   @memoizedproperty
@@ -336,6 +355,10 @@ class _TermInput(object):
   def _getType(self): # -> str
     return dataman.Term.TYPES[self.typeEdit.currentIndex()]
 
+  def _getHost(self): # -> str
+    i = self.hostEdit.currentIndex()
+    return dataman.Term.HOSTS[i - 1] if i else ''
+
   def setType(self, v): # str ->
     try: index = dataman.Term.TYPES.index(v)
     except ValueError:
@@ -355,6 +378,7 @@ class _TermInput(object):
       #  return
       lang = self._getLanguage()
       type = self._getType()
+      host = self._getHost() if type in dataman.Term.HOST_TYPES else ''
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
@@ -365,7 +389,7 @@ class _TermInput(object):
       private = self.privateButton.isChecked() and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
-          language=lang, type=type, private=private,
+          language=lang, type=type, host=host, private=private,
           special=special, regex=regex, syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, comment=comment)
@@ -395,6 +419,10 @@ class _TermInput(object):
     self.privateButton.setEnabled(not user.isGuest())
 
     self.saveButton.setEnabled(self._canSave())
+
+    type = self._getType()
+    self.hostEdit.setEnabled(type in dataman.Term.HOST_TYPES)
+
     self._refreshTypeLabel()
     self._refreshKanji()
     self._refreshYomi()
