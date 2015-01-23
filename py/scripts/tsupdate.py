@@ -11,9 +11,13 @@ if __name__ == '__main__':
 
 import os
 from sakurakit.skdebug import dprint, dwarn
-from google.googletrans import translate
+from google import googletrans
 
 USAGE = "to.ts from.ts"
+
+#GT = googletrans.GoogleJsonTranslator() # this might get my IP blocked
+GT = googletrans.GoogleHtmlTranslator()
+translate = GT.translate
 
 def getcfg(fname): # unicode -> unicode
   return os.path.join(os.path.dirname(__file__), '../../tr/%s' % fname)

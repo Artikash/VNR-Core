@@ -35,10 +35,11 @@ class GoogleTranslator(object): pass
 
 class GoogleHtmlTranslator(GoogleTranslator):
   API = 'https://translate.google.com/m'
+  #API = 'https://translate.google.co.jp/m'
   api = API
   session = requests
 
-  headers = {'User-Agent':USER_AGENT, 'Accept-Encoding':'gzip'}
+  headers = {'User-Agent':USER_AGENT, 'Accept-Encoding':'gzip'} #, 'Referer':API}
 
   #__rx = re.compile(r'class="t0"\>(.*?)\<') #, re.DOTALL|re.IGNORECASE)
   _TEXT_BEGIN = 'class="t0">' # faster than re
@@ -86,6 +87,7 @@ class GoogleHtmlTranslator(GoogleTranslator):
 
 class GoogleJsonTranslator(GoogleTranslator):
   API = "http://translate.google.com/translate_a/t"
+  #API = "http://translate.google.co.jp/translate_a/t"
   api = API
 
   session = requests
@@ -162,9 +164,9 @@ if __name__ == '__main__':
     # Does not work because
     # 1. need GZIP
     # 2. need redirect from http:// to https://
-    from qtrequests import qtrequests
-    from PySide.QtNetwork import QNetworkAccessManager
-    gt.session = qtrequests.Session(QNetworkAccessManager())
+    #from qtrequests import qtrequests
+    #from PySide.QtNetwork import QNetworkAccessManager
+    #gt.session = qtrequests.Session(QNetworkAccessManager())
     #with SkProfiler():
     #  for i in range(1):
     #    t = translate(s, to=to, fr=fr)
@@ -195,12 +197,12 @@ if __name__ == '__main__':
         t = gt.translate(s, to=to, fr=fr)
     print t
 
-    app.quit()
+    #app.quit()
 
-  from PySide.QtCore import QCoreApplication, QTimer
-  app = QCoreApplication(sys.argv)
-  QTimer.singleShot(0, test)
-  app.exec_()
-  #test()
+  test()
+  #from PySide.QtCore import QCoreApplication, QTimer
+  #app = QCoreApplication(sys.argv)
+  #QTimer.singleShot(0, test)
+  #app.exec_()
 
 # EOF
