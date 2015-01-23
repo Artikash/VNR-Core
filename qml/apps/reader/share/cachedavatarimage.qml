@@ -2,7 +2,7 @@
  *  2/21/2013 jichi
  */
 import QtQuick 1.1
-import org.sakuradite.reader 1.0 as Plugin
+//import org.sakuradite.reader 1.0 as Plugin
 import '.' as Share
 
 Share.AvatarImage {
@@ -12,7 +12,7 @@ Share.AvatarImage {
 
   // - Private -
 
-  url: !userId ? '' : dataman_.queryUserAvatarUrlWithHash(userId, userHash)
+  url: !userId ? '' : datamanPlugin_.queryUserAvatarUrlWithHash(userId, userHash)
 
-  Plugin.DataManagerProxy { id: dataman_ }
+  //Plugin.DataManagerProxy { id: dataman_ }
 }

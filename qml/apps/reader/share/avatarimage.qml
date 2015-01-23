@@ -3,7 +3,7 @@
  */
 import QtQuick 1.1
 
-Image { id: avatar_
+Image { //id: root_
 
   width: 50; height: 50
 

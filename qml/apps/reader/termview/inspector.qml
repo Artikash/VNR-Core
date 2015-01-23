@@ -18,7 +18,7 @@ Item { id: root_
 
   // - Private -
 
-  height: Math.max(60, text_.height + 10)
+  height: Math.max(80, text_.height + 7)
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
@@ -29,7 +29,7 @@ Item { id: root_
       topMargin: 3
       leftMargin: 9
     }
-    width: 40; height: 40
+    width: 50; height: 50
     userId: currentItem ? currentItem.userId : 0
     userHash: currentItem ? currentItem.userHash : 0
   }
@@ -37,10 +37,10 @@ Item { id: root_
   TextEdit { id: text_
     anchors {
       top: parent.top //; bottom: parent.bottom
-      right: parent.right
+      right: cover_.visible ? cover_.left : parent.right
       left: avatar_.visible ? avatar_.right : parent.left
       leftMargin: 9; rightMargin: 9
-      topMargin: 3
+      //topMargin: 0
     }
     textFormat: TextEdit.RichText
     font.pixelSize: 12
@@ -50,6 +50,15 @@ Item { id: root_
     onLinkActivated: Eval.evalLink(link)
 
     text: summary()
+  }
+
+  Share.GameCoverImage { id: cover_
+    anchors {
+      right: parent.right
+      top: parent.top; bottom: parent.bottom
+      bottomMargin: 5
+    }
+    fileId: currentItem ? currentItem.gameId : 0
   }
 
   Plugin.JlpUtil { id: jlp_ }
