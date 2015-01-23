@@ -21,7 +21,8 @@ def url(text, language, encoding='UTF-8'):
   @return  unicode or str not None
   """
   if language:
-    text = topercentencoding(text, encoding)
+    if encoding:
+      text = topercentencoding(text, encoding)
     if text:
       language = baidudef.bdlang(language)
       # kor does not work for Korean orz

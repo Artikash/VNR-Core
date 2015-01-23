@@ -47,7 +47,7 @@ def urlne(x, y):
   """
   return not urleq(x, y)
 
-def topercentencoding(text, encoding='utf8', safe=''):
+def topercentencoding(text, encoding='utf8', safe='', errors='ignore'):
   """
   @param  text  unicode or str
   @param* encoding  str or None
@@ -55,7 +55,7 @@ def topercentencoding(text, encoding='utf8', safe=''):
   @return  unicode
   """
   if encoding and isinstance(text, unicode):
-    text = text.encode(encoding, errors='ignore')
+    text = text.encode(encoding, errors=errors)
   return urllib.quote(text, safe=safe) if text else ''
 
 def frompercentencoding(text, encoding=None):

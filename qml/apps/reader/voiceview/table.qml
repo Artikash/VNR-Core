@@ -41,9 +41,10 @@ Item { id: root_
   function ttsEngineName(key) {
     switch (key) {
     case '': return Sk.tr('Default')
-    case 'google': return "Google"
-    case 'bing': return My.tr("Bing")
-    case 'baidu': return My.tr("Baidu")
+    case 'google': return "Google.com"
+    case 'bing': return "Bing.com"
+    case 'naver': return "Naver.com"
+    case 'baidu': return My.tr("Baidu") + ".com"
 
     case 'yukarioffline': return "結月ゆかり(♀)"
     case 'zunkooffline': return "東北ずん子(♀)"

@@ -25,8 +25,10 @@ class VoiceEngine(object):
   online = False # bool  whether it is an online engine
 
   def isValid(self): return True
-  def speak(self, text, language=None): pass
+  def speak(self, text, language=None, gender=''): pass
   def stop(self): pass
+
+  def setGender(self, v): pass # dummy
 
 # Offline engines
 
@@ -88,7 +90,7 @@ class SapiEngine(OfflineEngine):
       self._valid = bool(self.engine) and self.engine.isValid()
     return self._valid
 
-  #def speak(self, text, language=None):
+  #def speak(self, text, language=None, gender=''):
   #  """@remip"""
   #  skthreads.runasync(partial(self._speakasync, text))
 
@@ -103,7 +105,7 @@ class SapiEngine(OfflineEngine):
   #      e.speak(text)
   #      #e.speak(text, async=False) # async=False, or it might crash?
 
-  def speak(self, text, language=None):
+  def speak(self, text, language=None, gender=''):
     """@remip"""
     e = self.engine
     if e:
@@ -174,7 +176,7 @@ class VocalroidEngine(OfflineEngine):
         self.name,
       )))
 
-  def speak(self, text, language=None):
+  def speak(self, text, language=None, gender=''):
     """@reimp@"""
     e = self.engine
     if e:
@@ -242,7 +244,7 @@ class ZunkoEngine(VoiceEngine):
     """"@reimp"""
     return self.engine.isValid()
 
-  def speak(self, text, language=None):
+  def speak(self, text, language=None, gender=''):
     """"@reimp"""
     if self.mutex.tryLock():
       self.engine.speak(text)
@@ -288,15 +290,15 @@ class _OnlineThread:
     q.playRequested.connect(self.play, Qt.QueuedConnection)
     q.stopRequested.connect(self.stop, Qt.QueuedConnection)
 
-  def play(self, engine, text, language, time): # OnlineEngine, text, language, time ->
+  def play(self, engine, text, language, gender, time):
     if time < self.time: # outdated
       return
     if not text:
-      self.stop()
+      self.stop(time)
       return
-    url = engine.createUrl(text, language)
+    url = engine.createUrl(text, language, gender)
     if not url:
-      self.stop()
+      self.stop(time)
       return
     if time < self.time: # outdated
       return
@@ -340,7 +342,7 @@ class _OnlineThread:
       self.downloadCount = c
 
 class OnlineThread(QThread):
-  playRequested = Signal(object, unicode, str, float) # OnlineEngine, text, language, time
+  playRequested = Signal(object, unicode, str, str, float) # OnlineEngine, text, language, gender, time
   stopRequested = Signal(float) # time
   abortSignal = Signal()
   abortSignalRequested = Signal()
@@ -362,14 +364,14 @@ class OnlineThread(QThread):
 
   # Actions
 
-  def requestPlay(self, engine, text, language): # OnlineTask ->
+  def requestPlay(self, engine, text, language, gender): # OnlineTask ->
     now = time()
     d = self.__d
     d.time = now
     if d.downloadCount > 0:
       self.abortSignalRequested.emit()
 
-    self.playRequested.emit(engine, text, language, now)
+    self.playRequested.emit(engine, text, language, gender, now)
 
   def requestStop(self):
     d = self.__d
@@ -384,7 +386,7 @@ class OnlineEngine(VoiceEngine):
   language = '*' # override
   online = True # override
 
-  ENGINES = 'baidu', 'google', 'bing'
+  ENGINES = 'baidu', 'google', 'bing', 'naver'
 
   @staticmethod
   def create(key, **kwargs): # str -> OnlineEngine
@@ -394,6 +396,8 @@ class OnlineEngine(VoiceEngine):
       return BingEngine(**kwargs)
     if key == GoogleEngine.key:
       return GoogleEngine(**kwargs)
+    if key == NaverEngine.key:
+      return NaverEngine(**kwargs)
     if key in VoiceroidOnlineEngine.VOICES:
       return VoiceroidOnlineEngine(key, **kwargs)
     if key in VoiceTextOnlineEngine.VOICES:
@@ -413,15 +417,17 @@ class OnlineEngine(VoiceEngine):
       growl.msg(my.tr("Load {0} for TTS").format("Windows Media Player"))
     return cls._thread
 
-  def __init__(self, volume=100, speed=0, pitch=0):
+  def __init__(self, volume=100, speed=0, pitch=0, gender=''):
     #super(OnlineEngine, self).__init__()
     self.speed = speed # int
     self.pitch = pitch # int
     self.volume = volume # int
+    self.gender = gender # str
 
   def setSpeed(self, v): self.speed = v
   def setPitch(self, v): self.pitch = v
   def setVolume(self, v): self.volume = v
+  def setGender(self, v): self.gender = v
 
   _valid = None
   def isValid(self):
@@ -431,20 +437,20 @@ class OnlineEngine(VoiceEngine):
       OnlineEngine._valid = libman.wmp().exists()
     return OnlineEngine._valid
 
-  def speak(self, text, language=None):
+  def speak(self, text, language=None, gender=''):
     """@reimp@"""
     if not self.isValid():
       growl.warn(my.tr("Missing Windows Media Player needed by text-to-speech"))
     else:
       language = language[:2] if language else 'ja'
-      OnlineEngine.thread().requestPlay(self, text, language)
+      OnlineEngine.thread().requestPlay(self, text, language, gender)
 
   def stop(self):
     """@reimp@"""
     if self._thread:
       self._thread.requestStop()
 
-  def createUrl(self, text, language):
+  def createUrl(self, text, language, gender):
     """Create initial query URL
     @param  text
     @param  language
@@ -474,36 +480,49 @@ class OnlineEngine(VoiceEngine):
 
 class GoogleEngine(OnlineEngine):
   key = 'google' # override
-  name = u'Google' # override
+  name = 'Google.com' # override
 
   def __init__(self, *args, **kwargs):
     super(GoogleEngine, self).__init__(*args, **kwargs)
 
-  def createUrl(self, text, language):
+  def createUrl(self, text, language, gender):
     """@reimp@"""
     from google import googletts
     return googletts.url(text, language) # encoding is not needed
 
 class BaiduEngine(OnlineEngine):
   key = 'baidu' # override
-  name = mytr_("Baidu") # override
+  name = mytr_("Baidu") + ".com" # override
 
   def __init__(self, *args, **kwargs):
     super(BaiduEngine, self).__init__(*args, **kwargs)
 
-  def createUrl(self, text, language):
+  def createUrl(self, text, language, gender):
     """@reimp@"""
     from baidu import baidutts
     return baidutts.url(text, language)
 
 class BingEngine(OnlineEngine):
   key = 'bing' # override
-  name = mytr_('Bing') # override
+  name = 'Bing.com' # override
 
   def __init__(self, *args, **kwargs):
     super(BingEngine, self).__init__(*args, **kwargs)
     import bingman
     self.createUrl = bingman.manager().tts # override
+
+class NaverEngine(OnlineEngine):
+  key = 'naver' # override
+  name = "Naver.com" # override
+
+  def __init__(self, *args, **kwargs):
+    super(NaverEngine, self).__init__(*args, **kwargs)
+
+  def createUrl(self, text, language, gender):
+    """@reimp@"""
+    from naver import navertts
+    pitch = 100 + self.pitch * 10 # 100 by default
+    return navertts.url(text, language, pitch=pitch, gender=gender or self.gender)
 
 class VoiceroidOnlineEngine(OnlineEngine):
   language = 'ja' # override
@@ -519,7 +538,7 @@ class VoiceroidOnlineEngine(OnlineEngine):
     self.name = voice.name # override
     super(VoiceroidOnlineEngine, self).__init__(**kwargs)
 
-  def createUrl(self, text, language):
+  def createUrl(self, text, language, gender):
     """@override"""
     pitch = self.pitch
     pitch = pow(1.1, pitch) if pitch else 1 # 1.0 by default, 0.5 ~ 2.0
@@ -543,7 +562,7 @@ class VoiceTextOnlineEngine(OnlineEngine):
     self.language = voice.language # override
     super(VoiceTextOnlineEngine, self).__init__(**kwargs)
 
-  def createUrl(self, text, language):
+  def createUrl(self, text, language, gender):
     """@override"""
     pitch = 100 + self.pitch * 10 # 100 by default
     return vtapi.createdata(self.voice.id, self.voice.dic, text, pitch=pitch)

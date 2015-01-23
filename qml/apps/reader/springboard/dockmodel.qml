@@ -20,60 +20,39 @@ ListModel {
    *  It should contain either "show" or "run" method.
    */
 
+  function createLink(fun) { // string ->
+    return "javascript://main." + fun + '()'
+  }
+
   Component.onCompleted: {
     append({ name: Sk.tr("Launch")
       , icon: 'image://rc/dock-launch'
       , toolTip: qsTr("Sync with current running game by searching the online database")
-      , qml: "\
-import org.sakuradite.reader 1.0 as Plugin; \
-Plugin.MainObjectProxy { \
-  function run() { openRunningGame() } \
-} \
-"
+      , link: createLink('openRunningGame')
     })
 
     append({ name: My.tr("Game Wizard")
       , icon: 'image://rc/dock-gamewiz'
       , toolTip: qsTr("Add new game from my computer")
-      , qml: "\
-import org.sakuradite.reader 1.0 as Plugin; \
-Plugin.MainObjectProxy { \
-  function run() { showGameWizard() } \
-} \
-"
+      , link: createLink('showGameWizard')
     })
 
     append({ name: My.tr("Game Board")
       , icon: 'image://rc/dock-gameboard'
       , toolTip: qsTr("Information of online games")
-      , qml: "\
-import org.sakuradite.reader 1.0 as Plugin; \
-Plugin.MainObjectProxy { \
-  function run() { showGameBoard() } \
-} \
-"
+      , link: createLink('showGameBoard')
     })
 
     append({ name: My.tr("Website Reader")
       , icon: 'image://rc/dock-browser'
       , toolTip: qsTr("VNR's built-in web browser")
-      , qml: "\
-import org.sakuradite.reader 1.0 as Plugin; \
-Plugin.MainObjectProxy { \
-  function run() { showWebBrowser() } \
-} \
-"
+      , link: createLink('showWebBrowser')
     })
 
     append({ name: Sk.tr("Preferences")
       , icon: 'image://rc/dock-prefs'
       , toolTip: qsTr("Settings of language, translation, UI, etc")
-      , qml: "\
-import org.sakuradite.reader 1.0 as Plugin; \
-Plugin.MainObjectProxy { \
-  function run() { showPreferences() } \
-} \
-"
+      , link: createLink('showPreferences')
     })
   }
 }

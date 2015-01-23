@@ -87,12 +87,13 @@ class _TtsManager(object):
     self._speakTask = partial(self.speak, text, **kwargs)
     self._speakTimer.start(interval)
 
-  def speak(self, text, engine='', termEnabled=False, language='', verbose=True):
+  def speak(self, text, engine='', termEnabled=False, language='', gender='', verbose=True):
     """
     @param  text  unicode
     @param* engine  str
     @param* termEnabled  bool  whether apply game-specific terms
-    @param* language  unicode
+    @param* language  str
+    @param* gender  str
     @param* verbose  bool  whether warn on error
     """
     #if not features.TEXT_TO_SPEECH:
@@ -145,7 +146,7 @@ class _TtsManager(object):
     #else:
     #with SkProfiler():
     if text:
-      eng.speak(text, language) # 0.007 ~ 0.009 seconds for SAPI
+      eng.speak(text, language, gender) # 0.007 ~ 0.009 seconds for SAPI
     else:
       eng.stop()
 
@@ -159,7 +160,7 @@ class _TtsManager(object):
     if not self.online:
       dprint("ignore when offline")
       return None
-    key = 'baidu' if language == 'ja' or language.startswith('zh') else 'google'
+    key = 'naver' if language == 'ja' else 'baidu' if language.startswith('zh') else 'google'
     return self.getEngine(key)
 
   @property
@@ -210,6 +211,7 @@ class _TtsManager(object):
         ret.speed = self.getSpeed(key)
         ret.pitch = self.getPitch(key)
         ret.volume = self.getVolume(key)
+        ret.gender = self.getGender(key)
       if ret and ret.isValid():
         self._onlineEngines[key] = ret
         growl.msg(' '.join((
@@ -233,6 +235,7 @@ class _TtsManager(object):
         speed=self.getSpeed(key),
         pitch=self.getPitch(key),
         volume=self.getVolume(key),
+        #gender=self.getGender(key),
       )
       if ret.isValid():
         self._sapiEngines[key] = ret
@@ -314,6 +317,28 @@ class _TtsManager(object):
       if eng:
         eng.setSpeed(v)
 
+  def getGender(self, key):
+    """
+    @param  key  str
+    @return  str
+    """
+    try: return settings.global_().ttsGenders().get(key) or 'f'
+    except (ValueError, TypeError): return 'f'
+
+  def setGender(self, key, v):
+    """
+    @param  key  str
+    @param  v  str
+    """
+    ss = settings.global_()
+    m = ss.ttsGenders()
+    if v != m.get(key):
+      m[key] = v
+      ss.setTtsGenders(m)
+      eng = self.getCreatedEngine(key)
+      if eng:
+        eng.setGender(v)
+
   # Actions
 
   def getEngine(self, key):
@@ -382,7 +407,8 @@ class TtsManager(QObject):
     return self.__d.getSpeed(v)
   def setSpeed(self, key, v):
     """
-    @param  value  int in [-10,10]
+    @param  key  str
+    @param  v  int in [-10,10]
     """
     self.__d.setSpeed(key, v)
 
@@ -390,15 +416,26 @@ class TtsManager(QObject):
     return self.__d.getPitch(v)
   def setPitch(self, key, v):
     """
-    @param  value  int in [-10,10]
+    @param  key  str
+    @param  v  int in [-10,10]
     """
     self.__d.setPitch(key, v)
+
+  def getGender(self, v):
+    return self.__d.getGender(v)
+  def setGender(self, key, v):
+    """
+    @param  key  str
+    @param  v  'f' or 'm'
+    """
+    self.__d.setGender(key, v)
 
   def getVolume(self, v):
     return self.__d.getVolume(v)
   def setVolume(self, key, v):
     """
-    @param  value  int in [0,100]
+    @param  key  str
+    @param  v  int in [0,100]
     """
     self.__d.setVolume(key, v)
 
