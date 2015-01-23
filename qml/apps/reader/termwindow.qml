@@ -32,6 +32,7 @@ Share.View { id: root_
   Plugin.SystemStatus { id: statusPlugin_ }
   Plugin.Growl { id: growlPlugin_ }
   Plugin.MainObjectProxy { id: mainPlugin_ }
+  Plugin.DataManagerProxy { id: datamanPlugin_ }
 
   Comet.TermComet { id: termComet_
     active: windowVisible && statusPlugin_.online

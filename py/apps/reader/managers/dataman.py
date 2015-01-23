@@ -1163,7 +1163,7 @@ class GameInfo(object):
       ret = rc.image_url('game-cover').toString()
     return ret
 
-  def hasGoodImage0(self):
+  def imageFitsBackground0(self):
     img = self.image0
     return bool(img) and (
         'getchu.com' in img or
@@ -1799,7 +1799,7 @@ class GameObject(QObject):
   @Slot(result=str)
   def image(self):
     id = self.__d.id
-    return manager().queryGameImageUrl(id=id) if id else ''
+    return manager().queryGameBackgroundImageUrl(id=id) if id else ''
 
 class _Character:
 
@@ -8972,7 +8972,14 @@ class DataManager(QObject):
     @return  str not None
     """
     g = self.queryGameInfo(**kwargs)
-    return g.imageUrl0 if g and g.hasGoodImage0() else ''
+    return g.imageUrl0 if g else ''
+
+  def queryGameBackgroundImageUrl(self, **kwargs):
+    """
+    @return  str not None
+    """
+    g = self.queryGameInfo(**kwargs)
+    return g.imageUrl0 if g and g.imageFitsBackground0() else ''
 
   def queryGameFileName(self, id=None, md5=None):
     """
@@ -10751,9 +10758,9 @@ class DataManagerProxy(QObject):
   def queryGameFileName(self, id):
     return manager().queryGameFileName(id=id)
 
-  #@Slot(long, result=str)
-  #def queryGameImage(self, id):
-  #  return manager().queryGameImageUrl(id=id)
+  @Slot(long, long, result=unicode)
+  def queryGameImage(self, tokenId, itemId): # uncached
+    return manager().queryGameImageUrl(id=tokenId, itemId=itemId)
 
   @Slot(long, result=unicode)
   def queryUserAvatarUrl(self, id):
