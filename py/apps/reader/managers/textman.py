@@ -304,7 +304,7 @@ class _TextManager(object):
                   not text.startswith(u"「") and not text.endswith(u"」")
                   or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
                 ): # do not speak if no character name is detected
-                tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng)
+                tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng, gender=cd.gender)
         #else:
         #  tm.stop()
     self.ttsText = self.ttsName = ""
@@ -335,7 +335,7 @@ class _TextManager(object):
               #    #not text.startswith(u"「") and not text.endswith(u"」")
               #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
               #  ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng)
+              tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng, gender=cd.gender)
     self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
   def _repairText(self, text, language=None):

@@ -1363,6 +1363,7 @@ class _TtsTab(object):
         ('baidu', self.baiduButton, "http://fanyi.baidu.com"),
         ('google', self.googleButton, "http://translate.google.com"),
         ('bing', self.bingButton, "http://www.bing.com/translator"),
+        ('naver', self.naverButton, "http://translate.naver.com"),
       )):
       r += 1
       c = 0
@@ -1379,6 +1380,12 @@ class _TtsTab(object):
       self.onlineWidgets.append(w)
       grid.addWidget(w, r, c)
 
+      if k == 'naver':
+        c += 1
+        w = self.createGenderEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
       c += 1
       w = self.createVolumeEdit(k)
       self.onlineWidgets.append(w)
@@ -1388,6 +1395,18 @@ class _TtsTab(object):
       w = self.createSpeedEdit(k)
       self.onlineWidgets.append(w)
       grid.addWidget(w, r, c)
+
+      if k == 'naver':
+        c += 1
+        w = self.createPitchEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+        # add a span at the end
+        c += 1
+        span = QtWidgets.QWidget()
+        span.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        grid.addWidget(span, r, c)
 
     # Voiceroid
     r += 1
@@ -1424,12 +1443,6 @@ class _TtsTab(object):
       w = self.createPitchEdit(k)
       self.onlineWidgets.append(w)
       grid.addWidget(w, r, c)
-
-      if not i: # add span for the first item
-        c += 1
-        span = QtWidgets.QWidget()
-        span.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
-        grid.addWidget(span, r, c)
 
     # VoiceText
     r += 1
@@ -1528,19 +1541,25 @@ class _TtsTab(object):
 
   @memoizedproperty
   def googleButton(self):
-    ret = QtWidgets.QRadioButton(u"Google (♀)")
+    ret = QtWidgets.QRadioButton(u"Google.com (♀)")
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def baiduButton(self):
-    ret = QtWidgets.QRadioButton(u"%s (♀, %s)" % (mytr_("Baidu"), tr_("default")))
+    ret = QtWidgets.QRadioButton(u"%s.com (♀, %s)" % (mytr_("Baidu"), tr_("default")))
+    ret.toggled.connect(self._saveEngine)
+    return ret
+
+  @memoizedproperty
+  def naverButton(self):
+    ret = QtWidgets.QRadioButton(u"Naver.com (♀|♂, %s)" % tr_("recommended"))
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def bingButton(self):
-    ret = QtWidgets.QRadioButton(u"%s (♀)" % mytr_("Bing"))
+    ret = QtWidgets.QRadioButton(u"Bing.com (♀)")
     ret.toggled.connect(self._saveEngine)
     return ret
 
@@ -1607,9 +1626,10 @@ class _TtsTab(object):
     ret = {
       '': self.disableButton,
 
-      'google': self.googleButton,
+      'naver': self.naverButton,
       'baidu': self.baiduButton,
       'bing': self.bingButton,
+      'google': self.googleButton,
 
       'yukarioffline': self.yukariButton,
       'zunkooffline': self.zunkoButton,
@@ -1654,6 +1674,19 @@ class _TtsTab(object):
     tm = ttsman.manager()
     ret.setValue(tm.getVolume(key))
     ret.valueChanged[int].connect(partial(tm.setVolume, key))
+    return ret
+
+  def createGenderEdit(self, key, parent=None):
+    ret = QtWidgets.QComboBox(parent or self.q)
+    ret.setEditable(False)
+    ret.addItem(i18n.gender_name('f')) # index = 0
+    ret.addItem(i18n.gender_name('m')) # index = 1
+
+    tm = ttsman.manager()
+    ret.setCurrentIndex(1 if tm.getGender(key) == 'm' else 0)
+    ret.currentIndexChanged.connect(partial(
+        lambda key, index: ttsman.manager().setGender(key, 'f' if index == 0 else 'm'),
+        key))
     return ret
 
   #@memoizedproperty

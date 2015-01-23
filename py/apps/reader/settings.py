@@ -887,12 +887,20 @@ class Settings(QSettings):
       self.setValue('YukariLocation', value)
       self.yukariLocationChanged.emit(value)
 
+  def ttsGenders(self):
+    """
+    @return  {str ttskey:str 'f' or 'm'}
+    """
+    return to_dict(self.value('TTSGenders'))
+  def setTtsGenders(self, value): self.setValue('TTSGenders', value)
+
   def ttsSpeeds(self):
     """
     @return  {str ttskey:int speed}
     """
     return to_dict(self.value('TTSSpeeds'))
   def setTtsSpeeds(self, value): self.setValue('TTSSpeeds', value)
+
 
   def ttsVolumes(self):
     """
