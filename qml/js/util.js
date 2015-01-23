@@ -145,6 +145,7 @@ var TRANSLATOR_HOST_KEYS = [
   , 'infoseek'
   , 'excite'
   , 'transru'
+  , 'naver'
   , 'baidu'
   , 'jbeijing'
   , 'fastait'
@@ -159,6 +160,7 @@ var TRANSLATOR_NAME = {
   , excite: "Excite.co.jp"
   , bing: "Bing.com"
   , google: "Google.com"
+  , naver: "Naver.com"
   , baidu: "百度.com"
   //, youdao: "有道.com"
   , jbeijing: "J北京"

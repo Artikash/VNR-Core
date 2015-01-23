@@ -144,6 +144,7 @@ Item { id: root_
   property color exciteColor: settings_.exciteColor
   property color bingColor: settings_.bingColor
   property color googleColor: settings_.googleColor
+  property color naverColor: settings_.naverColor
   property color baiduColor: settings_.baiduColor
   property color lougoColor: settings_.lougoColor
   property color hanVietColor: settings_.hanVietColor
@@ -909,6 +910,7 @@ Item { id: root_
               case 'excite': return root_.exciteColor
               case 'bing': return root_.bingColor
               case 'google': return root_.googleColor
+              case 'naver': return root_.naverColor
               case 'baidu': return root_.baiduColor
               case 'lou': return root_.lougoColor
               default: return root_.translationColor

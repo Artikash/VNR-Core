@@ -645,6 +645,7 @@ Item { id: root_
         exciteColor: settings_.exciteColor
         bingColor: settings_.bingColor
         googleColor: settings_.googleColor
+        naverColor: settings_.naverColor
         baiduColor: settings_.baiduColor
         lougoColor: settings_.lougoColor
         hanVietColor: settings_.hanVietColor

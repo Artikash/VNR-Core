@@ -624,6 +624,7 @@ trdb:
   bing:             $PWD/../../../Caches/Translations/Microsoft
   excite:           $PWD/../../../Caches/Translations/Excite
   google:           $PWD/../../../Caches/Translations/Google
+  naver:            $PWD/../../../Caches/Translations/Naver
   infoseek:         $PWD/../../../Caches/Translations/Infoseek
   lecol:            $PWD/../../../Caches/Translations/LEC
   transru:          $PWD/../../../Caches/Translations/PROMT
