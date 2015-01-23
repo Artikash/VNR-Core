@@ -14,7 +14,7 @@
 a{color:#add8ff}
 .pp-name{color:silver}
 .text-error{background-color:rgba(255,0,0,40%)}
-.text-success{background-color:rgba(128,225,0,40%)}
+.text-success{background-color:rgba(128,225,0,30%)}
 		</style>
 	</head>
 	<body align="center">
@@ -72,10 +72,16 @@ a{color:#add8ff}
 				<td class="pp-value text-error">{{tr('yes')}}</td>
 			</tr>
 %endif
+%if td.host
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Translator')}}: </td>
+				<td class="pp-value text-success">{{td.host}}</td>
+			</tr>
+%endif
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Regex')}}: </td>
 %if td.regex
-				<td class="pp-value text-error">{{tr('yes')}}</td>
+				<td class="pp-value text-success">{{tr('yes')}}</td>
 %else
 				<td class="pp-value">{{tr('no')}}</td>
 %endif
@@ -83,9 +89,9 @@ a{color:#add8ff}
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Game-specific')}}: </td>
 %if td.special
-				<td class="pp-value text-error">{{tr('yes')}}</td>
+				<td class="pp-value">{{tr('yes')}}</td>
 %else
-				<td class="pp-value">{{tr('no')}}</td>
+				<td class="pp-value text-error">{{tr('no')}}</td>
 %endif
 			</tr>
 			<tr class="pp-row">
