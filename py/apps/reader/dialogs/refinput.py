@@ -235,7 +235,7 @@ class _ReferenceInput(object):
   @memoizedproperty
   def freemButton(self):
     ret = QtWidgets.QRadioButton("FreeM")
-    ret.setToolTip("gyutto.com (Alt+0)")
+    ret.setToolTip("freem.ne.jp (Alt+0)")
     ret.toggled.connect(self._searchLater)
     return ret
 
