@@ -399,7 +399,7 @@ bool DetermineEngineByProcessName()
     return true;
   }
 
-  if (wcsstr(str,L"rugp")) {
+  if (wcsstr(str,L"rugp") || IthCheckFile(L"rugp.exe")) {
     InsertRUGPHook();
     return true;
   }
