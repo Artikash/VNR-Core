@@ -514,6 +514,15 @@ class Settings(QSettings):
       self.setValue('BingColor', value)
       self.bingColorChanged.emit(value)
 
+  naverColorChanged = Signal(str)
+  def naverColor(self):
+    return self.value('NaverColor', config.SETTINGS_NAVER_COLOR)
+  def setNaverColor(self, value):
+    value = value or config.SETTINGS_NAVER_COLOR
+    if value != self.naverColor():
+      self.setValue('NaverColor', value)
+      self.naverColorChanged.emit(value)
+
   baiduColorChanged = Signal(str)
   def baiduColor(self):
     return self.value('BaiduColor', config.SETTINGS_BAIDU_COLOR)
@@ -1215,6 +1224,14 @@ class Settings(QSettings):
       self.setValue('BingEnabled', value)
       self.bingEnabledChanged.emit(value)
 
+  naverEnabledChanged = Signal(bool)
+  def isNaverEnabled(self):
+    return to_bool(self.value('NaverEnabled'))
+  def setNaverEnabled(self, value):
+    if value != self.isNaverEnabled():
+      self.setValue('NaverEnabled', value)
+      self.naverEnabledChanged.emit(value)
+
   baiduEnabledChanged = Signal(bool)
   def isBaiduEnabled(self):
     return to_bool(self.value('BaiduEnabled'))
@@ -1787,6 +1804,7 @@ class SettingsProxy(QObject):
     g.exciteColorChanged.connect(self.exciteColorChanged)
     g.bingColorChanged.connect(self.bingColorChanged)
     g.googleColorChanged.connect(self.googleColorChanged)
+    g.naverColorChanged.connect(self.naverColorChanged)
     g.baiduColorChanged.connect(self.baiduColorChanged)
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.transruColorChanged.connect(self.transruColorChanged)
@@ -2069,6 +2087,8 @@ class SettingsProxy(QObject):
   bingColor = unicode_property('BingColor', config.SETTINGS_BING_COLOR, notify=bingColorChanged)
   baiduColorChanged = Signal(unicode)
   baiduColor = unicode_property('BaiduColor', config.SETTINGS_BAIDU_COLOR, notify=baiduColorChanged)
+  naverColorChanged = Signal(unicode)
+  naverColor = unicode_property('NaverColor', config.SETTINGS_NAVER_COLOR, notify=naverColorChanged)
   lecOnlineColorChanged = Signal(unicode)
   lecOnlineColor = unicode_property('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR, notify=lecOnlineColorChanged)
   transruColorChanged = Signal(unicode)

@@ -116,8 +116,12 @@ class GoogleJsonTranslator(GoogleTranslator):
       if r.ok and len(ret) > 20:
         # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
         data = json.loads(ret)
-        ret = '\n'.join(it['trans'] for it in data['sentences'])
-        ret = unescapehtml(ret)
+        l = data['sentences']
+        if len(l) == 1:
+          ret = l[0]['trans']
+        else:
+          ret = '\n'.join(it['trans'] for it in l)
+        #ret = unescapehtml(ret)
         return ret
 
     #except socket.error, e:
@@ -143,8 +147,9 @@ if __name__ == '__main__':
   def test():
     global session
 
-    s = u"""オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"""
-    #s = u"お花の匂い！"
+    #s = u"""オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"""
+    s = u"お花の匂い！"
+    s = '"<html>&abcde"'
 
     fr = 'ja'
     to = 'zhs'
@@ -186,7 +191,7 @@ if __name__ == '__main__':
 
     with SkProfiler():
       #for i in range(10):
-      for i in range(20):
+      for i in range(1):
         t = gt.translate(s, to=to, fr=fr)
     print t
 

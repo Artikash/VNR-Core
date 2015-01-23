@@ -1195,6 +1195,21 @@ class InfoseekTranslator(OnlineMachineTranslator):
   key = 'infoseek' # override
   asyncSupported = False # override  disable async
 
+  NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'ar', 'ru', 'nl', 'pl'))
+
+  @staticmethod
+  def _checkLanguages(to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to in self.NOT_SUPPORTED_LANGUAGES:
+      to = 'en'
+    if fr in self.NOT_SUPPORTED_LANGUAGES:
+      fr = 'en'
+    return to, fr
+
   def __init__(self, session=None, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
     from transer import infoseek
@@ -1207,9 +1222,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #}))
   def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
-    if fr != 'ja':
-      return None, None, None
-    to = 'en' if to in ('ms', 'ar', 'ru', 'nl', 'pl') else to
+    to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1233,6 +1246,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1247,16 +1261,28 @@ class ExciteTranslator(OnlineMachineTranslator):
     #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
     self.engine = worldtrans
 
+  NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'))
+
+  @staticmethod
+  def _checkLanguages(to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to in self.NOT_SUPPORTED_LANGUAGES:
+      to = 'en'
+    if fr in self.NOT_SUPPORTED_LANGUAGES:
+      fr = 'en'
+    return to, fr
+
   #__excite_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
   def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
-    if fr != 'ja':
-      return None, None, None
-    if to in ('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'):
-      to = 'en'
+    to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1280,6 +1306,7 @@ class ExciteTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1295,9 +1322,24 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     leconline.session = session or requests.Session()
     self.engine = leconline
 
+  NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'th', 'vi'))
+
+  @staticmethod
+  def _checkLanguages(to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to in self.NOT_SUPPORTED_LANGUAGES:
+      to = 'en'
+    if fr in self.NOT_SUPPORTED_LANGUAGES:
+      fr = 'en'
+    return to, fr
+
   def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
-    to = 'en' if to in ('ms', 'th', 'vi') else to
+    to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1326,6 +1368,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1334,6 +1377,8 @@ class TransruTranslator(OnlineMachineTranslator):
   key = 'transru' # override
   asyncSupported = False # override  disable async
 
+  SUPPORTED_LANGUAGES = frozenset(('ja', 'en', 'ru', 'it', 'fr', 'de', 'pt', 'es'))
+
   def __init__(self, session=None, **kwargs):
     super(TransruTranslator, self).__init__(**kwargs)
 
@@ -1341,9 +1386,22 @@ class TransruTranslator(OnlineMachineTranslator):
     transru.session = session or requests.Session()
     self.engine = transru
 
+  @staticmethod
+  def _checkLanguages(to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to not in self.SUPPORTED_LANGUAGES:
+      to = 'en'
+    if fr not in self.SUPPORTED_LANGUAGES:
+      fr = 'en'
+    return to, fr
+
   def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
-    to = 'en' if to not in ('ja', 'en', 'ru', 'it', 'fr', 'de', 'pt', 'es') else to
+    to, fr = self._checkLanguages()
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1367,6 +1425,7 @@ class TransruTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    to, fr = self._checkLanguages()
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1473,6 +1532,74 @@ class BingTranslator(OnlineMachineTranslator):
     @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class NaverTranslator(OnlineMachineTranslator):
+  key = 'naver' # override
+  asyncSupported = False # override  disable async
+
+  def __init__(self, session=None, **kwargs):
+    super(NaverTranslator, self).__init__(**kwargs)
+
+    from naver import navertrans
+    navertrans.session = session or requests.Session()
+
+    self.engine = navertrans
+
+  @staticmethod
+  def _checkLanguages(to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if fr == 'ja':
+      return 'ko', 'ja'
+    elif fr == 'en':
+      if to not in ('en', 'ko', 'zhs', 'zht'):
+        return 'ko', 'en'
+    elif fr == 'ko':
+      if to not in ('en', 'ko', 'zhs', 'zht'):
+        return 'en', 'ko'
+    elif fr.startswith('zh'):
+      return 'ko', fr
+    elif fr in ('es', 'pt', 'id', 'th'):
+      return 'en', fr
+    else:
+      return 'ko', 'en'
+    return to, fr
+
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, **kwargs):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to, fr, emit)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        if to == 'zht':
+          repl = zhs2zht(repl)
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """
+    @param  text  unicode
+    @param* fr  unicode
+    @param* async  bool  ignored, always sync
+    @return  unicode sub
+    """
+    to, fr = self._checkLanguages(to, fr)
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
 class BaiduTranslator(OnlineMachineTranslator):

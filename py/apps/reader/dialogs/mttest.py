@@ -515,7 +515,8 @@ class _MTTester(object):
     #ret.setAcceptRichText(False)
     skqss.class_(ret, 'normal')
     ret.setPlainText(
-      u"「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」【綾波レイ】"
+      u"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」"
+      #u"「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」【綾波レイ】"
     )
     #ret.resize(300, 200)
     return ret

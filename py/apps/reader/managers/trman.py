@@ -36,6 +36,7 @@ class _TranslatorManager(object):
     self.exciteEnabled = \
     self.bingEnabled = \
     self.googleEnabled = \
+    self.naverEnabled = \
     self.baiduEnabled = \
     self.lecOnlineEnabled = \
     self.transruEnabled = \
@@ -105,6 +106,10 @@ class _TranslatorManager(object):
   @memoizedproperty
   def baiduTranslator(self):
     return self._newtr(_trman.BaiduTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+
+  @memoizedproperty
+  def naverTranslator(self):
+    return self._newtr(_trman.NaverTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
 
   @memoizedproperty
   def bingTranslator(self):
@@ -189,9 +194,11 @@ class _TranslatorManager(object):
         if self.transruEnabled: yield self.transruTranslator
         if self.googleEnabled: yield self.googleTranslator
         if self.bingEnabled: yield self.bingTranslator
+        if self.naverEnabled: yield self.naverTranslator
         if self.baiduEnabled: yield self.baiduTranslator
       else:
         if self.baiduEnabled: yield self.baiduTranslator
+        if self.naverEnabled: yield self.naverTranslator
         if self.bingEnabled: yield self.bingTranslator
         if self.googleEnabled: yield self.googleTranslator
         if self.transruEnabled: yield self.transruTranslator
@@ -271,6 +278,9 @@ class TranslatorManager(QObject):
   def isBaiduEnabled(self): return self.__d.baiduEnabled
   def setBaiduEnabled(self, value): self.__d.baiduEnabled = value
 
+  def isNaverEnabled(self): return self.__d.naverEnabled
+  def setNaverEnabled(self, value): self.__d.naverEnabled = value
+
   def isLecOnlineEnabled(self): return self.__d.lecOnlineEnabled
   def setLecOnlineEnabled(self, value): self.__d.lecOnlineEnabled = value
 
@@ -316,6 +326,7 @@ class TranslatorManager(QObject):
     d = self.__d
     return any((
       d.baiduEnabled,
+      d.naverEnabled,
       d.googleEnabled,
       d.bingEnabled,
       d.lecOnlineEnabled,
@@ -361,6 +372,7 @@ class TranslatorManager(QObject):
     if d.atlasEnabled: r.append('atlas')
 
     if d.baiduEnabled: r.append('baidu')
+    if d.naverEnabled: r.append('naver')
     if d.googleEnabled: r.append('google')
     if d.bingEnabled: r.append('bing')
     if d.lecOnlineEnabled: r.append('lecol')
@@ -379,12 +391,12 @@ class TranslatorManager(QObject):
     if not self.isEnabled():
       return ''
     d = self.__d
-    if d.ezTransEnabled:
-      return 'ko'
     if d.hanVietEnabled:
       return 'vi'
     if d.jbeijingEnabled or d.baiduEnabled or d.fastaitEnabled or d.dreyeEnabled:
       return 'zhs' if d.language == 'zhs' else 'zht'
+    if d.ezTransEnabled or d.naverEnabled:
+      return 'ko'
     if (d.atlasEnabled or d.lecEnabled) and not any((
         d.infoseekEnabled,
         d.transruEnabled,

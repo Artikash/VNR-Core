@@ -2435,14 +2435,15 @@ class _TextTab(object):
     blans = settings.global_().blockedLanguages()
     conf = ( # Name, name, tr, lang
       #('Lougo', None,  u"ルー語", None),
-      ('Bing', None,  mytr_("Bing"), None),
-      ('Google', None,  mytr_("Google"), None),
+      ('Bing', None,  "Bing.com", None),
+      ('Google', None,  "Google.com", None),
       ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
-      ('Infoseek', None,  mytr_("Infoseek"), None),
-      ('Excite', None,  mytr_("Excite"), None),
-      ('Transru', None,  mytr_("Translate.Ru"), None),
-      ('Baidu', None,  mytr_("Baidu"), 'zh'),
-      #('Youdao', None,  mytr_("Youdao"), 'zh'),
+      ('Infoseek', None,  "Infoseek.co.jp", None),
+      ('Excite', None,  "Excite.co.jp", None),
+      ('Transru', None,  "Translate.Ru", None),
+      ('Naver', None,  "Naver.com", 'ko'),
+      ('Baidu', None,  mytr_("Baidu") + ".com", 'zh'),
+      #('Youdao', None,  mytr_("Youdao") + '.com', 'zh'),
       ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
       ('Fastait', None,  mytr_("FastAIT"), 'zh'),
       ('Dreye', None,  mytr_("Dr.eye"), 'zh'),
@@ -2501,7 +2502,7 @@ class _TextTab(object):
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
                  #'Lougo',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -2727,6 +2728,11 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       grid.addWidget(self._createBrowseButton("http://fanyi.baidu.com"), r, 0)
       grid.addWidget(self.baiduButton, r, 1)
 
+    if 'ko' not in blans:
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://fanyi.naver.com"), r, 0)
+      grid.addWidget(self.naverButton, r, 1)
+
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.bing.com/translator"), r, 0)
     grid.addWidget(self.bingButton, r, 1)
@@ -2875,6 +2881,15 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def naverButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Naver.com Korean translation service"),
+        my.tr("recommended for Korean")))
+    ret.setChecked(settings.global_().isNaverEnabled())
+    ret.toggled.connect(settings.global_().setNaverEnabled)
+    return ret
+
+  @memoizedproperty
   def transruButton(self):
     ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
         my.tr("Translate.Ru multilingual translation service"),
@@ -2944,7 +2959,9 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   @memoizedproperty
   def ezTransButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
+    ret = QtWidgets.QCheckBox("%s (%s)" (
+        my.tr("ezTrans XP Korean translator"),
+        my.tr("recommended for Korean")))
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
     return ret

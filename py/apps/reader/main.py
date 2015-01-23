@@ -702,6 +702,9 @@ class _MainObject(object):
     ret.setTransruEnabled(ss.isTransruEnabled())
     ss.transruEnabledChanged.connect(ret.setTransruEnabled)
 
+    ret.setNaverEnabled(ss.isNaverEnabled())
+    ss.naverEnabledChanged.connect(ret.setNaverEnabled)
+
     ret.setBaiduEnabled(ss.isBaiduEnabled())
     ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
 
