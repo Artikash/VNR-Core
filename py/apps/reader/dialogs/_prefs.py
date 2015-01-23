@@ -2763,7 +2763,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
     if 'ko' not in blans:
       r += 1
-      grid.addWidget(self._createBrowseButton("http://fanyi.naver.com"), r, 0)
+      grid.addWidget(self._createBrowseButton("http://translate.naver.com"), r, 0)
       grid.addWidget(self.naverButton, r, 1)
 
     r += 1
