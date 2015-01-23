@@ -2959,9 +2959,9 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   @memoizedproperty
   def ezTransButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" (
-        my.tr("ezTrans XP Korean translator"),
-        my.tr("recommended for Korean")))
+    ret = QtWidgets.QCheckBox(
+        my.tr("ezTrans XP Korean translator"))
+        #my.tr("recommended for Korean")))
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
     return ret
