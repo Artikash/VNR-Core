@@ -25,7 +25,6 @@ Item { id: root_
   }
 
   function submit(postString, imageString) { // image string is ignored
-    console.log(postString)
     var post = JSON.parse(postString)
     var user = statusPlugin_.userName
     var pass = statusPlugin_.userPassword
