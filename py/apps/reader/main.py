@@ -2430,8 +2430,9 @@ class MainObjectProxy(QObject):
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)
 
-  @Slot(unicode)
-  def showNewTerm(self, pattern): manager().showTermInput(pattern)
+  @Slot(unicode, unicode, unicode)
+  def showNewTerm(self, pattern, type, language):
+    manager().showTermInput(pattern, type=type, language=language)
 
   @Slot(unicode)
   def openWiki(self, text): manager().openWiki(text)

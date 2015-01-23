@@ -1491,7 +1491,11 @@ Item { id: root_
       var item = listModel_.get(popupIndex())
       //textEditHighlightText(item.textEdit)
 
-      dictAct_.enabled = !!item && (item.type === 'text' || item.type === 'name')
+      termAct_.enabled = !!item && item.type !== 'comment' && item.type !== 'sub'
+      if (termAct_.enabled) {
+        termAct_.itemType = item.type
+        termAct_.itemLanguage = item.language
+      }
 
       var hasComment = !!(item && item.comment)
       editAct_.enabled = hasComment
@@ -1520,14 +1524,19 @@ Item { id: root_
 
     Desktop.Separator {}
 
-    Desktop.MenuItem { id: dictAct_
+    Desktop.MenuItem { id: termAct_
+      property string itemType
+      property string itemLanguage
 
       text: qsTr("Add to the Shared Dictionary")
 
       onTriggered: {
         var t = popupHoveredText()
-        if (t)
-          mainPlugin_.showNewTerm(t)
+        if (t) {
+          var type = itemType === 'tr' || itemType == 'name.tr' ? 'target' : ''
+          var lang = type === 'target' ? itemLanguage : ''
+          mainPlugin_.showNewTerm(t, type, lang)
+        }
       }
     }
 
