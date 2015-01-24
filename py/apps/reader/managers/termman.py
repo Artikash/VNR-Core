@@ -85,17 +85,17 @@ class TermWriter:
     @param  titles  [TermTitle] not None not empty
     @return  bool
     """
-    #marksChanges = self.marked and type in ('target', 'escape_target')
-    convertsChinese = language == 'zht' and type in ('target', 'escape_source', 'escape_target')
-    if type not in ('source', 'escape_source', 'escape_target'):
+    #marksChanges = self.marked and type in ('output', 'trans_output')
+    convertsChinese = language == 'zht' and type in ('output', 'trans_input', 'trans_output')
+    if type not in ('input', 'trans_input', 'trans_output'):
       titles = None
 
     titleCount = len(titles) if titles else 0 # int
 
     empty = True
 
-    escape_source = type == 'escape_source'
-    escape_target = type == 'escape_target'
+    trans_input = type == 'trans_input'
+    trans_output = type == 'trans_output'
 
     count = len(self.termData)
     try:
@@ -106,21 +106,21 @@ class TermWriter:
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
           # no padding space for Chinese names
-          padding = escape_source or (
-            td.type in ('name', 'yomi', 'escape')
+          padding = trans_input or (
+            td.type in ('name', 'yomi', 'trans')
             and (
               td.language not in ('ja', 'ko', 'zhs', 'zht')
               or td.type == 'yomi' and td.language == 'ja' and language not in ('ko', 'zhs', 'zht')
             )
           )
 
-          regex = td.regex and not escape_target
+          regex = td.regex and not trans_output
 
-          if escape_source or escape_target:
+          if trans_input or trans_output:
             priority = count - index
             key = defs.TERM_ESCAPE % priority
 
-          if escape_source:
+          if trans_input:
             repl = key
           else:
             repl = td.text
@@ -135,7 +135,7 @@ class TermWriter:
               #if marksChanges:
               #  repl = self._markText(repl)
 
-          if escape_target:
+          if trans_output:
             pattern = key
           else:
             pattern = td.pattern
@@ -148,7 +148,7 @@ class TermWriter:
           # pattern: A(?:(sama)|(1)|(2)|(4)|(5)|(6)|(7)|(8)|(9)|(sam))
           # repl: BCD(?1yy)(?10xxx)
           #if titleCount and td_is_name:
-          #  if escape_source:
+          #  if trans_input:
           #    repl_prefix = (defs.NAME_ESCAPE_PREFIX % priority) + "."
           #    repl_suffix = defs.NAME_ESCAPE_SUFFIX + " " # padding space
           #    pattern += r"(?:"
@@ -163,7 +163,7 @@ class TermWriter:
           #        repl_suffix = r")" + repl_suffix
           #    pattern += r"|)" # trailing "|" so that the title can be empty
           #    repl = repl_prefix + repl_suffix
-          #  elif escape_target:
+          #  elif trans_output:
           #    pattern = (defs.NAME_ESCAPE_PREFIX % priority) + r"\.(?:" # escape the dot
           #    for i,v in enumerate(titles.itervalues()):
           #      if i:
@@ -188,7 +188,7 @@ class TermWriter:
 
           name = None
           if titleCount and td.type in ('name', 'yomi'):
-            if escape_source:
+            if trans_input:
               name = True
               esc = defs.NAME_ESCAPE + " " # padding space
               for i,it in enumerate(titles):
@@ -199,7 +199,7 @@ class TermWriter:
                     regex or it.regex,
                     td.host,
                     name=False)
-            elif escape_target:
+            elif trans_output:
               esc = defs.NAME_ESCAPE
               for i,it in enumerate(titles):
                 self._writeLine(f,
@@ -290,14 +290,14 @@ class TermWriter:
     @yield  _Term
     """
     types = [type]
-    if type.startswith('escape'):
-      types[0] = 'escape' # override type
+    if type.startswith('trans'):
+      types[0] = 'trans' # override type
       if config.is_kanji_language(language):
         types.append('name')
         if language == 'ko':
           types.append('yomi')
-    elif type == 'source' and not config.is_kanji_language(language):
-      types.append('escape')
+    elif type == 'input' and not config.is_kanji_language(language):
+      types.append('trans')
       types.append('name')
       types.append('yomi')
 
@@ -355,7 +355,7 @@ class TermWriter:
     l = [] # [long id, unicode pattern, unicode replacement, bool regex]
     #ret = OrderedDict({'':''})
     #ret = OrderedDict()
-    for td in self._iterTermData('title', language):
+    for td in self._iterTermData('suffix', language):
       pat = td.pattern
       if td.regex:
         pat = self._applyMacros(pat, macros)
@@ -395,9 +395,6 @@ class TermWriter:
 class _TermManager:
 
   instance = None # _TermManager  needed for updateTime
-
-  # Cover all term types, but decouple escape into before and after
-  #SAVE_TYPES = 'origin', 'source', 'target', 'speech', 'ocr', 'escape_source', 'escape_target'
 
   def __init__(self, q):
     _TermManager.instance = self
@@ -440,7 +437,7 @@ class _TermManager:
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
-      ret.setLinkEnabled(self.marked and type in ('target', 'escape_target'))
+      ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
     return ret
 
   #@classmethod
@@ -507,7 +504,7 @@ class _TermManager:
       convertsChinese = language == 'zht'
       for td in termData:
         if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
-            td.syntax and td.type == 'escape'
+            td.syntax and td.type == 'trans'
             and (not td.special or gameIds and td.gameId and td.gameId in gameIds)
             and (not td.hentai or hentai)
             and i18n.language_compatible_to(td.language, language)
@@ -662,7 +659,7 @@ class TermManager(QObject):
       d.marked = t
       for key,man in d.scripts.iteritems():
         type = key.split(SCRIPT_KEY_SEP)[0]
-        marked = t and type in ('target', 'escape_target')
+        marked = t and type in ('output', 'trans_output')
         man.setLinkEnabled(marked)
 
       for it in d.rbmt.itervalues():
@@ -733,7 +730,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'origin', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'game', language or d.targetLanguage) if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
@@ -751,7 +748,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'speech', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'tts', language or d.targetLanguage) if d.enabled else text
 
   def applyOcrTerms(self, text, language=None):
     """
@@ -773,7 +770,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     #with SkProfiler():
-    return d.applyTerms(text, 'target', language, host=host) if d.enabled else text
+    return d.applyTerms(text, 'output', language, host=host) if d.enabled else text
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
@@ -790,7 +787,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.0005 seconds
     # 9/26/2014: Boost 0.001 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'source', language, host=host) if d.enabled else text
+    return d.applyTerms(text, 'input', language, host=host) if d.enabled else text
     #dm = dataman.manager()
     #d = self.__d
     #text = d.applyTerms(dm.iterSourceTerms(), text, language)
@@ -816,7 +813,7 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'escape_source', language, host=host)
+    return d.applyTerms(text, 'trans_input', language, host=host)
 
   def applyEscapeTerms(self, text, language, host=''):
     """
@@ -832,7 +829,7 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
-    ret = d.applyTerms(text, 'escape_target', language, host=host)
+    ret = d.applyTerms(text, 'trans_output', language, host=host)
     if d.marked and language.startswith('zh'):
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")

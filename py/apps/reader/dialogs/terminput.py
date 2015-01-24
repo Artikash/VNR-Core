@@ -175,27 +175,27 @@ class _TermInput(object):
     user = dataman.manager().user()
 
     tt = self._getType()
-    #self.regexButton.setEnabled(tt not in ('title', 'macro'))
+    #self.regexButton.setEnabled(tt not in ('suffix', 'macro'))
     self.regexButton.setEnabled(tt != 'macro')
-    self.syntaxButton.setEnabled(tt == 'escape' and not user.isGuest())
+    self.syntaxButton.setEnabled(tt == 'trans' and not user.isGuest())
 
-    if tt == 'escape':
+    if tt == 'trans':
       t = my.tr("translate text from input to text language")
-    elif tt == 'source':
+    elif tt == 'input':
       t = my.tr("transform text in input langauge before translation")
-    elif tt == 'target':
+    elif tt == 'output':
       t = my.tr("transform text in output language after translation")
     elif tt == 'name':
       t = my.tr("a character name")
     elif tt == 'yomi':
       t = my.tr("katagana or hiragana of a name")
-    elif tt == 'title':
+    elif tt == 'suffix':
       t = my.tr("a title after names")
-    elif tt == 'speech':
+    elif tt == 'tts':
       t = my.tr("transform text before TTS")
     elif tt == 'ocr':
       t = my.tr("transform text after OCR")
-    elif tt == 'origin':
+    elif tt == 'game':
       t = my.tr("transform extracted game text")
     elif tt == 'macro':
       t = my.tr("reusable regular expression pattern")
@@ -336,7 +336,7 @@ class _TermInput(object):
   def _isUseless(self): # -> bool  has no effect
     pattern = self.patternEdit.text().strip()
     #if self._getLanguage() not in ('zhs', 'zht', 'ko') or # allow people to force save sth
-    if self._getType() not in ('escape', 'title', 'name', 'yomi'):
+    if self._getType() not in ('trans', 'suffix', 'name', 'yomi'):
       text = self.textEdit.text().strip()
       if pattern == text:
         return True
@@ -382,9 +382,9 @@ class _TermInput(object):
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
-      #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'title')
-      regex = type == 'macro' or self.regexButton.isChecked() #and type != 'title')
-      syntax = type == 'escape' and self.syntaxButton.isChecked() and not user.isGuest()
+      #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'suffix')
+      regex = type == 'macro' or self.regexButton.isChecked() #and type != 'suffix')
+      syntax = type == 'trans' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
       private = self.privateButton.isChecked() and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
@@ -411,7 +411,7 @@ class _TermInput(object):
 
   #def autofill(self):
   #  lang = self._getLanguage()
-  #  type = 'escape' if config.is_kanji_language(lang) else 'source'
+  #  type = 'trans' if config.is_kanji_language(lang) else 'input'
   #  self._setType(type)
 
   def refresh(self):
@@ -483,7 +483,7 @@ class _TermInput(object):
 
   def _refreshKanji(self):
     w = self.kanjiEdit
-    if self._getType() not in ('macro', 'target'):
+    if self._getType() not in ('macro', 'output'):
       text = self.patternEdit.text().strip()
       if text:
         kanji = convutil.yomi2kanji(text)

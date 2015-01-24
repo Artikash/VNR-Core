@@ -188,7 +188,7 @@ Item { id: root_
       || currentItem.userId === _GUEST_USER_ID && userLevel > 0)
 
   function createTerm() {
-    //datamanPlugin_.createTerm('target', My.tr("Matched text"), My.tr("Replaced text"))
+    //datamanPlugin_.createTerm('output', My.tr("Matched text"), My.tr("Replaced text"))
     mainPlugin_.showTermInput()
   }
   function deleteCurrentItem() {

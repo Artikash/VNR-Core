@@ -72,7 +72,7 @@ Item { id: root_
   }
 
   function shouldHighlight(term) { // object -> bool
-    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'origin' || term.type === 'macro'
+    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'game' || term.type === 'macro'
   }
 
   function itemColor(term) { // object -> string
@@ -93,7 +93,7 @@ Item { id: root_
 
   function typeAllowsHost(type) { // string -> bool
     switch (type) {
-    case 'source': case 'target': case 'escape':
+    case 'input': case 'output': case 'trans':
     case 'name': case 'yomi':
       return true
     default: return false
@@ -140,14 +140,14 @@ Item { id: root_
   }
 
   property variant _TYPE_NAMES: {
-    escape: Sk.tr("Translation")
-    , source: My.tr("Input")
-    , target: My.tr("Output")
+    trans: Sk.tr("Translation")
+    , input: My.tr("Input")
+    , output: My.tr("Output")
     , name: My.tr("Name")
     , yomi: My.tr("Yomi")
-    , title: My.tr("Suffix")
-    , origin: Sk.tr("Game")
-    , speech: My.tr("TTS")
+    , suffix: My.tr("Suffix")
+    , game: Sk.tr("Game")
+    , tts: My.tr("TTS")
     , ocr: My.tr("OCR")
     , macro: Sk.tr("Macro")
   }
@@ -482,8 +482,8 @@ Item { id: root_
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue) && itemValue.type === 'escape' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
-          checked: itemValue.syntax && itemValue.type === 'escape' // force syntax for translatoin
+          enabled: canEdit(itemValue) && itemValue.type === 'trans' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
+          checked: itemValue.syntax && itemValue.type === 'trans' // force syntax for translatoin
           onCheckedChanged:
             if (enabled && checked !== itemValue.syntax)
               itemValue.syntax = checked
@@ -499,7 +499,7 @@ Item { id: root_
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          //enabled: canEdit(itemValue) && itemValue.type !== 'title' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
+          //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
           enabled: canEdit(itemValue) && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
           checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
