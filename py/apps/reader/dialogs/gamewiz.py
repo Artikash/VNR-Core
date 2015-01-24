@@ -971,7 +971,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
       t.name = name
       self._threads[signature] = t
 
-      if name == defs.USER_DEFINED_THREAD_NAME:
+      if name == defs.HCODE_THREAD_NAME:
         n = mytr_("H-code")
       elif name in defs.CAONIMAGEBI_ENGINES:
         n = name + defs.CAONIMAGEBI_USERNAME

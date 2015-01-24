@@ -7181,7 +7181,7 @@ class _DataManager(object):
           if v:
             g.nameThreadName = v
 
-        if g.hook and g.threadName != defs.USER_DEFINED_THREAD_NAME:
+        if g.hook and g.threadName != defs.HCODE_THREAD_NAME:
           dwarn("ignore bad hook: id=%s, code=%s" % (g.id, g.hook))
           growl.notify('<br/>'.join((
             my.tr("Remove bad user-defined hcode"),
