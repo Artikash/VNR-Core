@@ -37,7 +37,7 @@ SS_LABELS = {
   defs.ENGINE_THREAD_TYPE: "QLabel{color:blue}",
   defs.CUI_THREAD_TYPE: "QLabel{color:gray}",
   defs.GUI_THREAD_TYPE: "",
-  defs.NULL_THREAD_TYPE: "",   # should never happen!
+  defs.NULL_THREAD_TYPE: "QLabel{color:orange}",
 }
 
 def _gameprofile():
@@ -69,7 +69,9 @@ class _TextThreadView(object):
     tt = defs.threadtype(self.name)
     ttip = i18n.threadtip(tt)
 
-    if self.name == defs.HCODE_THREAD_NAME:
+    if self.name == defs.NULL_THREAD_NAME:
+      n = tr_("Not specified")
+    elif self.name == defs.HCODE_THREAD_NAME:
       n = mytr_("H-code")
     elif self.name in defs.CAONIMAGEBI_ENGINES:
       n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME

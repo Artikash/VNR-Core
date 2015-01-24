@@ -589,7 +589,7 @@ class _GameTab(object):
     if not features.WINE:
       layout.addWidget(self.launcherGroup)
     layout.addWidget(self.snifferGroup)
-    layout.addWidget(self.springBoardGroup)
+    #layout.addWidget(self.springBoardGroup)
     layout.addWidget(self.timeZoneGroup)
     #layout.addWidget(self.hcodeGroup) # Always enabled
     layout.addStretch()
@@ -622,34 +622,34 @@ and then change the code to the correct one in Text Settings.""")))
 
   ## Spring board ##
 
-  @memoizedproperty
-  def springBoardGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.springBoardButton)
+#  @memoizedproperty
+#  def springBoardGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.springBoardButton)
+#
+#    label = QtWidgets.QLabel(my.tr(
+#"""When enabled, VNR will launch the game dropped onto the Spring Board.
+#When disabled, VNR will only add the new game without launching it.
+#Drag-drop does not work when VNR is launched with admin privileges."""))
+#    if features.ADMIN == True:
+#      skqss.class_(label, 'warning')
+#    layout.addWidget(label)
+#
+#    ret = QtWidgets.QGroupBox(mytr_("Spring Board"))
+#    ret.setLayout(layout)
+#    return ret
 
-    label = QtWidgets.QLabel(my.tr(
-"""When enabled, VNR will launch the game dropped onto the Spring Board.
-When disabled, VNR will only add the new game without launching it.
-Drag-drop does not work when VNR is launched with admin privileges."""))
-    if features.ADMIN == True:
-      skqss.class_(label, 'warning')
-    layout.addWidget(label)
-
-    ret = QtWidgets.QGroupBox(mytr_("Spring Board"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def springBoardButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Launch the game (*.exe/*.lnk) dropped onto the Spring Board"
-    ))
-    if features.ADMIN == True:
-      skqss.class_(ret, 'warning')
-    ss = settings.global_()
-    ret.setChecked(ss.springBoardLaunchesGame())
-    ret.toggled.connect(ss.setSpringBoardLaunchesGame)
-    return ret
+  #@memoizedproperty
+  #def springBoardButton(self):
+  #  ret = QtWidgets.QCheckBox(my.tr(
+  #    "Launch the game (*.exe/*.lnk) dropped onto the Spring Board"
+  #  ))
+  #  if features.ADMIN == True:
+  #    skqss.class_(ret, 'warning')
+  #  ss = settings.global_()
+  #  ret.setChecked(ss.springBoardLaunchesGame())
+  #  ret.toggled.connect(ss.setSpringBoardLaunchesGame)
+  #  return ret
 
   ## Time zone ##
 

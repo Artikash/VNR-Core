@@ -1564,20 +1564,25 @@ class MainObject(QObject):
       return
     import osutil
     np = osutil.normalize_path(path)
-    import hashutil
-    md5 = hashutil.md5sum(np)
+    #import hashutil
+    #md5 = hashutil.md5sum(np)
 
-    d = self.__d
-    if d.dataManager.containsGameMd5(md5, online=False):
-      growl.notify(my.tr("The game already exists"))
-    elif not d.dataManager.containsGameMd5(md5):
-      growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
-      self.showGameWizard(path=path)
-    elif not d.networkManager.isOnline():
-      growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
-      self.showGameWizard(path=path)
-    else:
-      d.dataManager.addGame(path=path, md5=md5)
+    self.__d.dataManager.addGame(path=path)
+
+    #d = self.__d
+    #if d.dataManager.containsGameMd5(md5, online=False):
+    #  growl.notify(my.tr("The game already exists"))
+    #  #if not d.dataManager.containsGamePath(path, online=False):
+    #  return
+
+      #if not d.dataManager.containsGameMd5(md5):
+      #  growl.notify("<br/>".join((
+      #      my.tr("It seems to be an unknown game."),
+      #      my.tr("Please manually adjust Text Settings after launching the game."))))
+      #elif not d.networkManager.isOnline():
+      #  growl.notify("<br/>".join((
+      #      my.tr("It seems you are offline.")
+      #      my.tr("Please manually adjust Text Settings after launching the game."))))
 
   #def isDebug(self): return self.__d.debug
 

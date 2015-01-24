@@ -94,9 +94,9 @@ class _SpringBoard(object):
         dprint("drop game")
 
         import main
-        m = main.manager()
-        f = m.openGame if settings.global_().springBoardLaunchesGame() else m.addGame
-        skevents.runlater(partial(f, path=path), 200)
+        #m = main.manager()
+        #f = m.openGame if settings.global_().springBoardLaunchesGame() else m.addGame
+        skevents.runlater(partial(main.manager().addGame, path=path), 200)
       else:
         derror("unreachable unknown suffix: %s" % suf)
     except (AttributeError, IndexError): pass
