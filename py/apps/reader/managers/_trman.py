@@ -1397,7 +1397,7 @@ class TransruTranslator(OnlineMachineTranslator):
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
-    to, fr = self._checkLanguages()
+    to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1421,7 +1421,7 @@ class TransruTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
-    to, fr = self._checkLanguages()
+    to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
