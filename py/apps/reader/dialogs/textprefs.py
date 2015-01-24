@@ -37,7 +37,7 @@ SS_LABELS = {
   defs.ENGINE_THREAD_TYPE: "QLabel{color:blue}",
   defs.CUI_THREAD_TYPE: "QLabel{color:gray}",
   defs.GUI_THREAD_TYPE: "",
-  defs.NULL_THREAD_TYPE: "",   # should never happen!
+  defs.NULL_THREAD_TYPE: "QLabel{color:orange}",
 }
 
 def _gameprofile():
