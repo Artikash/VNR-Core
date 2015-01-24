@@ -94,6 +94,14 @@ class TermWriter:
     if type not in ('input', 'trans_input', 'trans_output'):
       titles = None
 
+    kanjiLanguage = config.is_kanji_language(language)
+    if kanjiLanguage:
+      TERM_ESCAPE = defs.TERM_ESCAPE_KANJI
+      NAME_ESCAPE = defs.NAME_ESCAPE_KANJI
+    else:
+      TERM_ESCAPE = defs.TERM_ESCAPE_LATIN
+      NAME_ESCAPE = defs.NAME_ESCAPE_LATIN
+
     titleCount = len(titles) if titles else 0 # int
 
     empty = True
@@ -114,7 +122,7 @@ class TermWriter:
             td.type in ('name', 'yomi', 'trans')
             and (
               not ESCAPE_ALL and not config.is_kanji_language(td.language)
-              or td.type == 'yomi' and td.language == 'ja' and language not in ('ko', 'zhs', 'zht')
+              or td.type == 'yomi' and td.language == 'ja' and not kanjiLanguage
             )
           )
 
@@ -122,7 +130,7 @@ class TermWriter:
 
           if trans_input or trans_output:
             priority = count - index
-            key = defs.TERM_ESCAPE % priority
+            key = TERM_ESCAPE % priority
 
           if trans_input:
             repl = key
@@ -194,7 +202,7 @@ class TermWriter:
           if titleCount and td.type in ('name', 'yomi'):
             if trans_input:
               name = True
-              esc = defs.NAME_ESCAPE + " " # padding space
+              esc = NAME_ESCAPE + " " # padding space
               for i,it in enumerate(titles):
                 self._writeLine(f,
                     td.id,
@@ -204,7 +212,7 @@ class TermWriter:
                     td.host,
                     name=False)
             elif trans_output:
-              esc = defs.NAME_ESCAPE
+              esc = NAME_ESCAPE
               for i,it in enumerate(titles):
                 self._writeLine(f,
                     td.id,

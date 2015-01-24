@@ -147,17 +147,15 @@ TOPIC_TYPES = (
 # Translations
 
 #TERM_ESCAPE = "9%i.67" # ESCAPE of escaped terms.
-#TERM_ESCAPE = "9%i.678" # ESCAPE of escaped terms. At least 3 digits so that youdao work well!
-TERM_ESCAPE = "SA%i.678" # ESCAPE of escaped terms.
+TERM_ESCAPE_KANJI = "9%i.678" # ESCAPE of escaped terms. At least 3 digits so that youdao work well!
+TERM_ESCAPE_LATIN = "SA%i" # ESCAPE of escaped terms.
 
 #NAME_ESCAPE = "9%i.%i58" # ESCAPE of escaped character name
-#NAME_ESCAPE = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
-NAME_ESCAPE = "SB%i.3%i8" # ESCAPE of escaped character name.
+NAME_ESCAPE_KANJI = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
+NAME_ESCAPE_LATIN = "SN%i.%i" # ESCAPE of escaped character name.
 
-#JITTER_ESCAPE = "341.143"
-JITTER_ESCAPE = "SC341.143"
-
-#CHARA_ESCAPE = "9%i.%i48" # ESCAPE of character names from getchu
+JITTER_ESCAPE_KANJI = "341.143"
+JITTER_ESCAPE_LATIN = "SJ341"
 
 TERM_MACRO_BEGIN = '{{'
 TERM_MACRO_END = '}}'
