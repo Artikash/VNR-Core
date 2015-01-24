@@ -15,6 +15,10 @@ import config, features, growl, osutil, rc, winutil
 
 PID = os.getpid() # cached
 
+windir = skpaths.WINDIR.lower()
+appdata = skpaths.APPDATA.lower()
+localappdata = skpaths.LOCALAPPDATA.lower()
+
 ## Filter ##
 
 def is_blocked_process_name(name):
@@ -26,6 +30,23 @@ def is_blocked_process_name(name):
       name.startswith('360') or
       name.startswith('Baidu') or
       name.startswith('baidu'))
+
+def is_blocked_process_path(path):
+  """
+  @param  path
+  @return  bool
+  """
+  name = os.path.basename(path)
+  if is_blocked_process_name(name):
+    return True
+
+  lpath = path.lower()
+  if (lpath.startswith(windir) or
+      lpath.startswith(appdata) or
+      lpath.startswith(localappdata)):
+    return True
+
+  return False
 
 def is_my_window(hwnd): return skwin.get_window_process_id(hwnd) == PID
 
@@ -70,9 +91,6 @@ def iterprocess():
   See: http://www.blog.pythonlibrary.org/2010/10/03/how-to-find-and-list-all-running-processes-with-python/
   """
 
-  windir = skpaths.WINDIR.lower()
-  appdata = skpaths.APPDATA.lower()
-  localappdata = skpaths.LOCALAPPDATA.lower()
   for p in psutil.process_iter():
     if (p.pid and       # pid == 0 will raise access denied exception on Mac
         p.is_running() and
@@ -81,11 +99,7 @@ def iterprocess():
       try: path = u(p.exe)        # system processes raise access denied exception on Windows 7
       except: continue
       name = u(p.name)
-      lpath = path.lower()
-      if (is_blocked_process_name(name) or
-          lpath.startswith(windir) or
-          lpath.startswith(appdata) or
-          lpath.startswith(localappdata)):
+      if is_blocked_process_name(name) or is_blocked_process_path(path):
         continue
       pid = p.pid
       if '?' in path: # Japanese characters
@@ -147,14 +161,9 @@ def may_be_game_window(wid):
   if not path:
     return False
 
-  exe = os.path.basename(path)
-  if is_blocked_process_name(exe):
+  if is_blocked_process_path(path):
     return False
 
-  if (path.startswith(skpaths.WINDIR) or
-      path.startswith(skpaths.APPDATA) or
-      path.startswith(skpaths.LOCALAPPDATA)):
-    return False
   return True
 
 def open_executable(path, lcid=0, params=None, vnrlocale=False):

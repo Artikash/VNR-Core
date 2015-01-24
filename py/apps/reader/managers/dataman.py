@@ -9453,10 +9453,10 @@ class DataManager(QObject):
       dwarn("missing path");
       return
 
-    fileName = os.path.basename(path)
-    if fileName in config.PROCESS_BLACKLIST:
+    import procutil
+    if procutil.is_blocked_process_path(path):
       dwarn("blocked file name")
-      growl.warning(my.tr("Please do not add non-game program to VNR!"))
+      growl.warn(my.tr("Please do not add non-game program to VNR!"))
       return
 
     if not md5:
@@ -9464,7 +9464,7 @@ class DataManager(QObject):
       md5 = hashutil.md5sum(np)
       if not md5:
         dwarn("failed to hash game executable")
-        growl.warning(my.tr("Failed to read game executable"))
+        growl.warn(my.tr("Failed to read game executable"))
         return
     d = self.__d
     if md5 in d.games:
@@ -9484,6 +9484,7 @@ class DataManager(QObject):
 
     g.md5 = md5
 
+    fileName = os.path.basename(path)
     if not g.names['file']:
       g.names['file'].append(fileName)
 
