@@ -604,6 +604,11 @@ bool DetermineNoEngine()
     return true;
   }
 
+  if (IthCheckFile(L"ScrPlayer.exe")) {
+    ConsoleOutput("vnreng: IGNORE ScrPlayer");
+    return true;
+  }
+
   if (IthCheckFile(L"nnnConfig2.exe")) {
     ConsoleOutput("vnreng: IGNORE Nya NNNConfig");
     return true;
