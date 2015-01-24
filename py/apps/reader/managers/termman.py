@@ -25,6 +25,8 @@ import config, cabochaman, dataman, defs, i18n, rc
 if skos.WIN:
   from pytrscript import TranslationScriptManager
 
+ESCAPE_ALL = True # escape all languages
+
 @memoized
 def manager(): return TermManager()
 
@@ -51,7 +53,7 @@ class TermTitle(object):
 
 class TermTranslator(rbmt.MachineTranslator):
   def __init__(self, cabocha, language, underline=True):
-    escape = config.is_kanji_language(language)
+    escape = ESCAPE_ALL or config.is_kanji_language(language)
     sep = '' if language.startswith('zh') else ' '
     super(TermTranslator, self).__init__(cabocha, language,
         sep=sep,
@@ -111,7 +113,7 @@ class TermWriter:
           padding = trans_input or (
             td.type in ('name', 'yomi', 'trans')
             and (
-              td.language not in ('ja', 'ko', 'zhs', 'zht')
+              not ESCAPE_ALL and not config.is_kanji_language(td.language)
               or td.type == 'yomi' and td.language == 'ja' and language not in ('ko', 'zhs', 'zht')
             )
           )
@@ -294,11 +296,12 @@ class TermWriter:
     types = [type]
     if type.startswith('trans'):
       types[0] = 'trans' # override type
-      if config.is_kanji_language(language):
+      if ESCAPE_ALL or config.is_kanji_language(language):
         types.append('name')
-        if language == 'ko':
+        #if language == 'ko':
+        if not language.startswith('zh'):
           types.append('yomi')
-    elif type == 'input' and not config.is_kanji_language(language):
+    elif type == 'input' and not ESCAPE_ALL and not config.is_kanji_language(language):
       types.append('trans')
       types.append('name')
       types.append('yomi')
@@ -809,7 +812,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or not config.is_kanji_language(language):
+    if not d.enabled or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.01 seconds
     # 9/26/2014: Boost 0.033 seconds, underline = True
@@ -825,7 +828,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or not config.is_kanji_language(language):
+    if not d.enabled or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.009 seconds
     # 9/26/2014: Boost 0.05 seconds, underline = True
