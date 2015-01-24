@@ -1383,8 +1383,7 @@ class TransruTranslator(OnlineMachineTranslator):
     transru.session = session or requests.Session()
     self.engine = transru
 
-  @staticmethod
-  def _checkLanguages(to, fr):
+  def _checkLanguages(self, to, fr):
     """
     @param  to  str
     @param  fr  str
