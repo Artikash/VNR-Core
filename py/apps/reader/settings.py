@@ -104,9 +104,8 @@ class Settings(QSettings):
   def springBoardSize(self): return to_size(self.value('SpringBoardSize'))
 
   ## Spring board ##
-
-  def setSpringBoardLaunchesGame(self, value): self.setValue('SpringBoardLaunch', value)
-  def springBoardLaunchesGame(self): return to_bool(self.value('SpringBoardLaunch', False))
+  #def setSpringBoardLaunchesGame(self, value): self.setValue('SpringBoardLaunch', value)
+  #def springBoardLaunchesGame(self): return to_bool(self.value('SpringBoardLaunch', False))
 
   ## Kagami ##
 

@@ -691,6 +691,8 @@ class _NetworkManager(object):
         e_game = root.find('./games/game')
         game.id = int(e_game.get('id'))
         game.md5 = e_game.find('./md5').text
+        try: game.itemId = long(e_game.find('./itemId').text)
+        except: pass
 
         dprint("game id = %i" % game.id)
         return game.id != 0

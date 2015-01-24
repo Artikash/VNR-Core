@@ -58,6 +58,7 @@ MIN_NORMAL_GAME_ITEM_ID = 100 # no game id < 100 except emulators
 
 NULL_THREAD_NAME = 'Null'
 NULL_THREAD_SIGNATURE = -1
+NULL_THREAD_ENCODING = 'shift-jis'
 
 HCODE_THREAD_NAME = 'H-code' # this value must be the same as texthook_config.h
 CAONIMAGEBI_USERNAME = '@CaoNiMaGeBi'

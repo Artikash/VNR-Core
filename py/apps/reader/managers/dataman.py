@@ -1483,6 +1483,13 @@ class Game(object):
   NAME_TYPES = 'window', 'file', 'link', 'folder', 'brand'
   LOADERS = 'none', 'apploc', 'ntlea', 'lsc', 'le'
 
+  @classmethod
+  def createEmptyGame(cls):
+    return cls(
+        threadSignature=defs.NULL_THREAD_SIGNATURE,
+        threadName=defs.NULL_THREAD_NAME,
+        encoding=defs.NULL_THREAD_ENCODING)
+
   def __init__(self, id=0, md5="", itemId=0,
       encoding="", hook="", deletedHook="", threadName="", threadSignature=0,
       removesRepeat=None, ignoresRepeat=None, keepsSpace=None,
@@ -9439,9 +9446,9 @@ class DataManager(QObject):
     @param  md5  str
     """
     nm = netman.manager()
-    if not nm.isOnline():
-      dwarn("cannot add new game when offline");
-      return
+    #if not nm.isOnline():
+    #  dwarn("cannot add new game when offline");
+    #  return
     if not path:
       dwarn("missing path");
       return
@@ -9450,17 +9457,29 @@ class DataManager(QObject):
       md5 = hashutil.md5sum(np)
       if not md5:
         dwarn("failed to hash game executable")
+        growl.warning(my.tr("Failed to read game executable"))
         return
     d = self.__d
     if md5 in d.games:
       dwarn("game md5 already exists")
+      growl.notify(my.tr("The game already exists"))
       return
-    growl.msg(my.tr("Searching game information online") + " ...")
 
-    g = netman.manager().queryGame(md5=md5)
+    g = None
+    if nm.isOnline():
+      growl.msg(my.tr("Searching game information online") + " ...")
+      g = nm.queryGame(md5=md5)
     if not g:
-      growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
-      return
+      growl.notify("<br/>".join((
+          my.tr("It seems to be an unknown game."),
+          my.tr("Please manually adjust Text Settings after launching the game."))))
+      g = Game.createEmptyGame()
+
+    g.md5 = md5
+
+    fileName = os.path.basename(path)
+    if not g.names['file']:
+      g.names['file'].append(fileName)
 
     g.visitTime = skdatetime.current_unixtime()
     g.visitCount = 1
