@@ -56,7 +56,7 @@ MIN_NORMAL_GAME_ITEM_ID = 100 # no game id < 100 except emulators
 #MAX_DATA_LENGTH = int(MAX_DATA_LENGTH * 1.5) # Increase data size
 #MAX_REPEAT_DATA_LENGTH = MAX_DATA_LENGTH * 2
 
-USER_DEFINED_THREAD_NAME = 'User-defined'
+HCODE_THREAD_NAME = 'H-code'
 CAONIMAGEBI_USERNAME = '@CaoNiMaGeBi'
 CAONIMAGEBI_ENGINES = frozenset((
   'Artemis',
@@ -179,7 +179,7 @@ def threadtype(name):
   import config
   return (
       NULL_THREAD_TYPE if not name else
-      HOOK_THREAD_TYPE if name == USER_DEFINED_THREAD_NAME else
+      HOOK_THREAD_TYPE if name == HCODE_THREAD_NAME else
       GUI_THREAD_TYPE if name in config.GUI_TEXT_THREADS else
       CUI_THREAD_TYPE if name in config.OPT_GUI_TEXT_THREADS or name in config.NON_GUI_TEXT_THREADS or name.startswith("mono_") else
       ENGINE_THREAD_TYPE)

@@ -69,7 +69,7 @@ class _TextThreadView(object):
     tt = defs.threadtype(self.name)
     ttip = i18n.threadtip(tt)
 
-    if self.name == defs.USER_DEFINED_THREAD_NAME:
+    if self.name == defs.HCODE_THREAD_NAME:
       n = mytr_("H-code")
     elif self.name in defs.CAONIMAGEBI_ENGINES:
       n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME
@@ -135,7 +135,7 @@ class _TextThreadView(object):
     self.textEdit.setMaximumHeight(TEXTEDIT_MAX_HEIGHT)
     self.textEdit.setMinimumWidth(TEXTEDIT_MIN_WIDTH)
     self.textEdit.setStyleSheet(
-        SS_TEXTEDIT_HOOK_IGNORED if self.name == defs.USER_DEFINED_THREAD_NAME else
+        SS_TEXTEDIT_HOOK_IGNORED if self.name == defs.HCODE_THREAD_NAME else
         SS_TEXTEDIT_IGNORED)
 
     header = QtWidgets.QHBoxLayout()
@@ -152,7 +152,7 @@ class _TextThreadView(object):
 
   def updateStyleSheet(self):
     row = self.buttonRow.currentIndex()
-    if self.name == defs.USER_DEFINED_THREAD_NAME:
+    if self.name == defs.HCODE_THREAD_NAME:
       if not self.keepsThreads and row == _TextThreadView.IGNORE_BUTTON_ROW:
         ss = SS_TEXTEDIT_HOOK_IGNORED
       else:
