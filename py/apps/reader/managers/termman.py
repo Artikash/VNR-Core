@@ -33,6 +33,8 @@ def _remove_marks(text): return _re_marks.sub('', text) # unicode -> unicode
 
 def _translator_category(host): # str -> int
   if host:
+    if host == 'lecol':
+      host = 'lec'
     try: return dataman.Term.HOSTS.index(host) + 1
     except: pass
   return 0

@@ -673,8 +673,8 @@ class LecTranslator(OfflineMachineTranslator):
   #def _translateApi(self, text, fr='', to=''): # unicode -> unicode
   #  return self.engine.translate(text)
 
-  @staticmethod
-  def _checkLanguages(to, fr):
+  #@staticmethod
+  def _checkLanguages(self, to, fr):
     """
     @param  to  str
     @param  fr  str
@@ -1019,6 +1019,19 @@ class FastAITTranslator(OfflineMachineTranslator):
     elif langs == 'zhten':
       return self.zhtenEngine
 
+  #@staticmethod
+  def _checkLanguages(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to not in ('en', 'ja') and not to.startswith('zh'):
+      to = 'en'
+      if to == fr:
+        to = 'zht'
+    return to, fr
+
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
     @param  text  unicode
@@ -1026,6 +1039,7 @@ class FastAITTranslator(OfflineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    to, fr = self._checkLanguages(to, fr)
     try:
       engine = self.getEngine(fr=fr, to=to)
       if engine:
@@ -1056,6 +1070,7 @@ class FastAITTranslator(OfflineMachineTranslator):
     """@reimp"""
     #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     async = True
+    to, fr = self._checkLanguages(to, fr)
     engine = self.getEngine(to=to, fr=fr)
     if engine:
       if emit:
@@ -1542,8 +1557,8 @@ class NaverTranslator(OnlineMachineTranslator):
 
     self.engine = navertrans
 
-  @staticmethod
-  def _checkLanguages(to, fr):
+  #@staticmethod
+  def _checkLanguages(self, to, fr):
     """
     @param  to  str
     @param  fr  str

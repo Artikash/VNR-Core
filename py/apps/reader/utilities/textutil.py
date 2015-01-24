@@ -143,7 +143,7 @@ def match_kata_hira_punc(text):
 def __capitalize_sentence_s(m): # with space
   ch = m.group(2)
   if ch.isdigit():
-    return m.group(1) + m.group(2) # do not change
+    return (m.group(1) or '') + m.group(2) # do not change
   else:
     return ' ' + ch.upper()
 def __capitalize_sentence_ns(m): # without space
