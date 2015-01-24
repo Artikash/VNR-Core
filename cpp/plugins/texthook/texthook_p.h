@@ -24,7 +24,7 @@ class TextHookPrivate
   QHash<ulong, QString> hooks; // ITH hook code, indexed by pid
 
   explicit TextHookPrivate(Q *q)
-    : q_(q), enabled(true), source("H-code") { instance_ = this; }
+    : q_(q), enabled(true), source(TEXTHOOK_DEFAULT_NAME) { instance_ = this; }
 
   ~TextHookPrivate() { instance_ = nullptr; }
 
