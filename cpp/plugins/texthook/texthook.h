@@ -59,7 +59,7 @@ public:
   bool wideCharacter() const;
   void setWideCharacter(bool value);
 
-  QString defaultHookName() const; ///< The default one is "User-defined"
+  QString defaultHookName() const; ///< The default one is "H-code"
   void setDefaultHookName(const QString &name);
 
   bool isActive() const;

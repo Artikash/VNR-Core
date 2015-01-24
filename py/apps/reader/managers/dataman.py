@@ -2487,7 +2487,7 @@ class _Term(object):
 
     # E_USELESS
     if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
-          or self.type not in ('escape', 'title', 'name', 'yomi'))
+          or self.type not in ('trans', 'suffix', 'name', 'yomi'))
         and self.pattern == self.text):
       return self.E_USELESS
 
@@ -2502,19 +2502,19 @@ class _Term(object):
       return self.W_BAD_REGEX
 
     # W_NOT_INPUT
-    if self.language == 'en' and self.type == 'source' and self.text and self._RE_LATIN_WORD.match(self.text):
+    if self.language == 'en' and self.type == 'input' and self.text and self._RE_LATIN_WORD.match(self.text):
       return self.W_NOT_INPUT
 
     # W_NOT_GAME
-    if not self.regex and self.type == 'origin' and self.text and unichars.isascii(self.text) and not unichars.isascii(self.pattern):
+    if not self.regex and self.type == 'game' and self.text and unichars.isascii(self.text) and not unichars.isascii(self.pattern):
       return self.W_NOT_GAME
 
     # W_MISSING_TEXT
-    if not self.text and len(self.pattern) > 3 and self.type in ('escape', 'name', 'yomi'):
+    if not self.text and len(self.pattern) > 3 and self.type in ('trans', 'name', 'yomi'):
       return self.W_MISSING_TEXT
 
     # W_SHORT
-    if (self.type not in ('title', 'ocr', 'macro') and not self.syntax and (
+    if (self.type not in ('suffix', 'ocr', 'macro') and not self.syntax and (
         len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
         not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1]))):
       return self.W_SHORT
@@ -2562,7 +2562,7 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'escape', 'source', 'target', 'name', 'yomi', 'title', 'origin', 'speech', 'ocr', 'macro'
+  TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'game', 'tts', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
   HOSTS = 'bing', 'google', 'lecol', 'excite', 'transru', 'infoseek', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
@@ -2585,7 +2585,7 @@ class _Term(object):
   E_NEWLINE = -900          # having new line characters in pattern or repl
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
-  HOST_TYPES = 'source', 'target', 'escape', 'name', 'yomi' # types allow host
+  HOST_TYPES = 'input', 'output', 'trans', 'name', 'yomi' # types allow host
 
 class Term(QObject):
   __D = _Term
@@ -4748,7 +4748,7 @@ class _TermModel(object):
       )
       and (
         xd.type == yd.type
-        or xd.type in ('name', 'yomi', 'escape', 'source') and yd.type in ('name', 'yomi', 'escape', 'source')
+        or xd.type in ('name', 'yomi', 'trans', 'input') and yd.type in ('name', 'yomi', 'trans', 'input')
       )
       and not (xd.type == 'yomi' and yd.type == 'name' and yd.language.startswith('zh'))
       and not (yd.type == 'yomi' and xd.type == 'name' and xd.language.startswith('zh'))
@@ -8423,6 +8423,19 @@ class _DataManager(object):
       #self.q.gamesChanged.emit()
       return
 
+    OLD_TYPES = {
+      'escape': 'trans',
+      'source': 'input',
+      'target': 'output',
+      #'name': 'name',
+      #'yomi': 'yomi',
+      'title': 'suffix',
+      'origin': 'game',
+      'speech': 'tts',
+      'ocr': 'ocr',
+      #'macro': 'macro',
+    }
+
     try:
       #tree = etree.parse(xmlfile)
       #root = tree.getroot()
@@ -8436,6 +8449,9 @@ class _DataManager(object):
         if event == 'start':
           path += 1
           if path == 3: # grimoire/terms/term
+            type_ = elem.get('type')
+            if type_:
+              type_ = OLD_TYPES.get(type_) or type_
             kw = {
               #'gameId': 0,
               #'text': "",
@@ -8450,7 +8466,7 @@ class _DataManager(object):
               #'updateUserId': 0,
 
               'id': int(elem.get('id')),
-              'type': elem.get('type'),
+              'type': type_,
               'disabled': elem.get('disabled') == 'true',
             }
         else:
@@ -10043,56 +10059,6 @@ class DataManager(QObject):
     t = self.queryTerm(*args, **kwargs)
     if t:
       return t.d
-
-  #def sortedTerms(self):
-  #  """Used by termman
-  #  @return  [Term]
-  #  """
-  #  return self.__d.sortedTerms
-
-  #def termData(self): return list(self.__d.iterTermData())
-
-  #def termTitles(self):
-  #  """NOT escaped
-  #  @return  {unicode source:unicode translation} not None
-  #  """
-  #  return self.__d.termTitles
-
-  #def hasTermTitles(self):
-  #  return len(self.__d.termTitles) > 1
-
-  #def iterTargetTerms(self):
-  #  return self.__d.iterTermsWithType('target')
-  #def iterOriginTerms(self):
-  #  return self.__d.iterTermsWithType('origin')
-  #def iterSpeechTerms(self):
-  #  return self.__d.iterTermsWithType('speech')
-  #def iterOcrTerms(self):
-  #  return self.__d.iterTermsWithType('ocr')
-  #def iterTitleTerms(self):
-  #  return self.__d.iterTermsWithType('title')
-  #def iterMacroTerms(self):
-  #  return self.__d.iterTermsWithType('macro')
-  ##def iterSourceTerms(self):
-  ##  return self.__d.iterTermsWithType('source')
-  #def iterWordTerms(self):
-  #  return self.__d.iterTermsWithTypes(('name', 'speech'))
-  #def iterFuriTerms(self):
-  #  return self.__d.iterTermsWithType('speech')
-  #def iterLatinSourceTerms(self):
-  #  return self.__d.iterTermsWithTypes(('source', 'name'))
-  #def iterSourceTerms(self):
-  #  d = self.__d
-  #  lang = d.user.language
-  #  return  (d.iterTermsWithType('source')
-  #      if config.is_kanji_language(lang) else
-  #      d.iterTermsWithTypes(('source', 'name')))
-  #def iterEscapeTerms(self):
-  #  d = self.__d
-  #  lang = d.user.language
-  #  return  (d.iterTermsWithType('escape')
-  #      if config.is_latin_language(lang) else
-  #      d.iterTermsWithTypes(('escape', 'name')))
 
   def removeTerm(self, term):
     """

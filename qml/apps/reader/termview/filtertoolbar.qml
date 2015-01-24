@@ -19,19 +19,19 @@ Grid { id: root_ // Theme refers to Bootstrap.label
 
   Component.onCompleted: {
     var l = [
-        {value:'escape', text:qsTr("Trans"),    toolTip:qsTr("Replace text matching pattern with translation")}
-      , {value:'target', text:My.tr("Output"),  toolTip:qsTr("Fix output text after translation")}
-      , {value:'source', text:My.tr("Input"),   toolTip:qsTr("Fix input text before translation")}
+        {value:'trans', text:qsTr("Trans"),     toolTip:qsTr("Replace text matching pattern with translation")}
+      , {value:'output', text:My.tr("Output"),  toolTip:qsTr("Fix output text after translation")}
+      , {value:'input', text:My.tr("Input"),    toolTip:qsTr("Fix input text before translation")}
       , {value:'macro',  text:Sk.tr("Macro"),   toolTip:qsTr("Reusable regular expression")}
 
       , {value:'name',   text:My.tr("Name"),    toolTip:qsTr("A Japanese first or last name")}
       , {value:'yomi',   text:My.tr("Yomi"),    toolTip:qsTr("Yomigana of a Japanese name")}
-      , {value:'title',  text:My.tr("Suffix"),  toolTip:qsTr("Title after a Japanese name")}
+      , {value:'suffix',  text:My.tr("Suffix"), toolTip:qsTr("Title after a Japanese name")}
       , {width:1, height:1} // empty item
 
-      , {value:'origin', text:Sk.tr("Game"),    toolTip:qsTr("Fix game text")}
+      , {value:'game', text:Sk.tr("Game"),      toolTip:qsTr("Fix game text")}
       , {width:1, height:1} // empty item
-      , {value:'speech', text:"TTS",            toolTip:qsTr("Fix text to send to TTS")}
+      , {value:'tts', text:"TTS",               toolTip:qsTr("Fix text to send to TTS")}
       , {value:'ocr',    text:"OCR",            toolTip:qsTr("Fix text received from OCR")}
     ]
     for (var i in l)

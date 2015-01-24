@@ -1533,8 +1533,8 @@ Item { id: root_
       onTriggered: {
         var t = popupHoveredText()
         if (t) {
-          var type = itemType === 'tr' || itemType == 'name.tr' ? 'target' : ''
-          var lang = type === 'target' ? itemLanguage : ''
+          var type = itemType === 'tr' || itemType == 'name.tr' ? 'output' : ''
+          var lang = type === 'output' ? itemLanguage : ''
           mainPlugin_.showNewTerm(t, type, lang)
         }
       }

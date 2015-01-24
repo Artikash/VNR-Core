@@ -91,7 +91,7 @@ Item { id: root_
     if (text && type == 'yomi')
       ret += "<br/>" + My.tr("Yomi") + ": " + renderYomi(text)
 
-    if (text && (type == 'escape' || type == 'target' || type == 'name' || type == 'title') && lang != 'en' && lang != 'ja')
+    if (text && (type == 'trans' || type == 'output' || type == 'name' || type == 'suffix') && lang != 'en' && lang != 'ja')
       ret += "<br/>" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
 
     if (currentItem.gameId > 0)

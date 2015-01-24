@@ -179,14 +179,14 @@ function translatorName(tr) { return TRANSLATOR_NAME[tr]; }
 // - Type constants -
 
 var TERM_TYPES = [
-  'escape'   // trans
-  , 'source' // input
-  , 'target' // output
+  'trans'
+  , 'input'
+  , 'output'
   , 'name'
   , 'yomi'
-  , 'title'  // suffix
-  , 'origin' // game
-  , 'speech' // tts
+  , 'suffix'
+  , 'game'
+  , 'tts'
   , 'ocr'
   , 'macro'
 ];
