@@ -926,22 +926,22 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>也許網路連線不暢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9598"/>
+        <location filename="managers/dataman.py" line="9604"/>
         <source>Failed to get game information</source>
         <translation>獲取遊戲資訊失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9752"/>
+        <location filename="managers/dataman.py" line="9758"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>遊戲並不存在。是不是已經被你刪除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10331"/>
+        <location filename="managers/dataman.py" line="10337"/>
         <source>Please sign in to submit comment</source>
         <translation>請先登入再提交評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10348"/>
+        <location filename="managers/dataman.py" line="10354"/>
         <source>Cannot connect to the Internet</source>
         <translation>無法連線到網路</translation>
     </message>
@@ -1113,22 +1113,22 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10404"/>
+        <location filename="managers/dataman.py" line="10410"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辭書是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10401"/>
+        <location filename="managers/dataman.py" line="10407"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>詞條資料儲存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10447"/>
+        <location filename="managers/dataman.py" line="10453"/>
         <source>There are no subtitles</source>
         <translation>這個遊戲還沒有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10444"/>
+        <location filename="managers/dataman.py" line="10450"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕資料儲存到了桌面</translation>
     </message>
@@ -1138,7 +1138,7 @@ It might take a couple of seconds to complete.</source>
         <translation>適用於日文編碼的Windows</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10008"/>
+        <location filename="managers/dataman.py" line="10014"/>
         <source>Please start the game to submit comment</source>
         <translation>請在開始遊戲後提交字幕</translation>
     </message>
@@ -1234,7 +1234,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9470"/>
+        <location filename="managers/dataman.py" line="9477"/>
         <source>Searching game information online</source>
         <translation>正在網上檢索遊戲資訊</translation>
     </message>
@@ -1244,7 +1244,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>未知的遊戲，請在遊戲嚮導中手動新增</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9465"/>
+        <location filename="managers/dataman.py" line="9472"/>
         <source>The game already exists</source>
         <translation>遊戲已經存在了呢</translation>
     </message>
@@ -1475,7 +1475,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的遊戲。請更新下游戲資料庫。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9905"/>
+        <location filename="managers/dataman.py" line="9911"/>
         <source>Please sign in to submit reference</source>
         <translation>請先登入再提交資訊</translation>
     </message>
@@ -3273,7 +3273,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10260"/>
+        <location filename="managers/dataman.py" line="10266"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以編輯其他人的條目的</translation>
     </message>
@@ -3298,7 +3298,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10274"/>
+        <location filename="managers/dataman.py" line="10280"/>
         <source>{0} items updated</source>
         <translation>修改了{0}個條目</translation>
     </message>
@@ -4400,19 +4400,24 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/s
         <translation>使用韓文的同學推薦</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9460"/>
+        <location filename="managers/dataman.py" line="9467"/>
         <source>Failed to read game executable</source>
         <translation>無法讀取遊戲的可執行檔案</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9474"/>
+        <location filename="managers/dataman.py" line="9481"/>
         <source>It seems to be an unknown game.</source>
         <translation>未知的遊戲。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9475"/>
+        <location filename="managers/dataman.py" line="9482"/>
         <source>Please manually adjust Text Settings after launching the game.</source>
         <translation>請在啟動遊戲後，手動調整文字設定。</translation>
+    </message>
+    <message>
+        <location filename="managers/dataman.py" line="9459"/>
+        <source>Please do not add non-game program to VNR!</source>
+        <translation>請不要新增非遊戲的程式到VNR！</translation>
     </message>
 </context>
 </TS>
