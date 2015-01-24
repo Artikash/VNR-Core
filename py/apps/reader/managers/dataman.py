@@ -9452,6 +9452,13 @@ class DataManager(QObject):
     if not path:
       dwarn("missing path");
       return
+
+    fileName = os.path.basename(path)
+    if fileName in config.PROCESS_BLACKLIST:
+      dwarn("blocked file name")
+      growl.warning(my.tr("Please do not add non-game program to VNR!"))
+      return
+
     if not md5:
       np = osutil.normalize_path(path)
       md5 = hashutil.md5sum(np)
@@ -9477,7 +9484,6 @@ class DataManager(QObject):
 
     g.md5 = md5
 
-    fileName = os.path.basename(path)
     if not g.names['file']:
       g.names['file'].append(fileName)
 
