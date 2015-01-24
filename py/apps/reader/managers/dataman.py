@@ -1484,11 +1484,13 @@ class Game(object):
   LOADERS = 'none', 'apploc', 'ntlea', 'lsc', 'le'
 
   @classmethod
-  def createEmptyGame(cls):
+  def createEmptyGame(cls, path="", md5=""):
     return cls(
         threadSignature=defs.NULL_THREAD_SIGNATURE,
         threadName=defs.NULL_THREAD_NAME,
-        encoding=defs.NULL_THREAD_ENCODING)
+        encoding=defs.NULL_THREAD_ENCODING,
+        md5=md5,
+        fileNames=[os.path.basename(path)] if path else [])
 
   def __init__(self, id=0, md5="", itemId=0,
       encoding="", hook="", deletedHook="", threadName="", threadSignature=0,

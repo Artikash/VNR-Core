@@ -955,6 +955,12 @@ class GameManager(QtCore.QObject):
     if not path:
       return
     dprint("enter: path = %s" % path)
+
+    if procutil.is_blocked_process_path(path):
+      dwarn("leave: blocked file name")
+      growl.warn(my.tr("Please do not add non-game program to VNR!"))
+      return
+
     d = self.__d
     if d.locked or d.game and d.game.isLocked():
       growl.msg(my.tr("Waiting for game to start"))
@@ -970,12 +976,17 @@ class GameManager(QtCore.QObject):
 
     game = dataman.manager().queryGame(md5=md5, online=True)
     if not game:
-      dwarn("leave: warning, cannot find game online")
-      growl.notify(my.tr("Could not found game online, and please manually add game by Game Wizard"))
-      import main
-      m = main.manager()
-      m.showSpringBoard()
-      m.showGameWizard()
+      #dwarn("leave: warning, cannot find game online")
+      #growl.notify(my.tr("Could not found game online, and please manually add game by Game Wizard"))
+      #import main
+      #m = main.manager()
+      #m.showSpringBoard()
+      #m.showGameWizard()
+      dwarn("unknown game")
+      growl.notify("<br/>".join((
+          my.tr("It seems to be an unknown game."),
+          my.tr("Please manually adjust Text Settings after launching the game."))))
+      game = dataman.Game.createEmptyGame(path=path, md5=md5)
 
     self.openGame(game=game, path=path, **kwargs)
     dprint("leave: path = %s" % path)

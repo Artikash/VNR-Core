@@ -1488,13 +1488,14 @@ class MainObject(QObject):
       if path:
         dprint("find running new game")
         growl.msg(my.tr("Found new game") + ":" "<br/>" + path)
-        if self.isOnline():
-          skevents.runlater(partial(
-              gm.openNewGame, path=path),
-              200)
-        else:
-          growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
-          self.showGameWizard(path=path)
+        #if self.isOnline():
+        skevents.runlater(partial(
+            gm.openNewGame, path=path),
+            200)
+        #else:
+        #  #growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
+        #  #self.showGameWizard(path=path)
+        #  self.addGame(path)
       else:
         if verbose:
           t = my.tr(
@@ -1539,16 +1540,15 @@ class MainObject(QObject):
       d.gameManager.openGame(game=game, path=path,
           linkName=linkName)
     else:
-      if d.gameManager.containsGameMd5(md5):
-        if self.isOnline():
-          d.gameManager.openNewGame(path=path, md5=md5,
-              linkName=linkName)
-          return
-        else:
-          growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
-      else:
-        growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
-      self.showGameWizard(path=path)
+      #if d.gameManager.containsGameMd5(md5) and self.isOnline():
+      d.gameManager.openNewGame(path=path, md5=md5,
+          linkName=linkName)
+      #  else:
+      #    growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
+      #else:
+      #  growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
+      #self.showGameWizard(path=path)
+      #self.addGame(path)
 
   def addGame(self, path):
     if not path:
@@ -1777,8 +1777,8 @@ class MainObject(QObject):
         else:
           d.springBoardDialog
           skevents.runlater(self.showSpringBoard, 300)
-          skevents.runlater(self.showGameWizard, 400)
-          growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
+          #skevents.runlater(self.showGameWizard, 400)
+          #growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
       else:
         #self.showSpringBoard()
         if not opt_minimize:
