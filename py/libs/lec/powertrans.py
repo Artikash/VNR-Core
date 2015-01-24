@@ -140,9 +140,27 @@ class Engine(object):
     if not l:
       raise RuntimeError("Failed to load Power Translator dll")
     for eng in l:
-      if text:
-        text = eng.translate(text)
+      text = eng.translate(text)
+      if not text:
+        break
     return text
+
+  def retranslate(self, text, to='en', fr='ja'):
+    """
+    @param  text  unicode or str
+    @param* to  str
+    @param* fr  str
+    @yield  unicode
+    @throw  RuntimeError
+    """
+    l = self.__d.getEngines(to, fr)
+    if not l:
+      raise RuntimeError("Failed to load Power Translator dll")
+    for eng in l:
+      text = eng.translate(text)
+      if not text:
+        break
+      yield text
 
   def warmup(self, to='en', fr='ja'):
     #try: self.translate(u" ")

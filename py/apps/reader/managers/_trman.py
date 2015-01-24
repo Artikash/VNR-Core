@@ -1197,8 +1197,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
 
   NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'ar', 'ru', 'nl', 'pl'))
 
-  @staticmethod
-  def _checkLanguages(to, fr):
+  def _checkLanguages(self, to, fr):
     """
     @param  to  str
     @param  fr  str
@@ -1263,8 +1262,7 @@ class ExciteTranslator(OnlineMachineTranslator):
 
   NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'))
 
-  @staticmethod
-  def _checkLanguages(to, fr):
+  def _checkLanguages(self, to, fr):
     """
     @param  to  str
     @param  fr  str
@@ -1324,8 +1322,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
 
   NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'th', 'vi'))
 
-  @staticmethod
-  def _checkLanguages(to, fr):
+  def _checkLanguages(self, to, fr):
     """
     @param  to  str
     @param  fr  str
