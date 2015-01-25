@@ -212,6 +212,30 @@ def checkpair(text, pair=("({[",")}]"), escape='\\'):
     #  return False
   return not stack
 
+def countleft(text, chars):
+  """Count numbers of chars on the left of text
+  @param  text
+  @param  chars
+  @return  int
+  """
+  if text and chars:
+    for i,c in enumerate(text):
+      if c not in chars:
+        return i
+  return 0
+
+def countright(text, chars):
+  """Count numbers of chars on the right of text
+  @param  text
+  @param  chars
+  @return  int
+  """
+  if text and chars:
+    for i,c in enumerate(reversed(text)):
+      if c not in chars:
+        return i
+  return 0
+
 if __name__ == '__main__':
   #print urlencode('hello world')
   #print multireplacer({

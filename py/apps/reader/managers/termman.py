@@ -16,7 +16,7 @@ from functools import partial
 from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
 from rbmt import api as rbmt
-from sakurakit import skfileio, skos, skthreads
+from sakurakit import skfileio, skos, skstr, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from convutil import kana2name, zhs2zht
@@ -25,7 +25,25 @@ import config, cabochaman, dataman, defs, i18n, rc
 if skos.WIN:
   from pytrscript import TranslationScriptManager
 
-ESCAPE_ALL = True # escape all languages
+#ESCAPE_ALL = True # escape all languages
+
+S_PUNCT = u"、？！。…「」『』【】" # full-width punctuations
+
+def _partition_punct(text, punct=S_PUNCT):
+  """
+  @param  text  unicode
+  @return  (unicode left, unicode middle, unicode right) not None
+  """
+  left = right = ''
+  count = skstr.countright(text, punct)
+  if count:
+    right = text[-count:]
+    text = text[:-count]
+  count = skstr.countleft(text, punct)
+  if count:
+    left = text[:count]
+    text = text[count:]
+  return left, text, right
 
 @memoized
 def manager(): return TermManager()
@@ -53,7 +71,8 @@ class TermTitle(object):
 
 class TermTranslator(rbmt.MachineTranslator):
   def __init__(self, cabocha, language, underline=True):
-    escape = ESCAPE_ALL or config.is_kanji_language(language)
+    #escape = ESCAPE_ALL or config.is_kanji_language(language)
+    escape = True
     sep = '' if language.startswith('zh') else ' '
     super(TermTranslator, self).__init__(cabocha, language,
         sep=sep,
@@ -95,6 +114,8 @@ class TermWriter:
       titles = None
 
     kanjiLanguage = config.is_kanji_language(language)
+    latinLanguage = not kanjiLanguage
+
     if kanjiLanguage:
       TERM_ESCAPE = defs.TERM_ESCAPE_KANJI
       NAME_ESCAPE = defs.NAME_ESCAPE_KANJI
@@ -118,13 +139,7 @@ class TermWriter:
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
           # no padding space for Chinese names
-          padding = trans_input or (
-            td.type in ('name', 'yomi', 'trans')
-            and (
-              not ESCAPE_ALL and not config.is_kanji_language(td.language)
-              or td.type == 'yomi' and td.language == 'ja' and not kanjiLanguage
-            )
-          )
+          padding = trans_input or latinLanguage and td.type in ('trans', 'name', 'yomi')
 
           regex = td.regex and not trans_output
 
@@ -132,10 +147,33 @@ class TermWriter:
             priority = count - index
             key = TERM_ESCAPE % priority
 
+          if trans_output:
+            pattern = key
+          else:
+            pattern = td.pattern
+            if regex:
+              pattern = self._applyMacros(pattern, macros)
+            if z:
+              pattern = zhs2zht(pattern)
+
+          repl = td.text
+          repl_left = repl_right = ''
+
+          if (latinLanguage and (trans_input or trans_output)
+              and repl and (repl[0] in S_PUNCT or repl[-1] in S_PUNCT)):
+            if trans_output:
+              repl = repl.strip(S_PUNCT)
+            elif trans_input:
+              repl_left, repl, repl_right = _partition_punct(repl)
+
           if trans_input:
             repl = key
+            if repl_right:
+              repl += repl_right
+            if repl_left:
+              repl = repl_left + repl
           else:
-            repl = td.text
+            #repl = td.text
             if repl:
               if z:
                 repl = zhs2zht(repl)
@@ -146,15 +184,6 @@ class TermWriter:
               #  repl += " "
               #if marksChanges:
               #  repl = self._markText(repl)
-
-          if trans_output:
-            pattern = key
-          else:
-            pattern = td.pattern
-            if regex:
-              pattern = self._applyMacros(pattern, macros)
-            if z:
-              pattern = zhs2zht(pattern)
 
           # See: http://stackoverflow.com/questions/6005821/how-to-do-multiple-substitutions-using-boost-regex
           # pattern: A(?:(sama)|(1)|(2)|(4)|(5)|(6)|(7)|(8)|(9)|(sam))
@@ -301,18 +330,16 @@ class TermWriter:
     @param* syntax  bool
     @yield  _Term
     """
-    types = [type]
     if type.startswith('trans'):
-      types[0] = 'trans' # override type
-      if ESCAPE_ALL or config.is_kanji_language(language):
-        types.append('name')
-        #if language == 'ko':
-        if not language.startswith('zh'):
-          types.append('yomi')
-    elif type == 'input' and not ESCAPE_ALL and not config.is_kanji_language(language):
-      types.append('trans')
-      types.append('name')
-      types.append('yomi')
+      types = ['trans', 'name']
+      if not language.startswith('zh'):
+        types.append('yomi')
+    else:
+      types = [type]
+    #elif type == 'input' and not ESCAPE_ALL and not config.is_kanji_language(language):
+    #  types.append('trans')
+    #  types.append('name')
+    #  types.append('yomi')
 
     types = frozenset(types)
     for td in self.termData:
@@ -820,7 +847,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.01 seconds
     # 9/26/2014: Boost 0.033 seconds, underline = True
@@ -836,7 +863,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.009 seconds
     # 9/26/2014: Boost 0.05 seconds, underline = True
