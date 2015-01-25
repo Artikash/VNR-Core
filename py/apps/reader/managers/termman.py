@@ -25,10 +25,23 @@ import config, cabochaman, dataman, defs, i18n, rc
 if skos.WIN:
   from pytrscript import TranslationScriptManager
 
-#ESCAPE_ALL = True # escape all languages
+LANG_SUFFIX_TR = {
+  'en': ((u"の", u"'s"),),
+  'ko': ((u"の", u"의"),),
+  'zh': ((u"の", u"的"),),
+}
+def _get_lang_suffices(lang):
+  """
+  @param  lang  str
+  @return  [(unicode pattern, unicode replacement)] or None
+  """
+  if lang.startswith('zh'):
+    return LANG_SUFFIX_TR['zh']
+  if config.is_latin_language(lang):
+    return LANG_SUFFIX_TR['en']
+  return LANG_SUFFIX_TR.get(lang)
 
 S_PUNCT = u"、？！。…「」『』【】" # full-width punctuations
-
 def _partition_punct(text, punct=S_PUNCT):
   """
   @param  text  unicode
@@ -62,21 +75,20 @@ def _translator_category(host): # str -> int
 SCRIPT_KEY_SEP = ',' # Separator of script manager key
 
 class TermTitle(object):
-  __slots__ = 'id', 'pattern', 'text', 'regex'
-  def __init__(self, id, pattern, text, regex):
-    self.id = id # long
+  __slots__ = 'pattern', 'text', 'regex', 'sortKey'
+  def __init__(self, pattern='', text='', regex=False, sortKey=0):
     self.pattern = pattern # unicode
     self.text = text # unicode
     self.regex = regex # bool
+    self.sortKey = sortKey # int
 
 class TermTranslator(rbmt.MachineTranslator):
   def __init__(self, cabocha, language, underline=True):
     #escape = ESCAPE_ALL or config.is_kanji_language(language)
-    escape = True
     sep = '' if language.startswith('zh') else ' '
     super(TermTranslator, self).__init__(cabocha, language,
         sep=sep,
-        escape=escape,
+        escape=True,
         underline=underline and escape)
 
   def translate(self, text, tr=None, fr="", to=""):
@@ -395,6 +407,10 @@ class TermWriter:
     l = [] # [long id, unicode pattern, unicode replacement, bool regex]
     #ret = OrderedDict({'':''})
     #ret = OrderedDict()
+    s = _get_lang_suffices(language)
+    if s:
+      for k,v in s:
+        l.append(TermTitle(pattern=k, text=v))
     for td in self._iterTermData('suffix', language):
       pat = td.pattern
       if td.regex:
@@ -404,14 +420,21 @@ class TermWriter:
         pat = zhs2zht(pat)
         if repl: # and self.convertsChinese:
           repl = zhs2zht(repl)
-      l.append(TermTitle(
-        id=td.id,
+      sortKey = td.updateTimestamp or td.timestamp
+      l.append(TermTitle(sortKey=sortKey,
         pattern=pat,
         text=repl,
         regex=td.regex,
       ))
+      if s:
+        for k,v in s:
+          l.append(TermTitle(sortKey=sortKey,
+            pattern=pat + k,
+            text=repl + v,
+            regex=td.regex,
+          ))
     l.sort(reverse=True, key=lambda it:
-        (it.regex, len(it.pattern), it.id)) # regex terms come at first, longer terms come at first, newer come at first
+        (it.regex, len(it.pattern), it.sortKey)) # regex terms come at first, longer terms come at first, newer come at first
     #for id,pat,repl,regex in l:
     #  ret[pat] = TermTitle(repl, regex)
     return l
