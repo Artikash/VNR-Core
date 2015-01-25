@@ -1,6 +1,7 @@
 {# mapping.html 1/25/2015 jichi
  # @param  tuples  [unicode surface, unicode ruby, str color]
  # @param  rubySize  int  ruby font size
+ # @param* rubyColor  str  color of ruby
  # @param* paddingSize  int  padding space size
  # @param* center  bool  align ment
  #
@@ -14,6 +15,9 @@
 .ruby {
 	font-weight: bold;
 	font-size: {{rubySize}}px;
+%if rubyColor
+	color: {{rubyColor}};
+%endif
 }
 %if paddingSize
 td {

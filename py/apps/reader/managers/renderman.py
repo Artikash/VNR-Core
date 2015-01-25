@@ -43,6 +43,13 @@ class RenderManager:
     #KANJI_RUBY_WIDTH = 0.55 # = 1/2
     # ruby size / surface size
 
+    # http://www.rapidtables.com/web/color/silver-color.htm
+    #rubyColor = None
+    #rubyColor = None if colorize else 'lightgray'
+    rubyColor = None if colorize else 'silver'
+    #rubyColor = None if colorize else 'darkgray'
+    #rubyColor = None if colorize else 'gray'
+
     roundRubySize = int(round(rubySize)) or 1
     #paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
     paddingSize = int(round(rubySize * PADDING_FACTOR))
@@ -81,6 +88,7 @@ class RenderManager:
         yield rc.jinja_template('html/mapping').render({
           'tuples': line,
           'rubySize': roundRubySize,
+          'rubyColor': rubyColor,
           'paddingSize': paddingSize,
           'center': center,
           #'groupColor': groupColor,
@@ -94,6 +102,7 @@ class RenderManager:
       yield rc.jinja_template('html/mapping').render({
         'tuples': line,
         'rubySize': roundRubySize,
+        'rubyColor': rubyColor,
         'paddingSize': paddingSize,
         'center': center,
         #'groupColor': groupColor,
