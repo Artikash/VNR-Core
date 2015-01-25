@@ -429,7 +429,8 @@ class MachineTranslator(Translator):
 
     t = text
     #with SkProfiler(): # 9/26/2014: C++ 0.015 seconds, Python: 0.05 seconds
-    if self._needsJitter(to, fr):
+    #if self._needsJitter(to, fr):
+    if fr == 'ja':
       text = self._escapeJitter(text, to, fr)
     text = tm.prepareEscapeTerms(text, to, host=self.key)
     if emit and text != t:
@@ -464,7 +465,8 @@ class MachineTranslator(Translator):
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyTargetTerms(text, to, host=self.key)
-    if self._needsJitter(to, fr):
+    #if self._needsJitter(to, fr):
+    if fr == 'ja':
       text = self._unescapeJitter(text, to, fr)
     if emit and text != t:
       self.emitTargetTranslation(text)
@@ -479,13 +481,13 @@ class MachineTranslator(Translator):
     return text.strip() # escape could produce trailing " "
 
   # Jitter for CJK
-  def _needsJitter(self, to, fr):
-    """
-    @param  to  str  language
-    @param  fr  str  language
-    @return  bool
-    """
-    return fr == 'ja' and (to.startswith('zh') or to == 'ko')
+  #def _needsJitter(self, to, fr):
+  #  """
+  #  @param  to  str  language
+  #  @param  fr  str  language
+  #  @return  bool
+  #  """
+  #  return fr == 'ja' and (to.startswith('zh') or to == 'ko')
 
   def _escapeJitter(self, text, to, fr):
     """
@@ -494,7 +496,8 @@ class MachineTranslator(Translator):
     @param  fr  str  unused
     @return  unicode
     """
-    return _re_jitter.sub(defs.JITTER_ESCAPE, text)
+    esc = defs.JITTER_ESCAPE_KANJI if config.is_kanji_language(to) else defs.JITTER_ESCAPE_LATIN
+    return _re_jitter.sub(esc, text)
 
   def _unescapeJitter(self, text, to, fr):
     """
@@ -503,10 +506,11 @@ class MachineTranslator(Translator):
     @param  fr  str  unused
     @return  unicode
     """
-    i = text.rfind(defs.JITTER_ESCAPE)
+    esc = defs.JITTER_ESCAPE_KANJI if config.is_kanji_language(to) else defs.JITTER_ESCAPE_LATIN
+    i = text.rfind(esc)
     while i >= 0:
       jitter = '' # jittered char
-      j = i + len(defs.JITTER_ESCAPE)
+      j = i + len(esc)
       while j < len(text):
         ch = text[j]
         if ch == '<':
@@ -516,8 +520,8 @@ class MachineTranslator(Translator):
           jitter = ch
           break
         j += 1
-      text = text[:i] + jitter + text[i+len(defs.JITTER_ESCAPE):]
-      i = text.rfind(defs.JITTER_ESCAPE)
+      text = text[:i] + jitter + text[i+len(esc):]
+      i = text.rfind(esc)
     return text
 
 class OfflineMachineTranslator(MachineTranslator):
@@ -1476,8 +1480,8 @@ class GoogleTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        if self.languageNeedsEscape(to, fr):
-          repl = self.__re_term_fix.sub('', repl)
+        #if self.languageNeedsEscape(to, fr):
+        repl = self.__re_term_fix.sub('', repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         if to.startswith('zh'):
           repl = repl.replace("...", u'…')
