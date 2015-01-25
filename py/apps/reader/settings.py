@@ -1231,6 +1231,14 @@ class Settings(QSettings):
       self.setValue('BingEnabled', value)
       self.bingEnabledChanged.emit(value)
 
+  naverRubyEnabledChanged = Signal(bool)
+  def isNaverRubyEnabled(self):
+    return to_bool(self.value('NaverRubyEnabled', True))
+  def setNaverRubyEnabled(self, value):
+    if value != self.isNaverRubyEnabled():
+      self.setValue('NaverRubyEnabled', value)
+      self.naverRubyEnabledChanged.emit(value)
+
   naverEnabledChanged = Signal(bool)
   def isNaverEnabled(self):
     return to_bool(self.value('NaverEnabled'))
@@ -1238,6 +1246,14 @@ class Settings(QSettings):
     if value != self.isNaverEnabled():
       self.setValue('NaverEnabled', value)
       self.naverEnabledChanged.emit(value)
+
+  baiduRubyEnabledChanged = Signal(bool)
+  def isBaiduRubyEnabled(self):
+    return to_bool(self.value('BaiduRubyEnabled', True))
+  def setBaiduRubyEnabled(self, value):
+    if value != self.isBaiduRubyEnabled():
+      self.setValue('BaiduRubyEnabled', value)
+      self.baiduRubyEnabledChanged.emit(value)
 
   baiduEnabledChanged = Signal(bool)
   def isBaiduEnabled(self):
@@ -1828,6 +1844,9 @@ class SettingsProxy(QObject):
     g.rubyJaInvertedChanged.connect(self.rubyJaInvertedChanged)
     g.convertsChineseChanged.connect(self.convertsChineseChanged)
 
+    #g.baiduRubyEnabledChanged.connect(self.baiduRubyEnabledChanged)
+    #g.naverRubyEnabledChanged.connect(self.naverRubyEnabledChanged)
+
     #g.msimeParserEnabledChanged.connect(self.msimeParserEnabledChanged)
     #g.meCabEnabledChanged.connect(self.meCabEnabledChanged)
     g.meCabDictionaryChanged.connect(self.meCabDictionaryChanged)
@@ -2020,6 +2039,12 @@ class SettingsProxy(QObject):
 
   rubyJaInvertedChanged = Signal(bool)
   rubyJaInverted = bool_property('InvertRubyJa', False, notify=rubyJaInvertedChanged)
+
+  #baiduRubyEnabledChanged = Signal(bool)
+  #baiduRubyEnabled = bool_property('BaiduRubyEnabled', True, notify=baiduRubyEnabledChanged)
+
+  #naverRubyEnabledChanged = Signal(bool)
+  #naverRubyEnabled = bool_property('NaverRubyEnabled', True, notify=naverRubyEnabledChanged)
 
   springBoardWallpaperUrlChanged = Signal(unicode)
   springBoardWallpaperUrl = unicode_property('SpringBoardWallpaperUrl', notify=springBoardWallpaperUrlChanged)

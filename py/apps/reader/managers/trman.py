@@ -14,7 +14,7 @@ import itertools
 from functools import partial
 from PySide.QtCore import QObject, Signal, Slot, Qt
 from sakurakit import skevents, skthreads
-from sakurakit.skclass import  memoized, memoizedproperty
+from sakurakit.skclass import  memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 import features, textutil
 import _trman
@@ -50,6 +50,9 @@ class _TranslatorManager(object):
     self.lecEnabled = \
     True # bool
 
+    self.baiduMappingEnabled = \
+    self.naverMappingEnabled = False
+
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
     from qtrequests import qtrequests
@@ -73,7 +76,8 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def yueTranslator(self): # no an independent machine translator
-    return _trman.YueTranslator(abortSignal=self.abortSignal, session=self.session)
+    return _trman.YueTranslator(
+          abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def lougoTranslator(self): return self._newtr(_trman.LougoTranslator())
@@ -91,53 +95,79 @@ class _TranslatorManager(object):
   def ezTranslator(self): return self._newtr(_trman.EzTranslator())
 
   @memoizedproperty
-  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(postprocess=self.postprocess))
+  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(
+      postprocess=self.postprocess))
 
   @memoizedproperty
-  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(postprocess=self.postprocess)))
+  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(
+      postprocess=self.postprocess)))
 
   @memoizedproperty
-  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(postprocess=self.postprocess))
+  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(
+      postprocess=self.postprocess))
 
   @memoizedproperty
   def googleTranslator(self):
-    return self._newtr(_trman.GoogleTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+    return self._newtr(_trman.GoogleTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess))
 
   @memoizedproperty
   def baiduTranslator(self):
-    return self._newtr(_trman.BaiduTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+    return self._newtr(_trman.BaiduTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess,
+        mappingEnabled=self.baiduMappingEnabled))
 
   @memoizedproperty
   def naverTranslator(self):
-    return self._newtr(_trman.NaverTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+    return self._newtr(_trman.NaverTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess,
+        mappingEnabled=self.naverMappingEnabled))
 
   @memoizedproperty
   def bingTranslator(self):
-    return self._newtr(_trman.BingTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+    return self._newtr(_trman.BingTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return self._newtr(_trman.LecOnlineTranslator(abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.LecOnlineTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
 
   @memoizedproperty
   def transruTranslator(self):
-    return self._newtr(_trman.TransruTranslator(abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.TransruTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return self._newtr(_trman.InfoseekTranslator(abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.InfoseekTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
 
   @memoizedproperty
   def exciteTranslator(self):
-    return self._newtr(_trman.ExciteTranslator(abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.ExciteTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
 
   @staticmethod
-  def translateAndApply(func, kw, tr, *args, **kwargs):
+  def translateAndApply(func, kw, tr, text, mapping=None, **kwargs):
     """
     @param  func  function to apply
     @param  kw  arguments passed to func
     @param  tr  function to translate
-    @param  *args  passed to tr
+    @param  text  unicode  passed to tr
+    @param* mapping  list or None
     @param  **kwargs  passed to tr
     """
     # TODO: I might be able to do runsync here instead of within tr
@@ -147,8 +177,9 @@ class _TranslatorManager(object):
     #  r = skthreads.runsync(partial(tr, *args, **kwargs),
     #      abortSignal=self.abortSignal)
     #else:
-    r = tr(*args, **kwargs)
-    if r and r[0]: func(*r, **kw)
+    r = tr(text, mapping=mapping, **kwargs)
+    if r and r[0]:
+      func(r[0], r[1], r[2], mapping, **kw)
 
   def getTranslator(self, key):
     """
@@ -310,6 +341,22 @@ class TranslatorManager(QObject):
 
   def isAtlasEnabled(self): return self.__d.atlasEnabled
   def setAtlasEnabled(self, value): self.__d.atlasEnabled = value
+
+  def isBaiduMappingEnabled(self): return self.__d.baiduMappingEnabled
+  def setBaiduMappingEnabled(self, t):
+    d = self.__d
+    if t != d.baiduMappingEnabled:
+      d.baiduMappingEnabled = t
+      if hasmemoizedproperty(d, 'baiduTranslator'):
+        d.baiduTranslator.mappingEnabled = t
+
+  def isNaverMappingEnabled(self): return self.__d.naverMappingEnabled
+  def setNaverMappingEnabled(self, t):
+    d = self.__d
+    if t != d.naverMappingEnabled:
+      d.naverMappingEnabled = t
+      if hasmemoizedproperty(d, 'naverTranslator'):
+        d.naverTranslator.mappingEnabled = t
 
   ## Queries ##
 
@@ -495,15 +542,18 @@ class TranslatorManager(QObject):
     text = d.normalizeText(text)
 
     for it in d.iterOfflineTranslators():
+      mapping = [] if it.mappingSupported and it.mappingEnabled else None
       #with SkProfiler(): # 0.3 seconds
-      r = it.translate(text, fr=fr, to=d.language, async=False)
+      r = it.translate(text, fr=fr, to=d.language, mapping=mapping, async=False)
       #with SkProfiler(): # 0.0004 seconds
-      if r and r[0]: func(*r, **kwargs)
+      if r and r[0]:
+        func(r[0], r[1], r[2], mapping, **kwargs)
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
+      mapping = [] if it.mappingSupported and it.mappingEnabled else None
       skevents.runlater(partial(d.translateAndApply,
-          func, kwargs, it.translate, text, fr=fr, to=d.language, async=False))
+          func, kwargs, it.translate, text, fr=fr, to=d.language, mapping=mapping, async=False))
 
 @memoized
 def manager(): return TranslatorManager()

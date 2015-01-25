@@ -187,7 +187,7 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
       'groupColor': groupColor,
     })
 
-def rendertable(text, language, **kwargs):
-  return ''.join(_iterrendertable(text, language, **kwargs))
+def rendertable(*args, **kwargs):
+  return ''.join(_iterrendertable(*args, **kwargs))
 
 # EOF

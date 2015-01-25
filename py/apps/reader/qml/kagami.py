@@ -11,6 +11,7 @@ from mecabjlp import mecabfmt
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
 from sakurakit.skdebug import dprint, dwarn
+from sakurakit.skqml import SkValueObject
 #from sakurakit.skqml import QmlObject
 #from sakurakit.sktr import tr_
 #from msime import msime
@@ -177,7 +178,7 @@ class GrimoireBean(QObject):
   clear = Signal()
   pageBreak = Signal()
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
-  showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
+  showTranslation = Signal(unicode, unicode, unicode, QObject, long)  # text, lang, provider, mapping, timestamp
   showComment = Signal(QObject) # dataman.Comment
   showSubtitle = Signal(QObject) # dataman.SubtitleObject
 
@@ -221,6 +222,18 @@ class GrimoireBean(QObject):
     return uniroman.rendertable(text, language, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
         hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
 
+  @Slot(unicode, unicode, QObject, int, float, bool, bool, result=unicode)
+  def renderMapping(self, text, language, mapping, charPerLine, rubySize, colorize, center):
+    """
+    @return  unicode  html
+    """
+    mapping = mapping.value()
+    if not mapping:
+      return text
+    import renderman
+    return renderman.manager().renderMapping(
+        text, language, mapping, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+
 class _GrimoireController:
 
   def __init__(self, q):
@@ -230,6 +243,8 @@ class _GrimoireController:
     self.nameTrClosure = None # function
     self.nameMissing = False # bool
     self.nameTrMissing = False # bool
+
+    self._retainedObjects = [] # [QObject]
 
     t = self.flushTimer = QTimer(q)
     t.setSingleShot(True)
@@ -247,6 +262,11 @@ class _GrimoireController:
     self.nameTrClosure = None
     self.nameMissing = False
     self.nameTrMissing = False
+
+  def retainObject(self, v):
+    self._retainedObjects.append(v)
+    if len(self._retainedObjects) > 50: # must be larger than the max items in kagami, which is 30
+      del self._retainedObjects[:10] # remove first 10 objects
 
   def _flush(self):
     if self._queue:
@@ -302,24 +322,44 @@ class GrimoireController(QObject):
     else:
       d.nameMissing = True
 
-  def showTranslation(self, text, language, provider, timestamp):
+  def showTranslation(self, text, language, provider, mapping, timestamp):
+    """
+    @param  text  unicode
+    @param  language  str
+    @param  provider  str
+    @param  mapping  list or None
+    @param  timestamp  long
+    """
     if not settings.global_().isGrimoireTranslationVisible():
       return
 
-    if self.__d.timestamp > timestamp:
+    d = self.__d
+
+    if d.timestamp > timestamp:
       dprint("translation comes too late, ignored")
       return
-    text = text.replace('\n', '<br/>')
-    self.__d.append(partial(GrimoireBean.instance.showTranslation.emit,
-        text, language, provider, timestamp))
+    if not mapping:
+      mapping = None
+    else:
+      mapping = SkValueObject(value=mapping)
+      d.retainObject(mapping)
+    #text = text.replace('\n', '<br/>')
+    d.append(partial(GrimoireBean.instance.showTranslation.emit,
+        text, language, provider, mapping, timestamp))
 
   def showComment(self, c):
+    """
+    @param  c  dataman.Comment
+    """
     if (settings.global_().isGrimoireSubtitleVisible() and
         c.type == 'subtitle' and not c.disabled and not c.deleted):
       self.__d.append(partial(GrimoireBean.instance.showComment.emit,
           c))
 
   def showSubtitle(self, s):
+    """
+    @param  s  dataman.SubtitleObject
+    """
     if settings.global_().isGrimoireSubtitleVisible():
       self.__d.append(partial(GrimoireBean.instance.showSubtitle.emit,
           s))

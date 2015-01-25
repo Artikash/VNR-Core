@@ -218,8 +218,7 @@ Item { id: root_
                 : lang.indexOf('zh') === 0 ? 18
                 : 10
     var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
-    return bean_.renderRuby(text
-      , lang
+    return bean_.renderRuby(text, lang
       , chperline
       , 10 * root_._zoomFactor // ruby size of furigana
       , root_.rubyInverted // ruby inverted
@@ -227,6 +226,20 @@ Item { id: root_
       , root_.alignCenter
       , root_.romajaRubyEnabled
       , root_.hanjaRubyEnabled
+    )
+  }
+
+  function renderTranslationMapping(text, lang, mapping, colorize) { // string, string, QObject -> string
+    //var chwidth = lang == 'ko' ? 13
+    //            //: lang === 'ja' ? 22
+    //            : lang.indexOf('zh') === 0 ? 18
+    //            : 10
+    var chperline = Math.round(root_.width / (18 * root_._zoomFactor)) // char per line
+    return bean_.renderMapping(text, lang, mapping
+      , chperline
+      , 10 * root_._zoomFactor // ruby size of furigana
+      , colorize // colorize
+      , root_.alignCenter
     )
   }
 
@@ -344,12 +357,20 @@ Item { id: root_
   }
 
   // string t, string lang, return string
-  function splitTranslation(t, lang) {
+  //function splitTranslation(t, lang) { // string, string -> string  insert \n
+  //  if (Util.isKanjiLanguage(lang))
+  //    return t.replace(/([。？！」\n])(?![。！？）」]|$)/g, "$1\n")
+  //  else
+  //    return t.replace(/([.?!」])(?![.!?)」]|$)/g, "$1\n").replace(/\.\.\n/g, '.. ') // do not split ".."
+  //}
+
+  function splitTranslation(t, lang) { // string, string -> string  insert <br/>
     if (Util.isKanjiLanguage(lang))
       return t.replace(/([。？！」\n])(?![。！？）」\n]|$)/g, '$1<br/>')
     else
       return t.replace(/([.?!」\n])(?![.!?)」\n]|$)/g, '$1<br/>').replace(/\.\.<br\/>/g, '.. ') // do not split ".."
   }
+
 
   //Rectangle {
   //  anchors.fill: parent
@@ -1258,13 +1279,15 @@ Item { id: root_
           }
           if (!t)
             return ""
-          if (root_.splitsTranslation && model.type === 'tr')
-            t = root_.splitTranslation(t, model.language)
-          if (root_.isRubyLanguage(model.language) &&
+          if (model.mapping)
+            t = root_.renderTranslationMapping(t || model.text, model.language, model.mapping, textItem_.hover)
+          else if (root_.isRubyLanguage(model.language) &&
               ((model.type === 'text' || model.type === 'name') ?
-               root_.rubyTextEnabled : root_.rubyTranslationEnabled))
+              root_.rubyTextEnabled : root_.rubyTranslationEnabled))
             t = root_.renderRuby(t, model.language, textItem_.hover)
-          else if (~t.indexOf("</a>"))
+          else if (root_.splitsTranslation && model.type === 'tr')
+            t = root_.splitTranslation(t, model.language)
+          if (~t.indexOf("</a>"))
             t = '<style>a{color:"' + root_.fontColor + '"}</style>' + t
           return t || ""
           //return !t ? "" : root_.shadowEnabled ? t :
@@ -1284,13 +1307,14 @@ Item { id: root_
     //console.log("grimoire.qml: pass")
   //}
 
-  function createTextItem(text, lang, type, provider, comment) {
+  function createTextItem(text, lang, type, mapping, provider, comment) {
     return {
       comment: type === 'sub' ? null : comment
       , sub: type === 'sub' ? comment : null
       , language: lang
       , text: text
       , type: type // text, tr, comment, name, or name.tr
+      , mapping: mapping // opaque object or null
       , provider: provider
       , textEdit: undefined // placeHolder property
     }
@@ -1341,7 +1365,7 @@ Item { id: root_
     modelLocked = false
   }
 
-  function showTranslation(text, lang, provider, timestamp) {
+  function showTranslation(text, lang, provider, mapping, timestamp) {
     if  (!root_.translationVisible)
       return
     if (modelLocked)
@@ -1352,7 +1376,7 @@ Item { id: root_
     //  pageBreak()
 
     //text = text.replace(/\n/g, "<br/>")
-    var item = createTextItem(text, lang, 'tr', provider)
+    var item = createTextItem(text, lang, 'tr', mapping, provider)
     if (_timestamp === Number(timestamp))
       listModel_.append(item)
     else if (_pageIndex <= listModel_.count)
@@ -1372,8 +1396,9 @@ Item { id: root_
       return
     modelLocked = true
 
+    var mapping = null // TODO: mapping is not implemented for name
     text = "【" + text + "】"
-    var item = createTextItem(text, lang, 'name.tr', provider)
+    var item = createTextItem(text, lang, 'name.tr', mapping, provider)
     var index = _pageIndex + 3
     if (index <= listModel_.count)
       listModel_.insert(index, item)

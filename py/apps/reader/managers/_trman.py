@@ -21,17 +21,14 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
-from unitraits import unichars, jpchars, jpmacros
+from unitraits import unichars, jpmacros
 import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
     ur'{{boc}}({{kana}})[っッ]?(?=[、…]\1)'))
 
 isspace = unichars.isspace
-
-_S_PUNCT = unichars.s_ascii_punct + jpchars.s_punct
-def ispunct(ch):
-  return ch in _S_PUNCT
+ispunct = textutil.ispunct
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -88,7 +85,8 @@ class TranslationCache:
 
 class Translator(object):
   key = 'tr' # str
-  asyncSupported = True # whether threading is supported
+  asyncSupported = True # bool  whether threading is supported
+  mappingSupported = False # bool  whether support translation mapping
 
   def clearCache(self): pass
 
@@ -104,13 +102,14 @@ class Translator(object):
     """
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=False, **kwargs):
     """
     @param  text  unicode
     @param  to  str
     @param* fr  str
     @param* async  bool
     @param* emit  bool
+    @param* mapping  list or None
     @param* scriptEnabled  bool
     @return  (unicode sub or None, str lang or None, self.name or None)
     """
@@ -361,7 +360,7 @@ class MachineTranslator(Translator):
       ret.append(t)
     return ret
 
-  def _translate(self, emit, text, tr, to, fr, async):
+  def _translate(self, emit, text, tr, to, fr, async, mapping=None):
     """
     @param  emit  bool
     @param  text  unicode
@@ -369,28 +368,34 @@ class MachineTranslator(Translator):
     @param  to  str
     @param  fr  str
     @param  async  bool
+    @param* mapping  list or None
     @param  kwargs  arguments passed to tr
     @return  unicode
     """
-    tr = self.__partialTranslate(tr, to, fr)
+    tr = self.__partialTranslate(tr, to, fr, mapping)
     l = self._splitTranslate(text, tr, to, fr, async)
     if emit:
       self.emitSplitTranslations(l)
     #delim = ' ' if self.splitsSentences else ''
     return ''.join(l) if l else ''
 
-  def __partialTranslate(self, tr, to, fr):
+  def __partialTranslate(self, tr, to, fr, mapping):
     """
     @param  tr  function
     @param  fr  str
     @param  to  str
+    @param  mapping  list or None
     @return  function
     """
+    if mapping is not None and self.mappingSupported:
+      ret = partial(tr, mapping=mapping)
+    else:
+      ret = tr
     if fr == 'ja':
       mt = termman.manager().getRuleBasedTranslator(to)
       if mt:
-        return partial(mt.translate, tr=tr)
-    return tr
+        ret = partial(mt.translate, tr=ret)
+    return ret
 
   def _translateTest(self, fn, text, async=False, **kwargs):
     """
@@ -586,7 +591,7 @@ class AtlasTranslator(OfflineMachineTranslator):
   def _translateApi(self, text, fr='', to=''): # unicode -> unicode
     return self.engine.translate(text)
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True, **kwargs):
     """@reimp"""
     to = 'en'
     if emit:
@@ -690,7 +695,7 @@ class LecTranslator(OfflineMachineTranslator):
       fr = 'ja'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1353,7 +1358,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
       fr = 'en'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1552,9 +1557,11 @@ class BingTranslator(OnlineMachineTranslator):
 class NaverTranslator(OnlineMachineTranslator):
   key = 'naver' # override
   asyncSupported = False # override  disable async
+  mappingSupported = True # override  enable translation mapping
 
-  def __init__(self, session=None, **kwargs):
+  def __init__(self, session=None, mappingEnabled=False, **kwargs):
     super(NaverTranslator, self).__init__(**kwargs)
+    self.mappingEnabled = mappingEnabled
 
     from naver import navertrans
     navertrans.session = session or requests.Session()
@@ -1584,7 +1591,7 @@ class NaverTranslator(OnlineMachineTranslator):
       return 'ko', 'en'
     return to, fr
 
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mapping=None, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1597,7 +1604,7 @@ class NaverTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, mapping=mapping)
       if repl:
         if to == 'zht':
           repl = zhs2zht(repl)
@@ -1620,9 +1627,11 @@ class NaverTranslator(OnlineMachineTranslator):
 class BaiduTranslator(OnlineMachineTranslator):
   key = 'baidu' # override
   asyncSupported = False # override  disable async
+  mappingSupported = True # override  enable translation mapping
 
-  def __init__(self, session=None, **kwargs):
+  def __init__(self, session=None, mappingEnabled=False, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
+    self.mappingEnabled = mappingEnabled
 
     from kingsoft import iciba
     iciba.session = session or requests.Session()
@@ -1660,7 +1669,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mapping=None, **kwargs):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
@@ -1674,11 +1683,11 @@ class BaiduTranslator(OnlineMachineTranslator):
         return repl, to, self.key
     repl = self._escapeText(text, to, fr, emit)
     if repl:
-      engine = self.getEngine(fr=fr, to=to)
+      engine = self.baidufanyi if mapping is not None else self.getEngine(fr=fr, to=to)
       repl = self.__baidu_repl_before(repl)
       repl = self._translate(emit, repl,
           engine.translate,
-          to, fr, async)
+          to, fr, async, mapping=mapping)
       if repl:
         if to == 'zht':
           #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
