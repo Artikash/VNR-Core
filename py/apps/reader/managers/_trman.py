@@ -476,7 +476,7 @@ class MachineTranslator(Translator):
       if self.postprocess:
         text = self.postprocess(text, to)
       if config.is_latin_language(to):
-        text = textutil.capitalize_sentence(text)
+        text = textutil.capitalize_html_sentence(text)
       text = textutil.beautify_subtitle(text)
     return text.strip() # escape could produce trailing " "
 
