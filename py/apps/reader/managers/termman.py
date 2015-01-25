@@ -35,6 +35,8 @@ def _get_lang_suffices(lang):
   @param  lang  str
   @return  [(unicode pattern, unicode replacement)] or None
   """
+  # FIXME: This is expensive and might break のほう
+  #return
   if lang.startswith('zh'):
     return LANG_SUFFIX_TR['zh']
   if config.is_latin_language(lang):
