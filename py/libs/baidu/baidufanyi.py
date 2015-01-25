@@ -41,11 +41,170 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 #  #Accept-Encoding:gzip, deflate
 #}
 
-def translate(text, to='zhs', fr='ja'):
+# Example json:
+# {
+#   "status": 0,
+#   "domain": "all",
+#   "from": "jp",
+#   "type": 2,
+#   "to": "zh",
+#   "data": [
+#     {
+#       "src": "悠真くんを攻略すれば２１０円か。なるほどなぁ…",
+#       "dst": "原悠君攻略的话210日元？。原来如此啊…",
+#       "relation": [],
+#       "result": [
+#         [
+#           0,
+#           "原悠",
+#           [
+#             "0|6"
+#           ],
+#           [],
+#           [
+#             "0|6"
+#           ],
+#           [
+#             "0|6"
+#           ]
+#         ],
+#         [
+#           1,
+#           "君",
+#           [
+#             "6|9"
+#           ],
+#           [],
+#           [
+#             "6|9"
+#           ],
+#           [
+#             "6|3"
+#           ]
+#         ],
+#         [
+#           2,
+#           "攻略",
+#           [
+#             "15|6"
+#           ],
+#           [],
+#           [
+#             "15|6"
+#           ],
+#           [
+#             "9|6"
+#           ]
+#         ],
+#         [
+#           3,
+#           "的话",
+#           [
+#             "21|9"
+#           ],
+#           [],
+#           [
+#             "21|9"
+#           ],
+#           [
+#             "15|6"
+#           ]
+#         ],
+#         [
+#           4,
+#           "210",
+#           [
+#             "30|9"
+#           ],
+#           [],
+#           [
+#             "30|9"
+#           ],
+#           [
+#             "21|3"
+#           ]
+#         ],
+#         [
+#           5,
+#           "日元？",
+#           [
+#             "39|6"
+#           ],
+#           [],
+#           [
+#             "39|6"
+#           ],
+#           [
+#             "24|9"
+#           ]
+#         ],
+#         [
+#           6,
+#           "。",
+#           [
+#             "45|3"
+#           ],
+#           [],
+#           [
+#             "45|3"
+#           ],
+#           [
+#             "33|3"
+#           ]
+#         ],
+#         [
+#           7,
+#           "原来如此",
+#           [
+#             "48|12"
+#           ],
+#           [],
+#           [
+#             "48|12"
+#           ],
+#           [
+#             "36|12"
+#           ]
+#         ],
+#         [
+#           8,
+#           "啊",
+#           [
+#             "60|6"
+#           ],
+#           [],
+#           [
+#             "60|6"
+#           ],
+#           [
+#             "48|3"
+#           ]
+#         ],
+#         [
+#           9,
+#           "…",
+#           [
+#             "66|3"
+#           ],
+#           [],
+#           [
+#             "66|3"
+#           ],
+#           [
+#             "51|3"
+#           ]
+#         ]
+#       ]
+#     }
+#   ]
+# }
+
+def translate(text, to='zhs', fr='ja', mapping=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param  fr  unicode not None, must be valid language code
   @param  to  unicode not None, must be valid language code
+  @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
   """
   #tok = self.__d.token
@@ -71,11 +230,15 @@ def translate(text, to='zhs', fr='ja'):
     if r.ok and len(ret) > 20 and ret[0] == '{' and ret[-1] == '}':
       #ret = ret.decode('utf8')
       js = json.loads(ret)
+      #print json.dumps(js, indent=2, ensure_ascii=False)
       l = js['data']
       if len(l) == 1:
         ret = l[0]['dst']
       else:
         ret = '\n'.join(it['dst'] for it in l)
+      if mapping is not None:
+        for k,v in _iterparse(l):
+          mapping.append((k, v))
       return ret
 
   #except socket.error, e:
@@ -94,13 +257,44 @@ def translate(text, to='zhs', fr='ja'):
   try: dwarn(r.url)
   except: pass
 
+def _iterparse(data, encoding='utf8'):
+  """
+  @param  data  list  json['data']
+  @param* encoding  unicoding of raw json bytes for offset
+  @yield  (unicode surface, unicode translation)
+  """
+  try:
+    for sentence in data:
+      src = sentence['src'].encode(encoding) #, errors='ignore') # get raw bytes
+      for res in sentence['result']:
+        #index = res[0] # int
+        trans = res[1] # unicode
+        offset = res[2][0] # such as "0|6"
+        left, mid, right = offset.partition('|')
+        left = int(left)
+        right = int(right)
+        surf = src[left:left+right].decode(encoding) #, errors='ignore')
+        if surf:
+          yield surf, trans
+  except Exception, e:
+    derror(e)
+
 if __name__ == "__main__":
-  s = u"你在说什么？"
-  t = translate(s, to='yue', fr='zh')
-  print t
-  sys.exit(0)
 
   def test():
+    m = []
+    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    #s = u"hello"
+    t = translate(s, to='zh', fr='ja', mapping=m)
+    print t
+    print json.dumps(m, indent=2, ensure_ascii=False)
+
+  def test_yue():
+    s = u"你在说什么？"
+    t = translate(s, to='yue', fr='zh')
+    print t
+
+  def test_qt():
     global session
 
     #s = u"オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"
@@ -135,10 +329,12 @@ if __name__ == "__main__":
 
     app.quit()
 
-  from PySide.QtCore import QCoreApplication, QTimer
-  app = QCoreApplication(sys.argv)
-  QTimer.singleShot(0, test)
-  app.exec_()
+  test()
+
+  #from PySide.QtCore import QCoreApplication, QTimer
+  #app = QCoreApplication(sys.argv)
+  #QTimer.singleShot(0, test)
+  #app.exec_()
 
 # EOF
 

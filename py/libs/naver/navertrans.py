@@ -24,11 +24,89 @@ session = requests # global session
 
 NAVER_API = "http://translate.naver.com/translate.dic"
 
-def translate(text, to='ko', fr='ja'):
+# Example highlight result for: 悠真くんを攻略すれば２１０円か。なるほどなぁ
+#
+# {
+#   "resultCode": 0,
+#   "resultData": "유진 군을 공략하면 210엔?과연..",
+#   "align": [
+#     {
+#       "ss": 0,
+#       "te": 5,
+#       "ts": 0,
+#       "se": 5
+#     },
+#     {
+#       "ss": 6,
+#       "te": 9,
+#       "ts": 7,
+#       "se": 11
+#     },
+#     {
+#       "ss": 12,
+#       "te": 25,
+#       "ts": 10,
+#       "se": 29
+#     },
+#     {
+#       "ss": 30,
+#       "te": 32,
+#       "ts": 27,
+#       "se": 41
+#     },
+#     {
+#       "ss": 42,
+#       "te": 33,
+#       "ts": 33,
+#       "se": 47
+#     },
+#     {
+#       "ss": 48,
+#       "te": 39,
+#       "ts": 34,
+#       "se": 59
+#     },
+#     {
+#       "ss": 60,
+#       "te": 41,
+#       "ts": 40,
+#       "se": 68
+#     }
+#   ],
+#   "hurigana": [
+#     {
+#       "h": "ゆう",
+#       "s": 0,
+#       "z": "悠",
+#       "e": 3
+#     },
+#     {
+#       "h": "しん",
+#       "s": 3,
+#       "z": "真",
+#       "e": 6
+#     },
+#     {
+#       "h": "こうりゃく",
+#       "s": 15,
+#       "z": "攻略",
+#       "e": 21
+#     },
+#     {
+#       "h": "えん",
+#       "s": 39,
+#       "z": "円",
+#       "e": 42
+#     }
+#   ],
+#   "dir": "j2k"
+# }
+def translate(text, to='ko', fr='ja', mapping=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param  fr  unicode not None, must be valid language code
   @param  to  unicode not None, must be valid language code
+  @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
   """
   #tok = self.__d.token
@@ -41,15 +119,19 @@ def translate(text, to='ko', fr='ja'):
         'tarLang': to[:2],
         #'translateParams.langDetect': 'Y',
         'query': text,
-        #'highlight': 1,
-        #'hurigana': 1,
+        'highlight': 1 if mapping is not None else 0,
+        'hurigana': 0, # turn off furigana, which seems not working though
       }
     )
 
     ret = r.content
     if r.ok and len(ret) > 20:
       data = json.loads(ret)
+      #print json.dumps(data, indent=2, ensure_ascii=False)
       ret = data['resultData']
+      if mapping is not None:
+        for k,v in _iterparse(data.get('align'), text, ret):
+          mapping.append((k, v))
       return ret
 
   #except socket.error, e:
@@ -68,6 +150,36 @@ def translate(text, to='ko', fr='ja'):
   try: dwarn(r.url)
   except: pass
 
+def _iterparse(data, source, target, encoding='utf8'):
+  """
+  @param  data  list  json['align']
+  @param  source  unicode  original text
+  @param  target  unicode  result translation
+  @param* encoding  unicoding of raw json bytes for offset
+  @yield  (unicode surface, unicode translation)
+  """
+  try:
+    # {
+    #   "ss": 48 # source start
+    #   "se": 59 # source end
+    #   "te": 39 # target start
+    #   "ts": 34 # target end
+    # },
+    source = source.encode(encoding)
+    target = target.encode(encoding)
+    for align in data:
+      ss = int(align['ss'])
+      se = int(align['se'])
+      ts = int(align['ts'])
+      te = int(align['te'])
+
+      s = source[ss:se+1].decode(encoding)
+      t = target[ts:te+1].decode(encoding)
+      if s:
+        yield s, t
+  except Exception, e:
+    derror(e)
+
 if __name__ == "__main__":
 
   def test():
@@ -78,6 +190,7 @@ if __name__ == "__main__":
     s = '"<html>&abcde"'
     s = u"그렇습니다"
     s = u"hello"
+    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
 
     fr = "ja"
     fr = "zhs"
@@ -87,6 +200,9 @@ if __name__ == "__main__":
     fr = "en"
     fr = "es"
     to = "en"
+
+    fr = "ja"
+    to = "ko"
 
     #s = u"What are you doing?"
     #fr = "en"
@@ -101,11 +217,15 @@ if __name__ == "__main__":
     #    t = translate(s, to=to, fr=fr)
     #print t
 
+    m = []
+
     session = requests.Session()
     with SkProfiler():
       for i in range(1):
-        t = translate(s, to=to, fr=fr)
+        t = translate(s, to=to, fr=fr, mapping=m)
     print t
+
+    print json.dumps(m, indent=2, ensure_ascii=False)
 
     #session = requests
     #with SkProfiler():
