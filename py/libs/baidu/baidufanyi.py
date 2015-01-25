@@ -204,7 +204,7 @@ def translate(text, to='zhs', fr='ja', mapping=None):
   @param  text  unicode not None
   @param  fr  unicode not None, must be valid language code
   @param  to  unicode not None, must be valid language code
-  @param* mapping  None or list  return mapping of words
+  @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
   """
   #tok = self.__d.token
@@ -257,23 +257,25 @@ def translate(text, to='zhs', fr='ja', mapping=None):
   try: dwarn(r.url)
   except: pass
 
-def _iterparse(data):
+def _iterparse(data, encoding='utf8'):
   """
-  @param  data  json list
+  @param  data  list  json['data']
+  @param* encoding  unicoding of raw json bytes for offset
   @yield  (unicode surface, unicode translation)
   """
   try:
     for sentence in data:
-      src = sentence['src']
+      src = sentence['src'].encode(encoding) #, errors='ignore') # get raw bytes
       for res in sentence['result']:
         #index = res[0] # int
         trans = res[1] # unicode
         offset = res[2][0] # such as "0|6"
         left, mid, right = offset.partition('|')
-        left = int(left) / 3
-        right = int(right) / 3
-        surf = src[left:left+right]
-        yield surf, trans
+        left = int(left)
+        right = int(right)
+        surf = src[left:left+right].decode(encoding) #, errors='ignore')
+        if surf:
+          yield surf, trans
   except Exception, e:
     derror(e)
 
@@ -282,6 +284,7 @@ if __name__ == "__main__":
   def test():
     m = []
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    #s = u"hello"
     t = translate(s, to='zh', fr='ja', mapping=m)
     print t
     print json.dumps(m, indent=2, ensure_ascii=False)
