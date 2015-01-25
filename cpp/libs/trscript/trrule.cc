@@ -73,19 +73,19 @@ std::wstring TranslationScriptRule::render_target() const
   std::wstring ret = L"{\"type\":\"term\"";
   ret.append(L",\"id\":")
      .append(id);
-  if (!is_regex()) { // do not save regex pattern to save memory
-    if (!source.empty() && !::isdigit(source[0])) { // do not save escaped floating number
-      std::string s = escape(source);
-      ret.append(L",\"source\":\"")
-         .append(s.cbegin(), s.cend())
-         .push_back('"');
-    }
-    if (!target.empty()) {
-      std::string s = escape(target);
-      ret.append(L",\"target\":\"")
-         .append(s.cbegin(), s.cend())
-         .push_back('"');
-    }
+  // do not save regex pattern to save memory
+  if (!is_regex() && !source.empty()
+      && !(source.size() > 1 && ::isdigit(source[source.size() - 2]))) { // do not save escaped floating number
+    std::string s = escape(source);
+    ret.append(L",\"source\":\"")
+       .append(s.cbegin(), s.cend())
+       .push_back('"');
+  }
+  if (!target.empty()) {
+    std::string s = escape(target);
+    ret.append(L",\"target\":\"")
+       .append(s.cbegin(), s.cend())
+       .push_back('"');
   }
   ret.push_back('}');
 
