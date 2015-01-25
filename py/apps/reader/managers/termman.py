@@ -28,17 +28,17 @@ if skos.WIN:
 LANG_SUFFIX_TR = {
   'en': ((u"の", u"'s"),),
   'ko': ((u"の", u"의"),),
-  'zh': ((u"の", u"的"),),
+  #'zh': ((u"の", u"的"),),
 }
 def _get_lang_suffices(lang):
   """
   @param  lang  str
   @return  [(unicode pattern, unicode replacement)] or None
   """
-  # FIXME: This is expensive and might break のほう
-  #return
-  if lang.startswith('zh'):
-    return LANG_SUFFIX_TR['zh']
+  # Disabled for Chinese as it might use lots of memory and
+  # it will break のほう
+  #if lang.startswith('zh'):
+  #  return LANG_SUFFIX_TR['zh']
   if config.is_latin_language(lang):
     return LANG_SUFFIX_TR['en']
   return LANG_SUFFIX_TR.get(lang)
