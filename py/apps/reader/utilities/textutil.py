@@ -5,7 +5,7 @@
 import re
 from sakurakit import skstr
 from sakurakit.skunicode import u
-from unitraits import jpchars
+from unitraits import unichars, jpchars
 import defs
 
 ## Encoding ##
@@ -193,7 +193,7 @@ def remove_html_tags(text):
   @param  text  unicode
   @return  unicode
   """
-  return __html_tag_re.sub('', text.replace('<br/>', '\n'))
+  return __html_tag_re.sub('', text.replace('<br/>', '\n')) if '<' in text else text
 
 __re_chars = re.compile(r"[%s]" % re.escape(
   skstr.REGEX_SPECIAL_CHARS + r"{}"
@@ -219,6 +219,10 @@ def validate_macro(text):
   @return  bool
   """
   return not text or skstr.checkpair(text, pair=('{','}'))
+
+_S_PUNCT = unichars.s_ascii_punct + jpchars.s_punct
+def ispunct(ch):
+  return ch in _S_PUNCT
 
 if __name__ == '__main__':
   t = u"かたがな"

@@ -230,11 +230,11 @@ Item { id: root_
   }
 
   function renderTranslationMapping(text, lang, mapping, colorize) { // string, string, QObject -> string
-    var chwidth = lang == 'ko' ? 13
-                //: lang === 'ja' ? 22
-                : lang.indexOf('zh') === 0 ? 18
-                : 10
-    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor)) // char per line
+    //var chwidth = lang == 'ko' ? 13
+    //            //: lang === 'ja' ? 22
+    //            : lang.indexOf('zh') === 0 ? 18
+    //            : 10
+    var chperline = Math.round(root_.width / (18 * root_._zoomFactor)) // char per line
     return bean_.renderMapping(text, lang, mapping
       , chperline
       , 10 * root_._zoomFactor // ruby size of furigana

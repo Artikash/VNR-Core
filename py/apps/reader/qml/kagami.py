@@ -227,11 +227,12 @@ class GrimoireBean(QObject):
     """
     @return  unicode  html
     """
-    return text
-    #import uniroman
-    #text = textutil.remove_html_tags(text).strip()
-    #return uniroman.rendertable(text, language, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
-    #    hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
+    mapping = mapping.value()
+    if not mapping:
+      return text
+    import renderman
+    return renderman.manager().renderMapping(
+        text, language, mapping, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
 
 class _GrimoireController:
 

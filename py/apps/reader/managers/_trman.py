@@ -21,17 +21,14 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
-from unitraits import unichars, jpchars, jpmacros
+from unitraits import unichars, jpmacros
 import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
     ur'{{boc}}({{kana}})[っッ]?(?=[、…]\1)'))
 
 isspace = unichars.isspace
-
-_S_PUNCT = unichars.s_ascii_punct + jpchars.s_punct
-def ispunct(ch):
-  return ch in _S_PUNCT
+ispunct = textutil.ispunct
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
