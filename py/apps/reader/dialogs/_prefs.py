@@ -2760,11 +2760,15 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       r += 1
       grid.addWidget(self._createBrowseButton("http://fanyi.baidu.com"), r, 0)
       grid.addWidget(self.baiduButton, r, 1)
+      r += 1
+      grid.addWidget(self.baiduRubyButton, r, 1)
 
     if 'ko' not in blans:
       r += 1
       grid.addWidget(self._createBrowseButton("http://translate.naver.com"), r, 0)
       grid.addWidget(self.naverButton, r, 1)
+      r += 1
+      grid.addWidget(self.naverRubyButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.bing.com/translator"), r, 0)
@@ -2914,12 +2918,32 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def baiduRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation mapping"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBaiduRubyEnabled())
+    ret.toggled.connect(ss.setBaiduRubyEnabled)
+    ret.setEnabled(ss.isBaiduEnabled())
+    ss.baiduEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def naverButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Naver.com Korean translation service"),
         my.tr("recommended for Korean")))
     ret.setChecked(settings.global_().isNaverEnabled())
     ret.toggled.connect(settings.global_().setNaverEnabled)
+    return ret
+
+  @memoizedproperty
+  def naverRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation mapping"))
+    ss = settings.global_()
+    ret.setChecked(ss.isNaverRubyEnabled())
+    ret.toggled.connect(ss.setNaverRubyEnabled)
+    ret.setEnabled(ss.isNaverEnabled())
+    ss.naverEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty

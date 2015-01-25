@@ -22,7 +22,7 @@ function openExternalUrl(link) { // string ->
 
 function evalJavascriptLink(link) { // string, object ->
   link = link.replace('javascript://', '');
-  console.log("eval.js:evalJavascriptLink: script =", link)
+  //console.log("eval.js:evalJavascriptLink: script =", link)
   // QML does not allow use global associate array for eval
   // See: https://bugreports.qt.io/browse/QTBUG-10492
   // See: http://stackoverflow.com/questions/543533/restricting-eval-to-a-narrow-scope

@@ -705,8 +705,14 @@ class _MainObject(object):
     ret.setNaverEnabled(ss.isNaverEnabled())
     ss.naverEnabledChanged.connect(ret.setNaverEnabled)
 
+    ret.setNaverMappingEnabled(ss.isNaverRubyEnabled())
+    ss.naverRubyEnabledChanged.connect(ret.setNaverMappingEnabled)
+
     ret.setBaiduEnabled(ss.isBaiduEnabled())
     ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
+
+    ret.setBaiduMappingEnabled(ss.isBaiduRubyEnabled())
+    ss.baiduRubyEnabledChanged.connect(ret.setBaiduMappingEnabled)
 
     ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
     ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)

@@ -7,9 +7,10 @@ __all__ = (
   'SkDeclarativeDragDropEventFilter',
   'SkDeclarativeView',
   'SkDesktopProxy',
+  'SkValueObject',
 )
 
-from PySide.QtCore import Property, Signal, Qt, QObject, QCoreApplication
+from PySide.QtCore import Property, Signal, Slot, Qt, QObject, QCoreApplication
 from Qt5.QtQuick1 import QDeclarativeView
 from Qt5.QtWidgets import QApplication
 import skos
@@ -19,6 +20,28 @@ from skdebug import dprint
 if skos.WIN:
   import win32api, win32con # used to modify window ex style
   import skwin
+
+## Containers ##
+
+class SkValueObject(QObject):
+  def __init__(self, value=None, parent=None):
+    super(SkValueObject, self).__init__(parent)
+    self._value = value
+
+  #def __del__(self): print "deleted"
+
+  def value(self): return self._value
+  def setValue(self, v): self._value = v
+
+  @Slot(result=unicode)
+  def toString(self):
+    try: return "%s" % self._value
+    except: return 0
+
+  @Slot(result=int)
+  def toInt(self):
+    try: return int(self._value)
+    except: return 0
 
 ## Views ##
 
