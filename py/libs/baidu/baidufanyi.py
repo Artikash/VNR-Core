@@ -199,12 +199,12 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 #   ]
 # }
 
-def translate(text, to='zhs', fr='ja', mapping=None):
+def translate(text, to='zhs', fr='ja', align=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param  fr  unicode not None, must be valid language code
   @param  to  unicode not None, must be valid language code
-  @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
+  @param* align  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
   """
   #tok = self.__d.token
@@ -236,8 +236,8 @@ def translate(text, to='zhs', fr='ja', mapping=None):
         ret = l[0]['dst']
       else:
         ret = '\n'.join(it['dst'] for it in l)
-      if mapping is not None:
-        mapping.extend(_iterparse(l))
+      if align is not None:
+        align.extend(_iteralign(l))
       return ret
 
   #except socket.error, e:
@@ -256,7 +256,7 @@ def translate(text, to='zhs', fr='ja', mapping=None):
   try: dwarn(r.url)
   except: pass
 
-def _iterparse(data, encoding='utf8'):
+def _iteralign(data, encoding='utf8'):
   """
   @param  data  list  json['data']
   @param* encoding  unicoding of raw json bytes for offset
@@ -284,7 +284,7 @@ if __name__ == "__main__":
     m = []
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
     #s = u"hello"
-    t = translate(s, to='zh', fr='ja', mapping=m)
+    t = translate(s, to='zh', fr='ja', align=m)
     print t
     print json.dumps(m, indent=2, ensure_ascii=False)
 

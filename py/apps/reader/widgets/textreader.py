@@ -53,12 +53,12 @@ class _TextReader(object):
         text, self.gameLanguage,
         time=time)
 
-  def _showTranslation(self, sub, language, provider, mapping, time=0):
+  def _showTranslation(self, sub, language, provider, align, time=0):
     """
     @param  sub  unicode
     @param  language  unicode
     @param  provider  unicode
-    @param  mapping  list  ignored
+    @param  align  list  ignored
     @param* long  time
     """
     #sub = userplugin.revise_translation(sub, language)

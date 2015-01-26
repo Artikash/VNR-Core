@@ -86,7 +86,7 @@ class TranslationCache:
 class Translator(object):
   key = 'tr' # str
   asyncSupported = True # bool  whether threading is supported
-  mappingSupported = False # bool  whether support translation mapping
+  alignSupported = False # bool  whether support translation alignment
 
   def clearCache(self): pass
 
@@ -102,14 +102,14 @@ class Translator(object):
     """
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=False, align=None, **kwargs):
     """
     @param  text  unicode
     @param  to  str
     @param* fr  str
     @param* async  bool
     @param* emit  bool
-    @param* mapping  list or None
+    @param* align  list or None
     @param* scriptEnabled  bool
     @return  (unicode sub or None, str lang or None, self.name or None)
     """
@@ -360,7 +360,7 @@ class MachineTranslator(Translator):
       ret.append(t)
     return ret
 
-  def _translate(self, emit, text, tr, to, fr, async, mapping=None):
+  def _translate(self, emit, text, tr, to, fr, async, align=None):
     """
     @param  emit  bool
     @param  text  unicode
@@ -368,27 +368,27 @@ class MachineTranslator(Translator):
     @param  to  str
     @param  fr  str
     @param  async  bool
-    @param* mapping  list or None
+    @param* align  list or None
     @param  kwargs  arguments passed to tr
     @return  unicode
     """
-    tr = self.__partialTranslate(tr, to, fr, mapping)
+    tr = self.__partialTranslate(tr, to, fr, align)
     l = self._splitTranslate(text, tr, to, fr, async)
     if emit:
       self.emitSplitTranslations(l)
     #delim = ' ' if self.splitsSentences else ''
     return ''.join(l) if l else ''
 
-  def __partialTranslate(self, tr, to, fr, mapping):
+  def __partialTranslate(self, tr, to, fr, align):
     """
     @param  tr  function
     @param  fr  str
     @param  to  str
-    @param  mapping  list or None
+    @param  align  list or None
     @return  function
     """
-    if mapping is not None and self.mappingSupported:
-      ret = partial(tr, mapping=mapping)
+    if align is not None and self.alignSupported:
+      ret = partial(tr, align=align)
     else:
       ret = tr
     # 1/25/2015: temporarily disabled
@@ -1558,11 +1558,11 @@ class BingTranslator(OnlineMachineTranslator):
 class NaverTranslator(OnlineMachineTranslator):
   key = 'naver' # override
   asyncSupported = False # override  disable async
-  mappingSupported = True # override  enable translation mapping
+  alignSupported = True # override  enable translation alignment
 
-  def __init__(self, session=None, mappingEnabled=False, **kwargs):
+  def __init__(self, session=None, alignEnabled=False, **kwargs):
     super(NaverTranslator, self).__init__(**kwargs)
-    self.mappingEnabled = mappingEnabled
+    self.alignEnabled = alignEnabled
 
     from naver import navertrans
     navertrans.session = session or requests.Session()
@@ -1592,7 +1592,7 @@ class NaverTranslator(OnlineMachineTranslator):
       return 'ko', 'en'
     return to, fr
 
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mapping=None, **kwargs):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, align=None, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1603,10 +1603,10 @@ class NaverTranslator(OnlineMachineTranslator):
         return repl, to, self.key
     repl = self._escapeText(text, to, fr, emit)
     if repl:
-      mappingSize = len(mapping) if mapping else 0
+      alignCount = len(align) if align else 0
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async, mapping=mapping)
+          to, fr, async, align=align)
       if repl:
         # Sometimes naver translation result contains <>
         # Example: るみちゃん、めでたい結婚を機にさ、名前変えたら
@@ -1614,10 +1614,10 @@ class NaverTranslator(OnlineMachineTranslator):
         repl = repl.replace('<', '').replace('>', '')
         if to == 'zht':
           repl = zhs2zht(repl)
-          if mapping:
-            for i,(k,v) in enumerate(mapping[mappingSize:]):
+          if align:
+            for i,(k,v) in enumerate(align[aligntSize:]):
               if v:
-                mapping[mappingSize+i] = (k, zhs2zht(v))
+                align[alignCount + i] = (k, zhs2zht(v))
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
@@ -1637,11 +1637,11 @@ class NaverTranslator(OnlineMachineTranslator):
 class BaiduTranslator(OnlineMachineTranslator):
   key = 'baidu' # override
   asyncSupported = False # override  disable async
-  mappingSupported = True # override  enable translation mapping
+  alignSupported = True # override  enable translation alignment
 
-  def __init__(self, session=None, mappingEnabled=False, **kwargs):
+  def __init__(self, session=None, alignEnabled=False, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
-    self.mappingEnabled = mappingEnabled
+    self.alignEnabled = alignEnabled
 
     from kingsoft import iciba
     iciba.session = session or requests.Session()
@@ -1679,7 +1679,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mapping=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, ailgn=None, **kwargs):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
@@ -1693,20 +1693,20 @@ class BaiduTranslator(OnlineMachineTranslator):
         return repl, to, self.key
     repl = self._escapeText(text, to, fr, emit)
     if repl:
-      mappingSize = len(mapping) if mapping else 0
-      engine = self.baidufanyi if mapping is not None else self.getEngine(fr=fr, to=to)
+      alignCount = len(align) if align else 0
+      engine = self.baidufanyi if align is not None else self.getEngine(fr=fr, to=to)
       repl = self.__baidu_repl_before(repl)
       repl = self._translate(emit, repl,
           engine.translate,
-          to, fr, async, mapping=mapping)
+          to, fr, async, align=align)
       if repl:
         if to == 'zht':
           #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
           repl = zhs2zht(repl)
-          if mapping:
-            for i,(k,v) in enumerate(mapping[mappingSize:]):
+          if align:
+            for i,(k,v) in enumerate(align[alignCount:]):
               if v:
-                mapping[mappingSize+i] = (k, zhs2zht(v))
+                align[alignCount + i] = (k, zhs2zht(v))
         repl = self.__baidu_repl_after(repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)

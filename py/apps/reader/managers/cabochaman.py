@@ -53,6 +53,8 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
   @param* features  {unicode surface:(unicode feature, fmt)} or None
   @yield  unicode  HTML table
   """
+  render = rc.jinja_template('html/furigana').render
+
   i = j = 0
   line = []
   lineCount = 0 # int  estimated line width, assume ruby has half width
@@ -97,7 +99,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
     if width + lineCount <= charPerLine:
       pass
     elif line:
-      yield rc.jinja_template('html/furigana').render({
+      yield render({
         'tuples': line,
         'rubySize': roundRubySize,
         'paddingSize': paddingSize,
@@ -117,7 +119,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
     line.append(t)
     lineCount += width
   if line:
-    yield rc.jinja_template('html/furigana').render({
+    yield render({
       'tuples': line,
       'rubySize': roundRubySize,
       'paddingSize': paddingSize,

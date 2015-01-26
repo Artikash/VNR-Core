@@ -121,16 +121,16 @@ class GoogleJsonTranslator(GoogleTranslator):
 
   headers = {'User-Agent':USER_AGENT}
 
-  def translate(self, t, to='auto', fr='auto', mapping=None):
+  def translate(self, t, to='auto', fr='auto', align=None):
     """
     @param  t  unicode
     @param* to  str
     @param* fr  str
-    @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
+    @param* align  None or list  insert [unicode surf, unicode trans] if not None
     @return  unicode or None
     """
     try:
-      client_json = mapping is None
+      client_json = align is None
       # http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
       r = self.session.post(self.api, headers=self.headers, data={
         'tl': googledef.lang2locale(to),
@@ -169,10 +169,10 @@ class GoogleJsonTranslator(GoogleTranslator):
               ret = l[0]
             else:
               ret = '\n'.join(it[0] for it in l)
-            if mapping is not None and len(data) > 3:
+            if align is not None and len(data) > 3:
               # data[-4] is the segmented translation
               # data[-5] is the segmented source text
-              mapping.extend(self._iterparse(data[-3]))
+              align.extend(self._iteralign(data[-3]))
             return ret
 
     #except socket.error, e:
@@ -266,7 +266,7 @@ class GoogleJsonTranslator(GoogleTranslator):
   #       ],
   #       ""
   #     ],
-  def _iterparse(self, data):
+  def _iteralign(self, data):
     """
     @param  data  list  gson list
     @yield  (unicode surface, unicode translation)
@@ -281,12 +281,12 @@ class GoogleJsonTranslator(GoogleTranslator):
       derror(e)
 
   # The following function is an alternative API
-  def analyze(self, t, to='auto', fr='auto', mapping=None):
+  def analyze(self, t, to='auto', fr='auto', align=None):
     """
     @param  t  unicode
     @param* to  str
     @param* fr  str
-    @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
+    @param* align  None or list  insert [unicode surf, unicode trans] if not None
     @return  unicode or None
     """
     try:
@@ -319,10 +319,10 @@ class GoogleJsonTranslator(GoogleTranslator):
             ret = l[0]
           else:
             ret = '\n'.join(it[0] for it in l)
-          if mapping is not None and len(data) > 3:
+          if align is not None and len(data) > 3:
             # data[-4] is the segmented translation
             # data[-5] is the segmented source text
-            mapping.extend(self._iterparse(data[-3]))
+            align.extend(self._iterparse(data[-3]))
           return ret
 
     #except socket.error, e:
@@ -396,8 +396,8 @@ if __name__ == '__main__':
     with SkProfiler():
       #for i in range(10):
       for i in range(1):
-        t = gt.translate(s, to=to, fr=fr, mapping=m)
-        #t = gt.analyze(s, to=to, fr=fr, mapping=m)
+        t = gt.translate(s, to=to, fr=fr, align=m)
+        #t = gt.analyze(s, to=to, fr=fr, align=m)
 
     print t
     print json.dumps(m, indent=2, ensure_ascii=False)

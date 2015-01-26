@@ -10,20 +10,22 @@ def manager(): return RenderManager()
 
 class RenderManager:
 
-  def renderMapping(self, *args, **kwargs):
-    return ''.join(self._iterRenderMapping(*args, **kwargs))
+  def renderAlignment(self, *args, **kwargs):
+    return ''.join(self._iterRenderAlignment(*args, **kwargs))
 
-  def _iterRenderMapping(self, text, language, mapping, charPerLine=100, rubySize=10, colorize=False, center=True):
+  def _iterRenderAlignment(self, text, language, align, charPerLine=100, rubySize=10, colorize=False, center=True):
     """
     @param  text  unicode
     @param  language  unicode
-    @param  mapping  [(unicode source, unicode target)]
+    @param  align  [(unicode source, unicode target)]
     @param* charPerLine  int  maximum number of characters per line
     @param* rubySize  float
     @param* colorsize  bool
     @param* center  bool
     @yield  unicode  HTML table
     """
+    render = rc.jinja_template('html/alignment').render
+
     i = j = 0
 
     line = []
@@ -57,11 +59,11 @@ class RenderManager:
     #rubyWidth = LATIN_RUBY_WIDTH if not romaji else KANJI_RUBY_WIDTH
     rubyWidth = 0.8 # around 4/6, make it larger to be safer
 
-    mappingIndex = 0
+    alignIndex = 0
     #for paragraph in text.split('\n'):
     # No longer split paragraph
-    for group, (surface, ruby, mappingIndex) in enumerate(self._iterParseMapping(text, language, mapping, mappingIndex)):
-      if group == 0 and mappingIndex >= len(mapping): # mapping failed
+    for group, (surface, ruby, alignIndex) in enumerate(self._iterParseAlignment(text, language, align, alignIndex)):
+      if group == 0 and alignIndex >= len(align): # aligning failed
         yield text
         line = []
         break
@@ -85,7 +87,7 @@ class RenderManager:
       if width + lineCount <= charPerLine:
         pass
       elif line:
-        yield rc.jinja_template('html/mapping').render({
+        yield render({
           'tuples': line,
           'rubySize': roundRubySize,
           'rubyColor': rubyColor,
@@ -99,7 +101,7 @@ class RenderManager:
       lineCount += width
 
     if line:
-      yield rc.jinja_template('html/mapping').render({
+      yield render({
         'tuples': line,
         'rubySize': roundRubySize,
         'rubyColor': rubyColor,
@@ -127,31 +129,31 @@ class RenderManager:
     except IndexError: pass
     return left, right
 
-  def _iterParseMapping(self, text, language, mapping, mappingIndex):
+  def _iterParseAlignment(self, text, language, align, alignIndex):
     """
     @param  text  unicode
     @param  language  unicode
-    @param  mapping  [(unicode source, unicode target)]
-    @param  mappingIndex  int
-    @yield  (unicode surface, unicode ruby, int mappingIndex)
+    @param  align  [(unicode source, unicode target)]
+    @param  alignIndex  int
+    @yield  (unicode surface, unicode ruby, int alignIndex)
     """
-    if mappingIndex < len(mapping):
-      for i,(k,v) in enumerate(mapping): # instead of doing mapping[mappingIndex:]
-        if i >= mappingIndex and not self._skipMapping(v):
+    if alignIndex < len(align):
+      for i,(k,v) in enumerate(align): # instead of doing align[alignIndex:]
+        if i >= alignIndex and not self._skipAlignment(v):
           if not text:
             break
           if v in text:
             left, mid, text = text.partition(v)
             if left:
               left, text = self._fixHtmlTag(left, text)
-              yield left, None, mappingIndex
-            mappingIndex = i
-            yield mid, k, mappingIndex
+              yield left, None, alignIndex
+            alignIndex = i
+            yield mid, k, alignIndex
     if text:
-      yield text, None, mappingIndex
+      yield text, None, alignIndex
 
   @staticmethod
-  def _skipMapping(text):
+  def _skipAlignment(text):
     """
     @param  text  unicode
     @return  bool

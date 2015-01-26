@@ -101,12 +101,12 @@ NAVER_API = "http://translate.naver.com/translate.dic"
 #   ],
 #   "dir": "j2k"
 # }
-def translate(text, to='ko', fr='ja', mapping=None):
+def translate(text, to='ko', fr='ja', align=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param  fr  unicode not None, must be valid language code
   @param  to  unicode not None, must be valid language code
-  @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
+  @param* align  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
   """
   #tok = self.__d.token
@@ -119,7 +119,7 @@ def translate(text, to='ko', fr='ja', mapping=None):
         'tarLang': to[:2],
         #'translateParams.langDetect': 'Y',
         'query': text,
-        'highlight': 1 if mapping is not None else 0,
+        'highlight': 1 if align is not None else 0,
         'hurigana': 0, # turn off furigana, which seems not working though
       }
     )
@@ -129,8 +129,8 @@ def translate(text, to='ko', fr='ja', mapping=None):
       data = json.loads(ret)
       #print json.dumps(data, indent=2, ensure_ascii=False)
       ret = data['resultData']
-      if mapping is not None:
-        mapping.extend(_iterparse(
+      if align is not None:
+        align.extend(_iterparse(
             data.get('align'), text, ret))
       return ret
 
@@ -223,7 +223,7 @@ if __name__ == "__main__":
     session = requests.Session()
     with SkProfiler():
       for i in range(1):
-        t = translate(s, to=to, fr=fr, mapping=m)
+        t = translate(s, to=to, fr=fr, align=m)
     print t
 
     print json.dumps(m, indent=2, ensure_ascii=False)

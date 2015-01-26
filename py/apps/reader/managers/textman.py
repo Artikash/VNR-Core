@@ -383,18 +383,18 @@ class _TextManager(object):
     if not self.blockedLanguages or s.subLang[:2] not in self.blockedLanguages:
       self.q.subtitleReceived.emit(s.getObject())
 
-  def _showTranslation(self, sub, language, provider, mapping, time=0):
+  def _showTranslation(self, sub, language, provider, align, time=0):
     """
     @param  sub  unicode
     @param  language  unicode
     @param  provider  unicode
-    @param  mapping  list
+    @param  align  list
     @param* long  time
     """
     #sub = userplugin.revise_translation(sub, language)
     if sub:
       self._onGameSubtitle(sub, language)
-      self.q.translationReceived.emit(sub, language, provider, mapping, time)
+      self.q.translationReceived.emit(sub, language, provider, align, time)
       self._updateTtsSubtitle(sub, language)
 
   def _onGameSubtitle(self, sub, language=''):
@@ -917,7 +917,7 @@ class TextManager(QObject):
 
   textReceived = Signal(unicode, unicode, long)   # text, lang, timestamp
   rawTextReceived = Signal(unicode, unicode, c_longlong, int)   # text, lang, context hash, context size
-  translationReceived = Signal(unicode, unicode, unicode, object, long) # text, language, provider, mapping, timestamp
+  translationReceived = Signal(unicode, unicode, unicode, object, long) # text, language, provider, align, timestamp
 
   commentReceived = Signal(QObject)  # dataman.Comment
   subtitleReceived = Signal(QObject)  # dataman.SubtitleObject

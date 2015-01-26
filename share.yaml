@@ -571,7 +571,7 @@ templates:
     qml/opengame:   qml/opengame.qml
     qml/userplugin: qml/userplugin.qml
     html/furigana:  html/furigana.html
-    html/mapping:   html/mapping.html
+    html/alignment: html/alignment.html
     html/shiori:    html/shiori.html
     html/term:      html/term.html
     xml/comments:   xml/comments.xml

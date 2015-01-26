@@ -2919,7 +2919,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   @memoizedproperty
   def baiduRubyButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Display translation mapping"))
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
     ss = settings.global_()
     ret.setChecked(ss.isBaiduRubyEnabled())
     ret.toggled.connect(ss.setBaiduRubyEnabled)
@@ -2938,7 +2938,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   @memoizedproperty
   def naverRubyButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Display translation mapping"))
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
     ss = settings.global_()
     ret.setChecked(ss.isNaverRubyEnabled())
     ret.toggled.connect(ss.setNaverRubyEnabled)
