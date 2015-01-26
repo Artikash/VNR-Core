@@ -76,10 +76,10 @@ Item {
     //  onTriggered: mainPlugin_.showJapaneseSyntaxTester()
     //}
 
-    Desktop.MenuItem {
-      text: My.tr("Speech Recognition")
-      onTriggered: mainPlugin_.showSpeechRecognitionTester()
-    }
+    //Desktop.MenuItem {
+    //  text: My.tr("Speech Recognition")
+    //  onTriggered: mainPlugin_.showSpeechRecognitionTester()
+    //}
 
     Desktop.Separator {}
 
