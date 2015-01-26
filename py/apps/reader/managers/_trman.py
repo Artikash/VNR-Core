@@ -1221,6 +1221,7 @@ class DreyeTranslator(OfflineMachineTranslator):
 class InfoseekTranslator(OnlineMachineTranslator):
   key = 'infoseek' # override
   asyncSupported = False # override  disable async
+  alignSupported = True # override
 
   NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'ar', 'ru', 'nl', 'pl'))
 
@@ -1236,8 +1237,10 @@ class InfoseekTranslator(OnlineMachineTranslator):
       fr = 'en'
     return to, fr
 
-  def __init__(self, session=None, **kwargs):
+  def __init__(self, session=None, alignEnabled=False, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
+    self.alignEnabled = alignEnabled
+
     from transer import infoseek
     infoseek.session = session or requests.Session()
     self.engine = infoseek
@@ -1246,7 +1249,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, align=None, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1259,7 +1262,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, align=align)
       if repl:
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)

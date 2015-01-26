@@ -1207,6 +1207,14 @@ class Settings(QSettings):
       self.setValue('InfoseekEnabled', value)
       self.infoseekEnabledChanged.emit(value)
 
+  infoseekRubyEnabledChanged = Signal(bool)
+  def isInfoseekRubyEnabled(self):
+    return to_bool(self.value('InfoseekRubyEnabled', True))
+  def setInfoseekRubyEnabled(self, value):
+    if value != self.isInfoseekRubyEnabled():
+      self.setValue('InfoseekRubyEnabled', value)
+      self.infoseekRubyEnabledChanged.emit(value)
+
   exciteEnabledChanged = Signal(bool)
   def isExciteEnabled(self):
     return to_bool(self.value('ExciteEnabled'))

@@ -255,7 +255,7 @@ def translate(text, to='en', fr='ja', align=None):
     # example response: {"t":[{"text":"hello"}]}
     if r.ok and len(ret) > 15 + 4:
       data = json.loads(ret)
-      print json.dumps(data, indent=2, ensure_ascii=False)
+      #print json.dumps(data, indent=2, ensure_ascii=False)
       l = data['t']
       if len(l) == 1:
         ret = l[0]['text']
@@ -285,10 +285,11 @@ def translate(text, to='en', fr='ja', align=None):
   try: dwarn(r.url)
   except: pass
 
-def _iteralign(data, source): # reverse=True
+def _iteralign(data, source, reverse=True):
   """
   @param  data  dict  json
   @param  source  unicode  the original input text
+  @param* reverse  bool  sort align based on source if false
   @yield  (unicode surface, unicode translation)
   """
   # Reverse is not enabled since there are cases one word mapping to two translation.
@@ -303,40 +304,41 @@ def _iteralign(data, source): # reverse=True
 
       m = OrderedDict() # {int index, [unicode s, unicode t])  mapping from s to t
 
-      #if not reverse: # order in source by default
+      if not reverse: # order in source by default
+        for i, start, size in slist:
+          s = source[start:start + size]
+          l = m.get(i)
+          if l:
+            l[0] = s
+          else:
+            m[i] = [s, ''] # use list instead of tuple so that it is modifiable
 
-      for i, start, size in slist:
-        s = source[start:start + size]
-        l = m.get(i)
-        if l:
-          l[0] = s
-        else:
-          m[i] = [s, ''] # use list instead of tuple so that it is modifiable
+        for i, start, size in tlist:
+          t = trans[start:start + size]
+          l = m.get(i)
+          if l:
+            l[1] = t
+          else:
+            m[i] = ['', t]
 
-      for i, start, size in tlist:
-        t = trans[start:start + size]
-        l = m.get(i)
-        if l:
-          l[1] = t
-        else:
-          m[i] = ['', t]
+      else: # order in translation instead
+        tlist.sort(key=lambda it:it[1])
 
-      #else: # order in translation instead
-      #  tlist.sort(key=lambda it:it[1])
-      #  for i, start, size in tlist:
-      #    t = trans[start:start + size]
-      #    l = m.get(i)
-      #    if l:
-      #      l[1] = t
-      #    else:
-      #      m[i] = ['', t]
-      #  for i, start, size in slist:
-      #    s = source[start:start + size]
-      #    l = m.get(i)
-      #    if l:
-      #      l[0] = s
-      #    else:
-      #      m[i] = [s, ''] # use list instead of tuple so that it is modifiable
+        for i, start, size in tlist:
+          t = trans[start:start + size]
+          l = m.get(i)
+          if l:
+            l[1] = t
+          else:
+            m[i] = ['', t]
+
+        for i, start, size in slist:
+          s = source[start:start + size]
+          l = m.get(i)
+          if l:
+            l[0] = s
+          else:
+            m[i] = [s, ''] # use list instead of tuple so that it is modifiable
 
       #for k in sorted(m.iterkeys()):
       for s,t in m.itervalues():
@@ -388,7 +390,7 @@ if __name__ == '__main__':
     print t
     print type(t)
 
-    print json.dumps(m, indent=2, ensure_ascii=False)
+    #print json.dumps(m, indent=2, ensure_ascii=False)
 
     #session = requests
     #with SkProfiler():

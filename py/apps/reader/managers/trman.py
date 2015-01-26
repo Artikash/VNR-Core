@@ -120,7 +120,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        alignEnabled=self.alignEnabled.get('google') or False))
+        alignEnabled=self.getAlignEnabled('google')))
 
   @memoizedproperty
   def bingTranslator(self):
@@ -128,7 +128,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        alignEnabled=self.alignEnabled.get('bing') or False))
+        alignEnabled=self.getAlignEnabled('bing')))
 
   @memoizedproperty
   def baiduTranslator(self):
@@ -136,7 +136,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        alignEnabled=self.alignEnabled.get('baidu') or False))
+        alignEnabled=self.getAlignEnabled('baidu')))
 
   @memoizedproperty
   def naverTranslator(self):
@@ -144,7 +144,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        alignEnabled=self.alignEnabled.get('naver') or False))
+        alignEnabled=self.getAlignEnabled('naver')))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
@@ -162,7 +162,8 @@ class _TranslatorManager(object):
   def infoseekTranslator(self):
     return self._newtr(_trman.InfoseekTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        alignEnabled=self.getAlignEnabled('infoseek')))
 
   @memoizedproperty
   def exciteTranslator(self):
@@ -368,17 +369,20 @@ class TranslatorManager(QObject):
   def isAtlasEnabled(self): return self.__d.atlasEnabled
   def setAtlasEnabled(self, value): self.__d.atlasEnabled = value
 
-  def isBaiduAlignEnabled(self): return self.__d.getAlignEnabled('naver')
-  def setBaiduAlignEnabled(self, t): self.__d.setAlignEnabled('naver', t)
+  def isBaiduAlignEnabled(self): return self.__d.getAlignEnabled('baidu')
+  def setBaiduAlignEnabled(self, t): self.__d.setAlignEnabled('baidu', t)
 
-  def isNaverAlignEnabled(self): return self.__d.getAlignEnabled('baidu')
-  def setNaverAlignEnabled(self, t): self.__d.setAlignEnabled('baidu', t)
+  def isNaverAlignEnabled(self): return self.__d.getAlignEnabled('naver')
+  def setNaverAlignEnabled(self, t): self.__d.setAlignEnabled('naver', t)
 
   def isBingAlignEnabled(self): return self.__d.getAlignEnabled('bing')
   def setBingAlignEnabled(self, t): self.__d.setAlignEnabled('bing', t)
 
   def isGoogleAlignEnabled(self): return self.__d.getAlignEnabled('google')
   def setGoogleAlignEnabled(self, t): self.__d.setAlignEnabled('google', t)
+
+  def isInfoseekAlignEnabled(self): return self.__d.getAlignEnabled('infoseek')
+  def setInfoseekAlignEnabled(self, t): self.__d.setAlignEnabled('infoseek', t)
 
   ## Queries ##
 
