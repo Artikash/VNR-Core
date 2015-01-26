@@ -30,6 +30,7 @@ processes:
   - 115Chrome.exe       # 115
   - 1ClickDownloader.exe # Download
   - 2345Explorer.exe    # 2345
+  - 2345chrome.exe      # 2345
   - 360Chrome.exe       # 360
   - 360chrome.exe       # 360
   - 360Desktop.exe      # 360
