@@ -20,7 +20,7 @@
     <message>
         <location filename="../springboard/appmodel.qml" line="60"/>
         <source>Add new game step by step</source>
-        <translation>차근차근 새로운 게임을 추가합니다</translation>
+        <translation>순서대로 새로운 게임을 추가합니다</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="67"/>
@@ -45,7 +45,7 @@
     <message>
         <location filename="../springboard/appmodel.qml" line="117"/>
         <source>Information of online games</source>
-        <translation>온라인 게임의 정보</translation>
+        <translation>온라인 게임 정보</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="146"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../kagami/commentbar.qml" line="57"/>
         <source>Enter to submit, or Shift+Enter to submit and forward the game</source>
-        <translation>Enter를 눌러 등록하거나, Shift+Enter를 Shift+Enter를 눌러 등록하고 게임을 계속하기</translation>
+        <translation>Enter를 눌러 등록하거나, Shift+Enter를 눌러 등록하고 게임을 계속하기</translation>
     </message>
     <message>
         <location filename="../kagami/commentbar.qml" line="58"/>
@@ -101,7 +101,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1166"/>
         <source>Automatically copy Japanese game text to the clipboard</source>
-        <translation>클립보드로 일본어 게임원문을 자동으로 복사하기</translation>
+        <translation>클립보드로 게임원문을 자동복사하기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1104"/>
@@ -120,37 +120,37 @@
     <message>
         <location filename="../kagami/dock.qml" line="1182"/>
         <source>Shadow behind text</source>
-        <translation>문자뒤 그림자</translation>
+        <translation>글자 아래 그림자</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="340"/>
         <source>Hide comment input bar</source>
-        <translation>입력 막대에 댓글 숨기기</translation>
+        <translation>댓글 입력 막대 숨기기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="340"/>
         <source>Show comment input bar</source>
-        <translation>입력 막대에 댓글 표시</translation>
+        <translation>댓글 입력 막대 보이기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="346"/>
         <source>Not login or offline</source>
-        <translation>로그인 상태가 아니거나 오프라인입니다</translation>
+        <translation>로그인하지 않았거나 오프라인입니다</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1186"/>
         <source>Display background shadow behind the text</source>
-        <translation>문자뒤 배경 그림자 표시</translation>
+        <translation>글자 아래 배경 그림자 보이기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1192"/>
         <source>Text aligns center</source>
-        <translation>문자를 중앙정렬</translation>
+        <translation>문자를 가운데 정렬</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1196"/>
         <source>Align center or align left</source>
-        <translation>중앙정렬 또는 왼쪽정렬</translation>
+        <translation>가운데 정렬 또는 왼쪽정렬</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1243"/>
@@ -160,7 +160,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1162"/>
         <source>Text to clipboard</source>
-        <translation>텍스트를 클립보드로 복사</translation>
+        <translation>원문을 클립보드로</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="290"/>
@@ -170,7 +170,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1257"/>
         <source>Enable Hentai terms in the Shared Dictionary for Machihne Translation</source>
-        <translation>공유사전의 Hentai용어를 활성화</translation>
+        <translation>공유사전의 Hentai 용어를 활성화</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1261"/>
@@ -180,7 +180,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1262"/>
         <source>Leave hentai mode</source>
-        <translation>Hentai 모드 탈출</translation>
+        <translation>Hentai 모드 나가기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="677"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="428"/>
         <source>Automatically read subtitle using TTS</source>
-        <translation>TTS를 사용해서 자막을 자동으로 읽기</translation>
+        <translation>TTS를 사용해서 번역문을 자동으로 읽기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="489"/>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="644"/>
         <source>Capture the entire desktop instead of the game window</source>
-        <translation>게임 윈도우 대신 전체바탕화면 캡쳐</translation>
+        <translation>게임창 대신 전체 바탕화면 캡쳐</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="689"/>
@@ -276,7 +276,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="736"/>
         <source>Leave full screen</source>
-        <translation>전체화면 탈출</translation>
+        <translation>전체화면 나가기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="736"/>
@@ -301,7 +301,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="842"/>
         <source>Change the display resolution while keeping display ratio</source>
-        <translation>화면 비를 유지한 채 화면 해상도 변경</translation>
+        <translation>화면비를 유지한 채 화면 해상도 변경</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="861"/>
@@ -316,43 +316,43 @@
     <message>
         <location filename="../kagami/dock.qml" line="1172"/>
         <source>Sub to clipboard</source>
-        <translation>번역을 클립보드로 복사</translation>
+        <translation>번역문을 클립보드로</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1176"/>
         <source>Automatically copy machine or user-contributed translation to the clipboard</source>
-        <translation>자동으로 기계번역이나 사용자기여 자막을 클립보드로 복사</translation>
+        <translation>클립보드로 기계번역이나 사용자 자막을  자동복사하기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1203"/>
         <source>Split game text</source>
-        <translation>게임원문 줄나누기</translation>
+        <translation>게임원문 줄나눔</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1207"/>
         <source>Split Japanese sentences by lines</source>
-        <translation>일본어 문장을 줄바꿈 처리</translation>
+        <translation>일본어 문장을 줄바꿈 처리합니다</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1213"/>
         <source>Split translation</source>
-        <translation>번역 줄나누기</translation>
+        <translation>번역문 줄나눔</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1217"/>
         <source>Split machine translation sentences by lines</source>
-        <translation>기계 번역 문장을 줄바꿈 처리</translation>
+        <translation>기계번역 문장을 줄바꿈 처리합니다</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1253"/>
         <source>Enable hentai term</source>
-        <translation>변태용어 활성화</translation>
+        <translation>hentai 용어 활성화</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1284"/>
         <location filename="../kagami/dock.qml" line="1288"/>
         <source>Show current time</source>
-        <translation>현재 시간 표시</translation>
+        <translation>현재시간 표시</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1420"/>
@@ -362,7 +362,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1471"/>
         <source>Light</source>
-        <translation>명도</translation>
+        <translation>밝기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1403"/>
@@ -372,22 +372,22 @@
     <message>
         <location filename="../kagami/dock.qml" line="463"/>
         <source>Automatic speech recognition from game audio</source>
-        <translation>게임 음성으로 부터 자동음성인식(ASR)</translation>
+        <translation>게임 음성으로부터 자동음성인식(ASR)</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1247"/>
         <source>Popup translation while hovering instead of clicking the game text</source>
-        <translation>일본어 텍스트를 틀릭 대신에 마우스를 대면 번역 띄우기</translation>
+        <translation>클릭 대신에 일본어 텍스트에 마우스를 대면 번역 띄우기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1267"/>
         <source>Show notification</source>
-        <translation>공지 표시</translation>
+        <translation>알림 표시</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1271"/>
         <source>Show notification at the corner of the screen</source>
-        <translation>화면 가상자리에 메세지 표시</translation>
+        <translation>화면 가상자리에 알림 표시</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1475"/>
@@ -417,12 +417,12 @@
     <message>
         <location filename="../kagami/dock.qml" line="1384"/>
         <source>The maximum length of allowed game text. Text longer than that will be ignored.</source>
-        <translation>허용된 게임원문의 최대 길이입니다. 문자길이가 이보다 크면 무시됩니다.</translation>
+        <translation>게임원문의 최대로 허용된 길이입니다. 문자의 길이가 이보다 길면 무시됩니다.</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1385"/>
         <source>Maximum number of allowed characters in the game text is {0}</source>
-        <translation>게임원문에서 허용된 문자의 최대 수는 {0}입니다</translation>
+        <translation>게임원문에서 허용된 문자의 최대 수는 {0}자 입니다</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="670"/>
@@ -468,17 +468,17 @@
     <message>
         <location filename="../termview/filtertoolbar.qml" line="22"/>
         <source>Replace text matching pattern with translation</source>
-        <translation>번역문에서 일치하는 텍스트를 교체</translation>
+        <translation>일치하는 원문을 번역문으로 텍스트 교체</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="23"/>
         <source>Fix input text before translation</source>
-        <translation>번역하기 전에 입력하는 원문 고치기</translation>
+        <translation>번역하기 전에 입력할 원문 고치기</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="24"/>
         <source>Fix output text after translation</source>
-        <translation>번역한 뒤에 출력하는 번역문 고치기</translation>
+        <translation>번역한 뒤에 출력할 번역문 고치기</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="25"/>
@@ -513,7 +513,7 @@
     <message>
         <location filename="../termview/filtertoolbar.qml" line="31"/>
         <source>Reusable regular expression</source>
-        <translation>다시 쓸 수 있는 정규표현식</translation>
+        <translation>재사용 가능한 정규표현식</translation>
     </message>
 </context>
 <context>
@@ -531,7 +531,7 @@
     <message>
         <location filename="../submaker/footer.qml" line="124"/>
         <source>Whether allow others to improve your subtitle</source>
-        <translation>다른 사람에게 자막 수정 허용여부</translation>
+        <translation>다른 사용자의 자막 수정 허용여부</translation>
     </message>
     <message>
         <location filename="../submaker/footer.qml" line="159"/>
@@ -597,7 +597,7 @@
     <message>
         <location filename="../submaker/graffiti.qml" line="675"/>
         <source>Lock the subtitle to prevent others from overriding it</source>
-        <translation>다른사람의 덮어쓰기를 방지하기위해 자막 잠그기</translation>
+        <translation>다른 사용자의 덮어쓰기를 방지하기위해 자막 잠그기</translation>
     </message>
     <message>
         <location filename="../submaker/graffiti.qml" line="704"/>
@@ -618,12 +618,12 @@
     <message>
         <location filename="../submaker/graffiti.qml" line="894"/>
         <source>Cannot create new comment here</source>
-        <translation>새로운 댓글을 생성할 수 없음</translation>
+        <translation>새로운 댓글을 생성 할 수 없음</translation>
     </message>
     <message>
         <location filename="../submaker/graffiti.qml" line="906"/>
         <source>Cannot improve the comment</source>
-        <translation>다른사람의 댓글은 수정할 수 없음</translation>
+        <translation>다른 사용자의 댓글은 수정 할 수 없음</translation>
     </message>
     <message>
         <location filename="../submaker/graffiti.qml" line="997"/>
@@ -646,12 +646,12 @@
     <message>
         <location filename="../kagami/grimoire.qml" line="447"/>
         <source>You can drag me to move the text box.</source>
-        <translation>글상자를 움직이려면 움직여보세요.</translation>
+        <translation>여기를 끌어서 글상자를 움직이세요.</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="1705"/>
         <source>Hide text box</source>
-        <translation>글상자 감추기</translation>
+        <translation>글상자 숨기기</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="819"/>
@@ -666,12 +666,12 @@
     <message>
         <location filename="../kagami/grimoire.qml" line="495"/>
         <source>Read current Japanese game text using TTS</source>
-        <translation>TTS를 사용하여 현재 일본어 게임 원문 읽기</translation>
+        <translation>TTS를 사용하여 현재 게임 원문 읽기</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="780"/>
         <source>Move text box to the saved position</source>
-        <translation>굴상자를 저장된 위치로 움직이기</translation>
+        <translation>굴상자를 저장된 위치로 이동하기</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="839"/>
@@ -686,12 +686,12 @@
     <message>
         <location filename="../kagami/grimoire.qml" line="852"/>
         <source>you can drag me!</source>
-        <translation>움직여보세요!</translation>
+        <translation>끌어보세요!</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="1523"/>
         <source>Add to the Shared Dictionary</source>
-        <translation>공유 사전에 추가</translation>
+        <translation>공유사전에 추가</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="1653"/>
@@ -781,7 +781,7 @@
     <message>
         <location filename="../springboard/inspector.qml" line="213"/>
         <source>Browse</source>
-        <translation>찾기</translation>
+        <translation>탐색</translation>
     </message>
     <message>
         <location filename="../springboard/inspector.qml" line="222"/>
@@ -796,12 +796,12 @@
     <message>
         <location filename="../termview/inspector.qml" line="170"/>
         <source>Pattern is too short</source>
-        <translation>패턴이 너무 짧음</translation>
+        <translation>원문이 너무 짧음</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="169"/>
         <source>Pattern or translation is very long</source>
-        <translation>패턴이나 번역문이 너무 길음</translation>
+        <translation>원문이나 번역문이 너무 길음</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="171"/>
@@ -821,12 +821,12 @@
     <message>
         <location filename="../termview/inspector.qml" line="167"/>
         <source>Language should be Chinese not Simplified Chinese</source>
-        <translation>쓸 언어가 중국어 간체가 아닌 중국어여야 합니다</translation>
+        <translation>쓸 언어가 중국어 간체가 아니라 중국어 번체여야 합니다</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="166"/>
         <source>Language should be Simplified Chinese not Chinese</source>
-        <translation>쓸 언어가 중국어가 아니라 중국어 간체여야 합니다</translation>
+        <translation>쓸 언어가 중국어 번체가 아니라 중국어 간체여야 합니다</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="174"/>
@@ -841,12 +841,12 @@
     <message>
         <location filename="../termview/inspector.qml" line="176"/>
         <source>Pattern does not need enabling regex</source>
-        <translation>패턴을 쓰는데 정규표현식을 활성화 할 필요 없음</translation>
+        <translation>원문을 쓰는데 정규표현식을 활성화 할 필요 없음</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="177"/>
         <source>Entry type does not allow being translator-specific</source>
-        <translation>항목 타입이 번역기 지정에 허용되지 않음</translation>
+        <translation>번역기 지정에 이 형식이 허용되지 않음</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="178"/>
@@ -856,7 +856,7 @@
     <message>
         <location filename="../termview/inspector.qml" line="179"/>
         <source>Missing pattern</source>
-        <translation>일치하는 텍스트 없음</translation>
+        <translation>원문을 찾을 수 없음</translation>
     </message>
 </context>
 <context>
@@ -869,7 +869,7 @@
     <message>
         <location filename="../kagami.qml" line="385"/>
         <source>VNR&apos;s top padding</source>
-        <translation>VNR 윗쪽 채우기</translation>
+        <translation>VNR 위쪽 채우기</translation>
     </message>
     <message>
         <location filename="../kagami.qml" line="401"/>
@@ -884,7 +884,7 @@
     <message>
         <location filename="../kagami.qml" line="433"/>
         <source>VNR&apos;s right padding</source>
-        <translation>VNR 오른족 채우기</translation>
+        <translation>VNR 오른쪽 채우기</translation>
     </message>
     <message>
         <location filename="../kagami.qml" line="573"/>
@@ -911,7 +911,7 @@
     <message>
         <location filename="../kagami.qml" line="1081"/>
         <source>Not login or offline</source>
-        <translation>로그인상태가 아니거나 오프라인입니다</translation>
+        <translation>로그인하지 않았거나 오프라인입니다</translation>
     </message>
 </context>
 <context>
@@ -991,7 +991,7 @@
     <message>
         <location filename="../textreader/mirage.qml" line="584"/>
         <source>You can drag this black bar to move the text box.</source>
-        <translation>검은 막대로 글상자를 움직여보세요.</translation>
+        <translation>검은 막대를 끌어서 글상자를 움직여보세요.</translation>
     </message>
     <message>
         <location filename="../textreader/mirage.qml" line="640"/>
@@ -1097,7 +1097,7 @@
     <message>
         <location filename="../kagami/ocredit.qml" line="414"/>
         <source>Zoom image text that is too large or too small</source>
-        <translation>확대한 이미지 글자가 너무 크거나 작습니다</translation>
+        <translation>이미지 글자가 너무 크거나 작으면 확대</translation>
     </message>
     <message>
         <location filename="../kagami/ocredit.qml" line="436"/>
@@ -1335,7 +1335,7 @@
     <message>
         <location filename="../submaker.qml" line="161"/>
         <source>Type part of text, user, language, date, etc.</source>
-        <translation>텍스트, 사용자이름, 언어, 일자 등을 입력하고 Enter를 눌러 찾기.</translation>
+        <translation>텍스트, 사용자, 언어, 일자 등을 입력하고 Enter를 눌러 찾기.</translation>
     </message>
 </context>
 <context>
@@ -1343,7 +1343,7 @@
     <message>
         <location filename="../subview.qml" line="178"/>
         <source>Type part of the text, context, user, language, etc, and press Enter to search</source>
-        <translation>텍스트, 문맥, 사용자이름, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
+        <translation>텍스트, 문맥, 사용자, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
     </message>
 </context>
 <context>
@@ -1390,7 +1390,7 @@
     <message>
         <location filename="../termview.qml" line="254"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
-        <translation>패턴, 텍스트, 사용자이름, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
+        <translation>원문, 텍스트, 사용자, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
     </message>
 </context>
 <context>
