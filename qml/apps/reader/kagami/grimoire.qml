@@ -229,7 +229,7 @@ Item { id: root_
     )
   }
 
-  function renderTranslationMapping(text, lang, mapping, colorize) { // string, string, QObject -> string
+  function renderMapping(text, lang, mapping, colorize) { // string, string, QObject -> string
     //var chwidth = lang == 'ko' ? 13
     //            //: lang === 'ja' ? 22
     //            : lang.indexOf('zh') === 0 ? 18
@@ -1280,7 +1280,7 @@ Item { id: root_
           if (!t)
             return ""
           if (model.mapping)
-            t = root_.renderTranslationMapping(t || model.text, model.language, model.mapping, textItem_.hover)
+            t = root_.renderMapping(t || model.text, model.language, model.mapping, textItem_.hover)
           else if (root_.isRubyLanguage(model.language) &&
               ((model.type === 'text' || model.type === 'name') ?
               root_.rubyTextEnabled : root_.rubyTranslationEnabled))
@@ -1574,6 +1574,7 @@ Item { id: root_
         var item = listModel_.get(popupIndex())
         if (item && item.text)
           clipboardPlugin_.text = Util.removeHtmlTags(item.text)
+          //clipboardPlugin_.text = item.text
       }
     }
 
