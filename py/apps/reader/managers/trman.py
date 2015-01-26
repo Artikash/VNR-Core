@@ -50,8 +50,7 @@ class _TranslatorManager(object):
     self.lecEnabled = \
     True # bool
 
-    self.baiduAlignEnabled = \
-    self.naverAlignEnabled = False
+    self.alignEnabled = {} # {str key:bool t}
 
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
@@ -59,6 +58,15 @@ class _TranslatorManager(object):
     self.session = qtrequests.Session(nam, abortSignal=self.abortSignal)
 
   normalizeText = staticmethod(textutil.normalize_punct)
+
+  def getAlignEnabled(self, key): # str -> bool
+    return self.alignEnabled.get(key) or False
+
+  def setAlignEnabled(self, key, t): # str, bool ->
+    if t != self.getAlignEnabled(key):
+      self.alignEnabled[key] = t
+      if self.hasTranslator(key):
+        self.getTranslator(key).alignEnabled = t
 
   def postprocess(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
@@ -111,7 +119,16 @@ class _TranslatorManager(object):
     return self._newtr(_trman.GoogleTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocess,
+        alignEnabled=self.alignEnabled.get('google') or False))
+
+  @memoizedproperty
+  def bingTranslator(self):
+    return self._newtr(_trman.BingTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess,
+        alignEnabled=self.alignEnabled.get('bing') or False))
 
   @memoizedproperty
   def baiduTranslator(self):
@@ -119,7 +136,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        alignEnabled=self.baiduAlignEnabled))
+        alignEnabled=self.alignEnabled.get('baidu') or False))
 
   @memoizedproperty
   def naverTranslator(self):
@@ -127,14 +144,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        alignEnabled=self.naverAlignEnabled))
-
-  @memoizedproperty
-  def bingTranslator(self):
-    return self._newtr(_trman.BingTranslator(
-        abortSignal=self.abortSignal,
-        session=self.session,
-        postprocess=self.postprocess))
+        alignEnabled=self.alignEnabled.get('naver') or False))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
@@ -181,23 +191,39 @@ class _TranslatorManager(object):
     if r and r[0]:
       func(r[0], r[1], r[2], align, **kw)
 
+  def _getTranslatorPropertyName(self, key):
+    """
+    @param  key  str
+    @return  str
+    """
+    if key == 'eztrans':
+      return 'ezTranslator'
+    if key == 'lecol':
+      return 'lecOnlineTranslator'
+    if key == 'transru':
+      return 'transruTranslator'
+    if key == 'hanviet':
+      return 'hanVietTranslator'
+    if key == 'lou':
+      return 'elf.lougoTranslator'
+    return key + 'Translator'
+
   def getTranslator(self, key):
     """
     @param  key  str
     @return  TranslatorEngine or None
     """
-    if key == 'eztrans':
-      return self.ezTranslator
-    if key == 'lecol':
-      return self.lecOnlineTranslator
-    if key == 'transru':
-      return self.transruTranslator
-    if key == 'hanviet':
-      return self.hanVietTranslator
-    if key == 'lou':
-      return self.lougoTranslator
-    try: return getattr(self, key + 'Translator')
+    v = self._getTranslatorPropertyName(key)
+    try: return getattr(self, v)
     except AttributeError: pass
+
+  def hasTranslator(self, key):
+    """
+    @param  key  str
+    @return  TranslatorEngine or None
+    """
+    v = self._getTranslatorPropertyName(key)
+    return hasmemoizedproperty(self, v)
 
   def iterOfflineTranslators(self):
     """
@@ -342,21 +368,17 @@ class TranslatorManager(QObject):
   def isAtlasEnabled(self): return self.__d.atlasEnabled
   def setAtlasEnabled(self, value): self.__d.atlasEnabled = value
 
-  def isBaiduAlignEnabled(self): return self.__d.baiduAlignEnabled
-  def setBaiduAlignEnabled(self, t):
-    d = self.__d
-    if t != d.baiduAlignEnabled:
-      d.baiduAlignEnabled = t
-      if hasmemoizedproperty(d, 'baiduTranslator'):
-        d.baiduTranslator.alignEnabled = t
+  def isBaiduAlignEnabled(self): return self.__d.getAlignEnabled('naver')
+  def setBaiduAlignEnabled(self, t): self.__d.setAlignEnabled('naver', t)
 
-  def isNaverAlignEnabled(self): return self.__d.naverAlignEnabled
-  def setNaverAlignEnabled(self, t):
-    d = self.__d
-    if t != d.naverAlignEnabled:
-      d.naverAlignEnabled = t
-      if hasmemoizedproperty(d, 'naverTranslator'):
-        d.naverTranslator.alignEnabled = t
+  def isNaverAlignEnabled(self): return self.__d.getAlignEnabled('baidu')
+  def setNaverAlignEnabled(self, t): self.__d.setAlignEnabled('baidu', t)
+
+  def isBingAlignEnabled(self): return self.__d.getAlignEnabled('bing')
+  def setBingAlignEnabled(self, t): self.__d.setAlignEnabled('bing', t)
+
+  def isGoogleAlignEnabled(self): return self.__d.getAlignEnabled('google')
+  def setGoogleAlignEnabled(self, t): self.__d.setAlignEnabled('google', t)
 
   ## Queries ##
 

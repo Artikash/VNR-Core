@@ -696,8 +696,14 @@ class _MainObject(object):
     ret.setBingEnabled(ss.isBingEnabled())
     ss.bingEnabledChanged.connect(ret.setBingEnabled)
 
+    ret.setBingAlignEnabled(ss.isBingRubyEnabled())
+    ss.bingRubyEnabledChanged.connect(ret.setBingAlignEnabled)
+
     ret.setGoogleEnabled(ss.isGoogleEnabled())
     ss.googleEnabledChanged.connect(ret.setGoogleEnabled)
+
+    ret.setGoogleAlignEnabled(ss.isGoogleRubyEnabled())
+    ss.googleRubyEnabledChanged.connect(ret.setGoogleAlignEnabled)
 
     ret.setTransruEnabled(ss.isTransruEnabled())
     ss.transruEnabledChanged.connect(ret.setTransruEnabled)

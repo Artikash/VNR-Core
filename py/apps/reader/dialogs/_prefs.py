@@ -2773,10 +2773,14 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.bing.com/translator"), r, 0)
     grid.addWidget(self.bingButton, r, 1)
+    r += 1
+    grid.addWidget(self.bingRubyButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
     grid.addWidget(self.googleButton, r, 1)
+    r += 1
+    grid.addWidget(self.googleRubyButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.lec.com/translate-demos.asp"), r, 0)
@@ -2856,10 +2860,30 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def bingRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBingRubyEnabled())
+    ret.toggled.connect(ss.setBingRubyEnabled)
+    ret.setEnabled(ss.isBingEnabled())
+    ss.bingEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def googleButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
     ret.setChecked(settings.global_().isGoogleEnabled())
     ret.toggled.connect(settings.global_().setGoogleEnabled)
+    return ret
+
+  @memoizedproperty
+  def googleRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isGoogleRubyEnabled())
+    ret.toggled.connect(ss.setGoogleRubyEnabled)
+    ret.setEnabled(ss.isGoogleEnabled())
+    ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty

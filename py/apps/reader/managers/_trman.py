@@ -1455,9 +1455,11 @@ class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
   #asyncSupported = True # override  enable async
   asyncSupported = False # override  disable async
+  alignSupported = True # override
 
-  def __init__(self, session=None, **kwargs):
+  def __init__(self, session=None, alignEnabled=False, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
+    self.alignEnabled = alignEnabled
 
     import googleman
     googleman.setsession(session or requests.Session())
@@ -1509,9 +1511,11 @@ class GoogleTranslator(OnlineMachineTranslator):
 class BingTranslator(OnlineMachineTranslator):
   key = 'bing' # override
   asyncSupported = False # override  disable async
+  alignSupported = True # override
 
-  def __init__(self, session=None, **kwargs):
+  def __init__(self, session=None, alignEnabled=False, **kwargs):
     super(BingTranslator, self).__init__(**kwargs)
+    self.alignEnabled = alignEnabled
 
     from microsoft import bingtrans
     bingtrans.session = session or requests.Session()
