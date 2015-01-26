@@ -1607,6 +1607,10 @@ class NaverTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async, mapping=mapping)
       if repl:
+        # Sometimes naver translation result contains <>
+        # Example: るみちゃん、めでたい結婚を機にさ、名前変えたら
+        # => 루미,<결혼을 계기로, 이름 바꾸면
+        repl = repl.replace('<', '').replace('>', '')
         if to == 'zht':
           repl = zhs2zht(repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)

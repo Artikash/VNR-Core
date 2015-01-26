@@ -137,7 +137,7 @@ class RenderManager:
     """
     if mappingIndex < len(mapping):
       for i,(k,v) in enumerate(mapping): # instead of doing mapping[mappingIndex:]
-        if i >= mappingIndex:
+        if i >= mappingIndex and not self._skipMapping(v):
           if not text:
             break
           if v in text:
@@ -149,5 +149,16 @@ class RenderManager:
             yield mid, k, mappingIndex
     if text:
       yield text, None, mappingIndex
+
+  @staticmethod
+  def _skipMapping(text):
+    """
+    @param  text  unicode
+    @return  bool
+    """
+    return (
+      len(text) == 1 and ord(text) < 128 # do not map single ascii char
+      or text in ("//", "id", "json", "href", "type", "term", "source", "target")
+    )
 
 # EOF
