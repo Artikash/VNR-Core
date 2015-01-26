@@ -457,7 +457,6 @@ Item { id: root_
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.pixelSize: 14
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.bold: true
         //font.italic: Util.isLatinLanguage(model.language)
         font.italic: textItem_.hasComment && model.comment.type === 'comment'

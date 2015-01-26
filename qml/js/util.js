@@ -56,24 +56,34 @@ var LATIN_LANGUAGES = [
 
 function isLatinLanguage(lang) { return -1 !== LATIN_LANGUAGES.indexOf(lang); }
 
-var ASIAN_LANGUAGES = [
+var CJK_LANGUAGES = [
   'ja'
-  , 'zht', 'zhs'
+  , 'zht', 'zhs', 'zh'
   , 'ko'
 ];
 /**
  *  @param  lang  string
  *  @return  bool  whether it is eastern asian language
  */
-function isAsianLanguage(lang) { return -1 !== ASIAN_LANGUAGES.indexOf(lang); }
+function isCJKLanguage(lang) {
+  switch (lang) {
+    case 'zht': case 'zhs': case 'zh':
+    case 'ko': case 'ja':
+      return true;
+    default: return false;
+  }
+}
 
-/**
+/** Japanese/Chinese but Korean.
+ *  The definition of this function is different from Python.
  *  @param  lang  string
  *  @return  bool  whether it is based on kanji characters
  */
 function isKanjiLanguage(lang) {
   switch (lang) {
-    case 'zht': case 'zhs': case 'ja': return true;
+    case 'zht': case 'zhs': case 'zh':
+    case 'ja':
+      return true;
     default: return false;
   }
 }

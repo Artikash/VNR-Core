@@ -15,6 +15,10 @@
 #
 # http:translate.google.com/translate_a/t?client=t&text=私は日本人ではない&sl=ja&tl=en
 # [[["I am not a Japanese","私は日本人ではない","","Watashi wa nihonjinde wanai"]],,"ja",,[["I am not a",[1],true,false,502,0,4,0],["Japanese",[2],true,false,502,4,5,0]],[["私 は ない は で",1,[["I am not a",502,true,false],["I am not the",0,true,false],["I am not",0,true,false]],[[0,2],[5,9]],"私は日本人ではない"],["日本人",2,[["Japanese",502,true,false],["the Japanese",0,true,false],["Japanese people",0,true,false],["Japan",0,true,false],["a Japanese",0,true,false]],[[2,5]],""]],,,[["ja"]],65]
+#
+#
+# Analysis API used by Google webpage
+# Request: https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=517378|356627&q=hello
 
 if __name__ == '__main__':
   import sys
@@ -30,6 +34,24 @@ import googledef
 
 
 USER_AGENT = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)"
+
+# Remove repetive comma only before "or[ and after "or].
+_re_gson_comma = re.compile(r'(?<=[\]"],),+(?=[\["])')
+def eval_gson_list(data):
+  """
+  @param  data  unicode  Google JSON5 list
+  @return  list or None
+
+  In javascript, this can be simply done using:
+    new Function("return " + data)
+  """
+  if data[0] == '[' and data[-1] == ']':
+    try:
+      data = _re_gson_comma.sub('', data)
+      data = '{"r":%s}' % data
+      return json.loads(data)['r']
+    except Exception, e:
+      dwarn(e)
 
 class GoogleTranslator(object): pass
 
@@ -86,45 +108,230 @@ class GoogleHtmlTranslator(GoogleTranslator):
 
 
 class GoogleJsonTranslator(GoogleTranslator):
+  #API_TRANSLATE = "http://translate.google.com/translate_a/t"
+  #API_ANALYZE = "http://translate.google.com/translate_a/single"
+
+  #api_translate = API_TRANSLATE
+  #api_analyze = API_TRANSLATE
+
   API = "http://translate.google.com/translate_a/t"
-  #API = "http://translate.google.co.jp/translate_a/t"
   api = API
 
   session = requests
 
   headers = {'User-Agent':USER_AGENT}
 
-  def translate(self, t, to='auto', fr='auto'):
+  def translate(self, t, to='auto', fr='auto', align=None):
     """
     @param  t  unicode
     @param* to  str
     @param* fr  str
+    @param* align  None or list  insert [unicode surf, unicode trans] if not None
     @return  unicode or None
     """
     try:
+      client_json = align is None
       # http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
       r = self.session.post(self.api, headers=self.headers, data={
         'tl': googledef.lang2locale(to),
         'sl': googledef.lang2locale(fr),
         'text': t,
-        # http://stackoverflow.com/questions/10334358/how-to-get-and-parse-json-answer-from-google-translate
-        #'client': 't', # This will return a Javascript object that can be evaluated using new Function
-        'client': 'p', # return JSON
         #'ie':'UTF-8',
         #'oe':'UTF-8',
+
+        # http://stackoverflow.com/questions/10334358/how-to-get-and-parse-json-answer-from-google-translate
+        #'client': 't', # This will return a Javascript object that can be evaluated using new Function
+        #'client': 'p', # return JSON
+        'client': 'p' if client_json else 't',
+      })
+
+
+      ret = r.content # unicode not used since json can do that
+      if r.ok and len(ret) > 20:
+        if client_json:
+          # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
+          data = json.loads(ret)
+          #print json.dumps(data, indent=2, ensure_ascii=False)
+          l = data['sentences']
+          if len(l) == 1:
+            ret = l[0]['trans']
+          else:
+            ret = '\n'.join(it['trans'] for it in l)
+          #ret = unescapehtml(ret)
+          return ret
+
+        else:
+          data = eval_gson_list(ret)
+          if data:
+            #print json.dumps(data, indent=2, ensure_ascii=False)
+            l = data[0]
+            if len(l) == 1:
+              ret = l[0][0]
+            else:
+              ret = '\n'.join(it[0] for it in l)
+            # Google JSON5 evaluation is not reliable
+            # The result could be a list
+            if isinstance(ret, basestring):
+              if align is not None and len(data) > 3:
+                # data[-4] is the segmented translation
+                # data[-5] is the segmented source text
+                align.extend(self._iteralign(data[-3]))
+              return ret
+
+    #except socket.error, e:
+    #  dwarn("socket error", e.args)
+    except requests.ConnectionError, e:
+      dwarn("connection error", e.args)
+    except requests.HTTPError, e:
+      dwarn("http error", e.args)
+    #except UnicodeDecodeError, e:
+    #  dwarn("unicode decode error", e)
+    except (ValueError, KeyError, IndexError, TypeError), e:
+      dwarn("format error", e)
+    except Exception, e:
+      derror(e)
+    dwarn("failed")
+    try: dwarn(r.url)
+    except: pass
+
+  # Sample returned json5 list (incomplete):
+  # [
+  #   [
+  #     [
+  #       "210日元或者捕捉有信坤。 ",
+  #       "悠真くんを攻略すれば２１０円か。",
+  #       "210 Rì yuán huòzhě bǔzhuō yǒu xìn kūn. ",
+  #       "Yūma-kun o kōryaku sureba 210-en ka."
+  #     ],
+  #     [
+  #       "NAA喔...",
+  #       "なるほどなぁ…",
+  #       "NAA ō...",
+  #       "Naruhodo nā…"
+  #     ]
+  #   ],
+  #   "ja",
+  #   [
+  #     [
+  #       "210日元",
+  #       [
+  #         1
+  #       ],
+  #       false,
+  #       false,
+  #       1000,
+  #       0,
+  #       1,
+  #       0
+  #     ],
+  #     [
+  #       "或者",
+  #       [
+  #         2
+  #       ],
+  #       false,
+  #       false,
+  #       639,
+  #       1,
+  #       2,
+  #       0
+  #     ],
+  #     [
+  #       "捕捉",
+  #       [
+  #         3
+  #       ],
+  #       false,
+  #       false,
+  #       380,
+  #       2,
+  #       3,
+  #       0
+  #     ],
+  # ...
+  #
+  #     [
+  #       "悠真",
+  #       6,
+  #       [
+  #         [
+  #           "YuShin",
+  #           406,
+  #           true,
+  #           false
+  #         ]
+  #       ],
+  #       [
+  #         [
+  #           0,
+  #           2
+  #         ]
+  #       ],
+  #       ""
+  #     ],
+  def _iteralign(self, data):
+    """
+    @param  data  list  gson list
+    @yield  (unicode surface, unicode translation)
+    """
+    try:
+      for l in data:
+        surface = l[0]
+        #index = l[1]
+        trans = l[2][0][0] # Actually, there are a list of possible meaning
+        if '(' in surface:
+          for annot in ('(aux:relc)' '(null:pronoun)'):
+            surface = surface.replace(annot, '').strip() # remove annotations
+        yield surface, trans
+    except Exception, e:
+      derror(e)
+
+  # The following function is an alternative API
+  def analyze(self, t, to='auto', fr='auto', align=None):
+    """
+    @param  t  unicode
+    @param* to  str
+    @param* fr  str
+    @param* align  None or list  insert [unicode surf, unicode trans] if not None
+    @return  unicode or None
+    """
+    try:
+      r = self.session.get(self.api_analyze, headers=self.headers, params={
+        'tl': googledef.lang2locale(to),
+        'sl': googledef.lang2locale(fr),
+        'q': t,
+        'dt': ('bd', 'ex', 'ld', 'md', 'qc', 'rw', 'rm', 'ss', 't', 'at'), # this list is indispensible
+        'client': 't',
+        #'client': 'p', # this does not work
+
+        # Following parameters are not needed
+        #'ie': 'UTF-8',
+        #'oe': 'UTF-8',
+        #'hl':'ja', # not needed
+
+        #'tk':'517378|356627',
+        #'otf': 1,
+        #'ssel': 0,
+        #'tsel': 0,
       })
 
       ret = r.content # unicode not used since json can do that
       if r.ok and len(ret) > 20:
-        # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
-        data = json.loads(ret)
-        l = data['sentences']
-        if len(l) == 1:
-          ret = l[0]['trans']
-        else:
-          ret = '\n'.join(it['trans'] for it in l)
-        #ret = unescapehtml(ret)
-        return ret
+        data = eval_gson_list(ret)
+        if data:
+          #print json.dumps(data, indent=2, ensure_ascii=False)
+          l = data[0]
+          if len(l) == 1:
+            ret = l[0][0]
+          else:
+            ret = '\n'.join(it[0] for it in l)
+          # Google JSON5 evaluation is not reliable
+          if isinstance(ret, basestring):
+            if align is not None and len(data) > 3:
+              # data[-4] is the segmented translation
+              # data[-5] is the segmented source text
+              align.extend(self._iterparse(data[-3]))
+            return ret
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -150,11 +357,16 @@ if __name__ == '__main__':
     global session
 
     #s = u"""オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"""
-    s = u"お花の匂い！"
-    s = '"<html>&abcde"'
+    #s = u"お花の匂い！"
+    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    #s = '"<html>&abcde"'
+
+    #s = u'ドアノブに勢い良く手をかけ、開いたドアが路上のガードレールにぶつかるのもおかまいなしに、隙間から身を這い出した。'
+    s = u'「う、ひょおおおおお――っ」'
 
     fr = 'ja'
-    to = 'zhs'
+    #to = 'zhs'
+    to = 'en'
 
     #s = u"What are you doing?"
     #fr = "en"
@@ -191,11 +403,16 @@ if __name__ == '__main__':
 
     #setapi("https://153.121.52.138/proxyssl/gg/trans/m")
 
+    m = []
     with SkProfiler():
       #for i in range(10):
       for i in range(1):
-        t = gt.translate(s, to=to, fr=fr)
+        t = gt.translate(s, to=to, fr=fr, align=m)
+        #t = gt.analyze(s, to=to, fr=fr, align=m)
+
     print t
+    print type(t)
+    print json.dumps(m, indent=2, ensure_ascii=False)
 
     #app.quit()
 

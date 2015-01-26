@@ -58,7 +58,6 @@ Item { id: root_
       //font.family: Util.fontFamilyForLanguage(root_.language)
       //font.family: 'DFGirl'
 
-      //font.bold: Util.isAsianLanguage(root_.language)
       //font.italic: Util.isLatinLanguage(root_.language)
 
       // Not working, which cause textedit width to shrink

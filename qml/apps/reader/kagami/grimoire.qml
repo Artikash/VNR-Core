@@ -229,13 +229,10 @@ Item { id: root_
     )
   }
 
-  function renderMapping(text, lang, mapping, colorize) { // string, string, QObject -> string
-    //var chwidth = lang == 'ko' ? 13
-    //            //: lang === 'ja' ? 22
-    //            : lang.indexOf('zh') === 0 ? 18
-    //            : 10
-    var chperline = Math.round(root_.width / (18 * root_._zoomFactor)) // char per line
-    return bean_.renderMapping(text, lang, mapping
+  function renderAlignment(text, lang, alignObject, colorize) { // string, string, QObject -> string
+    var chwidth = Util.isCJKLanguage(lang) ? 18 : 10 // wider font for CJK
+    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor)) // char per line
+    return bean_.renderAlignment(text, lang, alignObject
       , chperline
       , 10 * root_._zoomFactor // ruby size of furigana
       , colorize // colorize
@@ -1241,7 +1238,6 @@ Item { id: root_
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.italic: Util.isLatinLanguage(model.language)
 
         //color: root_.revertsColor ? '#050500' : 'snow'
@@ -1279,8 +1275,8 @@ Item { id: root_
           }
           if (!t)
             return ""
-          if (model.mapping)
-            t = root_.renderMapping(t || model.text, model.language, model.mapping, textItem_.hover)
+          if (model.alignObject)
+            t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
           else if (root_.isRubyLanguage(model.language) &&
               ((model.type === 'text' || model.type === 'name') ?
               root_.rubyTextEnabled : root_.rubyTranslationEnabled))
@@ -1307,14 +1303,14 @@ Item { id: root_
     //console.log("grimoire.qml: pass")
   //}
 
-  function createTextItem(text, lang, type, mapping, provider, comment) {
+  function createTextItem(text, lang, type, alignObject, provider, comment) {
     return {
       comment: type === 'sub' ? null : comment
       , sub: type === 'sub' ? comment : null
       , language: lang
       , text: text
       , type: type // text, tr, comment, name, or name.tr
-      , mapping: mapping // opaque object or null
+      , alignObject: alignObject // opaque object or null
       , provider: provider
       , textEdit: undefined // placeHolder property
     }
@@ -1365,7 +1361,7 @@ Item { id: root_
     modelLocked = false
   }
 
-  function showTranslation(text, lang, provider, mapping, timestamp) {
+  function showTranslation(text, lang, provider, alignObject, timestamp) {
     if  (!root_.translationVisible)
       return
     if (modelLocked)
@@ -1376,7 +1372,7 @@ Item { id: root_
     //  pageBreak()
 
     //text = text.replace(/\n/g, "<br/>")
-    var item = createTextItem(text, lang, 'tr', mapping, provider)
+    var item = createTextItem(text, lang, 'tr', alignObject, provider)
     if (_timestamp === Number(timestamp))
       listModel_.append(item)
     else if (_pageIndex <= listModel_.count)
@@ -1396,9 +1392,9 @@ Item { id: root_
       return
     modelLocked = true
 
-    var mapping = null // TODO: mapping is not implemented for name
+    var alignObject = null // TODO: mapping is not implemented for name
     text = "【" + text + "】"
-    var item = createTextItem(text, lang, 'name.tr', mapping, provider)
+    var item = createTextItem(text, lang, 'name.tr', alignObject, provider)
     var index = _pageIndex + 3
     if (index <= listModel_.count)
       listModel_.insert(index, item)

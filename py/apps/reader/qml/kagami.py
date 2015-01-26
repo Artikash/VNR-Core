@@ -178,7 +178,7 @@ class GrimoireBean(QObject):
   clear = Signal()
   pageBreak = Signal()
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
-  showTranslation = Signal(unicode, unicode, unicode, QObject, long)  # text, lang, provider, mapping, timestamp
+  showTranslation = Signal(unicode, unicode, unicode, QObject, long)  # text, lang, provider, align, timestamp
   showComment = Signal(QObject) # dataman.Comment
   showSubtitle = Signal(QObject) # dataman.SubtitleObject
 
@@ -223,16 +223,16 @@ class GrimoireBean(QObject):
         hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
 
   @Slot(unicode, unicode, QObject, int, float, bool, bool, result=unicode)
-  def renderMapping(self, text, language, mapping, charPerLine, rubySize, colorize, center):
+  def renderAlignment(self, text, language, align, charPerLine, rubySize, colorize, center):
     """
     @return  unicode  html
     """
-    mapping = mapping.value()
-    if not mapping:
+    align = align.value()
+    if not align:
       return text
     import renderman
-    return renderman.manager().renderMapping(
-        text, language, mapping, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+    return renderman.manager().renderAlignment(
+        text, language, align, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
 
 class _GrimoireController:
 
@@ -322,12 +322,12 @@ class GrimoireController(QObject):
     else:
       d.nameMissing = True
 
-  def showTranslation(self, text, language, provider, mapping, timestamp):
+  def showTranslation(self, text, language, provider, align, timestamp):
     """
     @param  text  unicode
     @param  language  str
     @param  provider  str
-    @param  mapping  list or None
+    @param  align  list or None
     @param  timestamp  long
     """
     if not settings.global_().isGrimoireTranslationVisible():
@@ -338,14 +338,14 @@ class GrimoireController(QObject):
     if d.timestamp > timestamp:
       dprint("translation comes too late, ignored")
       return
-    if not mapping:
-      mapping = None
+    if not align:
+      align = None # enforce None
     else:
-      mapping = SkValueObject(value=mapping)
-      d.retainObject(mapping)
+      align = SkValueObject(value=align)
+      d.retainObject(align)
     #text = text.replace('\n', '<br/>')
     d.append(partial(GrimoireBean.instance.showTranslation.emit,
-        text, language, provider, mapping, timestamp))
+        text, language, provider, align, timestamp))
 
   def showComment(self, c):
     """

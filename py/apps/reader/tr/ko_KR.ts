@@ -4433,7 +4433,7 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2941"/>
-        <source>Display translation mapping</source>
+        <source>Display translation alignment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1223,6 +1223,14 @@ class Settings(QSettings):
       self.setValue('GoogleEnabled', value)
       self.googleEnabledChanged.emit(value)
 
+  googleRubyEnabledChanged = Signal(bool)
+  def isGoogleRubyEnabled(self):
+    return to_bool(self.value('GoogleRubyEnabled', True))
+  def setGoogleRubyEnabled(self, value):
+    if value != self.isGoogleRubyEnabled():
+      self.setValue('GoogleRubyEnabled', value)
+      self.googleRubyEnabledChanged.emit(value)
+
   bingEnabledChanged = Signal(bool)
   def isBingEnabled(self):
     return to_bool(self.value('BingEnabled', True)) # the only one enabled
@@ -1231,13 +1239,13 @@ class Settings(QSettings):
       self.setValue('BingEnabled', value)
       self.bingEnabledChanged.emit(value)
 
-  naverRubyEnabledChanged = Signal(bool)
-  def isNaverRubyEnabled(self):
-    return to_bool(self.value('NaverRubyEnabled', True))
-  def setNaverRubyEnabled(self, value):
-    if value != self.isNaverRubyEnabled():
-      self.setValue('NaverRubyEnabled', value)
-      self.naverRubyEnabledChanged.emit(value)
+  bingRubyEnabledChanged = Signal(bool)
+  def isBingRubyEnabled(self):
+    return to_bool(self.value('BingRubyEnabled', True))
+  def setBingRubyEnabled(self, value):
+    if value != self.isBingRubyEnabled():
+      self.setValue('BingRubyEnabled', value)
+      self.bingRubyEnabledChanged.emit(value)
 
   naverEnabledChanged = Signal(bool)
   def isNaverEnabled(self):
@@ -1247,13 +1255,13 @@ class Settings(QSettings):
       self.setValue('NaverEnabled', value)
       self.naverEnabledChanged.emit(value)
 
-  baiduRubyEnabledChanged = Signal(bool)
-  def isBaiduRubyEnabled(self):
-    return to_bool(self.value('BaiduRubyEnabled', True))
-  def setBaiduRubyEnabled(self, value):
-    if value != self.isBaiduRubyEnabled():
-      self.setValue('BaiduRubyEnabled', value)
-      self.baiduRubyEnabledChanged.emit(value)
+  naverRubyEnabledChanged = Signal(bool)
+  def isNaverRubyEnabled(self):
+    return to_bool(self.value('NaverRubyEnabled', True))
+  def setNaverRubyEnabled(self, value):
+    if value != self.isNaverRubyEnabled():
+      self.setValue('NaverRubyEnabled', value)
+      self.naverRubyEnabledChanged.emit(value)
 
   baiduEnabledChanged = Signal(bool)
   def isBaiduEnabled(self):
@@ -1262,6 +1270,14 @@ class Settings(QSettings):
     if value != self.isBaiduEnabled():
       self.setValue('BaiduEnabled', value)
       self.baiduEnabledChanged.emit(value)
+
+  baiduRubyEnabledChanged = Signal(bool)
+  def isBaiduRubyEnabled(self):
+    return to_bool(self.value('BaiduRubyEnabled', True))
+  def setBaiduRubyEnabled(self, value):
+    if value != self.isBaiduRubyEnabled():
+      self.setValue('BaiduRubyEnabled', value)
+      self.baiduRubyEnabledChanged.emit(value)
 
   lecOnlineEnabledChanged = Signal(bool)
   def isLecOnlineEnabled(self):

@@ -50,8 +50,7 @@ class _TranslatorManager(object):
     self.lecEnabled = \
     True # bool
 
-    self.baiduMappingEnabled = \
-    self.naverMappingEnabled = False
+    self.alignEnabled = {} # {str key:bool t}
 
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
@@ -59,6 +58,15 @@ class _TranslatorManager(object):
     self.session = qtrequests.Session(nam, abortSignal=self.abortSignal)
 
   normalizeText = staticmethod(textutil.normalize_punct)
+
+  def getAlignEnabled(self, key): # str -> bool
+    return self.alignEnabled.get(key) or False
+
+  def setAlignEnabled(self, key, t): # str, bool ->
+    if t != self.getAlignEnabled(key):
+      self.alignEnabled[key] = t
+      if self.hasTranslator(key):
+        self.getTranslator(key).alignEnabled = t
 
   def postprocess(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
@@ -111,7 +119,16 @@ class _TranslatorManager(object):
     return self._newtr(_trman.GoogleTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocess,
+        alignEnabled=self.alignEnabled.get('google') or False))
+
+  @memoizedproperty
+  def bingTranslator(self):
+    return self._newtr(_trman.BingTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess,
+        alignEnabled=self.alignEnabled.get('bing') or False))
 
   @memoizedproperty
   def baiduTranslator(self):
@@ -119,7 +136,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        mappingEnabled=self.baiduMappingEnabled))
+        alignEnabled=self.alignEnabled.get('baidu') or False))
 
   @memoizedproperty
   def naverTranslator(self):
@@ -127,14 +144,7 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session,
         postprocess=self.postprocess,
-        mappingEnabled=self.naverMappingEnabled))
-
-  @memoizedproperty
-  def bingTranslator(self):
-    return self._newtr(_trman.BingTranslator(
-        abortSignal=self.abortSignal,
-        session=self.session,
-        postprocess=self.postprocess))
+        alignEnabled=self.alignEnabled.get('naver') or False))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
@@ -161,13 +171,13 @@ class _TranslatorManager(object):
         session=self.session))
 
   @staticmethod
-  def translateAndApply(func, kw, tr, text, mapping=None, **kwargs):
+  def translateAndApply(func, kw, tr, text, align=None, **kwargs):
     """
     @param  func  function to apply
     @param  kw  arguments passed to func
     @param  tr  function to translate
     @param  text  unicode  passed to tr
-    @param* mapping  list or None
+    @param* align  list or None
     @param  **kwargs  passed to tr
     """
     # TODO: I might be able to do runsync here instead of within tr
@@ -177,27 +187,43 @@ class _TranslatorManager(object):
     #  r = skthreads.runsync(partial(tr, *args, **kwargs),
     #      abortSignal=self.abortSignal)
     #else:
-    r = tr(text, mapping=mapping, **kwargs)
+    r = tr(text, align=align, **kwargs)
     if r and r[0]:
-      func(r[0], r[1], r[2], mapping, **kw)
+      func(r[0], r[1], r[2], align, **kw)
+
+  def _getTranslatorPropertyName(self, key):
+    """
+    @param  key  str
+    @return  str
+    """
+    if key == 'eztrans':
+      return 'ezTranslator'
+    if key == 'lecol':
+      return 'lecOnlineTranslator'
+    if key == 'transru':
+      return 'transruTranslator'
+    if key == 'hanviet':
+      return 'hanVietTranslator'
+    if key == 'lou':
+      return 'elf.lougoTranslator'
+    return key + 'Translator'
 
   def getTranslator(self, key):
     """
     @param  key  str
     @return  TranslatorEngine or None
     """
-    if key == 'eztrans':
-      return self.ezTranslator
-    if key == 'lecol':
-      return self.lecOnlineTranslator
-    if key == 'transru':
-      return self.transruTranslator
-    if key == 'hanviet':
-      return self.hanVietTranslator
-    if key == 'lou':
-      return self.lougoTranslator
-    try: return getattr(self, key + 'Translator')
+    v = self._getTranslatorPropertyName(key)
+    try: return getattr(self, v)
     except AttributeError: pass
+
+  def hasTranslator(self, key):
+    """
+    @param  key  str
+    @return  TranslatorEngine or None
+    """
+    v = self._getTranslatorPropertyName(key)
+    return hasmemoizedproperty(self, v)
 
   def iterOfflineTranslators(self):
     """
@@ -342,21 +368,17 @@ class TranslatorManager(QObject):
   def isAtlasEnabled(self): return self.__d.atlasEnabled
   def setAtlasEnabled(self, value): self.__d.atlasEnabled = value
 
-  def isBaiduMappingEnabled(self): return self.__d.baiduMappingEnabled
-  def setBaiduMappingEnabled(self, t):
-    d = self.__d
-    if t != d.baiduMappingEnabled:
-      d.baiduMappingEnabled = t
-      if hasmemoizedproperty(d, 'baiduTranslator'):
-        d.baiduTranslator.mappingEnabled = t
+  def isBaiduAlignEnabled(self): return self.__d.getAlignEnabled('naver')
+  def setBaiduAlignEnabled(self, t): self.__d.setAlignEnabled('naver', t)
 
-  def isNaverMappingEnabled(self): return self.__d.naverMappingEnabled
-  def setNaverMappingEnabled(self, t):
-    d = self.__d
-    if t != d.naverMappingEnabled:
-      d.naverMappingEnabled = t
-      if hasmemoizedproperty(d, 'naverTranslator'):
-        d.naverTranslator.mappingEnabled = t
+  def isNaverAlignEnabled(self): return self.__d.getAlignEnabled('baidu')
+  def setNaverAlignEnabled(self, t): self.__d.setAlignEnabled('baidu', t)
+
+  def isBingAlignEnabled(self): return self.__d.getAlignEnabled('bing')
+  def setBingAlignEnabled(self, t): self.__d.setAlignEnabled('bing', t)
+
+  def isGoogleAlignEnabled(self): return self.__d.getAlignEnabled('google')
+  def setGoogleAlignEnabled(self, t): self.__d.setAlignEnabled('google', t)
 
   ## Queries ##
 
@@ -542,18 +564,18 @@ class TranslatorManager(QObject):
     text = d.normalizeText(text)
 
     for it in d.iterOfflineTranslators():
-      mapping = [] if it.mappingSupported and it.mappingEnabled else None
+      align = [] if it.alignSupported and it.alignEnabled else None
       #with SkProfiler(): # 0.3 seconds
-      r = it.translate(text, fr=fr, to=d.language, mapping=mapping, async=False)
+      r = it.translate(text, fr=fr, to=d.language, align=align, async=False)
       #with SkProfiler(): # 0.0004 seconds
       if r and r[0]:
-        func(r[0], r[1], r[2], mapping, **kwargs)
+        func(r[0], r[1], r[2], align, **kwargs)
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
-      mapping = [] if it.mappingSupported and it.mappingEnabled else None
+      align = [] if it.alignSupported and it.alignEnabled else None
       skevents.runlater(partial(d.translateAndApply,
-          func, kwargs, it.translate, text, fr=fr, to=d.language, mapping=mapping, async=False))
+          func, kwargs, it.translate, text, fr=fr, to=d.language, align=align, async=False))
 
 @memoized
 def manager(): return TranslatorManager()

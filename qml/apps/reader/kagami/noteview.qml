@@ -206,7 +206,6 @@ Item { id: root_
       font.family: 'DFGirl'
 
 
-      //font.bold: Util.isAsianLanguage(root_.language)
       //font.italic: Util.isLatinLanguage(root_.language)
       font.pixelSize: 16 * root_._zoomFactor
 

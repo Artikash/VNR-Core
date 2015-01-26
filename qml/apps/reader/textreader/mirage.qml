@@ -955,7 +955,6 @@ Item { id: root_
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.family: root_.fontFamily(model.language)
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.italic: Util.isLatinLanguage(model.language)
 
         //color: root_.revertsColor ? '#050500' : 'snow'

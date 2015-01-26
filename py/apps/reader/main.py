@@ -696,8 +696,14 @@ class _MainObject(object):
     ret.setBingEnabled(ss.isBingEnabled())
     ss.bingEnabledChanged.connect(ret.setBingEnabled)
 
+    ret.setBingAlignEnabled(ss.isBingRubyEnabled())
+    ss.bingRubyEnabledChanged.connect(ret.setBingAlignEnabled)
+
     ret.setGoogleEnabled(ss.isGoogleEnabled())
     ss.googleEnabledChanged.connect(ret.setGoogleEnabled)
+
+    ret.setGoogleAlignEnabled(ss.isGoogleRubyEnabled())
+    ss.googleRubyEnabledChanged.connect(ret.setGoogleAlignEnabled)
 
     ret.setTransruEnabled(ss.isTransruEnabled())
     ss.transruEnabledChanged.connect(ret.setTransruEnabled)
@@ -705,14 +711,14 @@ class _MainObject(object):
     ret.setNaverEnabled(ss.isNaverEnabled())
     ss.naverEnabledChanged.connect(ret.setNaverEnabled)
 
-    ret.setNaverMappingEnabled(ss.isNaverRubyEnabled())
-    ss.naverRubyEnabledChanged.connect(ret.setNaverMappingEnabled)
+    ret.setNaverAlignEnabled(ss.isNaverRubyEnabled())
+    ss.naverRubyEnabledChanged.connect(ret.setNaverAlignEnabled)
 
     ret.setBaiduEnabled(ss.isBaiduEnabled())
     ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
 
-    ret.setBaiduMappingEnabled(ss.isBaiduRubyEnabled())
-    ss.baiduRubyEnabledChanged.connect(ret.setBaiduMappingEnabled)
+    ret.setBaiduAlignEnabled(ss.isBaiduRubyEnabled())
+    ss.baiduRubyEnabledChanged.connect(ret.setBaiduAlignEnabled)
 
     ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
     ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)

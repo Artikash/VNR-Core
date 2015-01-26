@@ -111,6 +111,7 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   @param* kwargs  passed to Korean
   @yield  unicode  HTML table
   """
+  render = rc.jinja_template('html/furigana').render
 
   i = j = 0
 
@@ -158,7 +159,7 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
       if width + lineCount <= charPerLine:
         pass
       elif line:
-        yield rc.jinja_template('html/furigana').render({
+        yield render({
           'tuples': line,
           'rubySize': roundRubySize,
           'paddingSize': paddingSize,
@@ -179,7 +180,7 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
       lineCount += width
 
   if line:
-    yield rc.jinja_template('html/furigana').render({
+    yield render({
       'tuples': line,
       'rubySize': roundRubySize,
       'paddingSize': paddingSize,

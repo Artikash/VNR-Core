@@ -4421,7 +4421,7 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/s
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2941"/>
-        <source>Display translation mapping</source>
+        <source>Display translation alignment</source>
         <translation>显示双语对照翻译</translation>
     </message>
 </context>

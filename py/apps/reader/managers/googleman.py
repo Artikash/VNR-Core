@@ -13,6 +13,8 @@ def setsession(s): # requests.Session ->
 
 def setapi(url): # string ->
   manager().gt.api = url
+  #manager().gt.api_translate = url + '/t'
+  #manager().gt.api_analyze = url + '/single'
 def resetapi():
   gt = manager().gt
   gt.api = gt.API
