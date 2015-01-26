@@ -402,6 +402,9 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1422221492:
+      if ss.value('RBMT'):
+        ss.setValue('RBMT', False)
 
     if ss_version <= 1421736204: # This is not really needed though
       for it in ( # delete all existing references
