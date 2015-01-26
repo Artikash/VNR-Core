@@ -1603,6 +1603,7 @@ class NaverTranslator(OnlineMachineTranslator):
         return repl, to, self.key
     repl = self._escapeText(text, to, fr, emit)
     if repl:
+      mappingSize = len(mapping) if mapping else 0
       repl = self._translate(emit, repl,
           self.engine.translate,
           to, fr, async, mapping=mapping)
@@ -1613,6 +1614,10 @@ class NaverTranslator(OnlineMachineTranslator):
         repl = repl.replace('<', '').replace('>', '')
         if to == 'zht':
           repl = zhs2zht(repl)
+          if mapping:
+            for i,(k,v) in enumerate(mapping[mappingSize:]):
+              if v:
+                mapping[mappingSize+i] = (k, zhs2zht(v))
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
@@ -1688,6 +1693,7 @@ class BaiduTranslator(OnlineMachineTranslator):
         return repl, to, self.key
     repl = self._escapeText(text, to, fr, emit)
     if repl:
+      mappingSize = len(mapping) if mapping else 0
       engine = self.baidufanyi if mapping is not None else self.getEngine(fr=fr, to=to)
       repl = self.__baidu_repl_before(repl)
       repl = self._translate(emit, repl,
@@ -1697,6 +1703,10 @@ class BaiduTranslator(OnlineMachineTranslator):
         if to == 'zht':
           #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
           repl = zhs2zht(repl)
+          if mapping:
+            for i,(k,v) in enumerate(mapping[mappingSize:]):
+              if v:
+                mapping[mappingSize+i] = (k, zhs2zht(v))
         repl = self.__baidu_repl_after(repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
         self.cache.update(text, repl)
