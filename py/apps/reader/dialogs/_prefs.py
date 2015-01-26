@@ -2482,8 +2482,8 @@ class _TextTab(object):
       ('Dreye', None,  mytr_("Dr.eye"), 'zh'),
       ('EzTrans', 'ezTrans',  mytr_("ezTrans"), 'ko'),
       ('HanViet', 'hanViet',  u"Hán Việt", 'vi'),
-      ('Atlas', None,  mytr_("ATLAS"), 'en'),
-      ('Lec', None,  mytr_("LEC"), 'en'),
+      ('Atlas', None,  "ATLAS", 'en'),
+      ('Lec', None,  "LEC", 'en'),
     )
     i = 0
     for Name, name, tr, lang in conf:
@@ -2783,12 +2783,14 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     grid.addWidget(self.googleRubyButton, r, 1)
 
     r += 1
-    grid.addWidget(self._createBrowseButton("http://www.lec.com/translate-demos.asp"), r, 0)
-    grid.addWidget(self.lecOnlineButton, r, 1)
-
-    r += 1
     grid.addWidget(self._createBrowseButton("http://translation.infoseek.ne.jp"), r, 0)
     grid.addWidget(self.infoseekButton, r, 1)
+    r += 1
+    grid.addWidget(self.infoseekRubyButton, r, 1)
+
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://www.lec.com/translate-demos.asp"), r, 0)
+    grid.addWidget(self.lecOnlineButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.excite.co.jp/world"), r, 0)
@@ -2899,6 +2901,16 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     )))))
     ret.setChecked(settings.global_().isInfoseekEnabled())
     ret.toggled.connect(settings.global_().setInfoseekEnabled)
+    return ret
+
+  @memoizedproperty
+  def infoseekRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isInfoseekRubyEnabled())
+    ret.toggled.connect(ss.setInfoseekRubyEnabled)
+    ret.setEnabled(ss.isInfoseekEnabled())
+    ss.infoseekEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty

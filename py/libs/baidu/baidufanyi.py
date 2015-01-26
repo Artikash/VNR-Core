@@ -202,8 +202,8 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 def translate(text, to='zhs', fr='ja', align=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
-  @param  fr  unicode not None, must be valid language code
-  @param  to  unicode not None, must be valid language code
+  @param* fr  unicode not None, must be valid language code
+  @param* to  unicode not None, must be valid language code
   @param* align  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
   """

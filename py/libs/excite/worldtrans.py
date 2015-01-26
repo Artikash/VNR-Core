@@ -147,6 +147,7 @@ if __name__ == '__main__':
       for i in range(1):
         t = translate(s, to=to, fr=fr)
     print t
+    print type(t)
 
     #session = requests
     #with SkProfiler():

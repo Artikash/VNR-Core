@@ -139,7 +139,7 @@ class RenderManager:
     """
     if alignIndex < len(align):
       for i,(k,v) in enumerate(align): # instead of doing align[alignIndex:]
-        if i >= alignIndex and not self._skipAlignment(v):
+        if i >= alignIndex and v and not self._skipAlignment(v):
           if not text:
             break
           #if v in text:

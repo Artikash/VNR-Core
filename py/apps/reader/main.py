@@ -690,6 +690,9 @@ class _MainObject(object):
     ret.setInfoseekEnabled(ss.isInfoseekEnabled())
     ss.infoseekEnabledChanged.connect(ret.setInfoseekEnabled)
 
+    ret.setInfoseekAlignEnabled(ss.isInfoseekRubyEnabled())
+    ss.infoseekRubyEnabledChanged.connect(ret.setInfoseekAlignEnabled)
+
     ret.setExciteEnabled(ss.isExciteEnabled())
     ss.exciteEnabledChanged.connect(ret.setExciteEnabled)
 

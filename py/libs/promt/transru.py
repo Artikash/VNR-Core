@@ -123,19 +123,20 @@ if __name__ == '__main__':
 
     from sakurakit.skprof import SkProfiler
 
-    from qtrequests import qtrequests
-    from PySide.QtNetwork import QNetworkAccessManager
-    session = qtrequests.Session(QNetworkAccessManager())
-    with SkProfiler():
-      for i in range(10):
-        t = translate(s, to=to, fr=fr)
-    print t
+    #from qtrequests import qtrequests
+    #from PySide.QtNetwork import QNetworkAccessManager
+    #session = qtrequests.Session(QNetworkAccessManager())
+    #with SkProfiler():
+    #  for i in range(1):
+    #    t = translate(s, to=to, fr=fr)
+    #print t
 
     session = requests.Session()
     with SkProfiler():
-      for i in range(10):
+      for i in range(1):
         t = translate(s, to=to, fr=fr)
     print t
+    print type(t)
 
     #session = requests
     #with SkProfiler():
