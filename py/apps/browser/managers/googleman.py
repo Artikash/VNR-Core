@@ -12,10 +12,12 @@ def setsession(s): # requests.Session ->
   manager().gt.session = s
 
 def setapi(url): # string ->
-  manager().gt.api = url
+  manager().gt.api_translate = url + '/t'
+  manager().gt.api_analyze = url + '/single'
 def resetapi():
   gt = manager().gt
-  gt.api = gt.API
+  gt.api_translate = gt.API_TRANSLATE
+  gt.api_analyze = gt.API_ANALYZE
 
 # This class is reserved to parse complicated google translation analysis
 class GoogleManager:

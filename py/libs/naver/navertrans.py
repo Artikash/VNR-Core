@@ -130,8 +130,8 @@ def translate(text, to='ko', fr='ja', mapping=None):
       #print json.dumps(data, indent=2, ensure_ascii=False)
       ret = data['resultData']
       if mapping is not None:
-        for k,v in _iterparse(data.get('align'), text, ret):
-          mapping.append((k, v))
+        mapping.extend(_iterparse(
+            data.get('align'), text, ret))
       return ret
 
   #except socket.error, e:

@@ -237,8 +237,7 @@ def translate(text, to='zhs', fr='ja', mapping=None):
       else:
         ret = '\n'.join(it['dst'] for it in l)
       if mapping is not None:
-        for k,v in _iterparse(l):
-          mapping.append((k, v))
+        mapping.extend(_iterparse(l))
       return ret
 
   #except socket.error, e:
