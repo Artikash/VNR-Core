@@ -96,6 +96,7 @@ processes:
   - hidfind.exe         # Dell
   - idaq.exe            # IDA
   - idea.exe            # Intelij IDEA
+  - IDMan.exe           # Internet Download Manager
   - iesandbox.exe       # Kuwo
   - IESandBox.exe       # Kuwo
   - iexplore.exe        # Windows
