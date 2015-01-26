@@ -79,7 +79,7 @@ def translate(text, to='en', fr='ja'):
       ret = _parse(ret)
     else:
       dwarn("return content too short")
-    return ret
+    return ret.decode('utf8', errors='ignore')
 
   #except socket.error, e:
   #  dwarn("socket error", e.args)
@@ -135,6 +135,7 @@ if __name__ == '__main__':
       for i in range(1):
         t = translate(s, to=to, fr=fr)
     print t
+    print type(t)
 
     #session = requests
     #with SkProfiler():
