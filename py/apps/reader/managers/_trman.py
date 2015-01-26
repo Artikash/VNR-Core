@@ -391,10 +391,11 @@ class MachineTranslator(Translator):
       ret = partial(tr, mapping=mapping)
     else:
       ret = tr
-    if fr == 'ja':
-      mt = termman.manager().getRuleBasedTranslator(to)
-      if mt:
-        ret = partial(mt.translate, tr=ret)
+    # 1/25/2015: temporarily disabled
+    #if fr == 'ja':
+    #  mt = termman.manager().getRuleBasedTranslator(to)
+    #  if mt:
+    #    ret = partial(mt.translate, tr=ret)
     return ret
 
   def _translateTest(self, fn, text, async=False, **kwargs):
