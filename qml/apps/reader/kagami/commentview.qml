@@ -312,7 +312,6 @@ Item { id: root_
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.pixelSize: 18 * root_.zoomFactor
-        //font.bold: Util.isAsianLanguage(model.comment.language)
         font.bold: true
         color: 'snow'
         //style: Text.Raised

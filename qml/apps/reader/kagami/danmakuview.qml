@@ -133,7 +133,6 @@ Item { id: root_
         wrapMode: Text.NoWrap
         textFormat: Text.RichText
         font.family: Util.fontFamilyForLanguage(model.comment.language)
-        //font.bold: Util.isAsianLanguage(model.comment.language)
         font.bold: true
         //font.italic: Util.isLatinLanguage(model.comment.language)
 

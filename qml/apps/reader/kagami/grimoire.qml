@@ -230,11 +230,8 @@ Item { id: root_
   }
 
   function renderAlignment(text, lang, alignObject, colorize) { // string, string, QObject -> string
-    //var chwidth = lang == 'ko' ? 13
-    //            //: lang === 'ja' ? 22
-    //            : lang.indexOf('zh') === 0 ? 18
-    //            : 10
-    var chperline = Math.round(root_.width / (18 * root_._zoomFactor)) // char per line
+    var chwidth = Util.isCJKLanguage(lang) ? 18 : 10 // wider font for CJK
+    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor)) // char per line
     return bean_.renderAlignment(text, lang, alignObject
       , chperline
       , 10 * root_._zoomFactor // ruby size of furigana
@@ -1241,7 +1238,6 @@ Item { id: root_
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.italic: Util.isLatinLanguage(model.language)
 
         //color: root_.revertsColor ? '#050500' : 'snow'

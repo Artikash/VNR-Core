@@ -10,6 +10,8 @@
 
 #from sakurakit.skprof import SkProfiler
 
+# TODO: Alignments are not cached to reduce memory usage
+
 import os, re
 import requests
 from functools import partial
@@ -49,7 +51,7 @@ def is_escaped_text(text): # unicode -> bool
 # All methods in this class are supposed to be thread-safe
 # Though they are not orz
 class TranslationCache:
-  def __init__(self, maxSize=100, shrinkSize=30):
+  def __init__(self, maxSize=50, shrinkSize=20):
     """
     @param  maxSize  max data size
     @param  shrinkSize  data to delete when oversize
@@ -312,7 +314,7 @@ class MachineTranslator(Translator):
     ) if async and self.asyncSupported else tr(text, to=to, fr=fr)
 
     if ret:
-      if not isinstance(ret, unicode):
+      if isinstance(ret, str):
         ret = ret.decode('utf8', errors='ignore')
       if ret:
         self._cache.update(text, ret)
@@ -1473,7 +1475,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #}))
   # Fix numbers such as 929,005.678。
   __re_term_fix = re.compile(r'(?<=\d),(?=\d{3})')
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, align=None, **kwargs):
     """@reimp"""
     #async = True # force enable async
     if emit:
@@ -1486,7 +1488,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, align=align)
       if repl:
         #if self.languageNeedsEscape(to, fr):
         repl = self.__re_term_fix.sub('', repl)
@@ -1528,7 +1530,7 @@ class BingTranslator(OnlineMachineTranslator):
   #  ']\n': u'】',
   #}))
   __fix_escape = re.compile(r'(?<=[0-9]),(?=[0-9])') # replace ',' between digits with '.'
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, align=None, **kwargs):
     """@reimp"""
     #if fr != 'ja':
     #  return None, None, None
@@ -1542,7 +1544,7 @@ class BingTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, align=align)
       if repl:
         repl = self.__fix_escape.sub('.', repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)

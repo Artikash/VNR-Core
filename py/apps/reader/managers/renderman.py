@@ -142,8 +142,13 @@ class RenderManager:
         if i >= alignIndex and not self._skipAlignment(v):
           if not text:
             break
-          if v in text:
-            left, mid, text = text.partition(v)
+          #if v in text:
+          #  left, mid, text = text.partition(v)
+          index = text.lower().find(v.lower())
+          if index != -1:
+            left = text[:index]
+            mid = text[index:index + len(v)]
+            text = text[index + len(v):]
             if left:
               left, text = self._fixHtmlTag(left, text)
               yield left, None, alignIndex
@@ -160,7 +165,7 @@ class RenderManager:
     """
     return (
       len(text) == 1 and ord(text) < 128 # do not map single ascii char
-      or text in ("//", "id", "json", "href", "type", "term", "source", "target")
+      or text.lower() in ("//", "id", "json", "href", "type", "term", "source", "target")
     )
 
 # EOF

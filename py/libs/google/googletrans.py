@@ -166,14 +166,17 @@ class GoogleJsonTranslator(GoogleTranslator):
             #print json.dumps(data, indent=2, ensure_ascii=False)
             l = data[0]
             if len(l) == 1:
-              ret = l[0]
+              ret = l[0][0]
             else:
               ret = '\n'.join(it[0] for it in l)
-            if align is not None and len(data) > 3:
-              # data[-4] is the segmented translation
-              # data[-5] is the segmented source text
-              align.extend(self._iteralign(data[-3]))
-            return ret
+            # Google JSON5 evaluation is not reliable
+            # The result could be a list
+            if isinstance(ret, basestring):
+              if align is not None and len(data) > 3:
+                # data[-4] is the segmented translation
+                # data[-5] is the segmented source text
+                align.extend(self._iteralign(data[-3]))
+              return ret
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -276,6 +279,9 @@ class GoogleJsonTranslator(GoogleTranslator):
         surface = l[0]
         #index = l[1]
         trans = l[2][0][0] # Actually, there are a list of possible meaning
+        if '(' in surface:
+          for annot in ('(aux:relc)' '(null:pronoun)'):
+            surface = surface.replace(annot, '').strip() # remove annotations
         yield surface, trans
     except Exception, e:
       derror(e)
@@ -316,14 +322,16 @@ class GoogleJsonTranslator(GoogleTranslator):
           #print json.dumps(data, indent=2, ensure_ascii=False)
           l = data[0]
           if len(l) == 1:
-            ret = l[0]
+            ret = l[0][0]
           else:
             ret = '\n'.join(it[0] for it in l)
-          if align is not None and len(data) > 3:
-            # data[-4] is the segmented translation
-            # data[-5] is the segmented source text
-            align.extend(self._iterparse(data[-3]))
-          return ret
+          # Google JSON5 evaluation is not reliable
+          if isinstance(ret, basestring):
+            if align is not None and len(data) > 3:
+              # data[-4] is the segmented translation
+              # data[-5] is the segmented source text
+              align.extend(self._iterparse(data[-3]))
+            return ret
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -352,6 +360,9 @@ if __name__ == '__main__':
     #s = u"お花の匂い！"
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
     #s = '"<html>&abcde"'
+
+    #s = u'ドアノブに勢い良く手をかけ、開いたドアが路上のガードレールにぶつかるのもおかまいなしに、隙間から身を這い出した。'
+    s = u'「う、ひょおおおおお――っ」'
 
     fr = 'ja'
     #to = 'zhs'
@@ -400,6 +411,7 @@ if __name__ == '__main__':
         #t = gt.analyze(s, to=to, fr=fr, align=m)
 
     print t
+    print type(t)
     print json.dumps(m, indent=2, ensure_ascii=False)
 
     #app.quit()
