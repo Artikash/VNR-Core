@@ -2174,7 +2174,7 @@ class _TermTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.generalGroup)
-    layout.addWidget(self.rbmtGroup)
+    #layout.addWidget(self.rbmtGroup)
     layout.addStretch()
     q.setLayout(layout)
 

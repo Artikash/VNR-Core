@@ -482,8 +482,9 @@ Item { id: root_
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue) && itemValue.type === 'trans' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
-          checked: itemValue.syntax && itemValue.type === 'trans' // force syntax for translatoin
+          //enabled: canEdit(itemValue) && itemValue.type === 'trans' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
+          enabled: itemValue.syntax && canEdit(itemValue) && root_.userId !== _GUEST_USER_ID
+          checked: itemValue.syntax //&& itemValue.type === 'trans' // force syntax for translatoin
           onCheckedChanged:
             if (enabled && checked !== itemValue.syntax)
               itemValue.syntax = checked
