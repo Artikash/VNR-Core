@@ -108,26 +108,31 @@ class GoogleHtmlTranslator(GoogleTranslator):
 
 
 class GoogleJsonTranslator(GoogleTranslator):
-  API_TRANSLATE = "http://translate.google.com/translate_a/t"
-  API_ANALYZE = "http://translate.google.com/translate_a/single"
+  #API_TRANSLATE = "http://translate.google.com/translate_a/t"
+  #API_ANALYZE = "http://translate.google.com/translate_a/single"
 
-  api_translate = API_TRANSLATE
-  api_analyze = API_TRANSLATE
+  #api_translate = API_TRANSLATE
+  #api_analyze = API_TRANSLATE
+
+  API = "http://translate.google.com/translate_a/t"
+  api = API
 
   session = requests
 
   headers = {'User-Agent':USER_AGENT}
 
-  def translate(self, t, to='auto', fr='auto'):
+  def translate(self, t, to='auto', fr='auto', mapping=None):
     """
     @param  t  unicode
     @param* to  str
     @param* fr  str
+    @param* mapping  None or list  insert [unicode surf, unicode trans] if not None
     @return  unicode or None
     """
     try:
+      client_json = mapping is None
       # http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
-      r = self.session.post(self.api_translate, headers=self.headers, data={
+      r = self.session.post(self.api, headers=self.headers, data={
         'tl': googledef.lang2locale(to),
         'sl': googledef.lang2locale(fr),
         'text': t,
@@ -136,21 +141,39 @@ class GoogleJsonTranslator(GoogleTranslator):
 
         # http://stackoverflow.com/questions/10334358/how-to-get-and-parse-json-answer-from-google-translate
         #'client': 't', # This will return a Javascript object that can be evaluated using new Function
-        'client': 'p', # return JSON
+        #'client': 'p', # return JSON
+        'client': 'p' if client_json else 't',
       })
+
 
       ret = r.content # unicode not used since json can do that
       if r.ok and len(ret) > 20:
-        # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
-        data = json.loads(ret)
-        #print json.dumps(data, indent=2, ensure_ascii=False)
-        l = data['sentences']
-        if len(l) == 1:
-          ret = l[0]['trans']
+        if client_json:
+          # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
+          data = json.loads(ret)
+          #print json.dumps(data, indent=2, ensure_ascii=False)
+          l = data['sentences']
+          if len(l) == 1:
+            ret = l[0]['trans']
+          else:
+            ret = '\n'.join(it['trans'] for it in l)
+          #ret = unescapehtml(ret)
+          return ret
+
         else:
-          ret = '\n'.join(it['trans'] for it in l)
-        #ret = unescapehtml(ret)
-        return ret
+          data = eval_gson_list(ret)
+          if data:
+            #print json.dumps(data, indent=2, ensure_ascii=False)
+            l = data[0]
+            if len(l) == 1:
+              ret = l[0]
+            else:
+              ret = '\n'.join(it[0] for it in l)
+            if mapping is not None and len(data) > 3:
+              # data[-4] is the segmented translation
+              # data[-5] is the segmented source text
+              mapping.extend(self._iterparse(data[-3]))
+            return ret
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -167,7 +190,6 @@ class GoogleJsonTranslator(GoogleTranslator):
     dwarn("failed")
     try: dwarn(r.url)
     except: pass
-
 
   # Sample returned json5 list (incomplete):
   # [
@@ -244,6 +266,21 @@ class GoogleJsonTranslator(GoogleTranslator):
   #       ],
   #       ""
   #     ],
+  def _iterparse(self, data):
+    """
+    @param  data  list  gson list
+    @yield  (unicode surface, unicode translation)
+    """
+    try:
+      for l in data:
+        surface = l[0]
+        #index = l[1]
+        trans = l[2][0][0] # Actually, there are a list of possible meaning
+        yield surface, trans
+    except Exception, e:
+      derror(e)
+
+  # The following function is an alternative API
   def analyze(self, t, to='auto', fr='auto', mapping=None):
     """
     @param  t  unicode
@@ -304,20 +341,6 @@ class GoogleJsonTranslator(GoogleTranslator):
     try: dwarn(r.url)
     except: pass
 
-  def _iterparse(self, data):
-    """
-    @param  data  list  gson list
-    @yield  (unicode surface, unicode translation)
-    """
-    try:
-      for l in data:
-        surface = l[0]
-        #index = l[1]
-        trans = l[2][0][0] # Actually, there are a list of possible meaning
-        yield surface, trans
-    except Exception, e:
-      derror(e)
-
 if __name__ == '__main__':
   #gt = GoogleHtmlTranslator()
   gt = GoogleJsonTranslator()
@@ -373,8 +396,8 @@ if __name__ == '__main__':
     with SkProfiler():
       #for i in range(10):
       for i in range(1):
-        #t = gt.translate(s, to=to, fr=fr)
-        t = gt.analyze(s, to=to, fr=fr, mapping=m)
+        t = gt.translate(s, to=to, fr=fr, mapping=m)
+        #t = gt.analyze(s, to=to, fr=fr, mapping=m)
 
     print t
     print json.dumps(m, indent=2, ensure_ascii=False)

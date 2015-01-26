@@ -247,7 +247,7 @@ proxies:
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
   googlesr:     http://153.121.52.138/proxy/gg/speech/v2/recognize
-  googletrans:  http://153.121.52.138/proxy/gg/trans/translate_a
+  googletrans:  http://153.121.52.138/proxy/gg/trans/translate_a/t
   googletts:    http://153.121.52.138/proxy/gg/trans/translate_tts
   ytimg:
     i:          http://153.121.52.138/proxy/ytimg/i2
