@@ -130,7 +130,7 @@ def translate(text, to='ko', fr='ja', align=None):
       #print json.dumps(data, indent=2, ensure_ascii=False)
       ret = data['resultData']
       if align is not None:
-        align.extend(_iterparse(
+        align.extend(_iteralign(
             data.get('align'), text, ret))
       return ret
 
@@ -150,7 +150,7 @@ def translate(text, to='ko', fr='ja', align=None):
   try: dwarn(r.url)
   except: pass
 
-def _iterparse(data, source, target, encoding='utf8'):
+def _iteralign(data, source, target, encoding='utf8'):
   """
   @param  data  list  json['align']
   @param  source  unicode  original text
