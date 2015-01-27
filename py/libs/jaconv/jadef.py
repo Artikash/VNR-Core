@@ -398,6 +398,8 @@ HANGUL_N = """
 # http://www.thaismile.jp/ThaiLanguage/6/aiueo.html
 # Ambiguity:
 # - ふ หุ (ฟุ)
+#
+# s: ซ
 THAI = u"""
 อะ	อิ	อุ	เอะ	โอะ
 ขะ	ขิ	ขุ	เขะ	โขะ
