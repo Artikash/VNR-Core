@@ -168,8 +168,9 @@ def capitalizeromaji(text):
 _u_prefix = "\
 おこそとのほもよろを\
 ごぞどぼぽ\
-ょ\
-"#ゅ
+ょ
+ゅ\
+"
 _re_u = re.compile(ur"(?<=[%s])う" % _u_prefix)
 def simplify_kana_name(text):
   """
