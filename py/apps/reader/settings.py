@@ -1209,7 +1209,7 @@ class Settings(QSettings):
 
   infoseekRubyEnabledChanged = Signal(bool)
   def isInfoseekRubyEnabled(self):
-    return to_bool(self.value('InfoseekRubyEnabled', True))
+    return to_bool(self.value('InfoseekRubyEnabled'))
   def setInfoseekRubyEnabled(self, value):
     if value != self.isInfoseekRubyEnabled():
       self.setValue('InfoseekRubyEnabled', value)
@@ -1233,7 +1233,7 @@ class Settings(QSettings):
 
   googleRubyEnabledChanged = Signal(bool)
   def isGoogleRubyEnabled(self):
-    return to_bool(self.value('GoogleRubyEnabled', True))
+    return to_bool(self.value('GoogleRubyEnabled'))
   def setGoogleRubyEnabled(self, value):
     if value != self.isGoogleRubyEnabled():
       self.setValue('GoogleRubyEnabled', value)
@@ -1249,7 +1249,7 @@ class Settings(QSettings):
 
   bingRubyEnabledChanged = Signal(bool)
   def isBingRubyEnabled(self):
-    return to_bool(self.value('BingRubyEnabled', True))
+    return to_bool(self.value('BingRubyEnabled'))
   def setBingRubyEnabled(self, value):
     if value != self.isBingRubyEnabled():
       self.setValue('BingRubyEnabled', value)
@@ -1265,7 +1265,7 @@ class Settings(QSettings):
 
   naverRubyEnabledChanged = Signal(bool)
   def isNaverRubyEnabled(self):
-    return to_bool(self.value('NaverRubyEnabled', True))
+    return to_bool(self.value('NaverRubyEnabled'))
   def setNaverRubyEnabled(self, value):
     if value != self.isNaverRubyEnabled():
       self.setValue('NaverRubyEnabled', value)
@@ -1281,7 +1281,7 @@ class Settings(QSettings):
 
   baiduRubyEnabledChanged = Signal(bool)
   def isBaiduRubyEnabled(self):
-    return to_bool(self.value('BaiduRubyEnabled', True))
+    return to_bool(self.value('BaiduRubyEnabled'))
   def setBaiduRubyEnabled(self, value):
     if value != self.isBaiduRubyEnabled():
       self.setValue('BaiduRubyEnabled', value)
