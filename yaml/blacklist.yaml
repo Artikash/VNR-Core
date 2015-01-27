@@ -156,6 +156,7 @@ processes:
   - POWERPNT.EXE        # Microsoft Office
   - PotPlayer.exe       # Pot Player
   - PotPlayerMini.exe   # Pot Player
+  - PPLive.exe          # PPLive
   - QQ.exe              # Tencent
   - QQBrowser.exe       # Tencent
   - QQDownload.exe      # Tencent
