@@ -87,9 +87,9 @@ def hira2hangul(text): return _convert(text, _TYPE_HIRA_N, _TYPE_HANGUL)
 def kata2hangul(text): return _convert(text, _TYPE_KATA_N, _TYPE_HANGUL)
 def kana2hangul(text): return _convert(text, _TYPE_KANA_N, _TYPE_HANGUL)
 
-def hira2thai(text): return _convert(text, _TYPE_HIRA, _TYPE_THAI)
-def kata2thai(text): return _convert(text, _TYPE_KATA, _TYPE_THAI)
-def kana2thai(text): return _convert(text, _TYPE_KANA, _TYPE_THAI)
+def hira2thai(text): return _repair_th(_convert(text, _TYPE_HIRA, _TYPE_THAI))
+def kata2thai(text): return _repair_th(_convert(text, _TYPE_KATA, _TYPE_THAI))
+def kana2thai(text): return _repair_th(_convert(text, _TYPE_KANA, _TYPE_THAI))
 
 # repair romaji
 import re
@@ -119,6 +119,27 @@ def _repair_romaji_ru(text): # unicode -> unicode  repair xtu
       text = _re_ru_ii.sub(ur'\1й', text) # push i to the end
   if u'з' in text:
     text = _re_ru_z.sub(u'дз', text)
+  return text
+
+# http://en.wikipedia.org/wiki/Thai_alphabet
+# Thai unicode range: U+0E00–U+0E7F
+_th_b = u'(?:^|(?<![\u0e00-\u0e7f]))' # \b at the beginning
+_th_e = u'(?:$|(?![\u0e00-\u0e7f]))' # \e at the beginning
+_re_th = (
+  (re.compile(_th_b + u'ก'), u'ค'), # k
+  (re.compile(_th_b + u'จิ'), u'ชิ'), # chi
+  (re.compile(_th_b + u'ตา'), u'ทา'), # ta
+  (re.compile(ur"า" + _th_e), u'ะ'),  # a
+  (re.compile(u"คะ" +_th_e), u'กะ'), # ka (after applying a)
+  (re.compile(ur"([โเ][กรต])" + _th_e), ur'\1ะ'), # oe
+)
+def _repair_th(text):
+  """
+  @param  text
+  @return  unicode
+  """
+  for pat, repl in _re_th:
+    text = pat.sub(repl, text)
   return text
 
 from sakurakit import skstr
@@ -173,16 +194,6 @@ if __name__ == '__main__':
     return JapaneseTransliterator(text).transliterate_from_hrkt_to_latn()
   print test(t)
 
-  t = u'さま'
-  t = u'ひろすえ'
-  t = u'ちゃん'
-  print hira2ru(t)
-  assert hira2ru(t) == u'чан'
-
-  t = u'せんせい'
-  print hira2ru(t)
-  assert hira2ru(t) == u'сэнсэй'
-
   t = u'イイズミ-ちゃん'
   print kana2ru(t) # ийдзуми-чан, supposed to be Иизуми-чан
   t = u'ぱっつぁん'
@@ -195,14 +206,62 @@ if __name__ == '__main__':
   t = u'ソフトクリーム'
   print kata2ru(t) # correct translation is Софуто-куриму
 
-  t = u'ジャケット'
-  print kata2ru(t) # дзякэтто
-  assert kata2ru(t) == u'дзякэтто'
+  # Korean
+  l = [
+    (u'しおり', u'시오리'),
+  ]
+  for k,v in l:
+    print k, kana2hangul(k), v
+    assert kana2hangul(k) == v
 
-  # http://ru.wikipedia.org/wiki/Каваий
-  t = u'かわいい'
-  print hira2ru(t) # дзякэтто
-  assert hira2ru(t) == u'каваий'
+  # Russian
+  l = [
+    (u'かわいい', u'каваий'), # http://ru.wikipedia.org/wiki/каваий
+    (u'ジャケット', u'дзякэтто'),
+    (u'せんせい', u'сэнсэй'),
+    (u'ちゃん', u'чан'),
+  ]
+  for k,v in l:
+    print k, kana2ru(k)
+    assert kana2ru(k) == v
+
+  # Thai
+  l = [
+    (u'たにゃ', u'ทาเนีย'),
+    (u'みかづき', u'มิคาซึกิ'),
+    (u'つぐみ', u'สึกุมิ'),
+    (u'かなり', u'คานาริ'),
+    (u'さと', u'ซาโตะ'),
+    (u'ましろ', u'มาชิโระ'),
+    (u'まどか', u'มาโดกะ'),
+    (u'かのん', u'คาน่อน'),
+    (u'まゆ', u'มายุ'),
+    (u'けせん', u'เคเซน'),
+    (u'ちばな', u'ชิบานะ'),
+    (u'きさき', u'คิซากิ'),
+    (u'みやこ', u'มิยาโกะ'),
+    (u'ふじな', u'ฟุจินะ'),
+    (u'ひろはら', u'ฮิโรฮาระ'),
+    (u'さぎばら', u'ซาคิบาระ'),
+    (u'すすら', u'ซึซึระ'),
+    (u'まる', u'มารุ'),
+    (u'おてんた', u'โอเท็นตะ'),
+    (u'むねちか', u'มุเนะจิกะ'),
+    (u'くろば', u'คุโรบะ'),
+    (u'けい', u'เคย์'),
+    (u'さねあき', u'ซาเนะอากิ'),
+    #(u'すずかけ', u'สุซึคาเคะ'), # this will fail because すす => すず
+    #(u'えんにし', u'เอนิชิ'), # this will fail because ennishi => enishi
+    #美愛: u'มิจิกะ
+    #かがみ: คางามิ
+    #幸和: ซาจิคาซุ
+    #一悟: อิจิโกะ
+    #左京: ซาเคียว
+    #みずのみや: มิซุโนะมิยะ
+  ]
+  for k,v in l:
+    print k, hira2thai(k), v
+    assert kana2thai(k) == v
 
 # EOF
 
