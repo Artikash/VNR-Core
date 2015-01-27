@@ -168,7 +168,7 @@ def capitalizeromaji(text):
 _u_prefix = "\
 おこそとのほもよろを\
 ごぞどぼぽ\
-ょ
+ょ\
 ゅ\
 "
 _re_u = re.compile(ur"(?<=[%s])う" % _u_prefix)
