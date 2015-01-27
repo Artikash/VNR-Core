@@ -409,7 +409,7 @@ HANGUL_N = """
 # - เค (ke) will be replaced by เคะ at the end of a word
 # - ตา (ta) replace by ทา at the beginning of a word
 THAI = u"""
-อา	ย์	う	เอ	โอ
+อา	อิ	う	เอ	โอ
 คา	กิ	กุ	เค	โก
 ซา	ชิ	ซึ	เซ	そ
 ตา	จิ	สึ	เท็	โต
