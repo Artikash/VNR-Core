@@ -61,8 +61,6 @@ HIRA = u"""
 ゃ		ゅ		ょ
 ゎ
 ゕ			ゖ
-っ
-ー
 """
 
 # Specific for ん
@@ -173,8 +171,6 @@ a	i	u	e	o
 ya		yu		yo
 wa
 ka			ke
-っ
--
 """
 
 # http://en.wikipedia.org/wiki/Russian_alphabet
@@ -279,8 +275,6 @@ ROMAJI_RU = u"""
 я		ю		й
 wа
 ка			кэ
-っ
--
 """
 
 # http://blog.naver.com/thinkstart/120072326990
@@ -343,7 +337,6 @@ HANGUL = u"""
 와
 카			케
 -
-ー
 """
 
 HANGUL_N = """
@@ -456,8 +449,6 @@ THAI = u"""
 ยา		ยุ		ょ
 ゎ
 ゕ			ゖ
-っ
-ー
 """
 
 TABLES = {

@@ -75,21 +75,32 @@ def _convert(text, fr, to):
 def hira2kata(text): return _convert(text, _TYPE_HIRA, _TYPE_KATA)
 def kata2hira(text): return _convert(text, _TYPE_KATA, _TYPE_HIRA)
 
-def hira2romaji(text): return _repair_romaji(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI))
-def kata2romaji(text): return _repair_romaji(_convert(text, _TYPE_KATA, _TYPE_ROMAJI))
-def kana2romaji(text): return _repair_romaji(_convert(text, _TYPE_KANA, _TYPE_ROMAJI))
+def hira2romaji(text): return _repair_reading(_repair_romaji(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI)))
+def kata2romaji(text): return _repair_reading(_repair_romaji(_convert(text, _TYPE_KATA, _TYPE_ROMAJI)))
+def kana2romaji(text): return _repair_reading(_repair_romaji(_convert(text, _TYPE_KANA, _TYPE_ROMAJI)))
 
-def hira2ru(text): return _repair_romaji_ru(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI_RU))
-def kata2ru(text): return _repair_romaji_ru(_convert(text, _TYPE_KATA, _TYPE_ROMAJI_RU))
-def kana2ru(text): return _repair_romaji_ru(_convert(text, _TYPE_KANA, _TYPE_ROMAJI_RU))
+def hira2ru(text): return _repair_reading(_repair_romaji_ru(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI_RU)))
+def kata2ru(text): return _repair_reading(_repair_romaji_ru(_convert(text, _TYPE_KATA, _TYPE_ROMAJI_RU)))
+def kana2ru(text): return _repair_reading(_repair_romaji_ru(_convert(text, _TYPE_KANA, _TYPE_ROMAJI_RU)))
 
-def hira2hangul(text): return _convert(text, _TYPE_HIRA_N, _TYPE_HANGUL)
-def kata2hangul(text): return _convert(text, _TYPE_KATA_N, _TYPE_HANGUL)
-def kana2hangul(text): return _convert(text, _TYPE_KANA_N, _TYPE_HANGUL)
+def hira2hangul(text): return _repair_reading(_convert(text, _TYPE_HIRA_N, _TYPE_HANGUL))
+def kata2hangul(text): return _repair_reading(_convert(text, _TYPE_KATA_N, _TYPE_HANGUL))
+def kana2hangul(text): return _repair_reading(_convert(text, _TYPE_KANA_N, _TYPE_HANGUL))
 
-def hira2thai(text): return _repair_th(_convert(text, _TYPE_HIRA, _TYPE_THAI))
-def kata2thai(text): return _repair_th(_convert(text, _TYPE_KATA, _TYPE_THAI))
-def kana2thai(text): return _repair_th(_convert(text, _TYPE_KANA, _TYPE_THAI))
+def hira2thai(text): return _repair_reading(_repair_th(_convert(text, _TYPE_HIRA, _TYPE_THAI)))
+def kata2thai(text): return _repair_reading(_repair_th(_convert(text, _TYPE_KATA, _TYPE_THAI)))
+def kana2thai(text): return _repair_reading(_repair_th(_convert(text, _TYPE_KANA, _TYPE_THAI)))
+
+def _repair_reading(text):
+  """
+  @param  text
+  @return  unicode
+  """
+  if u'ー' in text:
+    text = text.replace(u'ー', '-')
+  if u'っ' in text:
+    text = text.replace(u'っ', '')
+  return text
 
 # repair romaji
 import re
@@ -99,7 +110,9 @@ def _repair_romaji(text): # unicode -> unicode  repair xtu
   @param  text
   @return  unicode
   """
-  return _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-') if u'っ' in text else text
+  if u'っ' in text:
+    text = _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-')
+  return text
 
 _ru_i_vowel = u"ауэояё"
 _re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
@@ -167,7 +180,6 @@ def kana2name(text, lang):
   text = simplify_kana_name(text)
   return kana2reading(text, lang)
 
-
 from sakurakit import skstr
 _re_capitalize = skstr.multireplacer({
   #' Da ': ' da ',
@@ -199,6 +211,7 @@ def simplify_kana_name(text):
   @param  text  unicode
   @return  unicode
   """
+  text = text.replace(u"ー", '')
   if text and len(text) > 3 and u'う' in text:
     text = _re_u.sub('', text)
   return text
