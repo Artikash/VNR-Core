@@ -146,6 +146,28 @@ def _repair_th(text):
     text = pat.sub(repl, text)
   return text
 
+# Names
+
+def kana2reading(text, lang):
+  """
+  @param  text  unicode
+  @param  lang  str
+  @return  unicode or None
+  """
+  if lang == 'ko':
+    return kana2hangul(text)
+  #elif lang == 'th':
+  #  return kana2thai(text)
+  elif lang == 'ru':
+    return capitalizeromaji(kana2ru(text))
+  else:
+    return capitalizeromaji(kana2romaji(text))
+
+def kana2name(text, lang):
+  text = simplify_kana_name(text)
+  return kana2reading(text, lang)
+
+
 from sakurakit import skstr
 _re_capitalize = skstr.multireplacer({
   #' Da ': ' da ',

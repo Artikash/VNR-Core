@@ -227,15 +227,8 @@ class Settings(QSettings):
   ## Romanize ##
 
   rubyLanguagesChanged = Signal(str)
-  def rubyLanguages(self): # list of languages joined with ','
-    return self.value('RubyLanguages') or ''
-  def setRubyLanguages(self, value):
-    if value != self.rubyLanguages():
-      self.setValue('RubyLanguages', value)
-      self.rubyLanguagesChanged.emit(value)
-
   rubyTextEnabledChanged = Signal(bool)
-  def isRubyTextEnabled(self): return to_bool(self.value('RubyText'))
+  def isRubyTextEnabled(self): return to_bool(self.value('RubyText', True))
   def setRubyTextEnabled(self, value):
     if value != self.isRubyTextEnabled():
       self.setValue('RubyText', value)
@@ -256,7 +249,19 @@ class Settings(QSettings):
       self.setValue('InvertRuby', t)
       self.rubyInvertedChanged.emit(t)
 
-  # Ruby for Hangul
+  chineseRubyEnabledChanged = Signal(bool)
+  def isChineseRubyEnabled(self): return to_bool(self.value('ChineseRuby', True))
+  def setChineseRubyEnabled(self, value):
+    if value != self.isChineseRubyEnabled():
+      self.setValue('ChineseRuby', value)
+      self.chineseRubyEnabledChanged.emit(value)
+
+  koreanRubyEnabledChanged = Signal(bool)
+  def isKoreanRubyEnabled(self): return to_bool(self.value('KoreanRuby', True))
+  def setKoreanRubyEnabled(self, value):
+    if value != self.isKoreanRubyEnabled():
+      self.setValue('KoreanRuby', value)
+      self.koreanRubyEnabledChanged.emit(value)
 
   hanjaRubyEnabledChanged = Signal(bool)
   def isHanjaRubyEnabled(self): return to_bool(self.value('HanjaRuby', True))
@@ -1920,8 +1925,9 @@ class SettingsProxy(QObject):
     g.rubyInvertedChanged.connect(self.rubyInvertedChanged)
     g.rubyTextEnabledChanged.connect(self.rubyTextEnabledChanged)
     g.rubyTranslationEnabledChanged.connect(self.rubyTranslationEnabledChanged)
-    g.rubyLanguagesChanged.connect(self.rubyLanguagesChanged)
 
+    g.chineseRubyEnabledChanged.connect(self.chineseRubyEnabledChanged)
+    g.koreanRubyEnabledChanged.connect(self.koreanRubyEnabledChanged)
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
     g.hanjaRubyEnabledChanged.connect(self.hanjaRubyEnabledChanged)
 
@@ -2083,7 +2089,7 @@ class SettingsProxy(QObject):
   #timeZoneEnabled = bool_property('TimeZoneEnabled', True, notify=timeZoneEnabledChanged)
 
   rubyTextEnabledChanged = Signal(bool)
-  rubyTextEnabled = bool_property('RubyText', False, notify=rubyTextEnabledChanged)
+  rubyTextEnabled = bool_property('RubyText', True, notify=rubyTextEnabledChanged)
   rubyTranslationEnabledChanged = Signal(bool)
   rubyTranslationEnabled = bool_property('RubyTranslation', False, notify=rubyTranslationEnabledChanged)
 
@@ -2096,8 +2102,11 @@ class SettingsProxy(QObject):
   hanjaRubyEnabledChanged = Signal(bool)
   hanjaRubyEnabled = bool_property('HanjaRuby', True, notify=hanjaRubyEnabledChanged)
 
-  rubyLanguagesChanged = Signal(unicode)
-  rubyLanguages = unicode_property('RubyLanguages', '', notify=rubyLanguagesChanged)
+  koreanRubyEnabledChanged = Signal(bool)
+  koreanRubyEnabled = bool_property('KoreanRuby', True, notify=koreanRubyEnabledChanged)
+
+  chineseRubyEnabledChanged = Signal(bool)
+  chineseRubyEnabled = bool_property('ChineseRuby', True, notify=chineseRubyEnabledChanged)
 
   grimoireNormalizedXChanged = Signal(float)
   grimoireNormalizedX = float_property('GrimoireNormalizedX', 0.0, notify=grimoireNormalizedXChanged)

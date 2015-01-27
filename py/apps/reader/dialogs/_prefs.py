@@ -4,6 +4,7 @@
 
 import os
 from functools import partial
+from collections import OrderedDict
 from PySide.QtCore import Qt, QTimer
 from PySide import QtCore, QtGui
 from Qt5 import QtWidgets
@@ -3257,8 +3258,6 @@ class ChineseTranslationTab(QtWidgets.QDialog):
 #@Q_Q
 class _RomanTranslationTab(object):
 
-  LANGUAGES = [it for it in ALL_LANGUAGES if it != 'ja' and it != 'en']
-
   def __init__(self, q):
     self._createUi(q)
 
@@ -3272,7 +3271,7 @@ class _RomanTranslationTab(object):
     blans = settings.global_().blockedLanguages()
     if 'ko' not in blans:
       self._refreshKoreanEnabled()
-      for sig in ss.rubyTextEnabledChanged, ss.rubyTranslationEnabledChanged, ss.rubyLanguagesChanged:
+      for sig in ss.rubyTextEnabledChanged, ss.rubyTranslationEnabledChanged, ss.koreanRubyEnabledChanged:
         sig.connect(self._refreshKoreanEnabled)
 
   def _createUi(self, q):
@@ -3364,13 +3363,20 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
 
   # Language group
 
+  LANGUAGES = OrderedDict((
+    ('zh', 'Chinese'),
+    ('ko', 'Korean'),
+  ))
+
   @memoizedproperty
   def languageGroup(self):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
-    for lang in self.LANGUAGES:
+
+    for lang in self.LANGUAGES.iterkeys():
       if lang not in blans:
         layout.addWidget(self._createLanguageButton(lang))
+
     ret = QtWidgets.QGroupBox(my.tr("Languages to display ruby"))
     ret.setLayout(layout)
     return ret
@@ -3383,33 +3389,18 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
 
   def _refreshKoreanEnabled(self):
     ss = settings.global_()
-    t = (ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled()) and 'ko' in ss.rubyLanguages()
+    t = ss.isKoreanRubyEnabled() and (ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled())
     self.koreanGroup.setEnabled(t)
 
   def _createLanguageButton(self, lang): # str ->
     ret = QtWidgets.QCheckBox(i18n.language_name(lang))
-    ret.setChecked(lang in settings.global_().rubyLanguages())
-    ret.clicked[bool].connect(partial(lambda lang, value:
-        self._toggleLanguage(lang, value),
-        lang))
-    return ret
-
-  def _toggleLanguage(self, lang, t): # str, bool ->
+    name = self.LANGUAGES[lang]
     ss = settings.global_()
-    langs = ss.rubyLanguages()
-    if t: # t == true
-      if lang not in langs:
-        if langs:
-          langs += ',' + lang
-        else:
-          langs = lang
-        ss.setRubyLanguages(langs)
-    else: # t == false
-      if lang in langs:
-        l = langs.split(',')
-        l.remove(lang)
-        langs = ','.join(l)
-        ss.setRubyLanguages(langs)
+    getter = getattr(ss, "is%sRubyEnabled" % name)
+    setter = getattr(ss, "set%sRubyEnabled" % name)
+    ret.setChecked(getter())
+    ret.clicked[bool].connect(setter)
+    return ret
 
 class RomanTranslationTab(QtWidgets.QDialog):
 

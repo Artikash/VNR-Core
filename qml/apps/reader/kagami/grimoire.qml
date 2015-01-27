@@ -153,7 +153,9 @@ Item { id: root_
 
   property bool rubyTextEnabled
   property bool rubyTranslationEnabled
-  property string rubyLanguages
+
+  property bool chineseRubyEnabled
+  property bool koreanRubyEnabled
 
   property bool hanjaRubyEnabled
   property bool romajaRubyEnabled
@@ -193,9 +195,14 @@ Item { id: root_
   }
 
   function isRubyLanguage(lang) { // string -> bool
-    if (lang.length === 3)
-      lang = lang.substr(0, 2)
-    return !!~root_.rubyLanguages.indexOf(lang)
+    switch (lang) {
+    case 'ko': return root_.koreanRubyEnabled
+    case 'zh': case 'zhs': case 'zht': return root_.chineseRubyEnabled
+    default: return false
+    }
+    //if (lang.length === 3)
+    //  lang = lang.substr(0, 2)
+    //return !!~root_.rubyLanguages.indexOf(lang)
   }
 
   function renderJapanese(text, colorize) { // string, bool -> string
@@ -1275,12 +1282,12 @@ Item { id: root_
           }
           if (!t)
             return ""
-          if (model.alignObject)
-            t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
-          else if (root_.isRubyLanguage(model.language) &&
+          if (root_.isRubyLanguage(model.language) &&
               ((model.type === 'text' || model.type === 'name') ?
               root_.rubyTextEnabled : root_.rubyTranslationEnabled))
             t = root_.renderRuby(t, model.language, textItem_.hover)
+          else if (model.alignObject)
+            t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
           else if (root_.splitsTranslation && model.type === 'tr')
             t = root_.splitTranslation(t, model.language)
           if (~t.indexOf("</a>"))

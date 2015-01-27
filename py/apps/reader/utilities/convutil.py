@@ -8,29 +8,16 @@ from jaconv import jaconv
 from jaconv.jaconv import hira2romaji, hira2ru, hira2hangul, hira2thai \
                         , kata2romaji, kata2ru, kata2hangul, kata2thai \
                         , kana2romaji, kana2ru, kana2hangul, kana2thai \
-                        , capitalizeromaji
+                        , capitalizeromaji \
+                        , kana2name
+from jaconv.jaconv import kana2reading as kana2yomi
 from opencc.opencc import zht2zhs #, ja2zht
 from ccman import zhs2zht, zht2zhx
-from hangulconv import hangulconv
+from hangulconv.hangulconv import to_hanja as hangul2hanja
 #from pinyinconv import pinyinconv
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached
-
-def kana2yomi(text, lang):
-  """
-  @param  text  unicode
-  @param  lang  str
-  @return  unicode or None
-  """
-  if lang == 'ko':
-    return kana2hangul(text)
-  #elif lang == 'th':
-  #  return kana2thai(text)
-  elif lang == 'ru':
-    return capitalizeromaji(kana2ru(text))
-  else:
-    return capitalizeromaji(kana2romaji(text))
 
 def yomi2kanji(text):
   """
@@ -39,10 +26,6 @@ def yomi2kanji(text):
   """
   if MSIME_VALID:
     return msime.to_kanji(text)
-
-def kana2name(text, lang):
-  text = jaconv.simplify_kana_name(text)
-  return kana2yomi(text, lang)
 
 def toroman(text, language=''): # unicode, str -> unicode
   """
@@ -65,11 +48,5 @@ def toroman(text, language=''): # unicode, str -> unicode
   if language in ('ko', 'ja') and ret != text:
     ret = ret.title()
   return ret
-
-"""
-@param  text  unicode
-@return  unicode or None
-"""
-hangul2hanja = hangulconv.to_hanja
 
 # EOF
