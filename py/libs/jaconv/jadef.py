@@ -400,31 +400,25 @@ HANGUL_N = """
 #
 # http://th.wikipedia.org/wiki/เทนโจอิง_อาซึกะ
 #
-# - า (a) will be replaced by ะ at the end of a word
-# - [กร] (o) will be replaced by ระ at the end of a word
-# - ก (k) will be replaced by ค at the beginning of a word
-#   This also implies กิ(ki) / คุ(ku) replace by คิ/คุ
-# - จิ (chi) will be replaced by ชิ at the beginning of a word
-# - คา (ka) will be replaced by กะ at the end of a word
-# - เค (ke) will be replaced by เคะ at the end of a word
-# - ตา (ta) replace by ทา at the beginning of a word
+# Issues:
+# - su/zu: ซึ (すすら) or ซุ (อีซูซุ) or even ซูซุ for すず
 THAI = u"""
-อา	อิ	う	เอ	โอ
-คา	กิ	กุ	เค	โก
-ซา	ชิ	ซึ	เซ	そ
-ตา	จิ	สึ	เท็	โต
-นา	นิ	ぬ	เนะ	น่อ
-ฮา	ฮิ	ฟุ	へ	ほ
-มา	มิ	มุ	め	も
-ยา		ยุ		よ
-รา	ริ	รุ	れ	โร
+อา	ย์	อุ	เอ	โอ
+คา	กิ	คุ	เค	โก
+ซา	ชิ	สึ	เซ	そ
+ตา	จิ	สึ	เท็	โท
+นา	นิ	นุ	เนะ	โน
+ฮา	ฮิ	ฟุ	へ	โฮ
+มา	มิ	มุ	เมะ	โม
+ยา		ยุ		โย
+รา	ริ	รุ	เร็	โร
 わ				を
-	ゐ		ゑ
+	ย์		เอ
 น
 
 が	คิ	กุ	げ	ご
-ざ	จิ	ซึ	ぜ	ぞ
-だ	จิ	ซึ	で	โด
+ざ	จิ	ซุ	เซะ	ぞ
+ดา	จิ	ซึ	で	โด
 บา	び	ぶ	べ	ぼ
 ぱ	ぴ	ปุ	ぺ	ぽ
 
@@ -456,7 +450,7 @@ THAI = u"""
 びゃ	びぃ	びゅ	びぇ	びょ
 ぴゃ	ぴぃ	ぴゅ	ぴぇ	ぴょ
 
-ぁ	ย์	ぅ	ぇ	โอ
+ぁ	ย์	อุ	เอ	โอ
 ยา		ยุ		ょ
 ゎ
 ゕ			ゖ

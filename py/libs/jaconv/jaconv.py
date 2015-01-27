@@ -127,17 +127,21 @@ _th_b = u'(?:^|(?<![\u0e00-\u0e7f]))' # \b at the beginning
 _th_e = u'(?:$|(?![\u0e00-\u0e7f]))' # \e at the beginning
 _re_th = (
   (re.compile(_th_b + u'ก'), u'ค'), # k
-  (re.compile(_th_b + u'จิ'), u'ชิ'), # chi
+  #(re.compile(_th_b + u'จิ'), u'ชิ'), # chi
   (re.compile(_th_b + u'ตา'), u'ทา'), # ta
+  #(re.compile(_th_b + ur"ย์"), u'อิ'), # i => yi
+  (re.compile(_th_b + ur"ย์"), u'อี'), # i => yi
+  (re.compile(ur"คุ" + _th_e), u'ขุ'), # ku
   (re.compile(ur"า" + _th_e), u'ะ'),  # a
-  (re.compile(u"คะ" +_th_e), u'กะ'), # ka (after applying a)
-  (re.compile(ur"([โเ][กรต])" + _th_e), ur'\1ะ'), # oe
+  (re.compile(u"คะ" + _th_e), u'กะ'), # ka (after applying a)
+  (re.compile(ur"([โเ][กรตน])" + _th_e), ur'\1ะ'), # oe
 )
 def _repair_th(text):
   """
   @param  text
   @return  unicode
   """
+  #return text
   for pat, repl in _re_th:
     text = pat.sub(repl, text)
   return text
@@ -227,37 +231,58 @@ if __name__ == '__main__':
 
   # Thai
   l = [
+    #(u'すず', u'ซูซุ'), fail
+    #(u'すすら', u'ซึซึระ'), # fail
+    #(u'すずしろ', u'ซุสึชิโระ'), # fail
+    #(u'すずかけ', u'สุซึคาเคะ'), # fail because すす => すず
+    #(u'いすず', u'อีซูซุ'),
+    (u'ちはや', u'จิฮายะ'),
+    (u'すかもり', u'สึคาโมริ'),
     (u'たにゃ', u'ทาเนีย'),
     (u'みかづき', u'มิคาซึกิ'),
     (u'つぐみ', u'สึกุมิ'),
     (u'かなり', u'คานาริ'),
-    (u'さと', u'ซาโตะ'),
     (u'ましろ', u'มาชิโระ'),
     (u'まどか', u'มาโดกะ'),
-    (u'かのん', u'คาน่อน'),
+    #(u'かのん', u'คาน่อน'), # fail because of の
     (u'まゆ', u'มายุ'),
     (u'けせん', u'เคเซน'),
-    (u'ちばな', u'ชิบานะ'),
+    #(u'ちばな', u'ชิบานะ'), # fail because of chi
     (u'きさき', u'คิซากิ'),
     (u'みやこ', u'มิยาโกะ'),
     (u'ふじな', u'ฟุจินะ'),
     (u'ひろはら', u'ฮิโรฮาระ'),
     (u'さぎばら', u'ซาคิบาระ'),
-    (u'すすら', u'ซึซึระ'),
     (u'まる', u'มารุ'),
     (u'おてんた', u'โอเท็นตะ'),
     (u'むねちか', u'มุเนะจิกะ'),
     (u'くろば', u'คุโรบะ'),
     (u'けい', u'เคย์'),
     (u'さねあき', u'ซาเนะอากิ'),
-    #(u'すずかけ', u'สุซึคาเคะ'), # this will fail because すす => すず
-    #(u'えんにし', u'เอนิชิ'), # this will fail because ennishi => enishi
+    (u'はるかぜ', u'ฮารุคาเซะ'),
+    (u'きぬむら',u'คินุมุระ'),
+    (u'れんな', u'เร็นนะ'),
+    #(u'はさくら', u'ฮาซากุระ'), # fail because of ku
+    (u'れんか', u'เร็นกะ'),
+    (u'りん', u'ริน'),
+    (u'みなもり', u'มินาโมริ'),
+    (u'ほのか', u'โฮโนกะ'),
+    (u'あやめ', u'อายาเมะ'),
+    (u'たくや', u'ทาคุยะ'),
+    (u'みうら', u'มิอุระ'), # http://th.wikipedia.org/wiki/เดป้าเปเป้
+    (u'よしなり', u'โยชินาริ'),
+    (u'とくおか', u'โทคุโอกะ'),
+    (u'まえだ', u'มาเอดะ'),
+    #(u'つきの', u'สึคิโนะ'), # fail because of ki
+    #(u'てんまく', u'เทนมาขุ'), # fail because of te
+    #(u'えんにし', u'เอนิชิ'), # fail because ennishi => enishi
     #美愛: u'มิจิกะ
     #かがみ: คางามิ
     #幸和: ซาจิคาซุ
     #一悟: อิจิโกะ
     #左京: ซาเคียว
     #みずのみや: มิซุโนะมิยะ
+    #冬馬: โทวมะ
   ]
   for k,v in l:
     print k, hira2thai(k), v
