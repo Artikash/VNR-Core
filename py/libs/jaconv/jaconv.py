@@ -59,6 +59,10 @@ def hira2ko(text): return _repair_reading(_convert(text, 'hira', 'ko'))
 def kata2ko(text): return _repair_reading(_convert(text, 'kata', 'ko'))
 def kana2ko(text): return _repair_reading(_convert(text, 'kana', 'ko'))
 
+def hira2ar(text): return _repair_reading(_convert(text, 'hira', 'ar'))
+def kata2ar(text): return _repair_reading(_convert(text, 'kata', 'ar'))
+def kana2ar(text): return _repair_reading(_convert(text, 'kana', 'ar'))
+
 hira2romaji = hira2en
 kata2romaji = kata2en
 kana2romaji = kana2en
@@ -139,6 +143,8 @@ def kana2reading(text, lang):
     return kana2ko(text)
   elif lang == 'th':
     return kana2th(text)
+  #elif lang == 'ar':
+  #  return kana2ar(text)
   elif lang == 'ru':
     return capitalizeromaji(kana2ru(text))
   else:
@@ -308,6 +314,18 @@ if __name__ == '__main__':
   for k,v in l:
     print k, hira2th(k), v
     assert kana2th(k) == v
+
+  # Arabian
+  l = [
+    (u'さくら', u'ساكورا'),
+    (u'さと', u'ساتو'),
+    (u'かがみ', u'كاغامي'),
+    (u'さい', u'ساي'),
+    #(u'あべ', u'ابي'), # fail since I don't know how to say be
+  ]
+  for k,v in l:
+    print k, kana2ar(k), v
+    assert kana2ar(k) == v
 
 # EOF
 
