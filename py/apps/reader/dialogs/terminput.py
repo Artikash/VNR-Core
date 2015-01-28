@@ -472,8 +472,7 @@ class _TermInput(object):
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
-          #for lang in ('romaji', 'ko', 'th')
-          for lang in ('romaji', 'ru', 'ko')
+          for lang in ('romaji', 'ru', 'ko', 'th')
         ))
         w.setText(t)
         return

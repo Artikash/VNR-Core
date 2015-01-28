@@ -4,33 +4,21 @@
 
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin, wide2thin_digit
 from unidecode import unidecode
-from jaconv import jaconv
-from jaconv.jaconv import hira2romaji, hira2ru, hira2hangul, hira2thai \
-                        , kata2romaji, kata2ru, kata2hangul, kata2thai \
-                        , kana2romaji, kana2ru, kana2hangul, kana2thai \
-                        , capitalizeromaji
+from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th \
+                        , kana2name, kana2reading, capitalizeromaji
 from opencc.opencc import zht2zhs #, ja2zht
 from ccman import zhs2zht, zht2zhx
-from hangulconv import hangulconv
+from hangulconv.hangulconv import to_hanja as hangul2hanja
 #from pinyinconv import pinyinconv
+
+kana2yomi = kana2reading
+kata2romaji = hira2romaji = kana2romaji
+kata2ru = hira2ru = kana2ru
+kata2ko = hira2ko = kana2ko
+kata2th = hira2th = kana2th
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached
-
-def kana2yomi(text, lang):
-  """
-  @param  text  unicode
-  @param  lang  str
-  @return  unicode or None
-  """
-  if lang == 'ko':
-    return kana2hangul(text)
-  #elif lang == 'th':
-  #  return kana2thai(text)
-  elif lang == 'ru':
-    return capitalizeromaji(kana2ru(text))
-  else:
-    return capitalizeromaji(kana2romaji(text))
 
 def yomi2kanji(text):
   """
@@ -39,10 +27,6 @@ def yomi2kanji(text):
   """
   if MSIME_VALID:
     return msime.to_kanji(text)
-
-def kana2name(text, lang):
-  text = jaconv.simplify_kana_name(text)
-  return kana2yomi(text, lang)
 
 def toroman(text, language=''): # unicode, str -> unicode
   """
@@ -65,11 +49,5 @@ def toroman(text, language=''): # unicode, str -> unicode
   if language in ('ko', 'ja') and ret != text:
     ret = ret.title()
   return ret
-
-"""
-@param  text  unicode
-@return  unicode or None
-"""
-hangul2hanja = hangulconv.to_hanja
 
 # EOF

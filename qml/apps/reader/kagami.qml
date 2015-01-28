@@ -535,7 +535,6 @@ Item { id: root_
 
         rubyTextEnabled: settings_.rubyTextEnabled
         rubyTranslationEnabled: settings_.rubyTranslationEnabled
-        rubyLanguages: settings_.rubyLanguages
 
         function ensureVisible() {
           if (x < gameWindowTracker_.x || x+width/2 > gameWindowTracker_.x+gameWindowTracker_.width) {
@@ -618,6 +617,9 @@ Item { id: root_
 
         rubyJaInverted: settings_.rubyJaInverted
         rubyInverted: settings_.rubyInverted
+
+        chineseRubyEnabled: settings_.chineseRubyEnabled
+        koreanRubyEnabled: settings_.koreanRubyEnabled
 
         hanjaRubyEnabled: settings_.hanjaRubyEnabled
         romajaRubyEnabled: settings_.romajaRubyEnabled
