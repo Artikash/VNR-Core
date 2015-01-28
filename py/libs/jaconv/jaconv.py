@@ -143,6 +143,8 @@ def kana2reading(text, lang):
     return kana2ko(text)
   elif lang == 'th':
     return kana2th(text)
+  #elif lang == 'ar':
+  #  return kana2ar(text)
   elif lang == 'ru':
     return capitalizeromaji(kana2ru(text))
   else:
@@ -318,6 +320,8 @@ if __name__ == '__main__':
     (u'さくら', u'ساكورا'),
     (u'さと', u'ساتو'),
     (u'かがみ', u'كاغامي'),
+    (u'さい', u'ساي'),
+    #(u'あべ', u'ابي'), # fail since I don't know how to say be
   ]
   for k,v in l:
     print k, kana2ar(k), v
