@@ -165,6 +165,7 @@ processes:
   - QQPlayer.exe        # Tencent
   - qtcreator.exe       # Qt
   - QuickTime.exe       # Apple
+  - QvodPlayer.exe      # QVOD
   - saayaa.exe          # Baidu
   - Safari.exe          # Apple
   - ScreenshotReaderPortable.exe # http://sakuradite.com/topic/524
