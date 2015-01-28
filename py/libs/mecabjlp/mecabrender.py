@@ -11,7 +11,7 @@ import MeCab
 from sakurakit import skstr
 from unitraits.uniconv import kata2hira
 import mecabdef, mecabfmt, mecabparse
-from convutil import hira2romaji
+from jaconv.jaconv import hira2romaji
 
 ## Parse plain text
 
