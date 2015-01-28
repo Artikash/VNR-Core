@@ -213,24 +213,41 @@ if __name__ == '__main__':
   t = u'ソフトクリーム'
   print kata2ru(t) # correct translation is Софуто-куриму
 
-  # Korean
+  # Romaji
   l = [
-    (u'しおり', u'시오리'),
+    (u'かわいい', u'kawaii'),
+    (u'いぇす', u'yesu'),
+    (u'ジャケット', u'jaketto'),
+    (u'せんせい', u'sensei'),
+    (u'ちゃん', u'chan'),
+    (u'ちょうきょう', u'choukyou'),
   ]
   for k,v in l:
-    print k, kana2ko(k), v
-    assert kana2ko(k) == v
+    print k, kana2romaji(k), v
+    assert kana2romaji(k) == v
 
   # Russian
   l = [
     (u'かわいい', u'каваий'), # http://ru.wikipedia.org/wiki/каваий
+    #(u'いぇす', u'иэсу'), # not sure
     (u'ジャケット', u'дзякэтто'),
     (u'せんせい', u'сэнсэй'),
     (u'ちゃん', u'чан'),
+    (u'いえやす', u'иэясу'),
+    #(u'ちょうきょう', u'чоукёу'), # not sure
   ]
   for k,v in l:
-    print k, kana2ru(k)
+    print k, kana2ru(k), v
     assert kana2ru(k) == v
+
+  # Korean
+  l = [
+    (u'しおり', u'시오리'),
+    (u'いぇす', u'예스'),
+  ]
+  for k,v in l:
+    print k, kana2ko(k), v
+    assert kana2ko(k) == v
 
   # Thai
   l = [
@@ -276,6 +293,7 @@ if __name__ == '__main__':
     (u'よしなり', u'โยชินาริ'),
     (u'とくおか', u'โทคุโอกะ'),
     (u'まえだ', u'มาเอดะ'),
+    (u'ふうちゃん', u'ฟูจัง'), # http://th.wikipedia.org/wiki/รักลวงป่วนใจ
     #(u'つきの', u'สึคิโนะ'), # fail because of ki
     #(u'てんまく', u'เทนมาขุ'), # fail because of te
     #(u'えんにし', u'เอนิชิ'), # fail because ennishi => enishi
