@@ -10,8 +10,8 @@ if __name__ == '__main__': # DEBUG
 import MeCab
 from sakurakit import skstr
 from unitraits.uniconv import kata2hira
-from jaconv.jaconv import hira2romaji
 import mecabdef, mecabfmt, mecabparse
+from convutil import hira2romaji
 
 ## Parse plain text
 

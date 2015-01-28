@@ -7,34 +7,9 @@ if __name__ == '__main__':
   sys.path.append("..")
 
 import re
-from itertools import chain, imap, izip
 from sakurakit.skstr import multireplacer
+from unitraits.uniconv import hira2kata
 import jadef
-
-_TYPE_KANA = 0
-_TYPE_HIRA = 1
-_TYPE_KATA = 2
-
-_TYPE_KANA_N = 3
-_TYPE_HIRA_N = 4
-_TYPE_KATA_N = 5
-
-_TYPE_ROMAJI = 6
-_TYPE_HANGUL = 7
-_TYPE_THAI = 8
-
-_TYPE_ROMAJI_RU = 10
-
-_DEFS = { # {int type:unicode}
-  _TYPE_HIRA: jadef.HIRA,
-  _TYPE_KATA: jadef.KATA,
-  _TYPE_HIRA_N: jadef.HIRA + jadef.HIRA_N,
-  _TYPE_KATA_N: jadef.KATA + jadef.KATA_N,
-  _TYPE_ROMAJI: jadef.ROMAJI,
-  _TYPE_ROMAJI_RU: jadef.ROMAJI_RU,
-  _TYPE_HANGUL: jadef.HANGUL + jadef.HANGUL_N,
-  _TYPE_THAI: jadef.THAI,
-}
 
 def _makeconverter(fr, to):
   """
@@ -42,19 +17,14 @@ def _makeconverter(fr, to):
   @param  to  int
   @return  function or None
   """
-  if fr == _TYPE_KANA:
-    olist = _DEFS[to].split()
-    olist = chain(olist, olist)
-    ilist = chain(_DEFS[_TYPE_HIRA].split(), _DEFS[_TYPE_KATA].split())
-  elif fr == _TYPE_KANA_N:
-    olist = _DEFS[to].split()
-    olist = chain(olist, olist)
-    ilist = chain(_DEFS[_TYPE_HIRA_N].split(), _DEFS[_TYPE_KATA_N].split())
-  else:
-    olist = _DEFS[to].split()
-    ilist = _DEFS[fr].split()
-  table = dict(izip(ilist, olist))
-  return multireplacer(table, escape=True) # escape is needed to get rid of '-'
+  s = jadef.TABLES[to]
+  if fr == 'kata':
+    s = hira2kata(s)
+  elif fr == 'kana':
+    s += '\n' + hira2kata(s)
+
+  t = jadef.parse(s)
+  return multireplacer(t)
 
 _CONVERTERS = {}
 def _convert(text, fr, to):
@@ -64,54 +34,52 @@ def _convert(text, fr, to):
   @param  to  int
   @return  unicode
   """
-  key = fr * 10 + to
-  conv = _CONVERTERS.get(key)
+  conv = _CONVERTERS.get(fr + to)
   if not conv:
-    conv = _CONVERTERS[key] = _makeconverter(fr, to)
-  return conv(text)
+    conv = _CONVERTERS[fr + to] = _makeconverter(fr, to)
+  text = conv(text)
+  text = text.replace(u'ッ', u'っ')
+  return text
 
 # unicode -> unicode
 
-def hira2kata(text): return _convert(text, _TYPE_HIRA, _TYPE_KATA)
-def kata2hira(text): return _convert(text, _TYPE_KATA, _TYPE_HIRA)
+def hira2en(text): return _repair_reading(_repair_en(_convert(text, 'hira', 'en')))
+def kata2en(text): return _repair_reading(_repair_en(_convert(text, 'kata', 'en')))
+def kana2en(text): return _repair_reading(_repair_en(_convert(text, 'kana', 'en')))
 
-def hira2romaji(text): return _repair_reading(_repair_romaji(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI)))
-def kata2romaji(text): return _repair_reading(_repair_romaji(_convert(text, _TYPE_KATA, _TYPE_ROMAJI)))
-def kana2romaji(text): return _repair_reading(_repair_romaji(_convert(text, _TYPE_KANA, _TYPE_ROMAJI)))
+def hira2ru(text): return _repair_reading(_repair_ru(_convert(text, 'hira', 'ru')))
+def kata2ru(text): return _repair_reading(_repair_ru(_convert(text, 'kata', 'ru')))
+def kana2ru(text): return _repair_reading(_repair_ru(_convert(text, 'kana', 'ru')))
 
-def hira2ru(text): return _repair_reading(_repair_romaji_ru(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI_RU)))
-def kata2ru(text): return _repair_reading(_repair_romaji_ru(_convert(text, _TYPE_KATA, _TYPE_ROMAJI_RU)))
-def kana2ru(text): return _repair_reading(_repair_romaji_ru(_convert(text, _TYPE_KANA, _TYPE_ROMAJI_RU)))
+def hira2th(text): return _repair_reading(_repair_th(_convert(text, 'hira', 'th')))
+def kata2th(text): return _repair_reading(_repair_th(_convert(text, 'kata', 'th')))
+def kana2th(text): return _repair_reading(_repair_th(_convert(text, 'kana', 'th')))
 
-def hira2hangul(text): return _repair_reading(_convert(text, _TYPE_HIRA_N, _TYPE_HANGUL))
-def kata2hangul(text): return _repair_reading(_convert(text, _TYPE_KATA_N, _TYPE_HANGUL))
-def kana2hangul(text): return _repair_reading(_convert(text, _TYPE_KANA_N, _TYPE_HANGUL))
+def hira2ko(text): return _repair_reading(_convert(text, 'hira', 'ko'))
+def kata2ko(text): return _repair_reading(_convert(text, 'kata', 'ko'))
+def kana2ko(text): return _repair_reading(_convert(text, 'kana', 'ko'))
 
-def hira2thai(text): return _repair_reading(_repair_th(_convert(text, _TYPE_HIRA, _TYPE_THAI)))
-def kata2thai(text): return _repair_reading(_repair_th(_convert(text, _TYPE_KATA, _TYPE_THAI)))
-def kana2thai(text): return _repair_reading(_repair_th(_convert(text, _TYPE_KANA, _TYPE_THAI)))
+hira2romaji = hira2en
+kata2romaji = kata2en
+kana2romaji = kana2en
 
 def _repair_reading(text):
   """
   @param  text
   @return  unicode
   """
-  if u'ー' in text:
-    text = text.replace(u'ー', '-')
-  if u'っ' in text:
-    text = text.replace(u'っ', '')
+  text = text.replace(u'ー', '-')
+  text = text.replace(u'っ', '-')
   return text
 
-# repair romaji
-import re
-_re_romaji = re.compile(ur"っ([bcdfghjklmnprstvxz])")
-def _repair_romaji(text): # unicode -> unicode  repair xtu
+_re_en_tsu = re.compile(ur"っ([bcdfghjklmnprstvxz])")
+def _repair_en(text): # unicode -> unicode  repair xtu
   """
   @param  text
   @return  unicode
   """
   if u'っ' in text:
-    text = _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-')
+    text = _re_en_tsu.sub(r'\1\1', text).replace(u'っ', u'-')
   return text
 
 _ru_i_vowel = u"ауэояё"
@@ -119,7 +87,7 @@ _re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
 _re_ru_ii = re.compile(ur"(?<=[%s])й(и+)" % _ru_i_vowel)
 _re_ru_z = re.compile(ur'\bз', re.UNICODE)
 _re_ru_tsu = re.compile(ur"っ([бвгдзклмнпрстфхцчшщъыь])")
-def _repair_romaji_ru(text): # unicode -> unicode  repair xtu
+def _repair_ru(text): # unicode -> unicode  repair xtu
   """
   @param  text
   @return  unicode
@@ -168,9 +136,9 @@ def kana2reading(text, lang):
   @return  unicode or None
   """
   if lang == 'ko':
-    return kana2hangul(text)
-  #elif lang == 'th':
-  #  return kana2thai(text)
+    return kana2ko(text)
+  elif lang == 'th':
+    return kana2th(text)
   elif lang == 'ru':
     return capitalizeromaji(kana2ru(text))
   else:
@@ -180,8 +148,7 @@ def kana2name(text, lang):
   text = simplify_kana_name(text)
   return kana2reading(text, lang)
 
-from sakurakit import skstr
-_re_capitalize = skstr.multireplacer({
+_re_capitalize = multireplacer({
   #' Da ': ' da ',
   ' De ': ' de ',
   ' Ha ': ' ha ',
@@ -225,9 +192,9 @@ if __name__ == '__main__':
   #print kata2romaji(t)
   #print kata2hira(t)
   #print hira2kata(t)
-  #print kata2hangul(t)
-  print kana2hangul(t)
-  print kana2thai(t)
+  #print kata2ko(t)
+  print kana2ko(t)
+  print kana2th(t)
 
   from jTransliterate import JapaneseTransliterator
   def test(text):
@@ -237,7 +204,7 @@ if __name__ == '__main__':
   t = u'イイズミ-ちゃん'
   print kana2ru(t) # ийдзуми-чан, supposed to be Иизуми-чан
   t = u'ぱっつぁん'
-  print hira2hangul(t)
+  print hira2ko(t)
   print hira2romaji(t)
   print hira2ru(t)
 
@@ -251,8 +218,8 @@ if __name__ == '__main__':
     (u'しおり', u'시오리'),
   ]
   for k,v in l:
-    print k, kana2hangul(k), v
-    assert kana2hangul(k) == v
+    print k, kana2ko(k), v
+    assert kana2ko(k) == v
 
   # Russian
   l = [
@@ -321,8 +288,8 @@ if __name__ == '__main__':
     #冬馬: โทวมะ
   ]
   for k,v in l:
-    print k, hira2thai(k), v
-    assert kana2thai(k) == v
+    print k, hira2th(k), v
+    assert kana2th(k) == v
 
 # EOF
 

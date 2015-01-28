@@ -77,8 +77,8 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
     #if ruby == mecabdef.RB_TR:
     #  wordtr = None
     katatrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
-                 jaconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
-                 jaconv.kata2thai if ruby == mecabdef.RB_THAI else
+                 jaconv.kata2ko if ruby == mecabdef.RB_HANGUL else
+                 jaconv.kata2th if ruby == mecabdef.RB_THAI else
                  #jaconv.kata2kanji if ruby == mecabdef.RB_KANJI else
                  jaconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_TR) else
                  None)
@@ -146,7 +146,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
                         yomigana = None
                         unknownYomi = False
                     elif ruby == mecabdef.RB_HANGUL:
-                      yomigana = jaconv.kata2hangul(yomigana)
+                      yomigana = jaconv.kata2ko(yomigana)
                     #elif ruby == mecabdef.RB_KANJI:
                     #  yomigana = jaconv.kata2kanji(yomigana)
               if not yomigana and unknownYomi and readingTypes:
