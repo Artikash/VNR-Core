@@ -786,6 +786,8 @@ class EzTranslator(OfflineMachineTranslator):
     u'「"「': u'『',
     u'」"」': u'』',
   }))
+  # Example: GPS97351.678 => GPS97351. 678
+  __re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
     to = 'ko'
@@ -806,6 +808,7 @@ class EzTranslator(OfflineMachineTranslator):
             to, fr, async)
         if repl:
           repl = self.__ez_repl_after(repl)
+          repl = self.__re_term_fix.sub('', repl)
           repl = self._unescapeTranslation(repl, to=to, fr=fr, emit=emit)
           self.cache.update(text, repl)
           return repl, to, self.key
@@ -1477,7 +1480,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #  '...': u'…',
   #}))
   # Fix numbers such as 929,005.678。
-  __re_term_fix = re.compile(r'(?<=\d),(?=\d{3})')
+  __re_term_fix = re.compile(r'(?<=\d),(?=\d{2})')
   def translate(self, text, to='en', fr='ja', async=False, emit=False, align=None, **kwargs):
     """@reimp"""
     #async = True # force enable async
