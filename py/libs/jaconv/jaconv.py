@@ -88,7 +88,7 @@ def _repair_en(text): # unicode -> unicode  repair xtu
 
 _ru_i_vowel = u"ауэояё"
 _re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
-_re_ru_ii = re.compile(ur"(?<=[%s])й(и+)" % _ru_i_vowel)
+_re_ru_ii = re.compile(ur"[ий](и+)")
 _re_ru_z = re.compile(ur'\bз', re.UNICODE)
 _re_ru_tsu = re.compile(ur"っ([бвгдзклмнпрстфхцчшщъыь])")
 def _repair_ru(text): # unicode -> unicode  repair xtu
@@ -100,8 +100,7 @@ def _repair_ru(text): # unicode -> unicode  repair xtu
     text = _re_ru_tsu.sub(r'\1\1', text)
   if u'и' in text:
     text = _re_ru_i.sub(u'й', text)
-    if u'йи' in text:
-      text = _re_ru_ii.sub(ur'\1й', text) # push i to the end
+    text = _re_ru_ii.sub(ur'\1й', text) # push i to the end
   if u'з' in text:
     text = _re_ru_z.sub(u'дз', text)
   return text
@@ -235,7 +234,8 @@ if __name__ == '__main__':
   # Russian
   l = [
     (u'かわいい', u'каваий'), # http://ru.wikipedia.org/wiki/каваий
-    #(u'いぇす', u'иэсу'), # not sure
+    (u'じい', u'дзий'), # not sure
+    (u'いぇす', u'иэсу'), # not sure
     (u'ジャケット', u'дзякэтто'),
     (u'せんせい', u'сэнсэй'),
     (u'ちゃん', u'чан'),
