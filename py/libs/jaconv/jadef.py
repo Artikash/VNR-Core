@@ -351,11 +351,70 @@ TH = u"""
 ちゃん:จัง
 """
 
+# http://en.wikipedia.org/wiki/Arabic_alphabet
+AR = u"""
+#Single
+あ:a		い:i		う:u		え:e		お:o
+か:ka		き:ki		く:ku		け:ke		こ:ko
+さ:sa		し:shi		す:su		せ:se		そ:so
+た:ta		ち:chi		つ:tsu		て:te		と:to
+な:na		に:ni		ぬ:nu		ね:ne		の:no
+は:ha		ひ:hi		ふ:fu		へ:he		ほ:ho
+ま:ma		み:mi		む:mu		め:me		も:mo
+や:ya				ゆ:yu				よ:yo
+ら:ra		り:ri		る:ru		れ:re		ろ:ro
+わ:wa								を:wo
+		ゐ:wyi				ゑ:wye
+ん:n
+
+が:ga		ぎ:gi		ぐ:gu		げ:ge		ご:go
+ざ:za		じ:ji		ず:zu		ぜ:ze		ぞ:zo
+だ:da		ぢ:ji		づ:zu		で:de		ど:do
+ば:ba		び:bi		ぶ:bu		べ:be		ぼ:bo
+ぱ:pa		ぴ:pi		ぷ:pu		ぺ:pe		ぽ:po
+
+#Smaller
+ぁ:a		ぃ:i		ぅ:u		ぇ:e		ぉ:o
+ゃ:ya				ゅ:yu				ょ:yo
+ゎ:wa
+ゕ:ka						ゖ:ke
+
+#Composite
+						いぇ:ye
+うぁ:wha	うぃ:whi			うぇ:whe	うぉ:who
+すぁ:swa	すぃ:swi	すぅ:swu	すぇ:swe	すぉ:swo
+つぁ:tsa	つぃ:tsi	つぅ:tsu	つぇ:the	つぉ:tho
+とぁ:twa	とぃ:twi	とぅ:twu	とぇ:twe	とぉ:two
+ふぁ:fa		ふぃ:fi		ふぅ:fuu	ふぇ:fe		ふぉ:fo
+
+ゔぁ:va		ゔぃ:vi		ゔ:vu		ゔぇ:ve		ゔぉ:vo
+どぁ:dwa	どぃ:dwi	どぅ:dwu	どぇ:dwe	どぉ:dwo
+
+きゃ:kya	きぃ:kyi	きゅ:kyu	きぇ:kye	きょ:kyo
+しゃ:sha	しぃ:shi	しゅ:shu	しぇ:she	しょ:sho
+ちゃ:cha	ちぃ:chi	ちゅ:chu	ちぇ:che	ちょ:cho
+てゃ:tha	てぃ:thi	てゅ:thu	てぇ:the	てょ:tho
+にゃ:nya	にぃ:nyi	にゅ:nyu	にぇ:nye	にょ:nyo
+ひゃ:hya	ひぃ:hyi	ひゅ:hyu	ひぇ:hye	ひょ:hyo
+ふゃ:fya			ふゅ:fyu			ふょ:fyo
+みゃ:mya	みぃ:myi	みゅ:myu	みぇ:mye	みょ:myo
+りゃ:rya	りぃ:ryi	りゅ:ryu	りぇ:rye	りょ:ryo
+
+ゔゃ:vya			ゔゅ:vyu			ゔょ:vyo
+ぎゃ:gya	ぎぃ:gyi	ぎゅ:gyu	ぎぇ:gye	ぎょ:gyo
+じゃ:ja		じぃ:ji		じゅ:ju		じぇ:je		じょ:jo
+ぢゃ:dya	ぢぃ:dyi	ぢゅ:dyu	ぢぇ:dye	ぢょ:dyo
+でゃ:dha	でぃ:dhi	でゅ:dhu	でぇ:dhe	でょ:dho
+びゃ:bya	びぃ:byi	びゅ:byu	びぇ:bye	びょ:byo
+ぴゃ:pya	ぴぃ:pyi	ぴゅ:pyu	ぴぇ:pye	ぴょ:pyo
+"""
+
 TABLES = {
   'en': EN,
   'ru': RU,
   'ko': KO,
   'th': TH,
+  'ar': AR,
 }
 
 #def table(key):

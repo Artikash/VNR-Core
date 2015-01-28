@@ -55,9 +55,13 @@ def hira2th(text): return _repair_reading(_repair_th(_convert(text, 'hira', 'th'
 def kata2th(text): return _repair_reading(_repair_th(_convert(text, 'kata', 'th')))
 def kana2th(text): return _repair_reading(_repair_th(_convert(text, 'kana', 'th')))
 
-def hira2ko(text): return _repair_reading(_convert(text, 'hira', 'ko'))
-def kata2ko(text): return _repair_reading(_convert(text, 'kata', 'ko'))
-def kana2ko(text): return _repair_reading(_convert(text, 'kana', 'ko'))
+def hira2ko(text): return _repair_reading(_convert(text, 'hira', 'ar'))
+def kata2ko(text): return _repair_reading(_convert(text, 'kata', 'ar'))
+def kana2ko(text): return _repair_reading(_convert(text, 'kana', 'ar'))
+
+def hira2ar(text): return _repair_reading(_convert(reversed(text), 'hira', 'ar'))
+def kata2ar(text): return _repair_reading(_convert(reversed(text), 'kata', 'ar'))
+def kana2ar(text): return _repair_reading(_convert(reversed(text), 'kana', 'ar'))
 
 hira2romaji = hira2en
 kata2romaji = kata2en
@@ -308,6 +312,14 @@ if __name__ == '__main__':
   for k,v in l:
     print k, hira2th(k), v
     assert kana2th(k) == v
+
+  # Arabian
+  l = [
+    (u'さくら', u'ساكورا'),
+  ]
+  for k,v in l:
+    print k, kana2ar(k), v
+    assert kana2ar(k) == v
 
 # EOF
 
