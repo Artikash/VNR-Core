@@ -122,13 +122,13 @@ Share.View { id: root_
   VoiceView.OptionBar { id: optionBar_
     anchors {
       left: parent.left; right: parent.right
-      bottom: footer_.top
-    }
-  }
-  VoiceView.Footer { id: footer_
-    anchors {
-      left: parent.left; right: parent.right
       bottom: parent.bottom
     }
   }
+  //VoiceView.Footer { id: footer_
+  //  anchors {
+  //    left: parent.left; right: parent.right
+  //    bottom: parent.bottom
+  //  }
+  //}
 }
