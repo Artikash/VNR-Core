@@ -1484,7 +1484,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   def translate(self, text, to='en', fr='ja', async=False, emit=False, align=None, **kwargs):
     """@reimp"""
     #async = True # force enable async
-    #to = 'en'
+    #to = 'vi'
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1541,6 +1541,7 @@ class BingTranslator(OnlineMachineTranslator):
     """@reimp"""
     #if fr != 'ja':
     #  return None, None, None
+    #to = 'en'
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
