@@ -64,10 +64,11 @@ class _Engine(object):
     }
     l = []
     for path in paths:
-      for k in (r"Nova\JaEn", r"PARS\EnRu"):
-        v = os.path.join(path, k)
-        if os.path.exists(v):
-          l.append(v)
+      if path:
+        for k in (r"Nova\JaEn", r"PARS\EnRu"):
+          v = os.path.join(path, k)
+          if os.path.exists(v):
+            l.append(v)
     if l:
       skpaths.append_paths(l)
     self.pathLoaded = True
