@@ -141,6 +141,7 @@ processes:
   - mpcstar.exe         # MPC
   - ntleac.exe          # NTLER
   - NtleaGUI.exe        # NTLER
+  - ntleas.exe          # NTLEAS
   - NK-Frontend.exe     # Android emulator
   - ONENOTE.EXE         # Microsoft Office
   - onenote.exe         # Microsoft Office
