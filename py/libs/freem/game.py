@@ -73,13 +73,13 @@ class GameApi(object):
     title = self._parsetitle(h)
     if title:
       title = self._fixtitle(title)
-      otome = u'ＢＬゲーム' in h
-      bl = u'女性向' in h
+      bl = u'ＢＬゲーム' in h
+      otome = bl or u'女性向' in h or u'乙女ゲーム' in h
       ecchi = u'全年齢' in h
       return {
         'title': title, # unicode
         'slogan': self._parseslogan(h), # unicode or None
-        'otome': otome or bl, # bool
+        'otome': otome, # bool
         'ecchi': ecchi, # bool
         'brand': self._parsebrand(h), # unicode or None
         'date': self._parsedate(h),  # str or None, such as 2013-10-25
@@ -203,7 +203,8 @@ if __name__ == '__main__':
   k = 8329 # http://www.freem.ne.jp/win/game/8329
   k = 3055 # http://www.freem.ne.jp/win/game/3055
   k = 7190 # http://www.freem.ne.jp/win/game/7190
-  k = 5414
+  k = 5414 # special name
+  k = 4467 # http://www.freem.ne.jp/win/game/4467
   # Youtube Video
   print '-' * 10
   q = api.query(k)

@@ -206,6 +206,7 @@ processes:
   - Xmp.exe             # Xunlei
   - wmplayer.exe        # Windows media player
   - XMP.exe             # Xunlei KanKan
+  - UCBrowser.exe       # Chrome
   - YahooMessenger.exe  # Yahoo
   - Yomikaku.exe        # 読取革命
   - YoukuDesktop.exe    # Youku
