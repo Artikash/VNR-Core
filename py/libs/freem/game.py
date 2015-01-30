@@ -70,7 +70,7 @@ class GameApi(object):
     @param  h  unicode  html
     @return  {kw}
     """
-    title, slogan = self._parsemetadesc(h)
+    title = self._parsetitle(h)
     if title:
       title = self._fixtitle(title)
       otome = u'ＢＬゲーム' in h
@@ -78,7 +78,7 @@ class GameApi(object):
       ecchi = u'全年齢' in h
       return {
         'title': title, # unicode
-        'slogan': slogan, # unicode or None
+        'slogan': self._parseslogan(h), # unicode or None
         'otome': otome or bl, # bool
         'ecchi': ecchi, # bool
         'brand': self._parsebrand(h), # unicode or None
@@ -98,22 +98,26 @@ class GameApi(object):
     return self._re_fixtitle.sub('', t)
 
   # Example: <meta name="description" content="「赤い森の魔女」：樵の少年と魔女のお話" />
-  _re_meta = re.compile(ur'<meta name="description" content="「([^」]+)」(?:：([^"]+))?"')
-  def _parsemetadesc(self, h):
+  _re_slogan = re.compile(ur'<meta name="description" content="[^"]+」：([^"]+?)"')
+  def _parseslogan(self, h):
     """
     @param  h  unicode  html
-    @return  (unicode title, unicode slogan)
+    @return  unicode or None
     """
-    title = slogan = None
-    m = self._re_meta.search(h)
+    m = self._re_slogan.search(h)
     if m:
-      title = m.group(1)
-      slogan = m.group(2)
-      if title:
-        title = unescapehtml(title)
-        if slogan:
-          slogan = unescapehtml(slogan)
-    return title, slogan
+      return unescapehtml(m.group(1))
+
+  # Example: <meta name="twitter:title" content="「恋と友情の境界線-体験版-」：無料ゲーム by ふりーむ！">
+  _re_title = re.compile(ur'<meta name="twitter:title" content="([^"]+?)：無料ゲーム by ふりーむ！"')
+  def _parsetitle(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._re_title.search(h)
+    if m:
+      return unescapehtml(m.group(1))
 
   # Example: <p><a href="/brand/1666">mint wings</a></p>
   _re_brand = re.compile(r'href="/brand/\d+">([^<]+)<')
@@ -199,6 +203,7 @@ if __name__ == '__main__':
   k = 8329 # http://www.freem.ne.jp/win/game/8329
   k = 3055 # http://www.freem.ne.jp/win/game/3055
   k = 7190 # http://www.freem.ne.jp/win/game/7190
+  k = 5414
   # Youtube Video
   print '-' * 10
   q = api.query(k)
