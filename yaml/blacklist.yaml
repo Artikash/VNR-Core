@@ -133,6 +133,7 @@ processes:
   - LEGUI.exe           # Locale Emulator
   - LocaleSwitch.exe    # Locale Switch
   - LSC.exe             # Locale Switch
+  - KanKan.exe          # Xunlei
   - Maxthon.exe         # Maxthon
   - MediaInfo.exe       # MediaInfo
   - mpc-be.exe          # MPC
