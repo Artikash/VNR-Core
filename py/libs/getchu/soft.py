@@ -595,6 +595,9 @@ class SoftApi(object):
       if not name:
         name = yomi
         yomi = ''
+      if name:
+        # Example: http://www.getchu.com/soft.phtml?id=837244
+        name = name.replace('<charalist>', '').strip()
       if name and name != BAD_NAME:
         yield {
           'id': int(m.group(1)),  # character number, starting from 1
@@ -623,6 +626,7 @@ if __name__ == '__main__':
   k = 718587 # レミニセンス
   k = 798624
   k = 809466 # ちぇ～んじ！
+  k = 837244
   print '-' * 10
   q = api.query(k)
   for it in q['characters']:
