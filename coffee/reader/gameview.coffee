@@ -234,9 +234,9 @@ createTemplates = ->
     .header(style="${userStyle}")
       %a.user @${userName}
       :if scores
-        :if scores.overall != undefined
+        :if 'overall' in scores
           .score.score-overall.text-danger ${scores.overall}/10
-        :if scores.ecchi != undefined
+        :if 'ecchi' in scores
           .score.score-ecchi.text-info H:${scores.ecchi}/10
       .time.text-minor = createTime
       .lang = lang
