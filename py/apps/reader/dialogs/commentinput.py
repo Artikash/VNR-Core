@@ -11,11 +11,19 @@ if __name__ == '__main__':
   debug.initenv()
 
 from Qt5 import QtWidgets
+from PySide.QtCore import Qt
 from sakurakit import skqss
 #from sakurakit.skclass import memoizedproperty
 #from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import mytr_
+
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight)
+  return ret
 
 class CommentInputDialog(QtWidgets.QDialog):
 
@@ -91,7 +99,7 @@ class _CommentInputDialog(object):
     g = QtWidgets.QButtonGroup(q)
     g.addButton(self.updateCommentButton)
     g.addButton(self.commentButton)
-    grid.addWidget(QtWidgets.QLabel(tr_("Property") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Property")), r, 0)
     for i,b in enumerate(g.buttons()):
       grid.addWidget(b, r, i+1)
 
@@ -102,7 +110,7 @@ class _CommentInputDialog(object):
     g = QtWidgets.QButtonGroup(q)
     g.addButton(self.appendButton)
     g.addButton(self.overwriteButton)
-    grid.addWidget(QtWidgets.QLabel(tr_("Method") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Method")), r, 0)
     for i,b in enumerate(g.buttons()):
       grid.addWidget(b, r, i+1)
 

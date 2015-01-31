@@ -36,15 +36,12 @@ public:
   // Replacement
 
   // Rewrite the text according to the script, thread-safe
-  std::wstring translate(const std::wstring &text, int category = 0) const;
+  std::wstring translate(const std::wstring &text, int category = 0, bool mark = false) const;
 
   // Render option
 
-  bool isLinkEnabled() const;
-  void setLinkEnabled(bool value);
-
-  std::wstring linkStyle() const;
-  void setLinkStyle(const std::wstring &css);
+  //std::wstring linkStyle() const;
+  //void setLinkStyle(const std::wstring &css);
 };
 
 #endif // TRSCRIPT_H

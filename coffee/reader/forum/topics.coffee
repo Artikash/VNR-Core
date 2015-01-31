@@ -57,9 +57,9 @@ createTemplates = ->
       :if scores
         .score
           .item.text-danger
-            #{tr 'Score'}: ${scores.overall != undefined ? scores.overall : '-'}/10
+            #{tr 'Score'}: ${'overall' in scores ? scores.overall : '-'}/10
           .item.text-warning
-            H: ${scores.ecchi != undefined ? scores.ecchi : '-'}/10
+            H: ${'ecchi' in scores ? scores.ecchi : '-'}/10
     .line.title
       %a.btn.btn-link.link-topic(title="#{tr 'Show'}") ${title}
       :if gameTitle

@@ -2336,6 +2336,7 @@ class _Term(object):
     'type',
     'host',
     'language',
+    'sourceLanguage',
     'timestamp',
     'updateTimestamp',
     'updateUserId',
@@ -2361,7 +2362,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, host, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
     #self.priority = 0 # int  assigned after sorting
     self.init = False           # bool
     self.id = id                # long
@@ -2372,6 +2373,7 @@ class _Term(object):
     self.type = type            # in TYPES
     self.host = host            # str
     self.language = language    # str
+    self.sourceLanguage = sourceLanguage or 'ja' # str  default to Japanese
     self.timestamp = timestamp  # long
     self.updateTimestamp = updateTimestamp # long
     self.updateUserId = updateUserId   # long
@@ -2635,14 +2637,14 @@ class Term(QObject):
 
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
-      type="", host="", language="", timestamp=0, text="",
+      type="", host="", language="", sourceLanguage="", timestamp=0, text="",
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, host, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
     if init:
       self.init(parent)
 
@@ -2679,7 +2681,7 @@ class Term(QObject):
       regex=d.regex,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
-      type=d.type, host=d.host, language=d.language, text=d.text, pattern=d.pattern)
+      type=d.type, host=d.host, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern)
 
   ## Dirty ##
 
@@ -2711,6 +2713,7 @@ class Term(QObject):
   type, typeChanged = __D.synthesize('type', str, sync=True)
   host, hostChanged = __D.synthesize('host', str, sync=True)
   language, languageChanged = __D.synthesize('language', str, sync=True)
+  sourceLanguage, sourceLanguageChanged = __D.synthesize('sourceLanguage', str, sync=True)
   pattern, patternChanged = __D.synthesize('pattern', unicode, sync=True)
   text, textChanged = __D.synthesize('text', unicode, sync=True)
   comment, commentChanged = __D.synthesize('comment', unicode, sync=True)
@@ -4636,6 +4639,7 @@ class _TermModel(object):
     'errorType',
     'disabled',
     'private',
+    'sourceLanguage',
     'language',
     'type',
     'host',
@@ -4656,6 +4660,7 @@ class _TermModel(object):
   DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
+    self.filterSourceLanguage = "" # str
     self.filterLanguage = ""    # str
     self.filterHost = ""        # str
     self.filterTypes = ""       # str
@@ -4695,7 +4700,7 @@ class _TermModel(object):
     @return  [Term]
     """
     return (self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN
-        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
+        else self.filterData if any((self.filterText, self.filterTypes, self.filterLanguage, self.filterSourceLanguage, self.filterHost))
         else self.duplicateData if self.duplicate else self.sourceData)
 
   @staticproperty
@@ -4773,7 +4778,7 @@ class _TermModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
+      data = (self.filterData if any((self.filterText, self.filterTypes, self.filterLanguage, self.filterSourceLanguage, self.filterHost))
           else self.duplicateData if self.duplicate
           else self.sourceData)
       if not data:
@@ -4825,22 +4830,34 @@ class _TermModel(object):
     @return  bool
     """
     td = term.d
+    filters = [self.filterText, self.filterHost, self.filterSourceLanguage, self.filterLanguage, self.filterTypes]
+
+    filters.pop()
     if self.filterTypes:
       if td.type not in self.filterTypes:
         return False
-      if not self.filterText and not self.filterLanguage and not self.filterHost:
+      if not any(filters):
         return True
 
+    filters.pop()
     if self.filterLanguage:
       if not td.language.startswith(self.filterLanguage):
         return False
-      if not self.filterText and not self.filterHost: #and not self.filterTypes:
+      if not any(filters):
         return True
 
+    filters.pop()
+    if self.filterSourceLanguage:
+      if not td.sourceLanguage.startswith(self.filterSourceLanguage):
+        return False
+      if not any(filters):
+        return True
+
+    filters.pop()
     if self.filterHost:
       if td.host != self.filterHost:
         return False
-      if not self.filterText:
+      if not any(filters):
         return True
 
     t = self.filterText
@@ -5016,6 +5033,17 @@ class TermModel(QAbstractListModel):
       lambda self: self.__d.filterLanguage,
       setFilterLanguage,
       notify=filterLanguageChanged)
+
+  def setFilterSourceLanguage(self, value):
+    if value != self.__d.filterSourceLanguage:
+      self.__d.filterSourceLanguage = value
+      d = self.__d
+      self.filterSourceLanguageChanged.emit(value)
+  filterSourceLanguageChanged = Signal(str)
+  filterSourceLanguage = Property(str,
+      lambda self: self.__d.filterSourceLanguage,
+      setFilterSourceLanguage,
+      notify=filterSourceLanguageChanged)
 
   def setFilterColumn(self, value):
     if value != self.__d.filterColumn:
@@ -8483,7 +8511,7 @@ class _DataManager(object):
           if path == 3: # grimoire/terms/term
             tag = elem.tag
             text = elem.text
-            if tag in ('language', 'host', 'pattern', 'text', 'comment', 'updateComment'):
+            if tag in ('language', 'sourceLanguage', 'host', 'pattern', 'text', 'comment', 'updateComment'):
               kw[tag] = text or ''
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):

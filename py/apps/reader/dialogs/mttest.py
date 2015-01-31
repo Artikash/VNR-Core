@@ -105,6 +105,7 @@ class _MTTester(object):
     #row.addWidget(QtWidgets.QLabel("#"))
     row.addWidget(self.gameLabel)
     row.addStretch()
+    row.addWidget(self.markButton)
     layout.addLayout(row)
 
     # First row
@@ -263,6 +264,8 @@ class _MTTester(object):
   def _isOriginTermsEnabled(self): return self.originTextButton.isChecked()
   def _isTranslationScriptEnabled(self): return self.normalizedTextButton.isChecked()
 
+  def _isMarkEnabled(self): return self.markButton.isChecked()
+
   def _speak(self):
     t = self._currentText()
     if t:
@@ -282,9 +285,9 @@ class _MTTester(object):
       dprint("enter")
       self._clearTranslations()
       self.translatorLabel.setText(self.translatorEdit.currentText())
-      lang = self._currentFromLanguage()
+      fr = self._currentFromLanguage()
       params = {
-        'fr': lang,
+        'fr': fr,
         'engine': self._currentTranslator(),
       }
       raw = trman.manager().translateDirect(t, **params)
@@ -292,8 +295,9 @@ class _MTTester(object):
         self.directTranslationEdit.setPlainText(raw)
 
       if self._isOriginTermsEnabled():
+        to = self._currentToLanguage()
         tt = textutil.normalize_punct(t)
-        tt = termman.manager().applyOriginTerms(tt, lang)
+        tt = termman.manager().applyOriginTerms(tt, to=to, fr=fr)
         if tt != t:
           t = tt
           self.setOriginTextEditText(t or _EMPTY_TEXT)
@@ -302,12 +306,20 @@ class _MTTester(object):
       else:
         self.originTextEdit.setPlainText(_DISABLED_TEXT)
       if t:
-        t = trman.manager().translate(t, emit=True,
+        mark = self._isMarkEnabled()
+        t = trman.manager().translate(t, emit=True, mark=mark,
             scriptEnabled=self._isTranslationScriptEnabled(),
             **params)
         if t:
           self.finalTranslationEdit.setHtml(t)
       dprint("leave")
+
+  @memoizedproperty
+  def markButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Underline modified translation"))
+    ret.setToolTip(my.tr("Underline modified translation when possible."))
+    ret.setChecked(True)
+    return ret
 
   @memoizedproperty
   def equalLabel(self):

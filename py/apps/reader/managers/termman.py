@@ -63,8 +63,8 @@ def _partition_punct(text, punct=S_PUNCT):
 @memoized
 def manager(): return TermManager()
 
-_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
-def _remove_marks(text): return _re_marks.sub('', text) # unicode -> unicode
+#_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
+#def _remove_marks(text): #return _re_marks.sub('', text) # unicode -> unicode
 
 def _translator_category(host): # str -> int
   if host:
@@ -73,8 +73,6 @@ def _translator_category(host): # str -> int
     try: return dataman.Term.HOSTS.index(host) + 1
     except: pass
   return 0
-
-SCRIPT_KEY_SEP = ',' # Separator of script manager key
 
 class TermTitle(object):
   __slots__ = 'pattern', 'text', 'regex', 'sortKey'
@@ -113,21 +111,22 @@ class TermWriter:
   def isOutdated(self): # -> bool
     return self.createTime < _TermManager.instance.updateTime
 
-  def saveTerms(self, path, type, language, macros, titles):
+  def saveTerms(self, path, type, to, fr, macros, titles):
     """This method is invoked from a different thread
     @param  path  unicode
     @param  type  str  term type
-    @param  language  str  target text language
+    @param  to  str  target text language
+    @param  fr  str  source text language
     @param  macros  {unicode pattern:unicode repl}
     @param  titles  [TermTitle] not None not empty
     @return  bool
     """
     #marksChanges = self.marked and type in ('output', 'trans_output')
-    convertsChinese = language == 'zht' and type in ('output', 'trans_input', 'trans_output')
+    convertsChinese = to == 'zht' and type in ('output', 'trans_input', 'trans_output')
     if type not in ('input', 'trans_input', 'trans_output'):
       titles = None
 
-    kanjiLanguage = config.is_kanji_language(language)
+    kanjiLanguage = config.is_kanji_language(to)
     latinLanguage = not kanjiLanguage
 
     if kanjiLanguage:
@@ -147,8 +146,8 @@ class TermWriter:
     count = len(self.termData)
     try:
       with open(path, 'w') as f:
-        f.write(self._renderHeader(type, language))
-        for index,td in enumerate(self._iterTermData(type, language)):
+        f.write(self._renderHeader(type, to, fr))
+        for index,td in enumerate(self._iterTermData(type, to, fr)):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
@@ -192,7 +191,7 @@ class TermWriter:
               if z:
                 repl = zhs2zht(repl)
               if td.type == 'yomi':
-                repl = kana2name(repl, language) or repl
+                repl = kana2name(repl, to) or repl
 
               #elif config.is_latin_language(td.language):
               #  repl += " "
@@ -321,10 +320,11 @@ class TermWriter:
         ret = 's' + ret # a name with suffix
     f.write(ret)
 
-  def _renderHeader(self, type, language):
+  def _renderHeader(self, type, to, fr):
     """
     @param  type  str
-    @param  language  str
+    @param  to  str
+    @param  fr  str
     @return  unicode
     """
     return """\
@@ -332,21 +332,22 @@ class TermWriter:
 # Modifying this file will NOT affect VNR.
 #
 # Unix time: %s
-# Options: type = %s, language = %s, hentai = %s, games = (%s)
+# Options: type = %s, to = %s, fr = %s, hentai = %s, games = (%s)
 #
-""" % (self.createTime, type, language, self.hentai,
+""" % (self.createTime, type, to, fr, self.hentai,
     ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
 
-  def _iterTermData(self, type, language, syntax=False):
+  def _iterTermData(self, type, to, fr, syntax=False):
     """
     @param  type  str
-    @param  language  str
+    @param  to  str
+    @param  fr  str
     @param* syntax  bool
     @yield  _Term
     """
     if type.startswith('trans'):
       types = ['trans', 'name']
-      if not language.startswith('zh'):
+      if not to.startswith('zh'):
         types.append('yomi')
     else:
       types = [type]
@@ -359,19 +360,21 @@ class TermWriter:
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
           td.type in types
-          and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
-          and i18n.language_compatible_to(td.language, language)
+          and i18n.language_compatible_to(td.language, to)
+          and i18n.language_compatible_to(td.sourceLanguage, fr)
+          and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and td.syntax == syntax
         ):
         yield td
 
-  def queryTermMacros(self, language):
+  def queryTermMacros(self, to, fr):
     """
-    @param  language  str
+    @param  to  str
+    @param  fr  str
     @return  {unicode pattern:unicode repl} not None
     """
-    ret = {td.pattern:td.text for td in self._iterTermData('macro', language)}
+    ret = {td.pattern:td.text for td in self._iterTermData('macro', to, fr)}
     MAX_ITER_COUNT = 1000
     for count in xrange(1, MAX_ITER_COUNT):
       dirty = False
@@ -399,21 +402,22 @@ class TermWriter:
       dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def queryTermTitles(self, language, macros):
+  def queryTermTitles(self, to, fr, macros):
     """Terms sorted by length and id
-    @param  language
+    @param  to  str
+    @param  fr  str
     @param  macros  {unicode pattern:unicode repl}
     @return  [TermTitle]
     """
-    zht = language == 'zht'
+    zht = to == 'zht'
     l = [] # [long id, unicode pattern, unicode replacement, bool regex]
     #ret = OrderedDict({'':''})
     #ret = OrderedDict()
-    s = _get_lang_suffices(language)
+    s = _get_lang_suffices(to)
     if s:
       for k,v in s:
         l.append(TermTitle(pattern=k, text=v))
-    for td in self._iterTermData('suffix', language):
+    for td in self._iterTermData('suffix', to, fr):
       pat = td.pattern
       if td.regex:
         pat = self._applyMacros(pat, macros)
@@ -477,8 +481,8 @@ class _TermManager:
 
     self.saveMutex = QMutex()
 
-    self.scripts = {} # {str key:TranslationScriptManager}  key = lang + type
-    self.scriptTimes = {} # [str key:float time]
+    self.scripts = {} # {(str lang, str fr, str to):TranslationScriptManager}
+    self.scriptTimes = {} # [(str lang, str fr, str to):float time]
 
     self.rbmt = {} # {str language:rbmt.api.Translator}
     self.rbmtTimes = {} # [str language:float time]
@@ -497,12 +501,12 @@ class _TermManager:
     else:
       self.saveTimer.start()
 
-  def _createScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
-    key = SCRIPT_KEY_SEP.join((type, language))
+  def _createScriptManager(self, type, to, fr): # str, str, str -> TranslationScriptManager
+    key = type, to, fr
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
-      ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
+      #ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
     return ret
 
   #@classmethod
@@ -618,44 +622,48 @@ class _TermManager:
     #for scriptKey,ts in times.iteritems():
     for scriptKey,ts in times.items(): # back up items
       if ts < self.updateTime: # skip language that does not out of date
-        type, lang = scriptKey.split(SCRIPT_KEY_SEP)
-        macros = w.queryTermMacros(lang)
-        titles = w.queryTermTitles(lang, macros)
+        type, to, fr = scriptKey
+        macros = w.queryTermMacros(to, fr)
+        titles = w.queryTermTitles(to, fr, macros)
 
         if w.isOutdated():
           dwarn("leave: cancel saving out-of-date terms")
           return
 
-        path = rc.term_path(type, lang) # unicode
+        path = rc.term_path(type, to=to, fr=fr) # unicode
         dir = os.path.dirname(path) # unicode path
         if not os.path.exists(dir):
           skfileio.makedirs(dir)
 
-        man = self._createScriptManager(type, lang)
+        man = self._createScriptManager(type, to, fr)
         if not man.isEmpty():
           man.clear()
 
-        if w.saveTerms(path, type, lang, macros, titles) and man.loadFile(path):
-          dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
+        if w.saveTerms(path, type, to, fr, macros, titles) and man.loadFile(path):
+          dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
 
         times[scriptKey] = createTime
     dprint("leave")
 
-  def applyTerms(self, text, type, language, host=''):
+  def applyTerms(self, text, type, to, fr, host='', mark=False):
     """
     @param  text  unicode
     @param  type  str
-    @param  language  str
+    @param  to  str  language
+    @param* fr  str  language
     @param* key  str
+    @param* mark  bool or None
     """
+    if mark is None:
+      mark = self.marked
     # TODO: Schedule to update terms when man is missing
-    key = SCRIPT_KEY_SEP.join((type, language))
+    key = type, to, fr
     man = self.scripts.get(key)
     if man is None:
       self.scriptTimes[key] = 0
       self.rebuildCacheLater()
     category = _translator_category(host)
-    return man.translate(text, category) if man and not man.isEmpty() else text
+    return man.translate(text, category, mark) if man and not man.isEmpty() else text
 
 class TermManager(QObject):
 
@@ -718,17 +726,17 @@ class TermManager(QObject):
     self.__d.syntax = value
 
   def isMarked(self): return self.__d.marked
-  def setMarked(self, t):
-    d = self.__d
-    if d.marked != t:
-      d.marked = t
-      for key,man in d.scripts.iteritems():
-        type = key.split(SCRIPT_KEY_SEP)[0]
-        marked = t and type in ('output', 'trans_output')
-        man.setLinkEnabled(marked)
+  def setMarked(self, t): self.__d.marked = t
+    #d = self.__d
+    #if d.marked != t:
+    #  d.marked = t
+    #  for key,man in d.scripts.iteritems():
+    #    type = key[0]
+    #    marked = t and type in ('output', 'trans_output')
+    #    man.setLinkEnabled(marked)
 
-      for it in d.rbmt.itervalues():
-        it.setUnderline(t and it.isEscape())
+    #  for it in d.rbmt.itervalues():
+    #    it.setUnderline(t and it.isEscape())
 
   ## Marks ##
 
@@ -739,8 +747,8 @@ class TermManager(QObject):
   #def markEscapeText(self, text): # unicode -> unicode
   #  return _mark_text(text) if text and self.__d.marked else text
 
-  def removeMarks(self, text): # unicode -> unicode
-    return _remove_marks(text) if self.__d.marked else text
+  #def removeMarks(self, text): # unicode -> unicode
+  #  return textutil.remove_html_tags(text) if self.__d.marked else text
 
   #def convertsChinese(self): return self.__d.convertsChinese
   #def setConvertsChinese(self, value): self.__d.convertsChinese = value
@@ -785,17 +793,18 @@ class TermManager(QObject):
   #  """
   #  return self.__d.iterTerms(terms, language)
 
-  def applyOriginTerms(self, text, language):
+  def applyOriginTerms(self, text, to=None, fr=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param* to  str
+    @param* fr  str
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'game', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja') if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
@@ -809,42 +818,45 @@ class TermManager(QObject):
   def applySpeechTerms(self, text, language=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param* language  str
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'tts', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'tts', 'ja', language or d.targetLanguage) if d.enabled else text
 
   def applyOcrTerms(self, text, language=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param* language  str
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'ocr', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'ocr', 'ja', language or 'ja') if d.enabled else text
 
-  def applyTargetTerms(self, text, language, host=''):
+  def applyTargetTerms(self, text, to, fr, host='', mark=None):
     """
     @param  text  unicode
-    @param  language  str
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
+    @param* mark  bool or None
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     #with SkProfiler():
-    return d.applyTerms(text, 'output', language, host=host) if d.enabled else text
+    return d.applyTerms(text, 'output', to, fr, host=host, mark=mark) if d.enabled else text
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
     #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 
-  def applySourceTerms(self, text, language, host=''):
+  def applySourceTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
-    @param  language  str
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
     @return  unicode
     """
@@ -852,7 +864,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.0005 seconds
     # 9/26/2014: Boost 0.001 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'input', language, host=host) if d.enabled else text
+    return d.applyTerms(text, 'input', to, fr, host=host) if d.enabled else text
     #dm = dataman.manager()
     #d = self.__d
     #text = d.applyTerms(dm.iterSourceTerms(), text, language)
@@ -864,10 +876,11 @@ class TermManager(QObject):
     #  except Exception, e: dwarn(e)
     #  text = text.rstrip() # remove trailing spaces
 
-  def prepareEscapeTerms(self, text, language, host=''):
+  def prepareEscapeTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
-    @param  language  str
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
     @return  unicode
     """
@@ -878,13 +891,15 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'trans_input', language, host=host)
+    return d.applyTerms(text, 'trans_input', to, fr, host=host)
 
-  def applyEscapeTerms(self, text, language, host=''):
+  def applyEscapeTerms(self, text, to, fr, host='', mark=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
+    @param* mark  bool or None
     @return  unicode
     """
     d = self.__d
@@ -894,8 +909,8 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
-    ret = d.applyTerms(text, 'trans_output', language, host=host)
-    if d.marked and language.startswith('zh'):
+    ret = d.applyTerms(text, 'trans_output', to, fr, host=host, mark=mark)
+    if d.marked and to.startswith('zh'):
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")
     return ret

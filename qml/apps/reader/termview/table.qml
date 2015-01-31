@@ -22,6 +22,7 @@ Item { id: root_
   property alias filterTypes: model_.filterTypes
   property alias filterColumn: model_.filterColumn
   property alias filterLanguage: model_.filterLanguage
+  property alias filterSourceLanguage: model_.filterSourceLanguage
   property alias filterHost: model_.filterHost
   property alias currentCount: model_.currentCount
   property alias count: model_.count
@@ -301,9 +302,64 @@ Item { id: root_
       }
     }
 
+    // Column: Source language
+    Desktop.TableColumn {
+      role: 'object'; title: "From" // k.tr("From")
+      width: 40
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+
+          text: Sk.tr(itemValue.sourceLanguage)
+
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : itemColor(itemValue)
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex || itemValue.syntax
+        }
+        Desktop.ComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          model: ListModel { //id: languageModel_
+            Component.onCompleted: {
+              for (var i in Util.LANGUAGES) {
+                var lang = Util.LANGUAGES[i]
+                append({value: lang, text: Sk.tr(lang)})
+              }
+            }
+          }
+
+          tooltip: Sk.tr("Language")
+          visible: itemSelected && editable
+
+          onSelectedIndexChanged:
+            if (editable) {
+              var t = model.get(selectedIndex).value
+              if (t !== itemValue.sourceLanguage) {
+                itemValue.sourceLanguage = t
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+
+          selectedText: model.get(selectedIndex).text
+
+          Component.onCompleted: {
+            for (var i = 0; i < model.count; ++i)
+              if (model.get(i).value === itemValue.sourceLanguage)
+                selectedIndex = i
+          }
+        }
+      }
+    }
+
     // Column: Language
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Lang")
+      role: 'object'; title: "To" // k.tr("To")
       width: 40
       delegate: Item {
         height: table_.cellHeight
@@ -323,7 +379,7 @@ Item { id: root_
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          model: ListModel { id: languageModel_
+          model: ListModel { //id: languageModel_
             Component.onCompleted: {
               for (var i in Util.LANGUAGES) {
                 var lang = Util.LANGUAGES[i]
@@ -335,7 +391,7 @@ Item { id: root_
             }
           }
 
-          tooltip: My.tr("Language")
+          tooltip: Sk.tr("Language")
           visible: itemSelected && editable
 
           onSelectedIndexChanged:

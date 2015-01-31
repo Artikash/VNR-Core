@@ -21,6 +21,13 @@ from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import config, convutil, dataman, growl, i18n, rc, textutil
 
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight)
+  return ret
+
 #COMBOBOX_MAXWIDTH = 100
 COMBOBOX_MAXWIDTH = 80
 
@@ -38,25 +45,37 @@ class _TermInput(object):
     # Options
     grid = QtWidgets.QGridLayout()
     r = 0
-    grid.addWidget(QtWidgets.QLabel(tr_("Language") + ":"), r, 0)
-    grid.addWidget(self.languageEdit, r, 1)
+
+    grid.addWidget(create_label("From"), r, 0)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.sourceLanguageEdit)
+    row.addWidget(self._createInfoLabel(my.tr("should always be Japanese for a Japanese game")))
+    grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Type") + ":"), r, 0)
+    grid.addWidget(create_label("To"), r, 0)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.targetLanguageEdit)
+    row.addWidget(self._createInfoLabel(my.tr("target language to translate to")))
+    grid.addLayout(row, r, 1)
+    r += 1
+    r += 1
+
+    grid.addWidget(create_label(tr_("Type")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.typeEdit)
     row.addWidget(self.typeLabel)
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(mytr_("Translator") + ":"), r, 0)
+    grid.addWidget(create_label(mytr_("Translator")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.hostEdit)
     row.addStretch()
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Options") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Options")), r, 0)
     grid.addWidget(self.specialButton, r, 1)
     r += 1
 
@@ -69,35 +88,31 @@ class _TermInput(object):
     grid.addWidget(self.privateButton, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Pattern")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.patternEdit)
     row.addWidget(self.patternTtsButton)
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Kanji") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Kanji")), r, 0)
     grid.addWidget(self.kanjiEdit, r, 1) # span for two rows
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Translation")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.textEdit)
     row.addWidget(self.textTtsButton)
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(mytr_("Yomi") + ":"), r, 0)
+    grid.addWidget(create_label(mytr_("Yomigana")), r, 0)
     grid.addWidget(self.yomiEdit, r, 1) # span for two rows
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Comment") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Comment")), r, 0)
     grid.addWidget(self.commentEdit, r, 1)
     r += 1
-
-    #grid.addWidget(QtWidgets.QLabel(tr_("Status") + ":"), r, 0)
-    #grid.addWidget(self.statusLabel, r, 1, 2, 1)
-    #r += 1
 
     layout.addLayout(grid)
 
@@ -112,6 +127,14 @@ class _TermInput(object):
     layout.addLayout(row)
 
     q.setLayout(layout)
+
+  @staticmethod
+  def _createInfoLabel(text=""): # unicode -> QWidget
+    ret = QtWidgets.QLabel()
+    if text:
+      ret.setText("<= " + text)
+    skqss.class_(ret, 'text-primary')
+    return ret
 
   @memoizedproperty
   def helpButton(self):
@@ -166,10 +189,7 @@ class _TermInput(object):
     return ret
 
   @memoizedproperty
-  def typeLabel(self):
-    ret = QtWidgets.QLabel()
-    skqss.class_(ret, 'text-primary')
-    return ret
+  def typeLabel(self): return self._createInfoLabel()
 
   def _refreshTypeLabel(self):
     user = dataman.manager().user()
@@ -206,7 +226,19 @@ class _TermInput(object):
     self.typeLabel.setText(t)
 
   @memoizedproperty
-  def languageEdit(self):
+  def sourceLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
+    #ret.setCurrentIndex(0) # Japanese by default
+    ret.currentIndexChanged.connect(self._refreshStatus)
+    #ret.currentIndexChanged.connect(self._refreshYomi)
+    return ret
+
+  @memoizedproperty
+  def targetLanguageEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
 
@@ -342,13 +374,23 @@ class _TermInput(object):
         return True
     return False
 
-  def _getLanguage(self): # -> str
-    return config.LANGUAGES[self.languageEdit.currentIndex()]
+  def _getSourceLanguage(self): # -> str
+    return config.LANGUAGES[self.sourceLanguageEdit.currentIndex()]
 
-  def setLanguage(self, v): # str ->
+  def setSourceLanguage(self, v): # str ->
     try:
       index = config.LANGUAGES.index(v)
-      self.languageEdit.setCurrentIndex(index)
+      self.sourceLanguageEdit.setCurrentIndex(index)
+    except ValueError:
+      dwarn("unknown language: %s" % v)
+
+  def _getTargetLanguage(self): # -> str
+    return config.LANGUAGES[self.targetLanguageEdit.currentIndex()]
+
+  def setTargetLanguage(self, v): # str ->
+    try:
+      index = config.LANGUAGES.index(v)
+      self.targetLanguageEdit.setCurrentIndex(index)
     except ValueError:
       dwarn("unknown language: %s" % v)
 
@@ -376,7 +418,8 @@ class _TermInput(object):
       md5 = dm.currentGameMd5()
       #if not gameId and not md5:
       #  return
-      lang = self._getLanguage()
+      lang = self._getTargetLanguage()
+      sourceLang = self._getSourceLanguage()
       type = self._getType()
       host = self._getHost() if type in dataman.Term.HOST_TYPES else ''
       pattern = self.patternEdit.text().strip()
@@ -390,7 +433,7 @@ class _TermInput(object):
       private = self.privateButton.isChecked() and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
-          language=lang, type=type, host=host, private=private,
+          language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
           special=special, regex=regex, syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, comment=comment)
@@ -438,6 +481,9 @@ class _TermInput(object):
     elif self._isUseless():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))
+    elif self._getSourceLanguage() != 'ja':
+      skqss.class_(w, 'text-success')
+      w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
     elif (self.regexButton.isChecked() or self._getType() == 'macro') and (
         not textutil.validate_regex(pattern)
         or not textutil.validate_macro(self.textEdit.text().strip())
@@ -456,7 +502,7 @@ class _TermInput(object):
     elif len(pattern) > 10 and not self.regexButton.isChecked(): # and not self.syntaxButton.isChecked():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
-    elif self._getType() == 'yomi' and self._getLanguage().startswith('zh'):
+    elif self._getType() == 'yomi' and self._getTargetLanguage().startswith('zh'):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("Yomi type is useless for Chinese translation.")))
     else:
@@ -527,7 +573,8 @@ class TermInput(QtWidgets.QDialog):
   def setText(self, v): self.__d.textEdit.setText(v)
   def setComment(self, v): self.__d.commentEdit.setText(v)
   def setType(self, v): self.__d.setType(v)
-  def setLanguage(self, v): self.__d.setLanguage(v)
+  def setLanguage(self, v): self.__d.setTargetLanguage(v)
+  def setSourceLanguage(self, v): self.__d.setSourceLanguage(v)
   def setTokenId(self, v): self.__d.gameId = v # long
 
   #def autofill(self): self.__d.autofill()

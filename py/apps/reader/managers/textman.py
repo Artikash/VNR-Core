@@ -274,6 +274,7 @@ class _TextManager(object):
 
   def _speakText(self):
     text = self.ttsText
+    #text = textutil.remove_html_tags(text)
     tm = ttsman.manager()
     ss = settings.global_()
     if text: #and self.gameLanguage == 'ja':
@@ -298,12 +299,13 @@ class _TextManager(object):
           if c:
             cd = c.d
             if cd.ttsEnabled:
-              eng = cd.ttsEngine or tm.defaultEngine()
-              lang = tm.getEngineLanguage(eng)
-              if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
-                  not text.startswith(u"「") and not text.endswith(u"」")
+              #lang = tm.getEngineLanguage(eng) # always speak TTS subtitle
+              #if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
+              if (name
+                  or not text.startswith(u"「") and not text.endswith(u"」")
                   or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
                 ): # do not speak if no character name is detected
+                eng = cd.ttsEngine or tm.defaultEngine()
                 tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng, gender=cd.gender)
         #else:
         #  tm.stop()
@@ -311,7 +313,7 @@ class _TextManager(object):
 
   def _speakSubtitle(self):
     tm = ttsman.manager()
-    text = termman.manager().removeMarks(self.ttsSubtitle)
+    text = textutil.remove_html_tags(self.ttsSubtitle)
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
         lang = tm.defaultEngineLanguage()
@@ -325,12 +327,13 @@ class _TextManager(object):
         if c:
           cd = c.d
           if cd.ttsEnabled:
-            eng = cd.ttsEngine or tm.defaultEngine()
-            lang = tm.getEngineLanguage(eng)
-            if lang and (lang == '*' or lang[:2] == self.ttsSubtitleLanguage[:2]) and (name or
-                not text.startswith(u"「") and not text.endswith(u"」")
+            #lang = tm.getEngineLanguage(eng) # always speak
+            #if lang and (lang == '*' or lang[:2] == self.ttsSubtitleLanguage[:2]) and (name or
+            if (name
+                or not text.startswith(u"「") and not text.endswith(u"」")
                 or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
               ): # do not speak if no character name is detected
+              eng = cd.ttsEngine or tm.defaultEngine()
               #if (name
               #    #not text.startswith(u"「") and not text.endswith(u"」")
               #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
@@ -338,10 +341,11 @@ class _TextManager(object):
               tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng, gender=cd.gender)
     self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
-  def _repairText(self, text, language=None):
+  def _repairText(self, text, to=None, fr=None):
     """
     @param  text  unicode
-    @param  lang  unicode
+    @param  to  unicode
+    @param  fr  unicode
     @return  unicode
     """
     # Remove illegal characters before repetition removal.
@@ -350,9 +354,9 @@ class _TextManager(object):
       text = textutil.remove_repeat_text(text)
       #size = len(text)
       #nochange = len(text) == size
-    if language:
+    if fr or to:
       #with SkProfiler(): # 0.046 seconds
-      text = termman.manager().applyOriginTerms(text, language)
+      text = termman.manager().applyOriginTerms(text, to=to, fr=fr)
     if self.removesRepeat and text: # and nochange:
       t = textutil.remove_repeat_text(text)
       delta = len(text) - len(t)
@@ -403,7 +407,7 @@ class _TextManager(object):
     @param* language  str
     """
     if settings.global_().copiesGameSubtitle():
-      sub = termman.manager().removeMarks(sub)
+      sub = textutil.remove_html_tags(sub)
       if sub:
         skclip.settext(sub)
 
@@ -593,7 +597,7 @@ class _TextManager(object):
     if not text:
       return
     if not agent: # only repair text for ITH
-      text = self._repairText(text, self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
     if not text:
       #dprint("ignore text")
       return
@@ -749,7 +753,7 @@ class _TextManager(object):
     if not text:
       return
     if not agent:
-      text = self._repairText(text, self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
       if not text:
         return
     text = textutil.normalize_name(text)
@@ -779,7 +783,7 @@ class _TextManager(object):
 
     text = self._decodeText(data).strip()
     if text: #and not agent: # always repair text for other text
-      text = self._repairText(text, self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
     if not text:
       #dprint("no text")
       return
@@ -825,8 +829,8 @@ class _TextManager(object):
     q = self.q
 
     lang = self.gameLanguage or 'ja'
-    #text = self._repairText(text, self.language)
-    text = termman.manager().applyOriginTerms(text, lang)
+    #text = self._repairText(text, fr=self.gameLanguage, to=self.language)
+    text = termman.manager().applyOriginTerms(text, fr=lang)
     if not text:
       return
     text = termman.manager().applyOcrTerms(text, lang)
@@ -1086,7 +1090,7 @@ class TextManager(QObject):
             sub = zht2ja(sub)
         #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
-        sub = termman.manager().removeMarks(sub)
+        sub = textutil.remove_html_tags(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)
 
     d.addAgentText(text, role, needsTranslation=needsTranslation)

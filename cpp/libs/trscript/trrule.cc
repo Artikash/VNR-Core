@@ -67,7 +67,7 @@ void TranslationScriptRule::init_list(const param_type &param,
 // <a href='json://{"type":"term","id":12345,"source":"pattern","target":"text"}'>pattern</a>
 std::wstring TranslationScriptRule::render_target() const
 {
-  if (id.empty()) // do not render link if there is no termid
+  if (id.empty()) // do not render mark if there is no termid
     return L"<u>" + target + L"</u>";
 
   std::wstring ret = L"{\"type\":\"term\"";
@@ -92,9 +92,9 @@ std::wstring TranslationScriptRule::render_target() const
   ret.insert(0, L"<a href='json://");
   ret.push_back('\'');
 
-  //if (!linkStyle.empty())
+  //if (!markStyle.empty())
   //  ret.append(" style=\"")
-  //     .append(linkStyle)
+  //     .append(markStyle)
   //     .append("\"");
 
   ret.push_back('>');
@@ -105,16 +105,16 @@ std::wstring TranslationScriptRule::render_target() const
 
 // Replacement
 
-void TranslationScriptRule::string_replace(std::wstring &ret, bool link) const
+void TranslationScriptRule::string_replace(std::wstring &ret, bool mark) const
 {
   if (target.empty())
     boost::erase_all(ret, source);
   else
     boost::replace_all(ret, source,
-        target.empty() ? std::wstring() : !link ? target : render_target());
+        target.empty() ? std::wstring() : !mark ? target : render_target());
 }
 
-void TranslationScriptRule::regex_replace(std::wstring &ret, bool link) const
+void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
 {
   try  {
     // match_default is the default value
@@ -122,7 +122,7 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool link) const
     if (!source_re)
       source_re = new boost::wregex(source);
     ret = boost::regex_replace(ret, *source_re,
-        target.empty() ? std::wstring() : !link ? target : render_target(),
+        target.empty() ? std::wstring() : !mark ? target : render_target(),
         boost::match_default|boost::format_all);
   } catch (...) {
     DWOUT("invalid term: " << id << ", regex pattern: " << source);
@@ -144,12 +144,12 @@ bool TranslationScriptRule::regex_exists(const std::wstring &t) const
   }
 }
 
-bool TranslationScriptRule::children_replace(std::wstring &ret, bool link) const
+bool TranslationScriptRule::children_replace(std::wstring &ret, bool mark) const
 {
   if (child_count && children)
     for (size_t i = 0; i < child_count; i++) {
       const auto &c = children[i];
-      if (c.is_valid() && c.replace(ret, link) && !exists(ret))
+      if (c.is_valid() && c.replace(ret, mark) && !exists(ret))
         return true;
     }
   return false;

@@ -182,14 +182,15 @@ def subs_yaml_path(itemId, subLang, gameLang='ja', fmt='yaml'):
 #  'escape_source': 'escape_input',
 #  'escape_target': 'escape_output',
 #}
-def term_path(type, language):
+def term_path(type, to, fr):
   """
-  @param  type  str
-  @param  language  str
+  @param  type  str  term type
+  @param  to  str  target language
+  @param  fr  str  source language
   @return  unicode  path
   @nothrow
   """
-  return "%s/%s/%s.txt" % (DIR_TMP_TERM, language, type)
+  return "%s/%s-%s/%s.txt" % (DIR_TMP_TERM, fr or 'ja', to or 'ja', type or 'none')
 
 # TTS
 

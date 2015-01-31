@@ -489,10 +489,10 @@ class TranslatorManager(QObject):
 
   def translateDirect(self, text, fr='ja', engine='', async=False):
     """
-   Test @param  text  unicode
-    @param  fr  unicode  language
-    @param  to  unicode  language
-    @param  async  bool
+    @param  text  unicode
+    @param* fr  unicode  language
+    @param* to  unicode  language
+    @param* async  bool
     @return  unicode or None
     """
     #if not features.MACHINE_TRANSLATION or not text:
@@ -514,11 +514,12 @@ class TranslatorManager(QObject):
     for it in d.iterOnlineTranslators():
       return it.translateTest(text, **kw)
 
-  def translateOne(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False, scriptEnabled=True):
+  def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=True):
     """Translate using any translator
     @param  text  unicode
     @param* fr  unicode  language
     @param* to  unicode  language
+    @param* mark  bool or None
     @param* async  bool
     @param* online  bool
     @param* emit  bool  whether emit intermediate results
@@ -532,6 +533,7 @@ class TranslatorManager(QObject):
     kw = {
       'fr': fr,
       'to': d.language,
+      'mark': mark,
       'async': async,
       'emit': emit,
       'scriptEnabled': scriptEnabled,
@@ -555,11 +557,12 @@ class TranslatorManager(QObject):
         ) or (None, None, None)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja', **kwargs):
+  def translateApply(self, func, text, fr='ja', mark=None, **kwargs):
     """Specialized for textman
     @param  func  function(unicode sub, unicode lang, unicode provider)
     @param  text  unicode
     @param* fr  unicode  language
+    @param* mark  bool or None
     @param* kwargs  pass to func
     """
     if not features.MACHINE_TRANSLATION or not text:
@@ -570,7 +573,7 @@ class TranslatorManager(QObject):
     for it in d.iterOfflineTranslators():
       align = [] if it.alignSupported and it.alignEnabled else None
       #with SkProfiler(): # 0.3 seconds
-      r = it.translate(text, fr=fr, to=d.language, align=align, async=False)
+      r = it.translate(text, fr=fr, to=d.language, mark=mark, align=align, async=False)
       #with SkProfiler(): # 0.0004 seconds
       if r and r[0]:
         func(r[0], r[1], r[2], align, **kwargs)
@@ -579,7 +582,7 @@ class TranslatorManager(QObject):
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
       align = [] if it.alignSupported and it.alignEnabled else None
       skevents.runlater(partial(d.translateAndApply,
-          func, kwargs, it.translate, text, fr=fr, to=d.language, align=align, async=False))
+          func, kwargs, it.translate, text, fr=fr, to=d.language, mark=mark, align=align, async=False))
 
 @memoized
 def manager(): return TranslatorManager()
@@ -614,6 +617,6 @@ class TranslatorQmlBean(QObject):
   def translate(self, text, language, engine):
     # I should not hardcode fr = 'ja' here
     # Force async
-    return manager().translate(text, engine=engine, fr=language, async=True) or ''
+    return manager().translate(text, engine=engine, fr=language, mark=False, async=True) or ''
 
 # EOF

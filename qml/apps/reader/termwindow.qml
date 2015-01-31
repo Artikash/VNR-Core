@@ -12,7 +12,7 @@ import '.' as Main
 Share.View { id: root_
   //implicitWidth: 480; implicitHeight: 360
 
-  width: 1200; height: 500
+  width: 1250; height: 500
 
   property string windowTitle: termView_.windowTitle
   //property int windowFlags: termView_.windowFlags

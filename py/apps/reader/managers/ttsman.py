@@ -135,7 +135,7 @@ class _TtsManager(object):
         return
 
     if termEnabled: #and (not language or language == 'ja'):
-      text = termman.manager().applySpeechTerms(text)
+      text = termman.manager().applySpeechTerms(text, language)
     # Even if text is empty, trigger stop tts
     #if not text:
     #  return
@@ -442,6 +442,9 @@ class TtsManager(QObject):
   def speak(self, text, interval=100, **kwargs):
     #if not features.TEXT_TO_SPEECH:
     #  return
+    text = text.strip()
+    if not text:
+      return
     if interval:
       self.__d.speakLater(text, interval=interval, **kwargs)
     else:
