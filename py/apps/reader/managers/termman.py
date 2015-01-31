@@ -111,21 +111,22 @@ class TermWriter:
   def isOutdated(self): # -> bool
     return self.createTime < _TermManager.instance.updateTime
 
-  def saveTerms(self, path, type, language, macros, titles):
+  def saveTerms(self, path, type, to, fr, macros, titles):
     """This method is invoked from a different thread
     @param  path  unicode
     @param  type  str  term type
-    @param  language  str  target text language
+    @param  to  str  target text language
+    @param  fr  str  source text language
     @param  macros  {unicode pattern:unicode repl}
     @param  titles  [TermTitle] not None not empty
     @return  bool
     """
     #marksChanges = self.marked and type in ('output', 'trans_output')
-    convertsChinese = language == 'zht' and type in ('output', 'trans_input', 'trans_output')
+    convertsChinese = to == 'zht' and type in ('output', 'trans_input', 'trans_output')
     if type not in ('input', 'trans_input', 'trans_output'):
       titles = None
 
-    kanjiLanguage = config.is_kanji_language(language)
+    kanjiLanguage = config.is_kanji_language(to)
     latinLanguage = not kanjiLanguage
 
     if kanjiLanguage:
@@ -145,8 +146,8 @@ class TermWriter:
     count = len(self.termData)
     try:
       with open(path, 'w') as f:
-        f.write(self._renderHeader(type, language))
-        for index,td in enumerate(self._iterTermData(type, language)):
+        f.write(self._renderHeader(type, to, fr))
+        for index,td in enumerate(self._iterTermData(type, to, fr)):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
@@ -190,7 +191,7 @@ class TermWriter:
               if z:
                 repl = zhs2zht(repl)
               if td.type == 'yomi':
-                repl = kana2name(repl, language) or repl
+                repl = kana2name(repl, to) or repl
 
               #elif config.is_latin_language(td.language):
               #  repl += " "
@@ -319,10 +320,11 @@ class TermWriter:
         ret = 's' + ret # a name with suffix
     f.write(ret)
 
-  def _renderHeader(self, type, language):
+  def _renderHeader(self, type, to, fr):
     """
     @param  type  str
-    @param  language  str
+    @param  to  str
+    @param  fr  str
     @return  unicode
     """
     return """\
@@ -330,21 +332,22 @@ class TermWriter:
 # Modifying this file will NOT affect VNR.
 #
 # Unix time: %s
-# Options: type = %s, language = %s, hentai = %s, games = (%s)
+# Options: type = %s, to = %s, fr = %s, hentai = %s, games = (%s)
 #
-""" % (self.createTime, type, language, self.hentai,
+""" % (self.createTime, type, to, fr, self.hentai,
     ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
 
-  def _iterTermData(self, type, language, syntax=False):
+  def _iterTermData(self, type, to, fr, syntax=False):
     """
     @param  type  str
-    @param  language  str
+    @param  to  str
+    @param  fr  str
     @param* syntax  bool
     @yield  _Term
     """
     if type.startswith('trans'):
       types = ['trans', 'name']
-      if not language.startswith('zh'):
+      if not to.startswith('zh'):
         types.append('yomi')
     else:
       types = [type]
@@ -357,19 +360,21 @@ class TermWriter:
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
           td.type in types
-          and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
-          and i18n.language_compatible_to(td.language, language)
+          and i18n.language_compatible_to(td.language, to)
+          and i18n.language_compatible_to(td.sourceLanguage, fr)
+          and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and td.syntax == syntax
         ):
         yield td
 
-  def queryTermMacros(self, language):
+  def queryTermMacros(self, to, fr):
     """
-    @param  language  str
+    @param  to  str
+    @param  fr  str
     @return  {unicode pattern:unicode repl} not None
     """
-    ret = {td.pattern:td.text for td in self._iterTermData('macro', language)}
+    ret = {td.pattern:td.text for td in self._iterTermData('macro', to, fr)}
     MAX_ITER_COUNT = 1000
     for count in xrange(1, MAX_ITER_COUNT):
       dirty = False
@@ -397,21 +402,22 @@ class TermWriter:
       dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def queryTermTitles(self, language, macros):
+  def queryTermTitles(self, to, fr, macros):
     """Terms sorted by length and id
-    @param  language
+    @param  to  str
+    @param  fr  str
     @param  macros  {unicode pattern:unicode repl}
     @return  [TermTitle]
     """
-    zht = language == 'zht'
+    zht = to == 'zht'
     l = [] # [long id, unicode pattern, unicode replacement, bool regex]
     #ret = OrderedDict({'':''})
     #ret = OrderedDict()
-    s = _get_lang_suffices(language)
+    s = _get_lang_suffices(to)
     if s:
       for k,v in s:
         l.append(TermTitle(pattern=k, text=v))
-    for td in self._iterTermData('suffix', language):
+    for td in self._iterTermData('suffix', to, fr):
       pat = td.pattern
       if td.regex:
         pat = self._applyMacros(pat, macros)
@@ -475,8 +481,8 @@ class _TermManager:
 
     self.saveMutex = QMutex()
 
-    self.scripts = {} # {str key:TranslationScriptManager}  key = lang + type
-    self.scriptTimes = {} # [str key:float time]
+    self.scripts = {} # {(str lang, str fr, str to):TranslationScriptManager}
+    self.scriptTimes = {} # [(str lang, str fr, str to):float time]
 
     self.rbmt = {} # {str language:rbmt.api.Translator}
     self.rbmtTimes = {} # [str language:float time]
@@ -495,8 +501,8 @@ class _TermManager:
     else:
       self.saveTimer.start()
 
-  def _createScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
-    key = type, language
+  def _createScriptManager(self, type, to, fr): # str, str, str -> TranslationScriptManager
+    key = type, to, fr
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
@@ -616,25 +622,25 @@ class _TermManager:
     #for scriptKey,ts in times.iteritems():
     for scriptKey,ts in times.items(): # back up items
       if ts < self.updateTime: # skip language that does not out of date
-        type, lang = scriptKey
-        macros = w.queryTermMacros(lang)
-        titles = w.queryTermTitles(lang, macros)
+        type, to, fr = scriptKey
+        macros = w.queryTermMacros(to, fr)
+        titles = w.queryTermTitles(to, fr, macros)
 
         if w.isOutdated():
           dwarn("leave: cancel saving out-of-date terms")
           return
 
-        path = rc.term_path(type, lang) # unicode
+        path = rc.term_path(type, to=to, fr=fr) # unicode
         dir = os.path.dirname(path) # unicode path
         if not os.path.exists(dir):
           skfileio.makedirs(dir)
 
-        man = self._createScriptManager(type, lang)
+        man = self._createScriptManager(type, to, fr)
         if not man.isEmpty():
           man.clear()
 
-        if w.saveTerms(path, type, lang, macros, titles) and man.loadFile(path):
-          dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
+        if w.saveTerms(path, type, to, fr, macros, titles) and man.loadFile(path):
+          dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
 
         times[scriptKey] = createTime
     dprint("leave")
@@ -648,7 +654,7 @@ class _TermManager:
     @param* key  str
     """
     # TODO: Schedule to update terms when man is missing
-    key = type, to
+    key = type, to, fr
     man = self.scripts.get(key)
     if man is None:
       self.scriptTimes[key] = 0
