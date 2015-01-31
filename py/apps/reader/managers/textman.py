@@ -597,7 +597,7 @@ class _TextManager(object):
     if not text:
       return
     if not agent: # only repair text for ITH
-      text = self._repairText(text, to=self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
     if not text:
       #dprint("ignore text")
       return
@@ -753,7 +753,7 @@ class _TextManager(object):
     if not text:
       return
     if not agent:
-      text = self._repairText(text, to=self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
       if not text:
         return
     text = textutil.normalize_name(text)
@@ -783,7 +783,7 @@ class _TextManager(object):
 
     text = self._decodeText(data).strip()
     if text: #and not agent: # always repair text for other text
-      text = self._repairText(text, to=self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
     if not text:
       #dprint("no text")
       return

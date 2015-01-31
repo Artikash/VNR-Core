@@ -295,9 +295,9 @@ class _MTTester(object):
         self.directTranslationEdit.setPlainText(raw)
 
       if self._isOriginTermsEnabled():
-        #to = self._currentToLanguage()
+        to = self._currentToLanguage()
         tt = textutil.normalize_punct(t)
-        tt = termman.manager().applyOriginTerms(tt, fr=fr) #, to=to)
+        tt = termman.manager().applyOriginTerms(tt, to=to, fr=fr)
         if tt != t:
           t = tt
           self.setOriginTextEditText(t or _EMPTY_TEXT)
