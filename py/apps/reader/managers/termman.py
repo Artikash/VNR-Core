@@ -639,15 +639,16 @@ class _TermManager:
         times[scriptKey] = createTime
     dprint("leave")
 
-  def applyTerms(self, text, type, language, host=''):
+  def applyTerms(self, text, type, to, fr, host=''):
     """
     @param  text  unicode
     @param  type  str
-    @param  language  str
+    @param  to  str  language
+    @param* fr  str  language
     @param* key  str
     """
     # TODO: Schedule to update terms when man is missing
-    key = type, language
+    key = type, to
     man = self.scripts.get(key)
     if man is None:
       self.scriptTimes[key] = 0
@@ -783,17 +784,17 @@ class TermManager(QObject):
   #  """
   #  return self.__d.iterTerms(terms, language)
 
-  def applyOriginTerms(self, text, language):
+  def applyOriginTerms(self, text, language=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param* language  str  fr
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'game', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'game', 'ja', language or 'ja') if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
@@ -807,25 +808,26 @@ class TermManager(QObject):
   def applySpeechTerms(self, text, language=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param* language  str
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'tts', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'tts', 'ja', language or d.targetLanguage) if d.enabled else text
 
   def applyOcrTerms(self, text, language=None):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param* language  str
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'ocr', language or d.targetLanguage) if d.enabled else text
+    return d.applyTerms(text, 'ocr', 'ja', language or 'ja') if d.enabled else text
 
-  def applyTargetTerms(self, text, language, host=''):
+  def applyTargetTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
-    @param  language  str
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
     @return  unicode
     """
@@ -833,16 +835,17 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     #with SkProfiler():
-    return d.applyTerms(text, 'output', language, host=host) if d.enabled else text
+    return d.applyTerms(text, 'output', to, fr, host=host) if d.enabled else text
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
     #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 
-  def applySourceTerms(self, text, language, host=''):
+  def applySourceTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
-    @param  language  str
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
     @return  unicode
     """
@@ -850,7 +853,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.0005 seconds
     # 9/26/2014: Boost 0.001 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'input', language, host=host) if d.enabled else text
+    return d.applyTerms(text, 'input', to, fr, host=host) if d.enabled else text
     #dm = dataman.manager()
     #d = self.__d
     #text = d.applyTerms(dm.iterSourceTerms(), text, language)
@@ -862,10 +865,11 @@ class TermManager(QObject):
     #  except Exception, e: dwarn(e)
     #  text = text.rstrip() # remove trailing spaces
 
-  def prepareEscapeTerms(self, text, language, host=''):
+  def prepareEscapeTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
-    @param  language  str
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
     @return  unicode
     """
@@ -876,12 +880,13 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'trans_input', language, host=host)
+    return d.applyTerms(text, 'trans_input', to, fr, host=host)
 
-  def applyEscapeTerms(self, text, language, host=''):
+  def applyEscapeTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
-    @param  language  unicode
+    @param  to  str  language
+    @param  fr  str  language
     @param* host  str
     @return  unicode
     """
@@ -892,8 +897,8 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
-    ret = d.applyTerms(text, 'trans_output', language, host=host)
-    if d.marked and language.startswith('zh'):
+    ret = d.applyTerms(text, 'trans_output', to, fr, host=host)
+    if d.marked and to.startswith('zh'):
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")
     return ret

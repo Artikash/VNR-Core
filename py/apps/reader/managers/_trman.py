@@ -170,7 +170,7 @@ class LougoTranslator(Translator):
 
     tm = termman.manager()
     t = text
-    text = tm.applySourceTerms(text, 'en', host=self.key)
+    text = tm.applySourceTerms(text, to='en', fr='ja', host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
     sub = mecabman.tolou(text)
@@ -213,7 +213,7 @@ class HanVietTranslator(Translator):
 
     tm = termman.manager()
     t = text
-    text = tm.applySourceTerms(text, 'zhs', host=self.key)
+    text = tm.applySourceTerms(text, to='vi', fr='zhs', host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
 
@@ -431,7 +431,7 @@ class MachineTranslator(Translator):
     tm = termman.manager()
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applySourceTerms(text, to, host=self.key)
+    text = tm.applySourceTerms(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
 
@@ -440,7 +440,7 @@ class MachineTranslator(Translator):
     #if self._needsJitter(to, fr):
     if fr == 'ja':
       text = self._escapeJitter(text, to, fr)
-    text = tm.prepareEscapeTerms(text, to, host=self.key)
+    text = tm.prepareEscapeTerms(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
       self.emitEscapedText(text)
 
@@ -467,12 +467,12 @@ class MachineTranslator(Translator):
     #text = self.__google_repl_after(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
-    text = tm.applyEscapeTerms(text, to, host=self.key)
+    text = tm.applyEscapeTerms(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
       self.emitEscapedTranslation(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applyTargetTerms(text, to, host=self.key)
+    text = tm.applyTargetTerms(text, to=to, fr=fr, host=self.key)
     #if self._needsJitter(to, fr):
     if fr == 'ja':
       text = self._unescapeJitter(text, to, fr)
