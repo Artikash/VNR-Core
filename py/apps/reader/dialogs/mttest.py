@@ -282,9 +282,9 @@ class _MTTester(object):
       dprint("enter")
       self._clearTranslations()
       self.translatorLabel.setText(self.translatorEdit.currentText())
-      lang = self._currentFromLanguage()
+      fr = self._currentFromLanguage()
       params = {
-        'fr': lang,
+        'fr': fr,
         'engine': self._currentTranslator(),
       }
       raw = trman.manager().translateDirect(t, **params)
@@ -294,7 +294,7 @@ class _MTTester(object):
       if self._isOriginTermsEnabled():
         #to = self._currentToLanguage()
         tt = textutil.normalize_punct(t)
-        tt = termman.manager().applyOriginTerms(tt, lang)
+        tt = termman.manager().applyOriginTerms(tt, fr=fr) #, to=to)
         if tt != t:
           t = tt
           self.setOriginTextEditText(t or _EMPTY_TEXT)

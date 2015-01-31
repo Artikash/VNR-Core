@@ -442,6 +442,9 @@ class TtsManager(QObject):
   def speak(self, text, interval=100, **kwargs):
     #if not features.TEXT_TO_SPEECH:
     #  return
+    text = text.strip()
+    if not text:
+      return
     if interval:
       self.__d.speakLater(text, interval=interval, **kwargs)
     else:

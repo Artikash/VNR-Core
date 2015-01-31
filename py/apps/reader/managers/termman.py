@@ -63,8 +63,8 @@ def _partition_punct(text, punct=S_PUNCT):
 @memoized
 def manager(): return TermManager()
 
-_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
-def _remove_marks(text): return _re_marks.sub('', text) # unicode -> unicode
+#_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
+#def _remove_marks(text): #return _re_marks.sub('', text) # unicode -> unicode
 
 def _translator_category(host): # str -> int
   if host:
@@ -744,8 +744,8 @@ class TermManager(QObject):
   #def markEscapeText(self, text): # unicode -> unicode
   #  return _mark_text(text) if text and self.__d.marked else text
 
-  def removeMarks(self, text): # unicode -> unicode
-    return _remove_marks(text) if self.__d.marked else text
+  #def removeMarks(self, text): # unicode -> unicode
+  #  return textutil.remove_html_tags(text) if self.__d.marked else text
 
   #def convertsChinese(self): return self.__d.convertsChinese
   #def setConvertsChinese(self, value): self.__d.convertsChinese = value
@@ -790,17 +790,18 @@ class TermManager(QObject):
   #  """
   #  return self.__d.iterTerms(terms, language)
 
-  def applyOriginTerms(self, text, language=None):
+  def applyOriginTerms(self, text, to=None, fr=None):
     """
     @param  text  unicode
-    @param* language  str  fr
+    @param* to  str
+    @param* fr  str
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'game', 'ja', language or 'ja') if d.enabled else text
+    return d.applyTerms(text, 'game', to or self.targetLanguage, fr or 'ja') if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
