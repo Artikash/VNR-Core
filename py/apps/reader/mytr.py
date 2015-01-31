@@ -180,6 +180,7 @@ class reader(QObject):
       # Terms
       self.tr("Name"), self.tr("name"), # used in Text Settings
       self.tr("Names"), self.tr("names"),
+      self.tr("Yomigana"),
       self.tr("Yomi"),
       self.tr("Suffix"),
 

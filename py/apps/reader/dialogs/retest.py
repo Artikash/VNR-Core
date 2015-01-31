@@ -20,6 +20,13 @@ from sakurakit.sktr import tr_
 from mytr import mytr_
 import rc
 
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight)
+  return ret
+
 class _RegExpTester(object):
 
   def __init__(self, q):
@@ -54,15 +61,15 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     grid = QtWidgets.QGridLayout()
 
     # 0
-    grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), 0, 0)
+    grid.addWidget(create_label(tr_("Pattern")), 0, 0)
     grid.addWidget(self.patternEdit, 0, 1)
 
     # 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"))
+    grid.addWidget(create_label(tr_("Translation")))
     grid.addWidget(self.replaceEdit)
 
     # 2
-    grid.addWidget(QtWidgets.QLabel(tr_("Status") + ":"))
+    grid.addWidget(create_label(tr_("Status")))
     grid.addWidget(self.messageEdit)
 
     layout.addLayout(grid)

@@ -25,6 +25,13 @@ import rc
 _EMPTY_TEXT = "(%s)" % tr_("Empty")
 _ERROR_TEXT = "(%s)" % tr_("Error")
 
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight)
+  return ret
+
 class _SyntaxTester(object):
 
   def __init__(self, q):
@@ -54,15 +61,15 @@ class _SyntaxTester(object):
     grid = QtWidgets.QGridLayout()
 
     # 0
-    grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), 0, 0)
+    grid.addWidget(create_label(tr_("Pattern")), 0, 0)
     grid.addWidget(self.patternEdit, 0, 1)
 
     # 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"))
+    grid.addWidget(create_label(tr_("Translation")))
     grid.addWidget(self.replaceEdit)
 
     # 2
-    grid.addWidget(QtWidgets.QLabel(tr_("Language") + ":"))
+    grid.addWidget(create_label(tr_("Language")))
     grid.addWidget(self.languageLabel)
 
     layout.addLayout(grid)

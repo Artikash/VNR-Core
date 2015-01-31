@@ -11,7 +11,7 @@ import 'postview' as PostView
 import 'share' as Share
 
 Item { id: root_
-  implicitWidth: 200; implicitHeight: 400
+  implicitWidth: 250; implicitHeight: 400
 
   property string url: Define.DOMAIN_COM + '/api/json/post/'
 

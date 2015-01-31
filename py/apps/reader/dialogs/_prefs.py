@@ -23,11 +23,18 @@ def parent_window(): # replace self.q to make sure windows is always visible
   import windows
   return windows.top()
 
-def create_toggle_button(*args, **kwargs):
+def create_toggle_button(*args, **kwargs): # -> QPushButton
   ret = QtWidgets.QPushButton(*args, **kwargs)
   skqss.class_(ret, 'btn btn-default btn-toggle')
   ret.setMaximumWidth(18)   # qss sometimes does not work, bug?
   ret.setMaximumHeight(18)  # qss sometimes does not work, bug?
+  return ret
+
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight)
   return ret
 
 ALL_LANGUAGES = 'ja', 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'ar', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
@@ -137,28 +144,28 @@ class _UserTab(object):
     grid = QtWidgets.QGridLayout()
 
     r = 0
-    grid.addWidget(QtWidgets.QLabel(tr_("Avatar") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Avatar")), r, 0)
     grid.addWidget(self.userAvatarLabel, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Username") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Username")), r, 0)
     grid.addWidget(self.userNameEdit, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Password") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Password")), r, 0)
     grid.addWidget(self.userPasswordEdit, r, 1)
 
     # Language name is not translated
     r += 1
-    grid.addWidget(QtWidgets.QLabel(notr_("Language") + ":"), r, 0)
+    grid.addWidget(create_label(notr_("Language")), r, 0)
     grid.addWidget(self.userLanguageEdit, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Gender") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Gender")), r, 0)
     grid.addWidget(self.userGenderEdit, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Color") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Color")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.userColorButton)
     row.addWidget(self.resetUserColorButton)
@@ -166,7 +173,7 @@ class _UserTab(object):
     grid.addLayout(row, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Privilege") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Privilege")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.userLevelLabel)
     self._refreshUserLevel()
