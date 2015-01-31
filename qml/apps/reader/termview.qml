@@ -13,7 +13,7 @@ import 'termview' as TermView
 //Share.View { id: root_
 Item { id: root_
   //implicitWidth: 480; implicitHeight: 360
-  width: 950; height: 500
+  width: 1000; height: 500
 
   // Window properties
   property string windowTitle: title() ///< window title
@@ -112,6 +112,7 @@ Item { id: root_
 
     filterColumn: searchCol_.value
     filterLanguage: searchLang_.value
+    filterSourceLanguage: searchSourceLang_.value
     filterHost: searchHost_.value
     filterTypes: filterToolBar_.values
 
@@ -163,51 +164,47 @@ Item { id: root_
         table_.pageNumber = value
   }
 
-  Desktop.ComboBox { id: searchCol_
+  Desktop.ComboBox { id: searchHost_
     anchors {
       verticalCenter: searchBox_.verticalCenter
       left: paginator_.right
-      leftMargin: 5
+      leftMargin: 2
     }
-    width: 60
+    width: 65
 
-    tooltip: Sk.tr("Column")
+    tooltip: My.tr("Translator")
 
     model: ListModel {
       Component.onCompleted: {
-        append({text:Sk.tr("Column"), value:''})
-        append({text:"ID", value:'id'})
-        append({text:Sk.tr("User"), value:'user'})
-        append({text:Sk.tr("Game"), value:'game'})
-        //append({text:Sk.tr("Type"), value:'type'})
-        //append({text:Sk.tr("Language"), value:'language'})
-        append({text:Sk.tr("Pattern"), value:'pattern'})
-        append({text:Sk.tr("Translation"), value:'text'})
-        append({text:Sk.tr("Comment"), value:'comment'})
+        append({value:'', text:My.tr("Translator")})
+        for (var i in Util.TRANSLATOR_HOST_KEYS) {
+          var key = Util.TRANSLATOR_HOST_KEYS[i]
+          append({value:key, text:Util.translatorName(key)})
+        }
       }
     }
 
     property string value
     onSelectedIndexChanged: value = model.get(selectedIndex).value
 
-    function setValue(v) { // string -> bool  whether changed
-      if (!v)
-        v = '' // for null
-      if (v == value)
-        return false
-      for (var i = 0; i < model.count; ++i)
-        if (model.get(i).value == v) {
-          selectedIndex = i
-          return true
-        }
-      return false
-    }
+    // This function is not used
+    //function setValue(v) { // string -> bool  whether changed
+    //  if (!v)
+    //    v = '' // for null
+    //  for (var i = 0; i < model.count; ++i)
+    //    if (model.get(i).value == v) {
+    //      selectedIndex = i
+    //      return true
+    //    }
+    //  return false
+    //}
   }
 
-  Desktop.ComboBox { id: searchLang_
+
+  Desktop.ComboBox { id: searchSourceLang_
     anchors {
-      verticalCenter: searchCol_.verticalCenter
-      left: searchCol_.right
+      verticalCenter: searchBox_.verticalCenter
+      left: searchHost_.right
       leftMargin: 2
     }
     width: 60
@@ -216,7 +213,45 @@ Item { id: root_
 
     model: ListModel {
       Component.onCompleted: {
-        append({value:'', text:Sk.tr("Lang")})
+        append({value:'', text:"From"})
+        for (var i in Util.LANGUAGES) {
+          var lang = Util.LANGUAGES[i]
+          append({value:lang, text:Sk.tr(lang)})
+        }
+      }
+    }
+
+    property string value
+    onSelectedIndexChanged: value = model.get(selectedIndex).value
+
+    // Not used
+    //function setValue(v) { // string -> bool  whether changed
+    //  if (!v)
+    //    v = '' // for null
+    //  if (v == value)
+    //    return false
+    //  var i = Util.LANGUAGES.indexOf(v)
+    //  if (i !== -1) {
+    //    selectedIndex = i
+    //    return true
+    //  }
+    //  return false
+    //}
+  }
+
+  Desktop.ComboBox { id: searchLang_
+    anchors {
+      verticalCenter: searchBox_.verticalCenter
+      left: searchSourceLang_.right
+      leftMargin: 2
+    }
+    width: 60
+
+    tooltip: Sk.tr("Language")
+
+    model: ListModel {
+      Component.onCompleted: {
+        append({value:'', text:"To"})
         for (var i in Util.LANGUAGES) {
           var lang = Util.LANGUAGES[i]
           append({value:lang, text:Sk.tr(lang)})
@@ -246,45 +281,48 @@ Item { id: root_
     }
   }
 
-  Desktop.ComboBox { id: searchHost_
+  Desktop.ComboBox { id: searchCol_
     anchors {
-      verticalCenter: searchLang_.verticalCenter
+      verticalCenter: searchBox_.verticalCenter
       left: searchLang_.right
-      leftMargin: 2
+      leftMargin: 5
     }
     width: 60
 
-    tooltip: My.tr("Translator")
+    tooltip: Sk.tr("Column")
 
     model: ListModel {
       Component.onCompleted: {
         append({value:'', text:"*"})
-        for (var i in Util.TRANSLATOR_HOST_KEYS) {
-          var key = Util.TRANSLATOR_HOST_KEYS[i]
-          append({value:key, text:Util.translatorName(key)})
-        }
+        append({value:'id', text:"ID"})
+        append({value:'user', text:Sk.tr("User")})
+        append({value:'game', text:Sk.tr("Game")})
+        append({value:'pattern', text:Sk.tr("Pattern")})
+        append({value:'text', text:Sk.tr("Translation")})
+        append({value:'comment', text:Sk.tr("Comment")})
       }
     }
 
     property string value
     onSelectedIndexChanged: value = model.get(selectedIndex).value
 
-    // This function is not used
-    //function setValue(v) { // string -> bool  whether changed
-    //  if (!v)
-    //    v = '' // for null
-    //  for (var i = 0; i < model.count; ++i)
-    //    if (model.get(i).value == v) {
-    //      selectedIndex = i
-    //      return true
-    //    }
-    //  return false
-    //}
+    function setValue(v) { // string -> bool  whether changed
+      if (!v)
+        v = '' // for null
+      if (v == value)
+        return false
+      for (var i = 0; i < model.count; ++i)
+        if (model.get(i).value == v) {
+          selectedIndex = i
+          return true
+        }
+      return false
+    }
   }
 
   Share.SearchBox { id: searchBox_
     anchors {
-      left: searchHost_.right
+      left: searchCol_.right
       //left: parent.left
       right: searchToolBar_.left
       bottom: inspector_.top

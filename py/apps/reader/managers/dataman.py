@@ -4639,6 +4639,7 @@ class _TermModel(object):
     'errorType',
     'disabled',
     'private',
+    'sourceLanguage',
     'language',
     'type',
     'host',
@@ -4659,6 +4660,7 @@ class _TermModel(object):
   DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
+    self.filterSourceLanguage = "" # str
     self.filterLanguage = ""    # str
     self.filterHost = ""        # str
     self.filterTypes = ""       # str
@@ -4698,7 +4700,7 @@ class _TermModel(object):
     @return  [Term]
     """
     return (self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN
-        else self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
+        else self.filterData if any((self.filterText, self.filterTypes, self.filterLanguage, self.filterSourceLanguage, self.filterHost))
         else self.duplicateData if self.duplicate else self.sourceData)
 
   @staticproperty
@@ -4776,7 +4778,7 @@ class _TermModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = (self.filterData if self.filterText or self.filterTypes or self.filterLanguage or self.filterHost
+      data = (self.filterData if any((self.filterText, self.filterTypes, self.filterLanguage, self.filterSourceLanguage, self.filterHost))
           else self.duplicateData if self.duplicate
           else self.sourceData)
       if not data:
@@ -4828,22 +4830,34 @@ class _TermModel(object):
     @return  bool
     """
     td = term.d
+    filters = [self.filterText, self.filterHost, self.filterSourceLanguage, self.filterLanguage, self.filterTypes]
+
+    filters.pop()
     if self.filterTypes:
       if td.type not in self.filterTypes:
         return False
-      if not self.filterText and not self.filterLanguage and not self.filterHost:
+      if not any(filters):
         return True
 
+    filters.pop()
     if self.filterLanguage:
       if not td.language.startswith(self.filterLanguage):
         return False
-      if not self.filterText and not self.filterHost: #and not self.filterTypes:
+      if not any(filters):
         return True
 
+    filters.pop()
+    if self.filterSourceLanguage:
+      if not td.sourceLanguage.startswith(self.filterSourceLanguage):
+        return False
+      if not any(filters):
+        return True
+
+    filters.pop()
     if self.filterHost:
       if td.host != self.filterHost:
         return False
-      if not self.filterText:
+      if not any(filters):
         return True
 
     t = self.filterText
@@ -5019,6 +5033,17 @@ class TermModel(QAbstractListModel):
       lambda self: self.__d.filterLanguage,
       setFilterLanguage,
       notify=filterLanguageChanged)
+
+  def setFilterSourceLanguage(self, value):
+    if value != self.__d.filterSourceLanguage:
+      self.__d.filterSourceLanguage = value
+      d = self.__d
+      self.filterSourceLanguageChanged.emit(value)
+  filterSourceLanguageChanged = Signal(str)
+  filterSourceLanguage = Property(str,
+      lambda self: self.__d.filterSourceLanguage,
+      setFilterSourceLanguage,
+      notify=filterSourceLanguageChanged)
 
   def setFilterColumn(self, value):
     if value != self.__d.filterColumn:
