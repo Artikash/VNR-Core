@@ -19,6 +19,7 @@
 %		if it.host
 			<host>{{it.host}}</host>
 %		endif
+			<sourceLanguage>{{it.sourceLanguage}}</sourceLanguage>
 			<language>{{it.language}}</language>
 			<timestamp>{{it.timestamp}}</timestamp>
 %		if it.updateTimestamp
