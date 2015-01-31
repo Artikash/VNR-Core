@@ -506,7 +506,7 @@ class _TermManager:
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
-      ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
+      #ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
     return ret
 
   #@classmethod
@@ -645,14 +645,17 @@ class _TermManager:
         times[scriptKey] = createTime
     dprint("leave")
 
-  def applyTerms(self, text, type, to, fr, host=''):
+  def applyTerms(self, text, type, to, fr, host='', mark=False):
     """
     @param  text  unicode
     @param  type  str
     @param  to  str  language
     @param* fr  str  language
     @param* key  str
+    @param* mark  bool or None
     """
+    if mark is None:
+      mark = self.marked
     # TODO: Schedule to update terms when man is missing
     key = type, to, fr
     man = self.scripts.get(key)
@@ -660,7 +663,7 @@ class _TermManager:
       self.scriptTimes[key] = 0
       self.rebuildCacheLater()
     category = _translator_category(host)
-    return man.translate(text, category) if man and not man.isEmpty() else text
+    return man.translate(text, category, mark) if man and not man.isEmpty() else text
 
 class TermManager(QObject):
 
@@ -723,17 +726,17 @@ class TermManager(QObject):
     self.__d.syntax = value
 
   def isMarked(self): return self.__d.marked
-  def setMarked(self, t):
-    d = self.__d
-    if d.marked != t:
-      d.marked = t
-      for key,man in d.scripts.iteritems():
-        type = key[0]
-        marked = t and type in ('output', 'trans_output')
-        man.setLinkEnabled(marked)
+  def setMarked(self, t): self.__d.marked = t
+    #d = self.__d
+    #if d.marked != t:
+    #  d.marked = t
+    #  for key,man in d.scripts.iteritems():
+    #    type = key[0]
+    #    marked = t and type in ('output', 'trans_output')
+    #    man.setLinkEnabled(marked)
 
-      for it in d.rbmt.itervalues():
-        it.setUnderline(t and it.isEscape())
+    #  for it in d.rbmt.itervalues():
+    #    it.setUnderline(t and it.isEscape())
 
   ## Marks ##
 
@@ -830,19 +833,20 @@ class TermManager(QObject):
     d = self.__d
     return d.applyTerms(text, 'ocr', 'ja', language or 'ja') if d.enabled else text
 
-  def applyTargetTerms(self, text, to, fr, host=''):
+  def applyTargetTerms(self, text, to, fr, host='', mark=None):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param* host  str
+    @param* mark  bool or None
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     #with SkProfiler():
-    return d.applyTerms(text, 'output', to, fr, host=host) if d.enabled else text
+    return d.applyTerms(text, 'output', to, fr, host=host, mark=mark) if d.enabled else text
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
@@ -889,12 +893,13 @@ class TermManager(QObject):
     #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
     return d.applyTerms(text, 'trans_input', to, fr, host=host)
 
-  def applyEscapeTerms(self, text, to, fr, host=''):
+  def applyEscapeTerms(self, text, to, fr, host='', mark=None):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param* host  str
+    @param* mark  bool or None
     @return  unicode
     """
     d = self.__d
@@ -904,7 +909,7 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
-    ret = d.applyTerms(text, 'trans_output', to, fr, host=host)
+    ret = d.applyTerms(text, 'trans_output', to, fr, host=host, mark=mark)
     if d.marked and to.startswith('zh'):
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")

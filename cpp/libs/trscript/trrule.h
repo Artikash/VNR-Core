@@ -82,26 +82,26 @@ private:
 
   std::wstring render_target() const;
 
-  void string_replace(std::wstring &ret, bool link) const;
-  void regex_replace(std::wstring &ret, bool link) const;
+  void string_replace(std::wstring &ret, bool mark) const;
+  void regex_replace(std::wstring &ret, bool mark) const;
 
   bool string_exists(const std::wstring &t) const { return boost::algorithm::contains(t, source); }
   bool regex_exists(const std::wstring &t) const;
-  bool children_replace(std::wstring &ret, bool link) const;
+  bool children_replace(std::wstring &ret, bool mark) const;
 
 public:
   bool exists(const std::wstring &text) const
   { return is_regex() ? regex_exists(text) : string_exists(text); }
 
-  bool replace(std::wstring &ret, bool link) const
+  bool replace(std::wstring &ret, bool mark) const
   {
     if (!exists(ret))
       return false;
-    if (!is_list() || !children_replace(ret, link)) {
+    if (!is_list() || !children_replace(ret, mark)) {
       if (is_regex())
-        regex_replace(ret, link);
+        regex_replace(ret, mark);
       else
-        string_replace(ret, link);
+        string_replace(ret, mark);
     }
     return true;
   }

@@ -38,10 +38,7 @@ public:
   TranslationScriptRule *rules; // use array for performance reason
   size_t ruleCount;
 
-  bool link;
-  std::wstring linkStyle;
-
-  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0), link(false) {}
+  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
   ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
 
   void clear()
@@ -73,11 +70,11 @@ TranslationScriptManager::~TranslationScriptManager() { delete d_; }
 int TranslationScriptManager::size() const { return d_->ruleCount; }
 bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 
-bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
-void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
+//bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
+//void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
 
-std::wstring TranslationScriptManager::linkStyle() const { return d_->linkStyle; }
-void TranslationScriptManager::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+//std::wstring TranslationScriptManager::linkStyle() const { return d_->linkStyle; }
+//void TranslationScriptManager::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
 
 void TranslationScriptManager::clear() { d_->clear(); }
 
@@ -160,7 +157,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 }
 
 // Translation
-std::wstring TranslationScriptManager::translate(const std::wstring &text, int category) const
+std::wstring TranslationScriptManager::translate(const std::wstring &text, int category, bool mark) const
 {
   //QReadLocker locker(&d_->lock);
   std::wstring ret = text;
@@ -172,7 +169,7 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text, int c
       const auto &rule = d_->rules[i];
       //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
       if (rule.is_valid() && rule.match_category(category))
-        rule.replace(ret, d_->link);
+        rule.replace(ret, mark);
 
 #ifdef DEBUG_RULE
       if (previous != ret)
