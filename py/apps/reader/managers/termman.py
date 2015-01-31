@@ -801,7 +801,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'game', to or self.targetLanguage, fr or 'ja') if d.enabled else text
+    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja') if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):

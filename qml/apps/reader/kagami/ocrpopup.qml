@@ -7,7 +7,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
-import '../../../js/eval.min.js' as Eval
+//import '../../../js/eval.min.js' as Eval
 import '../../../js/util.min.js' as Util
 import '../../../components' as Components
 import '../../../js/local.js' as Local // Local.comet
@@ -410,6 +410,8 @@ Item { id: root_
 
           //selectByMouse: true // conflicts with flickable
 
+          // Not enabled since RichText is not used
+          //onLinkActivated: Eval.evalLink(link)
           textFormat: TextEdit.PlainText
           wrapMode: TextEdit.Wrap
           focus: true
@@ -420,8 +422,6 @@ Item { id: root_
 
           // Not working, which cause textedit width to shrink
           //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
-
-          onLinkActivated: Eval.evalLink(link)
 
           //console.log("shiori.qml: link activated:", link)
 
