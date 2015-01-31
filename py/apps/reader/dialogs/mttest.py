@@ -256,8 +256,8 @@ class _MTTester(object):
     return self.textEdit.toPlainText().strip()
   def _currentFromLanguage(self):
     return config.LANGUAGES[self.fromLanguageEdit.currentIndex()]
-  def _currentToLanguage(self):
-    return config.LANGUAGES[self.toLanguageEdit.currentIndex()]
+  #def _currentToLanguage(self):
+  #  return config.LANGUAGES[self.toLanguageEdit.currentIndex()]
   def _currentTranslator(self):
     return trtraits.TRAITS[self.translatorEdit.currentIndex()]['key']
 
@@ -295,9 +295,9 @@ class _MTTester(object):
         self.directTranslationEdit.setPlainText(raw)
 
       if self._isOriginTermsEnabled():
-        to = self._currentToLanguage()
+        #to = self._currentToLanguage()
         tt = textutil.normalize_punct(t)
-        tt = termman.manager().applyOriginTerms(tt, to=to, fr=fr)
+        tt = termman.manager().applyOriginTerms(tt, fr=fr) #, to=to)
         if tt != t:
           t = tt
           self.setOriginTextEditText(t or _EMPTY_TEXT)
