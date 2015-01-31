@@ -678,7 +678,7 @@ bool InsertKAGParserExHook()
  *    Using MemDbg::findCallerAddressAfterInt3()
  *
  *  - Find the caller of the above caller
- *    SInce the function address is dynamic, the function is found using KiriKiriZHook
+ *    Since the function address is dynamic, the function is found using KiriKiriZHook
  *
  *    00377c44   8b01             mov eax,dword ptr ds:[ecx]
  *    00377c46   ff75 10          push dword ptr ss:[ebp+0x10]
@@ -695,17 +695,497 @@ bool InsertKAGParserExHook()
  *    0017E960  E0 8E 90 D9 42 7D 00 00 00 02 00 00 01 00 00 00
  *                          up: text here
  *    0017E970  01 00 01 FF 00 00 00 00 00 00 00 00 C8
+ *
+ *  1/30/2015:
+ *  The hooked function in Venus Blood -HYPNO- is as follows.
+ *  Since サノバウィッチ (150226), KiriKiriZ no longer invokes GetGlyphOutlineW.
+ *  Try to extract instruction patterns from the following function instead.
+ *
+ *  011a7a3c   cc               int3
+ *  011a7a3d   cc               int3
+ *  011a7a3e   cc               int3
+ *  011a7a3f   cc               int3
+ *  011a7a40   55               push ebp
+ *  011a7a41   8bec             mov ebp,esp
+ *  011a7a43   6a ff            push -0x1
+ *  011a7a45   68 dbaa3101      push .0131aadb
+ *  011a7a4a   64:a1 00000000   mov eax,dword ptr fs:[0]
+ *  011a7a50   50               push eax
+ *  011a7a51   83ec 14          sub esp,0x14
+ *  011a7a54   53               push ebx
+ *  011a7a55   56               push esi
+ *  011a7a56   57               push edi
+ *  011a7a57   a1 00593d01      mov eax,dword ptr ds:[0x13d5900]
+ *  011a7a5c   33c5             xor eax,ebp
+ *  011a7a5e   50               push eax
+ *  011a7a5f   8d45 f4          lea eax,dword ptr ss:[ebp-0xc]
+ *  011a7a62   64:a3 00000000   mov dword ptr fs:[0],eax
+ *  011a7a68   8965 f0          mov dword ptr ss:[ebp-0x10],esp
+ *  011a7a6b   8bd9             mov ebx,ecx
+ *  011a7a6d   803d 00113e01 00 cmp byte ptr ds:[0x13e1100],0x0
+ *  011a7a74   75 17            jnz short .011a7a8d
+ *  011a7a76   c745 e8 1cb83d01 mov dword ptr ss:[ebp-0x18],.013db81c
+ *  011a7a7d   8d45 e8          lea eax,dword ptr ss:[ebp-0x18]
+ *  011a7a80   50               push eax
+ *  011a7a81   e8 4ae2f0ff      call .010b5cd0
+ *  011a7a86   c605 00113e01 01 mov byte ptr ds:[0x13e1100],0x1
+ *  011a7a8d   33c9             xor ecx,ecx
+ *  011a7a8f   384b 21          cmp byte ptr ds:[ebx+0x21],cl
+ *  011a7a92   0f95c1           setne cl
+ *  011a7a95   33c0             xor eax,eax
+ *  011a7a97   3843 20          cmp byte ptr ds:[ebx+0x20],al
+ *  011a7a9a   0f95c0           setne al
+ *  011a7a9d   33c8             xor ecx,eax
+ *  011a7a9f   334b 10          xor ecx,dword ptr ds:[ebx+0x10]
+ *  011a7aa2   0fb743 14        movzx eax,word ptr ds:[ebx+0x14]
+ *  011a7aa6   33c8             xor ecx,eax
+ *  011a7aa8   8b7b 1c          mov edi,dword ptr ds:[ebx+0x1c]
+ *  011a7aab   33f9             xor edi,ecx
+ *  011a7aad   337b 18          xor edi,dword ptr ds:[ebx+0x18]
+ *  011a7ab0   897d e4          mov dword ptr ss:[ebp-0x1c],edi
+ *  011a7ab3   57               push edi
+ *  011a7ab4   53               push ebx
+ *  011a7ab5   e8 06330000      call .011aadc0
+ *  011a7aba   8bf0             mov esi,eax
+ *  011a7abc   85f6             test esi,esi
+ *  011a7abe   74 26            je short .011a7ae6
+ *  011a7ac0   56               push esi
+ *  011a7ac1   e8 ba330000      call .011aae80
+ *  011a7ac6   8d46 2c          lea eax,dword ptr ds:[esi+0x2c]
+ *  011a7ac9   85c0             test eax,eax
+ *  011a7acb   74 19            je short .011a7ae6
+ *  011a7acd   8b08             mov ecx,dword ptr ds:[eax]
+ *  011a7acf   ff41 04          inc dword ptr ds:[ecx+0x4]
+ *  011a7ad2   8b00             mov eax,dword ptr ds:[eax]
+ *  011a7ad4   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  011a7ad7   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  011a7ade   59               pop ecx
+ *  011a7adf   5f               pop edi
+ *  011a7ae0   5e               pop esi
+ *  011a7ae1   5b               pop ebx
+ *  011a7ae2   8be5             mov esp,ebp
+ *  011a7ae4   5d               pop ebp
+ *  011a7ae5   c3               retn
+ *  011a7ae6   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+ *  011a7ae9   85c9             test ecx,ecx
+ *  011a7aeb   0f84 47010000    je .011a7c38
+ *  011a7af1   0fb743 14        movzx eax,word ptr ds:[ebx+0x14]
+ *  011a7af5   50               push eax
+ *  011a7af6   e8 b5090300      call .011d84b0
+ *  011a7afb   8bf0             mov esi,eax
+ *  011a7afd   8975 ec          mov dword ptr ss:[ebp-0x14],esi
+ *  011a7b00   85f6             test esi,esi
+ *  011a7b02   0f84 30010000    je .011a7c38
+ *  011a7b08   6a 34            push 0x34
+ *  011a7b0a   e8 29621300      call .012ddd38
+ *  011a7b0f   83c4 04          add esp,0x4
+ *  011a7b12   8bf8             mov edi,eax
+ *  011a7b14   897d e0          mov dword ptr ss:[ebp-0x20],edi
+ *  011a7b17   c745 fc 00000000 mov dword ptr ss:[ebp-0x4],0x0
+ *  011a7b1e   85ff             test edi,edi
+ *  011a7b20   74 1d            je short .011a7b3f
+ *  011a7b22   c747 2c 41000000 mov dword ptr ds:[edi+0x2c],0x41
+ *  011a7b29   c647 32 00       mov byte ptr ds:[edi+0x32],0x0
+ *  011a7b2d   c747 04 01000000 mov dword ptr ds:[edi+0x4],0x1
+ *  011a7b34   c707 00000000    mov dword ptr ds:[edi],0x0
+ *  011a7b3a   8945 e8          mov dword ptr ss:[ebp-0x18],eax
+ *  011a7b3d   eb 05            jmp short .011a7b44
+ *  011a7b3f   33ff             xor edi,edi
+ *  011a7b41   897d e8          mov dword ptr ss:[ebp-0x18],edi
+ *  011a7b44   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  011a7b4b   0fb746 04        movzx eax,word ptr ds:[esi+0x4]
+ *  011a7b4f   8947 1c          mov dword ptr ds:[edi+0x1c],eax
+ *  011a7b52   0fb746 06        movzx eax,word ptr ds:[esi+0x6]
+ *  011a7b56   8947 20          mov dword ptr ds:[edi+0x20],eax
+ *  011a7b59   0fbf46 0c        movsx eax,word ptr ds:[esi+0xc]
+ *  011a7b5d   8947 10          mov dword ptr ds:[edi+0x10],eax
+ *  011a7b60   0fbf46 0e        movsx eax,word ptr ds:[esi+0xe]
+ *  011a7b64   8947 14          mov dword ptr ds:[edi+0x14],eax
+ *  011a7b67   0fbf46 08        movsx eax,word ptr ds:[esi+0x8]
+ *  011a7b6b   0345 0c          add eax,dword ptr ss:[ebp+0xc]
+ *  011a7b6e   8947 08          mov dword ptr ds:[edi+0x8],eax
+ *  011a7b71   0fbf46 0a        movsx eax,word ptr ds:[esi+0xa]
+ *  011a7b75   8b4d 10          mov ecx,dword ptr ss:[ebp+0x10]
+ *  011a7b78   2bc8             sub ecx,eax
+ *  011a7b7a   894f 0c          mov dword ptr ds:[edi+0xc],ecx
+ *  011a7b7d   0fb643 20        movzx eax,byte ptr ds:[ebx+0x20]
+ *  011a7b81   8847 30          mov byte ptr ds:[edi+0x30],al
+ *  011a7b84   c647 32 00       mov byte ptr ds:[edi+0x32],0x0
+ *  011a7b88   0fb643 21        movzx eax,byte ptr ds:[ebx+0x21]
+ *  011a7b8c   8847 31          mov byte ptr ds:[edi+0x31],al
+ *  011a7b8f   8b43 1c          mov eax,dword ptr ds:[ebx+0x1c]
+ *  011a7b92   8947 28          mov dword ptr ds:[edi+0x28],eax
+ *  011a7b95   8b43 18          mov eax,dword ptr ds:[ebx+0x18]
+ *  011a7b98   8947 24          mov dword ptr ds:[edi+0x24],eax
+ *  011a7b9b   c745 fc 01000000 mov dword ptr ss:[ebp-0x4],0x1
+ *  011a7ba2   837f 1c 00       cmp dword ptr ds:[edi+0x1c],0x0
+ *  011a7ba6   74 64            je short .011a7c0c
+ *  011a7ba8   8b47 20          mov eax,dword ptr ds:[edi+0x20]
+ *  011a7bab   85c0             test eax,eax
+ *  011a7bad   74 5d            je short .011a7c0c
+ *  011a7baf   0fb776 04        movzx esi,word ptr ds:[esi+0x4]
+ *  011a7bb3   4e               dec esi
+ *  011a7bb4   83e6 fc          and esi,0xfffffffc
+ *  011a7bb7   83c6 04          add esi,0x4
+ *  011a7bba   8977 18          mov dword ptr ds:[edi+0x18],esi
+ *  011a7bbd   0fafc6           imul eax,esi
+ *  011a7bc0   50               push eax
+ *  011a7bc1   8bcf             mov ecx,edi
+ *  011a7bc3   e8 b8f6ffff      call .011a7280
+ *  011a7bc8   56               push esi
+ *  011a7bc9   ff37             push dword ptr ds:[edi]
+ *  011a7bcb   ff75 ec          push dword ptr ss:[ebp-0x14]
+ *  011a7bce   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+ *  011a7bd1   e8 3a090300      call .011d8510
+ *  011a7bd6   807b 21 00       cmp byte ptr ds:[ebx+0x21],0x0
+ *  011a7bda   74 0d            je short .011a7be9
+ *  011a7bdc   ff77 28          push dword ptr ds:[edi+0x28]
+ *  011a7bdf   ff77 24          push dword ptr ds:[edi+0x24]
+ *  011a7be2   8bcf             mov ecx,edi
+ *  011a7be4   e8 d70affff      call .011986c0
+ *  011a7be9   897d ec          mov dword ptr ss:[ebp-0x14],edi
+ *  011a7bec   ff47 04          inc dword ptr ds:[edi+0x4]
+ *  011a7bef   c645 fc 02       mov byte ptr ss:[ebp-0x4],0x2
+ *  011a7bf3   8d45 ec          lea eax,dword ptr ss:[ebp-0x14]
+ *  011a7bf6   50               push eax
+ *  011a7bf7   ff75 e4          push dword ptr ss:[ebp-0x1c]
+ *  011a7bfa   53               push ebx
+ *  011a7bfb   e8 50280000      call .011aa450
+ *  011a7c00   c645 fc 01       mov byte ptr ss:[ebp-0x4],0x1
+ *  011a7c04   8d4d ec          lea ecx,dword ptr ss:[ebp-0x14]
+ *  011a7c07   e8 84280000      call .011aa490
+ *  011a7c0c   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  011a7c13   8bc7             mov eax,edi
+ *  011a7c15   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  011a7c18   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  011a7c1f   59               pop ecx
+ *  011a7c20   5f               pop edi
+ *  011a7c21   5e               pop esi
+ *  011a7c22   5b               pop ebx
+ *  011a7c23   8be5             mov esp,ebp
+ *  011a7c25   5d               pop ebp
+ *  011a7c26   c3               retn
+ *  011a7c27   8b4d e8          mov ecx,dword ptr ss:[ebp-0x18]
+ *  011a7c2a   e8 81f6ffff      call .011a72b0
+ *  011a7c2f   6a 00            push 0x0
+ *  011a7c31   6a 00            push 0x0
+ *  011a7c33   e8 93cb1300      call .012e47cb
+ *  011a7c38   a1 dc8a3d01      mov eax,dword ptr ds:[0x13d8adc]
+ *  011a7c3d   8b0c85 88b93f01  mov ecx,dword ptr ds:[eax*4+0x13fb988]
+ *  011a7c44   8b01             mov eax,dword ptr ds:[ecx]
+ *  011a7c46   ff75 10          push dword ptr ss:[ebp+0x10]
+ *  011a7c49   ff75 0c          push dword ptr ss:[ebp+0xc]
+ *  011a7c4c   53               push ebx
+ *  011a7c4d   ff50 1c          call dword ptr ds:[eax+0x1c]
+ *  011a7c50   8bf0             mov esi,eax
+ *  011a7c52   8975 e4          mov dword ptr ss:[ebp-0x1c],esi
+ *  011a7c55   ff46 04          inc dword ptr ds:[esi+0x4]
+ *  011a7c58   c745 fc 04000000 mov dword ptr ss:[ebp-0x4],0x4
+ *  011a7c5f   8d45 e4          lea eax,dword ptr ss:[ebp-0x1c]
+ *  011a7c62   50               push eax
+ *  011a7c63   57               push edi
+ *  011a7c64   53               push ebx
+ *  011a7c65   e8 a62c0000      call .011aa910
+ *  011a7c6a   a1 388b3f01      mov eax,dword ptr ds:[0x13f8b38]
+ *  011a7c6f   8b0d 448b3f01    mov ecx,dword ptr ds:[0x13f8b44]
+ *  011a7c75   3bc1             cmp eax,ecx
+ *  011a7c77   76 08            jbe short .011a7c81
+ *  011a7c79   2bc1             sub eax,ecx
+ *  011a7c7b   50               push eax
+ *  011a7c7c   e8 1f2e0000      call .011aaaa0
+ *  011a7c81   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  011a7c88   8b46 04          mov eax,dword ptr ds:[esi+0x4]
+ *  011a7c8b   83f8 01          cmp eax,0x1
+ *  011a7c8e   75 2c            jnz short .011a7cbc
+ *  011a7c90   8b06             mov eax,dword ptr ds:[esi]
+ *  011a7c92   85c0             test eax,eax
+ *  011a7c94   74 09            je short .011a7c9f
+ *  011a7c96   50               push eax
+ *  011a7c97   e8 3b621300      call .012dded7
+ *  011a7c9c   83c4 04          add esp,0x4
+ *  011a7c9f   56               push esi
+ *  011a7ca0   e8 335e1300      call .012ddad8
+ *  011a7ca5   83c4 04          add esp,0x4
+ *  011a7ca8   8bc6             mov eax,esi
+ *  011a7caa   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  011a7cad   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  011a7cb4   59               pop ecx
+ *  011a7cb5   5f               pop edi
+ *  011a7cb6   5e               pop esi
+ *  011a7cb7   5b               pop ebx
+ *  011a7cb8   8be5             mov esp,ebp
+ *  011a7cba   5d               pop ebp
+ *  011a7cbb   c3               retn
+ *  011a7cbc   48               dec eax
+ *  011a7cbd   8946 04          mov dword ptr ds:[esi+0x4],eax
+ *  011a7cc0   8bc6             mov eax,esi
+ *  011a7cc2   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  011a7cc5   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  011a7ccc   59               pop ecx
+ *  011a7ccd   5f               pop edi
+ *  011a7cce   5e               pop esi
+ *  011a7ccf   5b               pop ebx
+ *  011a7cd0   8be5             mov esp,ebp
+ *  011a7cd2   5d               pop ebp
+ *  011a7cd3   c3               retn
+ *  011a7cd4   cc               int3
+ *  011a7cd5   cc               int3
+ *  011a7cd6   cc               int3
+ *  011a7cd7   cc               int3
+ *  011a7cd8   cc               int3
+ *
+ *  Here's the hooked function in サノバウィッチ (150226).
+ *  I randomly picked a pattern from VBH:
+ *
+ *    011a7a95   33c0             xor eax,eax
+ *    011a7a97   3843 20          cmp byte ptr ds:[ebx+0x20],al
+ *    011a7a9a   0f95c0           setne al
+ *    011a7a9d   33c8             xor ecx,eax
+ *    011a7a9f   334b 10          xor ecx,dword ptr ds:[ebx+0x10]
+ *    011a7aa2   0fb743 14        movzx eax,word ptr ds:[ebx+0x14]
+ *
+ *  i.e: 33c03843200f95c033c8334b100fb74314
+ *
+ *  The new hooked function in サノバウィッチ is as follows.
+ *
+ *  012280dc   cc               int3
+ *  012280dd   cc               int3
+ *  012280de   cc               int3
+ *  012280df   cc               int3
+ *  012280e0   55               push ebp
+ *  012280e1   8bec             mov ebp,esp
+ *  012280e3   6a ff            push -0x1
+ *  012280e5   68 3b813d01      push .013d813b
+ *  012280ea   64:a1 00000000   mov eax,dword ptr fs:[0]
+ *  012280f0   50               push eax
+ *  012280f1   83ec 14          sub esp,0x14
+ *  012280f4   53               push ebx
+ *  012280f5   56               push esi
+ *  012280f6   57               push edi
+ *  012280f7   a1 00694901      mov eax,dword ptr ds:[0x1496900]
+ *  012280fc   33c5             xor eax,ebp
+ *  012280fe   50               push eax
+ *  012280ff   8d45 f4          lea eax,dword ptr ss:[ebp-0xc]
+ *  01228102   64:a3 00000000   mov dword ptr fs:[0],eax
+ *  01228108   8965 f0          mov dword ptr ss:[ebp-0x10],esp
+ *  0122810b   8bd9             mov ebx,ecx
+ *  0122810d   803d e82d4a01 00 cmp byte ptr ds:[0x14a2de8],0x0
+ *  01228114   75 17            jnz short .0122812d
+ *  01228116   c745 e8 d8d44901 mov dword ptr ss:[ebp-0x18],.0149d4d8
+ *  0122811d   8d45 e8          lea eax,dword ptr ss:[ebp-0x18]
+ *  01228120   50               push eax
+ *  01228121   e8 aadbf0ff      call .01135cd0
+ *  01228126   c605 e82d4a01 01 mov byte ptr ds:[0x14a2de8],0x1
+ *  0122812d   33c9             xor ecx,ecx
+ *  0122812f   384b 21          cmp byte ptr ds:[ebx+0x21],cl
+ *  01228132   0f95c1           setne cl
+ *  01228135   33c0             xor eax,eax
+ *  01228137   3843 20          cmp byte ptr ds:[ebx+0x20],al
+ *  0122813a   0f95c0           setne al
+ *  0122813d   33c8             xor ecx,eax
+ *  0122813f   334b 10          xor ecx,dword ptr ds:[ebx+0x10]
+ *  01228142   0fb743 14        movzx eax,word ptr ds:[ebx+0x14]
+ *  01228146   33c8             xor ecx,eax
+ *  01228148   8b7b 1c          mov edi,dword ptr ds:[ebx+0x1c]
+ *  0122814b   33f9             xor edi,ecx
+ *  0122814d   337b 18          xor edi,dword ptr ds:[ebx+0x18]
+ *  01228150   897d e4          mov dword ptr ss:[ebp-0x1c],edi
+ *  01228153   57               push edi
+ *  01228154   53               push ebx
+ *  01228155   e8 06330000      call .0122b460
+ *  0122815a   8bf0             mov esi,eax
+ *  0122815c   85f6             test esi,esi
+ *  0122815e   74 26            je short .01228186
+ *  01228160   56               push esi
+ *  01228161   e8 ba330000      call .0122b520
+ *  01228166   8d46 2c          lea eax,dword ptr ds:[esi+0x2c]
+ *  01228169   85c0             test eax,eax
+ *  0122816b   74 19            je short .01228186
+ *  0122816d   8b08             mov ecx,dword ptr ds:[eax]
+ *  0122816f   ff41 04          inc dword ptr ds:[ecx+0x4]
+ *  01228172   8b00             mov eax,dword ptr ds:[eax]
+ *  01228174   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  01228177   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  0122817e   59               pop ecx
+ *  0122817f   5f               pop edi
+ *  01228180   5e               pop esi
+ *  01228181   5b               pop ebx
+ *  01228182   8be5             mov esp,ebp
+ *  01228184   5d               pop ebp
+ *  01228185   c3               retn
+ *  01228186   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+ *  01228189   85c9             test ecx,ecx
+ *  0122818b   0f84 47010000    je .012282d8
+ *  01228191   0fb743 14        movzx eax,word ptr ds:[ebx+0x14]
+ *  01228195   50               push eax
+ *  01228196   e8 950f0300      call .01259130
+ *  0122819b   8bf0             mov esi,eax
+ *  0122819d   8975 ec          mov dword ptr ss:[ebp-0x14],esi
+ *  012281a0   85f6             test esi,esi
+ *  012281a2   0f84 30010000    je .012282d8
+ *  012281a8   6a 34            push 0x34
+ *  012281aa   e8 297c1300      call .0135fdd8
+ *  012281af   83c4 04          add esp,0x4
+ *  012281b2   8bf8             mov edi,eax
+ *  012281b4   897d e0          mov dword ptr ss:[ebp-0x20],edi
+ *  012281b7   c745 fc 00000000 mov dword ptr ss:[ebp-0x4],0x0
+ *  012281be   85ff             test edi,edi
+ *  012281c0   74 1d            je short .012281df
+ *  012281c2   c747 2c 41000000 mov dword ptr ds:[edi+0x2c],0x41
+ *  012281c9   c647 32 00       mov byte ptr ds:[edi+0x32],0x0
+ *  012281cd   c747 04 01000000 mov dword ptr ds:[edi+0x4],0x1
+ *  012281d4   c707 00000000    mov dword ptr ds:[edi],0x0
+ *  012281da   8945 e8          mov dword ptr ss:[ebp-0x18],eax
+ *  012281dd   eb 05            jmp short .012281e4
+ *  012281df   33ff             xor edi,edi
+ *  012281e1   897d e8          mov dword ptr ss:[ebp-0x18],edi
+ *  012281e4   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  012281eb   0fb746 04        movzx eax,word ptr ds:[esi+0x4]
+ *  012281ef   8947 1c          mov dword ptr ds:[edi+0x1c],eax
+ *  012281f2   0fb746 06        movzx eax,word ptr ds:[esi+0x6]
+ *  012281f6   8947 20          mov dword ptr ds:[edi+0x20],eax
+ *  012281f9   0fbf46 0c        movsx eax,word ptr ds:[esi+0xc]
+ *  012281fd   8947 10          mov dword ptr ds:[edi+0x10],eax
+ *  01228200   0fbf46 0e        movsx eax,word ptr ds:[esi+0xe]
+ *  01228204   8947 14          mov dword ptr ds:[edi+0x14],eax
+ *  01228207   0fbf46 08        movsx eax,word ptr ds:[esi+0x8]
+ *  0122820b   0345 0c          add eax,dword ptr ss:[ebp+0xc]
+ *  0122820e   8947 08          mov dword ptr ds:[edi+0x8],eax
+ *  01228211   0fbf46 0a        movsx eax,word ptr ds:[esi+0xa]
+ *  01228215   8b4d 10          mov ecx,dword ptr ss:[ebp+0x10]
+ *  01228218   2bc8             sub ecx,eax
+ *  0122821a   894f 0c          mov dword ptr ds:[edi+0xc],ecx
+ *  0122821d   0fb643 20        movzx eax,byte ptr ds:[ebx+0x20]
+ *  01228221   8847 30          mov byte ptr ds:[edi+0x30],al
+ *  01228224   c647 32 00       mov byte ptr ds:[edi+0x32],0x0
+ *  01228228   0fb643 21        movzx eax,byte ptr ds:[ebx+0x21]
+ *  0122822c   8847 31          mov byte ptr ds:[edi+0x31],al
+ *  0122822f   8b43 1c          mov eax,dword ptr ds:[ebx+0x1c]
+ *  01228232   8947 28          mov dword ptr ds:[edi+0x28],eax
+ *  01228235   8b43 18          mov eax,dword ptr ds:[ebx+0x18]
+ *  01228238   8947 24          mov dword ptr ds:[edi+0x24],eax
+ *  0122823b   c745 fc 01000000 mov dword ptr ss:[ebp-0x4],0x1
+ *  01228242   837f 1c 00       cmp dword ptr ds:[edi+0x1c],0x0
+ *  01228246   74 64            je short .012282ac
+ *  01228248   8b47 20          mov eax,dword ptr ds:[edi+0x20]
+ *  0122824b   85c0             test eax,eax
+ *  0122824d   74 5d            je short .012282ac
+ *  0122824f   0fb776 04        movzx esi,word ptr ds:[esi+0x4]
+ *  01228253   4e               dec esi
+ *  01228254   83e6 fc          and esi,0xfffffffc
+ *  01228257   83c6 04          add esi,0x4
+ *  0122825a   8977 18          mov dword ptr ds:[edi+0x18],esi
+ *  0122825d   0fafc6           imul eax,esi
+ *  01228260   50               push eax
+ *  01228261   8bcf             mov ecx,edi
+ *  01228263   e8 a8f6ffff      call .01227910
+ *  01228268   56               push esi
+ *  01228269   ff37             push dword ptr ds:[edi]
+ *  0122826b   ff75 ec          push dword ptr ss:[ebp-0x14]
+ *  0122826e   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+ *  01228271   e8 1a0f0300      call .01259190
+ *  01228276   807b 21 00       cmp byte ptr ds:[ebx+0x21],0x0
+ *  0122827a   74 0d            je short .01228289
+ *  0122827c   ff77 28          push dword ptr ds:[edi+0x28]
+ *  0122827f   ff77 24          push dword ptr ds:[edi+0x24]
+ *  01228282   8bcf             mov ecx,edi
+ *  01228284   e8 870affff      call .01218d10
+ *  01228289   897d ec          mov dword ptr ss:[ebp-0x14],edi
+ *  0122828c   ff47 04          inc dword ptr ds:[edi+0x4]
+ *  0122828f   c645 fc 02       mov byte ptr ss:[ebp-0x4],0x2
+ *  01228293   8d45 ec          lea eax,dword ptr ss:[ebp-0x14]
+ *  01228296   50               push eax
+ *  01228297   ff75 e4          push dword ptr ss:[ebp-0x1c]
+ *  0122829a   53               push ebx
+ *  0122829b   e8 50280000      call .0122aaf0
+ *  012282a0   c645 fc 01       mov byte ptr ss:[ebp-0x4],0x1
+ *  012282a4   8d4d ec          lea ecx,dword ptr ss:[ebp-0x14]
+ *  012282a7   e8 84280000      call .0122ab30
+ *  012282ac   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  012282b3   8bc7             mov eax,edi
+ *  012282b5   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  012282b8   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  012282bf   59               pop ecx
+ *  012282c0   5f               pop edi
+ *  012282c1   5e               pop esi
+ *  012282c2   5b               pop ebx
+ *  012282c3   8be5             mov esp,ebp
+ *  012282c5   5d               pop ebp
+ *  012282c6   c3               retn
+ *  012282c7   8b4d e8          mov ecx,dword ptr ss:[ebp-0x18]
+ *  012282ca   e8 71f6ffff      call .01227940
+ *  012282cf   6a 00            push 0x0
+ *  012282d1   6a 00            push 0x0
+ *  012282d3   e8 83eb1300      call .01366e5b
+ *  012282d8   a1 e89a4901      mov eax,dword ptr ds:[0x1499ae8]
+ *  012282dd   8b0c85 f0d64b01  mov ecx,dword ptr ds:[eax*4+0x14bd6f0]
+ *  012282e4   8b01             mov eax,dword ptr ds:[ecx]
+ *  012282e6   ff75 10          push dword ptr ss:[ebp+0x10]
+ *  012282e9   ff75 0c          push dword ptr ss:[ebp+0xc]
+ *  012282ec   53               push ebx
+ *  012282ed   ff50 1c          call dword ptr ds:[eax+0x1c]
+ *  012282f0   8bf0             mov esi,eax
+ *  012282f2   8975 e4          mov dword ptr ss:[ebp-0x1c],esi
+ *  012282f5   ff46 04          inc dword ptr ds:[esi+0x4]
+ *  012282f8   c745 fc 04000000 mov dword ptr ss:[ebp-0x4],0x4
+ *  012282ff   8d45 e4          lea eax,dword ptr ss:[ebp-0x1c]
+ *  01228302   50               push eax
+ *  01228303   57               push edi
+ *  01228304   53               push ebx
+ *  01228305   e8 a62c0000      call .0122afb0
+ *  0122830a   a1 a0a84b01      mov eax,dword ptr ds:[0x14ba8a0]
+ *  0122830f   8b0d aca84b01    mov ecx,dword ptr ds:[0x14ba8ac]
+ *  01228315   3bc1             cmp eax,ecx
+ *  01228317   76 08            jbe short .01228321
+ *  01228319   2bc1             sub eax,ecx
+ *  0122831b   50               push eax
+ *  0122831c   e8 1f2e0000      call .0122b140
+ *  01228321   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  01228328   8b46 04          mov eax,dword ptr ds:[esi+0x4]
+ *  0122832b   83f8 01          cmp eax,0x1
+ *  0122832e   75 2c            jnz short .0122835c
+ *  01228330   8b06             mov eax,dword ptr ds:[esi]
+ *  01228332   85c0             test eax,eax
+ *  01228334   74 09            je short .0122833f
+ *  01228336   50               push eax
+ *  01228337   e8 3b7c1300      call .0135ff77
+ *  0122833c   83c4 04          add esp,0x4
+ *  0122833f   56               push esi
+ *  01228340   e8 33781300      call .0135fb78
+ *  01228345   83c4 04          add esp,0x4
+ *  01228348   8bc6             mov eax,esi
+ *  0122834a   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  0122834d   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  01228354   59               pop ecx
+ *  01228355   5f               pop edi
+ *  01228356   5e               pop esi
+ *  01228357   5b               pop ebx
+ *  01228358   8be5             mov esp,ebp
+ *  0122835a   5d               pop ebp
+ *  0122835b   c3               retn
+ *  0122835c   48               dec eax
+ *  0122835d   8946 04          mov dword ptr ds:[esi+0x4],eax
+ *  01228360   8bc6             mov eax,esi
+ *  01228362   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  01228365   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  0122836c   59               pop ecx
+ *  0122836d   5f               pop edi
+ *  0122836e   5e               pop esi
+ *  0122836f   5b               pop ebx
+ *  01228370   8be5             mov esp,ebp
+ *  01228372   5d               pop ebp
+ *  01228373   c3               retn
+ *  01228374   cc               int3
+ *  01228375   cc               int3
+ *  01228376   cc               int3
+ *  01228377   cc               int3
+ *  01228378   cc               int3
  */
 
-static bool KiriKiriZHook(DWORD esp_base, HookParam *)
-{
-  DWORD addr = retof(esp_base); // retaddr
-  addr = MemDbg::findEnclosingAlignedFunction(addr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
-  if (!addr) {
-    ConsoleOutput("vnreng:KiriKiriZ: failed to find enclosing function");
-    return false; // stop looking
-  }
+namespace { // unnamed
 
+void NewKiriKiriZHook(DWORD addr)
+{
   HookParam hp = {};
   hp.addr = addr;
   hp.off = pusha_ecx_off - 4;
@@ -718,31 +1198,85 @@ static bool KiriKiriZHook(DWORD esp_base, HookParam *)
 
   ConsoleOutput("vnreng:KiriKiriZ: disable GDI hooks");
   DisableGDIHooks();
+}
+
+bool KiriKiriZHook1(DWORD esp_base, HookParam *)
+{
+  DWORD addr = retof(esp_base); // retaddr
+  addr = MemDbg::findEnclosingAlignedFunction(addr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
+  if (!addr) {
+    ConsoleOutput("vnreng:KiriKiriZ: failed to find enclosing function");
+    return false; // stop looking
+  }
+  NewKiriKiriZHook(addr);
+  ConsoleOutput("vnreng: KiriKiriZ1 inserted");
   return false; // stop looking
 }
 
-bool InsertKiriKiriZHook()
+bool InsertKiriKiriZHook1()
 {
   ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
-    ConsoleOutput("vnreng:KiriKiriZ: failed to get memory range");
+    ConsoleOutput("vnreng:KiriKiriZ1: failed to get memory range");
     return false;
   }
 
   ULONG addr = MemDbg::findCallerAddressAfterInt3((DWORD)::GetGlyphOutlineW, startAddress, stopAddress);
   if (!addr) {
-    ConsoleOutput("vnreng:KiriKiriZ: could not find caller of GetGlyphOutlineW");
+    ConsoleOutput("vnreng:KiriKiriZ1: could not find caller of GetGlyphOutlineW");
     return false;
   }
 
   HookParam hp = {};
   hp.addr = addr;
   hp.type = HOOK_EMPTY;
-  hp.hook_fun = KiriKiriZHook;
-  ConsoleOutput("vnreng: INSERT KiriKiriZ empty hook");
+  hp.hook_fun = KiriKiriZHook1;
+  ConsoleOutput("vnreng: INSERT KiriKiriZ1 empty hook");
   NewHook(hp, L"KiriKiriZ Hook");
   return true;
 }
+
+// jichi 1/30/2015: Add KiriKiriZ2 for サノバウィッチ
+// It inserts to the same location as the old KiriKiriZ, but use a different way to find it.
+bool InsertKiriKiriZHook2()
+{
+  const BYTE bytes[] = {
+    0x38,0x4b, 0x21,     // 0122812f   384b 21          cmp byte ptr ds:[ebx+0x21],cl
+    0x0f,0x95,0xc1,      // 01228132   0f95c1           setne cl
+    0x33,0xc0,           // 01228135   33c0             xor eax,eax
+    0x38,0x43, 0x20,     // 01228137   3843 20          cmp byte ptr ds:[ebx+0x20],al
+    0x0f,0x95,0xc0,      // 0122813a   0f95c0           setne al
+    0x33,0xc8,           // 0122813d   33c8             xor ecx,eax
+    0x33,0x4b, 0x10,     // 0122813f   334b 10          xor ecx,dword ptr ds:[ebx+0x10]
+    0x0f,0xb7,0x43, 0x14 // 01228142   0fb743 14        movzx eax,word ptr ds:[ebx+0x14]
+  };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  //ITH_GROWL_DWORD(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:KiriKiriZ2: pattern not found");
+    return false;
+  }
+
+  // 012280e0   55               push ebp
+  // 012280e1   8bec             mov ebp,esp
+  addr = MemDbg::findEnclosingAlignedFunction(addr, 0x100); // 0x0122812f - 0x 012280dc = 83
+  enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
+  if (!addr || *(BYTE *)addr != push_ebp) {
+    ConsoleOutput("vnreng:KiriKiriZ2: pattern found but the function offset is invalid");
+    return false;
+  }
+
+  NewKiriKiriZHook(addr);
+  ConsoleOutput("vnreng: KiriKiriZ2 inserted");
+  return true;
+}
+
+} // unnamed namespace
+
+// jichi 1/30/2015: Do KiriKiriZ2 first, which might insert to the same location as KiriKiri1.
+bool InsertKiriKiriZHook()
+{ return InsertKiriKiriZHook2() || InsertKiriKiriZHook1(); }
 
 /********************************************************************************************
 BGI hook:
