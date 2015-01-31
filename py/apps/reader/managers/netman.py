@@ -1636,7 +1636,7 @@ class _NetworkManager(object):
     if 'deleted' in pty:        params['del'] = td.deleted
     if not td.deleted:
       if 'language' in pty:     params['lang'] = td.language
-      if 'sourceLanguage' in pty: params['sourcelang'] = td.language
+      if 'sourceLanguage' in pty: params['sourcelang'] = td.sourceLanguage
       if 'disabled' in pty:     params['disable'] = td.disabled
 
       for k in 'gameId', 'type', 'host', 'special', 'private', 'syntax', 'hentai', 'regex':
