@@ -74,8 +74,6 @@ def _translator_category(host): # str -> int
     except: pass
   return 0
 
-SCRIPT_KEY_SEP = ',' # Separator of script manager key
-
 class TermTitle(object):
   __slots__ = 'pattern', 'text', 'regex', 'sortKey'
   def __init__(self, pattern='', text='', regex=False, sortKey=0):
@@ -498,7 +496,7 @@ class _TermManager:
       self.saveTimer.start()
 
   def _createScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
-    key = SCRIPT_KEY_SEP.join((type, language))
+    key = type, language
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
@@ -618,7 +616,7 @@ class _TermManager:
     #for scriptKey,ts in times.iteritems():
     for scriptKey,ts in times.items(): # back up items
       if ts < self.updateTime: # skip language that does not out of date
-        type, lang = scriptKey.split(SCRIPT_KEY_SEP)
+        type, lang = scriptKey
         macros = w.queryTermMacros(lang)
         titles = w.queryTermTitles(lang, macros)
 
@@ -649,7 +647,7 @@ class _TermManager:
     @param* key  str
     """
     # TODO: Schedule to update terms when man is missing
-    key = SCRIPT_KEY_SEP.join((type, language))
+    key = type, language
     man = self.scripts.get(key)
     if man is None:
       self.scriptTimes[key] = 0
@@ -723,7 +721,7 @@ class TermManager(QObject):
     if d.marked != t:
       d.marked = t
       for key,man in d.scripts.iteritems():
-        type = key.split(SCRIPT_KEY_SEP)[0]
+        type = key[0]
         marked = t and type in ('output', 'trans_output')
         man.setLinkEnabled(marked)
 
