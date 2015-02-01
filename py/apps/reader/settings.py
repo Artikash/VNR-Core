@@ -1464,12 +1464,12 @@ class Settings(QSettings):
       self.setValue('Hentai', t)
       self.hentaiEnabledChanged.emit(t)
 
-  translationSyntaxEnabledChanged = Signal(bool)
-  def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))
-  def setTranslationSyntaxEnabled(self, t):
-    if t != self.isTranslationSyntaxEnabled():
-      self.setValue('RBMT', t)
-      self.translationSyntaxEnabledChanged.emit(t)
+  #translationSyntaxEnabledChanged = Signal(bool)
+  #def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))
+  #def setTranslationSyntaxEnabled(self, t):
+  #  if t != self.isTranslationSyntaxEnabled():
+  #    self.setValue('RBMT', t)
+  #    self.translationSyntaxEnabledChanged.emit(t)
 
   ## Fonts ##
 

@@ -428,13 +428,12 @@ class _TermInput(object):
       #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'suffix')
       regex = type == 'macro' or self.regexButton.isChecked() #and type != 'suffix')
       #syntax = type == 'trans' and self.syntaxButton.isChecked() and not user.isGuest()
-      syntax = False
       special = self.specialButton.isChecked() and bool(gameId or md5)
       private = self.privateButton.isChecked() and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
           language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
-          special=special, regex=regex, syntax=syntax,
+          special=special, regex=regex, #syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, comment=comment)
 

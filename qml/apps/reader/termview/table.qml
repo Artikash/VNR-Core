@@ -238,7 +238,7 @@ Item { id: root_
         verticalAlignment: Text.AlignVCenter
         color: (itemSelected || itemValue.id == 0) ? 'white' : itemColor(itemValue)
         font.strikeout: !itemSelected && itemValue.disabled
-        font.bold: itemValue.regex || itemValue.syntax
+        font.bold: itemValue.regex //|| itemValue.syntax
         text: itemValue.id == 0 ? root_._UNSAVED_RICH_TEXT : String(itemValue.id)
       }
     }
@@ -257,7 +257,7 @@ Item { id: root_
         verticalAlignment: Text.AlignVCenter
         color: itemSelected ? 'white' : root_.getErrorColor(itemValue.errorType)
         font.strikeout: !itemSelected && itemValue.disabled
-        font.bold: itemValue.regex || itemValue.syntax
+        font.bold: itemValue.regex //|| itemValue.syntax
         text: root_.getErrorText(itemValue.errorType)
       }
     }
@@ -320,7 +320,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -375,7 +375,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -431,7 +431,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -485,7 +485,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : root_.typeAllowsHost(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -531,22 +531,22 @@ Item { id: root_
     }
 
     // Column: Syntax
-    Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Syntax")
-      width: 40
-      delegate: Item {
-        height: table_.cellHeight
-        Desktop.CheckBox {
-          anchors { fill: parent; leftMargin: table_.cellSpacing }
-          //enabled: canEdit(itemValue) && itemValue.type === 'trans' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
-          enabled: itemValue.syntax && canEdit(itemValue) && root_.userId !== _GUEST_USER_ID
-          checked: itemValue.syntax //&& itemValue.type === 'trans' // force syntax for translatoin
-          onCheckedChanged:
-            if (enabled && checked !== itemValue.syntax)
-              itemValue.syntax = checked
-        }
-      }
-    }
+    //Desktop.TableColumn {
+    //  role: 'object'; title: Sk.tr("Syntax")
+    //  width: 40
+    //  delegate: Item {
+    //    height: table_.cellHeight
+    //    Desktop.CheckBox {
+    //      anchors { fill: parent; leftMargin: table_.cellSpacing }
+    //      //enabled: canEdit(itemValue) && itemValue.type === 'trans' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
+    //      enabled: itemValue.syntax && canEdit(itemValue) && root_.userId !== _GUEST_USER_ID
+    //      checked: itemValue.syntax //&& itemValue.type === 'trans' // force syntax for translatoin
+    //      onCheckedChanged:
+    //        if (enabled && checked !== itemValue.syntax)
+    //          itemValue.syntax = checked
+    //    }
+    //  }
+    //}
 
     // Column: Regex
     Desktop.TableColumn {
@@ -557,7 +557,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
           checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
@@ -653,7 +653,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -729,7 +729,7 @@ Item { id: root_
           text: itemValue.pattern
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
@@ -778,7 +778,7 @@ Item { id: root_
           text: itemValue.text
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
-          font.bold: itemValue.regex || itemValue.syntax
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
