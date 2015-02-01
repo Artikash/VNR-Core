@@ -35,9 +35,6 @@
 %		if it.private
 			<private>true</private>
 %		endif
-%		if it.syntax
-			<syntax>true</syntax>
-%		endif
 %		if it.regex
 			<regex>true</regex>
 %		endif

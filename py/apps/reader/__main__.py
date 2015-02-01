@@ -332,9 +332,9 @@ def main():
     curtheme.load()
 
   # Disable RBMT if CaboCha or UniDic is disabled
-  if ss.isTranslationSyntaxEnabled() and not (
-      ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'):
-    ss.setTranslationSyntaxEnabled(False)
+  #if ss.isTranslationSyntaxEnabled() and not (
+  #    ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'):
+  #  ss.setTranslationSyntaxEnabled(False)
 
   #dprint("set max thread count")
   from PySide.QtCore import QThreadPool
@@ -405,10 +405,6 @@ def migrate(ss_version): # long ->
     if ss_version <= 1422396934:
       ss.setValue('RubyText', True)
 
-    if ss_version <= 1422221492:
-      if ss.value('RBMT'):
-        ss.setValue('RBMT', False)
-
     if ss_version <= 1421736204: # This is not really needed though
       for it in ( # delete all existing references
           rc.DIR_CACHE_AWS,
@@ -456,9 +452,6 @@ def migrate(ss_version): # long ->
 
     if ss_version <= 1412817938:
       self.setValue('TermMarked', True) # enable underline by default
-
-    if ss_version <= 1412745537:
-      self.setValue("RBMT", False) # disable RBMT by default
 
     if ss_version <= 1412718122:
       ss.setValue('SubtitleVoice', False) # disable subtitle by default
