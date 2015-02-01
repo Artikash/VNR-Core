@@ -2190,7 +2190,7 @@ class _TermTab(object):
   def generalGroup(self):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.underlineButton)
-    #layout.addWidget(self.hentaiButton)
+    layout.addWidget(self.hentaiButton)
     ret = QtWidgets.QGroupBox(my.tr("Machine translation option"))
     ret.setLayout(layout)
     return ret
@@ -2205,13 +2205,14 @@ class _TermTab(object):
     ret.toggled.connect(ss.setTermMarked)
     return ret
 
-  #@memoizedproperty
-  #def hentaiButton(self):
-  #  ret = QtWidgets.QRadioButton(my.tr("Enable hentai rules for H-scene"))
-  #  ss = settings.global_()
-  #  ret.setChecked(ss.isHentaiEnabled())
-  #  ret.toggled.connect(ss.setHentaiEnabled)
-  #  return ret
+  @memoizedproperty
+  def hentaiButton(self):
+    ret = QtWidgets.QRadioButton(my.tr("Enable hentai translation rules for H-scene"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHentaiEnabled())
+    ret.toggled.connect(ss.setHentaiEnabled)
+    ss.hentaiEnabledChanged.connect(ret.setChecked)
+    return ret
 
   @memoizedproperty
   def rbmtGroup(self):
