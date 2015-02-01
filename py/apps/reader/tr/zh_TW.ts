@@ -4444,5 +4444,10 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/s
         <source>Underline modified translation when possible.</source>
         <translation>如果可能的話，下劃線被修改的文字。</translation>
     </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="2210"/>
+        <source>Enable hentai translation rules for H-scene</source>
+        <translation>開啟hentai詞條來讓翻譯更加H一些</translation>
+    </message>
 </context>
 </TS>

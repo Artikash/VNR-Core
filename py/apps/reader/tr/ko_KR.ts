@@ -4456,5 +4456,10 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <source>Underline modified translation when possible.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="2210"/>
+        <source>Enable hentai translation rules for H-scene</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

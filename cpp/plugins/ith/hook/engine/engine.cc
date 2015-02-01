@@ -659,6 +659,9 @@ bool InsertKAGParserExHook()
  *  This engine will hook to the caller of caller of the first GetGlyphOutlineW (totally three).
  *  The logic is quite similar to KiriKiri1 except it backtrack twice to get the function call.
  *
+ *  1/31/2015: If the game no longer invoke GDI functions by default, one way to find the hook
+ *  is to click the フォント in the menu to force triggering GetGlyphOutlineW function.
+ *
  *  KiriKiriZ:
  *  https://github.com/krkrz/krkrz
  *  http://krkrz.github.io

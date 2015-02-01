@@ -1459,6 +1459,10 @@ class Settings(QSettings):
 
   hentaiEnabledChanged = Signal(bool)
   def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
+  def setHentaiEnabled(self, t):
+    if t != self.isHentaiEnabled():
+      self.setValue('Hentai', t)
+      self.hentaiEnabledChanged.emit(t)
 
   translationSyntaxEnabledChanged = Signal(bool)
   def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))
@@ -1883,7 +1887,8 @@ class SettingsProxy(QObject):
 
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
-    self.hentaiChanged.connect(g.hentaiEnabledChanged)
+    g.hentaiEnabledChanged.connect(self.hentaiChanged)
+
     self.termEnabledChanged.connect(g.termEnabledChanged)
     #self.termMarkedChanged.connect(g.termMarkedChanged)
 
@@ -1931,14 +1936,10 @@ class SettingsProxy(QObject):
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
     g.hanjaRubyEnabledChanged.connect(self.hanjaRubyEnabledChanged)
 
-  def setHentai(self, value):
-    if value != self.hentai:
-      global_().setValue('Hentai', value)
-      self.hentaiChanged.emit(value)
   hentaiChanged = Signal(bool)
   hentai = Property(bool,
       lambda _: global_().isHentaiEnabled(),
-      setHentai,
+      lambda _, t: global_().setHentaiEnabled(t),
       notify=hentaiChanged)
 
   def setGameTextCapacity(self, value):
