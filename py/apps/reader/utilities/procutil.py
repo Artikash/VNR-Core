@@ -176,10 +176,38 @@ def may_be_game_window(wid):
 
   return True
 
-def open_executable(path, lcid=0, params=None, vnrlocale=False):
+def open_executable(path, type=None, language='', lcid=0, codepage=0, params=None, vnrlocale=False):
   """
   @param  path  str  path to executable
-  @paramk lcid  int  Microsoft lcid
+  @param* language  str
+  @param* lcid  int  Microsoft lcid
+  @paramk codepage  int  Microsoft codepage
+  @param* params  [unicode param] or None
+  @param* vnrlocale  bool  whether inject vnrlocale on the startup
+  @return  long  pid  exe's pid or launcher's pid
+  """
+  if language:
+    if not lcid:
+      lcid = config.language2lcid(language)
+    if not codepage:
+      codepage = config.language2codepage(language)
+  if not type or type == 'apploc':
+    return open_executable_with_apploc(path, params=params, lcid=lcid, vnrlocale=vnrlocale)
+  if type == 'le':
+    return open_executable_with_leproc(path, params=params)
+  if type == 'ntlea':
+    return open_executable_with_ntlea(path, params=params, locale=lcid, codepage=codepage)
+  if type == 'ntleas':
+    return open_executable_with_ntleas(path, params=params, locale=lcid, codepage=codepage)
+  if type == 'lsc':
+    return open_executable_with_lsc(path, params=params, locale=lcid, codepage=codepage)
+  return 0
+
+def open_executable_with_apploc(path, lcid=0, params=None, vnrlocale=False):
+  """
+  @param  path  str  path to executable
+  @param* lcid  int  Microsoft lcid
+  @param* codepage  int  Microsoft lcid
   @param* params  [unicode param] or None
   @param* vnrlocale  bool  whether inject vnrlocale on the startup
   @return  long  pid
@@ -198,7 +226,7 @@ def open_executable(path, lcid=0, params=None, vnrlocale=False):
       inject.inject_vnrlocale(handle=proc.processHandle)
       return proc.processId
 
-def open_executable_with_ntlea(path, params=None):
+def open_executable_with_ntlea(path, params=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
@@ -209,7 +237,7 @@ def open_executable_with_ntlea(path, params=None):
   exe = config.NTLEA_LOCATION
 
   from ntlea import ntlea
-  params = ntlea.params(path=path, args=params)
+  params = ntlea.params(path=path, args=params, **kwargs)
   return skwin.create_process(exe, params=params)
 
 def open_executable_with_leproc(path, params=None):
@@ -233,7 +261,7 @@ def open_executable_with_leproc(path, params=None):
   params = leproc.params(path=path, args=params)
   return skwin.create_process(exe, params=params)
 
-def open_executable_with_ntleas(path, params=None):
+def open_executable_with_ntleas(path, params=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
@@ -251,10 +279,10 @@ def open_executable_with_ntleas(path, params=None):
     return 0
 
   from ntleas import ntleas
-  params = ntleas.params(path=path, args=params)
+  params = ntleas.params(path=path, args=params, **kwargs)
   return skwin.create_process(exe, params=params)
 
-def open_executable_with_lsc(path, params=None):
+def open_executable_with_lsc(path, params=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
@@ -265,7 +293,7 @@ def open_executable_with_lsc(path, params=None):
 
   from localeswitch import lsc
   params = lsc.params(path=path, args=params)
-  return skwin.create_process(exe, params=params)
+  return skwin.create_process(exe, params=params, **kwargs)
 
 def getyoutube(vids, path=''):
   """

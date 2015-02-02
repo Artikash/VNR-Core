@@ -314,7 +314,12 @@ class Settings(QSettings):
       self.setValue('OCRRefreshInterval', value)
       self.ocrRefreshIntervalChanged.emit(value)
 
-  ## AppLocale ##
+  ## Locale ##
+
+  def gameLaunchLanguage(self):
+    return self.value('GameLaunchLanguage', 'ja')
+  def setGameLaunchLanguage(self, value):
+    self.setValue('GameLaunchLanguage', value)
 
   #applocEnabledChanged = Signal(bool)
   #def isApplocEnabled(self):
