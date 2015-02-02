@@ -8,7 +8,6 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty, hasmemoizedproper
 from sakurakit.skdebug import dprint
 #from sakurakit.skqml import QmlObject
 from mytr import my
-from wintext import wintext
 import growl, procutil
 
 def _textat(x, y):
@@ -19,6 +18,9 @@ def _textat(x, y):
   """
   hwnd = skwin.get_window_at(x, y)
   if hwnd and not procutil.is_my_window(hwnd):
+    # This might cause issue on Windows 10
+    # http://sakuradite.com/topic/639
+    from wintext import wintext
     return wintext.textat(x, y) or skwin.get_window_text(hwnd)
 
 @Q_Q
