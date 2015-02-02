@@ -52,7 +52,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
         self.patternEdit.textChanged,
         self.replaceEdit.textChanged,
         self.regexCheckBox.toggled,
-        self.ignoreCaseCheckBox.toggled,
+        self.icaseCheckBox.toggled,
       ):
       sig.connect(self._refresh)
 
@@ -76,7 +76,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
 
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.regexCheckBox)
-    row.addWidget(self.ignoreCaseCheckBox)
+    row.addWidget(self.icaseCheckBox)
     layout.addLayout(row)
 
     splitter = QtWidgets.QSplitter(Qt.Vertical)
@@ -94,7 +94,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     pattern = self.patternEdit.text().strip()
     repl = self.replaceEdit.text().strip()
     r = self.regexCheckBox.isChecked()
-    i = self.ignoreCaseCheckBox.isChecked()
+    i = self.icaseCheckBox.isChecked()
     result = text
     try:
       if r and i:
@@ -167,7 +167,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     return ret
 
   @memoizedproperty
-  def ignoreCaseCheckBox(self):
+  def icaseCheckBox(self):
     ret = QtWidgets.QCheckBox()
     ret.setText(tr_("Ignore case"))
     ret.setToolTip(tr_("Ignore case"))

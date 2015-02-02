@@ -915,18 +915,18 @@ class _NetworkManager(object):
       return rd.itemId
 
     if 'deleted' in pty:        params['del'] = rd.deleted
-    if not rd.deleted:
-      if 'disabled' in pty:     params['disable'] = rd.disabled
+    #if not rd.deleted:
+    if 'disabled' in pty:     params['disable'] = rd.disabled
 
-      for k in 'comment', 'updateComment':
-        if k in pty:
-          v = getattr(rd, k)
-          if v:
-            params[k.lower()] = (v
-                if len(v) <= defs.MAX_TEXT_LENGTH
-                else v[:defs.MAX_TEXT_LENGTH])
-          else:
-            params['del' + k.lower()] = True
+    for k in 'comment', 'updateComment':
+      if k in pty:
+        v = getattr(rd, k)
+        if v:
+          params[k.lower()] = (v
+              if len(v) <= defs.MAX_TEXT_LENGTH
+              else v[:defs.MAX_TEXT_LENGTH])
+        else:
+          params['del' + k.lower()] = True
 
     if not params:
       dwarn("warning: nothing change")
@@ -1317,36 +1317,36 @@ class _NetworkManager(object):
       return True
 
     if 'deleted' in pty:        params['del'] = cd.deleted
-    if not cd.deleted:
-      for k,v in (
-          ('type', 'type'),
-          ('language', 'lang'),
-          ('hash', 'ctxhash'),
-          ('contextSize', 'ctxsize'),
-          ('disabled', 'disable'),
-          ('locked', 'lock'),
-        ):
-        if k in pty:
-          params[v] = getattr(cd, k)
+    #if not cd.deleted:
+    for k,v in (
+        ('type', 'type'),
+        ('language', 'lang'),
+        ('hash', 'ctxhash'),
+        ('contextSize', 'ctxsize'),
+        ('disabled', 'disable'),
+        ('locked', 'lock'),
+      ):
+      if k in pty:
+        params[v] = getattr(cd, k)
 
-      if 'text' in pty:
-        params['text'] = (cd.text
-            if len(cd.text) <= defs.MAX_TEXT_LENGTH
-            else cd.text[:defs.MAX_TEXT_LENGTH])
-      if 'context' in pty and cd.context:
-        params['ctx'] = (cd.context
-            if len(cd.context) <= defs.MAX_TEXT_LENGTH
-            else cd.context[:defs.MAX_TEXT_LENGTH])
+    if 'text' in pty:
+      params['text'] = (cd.text
+          if len(cd.text) <= defs.MAX_TEXT_LENGTH
+          else cd.text[:defs.MAX_TEXT_LENGTH])
+    if 'context' in pty and cd.context:
+      params['ctx'] = (cd.context
+          if len(cd.context) <= defs.MAX_TEXT_LENGTH
+          else cd.context[:defs.MAX_TEXT_LENGTH])
 
-      for k in 'comment', 'updateComment':
-        if k in pty:
-          v = getattr(comment, k)
-          if v:
-            params[k.lower()] = (v
-                if len(v) <= defs.MAX_TEXT_LENGTH
-                else v[:defs.MAX_TEXT_LENGTH])
-          else:
-            params['del' + k.lower()] = True
+    for k in 'comment', 'updateComment':
+      if k in pty:
+        v = getattr(comment, k)
+        if v:
+          params[k.lower()] = (v
+              if len(v) <= defs.MAX_TEXT_LENGTH
+              else v[:defs.MAX_TEXT_LENGTH])
+        else:
+          params['del' + k.lower()] = True
 
     if not params:
       dwarn("warning: nothing change")
@@ -1485,7 +1485,7 @@ class _NetworkManager(object):
               text = elem.text
               if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp'):
                 kw[tag] = int(text)
-              elif tag in ('special', 'private', 'hentai', 'regex', 'disabled'):
+              elif tag in ('special', 'private', 'hentai', 'regex', 'icase', 'disabled'):
                 kw[tag] = text == 'true'
               else:
                 kw[tag] = text or ''
@@ -1564,13 +1564,9 @@ class _NetworkManager(object):
           if len(td.updateComment) <= defs.MAX_TEXT_LENGTH
           else td.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if td.special: params['special'] = True
-    if td.private: params['private'] = True
-    if td.hentai: params['hentai'] = True
-    #if td.syntax: params['syntax'] = True
-    if td.regex: params['regex'] = True
-    #if td.bbcode: params['bbcode'] = True
-    #if td.ignoresCase: params['ignoreCase'] = True
+    for pty in 'special', 'private', 'hentai', 'regex', 'icase':
+      if getattr(td, pty):
+        params[pty] = True
 
     if td.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
@@ -1633,26 +1629,26 @@ class _NetworkManager(object):
       dwarn("warning: term to update is not dirty")
       return True
 
-    if 'deleted' in pty:        params['del'] = td.deleted
-    if not td.deleted:
-      if 'language' in pty:     params['lang'] = td.language
-      if 'sourceLanguage' in pty: params['sourcelang'] = td.sourceLanguage
-      if 'disabled' in pty:     params['disable'] = td.disabled
+    if 'deleted' in pty:            params['del'] = td.deleted
+    #if not td.deleted:
+    if 'language' in pty:         params['lang'] = td.language
+    if 'sourceLanguage' in pty:   params['sourcelang'] = td.sourceLanguage
+    if 'disabled' in pty:         params['disable'] = td.disabled
 
-      for k in 'gameId', 'type', 'host', 'special', 'private', 'hentai', 'regex':
-        if k in pty:
-          params[k.lower()] = getattr(term, k)
+    for k in 'gameId', 'type', 'host', 'special', 'private', 'hentai', 'icase', 'regex':
+      if k in pty:
+        params[k.lower()] = getattr(term, k)
 
-      # Note: actually, there is no 'delpattern'
-      for k in 'pattern', 'text', 'comment', 'updateComment':
-        if k in pty:
-          v = getattr(td, k)
-          if v:
-            params[k.lower()] = (v
-                if len(v) <= defs.MAX_TEXT_LENGTH
-                else v[:defs.MAX_TEXT_LENGTH])
-          else:
-            params['del' + k.lower()] = True
+    # Note: actually, there is no 'delpattern'
+    for k in 'pattern', 'text', 'comment', 'updateComment':
+      if k in pty:
+        v = getattr(td, k)
+        if v:
+          params[k.lower()] = (v
+              if len(v) <= defs.MAX_TEXT_LENGTH
+              else v[:defs.MAX_TEXT_LENGTH])
+        else:
+          params['del' + k.lower()] = True
 
     if not params:
       dwarn("warning: nothing change")

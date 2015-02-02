@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ko_KR">
+<!DOCTYPE TS><TS version="1.1" language="ko_KR">
 <context>
     <name>sakurakit</name>
     <message>
@@ -271,7 +270,7 @@
     <message>
         <location filename="sktr.py" line="248"/>
         <source>Romaji</source>
-        <translation>로마지</translation>
+        <translation>로마지(일본어 로마표기)</translation>
     </message>
     <message>
         <location filename="sktr.py" line="249"/>
@@ -821,7 +820,7 @@
     <message>
         <location filename="sktr.py" line="438"/>
         <source>Not specified</source>
-        <translation>지정안함</translation>
+        <translation>지정되지 않음</translation>
     </message>
     <message>
         <location filename="sktr.py" line="447"/>
@@ -986,7 +985,7 @@
     <message>
         <location filename="sktr.py" line="81"/>
         <source>Double click</source>
-        <translation>더블클릭</translation>
+        <translation>더블 클릭</translation>
     </message>
     <message>
         <location filename="sktr.py" line="81"/>
@@ -1086,7 +1085,7 @@
     <message>
         <location filename="sktr.py" line="353"/>
         <source>regexp</source>
-        <translation>정규 표현식</translation>
+        <translation>정규식</translation>
     </message>
     <message>
         <location filename="sktr.py" line="93"/>
@@ -1416,12 +1415,12 @@
     <message>
         <location filename="sktr.py" line="377"/>
         <source>Title</source>
-        <translation>타이틀</translation>
+        <translation>표제</translation>
     </message>
     <message>
         <location filename="sktr.py" line="438"/>
         <source>not specified</source>
-        <translation>지정안함</translation>
+        <translation>지정되지 않음</translation>
     </message>
     <message>
         <location filename="sktr.py" line="129"/>
@@ -1666,7 +1665,7 @@
     <message>
         <location filename="sktr.py" line="377"/>
         <source>title</source>
-        <translation>타이틀</translation>
+        <translation>표제</translation>
     </message>
     <message>
         <location filename="sktr.py" line="284"/>
@@ -2326,7 +2325,7 @@
     <message>
         <location filename="sktr.py" line="248"/>
         <source>romaji</source>
-        <translation>로마지</translation>
+        <translation>로마자</translation>
     </message>
     <message>
         <location filename="sktr.py" line="380"/>
@@ -2341,12 +2340,12 @@
     <message>
         <location filename="sktr.py" line="222"/>
         <source>Solved</source>
-        <translation>해결됨</translation>
+        <translation>해결</translation>
     </message>
     <message>
         <location filename="sktr.py" line="102"/>
         <source>chat</source>
-        <translation>채팅</translation>
+        <translation>잡담</translation>
     </message>
     <message>
         <location filename="sktr.py" line="221"/>
@@ -2356,7 +2355,7 @@
     <message>
         <location filename="sktr.py" line="222"/>
         <source>solved</source>
-        <translation>해결됨</translation>
+        <translation>해결</translation>
     </message>
     <message>
         <location filename="sktr.py" line="326"/>
@@ -2391,27 +2390,27 @@
     <message>
         <location filename="sktr.py" line="419"/>
         <source>Like</source>
-        <translation>선호</translation>
+        <translation>같은</translation>
     </message>
     <message>
         <location filename="sktr.py" line="345"/>
         <source>Proxy</source>
-        <translation>프록시</translation>
+        <translation>대리</translation>
     </message>
     <message>
         <location filename="sktr.py" line="125"/>
         <source>Equal</source>
-        <translation>같음</translation>
+        <translation>같은</translation>
     </message>
     <message>
         <location filename="sktr.py" line="426"/>
         <source>not changed</source>
-        <translation>변경되지 않음</translation>
+        <translation>변경되지</translation>
     </message>
     <message>
         <location filename="sktr.py" line="125"/>
         <source>equal</source>
-        <translation>같음</translation>
+        <translation>같은</translation>
     </message>
     <message>
         <location filename="sktr.py" line="251"/>
@@ -2421,7 +2420,7 @@
     <message>
         <location filename="sktr.py" line="252"/>
         <source>Romaja</source>
-        <translation>로마자</translation>
+        <translation>Romaja</translation>
     </message>
     <message>
         <location filename="sktr.py" line="352"/>
@@ -2436,12 +2435,12 @@
     <message>
         <location filename="sktr.py" line="416"/>
         <source>Unsaved</source>
-        <translation>저장되지 않음</translation>
+        <translation>저장되지 않은</translation>
     </message>
     <message>
         <location filename="sktr.py" line="416"/>
         <source>unsaved</source>
-        <translation>저장되지 않음</translation>
+        <translation>저장되지 않은</translation>
     </message>
     <message>
         <location filename="sktr.py" line="342"/>
@@ -2456,7 +2455,7 @@
     <message>
         <location filename="sktr.py" line="318"/>
         <source>lang</source>
-        <translation>언어</translation>
+        <translation>LANG</translation>
     </message>
     <message>
         <location filename="sktr.py" line="103"/>
@@ -2471,12 +2470,12 @@
     <message>
         <location filename="sktr.py" line="444"/>
         <source>Unknown error</source>
-        <translation>알 수 없는 오류</translation>
+        <translation>알 수없는 오류</translation>
     </message>
     <message>
         <location filename="sktr.py" line="445"/>
         <source>Unknown warning</source>
-        <translation>알 수 없는 경고</translation>
+        <translation>알 수없는 경고</translation>
     </message>
 </context>
 </TS>

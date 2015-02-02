@@ -566,24 +566,24 @@ Item { id: root_
       }
     }
 
-/*
-    // Column: IgnoreCase
+    // Column: Icase
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Ignore case")
+      role: 'object'; title: qsTr("Case-insensitive")
       width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue)
-          checked: itemValue.ignoresCase
+          //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          checked: itemValue.icase // force regex for macros
           onCheckedChanged:
-            if (enabled && checked !== itemValue.ignoresCase)
-              itemValue.ignoresCase = checked
+            if (enabled && checked !== itemValue.icase)
+              itemValue.icase = checked
         }
       }
     }
-*/
+
 /*
     // Column: BBCode
     Desktop.TableColumn {

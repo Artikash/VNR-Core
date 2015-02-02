@@ -16,6 +16,7 @@
 #define SCRIPT_CH_COMMENT   L'#'    // indicate the beginning of a line comment
 #define SCRIPT_CH_DELIM     L'\t'   // deliminator of the rule pair
 #define SCRIPT_CH_REGEX     L'r'    // a regex rule
+#define SCRIPT_CH_ICASE     L'i'    // case insensitive
 #define SCRIPT_CH_NAME      L'n'    // a name without suffix
 #define SCRIPT_CH_SUFFIX    L's'    // a name with suffix
 
@@ -103,6 +104,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
       for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
         switch (line[pos]) {
         case SCRIPT_CH_REGEX: param.f_regex = true; break;
+        case SCRIPT_CH_ICASE: param.f_icase = true; break;
         case SCRIPT_CH_NAME: param.f_parent = true; break;
         case SCRIPT_CH_SUFFIX: param.f_child = true; break;
         }
