@@ -28,6 +28,18 @@ def _good_folder_name(path):
   """
   return bool(path) and not __re_folder.match(path)
 
+def get_process_by_path(path):
+  """
+  @param  path  unicode or None
+  @return  Process or None
+  """
+  proc = procutil.get_process_by_path(path)
+  if proc:
+    return proc
+  md5 = hashutil.md5sum(osutil.normalize_path(path))
+  if md5:
+    return procutil.get_process_by_md5(md5)
+
 ## Game window ##
 
 class _GameWindowProxy:
@@ -528,7 +540,7 @@ class GameProfile(QtCore.QObject):
       self.pid = skwin.get_window_process_id(self.wid)
 
     if not self.pid and self.path:
-      proc = procutil.get_process_by_path(self.path)
+      proc = get_process_by_path(self.path)
       if not proc:
         dprint("launching process path = %s" % self.path)
 
@@ -554,7 +566,7 @@ class GameProfile(QtCore.QObject):
           if usingLocaleEmulator:
             path = QtCore.QDir.toNativeSeparators(self.path)
             #path = winutil.to_short_path(path) or path
-            proc = procutil.get_process_by_path(path)
+            proc = get_process_by_path(path)
             if not proc:
               if procutil.is_process_running('LEGUI.exe'):
                 growl.notify(my.tr("Launch aborted. Wait for Locale Emulator."))
@@ -567,14 +579,14 @@ class GameProfile(QtCore.QObject):
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("Locale Emulator")))
                   ntpid = procutil.open_executable_with_leproc(path)
-                  #proc = procutil.get_process_by_path(path)
+                  #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("Locale Emulator")))
                   elif updateLater(): return
               else:
                 launchPath = QtCore.QDir.toNativeSeparators(self.launchPath)
                 #launchPath = winutil.to_short_path(launchPath) or launchPath
-                if procutil.get_process_by_path(launchPath):
+                if get_process_by_path(launchPath):
                   if updateLater(verbose=True): return
                 if not launch:
                   if updateLater(verbose=True): return
@@ -588,7 +600,7 @@ class GameProfile(QtCore.QObject):
           elif usingNtleas:
             #path = QtCore.QDir.toNativeSeparators(self.path) # not needed by ntleas
             path = winutil.to_short_path(path) or path
-            proc = procutil.get_process_by_path(path)
+            proc = get_process_by_path(path)
             if not proc:
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if not launch:
@@ -596,7 +608,7 @@ class GameProfile(QtCore.QObject):
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("Ntleas")))
                   ntpid = procutil.open_executable_with_ntleas(path)
-                  #proc = procutil.get_process_by_path(path)
+                  #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("NTLEA")))
                   elif updateLater(): return
@@ -604,7 +616,7 @@ class GameProfile(QtCore.QObject):
           elif usingNtlea:
             path = QtCore.QDir.toNativeSeparators(self.path)
             path = winutil.to_short_path(path) or path
-            proc = procutil.get_process_by_path(path)
+            proc = get_process_by_path(path)
             if not proc:
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if not launch:
@@ -612,14 +624,14 @@ class GameProfile(QtCore.QObject):
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("NTLEA")))
                   ntpid = procutil.open_executable_with_ntlea(path)
-                  #proc = procutil.get_process_by_path(path)
+                  #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("NTLEA")))
                   elif updateLater(): return
               else:
                 launchPath = QtCore.QDir.toNativeSeparators(self.launchPath)
                 launchPath = winutil.to_short_path(launchPath) or launchPath
-                if procutil.get_process_by_path(launchPath):
+                if get_process_by_path(launchPath):
                   if updateLater(): return
                 elif not launch:
                   if updateLater(verbose=True): return
@@ -633,7 +645,7 @@ class GameProfile(QtCore.QObject):
           elif usingLocaleSwitch:
             path = QtCore.QDir.toNativeSeparators(self.path)
             path = winutil.to_short_path(path) or path
-            proc = procutil.get_process_by_path(path)
+            proc = get_process_by_path(path)
             if not proc:
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if not launch:
@@ -641,14 +653,14 @@ class GameProfile(QtCore.QObject):
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("LocaleSwitch")))
                   ntpid = procutil.open_executable_with_lsc(path)
-                  #proc = procutil.get_process_by_path(path)
+                  #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("LocaleSwitch")))
                   elif updateLater(): return
               else:
                 launchPath = QtCore.QDir.toNativeSeparators(self.launchPath)
                 launchPath = winutil.to_short_path(launchPath) or launchPath
-                if procutil.get_process_by_path(launchPath):
+                if get_process_by_path(launchPath):
                   if updateLater(): return
                 elif not launch:
                   if updateLater(verbose=True): return
@@ -675,11 +687,11 @@ class GameProfile(QtCore.QObject):
                 #vnragent.inject_process(self.pid)
                 #rpcman.manager().enableClient()
                 if not self.pid:
-                  proc = procutil.get_process_by_path(self.path)
+                  proc = get_process_by_path(self.path)
                 if self.pid or proc:
                   if updateLater(): return
               else: # launch the launcher instead of the original ame
-                if procutil.get_process_by_path(self.launchPath):
+                if get_process_by_path(self.launchPath):
                   if updateLater(): return
 
                 #if self.vnrlocale:
@@ -687,7 +699,7 @@ class GameProfile(QtCore.QObject):
 
                 params = [QtCore.QDir.toNativeSeparators(self.path)]
                 pid = procutil.open_executable(self.launchPath, lcid=lcid, params=params) #, vnrlocale=self.vnrlocale)
-                proc = procutil.get_process_by_path(self.path)
+                proc = get_process_by_path(self.path)
                 if pid or proc:
                   if updateLater(): return
       if proc:

@@ -11,7 +11,7 @@ from sakurakit.skdebug import dprint
 from sakurakit.skunicode import u
 from apploc import applocale
 from mytr import my
-import config, features, growl, osutil, rc, winutil
+import config, features, hashutil, growl, osutil, rc, winutil
 
 PID = os.getpid() # cached
 
@@ -109,7 +109,7 @@ def iterprocess():
 
 def get_process_by_path(path):
   """
-  @param  path  unicode or None
+  @param  path  unicode
   @return  Process or None
   """
   np = osutil.normalize_path(path)
@@ -119,10 +119,20 @@ def get_process_by_path(path):
 
 def get_process_by_pid(pid):
   """
+  @param  pid  long
   @return  Process or None
   """
   for p in iterprocess():
     if p.pid == pid:
+      return p
+
+def get_process_by_md5(md5):
+  """
+  @param  md5  str
+  @return  Process or None
+  """
+  for p in iterprocess():
+    if md5 == hashutil.md5sum(osutil.normalize_path(p.path)):
       return p
 
 if not skos.WIN:
