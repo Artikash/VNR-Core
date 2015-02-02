@@ -1483,6 +1483,40 @@ class Game(object):
   NAME_TYPES = 'window', 'file', 'link', 'folder', 'brand'
   LOADERS = 'none', 'apploc', 'ntlea', 'lsc', 'le'
 
+  __slots__ = (
+    'id',
+    'md5',
+    'itemId',
+    'encoding',
+    'language',
+    'launchLanguage',
+    'hook',
+    'deletedHook',
+    'hookDisabled',
+    'threadKept',
+    'threadName',
+    'threadSignature',
+    'keepsSpace',
+    'removesRepeat',
+    'ignoresRepeat',
+    'timeZoneEnabled',
+    'nameThreadName',
+    'nameThreadSignature',
+    'nameThreadDisabled',
+    'otherThreads',
+    'userDefinedName',
+    'names',
+    'path',
+    'launchPath',
+    'visitTime',
+    'visitCount',
+    'commentCount',
+    'commentsUpdateTime',
+    'refsUpdateTime',
+    'voiceDefaultEnabled',
+    'loader',
+  )
+
   @classmethod
   def createEmptyGame(cls, path="", md5=""):
     return cls(
@@ -1498,7 +1532,8 @@ class Game(object):
       nameThreadName="", nameThreadSignature=0, nameThreadDisabled=None,
       windowNames=[], fileNames=[], linkNames=[], folderNames=[], brandNames=[],
       path="", launchPath="", otherThreads=None,
-      loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None, language='',
+      loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None,
+      language='', launchLanguage='',
       userDefinedName="", visitTime=0, visitCount=0, commentCount=0,
       **ignored):
     # Static
@@ -1507,6 +1542,7 @@ class Game(object):
     self.itemId = itemId        # long
     self.encoding = encoding    # str
     self.language = language    # str
+    self.launchLanguage = launchLanguage # str
     self.hook = hook            # str
     self.deletedHook = deletedHook    # str
     self.hookDisabled = hookDisabled  # bool or None
@@ -6765,12 +6801,15 @@ class _DataManager(object):
       g.visitCount += 1
       g.md5 = game.md5 # enforce md5
 
-      if game.id: g.id = game.id
-      if game.encoding: g.encoding = game.encoding
-      if game.language: g.language = game.language
+      for pty in 'id', 'itemId', 'encoding', 'language', 'launchLanguage', 'visitTime', 'commentCount', 'path', 'launchPath':
+        v = getattr(g, pty)
+        if v:
+          setattr(game, pty, v)
 
-      if game.visitTime: g.visitTime = game.visitTime
-      if game.commentCount: g.commentCount = game.commentCount
+      for pty in 'nameThreadDisabled', 'hookDisabled', 'threadKept', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'timeZoneEnabled':
+        v = getattr(g, pty)
+        if v is not None:
+          setattr(game, pty, v)
 
       if game.threadSignature:
         g.threadSignature = game.threadSignature
@@ -6780,46 +6819,15 @@ class _DataManager(object):
         g.nameThreadSignature = game.nameThreadSignature
         g.nameThreadName = game.nameThreadName
 
-      if game.nameThreadDisabled is not None:
-        g.nameThreadDisabled = game.nameThreadDisabled
-
-      if game.hookDisabled is not None:
-        g.hookDisabled = game.hookDisabled
-
       if game.deletedHook:
         g.deletedHook = game.deletedHook
       elif deleteHook and not g.deletedHook:
         g.deletedHook = g.hook
 
-      if game.threadKept is not None:
-        g.threadKept = game.threadKept
-
-      if game.removesRepeat is not None:
-        g.removesRepeat = game.removesRepeat
-
-      if game.ignoresRepeat is not None:
-        g.ignoresRepeat = game.ignoresRepeat
-
-      if game.keepsSpace is not None:
-        g.keepsSpace = game.keepsSpace
-
-      if game.timeZoneEnabled is not None:
-        g.timeZoneEnabled = game.timeZoneEnabled
-
       if deleteHook:
         g.hook = None
       elif game.hook:
         g.hook = game.hook
-
-      if game.path:
-        g.path = game.path
-
-      if game.launchPath:
-        g.launchPath = game.launchPath
-
-      # TODO: Broadcast the changes of itemId
-      if game.itemId:
-        g.itemId = game.itemId
 
       #g.otherThreads = game.otherThreads if game.otherThreads is not None else {}
       #elif game.otherThreads: # merge thread
@@ -7155,7 +7163,7 @@ class _DataManager(object):
 
         for e in game:
           tag = e.tag
-          if tag in ('md5', 'path', 'launchPath', 'language', 'loader', 'encoding', 'userDefinedName', 'deletedHook'):
+          if tag in ('md5', 'path', 'launchPath', 'language', 'launchLanguage', 'loader', 'encoding', 'userDefinedName', 'deletedHook'):
             setattr(g, tag, e.text or '')
           #elif tag in ('itemId', 'commentsUpdateTime', 'refsUpdateTime', 'visitTime', 'visitCount', 'commentCount'):
           elif tag.endswith('Id') or tag.endswith('Count') or tag.endswith('Time'):
@@ -9682,9 +9690,26 @@ class DataManager(QObject):
     self.__d.touchGames()
     #self.__d.backupGamesXmlLater()
 
+  def setGameLaunchLanguage(self, language, md5):
+    """Either id or md5 should be given
+    @param  language  str not None
+    @param  md5  str
+    """
+    g = self.__d.games.get(md5)
+    if not g:
+      growl.warn('<br/>'.join((
+        my.tr("The game does not exist. Did you delete it?"),
+        path,
+      )))
+      return
+    if g.launchLanguage == language:
+      return
+    g.launchLanguage = language
+    self.__d.touchGames()
+
   def setGameLaunchPath(self, path, md5):
     """Either id or md5 should be given
-    @param  path unicode not None
+    @param  path  unicode not None
     @param  md5  str
     """
     g = self.__d.games.get(md5)

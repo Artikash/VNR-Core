@@ -41,6 +41,7 @@ class _GameEditor(object):
     self._loadText()
     self._loadLocation()
     self._loadLoader()
+    self._loadLaunchLanguage()
     self._loadTimeZone()
 
     # Enabled
@@ -326,6 +327,12 @@ By default it is the same as the executable of the game process."""))
     #introLabel.setWordWrap(True)
     #layout.addWidget(introLabel)
 
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(tr_("Locale") + ":"))
+    row.addWidget(self.launchLanguageEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     return ret
@@ -394,6 +401,31 @@ By default it is the same as the executable of the game process."""))
     ret.toggled.connect(self._saveLoader)
     return ret
 
+  @memoizedproperty
+  def launchLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItem(tr_("Default"))
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLaunchLanguage)
+    return ret
+
+  def _loadLaunchLanguage(self):
+    lang = self.game.launchLanguage
+    try: langIndex = config.LANGUAGES.index(lang) + 1
+    except ValueError: langIndex = 0 # 'default'
+    self.launchLanguageEdit.setCurrentIndex(langIndex)
+
+  def _saveLaunchLanguage(self):
+    index = self.launchLanguageEdit.currentIndex()
+    if not index:
+      lang = ''
+    else:
+      lang = config.LANGUAGES[index - 1]
+    if lang != self.game.launchLanguage:
+      dataman.manager().setGameLaunchLanguage(lang, md5=self.game.md5)
+
   def _loadLoader(self):
     loader = self.game.loader
     b = (self.disableLoaderButton if loader == 'none' else
@@ -406,6 +438,9 @@ By default it is the same as the executable of the game process."""))
     if not b.isChecked():
       b.setChecked(True)
 
+    t = b is self.disableLoaderButton or b is self.localeEmulatorButton
+    self.launchLanguageEdit.setEnabled(not t)
+
   def _saveLoader(self):
     loader = (
       'none' if self.disableLoaderButton.isChecked() else
@@ -415,7 +450,10 @@ By default it is the same as the executable of the game process."""))
       'lsc' if self.localeSwitchButton.isChecked() else
       'le' if self.localeEmulatorButton.isChecked() else
       '')
+    #if loader != self.game.loader: # Not needed since they are connected with toggled signal
     dataman.manager().setGameLoader(loader, md5=self.game.md5)
+
+    self.launchLanguageEdit.setEnabled(loader not in ('none', 'le'))
 
   ## Time zone ##
 

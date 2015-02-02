@@ -276,10 +276,9 @@ class GameProfile(QtCore.QObject):
       wid=0, pid=0, path="", launchPath="", processName="", windowName="",
       hook="", deletedHook="", encoding="", threadName="", threadSignature=0,
       linkName="", folderName="", brandName="",
-      loader="", language='ja',
+      loader="", language='ja', launchLanguage="",
       removesRepeat=False, ignoresRepeat=False, keepsSpace=False, threadKept=False,
-      timeZoneEnabled=None,
-      launchLanguage=''):
+      timeZoneEnabled=None):
     super(GameProfile, self).__init__(parent)
     d = self.__d = _GameProfile()
     d.locked = False
@@ -323,11 +322,6 @@ class GameProfile(QtCore.QObject):
 
     # Whether enable vnrlccale
     self.vnrlocale = False # bool
-
-  def lcid(self): # -> long not None
-    if self.launchLanguage:
-      return config.language2lcid(self.launchLanguage) or 0x0411 # ja by default
-    return 0x0411
 
   def applyHook(self):
     """
@@ -489,6 +483,7 @@ class GameProfile(QtCore.QObject):
     self.windowName = self.processName = ""
     self.hook = ""
     self.language = "ja"
+    self.launchLanguage = ""
     self.threadSignature = 0
     self.threadName = ""
     self.processName = ""
@@ -496,17 +491,16 @@ class GameProfile(QtCore.QObject):
     self.brandName = ""
     #self.otherThreads = None
     self.loader = "" # apploc, etc
-    self.launchLanguage = ''
 
   processUpdated = Signal()
 
   # Always use apploc when launchLanguage is specified by game agent
   #def usingNoneLoader(self): return self.loader == 'none'
-  def usingApploc(self): return bool(self.launchLanguage) or self.loader == 'apploc' or not self.loader and settings.global_().isApplocEnabled()
-  def usingNtlea(self): return not self.launchLanguage and (self.loader == 'ntlea' or not self.loader and settings.global_().isNtleaEnabled())
-  def usingLocaleSwitch(self): return not self.launchLanguage and (self.loader == 'lsc' or not self.loader and settings.global_().isLocaleSwitchEnabled())
-  def usingLocaleEmulator(self): return not self.launchLanguage and (self.loader == 'le' or not self.loader and settings.global_().isLocaleEmulatorEnabled())
-  def usingNtleas(self): return not self.launchLanguage and (self.loader == 'ntleas' or not self.loader and settings.global_().isNtleasEnabled())
+  def usingApploc(self): return self.loader == 'apploc' or not self.loader and settings.global_().isApplocEnabled()
+  def usingNtlea(self): return self.loader == 'ntlea' or not self.loader and settings.global_().isNtleaEnabled()
+  def usingLocaleSwitch(self): return self.loader == 'lsc' or not self.loader and settings.global_().isLocaleSwitchEnabled()
+  def usingLocaleEmulator(self): return self.loader == 'le' or not self.loader and settings.global_().isLocaleEmulatorEnabled()
+  def usingNtleas(self): return self.loader == 'ntleas' or not self.loader and settings.global_().isNtleasEnabled()
 
   def updateProcess(self, retries=2, launch=True):
     """
@@ -544,14 +538,12 @@ class GameProfile(QtCore.QObject):
       if not proc:
         dprint("launching process path = %s" % self.path)
 
-        usingLocaleEmulator = self.usingLocaleEmulator()
-        usingLocaleSwitch = self.usingLocaleSwitch()
-        usingNtlea = self.usingNtlea()
-        usingNtleas = self.usingNtleas()
+        launchLanguage = self.launchLanguage or settings.global_().gameLaunchLanguage() #or 'ja'
+        dprint("launch language = %s" % launchLanguage)
 
-        #if features.ADMIN == False and (usingLocaleSwitch or usingLocaleEmulator):
+        usingLocaleSwitch = self.usingLocaleSwitch()
         if features.ADMIN == False and usingLocaleSwitch:
-          loader = notr_("LocaleSwitch") if self.usingLocaleSwitch() else notr_("Locale Emulator")
+          loader = notr_("LocaleSwitch") if usingLocaleSwitch else notr_("Locale Emulator")
           growl.error(my.tr("{0} requires admin privileges. Please restart VNR as admin").format(loader))
         else:
           tz = self.timeZoneEnabled
@@ -563,7 +555,7 @@ class GameProfile(QtCore.QObject):
             tzman.manager().changeTimeZone()
 
           # Launch with Locale Emulator
-          if usingLocaleEmulator:
+          if self.usingLocaleEmulator():
             path = QtCore.QDir.toNativeSeparators(self.path)
             #path = winutil.to_short_path(path) or path
             proc = get_process_by_path(path)
@@ -578,7 +570,7 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("Locale Emulator")))
-                  ntpid = procutil.open_executable_with_leproc(path)
+                  ntpid = procutil.open_executable(path, type='le', language=launchLanguage)
                   #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("Locale Emulator")))
@@ -592,13 +584,13 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   params = [QtCore.QDir.toNativeSeparators(self.path)]
-                  ntpid = procutil.open_executable_with_leproc(launchPath, params=params)
+                  ntpid = procutil.open_executable(launchPath, params=params, type='le', language=launchLanguage)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("Locale Emulator")))
                   elif updateLater(): return
           # Launch with NTLEAS
-          elif usingNtleas:
-            #path = QtCore.QDir.toNativeSeparators(self.path) # not needed by ntleas
+          elif self.usingNtleas():
+            path = QtCore.QDir.toNativeSeparators(self.path) # maybe not needed by ntleas
             path = winutil.to_short_path(path) or path
             proc = get_process_by_path(path)
             if not proc:
@@ -607,13 +599,26 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("Ntleas")))
-                  ntpid = procutil.open_executable_with_ntleas(path)
+                  ntpid = procutil.open_executable(path, type='ntleas', language=launchLanguage)
                   #proc = get_process_by_path(path)
                   if not ntpid:
-                    growl.error(my.tr("Failed to launch the game with {0}").format(notr_("NTLEA")))
+                    growl.error(my.tr("Failed to launch the game with {0}").format(notr_("Ntleas")))
+                  elif updateLater(): return
+              else:
+                launchPath = QtCore.QDir.toNativeSeparators(self.launchPath)
+                launchPath = winutil.to_short_path(launchPath) or launchPath
+                if get_process_by_path(launchPath):
+                  if updateLater(): return
+                elif not launch:
+                  if updateLater(verbose=True): return
+                else:
+                  params = [QtCore.QDir.toNativeSeparators(self.path)]
+                  ntpid = procutil.open_executable(launchPath, params=params, type='ntleas', language=launchLanguage)
+                  if not ntpid:
+                    growl.error(my.tr("Failed to launch the game with {0}").format(notr_("Ntleas")))
                   elif updateLater(): return
           # Launch with NTLEA
-          elif usingNtlea:
+          elif self.usingNtlea():
             path = QtCore.QDir.toNativeSeparators(self.path)
             path = winutil.to_short_path(path) or path
             proc = get_process_by_path(path)
@@ -623,7 +628,7 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("NTLEA")))
-                  ntpid = procutil.open_executable_with_ntlea(path)
+                  ntpid = procutil.open_executable(path, type='ntlea', language=launchLanguage)
                   #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("NTLEA")))
@@ -637,12 +642,12 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   params = [QtCore.QDir.toNativeSeparators(self.path)]
-                  ntpid = procutil.open_executable_with_ntlea(launchPath, params=params)
+                  ntpid = procutil.open_executable(launchPath, params=params, type='ntlea', language=launchLanguage)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("NTLEA")))
                   elif updateLater(): return
           # Launch with LocaleSwitch
-          elif usingLocaleSwitch:
+          elif self.usingLocaleSwitch():
             path = QtCore.QDir.toNativeSeparators(self.path)
             path = winutil.to_short_path(path) or path
             proc = get_process_by_path(path)
@@ -652,7 +657,7 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("LocaleSwitch")))
-                  ntpid = procutil.open_executable_with_lsc(path)
+                  ntpid = procutil.open_executable(path, type='lsc', language=launchLanguage)
                   #proc = get_process_by_path(path)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("LocaleSwitch")))
@@ -666,7 +671,7 @@ class GameProfile(QtCore.QObject):
                   if updateLater(verbose=True): return
                 else:
                   params = [QtCore.QDir.toNativeSeparators(self.path)]
-                  ntpid = procutil.open_executable_with_lsc(launchPath, params=params)
+                  ntpid = procutil.open_executable(launchPath, params=params, type='lsc', language=launchLanguage)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("LocaleSwitch")))
                   elif updateLater(): return
@@ -674,16 +679,16 @@ class GameProfile(QtCore.QObject):
             if not launch:
               if updateLater(verbose=True): return
             else:
-              lcid = 0 if features.WINE else self.lcid() if self.usingApploc() else 0
-              dprint("lcid = %s" % lcid)
+              if features.WINE or not self.usingApploc():
+                launchLanguage = ''
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if self.vnrlocale:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
-                elif lcid:
+                elif launchLanguage:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("AppLocale")))
                 elif not features.WINE:
                   growl.notify(my.tr("Launch the game in original Japanese locale"))
-                self.pid = procutil.open_executable(self.path, lcid=lcid, vnrlocale=self.vnrlocale)
+                self.pid = procutil.open_executable(self.path, language=launchLanguage, vnrlocale=self.vnrlocale)
                 #vnragent.inject_process(self.pid)
                 #rpcman.manager().enableClient()
                 if not self.pid:
@@ -698,7 +703,7 @@ class GameProfile(QtCore.QObject):
                 #  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
 
                 params = [QtCore.QDir.toNativeSeparators(self.path)]
-                pid = procutil.open_executable(self.launchPath, lcid=lcid, params=params) #, vnrlocale=self.vnrlocale)
+                pid = procutil.open_executable(self.launchPath, params=params, language=launchLanguage) #, vnrlocale=self.vnrlocale)
                 proc = get_process_by_path(self.path)
                 if pid or proc:
                   if updateLater(): return
@@ -1038,6 +1043,7 @@ class GameManager(QtCore.QObject):
       if game:
         path = path or game.path
         launchPath = launchPath or game.launchPath
+        launchLanguage = launchLanguage or game.launchLanguage
         hook = hook or game.hook
         encoding = encoding or game.encoding
         threadName = threadName or game.threadName
@@ -1064,18 +1070,20 @@ class GameManager(QtCore.QObject):
           wid=wid, pid=pid, path=path, launchPath=launchPath, linkName=linkName,
           deletedHook=game.deletedHook if game else "",
           encoding=encoding, hook=hook, threadName=threadName, threadSignature=threadSignature,
-          removesRepeat=removesRepeat, ignoresRepeat=ignoresRepeat, keepsSpace=keepsSpace, threadKept=threadKept, language=language,
-          loader=loader, timeZoneEnabled=timeZoneEnabled,
-          launchLanguage=launchLanguage)
+          removesRepeat=removesRepeat, ignoresRepeat=ignoresRepeat, keepsSpace=keepsSpace, threadKept=threadKept,
+          language=language, launchLanguage=launchLanguage,
+          loader=loader, timeZoneEnabled=timeZoneEnabled)
 
       md5 = g.md5()
       oldGame = dataman.manager().queryGame(md5=md5, online=False)
       if oldGame:
-        if not g.encoding: g.encoding = oldGame.encoding
-        if not g.language: g.language = oldGame.language
-        if not g.loader: g.loader = oldGame.loader
-        if not g.launchPath: g.launchPath = oldGame.launchPath
-        if g.timeZoneEnabled is None: g.timeZoneEnabled = oldGame.timeZoneEnabled
+        for pty in 'encoding', 'language', 'launchLanguage', 'loader', 'launchPath':
+          v = getattr(g, pty)
+          if not v:
+            v = getattr(oldGame, pty)
+            setattr(g, pty, v)
+        if g.timeZoneEnabled is None:
+          g.timeZoneEnabled = oldGame.timeZoneEnabled
         if not game:
           hookEnabled = not oldGame.hookDisabled
           #threadKept = oldGame.threadKept
@@ -1084,7 +1092,11 @@ class GameManager(QtCore.QObject):
         #if not commentCount:
         #  commentCount = oldGame.commentCount
 
-      if not g.language: g.language = 'ja'
+      if not g.language:
+        g.language = 'ja'
+
+      #if not g.launchLanguage:
+      #  g.launchLanguage = 'ja'
 
       agentEngine = gameagent.global_().guessEngine(pid=pid, path=path) if ss.isGameAgentEnabled() else None
       dprint("agent engine = %s" % (agentEngine.name if agentEngine else "None"))
@@ -1249,7 +1261,7 @@ class GameManager(QtCore.QObject):
           brandNames = [g.brandName] if g.brandName else [],
           path=g.path, launchPath=g.launchPath,
           loader=g.loader, hookDisabled=not hookEnabled, deletedHook=g.deletedHook,
-          language=g.language,
+          language=g.language, launchLanguage=g.launchLanguage,
           timeZoneEnabled=g.timeZoneEnabled,
           commentCount=commentCount,
           visitTime=skdatetime.current_unixtime())
