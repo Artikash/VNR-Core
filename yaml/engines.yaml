@@ -122,6 +122,7 @@ simple:
   - 5pb PSP
   - 5pb1
   - 5pb2
+  - 5pb3
   - AB2Try
   - Adobe AIR
   - Adobe Flash 10
@@ -309,6 +310,7 @@ char:
   - 5pb PSP
   - 5pb1
   - 5pb2
+  - 5pb3
   - AB2Try
   - AbelSoftware
   - Alchemist PSP
@@ -476,6 +478,7 @@ utf8:
 focus:
   - 5pb1
   - 5pb2
+  - 5pb3
   - Adobe Flash 10
   - CatSystem2
   - CatSystem3

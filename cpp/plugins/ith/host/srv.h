@@ -4,8 +4,8 @@
 // 8/23/2013 jichi
 // Branch: ITH/IHF.h, rev 105
 
-//#include "ith/srv/settings.h"
-#include "ith/srv/hookman.h"
+//#include "ith/host/settings.h"
+#include "ith/host/hookman.h"
 
 #define IHFAPI __stdcall
 #ifdef IHF

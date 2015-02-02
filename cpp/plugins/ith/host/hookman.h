@@ -4,8 +4,8 @@
 // 8/23/2013 jichi
 // Branch: ITH/HookManager.h, rev 133
 
-#include "ith/srv/avl_p.h"
-#include "ith/srv/textthread.h"
+#include "ith/host/avl_p.h"
+#include "ith/host/textthread.h"
 #include "winmutex/winmutex.h"
 
 enum { MAX_REGISTER = 0xf };

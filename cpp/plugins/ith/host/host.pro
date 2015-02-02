@@ -1,6 +1,6 @@
-# srv.pro
+# host.pro
 # 8/9/2013 jichi
-# Build vnrsrv
+# Build vnrhost
 
 #CONFIG += eha # 3/1/2014: catchlng all exceptions will break pytexthook on Windows XP
 CONFIG += noeh # Needed by pytexthook ONLY on windows xp orz
@@ -24,7 +24,7 @@ LIBS    += -lkernel32 -luser32 #-lcomctl32
 
 TEMPLATE = lib
 #TARGET   = IHF # compatible with ITHv3
-TARGET   = vnrsrv
+TARGET   = vnrhost
 
 #CONFIG += staticlib
 
@@ -49,6 +49,6 @@ SOURCES += \
 #RC_FILE += engine.rc
 #OTHER_FILES += engine.rc
 
-OTHER_FILES += srv.pri
+OTHER_FILES += host.pri
 
 # EOF

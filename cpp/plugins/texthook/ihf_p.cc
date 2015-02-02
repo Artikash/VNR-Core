@@ -5,8 +5,8 @@
 #include "texthook/ith_p.h"
 #include "texthook/textthread_p.h"
 #include "ith/common/types.h"
-#include "ith/srv/srv.h"
-//#include "ith/srv/settings.h"
+#include "ith/host/srv.h"
+//#include "ith/host/settings.h"
 #include <QtCore/QDebug>
 
 #ifdef WITH_LIB_WINMAKER
