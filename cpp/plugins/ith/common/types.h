@@ -17,12 +17,12 @@
   *  EAX, ECX, EDX, EBX, EBP, ESP (original value), EBP, ESI, and EDI (if the current operand-size attribute is 32) and AX, CX, DX, BX, SP
   *  Negative values of 'data_offset' and 'sub_offset' refer to registers:-4 for EAX, -8 for ECX, -C for EDX, -10 for EBX, -14 for ESP, -18 for EBP, -1C for ESI, -20 for EDIhttp://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial
   */
-struct HookParam { // size: 0x24
+struct HookParam {
   // jichi 8/24/2013: For special hooks. Orignial name: DataFun
-  typedef void (*text_fun_t)(DWORD esp, HookParam *hp, DWORD *data, DWORD *split, DWORD *len);
+  typedef void (*text_fun_t)(DWORD esp, HookParam *hp, BYTE index, DWORD *data, DWORD *split, DWORD *len);
 
   // jichi 10/24/2014: Add filter function. Return the if skip the text
-  typedef bool (*filter_fun_t)(LPVOID str, DWORD *len, HookParam *hp);
+  typedef bool (*filter_fun_t)(LPVOID str, DWORD *len, HookParam *hp, BYTE index);
 
   // jichi 10/24/2014: Add generic hook function, return false if stop execution.
   typedef bool (*hook_fun_t)(DWORD esp, HookParam *hp);
@@ -42,9 +42,12 @@ struct HookParam { // size: 0x24
   BYTE hook_len, // ?
        recover_len; // ?
 
+  // 2/2/2015: jichi number of times - 1 to run the hook
+  BYTE extra_text_count;
+
   // 7/20/2014: jichi additional parameters for PSP games
-  DWORD userFlags,
-        userValue;
+  DWORD user_flags,
+        user_value;
 };
 
 // jichi 6/1/2014: Structure of the esp for extern functions

@@ -306,10 +306,10 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
 {
   enum { SMALL_BUFF_SIZE = 0x80 };
   enum { MAX_DATA_SIZE = 0x10000 }; // jichi 12/25/2013: The same as the original ITH
-  DWORD dwCount = 0,
+  DWORD dwCount,
       dwAddr,
       dwDataIn,
-      dwSplit = 0;
+      dwSplit;
   BYTE *pbData,
        pbSmallBuff[SMALL_BUFF_SIZE];
   DWORD dwType = hp.type;
@@ -353,8 +353,6 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
   }
 #endif // 0
-  dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
-
   // jichi 10/24/2014: generic hook function
   if (hp.hook_fun && !hp.hook_fun(dwDataBase, &hp))
     hp.hook_fun = nullptr;
@@ -362,98 +360,105 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   if (dwType & HOOK_EMPTY) // jichi 10/24/2014: dummy hook only for dynamic hook
     return 0;
 
-  //if (dwType & EXTERN_HOOK) {
-  if (hp.text_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
-    //DataFun fun=(DataFun)hp.text_fun;
-    //auto fun = hp.text_fun;
-    hp.text_fun(dwDataBase, &hp, &dwDataIn, &dwSplit, &dwCount);
-    //if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
-    //  return 0;
-    if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)
-      dwSplit -= ::processStartAddress;
-  } else {
-    if (dwDataIn == 0)
-      return 0;
-    if (dwType & FIXING_SPLIT)
-      dwSplit = FIXED_SPLIT_VALUE; // fuse all threads, and prevent floating
-    else if (dwType & USING_SPLIT) {
-      dwSplit = *(DWORD *)(dwDataBase + hp.split);
-      if (dwType & SPLIT_INDIRECT) {
-        if (IthGetMemoryRange((LPVOID)(dwSplit + hp.split_ind), 0, 0))
-          dwSplit = *(DWORD *)(dwSplit + hp.split_ind);
+  // jichi 2/2/2015: Send multiple texts
+  for (BYTE textIndex = 0; textIndex <= hp.extra_text_count; textIndex++) {
+    dwCount = 0;
+    dwSplit = 0;
+    dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
+
+    //if (dwType & EXTERN_HOOK) {
+    if (hp.text_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
+      //DataFun fun=(DataFun)hp.text_fun;
+      //auto fun = hp.text_fun;
+      hp.text_fun(dwDataBase, &hp, textIndex, &dwDataIn, &dwSplit, &dwCount);
+      //if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
+      //  return 0;
+      if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)
+        dwSplit -= ::processStartAddress;
+    } else {
+      if (dwDataIn == 0)
+        return 0;
+      if (dwType & FIXING_SPLIT)
+        dwSplit = FIXED_SPLIT_VALUE; // fuse all threads, and prevent floating
+      else if (dwType & USING_SPLIT) {
+        dwSplit = *(DWORD *)(dwDataBase + hp.split);
+        if (dwType & SPLIT_INDIRECT) {
+          if (IthGetMemoryRange((LPVOID)(dwSplit + hp.split_ind), 0, 0))
+            dwSplit = *(DWORD *)(dwSplit + hp.split_ind);
+          else
+            return 0;
+        }
+        if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)
+          dwSplit -= ::processStartAddress;
+      }
+      if (dwType & DATA_INDIRECT) {
+        if (IthGetMemoryRange((LPVOID)(dwDataIn + hp.ind), 0, 0))
+          dwDataIn = *(DWORD *)(dwDataIn + hp.ind);
         else
           return 0;
       }
-      if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)
-        dwSplit -= ::processStartAddress;
+      //if (dwType & PRINT_DWORD) {
+      //  swprintf((WCHAR *)(pbSmallBuff + HEADER_SIZE), L"%.8X ", dwDataIn);
+      //  dwDataIn = (DWORD)pbSmallBuff + HEADER_SIZE;
+      //}
+      dwCount = GetLength(dwDataBase, dwDataIn);
     }
-    if (dwType & DATA_INDIRECT) {
-      if (IthGetMemoryRange((LPVOID)(dwDataIn + hp.ind), 0, 0))
-        dwDataIn = *(DWORD *)(dwDataIn + hp.ind);
-      else
-        return 0;
+
+    // jichi 12/25/2013: validate data size
+    if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
+      return 0;
+
+    size_t sz = dwCount + HEADER_SIZE;
+    if (sz >= SMALL_BUFF_SIZE)
+      pbData = new BYTE[sz];
+      //ITH_MEMSET_HEAP(pbData, 0, sz * sizeof(BYTE)); // jichi 9/26/2013: zero memory
+    else
+      pbData = pbSmallBuff;
+
+    if (hp.length_offset == 1) {
+      if (dwType & STRING_LAST_CHAR) {
+        LPWSTR ts = (LPWSTR)dwDataIn;
+        dwDataIn = ts[::wcslen(ts) -1];
+      }
+      dwDataIn &= 0xffff;
+      if ((dwType & BIG_ENDIAN) && (dwDataIn >> 8))
+        dwDataIn = _byteswap_ushort(dwDataIn & 0xffff);
+      if (dwCount == 1)
+        dwDataIn &= 0xff;
+      *(WORD *)(pbData + HEADER_SIZE) = dwDataIn & 0xffff;
     }
-    //if (dwType & PRINT_DWORD) {
-    //  swprintf((WCHAR *)(pbSmallBuff + HEADER_SIZE), L"%.8X ", dwDataIn);
-    //  dwDataIn = (DWORD)pbSmallBuff + HEADER_SIZE;
-    //}
-    dwCount = GetLength(dwDataBase, dwDataIn);
-  }
+    else
+      ::memcpy(pbData + HEADER_SIZE, (void *)dwDataIn, dwCount);
 
-  // jichi 12/25/2013: validate data size
-  if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
-    return 0;
-
-  size_t sz = dwCount + HEADER_SIZE;
-  if (sz >= SMALL_BUFF_SIZE)
-    pbData = new BYTE[sz];
-    //ITH_MEMSET_HEAP(pbData, 0, sz * sizeof(BYTE)); // jichi 9/26/2013: zero memory
-  else
-    pbData = pbSmallBuff;
-
-  if (hp.length_offset == 1) {
-    if (dwType & STRING_LAST_CHAR) {
-      LPWSTR ts = (LPWSTR)dwDataIn;
-      dwDataIn = ts[::wcslen(ts) -1];
+    // jichi 10/14/2014: Add filter function
+    if (hp.filter_fun && !hp.filter_fun(pbData + HEADER_SIZE, &dwCount, &hp, textIndex) || dwCount <= 0) {
+      if (pbData != pbSmallBuff)
+        delete[] pbData;
+      return 0;
     }
-    dwDataIn &= 0xffff;
-    if ((dwType & BIG_ENDIAN) && (dwDataIn >> 8))
-      dwDataIn = _byteswap_ushort(dwDataIn & 0xffff);
-    if (dwCount == 1)
-      dwDataIn &= 0xff;
-    *(WORD *)(pbData + HEADER_SIZE) = dwDataIn & 0xffff;
-  }
-  else
-    ::memcpy(pbData + HEADER_SIZE, (void *)dwDataIn, dwCount);
 
-  // jichi 10/14/2014: Add filter function
-  if (hp.filter_fun && !hp.filter_fun(pbData + HEADER_SIZE, &dwCount, &hp) || dwCount <= 0) {
+    *(DWORD *)pbData = dwAddr;
+    if (dwType & (NO_CONTEXT|FIXING_SPLIT))
+      dwRetn = 0;
+    else if (dwRetn && (dwType & RELATIVE_SPLIT))
+      dwRetn -= ::processStartAddress;
+
+    *((DWORD *)pbData + 1) = dwRetn;
+    *((DWORD *)pbData + 2) = dwSplit;
+    if (dwCount) {
+      IO_STATUS_BLOCK ios = {};
+
+      IthCoolDown(); // jichi 9/28/2013: cool down to prevent parallelization in wine
+      //CliLockPipe();
+      if (STATUS_PENDING == NtWriteFile(hPipe, 0, 0, 0, &ios, pbData, dwCount + HEADER_SIZE, 0, 0)) {
+        NtWaitForSingleObject(hPipe, 0, 0);
+        NtFlushBuffersFile(hPipe, &ios);
+      }
+      //CliUnlockPipe();
+    }
     if (pbData != pbSmallBuff)
       delete[] pbData;
-    return 0;
   }
-
-  *(DWORD *)pbData = dwAddr;
-  if (dwType & (NO_CONTEXT|FIXING_SPLIT))
-    dwRetn = 0;
-  else if (dwRetn && (dwType & RELATIVE_SPLIT))
-    dwRetn -= ::processStartAddress;
-
-  *((DWORD *)pbData + 1) = dwRetn;
-  *((DWORD *)pbData + 2) = dwSplit;
-  if (dwCount) {
-    IO_STATUS_BLOCK ios = {};
-
-    IthCoolDown(); // jichi 9/28/2013: cool down to prevent parallelization in wine
-    //CliLockPipe();
-    if (STATUS_PENDING == NtWriteFile(hPipe, 0, 0, 0, &ios, pbData, dwCount + HEADER_SIZE, 0, 0)) {
-      NtWaitForSingleObject(hPipe, 0, 0);
-      NtFlushBuffersFile(hPipe, &ios);
-    }
-    //CliUnlockPipe();
-  }
-  if (pbData != pbSmallBuff)
-    delete[] pbData;
   return 0;
 
 }

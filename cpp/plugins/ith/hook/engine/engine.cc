@@ -219,6 +219,22 @@ bool all_ascii(const char *s)
 
 // String filters
 
+void CharReplacer(char *str, size_t *size, char fr, char to)
+{
+  size_t len = *size;
+  for (size_t i = 0; i < len; i++)
+    if (str[i] == fr)
+      str[i] = to;
+}
+
+void WideCharReplacer(wchar_t *str, size_t *size, wchar_t fr, wchar_t to)
+{
+  size_t len = *size / 2;
+  for (size_t i = 0; i < len; i++)
+    if (str[i] == fr)
+      str[i] = to;
+}
+
 void CharFilter(char *str, size_t *size, char ch)
 {
   size_t len = *size,
@@ -272,25 +288,33 @@ void WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t 
   }
   *size = len * 2;
 }
-bool NewLineCharFilter(LPVOID data, DWORD *size, HookParam *hp)
+bool NewLineCharFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  CC_UNUSED(hp);
   CharFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
       '\n');
   return true;
 }
-bool NewLineWideCharFilter(LPVOID data, DWORD *size, HookParam *hp)
+bool NewLineWideCharFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  CC_UNUSED(hp);
   CharFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
       L'\n');
   return true;
 }
-bool NewLineStringFilter(LPVOID data, DWORD *size, HookParam *hp)
+bool NewLineStringFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  CC_UNUSED(hp);
   StringFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
       "\\n", 2);
+  return true;
+}
+
+bool NewLineCharToSpaceFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  CharReplacer(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), '\n', ' ');
+  return true;
+}
+bool NewLineWideCharToSpaceFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  WideCharReplacer(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L'\n', L' ');
   return true;
 }
 } // unnamed namespace
@@ -318,9 +342,8 @@ KiriKiri hook:
   char and we insert hook here to extract it.
 ********************************************************************************************/
 #if 0 // jichi 11/12/2013: not used
-static void SpecialHookKiriKiri(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookKiriKiri(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD p1 =  *(DWORD *)(esp_base - 0x14),
         p2 =  *(DWORD *)(esp_base - 0x18);
   if ((p1>>16) == (p2>>16)) {
@@ -537,18 +560,16 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
 #if 0 // not used
 namespace { // unnamed
 
-bool KAGParserFilter(LPVOID data, DWORD *size, HookParam *hp)
+bool KAGParserFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  CC_UNUSED(hp);
   WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
                           L"[r]", 3);
   return true;
 }
 
-void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookKAGParser(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   // 6e5622a8   66:833c48 5b     cmp word ptr ds:[eax+ecx*2],0x5b
-  CC_UNUSED(hp);
   DWORD eax = regof(eax, esp_base),
         ecx = regof(ecx, esp_base);
   if (eax && !ecx) { // skip string when ecx is not zero
@@ -558,10 +579,9 @@ void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *spl
   }
 }
 
-void SpecialHookKAGParserEx(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookKAGParserEx(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   // 10013960   66:833c41 5b     cmp word ptr ds:[ecx+eax*2],0x5b
-  CC_UNUSED(hp);
   DWORD eax = regof(eax, esp_base),
         ecx = regof(ecx, esp_base);
   if (ecx && !eax) { // skip string when ecx is not zero
@@ -1188,9 +1208,8 @@ bool InsertKAGParserExHook()
 namespace { // unnamed
 
 // Skip individual L'\n' which might cause repetition.
-//bool NewLineWideCharSkipper(LPVOID data, DWORD *size, HookParam *hp)
+//bool NewLineWideCharSkipper(LPVOID data, DWORD *size, HookParam *)
 //{
-//  CC_UNUSED(hp);
 //  LPCWSTR text = (LPCWSTR)data;
 //  if (*size == 2 && *text == L'\n')
 //    return false;
@@ -1708,7 +1727,7 @@ bool InsertBGI1Hook()
 //  return r;
 //}
 //
-//static void SpecialHookBGI2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//static void SpecialHookBGI2(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 //{
 //  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->off);
 //  if (text) {
@@ -2831,7 +2850,7 @@ bool InsertSiglus2Hook()
   return true;
 }
 
-static void SpecialHookSiglus1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookSiglus1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   __asm
   {
@@ -2910,7 +2929,7 @@ MAJIRO hook:
 // jichi 11/28/2014: Disable original Majiro special hook that does not work for new Majiro games, such as: 流され妻
 // In the new Majiro engine, arg1 could be zero
 #if 0
-static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   // jichi 5/12/2014
   // See: http://stackoverflow.com/questions/14210614/bind-function-parameter-to-specific-register
@@ -3105,14 +3124,14 @@ inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to be a str
 inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
 { return (arg[12] & 0xff) | (arg[16] & 0xffffff00); }
 
-void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookMajiro(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD arg3 = argof(3, esp_base); // text
   *data = arg3;
   *len = ::strlen((LPCSTR)arg3);
   // IsBadReadPtr is not needed for old Majiro game.
   // I am not sure if it is needed by new Majiro game.
-  if (hp->userValue) { // new majiro
+  if (hp->user_value) { // new majiro
     if (DWORD arg4 = argof(4, esp_base)) // old majiro
       *split = MajiroNewFontSplit((LPDWORD)arg4);
     else
@@ -3154,7 +3173,7 @@ bool InsertMajiroHook()
   //hp.type|=USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
   hp.addr = addr;
   hp.text_fun = SpecialHookMajiro;
-  hp.userValue = newMajiro;
+  hp.user_value = newMajiro;
   if (newMajiro) {
     hp.type = NO_CONTEXT; // do not use return address for new majiro
     ConsoleOutput("vnreng: INSERT Majiro2");
@@ -3355,7 +3374,7 @@ rUGP hook:
   characters. It's determining if ebp contains a SHIFT-JIS character. This function is not likely
   to be used in other ways. We simply search for this instruction and place hook around.
 ********************************************************************************************/
-void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD *stack = (DWORD *)esp_base;
   DWORD i,val;
@@ -3887,9 +3906,8 @@ ShinaRio hook:
 
   New ShinaRio engine (>=2.48) uses different approach.
 ********************************************************************************************/
-static void SpecialHookShina(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookShina(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD ptr = *(DWORD*)(esp_base-0x20);
   *split = ptr;
   char* str = *(char**)(ptr+0x160);
@@ -4585,9 +4603,8 @@ bool InsertCotophaHook()
 // 051ae554   042c4c20
 // 051ae558   0000002c
 
-static void SpecialHookCatSystem3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookCatSystem3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   //DWORD ch = *data = *(DWORD *)(esp_base + hp->off); // arg2
   DWORD ch = *data = argof(2, esp_base);
   *len = LeadByteTable[(ch >> 8) & 0xff];  // BIG_ENDIAN
@@ -4730,9 +4747,8 @@ bool InsertMalieHook1()
 }
 
 DWORD malie_furi_flag_; // jichi 8/20/2013: Make it global so that it can be reset
-void SpecialHookMalie(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookMalie(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD ch = *(DWORD *)(esp_base - 0x8) & 0xffff,
         ptr = *(DWORD *)(esp_base - 0x24);
   *data = ch;
@@ -4793,9 +4809,8 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
  *  1. split = 0xC can handle most texts and its dwRetn is always zero
  *  2. The text containing furigana needed to split has non-zero dwRetn when split = 0
  */
-void SpecialHookMalie2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookMalie2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   CC_UNUSED(data);
   static DWORD last_split; // FIXME: This makes the special function stateful
   DWORD s1 = *(DWORD *)esp_base; // current split at 0x0
@@ -4930,9 +4945,8 @@ LPCWSTR _Malie3GetEOL(LPCWSTR p)
  *  Also need to skip furigana.
  */
 
-void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   CC_UNUSED(split);
   DWORD ecx = regof(ecx, esp_base), // *(DWORD *)(esp_base + pusha_ecx_off - 4),
         edx = regof(edx, esp_base); // *(DWORD *)(esp_base + pusha_edx_off - 4);
@@ -5037,9 +5051,8 @@ bool InsertEMEHook()
   //else ConsoleOutput("Unknown EmonEngine engine");
   return true;
 }
-static void SpecialRunrunEngine(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialRunrunEngine(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   CC_UNUSED(split);
   DWORD eax = regof(eax, esp_base), // *(DWORD *)(esp_base - 0x8),
         edx = regof(edx, esp_base); // *(DWORD *)(esp_base - 0x10);
@@ -5472,9 +5485,8 @@ Apricot hook:
   Only name and text data is needed.
 
 ********************************************************************************************/
-static void SpecialHookApricoT(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookApricoT(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD reg_esi = *(DWORD *)(esp_base - 0x20);
   DWORD reg_esp = *(DWORD *)(esp_base - 0x18);
   DWORD base = *(DWORD *)(reg_esi + 0x24);
@@ -5618,9 +5630,8 @@ bool IsPensilSetup()
   NtFreeVirtualMemory(NtCurrentProcess(), &buffer, &info.AllocationSize.LowPart, MEM_RELEASE);
   return ret;
 }
-static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(split);
   DWORD retn = *(DWORD*)esp_base;
   if (*(WORD*)retn == 0xc483) // add esp, *
     hp->off = 4;
@@ -5670,7 +5681,7 @@ bool InsertDebonosuHook()
   return false;
 }
 
-static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD i;
   union {
@@ -5741,7 +5752,7 @@ void InsertSoftHouseHook()
   SwitchTrigger(true);
 }
 
-static void SpecialHookCaramelBox(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookCaramelBox(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD reg_ecx = *(DWORD*)(esp_base + hp->off);
   BYTE *ptr = (BYTE *)reg_ecx;
@@ -6002,9 +6013,8 @@ typedef struct _NSTRING
 int cmp(const void * a, const void * b)
 { return *(int*)a - *(int*)b; }
 
-void SpecialHookAB2Try(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookAB2Try(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   //DWORD test = *(DWORD*)(esp_base - 0x10);
   DWORD edx = regof(edx, esp_base);
   if (edx != 0)
@@ -6257,7 +6267,7 @@ static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
 }
 #endif // 0
 
-static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //static DWORD detect_offset; // jichi 1/18/2015: this makes sure it only runs once
   //if (detect_offset)
@@ -6365,9 +6375,8 @@ bool InsertTanukiHook()
   ConsoleOutput("vnreng:TanukiSoft: failed");
   return false;
 }
-static void SpecialHookRyokucha(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookRyokucha(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(split);
   const DWORD *base = (const DWORD *)esp_base;
   for (DWORD i = 1; i < 5; i++) {
     DWORD j = base[i];
@@ -6600,7 +6609,7 @@ BYTE JIS_tableL[0x80] = {
   0x98,0x99,0x9a,0x9b,0x9c,0x9d,0x9e,0x00,
 };
 
-void SpecialHookAnex86(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookAnex86(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   __asm
   {
@@ -6658,7 +6667,7 @@ bool InsertAnex86Hook()
 //static char* ShinyDaysQueueString[0x10];
 //static int ShinyDaysQueueStringLen[0x10];
 //static int ShinyDaysQueueIndex, ShinyDaysQueueNext;
-static void SpecialHookShinyDays(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookShinyDays(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   static int ShinyDaysQueueStringLen;
   LPWSTR fun_str;
@@ -8284,9 +8293,8 @@ static inline size_t _elf_strlen(LPCSTR p) // limit search address which might b
   return 0; // when len >= VNR_TEXT_CAPACITY
 }
 
-static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookElf(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   //DWORD arg1 = *(DWORD *)(esp_base + 0x4);
   DWORD arg1 = argof(1, esp_base);
   DWORD arg2_scene = arg1 + 4*5,
@@ -8910,7 +8918,7 @@ static bool _yk2garbage(const char *p)
 }
 
 // Get text from arg2
-static void SpecialHookYukaSystem2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookYukaSystem2(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD arg2 = argof(2, esp_base), // [esp+0x8]
         arg3 = argof(3, esp_base); // [esp+0xc]
@@ -9416,7 +9424,7 @@ bool InsertSideBHook()
  *  For long sentences, it first render the first line, then the second line, and so on.
  *  So, the second line is a subtext of the entire dialog.
  */
-static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookExp(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   static DWORD lasttext;
   // 00258020   55               push ebp  ; jichi: hook here
@@ -9570,9 +9578,8 @@ bool InsertExpHook()
  */
 // Skip text between "," and "】", and remove [n]
 // ex:【夏凜,S005_B_0002】「バーテック
-static bool HorkEyeFilter(LPVOID data, DWORD *size, HookParam *hp)
+static bool HorkEyeFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  CC_UNUSED(hp);
   size_t len = *size;
   char *str = reinterpret_cast<char *>(data),
        *start,
@@ -9783,9 +9790,8 @@ inline bool _5pb2garbage_ch(char c)
 { return c == '%' || c == '@' || c >= 'A' && c <= 'z'; }
 
 // 001e9b15   8a10             mov dl,byte ptr ds:[eax]    ; jichi: here, word by word
-void SpecialHook5pb2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHook5pb2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   static DWORD lasttext;
   DWORD text = regof(eax, esp_base);
   if (lasttext == text)
@@ -9830,12 +9836,168 @@ bool Insert5pbHook2()
   return true;
 }
 
+/** jichi 2/2/2015: New 5pb hook
+ *  Sample game: Hyperdimension.Neptunia.ReBirth1
+ *
+ *  Debugging method: hardware breakpoint and find function in msvc110
+ *  Then, backtrack the function stack to find proper function.
+ *
+ *  Hooked function: 558BEC56FF750C8BF1FF75088D460850
+ *
+ *  0025A12E   CC               INT3
+ *  0025A12F   CC               INT3
+ *  0025A130   55               PUSH EBP
+ *  0025A131   8BEC             MOV EBP,ESP
+ *  0025A133   56               PUSH ESI
+ *  0025A134   FF75 0C          PUSH DWORD PTR SS:[EBP+0xC]
+ *  0025A137   8BF1             MOV ESI,ECX
+ *  0025A139   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
+ *  0025A13C   8D46 08          LEA EAX,DWORD PTR DS:[ESI+0x8]
+ *  0025A13F   50               PUSH EAX
+ *  0025A140   E8 DB100100      CALL .0026B220
+ *  0025A145   8B8E 988D0000    MOV ECX,DWORD PTR DS:[ESI+0x8D98]
+ *  0025A14B   8988 80020000    MOV DWORD PTR DS:[EAX+0x280],ECX
+ *  0025A151   8B8E A08D0000    MOV ECX,DWORD PTR DS:[ESI+0x8DA0]
+ *  0025A157   8988 88020000    MOV DWORD PTR DS:[EAX+0x288],ECX
+ *  0025A15D   8B8E A88D0000    MOV ECX,DWORD PTR DS:[ESI+0x8DA8]
+ *  0025A163   8988 90020000    MOV DWORD PTR DS:[EAX+0x290],ECX
+ *  0025A169   8B8E B08D0000    MOV ECX,DWORD PTR DS:[ESI+0x8DB0]
+ *  0025A16F   8988 98020000    MOV DWORD PTR DS:[EAX+0x298],ECX
+ *  0025A175   83C4 0C          ADD ESP,0xC
+ *  0025A178   8D8E 188B0000    LEA ECX,DWORD PTR DS:[ESI+0x8B18]
+ *  0025A17E   E8 DDD8FEFF      CALL .00247A60
+ *  0025A183   5E               POP ESI
+ *  0025A184   5D               POP EBP
+ *  0025A185   C2 0800          RETN 0x8
+ *  0025A188   CC               INT3
+ *  0025A189   CC               INT3
+ *
+ *  Runtime stack, text in arg1, and name in arg2:
+ *
+ *  0015F93C   00252330  RETURN to .00252330 from .0025A130
+ *  0015F940   181D0D4C  ASCII "That's my line! I won't let any of you
+ *  take the title of True Goddess!"
+ *  0015F944   0B8B4D20  ASCII "  White Heart  "
+ *  0015F948   0B8B5528
+ *  0015F94C   0B8B5524
+ *  0015F950  /0015F980
+ *  0015F954  |0026000F  RETURN to .0026000F from .002521D0
+ *
+ *
+ *  Another candidate funciton for backup usage.
+ *  Previous text in arg1.
+ *  Current text in arg2.
+ *  Current name in arg3.
+ *
+ *  0026B21C   CC               INT3
+ *  0026B21D   CC               INT3
+ *  0026B21E   CC               INT3
+ *  0026B21F   CC               INT3
+ *  0026B220   55               PUSH EBP
+ *  0026B221   8BEC             MOV EBP,ESP
+ *  0026B223   81EC A0020000    SUB ESP,0x2A0
+ *  0026B229   BA A0020000      MOV EDX,0x2A0
+ *  0026B22E   53               PUSH EBX
+ *  0026B22F   8B5D 08          MOV EBX,DWORD PTR SS:[EBP+0x8]
+ *  0026B232   56               PUSH ESI
+ *  0026B233   57               PUSH EDI
+ *  0026B234   8D041A           LEA EAX,DWORD PTR DS:[EDX+EBX]
+ *  0026B237   B9 A8000000      MOV ECX,0xA8
+ *  0026B23C   8BF3             MOV ESI,EBX
+ *  0026B23E   8DBD 60FDFFFF    LEA EDI,DWORD PTR SS:[EBP-0x2A0]
+ *  0026B244   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  0026B246   B9 A8000000      MOV ECX,0xA8
+ *  0026B24B   8BF0             MOV ESI,EAX
+ *  0026B24D   8BFB             MOV EDI,EBX
+ *  0026B24F   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  0026B251   81C2 A0020000    ADD EDX,0x2A0
+ *  0026B257   B9 A8000000      MOV ECX,0xA8
+ *  0026B25C   8DB5 60FDFFFF    LEA ESI,DWORD PTR SS:[EBP-0x2A0]
+ *  0026B262   8BF8             MOV EDI,EAX
+ *  0026B264   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  0026B266   81FA 40830000    CMP EDX,0x8340
+ *  0026B26C  ^7C C6            JL SHORT .0026B234
+ *  0026B26E   8BCB             MOV ECX,EBX
+ *  0026B270   E8 EBC7FDFF      CALL .00247A60
+ *  0026B275   FF75 0C          PUSH DWORD PTR SS:[EBP+0xC]
+ *  0026B278   8B35 D8525000    MOV ESI,DWORD PTR DS:[0x5052D8]          ; msvcr110.sprintf
+ *  0026B27E   68 805C5000      PUSH .00505C80                           ; ASCII "%s"
+ *  0026B283   53               PUSH EBX
+ *  0026B284   FFD6             CALL ESI
+ *  0026B286   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
+ *  0026B289   8D83 00020000    LEA EAX,DWORD PTR DS:[EBX+0x200]
+ *  0026B28F   68 805C5000      PUSH .00505C80                           ; ASCII "%s"
+ *  0026B294   50               PUSH EAX
+ *  0026B295   FFD6             CALL ESI
+ *  0026B297   83C4 18          ADD ESP,0x18
+ *  0026B29A   8BC3             MOV EAX,EBX
+ *  0026B29C   5F               POP EDI
+ *  0026B29D   5E               POP ESI
+ *  0026B29E   5B               POP EBX
+ *  0026B29F   8BE5             MOV ESP,EBP
+ *  0026B2A1   5D               POP EBP
+ *  0026B2A2   C3               RETN
+ *  0026B2A3   CC               INT3
+ *  0026B2A4   CC               INT3
+ *  0026B2A5   CC               INT3
+ *  0026B2A6   CC               INT3
+ */
+void SpecialHook5pb3(DWORD esp_base, HookParam *, BYTE index, DWORD *data, DWORD *split, DWORD *len)
+{
+  // Text in arg1, name in arg2
+  if (LPCSTR text = (LPCSTR)argof(index+1, esp_base))
+    if (*text) {
+      if (index)  // trim spaces in character name
+        while (*text == ' ') text++;
+      size_t sz = ::strlen(text);
+      if (index)
+        while (sz && text[sz-1] == ' ') sz--;
+      *data = (DWORD)text;
+      *len = sz;
+      *split = FIXED_SPLIT_VALUE << index;
+    }
+}
+bool Insert5pbHook3()
+{
+  const BYTE bytes[] = { // function starts
+    0x55,            // 0025A130   55               PUSH EBP
+    0x8b,0xec,       // 0025A131   8BEC             MOV EBP,ESP
+    0x56,            // 0025A133   56               PUSH ESI
+    0xff,0x75, 0x0c, // 0025A134   FF75 0C          PUSH DWORD PTR SS:[EBP+0xC]
+    0x8b,0xf1,       // 0025A137   8BF1             MOV ESI,ECX
+    0xff,0x75, 0x08, // 0025A139   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
+    0x8d,0x46, 0x08, // 0025A13C   8D46 08          LEA EAX,DWORD PTR DS:[ESI+0x8]
+    0x50,            // 0025A13F   50               PUSH EAX
+    0xe8             // 0025A140   E8 DB100100      CALL .0026B220
+  };
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
+  //ITH_GROWL_DWORD3(addr, module_base_,module_limit_);
+  if (!addr) {
+    ConsoleOutput("vnreng:5pb2: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = USING_STRING|NO_CONTEXT;
+  hp.text_fun = SpecialHook5pb3;
+  hp.extra_text_count = 1; // extract character name in arg1
+  hp.filter_fun = NewLineCharToSpaceFilter; // replace '\n' by ' '
+  ConsoleOutput("vnreng: INSERT 5pb3");
+  NewHook(hp, L"5pb3");
+  // GDI functions are not used by 5pb games anyway.
+  //ConsoleOutput("vnreng:5pb: disable GDI hooks");
+  //DisableGDIHooks();
+  return true;
+}
+
 } // unnamed namespace
 
 bool Insert5pbHook()
 {
   bool ok = Insert5pbHook1();
   ok = Insert5pbHook2() || ok;
+  ok = Insert5pbHook3() || ok;
   return ok;
 }
 
@@ -9979,9 +10141,8 @@ static bool InsertMinkDynamicHook(LPVOID fun, DWORD frame, DWORD stack)
 }
 #endif // 0
 
-static void SpecialHookMink(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookMink(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   //DWORD addr = *(DWORD *)(esp_base + hp->off); // default value
   DWORD addr = regof(eax, esp_base);
   if (!IthGetMemoryRange((LPVOID)(addr), 0, 0))
@@ -10081,18 +10242,16 @@ bool InsertMinkHook()
  *  EDI 079047E0
  *  EIP 00451671 .00451671
  */
-static void SpecialHookLeaf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookLeaf(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD text = regof(ebx, esp_base) - 1; // = ebx -1
   *data = text;
   *len = ::strlen((LPCSTR)text);
   *split = FIXED_SPLIT_VALUE; // only caller's address use as split
 }
 // Remove both \n and \k
-static bool LeafFilter(LPVOID data, DWORD *size, HookParam *hp)
+static bool LeafFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  CC_UNUSED(hp);
   LPSTR text = (LPSTR)data;
   if (::memchr(text, '\\', *size)) {
     StringFilter(text, reinterpret_cast<size_t *>(size), "\\n", 2);
@@ -10198,9 +10357,8 @@ bool InsertLeafHook()
  */
 // Remove: \n\s*
 // This is dangerous since \n could appear within SJIS
-//static bool LunaSoftFilter(LPVOID data, DWORD *size, HookParam *hp)
+//static bool LunaSoftFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 //{
-//  CC_UNUSED(hp);
 //  size_t len = *size;
 //  char *str = reinterpret_cast<char *>(data),
 //       *cur;
@@ -10470,10 +10628,9 @@ bool InsertLunaSoftHook()
  *  EIP 01612940 Ron2.01612940
  */
 // Skip ASCII garbage such as: Dat/Chr/HAL_061.swf
-static bool AdobeFlashFilter(LPVOID data, DWORD *size, HookParam *hp)
+static bool AdobeFlashFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
   // TODO: Remove [0-9a-zA-Z./]{4,} as garbage
-  CC_UNUSED(hp);
   LPCWSTR p = reinterpret_cast<LPCWSTR>(data);
   size_t len = *size / 2;
   for (size_t i = 0; i < len; i++)
@@ -10518,9 +10675,8 @@ bool InsertAdobeFlash10Hook()
 /** jichi 12/26/2014 Mono
  *  Sample game: [141226] ハーレムめいと
  */
-static void SpecialHookMonoString(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   if (MonoString *s = (MonoString *)argof(1, esp_base)) {
     *data = (DWORD)s->chars;
     *len = s->length * 2; // for widechar
@@ -10696,10 +10852,10 @@ bool _vanillawaregarbage(LPCSTR p)
 }
 } // unnamed namespace
 
-static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   static LPCSTR lasttext;
   if (lasttext != text && *text && !_vanillawaregarbage(text)) {
     lasttext = text;
@@ -10740,7 +10896,7 @@ bool InsertVanillawareGCHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.text_fun = SpecialGCHookVanillaware;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Vanillaware GC: INSERT");
@@ -10754,13 +10910,13 @@ bool InsertVanillawareGCHook()
 /** jichi 7/12/2014 PPSSPP
  *  Tested with PPSSPP 0.9.8.
  */
-void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialPSPHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD offset = *(DWORD *)(esp_base + hp->off);
-  LPCSTR text = LPCSTR(offset + hp->userValue);
+  LPCSTR text = LPCSTR(offset + hp->user_value);
   static LPCSTR lasttext;
   if (*text) {
-    if (hp->userFlags & HPF_IgnoreSameAddress) {
+    if (hp->user_flags & HPF_IgnoreSameAddress) {
       if (text == lasttext)
         return;
       lasttext = text;
@@ -11009,10 +11165,10 @@ size_t _rejetstrlen(LPCSTR text)
 
 } // unnamed namespace
 
-static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (*text && !_alchemistgarbage(text)) {
     text = _rejetltrim(text);
     *data = (DWORD)text;
@@ -11051,7 +11207,7 @@ bool InsertAlchemistPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.text_fun = SpecialPSPHookAlchemist;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
@@ -11111,10 +11267,10 @@ bool InsertAlchemistPSPHook()
  *  13400f8f   90               nop
  */
 
-static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (*text && !_alchemistgarbage(text)) {
     *data = (DWORD)text;
     *len = ::strlen(text);
@@ -11150,7 +11306,7 @@ bool InsertAlchemist2PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.text_fun = SpecialPSPHookAlchemist2;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
@@ -11324,10 +11480,10 @@ size_t _5pbstrlen(LPCSTR text)
 
 } // unnamed namespace
 
-static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (*text) {
     text = _5pbltrim(text);
     *data = (DWORD)text;
@@ -11394,7 +11550,7 @@ bool Insert5pbPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.text_fun = SpecialPSPHook5pb;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: 5pb PSP: INSERT");
@@ -11456,11 +11612,11 @@ bool Insert5pbPSPHook()
  *  1346d3ed   f0:90            lock nop                                 ; lock prefix is not allowed
  *  1346d3ef   cc               int3
  */
-static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   // 7/25/2014: I tried using uniquemap to eliminate duplication, which does not work
   DWORD eax = regof(eax, esp_base);
-  DWORD text = eax + hp->userValue;
+  DWORD text = eax + hp->user_value;
   static DWORD lasttext; // Prevent reading the same address multiple times
   if (text != lasttext && *(LPCSTR)text) {
     *data = lasttext = text;
@@ -11499,11 +11655,11 @@ bool InsertImageepochPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
-    hp.userFlags = HPF_IgnoreSameAddress;
+    hp.user_flags = HPF_IgnoreSameAddress;
     //hp.text_fun = SpecialPSPHook;
     hp.text_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameAddress
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
@@ -11584,7 +11740,7 @@ bool InsertImageepoch2PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
@@ -12059,11 +12215,11 @@ bool InsertImageepoch2PSPHook()
  *  138d151e   cc               int3
  *  138d151f   cc               int3
  */
-//static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 //{
 //  //enum { base = 0x7400000 };
 //  DWORD eax = regof(eax, esp_base);
-//  LPCSTR text = LPCSTR(eax + hp->userValue);
+//  LPCSTR text = LPCSTR(eax + hp->user_value);
 //  if (*text) {
 //    *data = (DWORD)text;
 //    *len = ::strlen(text); // SHIFT-JIS
@@ -12111,7 +12267,7 @@ bool InsertYetiPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     hp.text_fun = SpecialPSPHook;
     hp.off = pusha_eax_off - 4;
@@ -12213,10 +12369,10 @@ bool InsertYetiPSPHook()
  *  10873a5a   cc               int3
  *  10873a5b   cc               int3
  */
-static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   static LPCSTR lasttext; // Prevent reading the same address multiple times
   if (text != lasttext && *text) {
     lasttext = text;
@@ -12253,13 +12409,13 @@ bool InsertKidPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.text_fun = SpecialPSPHookKid;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
 
     //HookParam hp = {};
     //hp.addr = addr + hook_offset;
-    //hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    //hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     //hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4;
@@ -12346,14 +12502,13 @@ bool InsertKidPSPHook()
  *  0ed8cf8f   90               nop
  */
 
-static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD splitvalue = regof(edi, esp_base);
   if (splitvalue < 0x0fff)
     return;
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (*text) {
     *data = (DWORD)text;
     *len = ::strlen(text);
@@ -12392,7 +12547,7 @@ bool InsertCyberfrontPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_edi_off - 4;
@@ -12586,10 +12741,10 @@ bool InsertCyberfrontPSPHook()
  *  0ed859f2   90               nop
  */
 // TODO: Is reverse_strlen a better choice?
-static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (BYTE c = *(BYTE *)text) {
     *data = (DWORD)text;
     //*len = text[1] ? 2 : 1;
@@ -12631,7 +12786,7 @@ bool InsertYeti2PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4; // this would split scenario thread
@@ -12813,7 +12968,7 @@ bool InsertBandaiNamePSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ebx_off - 4;
@@ -12860,10 +13015,10 @@ LPCSTR _bandailtrim(LPCSTR p)
 }
 } // unnamed namespae
 
-static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
 
   if (*text) {
     //lasttext = text;
@@ -12905,7 +13060,7 @@ bool InsertBandaiPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4;
@@ -12954,7 +13109,7 @@ bool InsertBandaiPSPHook()
  */
 // Read text from bp
 // TODO: This should be expressed as general hook without extern fun
-static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
   LPCSTR text = LPCSTR(esp_base + hp->off); // dynamic offset, ebp or esi
@@ -13057,9 +13212,8 @@ bool InsertNippon1PSPHook()
  *  13d13f62  -e9 bcc0a3ef      jmp 03750023
  *  13d13f67   90               nop
  */
-//static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 //{
-//  CC_UNUSED(hp);
 //  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
 //  if (*text) {
 //    *data = (DWORD)text;
@@ -13195,9 +13349,8 @@ bool InsertNippon2PSPHook()
 static inline bool _broccoligarbage_ch(char c) { return c == '^'; }
 
 // Read text from dl
-static void SpecialPSPHookBroccoli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookBroccoli(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD text = esp_base + pusha_edx_off - 4; // edx address
   char c = *(LPCSTR)text;
   if (c && !_broccoligarbage_ch(c)) {
@@ -13301,11 +13454,11 @@ bool InsertBroccoliPSPHook()
  */
 // TODO: is reverse_strlen a better choice?
 // Read text from esi
-static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //static uniquemap uniq;
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue - 2); // -2 to read 1 word more from previous location
+  LPCSTR text = LPCSTR(eax + hp->user_value - 2); // -2 to read 1 word more from previous location
   if (*text) {
     *split = regof(ecx, esp_base); // this would cause lots of texts, but it works for all games
     //*split = regof(ecx, esp_base) & 0xff00; // only use higher bits
@@ -13344,7 +13497,7 @@ bool InsertOtomatePSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookOtomate;
     ConsoleOutput("vnreng: Otomate PSP: INSERT");
@@ -13377,7 +13530,7 @@ bool InsertOtomatePSPHook()
  *  006db4dc   c3               retn
  *  006db4dd   cc               int3
  */
-static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   // 006db4b7   8b42 10          mov eax,dword ptr ds:[edx+0x10] ; jichi: hook here
   // 006db4ba   25 ffffff3f      and eax,0x3fffffff
@@ -13386,7 +13539,7 @@ static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data,
   DWORD edx = regof(edx, esp_base);
   DWORD eax = *(DWORD *)(edx + 0x10);
   eax &= 0x3fffffff;
-  eax += *(DWORD *)hp->userValue;
+  eax += *(DWORD *)hp->user_value;
 
   //DWORD eax = regof(eax, esp_base);
   LPCSTR text = LPCSTR(eax);
@@ -13436,7 +13589,7 @@ bool InsertOtomatePPSSPPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(addr + ds_offset); // this is the address after ds:[]
+    hp.user_value = *(DWORD *)(addr + ds_offset); // this is the address after ds:[]
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPPSSPPHookOtomate;
     ConsoleOutput("vnreng: Otomate PPSSPP: INSERT");
@@ -13495,7 +13648,7 @@ bool InsertOtomatePPSSPPHook()
  *  140391ba   cc               int3
  */
 // Get bytes in esi
-static void SpecialPSPHookOtomate2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookOtomate2(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //static uniquemap uniq;
   DWORD text = esp_base + pusha_esi_off - 4;
@@ -13625,10 +13778,10 @@ bool InsertOtomate2PSPHook()
  *  134722e3   cc               int3
  */
 // Read text from esi
-static void SpecialPSPHookIntense(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookIntense(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  DWORD text = eax + hp->userValue;
+  DWORD text = eax + hp->user_value;
   if (BYTE c = *(BYTE *)text) { // unsigned char
     *data = text;
     *len = ::LeadByteTable[c]; // 1 or 2
@@ -13668,7 +13821,7 @@ bool InsertIntensePSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookIntense;
     ConsoleOutput("vnreng: Intense PSP: INSERT");
@@ -13778,13 +13931,13 @@ bool InsertIntensePSPHook()
  */
 // Read text from looped address word by word
 // Use reverse search to avoid looping issue assume the text is at fixed address.
-static void SpecialPSPHookKonami(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookKonami(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //static LPCSTR lasttext; // this value should be the same for the same game
   static size_t lastsize;
 
   DWORD eax = regof(eax, esp_base);
-  LPCSTR cur = LPCSTR(eax + hp->userValue);
+  LPCSTR cur = LPCSTR(eax + hp->user_value);
   if (!*cur)
     return;
 
@@ -13831,7 +13984,7 @@ bool InsertKonamiPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookKonami;
     ConsoleOutput("vnreng: KONAMI PSP: INSERT");
@@ -13995,13 +14148,13 @@ bool InsertKadokawaNamePSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_edx_off - 4; // use edx to split repetition
     hp.text_fun = SpecialPSPHook;
 
-    //ITH_GROWL_DWORD2(hp.addr, hp.userValue);
+    //ITH_GROWL_DWORD2(hp.addr, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa Name PSP: INSERT");
     NewHook(hp, L"Kadokawa Name PSP");
   }
@@ -14080,10 +14233,10 @@ bool InsertKadokawaNamePSPHook()
  */
 // Only split text when edi is eax
 // The value of edi is either eax or 0
-static void SpecialPSPHookFelistella(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookFelistella(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (text) {
     *len = ::strlen(text); // utf8
     *data = (DWORD)text;
@@ -14128,7 +14281,7 @@ bool InsertFelistellaPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_UTF8|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     //hp.text_fun = SpecialPSPHook;
     hp.text_fun = SpecialPSPHookFelistella;
@@ -14189,14 +14342,14 @@ bool InsertKadokawaPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4; // use edx to split repetition
     hp.length_offset = 1; // byte by byte
     hp.text_fun = SpecialPSPHook;
 
-    //ITH_GROWL_DWORD2(hp.addr, hp.userValue);
+    //ITH_GROWL_DWORD2(hp.addr, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa PSP: INSERT");
     NewHook(hp, L"Kadokawa PSP");
   }
@@ -14308,10 +14461,10 @@ bool InsertKadokawaPSPHook()
  *  13513fd6   cc               int3
  */
 // Read text from dl
-static void SpecialPSPHookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookTypeMoon(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  DWORD text = eax + hp->userValue - 1; // the text is in the previous byte
+  DWORD text = eax + hp->user_value - 1; // the text is in the previous byte
   if (BYTE c = *(BYTE *)text) { // unsigned char
     *data = text;
     *len = ::LeadByteTable[c]; // 1 or 2
@@ -14349,7 +14502,7 @@ bool InsertTypeMoonPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookTypeMoon;
     ConsoleOutput("vnreng: TypeMoon PSP: INSERT");
@@ -14428,7 +14581,7 @@ bool InsertTecmoPSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
@@ -14579,9 +14732,8 @@ size_t _typemoonstrlen(LPCSTR text)
 } // unnamed namespace
 
 // Use last text size to determine
-static void SpecialPS2HookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPS2HookTypeMoon(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   static LPCSTR lasttext; // this value should be the same for the same game
   static size_t lastsize;
 
@@ -14862,9 +15014,8 @@ bool InsertTypeMoonPS2Hook()
  *  3026e521   31c0             xor eax,eax
  */
 // Use fixed split for this hook
-static void SpecialPS2HookMarvelous(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPS2HookMarvelous(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD text = regof(ecx, esp_base);
   if (BYTE c = *(BYTE *)text) { // BYTE is unsigned
     *data = text;
@@ -15023,9 +15174,8 @@ bool InsertMarvelousPS2Hook()
  *  3020745f   8b15 04ac9e01    mov edx,dword ptr ds:[0x19eac04]
  */
 // Use fixed split for this hook
-static void SpecialPS2HookMarvelous2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPS2HookMarvelous2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   DWORD text = esp_base + pusha_edx_off - 4; // get text in dl: 3020734d   8811  mov byte ptr ds:[ecx],dl
   if (BYTE c = *(BYTE *)text) { // BYTE is unsigned
     *data = text;
@@ -15194,9 +15344,8 @@ bool InsertNamcoPS2Hook()
  *  1351351b   cc               int3
  */
 // Read text from esi
-static void SpecialPSPHookSega(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookSega(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
   LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
   if (*text) {
     *data = (DWORD)text;
@@ -15314,10 +15463,10 @@ bool InsertSegaPSPHook()
  *  13400f0a   cc               int3
  *  13400f0b   cc               int3
  */
-static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->user_value);
   if (*text) {
     *data = (DWORD)text;
     *len = ::strlen(text);
@@ -15355,7 +15504,7 @@ bool InsertShadePSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
     hp.text_fun = SpecialPSPHookShade;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: Shade PSP: INSERT");
@@ -15437,10 +15586,10 @@ bool InsertShadePSPHook()
  *  13400f02   cc               int3
  */
 // jichi 7/17/2014: Why this function is exactly the same as SpecialPSPHookImageepoch?
-static void SpecialPSPHookAlchemist3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookAlchemist3(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  DWORD text = eax + hp->userValue;
+  DWORD text = eax + hp->user_value;
   static DWORD lasttext;
   if (text != lasttext && *(LPCSTR)text) {
     *data = lasttext = text;
@@ -15475,7 +15624,7 @@ bool InsertAlchemist3PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.userValue = *(DWORD *)(hp.addr + memory_offset); // use module to pass membase
+    hp.user_value = *(DWORD *)(hp.addr + memory_offset); // use module to pass membase
     hp.text_fun = SpecialPSPHookAlchemist3;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist3 PSP: INSERT");

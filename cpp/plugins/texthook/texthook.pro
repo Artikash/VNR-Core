@@ -4,7 +4,7 @@
 
 CONFIG += noqtgui dll #eha # eha will catch all exceptions, but does not work on Windows XP
 include(../../../config.pri)
-include($$PLUGINDIR/ith/srv/srv.pri)
+include($$PLUGINDIR/ith/host/host.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
 
@@ -32,7 +32,7 @@ QT -= gui
 
 #INCLUDEPATH += $$ITH_HOME/include
 #LIBS        += -L$$ITH_HOME/lib -lihf #-lihf_dll
-#LIBS        += -lvnrsrv
+#LIBS        += -lvnrhost
 
 # Tell IHF not to override new operators, see: ith/mem.h
 #DEFINES += ITH_HAS_CXX

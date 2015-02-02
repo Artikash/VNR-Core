@@ -10,9 +10,9 @@
 #include <QtCore/QString>
 #include <QtGui/qwindowdefs.h> // for WId
 
-//struct Settings; // opaque in ith/srv/settings.h
-class HookManager; // opaque in ith/srv/hookman.h
-class TextThread; // opaque in ith/srv/textthread.h
+//struct Settings; // opaque in ith/host/settings.h
+class HookManager; // opaque in ith/host/hookman.h
+class TextThread; // opaque in ith/host/textthread.h
 class TextThreadDelegate;
 
 enum { ITH_MAX_THREAD_NAME = 0x200 }; // used internally by ITH
