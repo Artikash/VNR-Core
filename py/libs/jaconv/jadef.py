@@ -362,6 +362,7 @@ TH = u"""
 #Eng
 さん:ซัง
 ちゃん:จัง
+								のん:น่อน
 """
 
 # http://en.wikipedia.org/wiki/Arabic_alphabet
