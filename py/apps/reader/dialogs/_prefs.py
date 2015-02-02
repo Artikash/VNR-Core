@@ -379,11 +379,10 @@ class _UserTab(object):
     lang = config.LANGUAGES[self.userLanguageEdit.currentIndex()]
     ss = settings.global_()
     if lang != ss.userLanguage():
-      if lang in ('en', 'ja', 'zht', 'zhs'):
-        growl.notify("<br/>".join((
-          my.tr("GUI language changed."),
-          my.tr("VNR will use the new language next time."),
-        )))
+      growl.notify("<br/>".join((
+        my.tr("GUI language changed."),
+        my.tr("VNR will use the new language next time."),
+      )))
       #elif lang in ('vi', 'id', 'ms', 'th'):
       #  growl.notify("<br/>".join((
       #    my.tr("I am so sorry that"),
@@ -715,6 +714,13 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.ntleaButton)
     layout.addWidget(self.localeSwitchButton)
     #layout.addWidget(self.launchInfoLabel)
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(tr_("Locale") + ":"))
+    row.addWidget(self.launchLanguageEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     self._loadLauncher()
@@ -727,6 +733,19 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
   #   ))
   #  ret.setWordWrap(True)
   #  return ret
+
+  @memoizedproperty
+  def launchLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    try: langIndex = config.LANGUAGES.index(settings.global_().gameLaunchLanguage())
+    except ValueError: langIndex = 0 # 'ja'
+    ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(lambda index:
+        settings.global_().setGameLaunchLanguage(config.LANGUAGES[index]))
+    return ret
 
   @memoizedproperty
   def disableButton(self):
@@ -793,6 +812,8 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     if not b.isChecked():
       b.setChecked(True)
 
+    self._refreshLanguageEdit()
+
   def _saveLauncher(self):
     ss = settings.global_()
     ss.setApplocEnabled(self.applocButton.isChecked())
@@ -800,6 +821,11 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ss.setNtleasEnabled(self.ntleasButton.isChecked())
     ss.setLocaleSwitchEnabled(self.localeSwitchButton.isChecked())
     ss.setLocaleEmulatorEnabled(self.localeEmulatorButton.isChecked())
+    self._refreshLanguageEdit()
+
+  def _refreshLanguageEdit(self):
+    f = self.disableButton.isChecked() or self.localeEmulatorButton.isChecked()
+    self.launchLanguageEdit.setEnabled(not f)
 
   def refresh(self):
     self.localeEmulatorButton.setEnabled(libman.localeEmulator().exists())

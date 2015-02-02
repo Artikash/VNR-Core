@@ -9690,9 +9690,26 @@ class DataManager(QObject):
     self.__d.touchGames()
     #self.__d.backupGamesXmlLater()
 
+  def setGameLaunchLanguage(self, language, md5):
+    """Either id or md5 should be given
+    @param  language  str not None
+    @param  md5  str
+    """
+    g = self.__d.games.get(md5)
+    if not g:
+      growl.warn('<br/>'.join((
+        my.tr("The game does not exist. Did you delete it?"),
+        path,
+      )))
+      return
+    if g.launchLanguage == language:
+      return
+    g.launchLanguage = language
+    self.__d.touchGames()
+
   def setGameLaunchPath(self, path, md5):
     """Either id or md5 should be given
-    @param  path unicode not None
+    @param  path  unicode not None
     @param  md5  str
     """
     g = self.__d.games.get(md5)

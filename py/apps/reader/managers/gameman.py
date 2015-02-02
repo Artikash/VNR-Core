@@ -539,6 +539,7 @@ class GameProfile(QtCore.QObject):
         dprint("launching process path = %s" % self.path)
 
         launchLanguage = self.launchLanguage or settings.global_().gameLaunchLanguage() #or 'ja'
+        dprint("launch language = %s" % launchLanguage)
 
         usingLocaleSwitch = self.usingLocaleSwitch()
         if features.ADMIN == False and usingLocaleSwitch:
@@ -589,7 +590,7 @@ class GameProfile(QtCore.QObject):
                   elif updateLater(): return
           # Launch with NTLEAS
           elif self.usingNtleas():
-            #path = QtCore.QDir.toNativeSeparators(self.path) # not needed by ntleas
+            path = QtCore.QDir.toNativeSeparators(self.path) # maybe not needed by ntleas
             path = winutil.to_short_path(path) or path
             proc = get_process_by_path(path)
             if not proc:
@@ -680,7 +681,6 @@ class GameProfile(QtCore.QObject):
             else:
               if features.WINE or not self.usingApploc():
                 launchLanguage = ''
-              dprint("lang = %s" % launchLanguage)
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if self.vnrlocale:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
@@ -1077,12 +1077,13 @@ class GameManager(QtCore.QObject):
       md5 = g.md5()
       oldGame = dataman.manager().queryGame(md5=md5, online=False)
       if oldGame:
-        if not g.encoding: g.encoding = oldGame.encoding
-        if not g.language: g.language = oldGame.language
-        if not g.launchLanguage: g.language = oldGame.launchLanguage
-        if not g.loader: g.loader = oldGame.loader
-        if not g.launchPath: g.launchPath = oldGame.launchPath
-        if g.timeZoneEnabled is None: g.timeZoneEnabled = oldGame.timeZoneEnabled
+        for pty in 'encoding', 'language', 'launchLanguage', 'loader', 'launchPath':
+          v = getattr(g, pty)
+          if not v:
+            v = getattr(oldGame, pty)
+            setattr(g, pty, v)
+        if g.timeZoneEnabled is None:
+          g.timeZoneEnabled = oldGame.timeZoneEnabled
         if not game:
           hookEnabled = not oldGame.hookDisabled
           #threadKept = oldGame.threadKept

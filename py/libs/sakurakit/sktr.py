@@ -319,6 +319,7 @@ class sakurakit(QObject):
       self.tr("Language"), self.tr("language"),
       self.tr("Languages"), self.tr("languages"),
       self.tr("Local"),
+      self.tr("Locale"),
       self.tr("Location"),
       self.tr("Locations"),
       self.tr("Macro"),

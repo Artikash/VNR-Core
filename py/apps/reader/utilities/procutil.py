@@ -292,8 +292,8 @@ def open_executable_with_lsc(path, params=None, **kwargs):
   exe = config.LSC_LOCATION
 
   from localeswitch import lsc
-  params = lsc.params(path=path, args=params)
-  return skwin.create_process(exe, params=params, **kwargs)
+  params = lsc.params(path=path, args=params, **kwargs)
+  return skwin.create_process(exe, params=params)
 
 def getyoutube(vids, path=''):
   """
