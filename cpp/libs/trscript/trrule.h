@@ -20,8 +20,9 @@ struct TranslationScriptParam
                target;
   int category;
   uint8_t f_regex,  // this is a regex
+          f_icase,  // case insensitive
           f_parent, // this is a name
-          f_child;  // this is a name
+          f_child;  // this is a name+suffix
 
   //TranslationScriptParam() {} // uninitialized
 
@@ -33,8 +34,9 @@ class TranslationScriptRule
   typedef TranslationScriptRule Self;
 
   enum Flag : uint8_t {
-    RegexFlag =  1
-    , ListFlag = 1 << 1
+    ListFlag = 1
+    , RegexFlag = 1 << 1
+    , IcaseFlag = 1 << 2
   };
 
   uint8_t flags;
@@ -77,15 +79,28 @@ public:
 
   // Replacement
 private:
-  bool is_regex() const { return flags & RegexFlag; }
   bool is_list() const { return flags & ListFlag; }
+  bool is_regex() const { return flags & RegexFlag; }
+  bool is_icase() const { return flags & IcaseFlag; }
+
+  void cache_re() const // may throw
+  {
+    if (!source_re) {
+      if (is_icase())
+        source_re = new boost::wregex(source, boost::wregex::icase);
+      else
+        source_re = new boost::wregex(source);
+    }
+  }
 
   std::wstring render_target() const;
 
   void string_replace(std::wstring &ret, bool mark) const;
   void regex_replace(std::wstring &ret, bool mark) const;
 
-  bool string_exists(const std::wstring &t) const { return boost::algorithm::contains(t, source); }
+  bool string_exists(const std::wstring &t) const // inline to make this function faster
+  { return is_icase() ? boost::algorithm::icontains(t, source) : boost::algorithm::contains(t, source); }
+
   bool regex_exists(const std::wstring &t) const;
   bool children_replace(std::wstring &ret, bool mark) const;
 

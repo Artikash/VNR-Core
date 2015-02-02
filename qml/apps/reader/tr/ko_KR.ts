@@ -433,27 +433,27 @@
 <context>
     <name>dockmodel</name>
     <message>
-        <location filename="../springboard/dockmodel.qml" line="26"/>
+        <location filename="../springboard/dockmodel.qml" line="30"/>
         <source>Sync with current running game by searching the online database</source>
         <translation>현재 실행 중인 게임을 온라인 데이터베이스에서 찾아서 동기화</translation>
     </message>
     <message>
-        <location filename="../springboard/dockmodel.qml" line="37"/>
+        <location filename="../springboard/dockmodel.qml" line="36"/>
         <source>Add new game from my computer</source>
         <translation>컴퓨터에서 새로운 게임 추가</translation>
     </message>
     <message>
-        <location filename="../springboard/dockmodel.qml" line="48"/>
+        <location filename="../springboard/dockmodel.qml" line="42"/>
         <source>Information of online games</source>
         <translation>온라인 게임 정보</translation>
     </message>
     <message>
-        <location filename="../springboard/dockmodel.qml" line="59"/>
+        <location filename="../springboard/dockmodel.qml" line="48"/>
         <source>VNR&apos;s built-in web browser</source>
         <translation>VNR 내장 웹브라우저</translation>
     </message>
     <message>
-        <location filename="../springboard/dockmodel.qml" line="70"/>
+        <location filename="../springboard/dockmodel.qml" line="54"/>
         <source>Settings of language, translation, UI, etc</source>
         <translation>언어, 번역, UI 등의 설정</translation>
     </message>
@@ -471,47 +471,47 @@
         <translation>일치하는 원문을 번역문으로 텍스트 교체</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="23"/>
+        <location filename="../termview/filtertoolbar.qml" line="24"/>
         <source>Fix input text before translation</source>
         <translation>번역하기 전에 입력할 원문 고치기</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="24"/>
+        <location filename="../termview/filtertoolbar.qml" line="23"/>
         <source>Fix output text after translation</source>
         <translation>번역한 뒤에 출력할 번역문 고치기</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="25"/>
+        <location filename="../termview/filtertoolbar.qml" line="27"/>
         <source>A Japanese first or last name</source>
         <translation>일본어 이름이나 성</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="26"/>
+        <location filename="../termview/filtertoolbar.qml" line="28"/>
         <source>Yomigana of a Japanese name</source>
         <translation>일본어 이름의 요미가나 표기</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="27"/>
+        <location filename="../termview/filtertoolbar.qml" line="29"/>
         <source>Title after a Japanese name</source>
         <translation>일본어 이름 뒤에 붙이는 호칭</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="28"/>
+        <location filename="../termview/filtertoolbar.qml" line="32"/>
         <source>Fix game text</source>
         <translation>게임 원문 교정하기</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="29"/>
+        <location filename="../termview/filtertoolbar.qml" line="34"/>
         <source>Fix text to send to TTS</source>
         <translation>TTS음성합성에 보낼 텍스트 고치기</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="30"/>
+        <location filename="../termview/filtertoolbar.qml" line="35"/>
         <source>Fix text received from OCR</source>
         <translation>OCR에서 받은 텍스트 고치기</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="31"/>
+        <location filename="../termview/filtertoolbar.qml" line="25"/>
         <source>Reusable regular expression</source>
         <translation>재사용 가능한 정규표현식</translation>
     </message>
@@ -554,89 +554,88 @@
         <translation>Shift+Enter를 눌러 게임을 계속하기</translation>
     </message>
     <message>
-        <location filename="../voiceview/footer.qml" line="24"/>
         <source>VNR will read translations instead of game texts if TTS&apos;s language is different from game&apos;s</source>
-        <translation>게임 언어와 TTS언어가 다르면, VNR에서 게임원문 대신에 번역문을 읽습니다</translation>
+        <translation type="obsolete">게임 언어와 TTS언어가 다르면, VNR에서 게임원문 대신에 번역문을 읽습니다</translation>
     </message>
 </context>
 <context>
     <name>graffiti</name>
     <message>
+        <location filename="../submaker/graffiti.qml" line="501"/>
         <location filename="../submaker/graffiti.qml" line="502"/>
         <location filename="../submaker/graffiti.qml" line="503"/>
-        <location filename="../submaker/graffiti.qml" line="504"/>
         <source>Creation user and time</source>
         <translation>만든 사용자/시간</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="557"/>
-        <location filename="../submaker/graffiti.qml" line="572"/>
+        <location filename="../submaker/graffiti.qml" line="556"/>
+        <location filename="../submaker/graffiti.qml" line="571"/>
         <source>Create a new {0}</source>
         <translation>새로운 {0} 만들기</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="600"/>
+        <location filename="../submaker/graffiti.qml" line="599"/>
         <source>Edit properties of the subtitle</source>
         <translation>자막 속성 수정</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="615"/>
+        <location filename="../submaker/graffiti.qml" line="614"/>
         <source>Improve the subtitle</source>
         <translation>자막 개선</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="635"/>
+        <location filename="../submaker/graffiti.qml" line="634"/>
         <source>Enable or disable the subtitle</source>
         <translation>자막 활성화/비활성화</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="650"/>
+        <location filename="../submaker/graffiti.qml" line="649"/>
         <source>Delete the subtitle</source>
         <translation>자막 삭제</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="675"/>
+        <location filename="../submaker/graffiti.qml" line="674"/>
         <source>Lock the subtitle to prevent others from overriding it</source>
         <translation>다른 사용자의 덮어쓰기를 방지하기위해 자막 잠그기</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="704"/>
+        <location filename="../submaker/graffiti.qml" line="703"/>
         <source>Modification user and time</source>
         <translation>수정 사용자/시간</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="883"/>
-        <location filename="../submaker/graffiti.qml" line="899"/>
+        <location filename="../submaker/graffiti.qml" line="882"/>
+        <location filename="../submaker/graffiti.qml" line="898"/>
         <source>Please login to add comment</source>
         <translation>댓글을 등록하려면 로그인해주세요</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="887"/>
+        <location filename="../submaker/graffiti.qml" line="886"/>
         <source>New {0}</source>
         <translation>새로운 {0}</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="894"/>
+        <location filename="../submaker/graffiti.qml" line="893"/>
         <source>Cannot create new comment here</source>
         <translation>새로운 댓글을 생성 할 수 없음</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="906"/>
+        <location filename="../submaker/graffiti.qml" line="905"/>
         <source>Cannot improve the comment</source>
         <translation>다른 사용자의 댓글은 수정 할 수 없음</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="997"/>
+        <location filename="../submaker/graffiti.qml" line="996"/>
         <source>Read Sentence</source>
         <translation>문장 읽기</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="1007"/>
+        <location filename="../submaker/graffiti.qml" line="1006"/>
         <source>Read Selection</source>
         <translation>선택영역 읽기</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="1019"/>
+        <location filename="../submaker/graffiti.qml" line="1018"/>
         <source>Lookup Selection</source>
         <translation>선택영역 번역</translation>
     </message>
@@ -644,82 +643,82 @@
 <context>
     <name>grimoire</name>
     <message>
-        <location filename="../kagami/grimoire.qml" line="447"/>
+        <location filename="../kagami/grimoire.qml" line="473"/>
         <source>You can drag me to move the text box.</source>
         <translation>여기를 끌어서 글상자를 움직이세요.</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1705"/>
+        <location filename="../kagami/grimoire.qml" line="1745"/>
         <source>Hide text box</source>
         <translation>글상자 숨기기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="819"/>
+        <location filename="../kagami/grimoire.qml" line="845"/>
         <source>Lock text box position</source>
         <translation>글상자 위치 잠그기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="761"/>
+        <location filename="../kagami/grimoire.qml" line="787"/>
         <source>Save text box position</source>
         <translation>글상자 위치 저장</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="495"/>
+        <location filename="../kagami/grimoire.qml" line="521"/>
         <source>Read current Japanese game text using TTS</source>
         <translation>TTS를 사용하여 현재 게임 원문 읽기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="780"/>
+        <location filename="../kagami/grimoire.qml" line="806"/>
         <source>Move text box to the saved position</source>
         <translation>굴상자를 저장된 위치로 이동하기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="839"/>
+        <location filename="../kagami/grimoire.qml" line="865"/>
         <source>Unlock text box position</source>
         <translation>글상자 위치 잠금해제</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="731"/>
+        <location filename="../kagami/grimoire.qml" line="757"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>검은 막대를 움직여서 글상자를 움직일 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="852"/>
+        <location filename="../kagami/grimoire.qml" line="878"/>
         <source>you can drag me!</source>
         <translation>끌어보세요!</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1523"/>
+        <location filename="../kagami/grimoire.qml" line="1559"/>
         <source>Add to the Shared Dictionary</source>
         <translation>공유사전에 추가</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1653"/>
+        <location filename="../kagami/grimoire.qml" line="1693"/>
         <source>Read Current</source>
         <translation>현재 읽기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1659"/>
+        <location filename="../kagami/grimoire.qml" line="1699"/>
         <source>Scroll to the Beginning</source>
         <translation>처음으로 스크롤</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1664"/>
+        <location filename="../kagami/grimoire.qml" line="1704"/>
         <source>Scroll to the End</source>
         <translation>끝으로 스크롤</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1677"/>
+        <location filename="../kagami/grimoire.qml" line="1717"/>
         <source>Lock Position</source>
         <translation>위치 잠금</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1683"/>
+        <location filename="../kagami/grimoire.qml" line="1723"/>
         <source>Save Position</source>
         <translation>위치 저장</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1688"/>
+        <location filename="../kagami/grimoire.qml" line="1728"/>
         <source>Load Position</source>
         <translation>위치 불러오기</translation>
     </message>
@@ -794,67 +793,67 @@
         <translation>Dashboard에서 이 게임 제거</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="170"/>
+        <location filename="../termview/inspector.qml" line="180"/>
         <source>Pattern is too short</source>
         <translation>원문이 너무 짧음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="169"/>
+        <location filename="../termview/inspector.qml" line="179"/>
         <source>Pattern or translation is very long</source>
         <translation>원문이나 번역문이 너무 길음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="171"/>
+        <location filename="../termview/inspector.qml" line="181"/>
         <source>Translation is empty</source>
         <translation>번역문이 비어있음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="172"/>
+        <location filename="../termview/inspector.qml" line="182"/>
         <source>Game type should not be used for translation</source>
         <translation>게임 형식은 번역문에 사용되지 않아야 합니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="173"/>
+        <location filename="../termview/inspector.qml" line="183"/>
         <source>Type should not translation instead of input</source>
         <translation>입력 대신에 번역하지 말아야 형식</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="167"/>
+        <location filename="../termview/inspector.qml" line="177"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>쓸 언어가 중국어 간체가 아니라 중국어 번체여야 합니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="166"/>
+        <location filename="../termview/inspector.qml" line="176"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>쓸 언어가 중국어 번체가 아니라 중국어 간체여야 합니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="174"/>
+        <location filename="../termview/inspector.qml" line="184"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>정규 표현식의 괄호가 일치하지 않음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="175"/>
+        <location filename="../termview/inspector.qml" line="185"/>
         <source>This rule is useless that has no effect</source>
         <translation>이 규칙은 효과가 없기에 쓸모 없습니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="176"/>
+        <location filename="../termview/inspector.qml" line="186"/>
         <source>Pattern does not need enabling regex</source>
         <translation>원문을 쓰는데 정규표현식을 활성화 할 필요 없음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="177"/>
+        <location filename="../termview/inspector.qml" line="187"/>
         <source>Entry type does not allow being translator-specific</source>
         <translation>번역기 지정에 이 형식이 허용되지 않음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="178"/>
+        <location filename="../termview/inspector.qml" line="188"/>
         <source>New line characters are not allowed in text</source>
         <translation>텍스트에 \n 같은 줄 나누기를 쓸 수 없음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="179"/>
+        <location filename="../termview/inspector.qml" line="189"/>
         <source>Missing pattern</source>
         <translation>원문을 찾을 수 없음</translation>
     </message>
@@ -887,29 +886,29 @@
         <translation>VNR 오른쪽 채우기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="573"/>
+        <location filename="../kagami.qml" line="572"/>
         <source>Save the text box position</source>
         <translation>글상자 위치 저장</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="575"/>
-        <location filename="../kagami.qml" line="587"/>
-        <location filename="../kagami.qml" line="601"/>
+        <location filename="../kagami.qml" line="574"/>
+        <location filename="../kagami.qml" line="586"/>
+        <location filename="../kagami.qml" line="600"/>
         <source>Cannot find the game window. Is it closed?</source>
         <translation>게임 창을 찾을 수 없습니다. 종료하셨나요?</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="585"/>
+        <location filename="../kagami.qml" line="584"/>
         <source>Load the text box position</source>
         <translation>글상자 위치 불러오기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="599"/>
+        <location filename="../kagami.qml" line="598"/>
         <source>Reset the text box position</source>
         <translation>글상자 위치 재설정</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="1081"/>
+        <location filename="../kagami.qml" line="1084"/>
         <source>Not login or offline</source>
         <translation>로그인하지 않았거나 오프라인입니다</translation>
     </message>
@@ -984,17 +983,17 @@
 <context>
     <name>mirage</name>
     <message>
-        <location filename="../textreader/mirage.qml" line="302"/>
+        <location filename="../textreader/mirage.qml" line="303"/>
         <source>You can drag me to move the text box.</source>
         <translation>여기를 끌어 글상자를 움직일 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../textreader/mirage.qml" line="584"/>
+        <location filename="../textreader/mirage.qml" line="585"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>검은 막대를 끌어서 글상자를 움직여보세요.</translation>
     </message>
     <message>
-        <location filename="../textreader/mirage.qml" line="640"/>
+        <location filename="../textreader/mirage.qml" line="641"/>
         <source>you can drag me!</source>
         <translation>끌어보세요!</translation>
     </message>
@@ -1181,12 +1180,12 @@
 <context>
     <name>postinput</name>
     <message>
-        <location filename="../postview/postinput.qml" line="55"/>
+        <location filename="../postview/postinput.qml" line="54"/>
         <source>I am sorry that I am failed to save the changes</source>
         <translation>죄송합니다. 변경사항을 저장하지 못하였습니다</translation>
     </message>
     <message>
-        <location filename="../postview/postinput.qml" line="57"/>
+        <location filename="../postview/postinput.qml" line="56"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>인터넷 연결에 문제가 있는것 같습니다</translation>
     </message>
@@ -1349,38 +1348,43 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="127"/>
+        <location filename="../termview/table.qml" line="129"/>
         <source>Short</source>
         <translation>짧음</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="126"/>
+        <location filename="../termview/table.qml" line="128"/>
         <source>Long</source>
         <translation>길음</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="128"/>
+        <location filename="../termview/table.qml" line="130"/>
         <source>Missing</source>
         <translation>누락</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="131"/>
+        <location filename="../termview/table.qml" line="133"/>
         <source>Brackets</source>
         <translation>괄호</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="132"/>
+        <location filename="../termview/table.qml" line="134"/>
         <source>Useless</source>
         <translation>쓸모없음</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="133"/>
-        <location filename="../termview/table.qml" line="495"/>
+        <location filename="../termview/table.qml" line="135"/>
+        <location filename="../termview/table.qml" line="553"/>
         <source>Regex</source>
         <translation>정규표현식</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="567"/>
+        <location filename="../termview/table.qml" line="571"/>
+        <source>Case-insensitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/table.qml" line="625"/>
         <source>Series</source>
         <translation>시리즈</translation>
     </message>
@@ -1388,7 +1392,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="254"/>
+        <location filename="../termview.qml" line="335"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>원문, 텍스트, 사용자, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
     </message>

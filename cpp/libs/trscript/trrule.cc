@@ -30,11 +30,14 @@ void TranslationScriptRule::init(const param_type &param, bool precompile_regex)
   source = param.source;
   target = param.target;
 
+  if (param.f_icase)
+    flags |= IcaseFlag;
+
   if (param.f_regex) {
     flags |= RegexFlag;
     if (precompile_regex)
       try {
-        source_re = new boost::wregex(param.source);
+        cache_re();
       } catch (...) { // boost::bad_pattern
         DWOUT("invalid term: " << param.id << ", regex pattern: " << param.source);
         valid = false;
@@ -107,11 +110,18 @@ std::wstring TranslationScriptRule::render_target() const
 
 void TranslationScriptRule::string_replace(std::wstring &ret, bool mark) const
 {
-  if (target.empty())
-    boost::erase_all(ret, source);
-  else
-    boost::replace_all(ret, source,
-        target.empty() ? std::wstring() : !mark ? target : render_target());
+  if (target.empty()) {
+    if (is_icase())
+      boost::ierase_all(ret, source);
+    else
+      boost::erase_all(ret, source);
+  } else {
+    std::wstring repl = mark ? render_target() : target;
+    if (is_icase())
+      boost::ireplace_all(ret, source, repl);
+    else
+      boost::replace_all(ret, source, repl);
+  }
 }
 
 void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
@@ -119,8 +129,7 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
   try  {
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
-    if (!source_re)
-      source_re = new boost::wregex(source);
+    cache_re();
     ret = boost::regex_replace(ret, *source_re,
         target.empty() ? std::wstring() : !mark ? target : render_target(),
         boost::match_default|boost::format_all);
@@ -133,8 +142,7 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
 bool TranslationScriptRule::regex_exists(const std::wstring &t) const
 {
   try  {
-    if (!source_re)
-      source_re = new boost::wregex(source);
+    cache_re();
     boost::wsmatch m; // search first, which has less opportunity to happen
     return boost::regex_search(t, m, *source_re);
   } catch (...) {

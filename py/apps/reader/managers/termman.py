@@ -75,11 +75,12 @@ def _translator_category(host): # str -> int
   return 0
 
 class TermTitle(object):
-  __slots__ = 'pattern', 'text', 'regex', 'sortKey'
-  def __init__(self, pattern='', text='', regex=False, sortKey=0):
+  __slots__ = 'pattern', 'text', 'regex', 'icase', 'sortKey'
+  def __init__(self, pattern='', text='', regex=False, icase=False, sortKey=0):
     self.pattern = pattern # unicode
     self.text = text # unicode
     self.regex = regex # bool
+    self.icase = icase # bool
     self.sortKey = sortKey # int
 
 #class TermTranslator(rbmt.MachineTranslator):
@@ -251,6 +252,7 @@ class TermWriter:
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     esc % (priority, titleCount - i),
                     regex or it.regex,
+                    td.icase or it.icase,
                     td.host,
                     name=False)
             elif trans_output:
@@ -262,6 +264,7 @@ class TermWriter:
                     repl + it.text + (" " if padding else ""), # it will be escaped in C++
                     #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
                     regex, # no padding space for Chinese names
+                    td.icase or it.icase,
                     td.host)
             else:
               name = True
@@ -272,12 +275,20 @@ class TermWriter:
                     (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
                     repl + it.text + " ",
                     regex or it.regex,
+                    td.icase or it.icase,
                     td.host,
                     name=False) # padding space for Japanese names
 
           if padding:
             repl += " "
-          self._writeLine(f, td.id, pattern, repl, regex, td.host, name=name)
+          self._writeLine(f,
+              td.id,
+              pattern,
+              repl,
+              regex,
+              td.icase,
+              td.host,
+              name=name)
 
           empty = False
 
@@ -291,13 +302,14 @@ class TermWriter:
     return False
 
   @staticmethod
-  def _writeLine(f, tid, pattern, repl, regex, host, name=None):
+  def _writeLine(f, tid, pattern, repl, regex, icase, host, name=None):
     """
     @param  f  file
     @param  tid  long
     @param  pattern  unicode
     @param  repl  unicode
     @param  regex  bool
+    @param  icase  bool
     @param  host  str
     @param  name  True (name) of False (suffix) or None
     @return  unicode or None
@@ -311,6 +323,8 @@ class TermWriter:
       cols.append(repl)
     ret = '\t'.join(cols)
     ret = "\t%s\n" % ret # add leading/trailing spaces
+    if icase:
+      ret = 'i' + ret
     if regex:
       ret = 'r' + ret
     if name is not None:
@@ -430,6 +444,7 @@ class TermWriter:
         pattern=pat,
         text=repl,
         regex=td.regex,
+        icase=td.icase,
       ))
       if s:
         for k,v in s:
@@ -437,9 +452,10 @@ class TermWriter:
             pattern=pat + k,
             text=repl + v,
             regex=td.regex,
+            icase=td.icase,
           ))
     l.sort(reverse=True, key=lambda it:
-        (it.regex, len(it.pattern), it.sortKey)) # regex terms come at first, longer terms come at first, newer come at first
+        (it.regex, len(it.pattern), not it.icase, it.sortKey)) # regex terms come at first, longer terms come at first, case-sensitive at first, newer come at first
     #for id,pat,repl,regex in l:
     #  ret[pat] = TermTitle(repl, regex)
     return l
@@ -545,7 +561,7 @@ class _TermManager:
 
     termData = (t.d for t in dm.terms() if not t.d.disabled and not t.d.deleted and t.d.pattern) # filtered
     termData = sorted(termData, reverse=True, key=lambda td:
-          (len(td.pattern), td.private, td.special, td.id)) # it.regex  true is applied first
+          (len(td.pattern), td.private, td.special, not td.icase, td.id)) # it.regex  true is applied first
 
     if scriptTimes and createTime >= self.updateTime:
       self._saveScriptTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=scriptTimes)

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ja_JP">
+<!DOCTYPE TS><TS version="1.1" language="ja_JP">
 <context>
     <name>sakurakit</name>
     <message>
@@ -861,32 +860,32 @@
     <message>
         <location filename="sktr.py" line="430"/>
         <source>Ignore Case</source>
-        <translation>大文字小文字を区別しない</translation>
+        <translation>大小文字を区別しない</translation>
     </message>
     <message>
         <location filename="sktr.py" line="430"/>
         <source>Ignore case</source>
-        <translation>大文字小文字を区別しない</translation>
+        <translation>大小文字を区別しない</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
         <source>Case-insensitive</source>
-        <translation>大文字小文字を区別しない</translation>
+        <translation>大小文字を区別しない</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
         <source>case-insensitive</source>
-        <translation>大文字小文字を区別しない</translation>
+        <translation>大小文字を区別しない</translation>
     </message>
     <message>
         <location filename="sktr.py" line="428"/>
         <source>Case-sensitive</source>
-        <translation>大文字小文字を区別する</translation>
+        <translation>大小文字を区別</translation>
     </message>
     <message>
         <location filename="sktr.py" line="428"/>
         <source>case-sensitive</source>
-        <translation>大文字小文字を区別する</translation>
+        <translation>大小文字を区別</translation>
     </message>
     <message>
         <location filename="sktr.py" line="277"/>

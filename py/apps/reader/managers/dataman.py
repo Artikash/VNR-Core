@@ -2350,6 +2350,7 @@ class _Term(object):
     'special',
     'private',
     'hentai',
+    'icase',
     #'syntax',
 
     'selected',
@@ -2362,7 +2363,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, icase):
     #self.priority = 0 # int  assigned after sorting
     self.init = False           # bool
     self.id = id                # long
@@ -2383,12 +2384,12 @@ class _Term(object):
     self.updateComment = updateComment  # unicode
     self.regex = regex          # bool
     #self.bbcode = bbcode        # bool
-    #self.ignoresCase = ignoresCase  # bool
     self.disabled = disabled    # bool
     self.deleted = deleted      # bool
     self.special = special      # bool
     self.private = private      # bool
     self.hentai = hentai        # bool
+    self.icase = icase          # bool
     #self.syntax = syntax        # bool
 
     self.selected = False       # bool
@@ -2641,10 +2642,10 @@ class Term(QObject):
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False,
-      disabled=False, deleted=False, special=False, private=False, hentai=False, #syntax=False,
+      disabled=False, deleted=False, special=False, private=False, hentai=False, icase=False, #syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai)
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, icase)
     if init:
       self.init(parent)
 
@@ -2677,6 +2678,7 @@ class Term(QObject):
       special=d.special,
       private=d.private,
       hentai=d.hentai,
+      icase=d.icase,
       #syntax=d.syntax,
       regex=d.regex,
       gameId=d.gameId, gameMd5=d.gameMd5,
@@ -2724,6 +2726,7 @@ class Term(QObject):
   private, privateChanged = __D.synthesize('private', bool, sync=True)
   regex, regexChanged = __D.synthesize('regex', bool, sync=True)
   hentai, hentaiChanged = __D.synthesize('hentai', bool, sync=True)
+  icase, icaseChanged = __D.synthesize('icase', bool, sync=True)
   #syntax, syntaxChanged = __D.synthesize('syntax', bool, sync=True)
 
   selected, selectedChanged = __D.synthesize('selected', bool) # whether the item is selected in term table
@@ -4645,6 +4648,7 @@ class _TermModel(object):
     'host',
     #'syntax',
     'regex',
+    'icase',
     'hentai',
     'special',
     'gameId',
@@ -8495,7 +8499,7 @@ class _DataManager(object):
               #'pattern': "",
               #'special': False,
               #'regex': False,
-              ##'ignoresCase': False,
+              #'icase': False,
               ##'bbcode': False,
               #'comment': "",
               #'updateComment': "",
@@ -8516,7 +8520,7 @@ class _DataManager(object):
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):
               kw[tag] = int(text)
-            elif tag in ('special', 'private', 'hentai', 'regex'):
+            elif tag in ('special', 'private', 'hentai', 'regex', 'icase'):
               kw[tag] = text == 'true'
 
           elif path == 2 and kw['type'] in Term.TYPES:
