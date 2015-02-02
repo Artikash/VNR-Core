@@ -1187,6 +1187,17 @@ bool InsertKAGParserExHook()
 
 namespace { // unnamed
 
+// Skip individual L'\n' which might cause repetition.
+//bool NewLineWideCharSkipper(LPVOID data, DWORD *size, HookParam *hp)
+//{
+//  CC_UNUSED(hp);
+//  LPCWSTR text = (LPCWSTR)data;
+//  if (*size == 2 && *text == L'\n')
+//    return false;
+//  return true;
+//}
+//
+
 void NewKiriKiriZHook(DWORD addr)
 {
   HookParam hp = {};
@@ -1196,6 +1207,7 @@ void NewKiriKiriZHook(DWORD addr)
   hp.ind = 0x14;        // the same as KiriKiri1
   hp.length_offset = 1; // the same as KiriKiri1
   hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
+  //hp.filter_fun = NewLineWideCharFilter;
   ConsoleOutput("vnreng: INSERT KiriKiriZ");
   NewHook(hp, L"KiriKiriZ");
 
