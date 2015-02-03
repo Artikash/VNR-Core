@@ -26,7 +26,7 @@ struct TranslationScriptParam
 
   //TranslationScriptParam() {} // uninitialized
 
-  void clear_flags() { f_regex = f_parent = f_child = 0; }
+  void clear_flags() { f_regex = f_parent = f_child = f_icase = 0; }
 };
 
 class TranslationScriptRule
