@@ -139,6 +139,10 @@ class RenderManager:
     """
     if alignIndex < len(align):
       for i,(k,v) in enumerate(align): # instead of doing align[alignIndex:]
+        if isinstance(v, list):
+          if len(v) != 1:
+            continue # skip if v is a list
+          v = v[0]
         if i >= alignIndex and v and not self._skipAlignment(v):
           if not text:
             break
@@ -153,6 +157,9 @@ class RenderManager:
               left, text = self._fixHtmlTag(left, text)
               yield left, None, alignIndex
             alignIndex = i
+
+            if isinstance(k, list):
+              k = ' '.join(k)
             yield mid, k, alignIndex
     if text:
       yield text, None, alignIndex

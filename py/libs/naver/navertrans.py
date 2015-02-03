@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
 import json
 import requests
+from collections import OrderedDict
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
 
@@ -167,15 +168,46 @@ def _iteralign(data, source, target, encoding='utf8'):
     # },
     source = source.encode(encoding)
     target = target.encode(encoding)
-    for align in data:
-      ss = int(align['ss'])
-      se = int(align['se'])
-      ts = int(align['ts'])
-      te = int(align['te'])
+    if isinstance(data, list): # English -> Korean
+      for align in data:
+        ss = int(align['ss'])
+        se = int(align['se'])
+        ts = int(align['ts'])
+        te = int(align['te'])
 
-      s = source[ss:se+1].decode(encoding)
-      t = target[ts:te+1].decode(encoding)
-      if s:
+        s = source[ss:se+1].decode(encoding)
+        t = target[ts:te+1].decode(encoding)
+        if s:
+          yield s, t
+    elif isinstance(data, dict): # Japanese -> Korean
+      slist = data['src']
+      tlist = data['tar']
+      m = OrderedDict() # {int group, ([unicode s], [unicode t])}  mapping from s to t
+
+      for it in tlist:
+        group = it['g']
+        fr = it['f'] #
+        to = it['t'] #
+        t = target[fr:to+1].decode(encoding)
+        l = m.get(group)
+        if l:
+          l[1].append(t)
+        else:
+          m[group] = [], [t]
+
+      for it in slist:
+        group = it['g']
+        fr = it['f'] #
+        to = it['t'] #
+        s = source[fr:to+1].decode(encoding)
+        l = m.get(group)
+        if l:
+          l[0].append(s)
+        else:
+          m[group] = [s], []
+
+      #for k in sorted(m.iterkeys()):
+      for s,t in m.itervalues():
         yield s, t
   except Exception, e:
     derror(e)
@@ -205,8 +237,11 @@ if __name__ == "__main__":
     fr = "ja"
     to = "ko"
 
-    #s = u"What are you doing?"
-    #fr = "en"
+    s = "hello world"
+    fr = "en"
+
+    s = u"What are you doing for today?"
+    fr = "en"
 
     from sakurakit.skprof import SkProfiler
 
@@ -224,6 +259,7 @@ if __name__ == "__main__":
     with SkProfiler():
       for i in range(1):
         t = translate(s, to=to, fr=fr, align=m)
+    print s
     print t
 
     print json.dumps(m, indent=2, ensure_ascii=False)
