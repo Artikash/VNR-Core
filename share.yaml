@@ -529,20 +529,25 @@ fonts:
   ru: DFGirl    #Helvetica
 
 font:
-  location:         $PWD/../../Fonts
+  location: $PWD/../../Fonts
 
 opencc:
-  location:         $PWD/../../Dictionaries/opencc
+  s2t:      $PWD/../../Dictionaries/opencc/STCharacters.txt
+  t2s:      $PWD/../../Dictionaries/opencc/TSCharacters.txt
+  t2tw:     $PWD/../../Dictionaries/opencc/TWVariants.txt
+  t2hk:     $PWD/../../Dictionaries/opencc/HKVariants.txt
+  t2ja:     $PWD/../../Dictionaries/opencc/JPVariants.txt
+  t2ko:     $PWD/../../Dictionaries/hanja/dic0.txt
 
 hangul:
-  path:             $PWD/../../Dictionaries/hanja/dic6.txt
+  path:     $PWD/../../Dictionaries/hanja/dic6.txt
 
 pinyin:
-  path:             $PWD/../../Dictionaries/pinyin/Mandarin.dat
+  path:     $PWD/../../Dictionaries/pinyin/Mandarin.dat
 
 hanviet:
-  word:             $PWD/../../Dictionaries/hanviet/ChinesePhienAmWords.txt
-  phrase:           $PWD/../../Dictionaries/hanviet/VietPhrase.txt
+  word:     $PWD/../../Dictionaries/hanviet/ChinesePhienAmWords.txt
+  phrase:   $PWD/../../Dictionaries/hanviet/VietPhrase.txt
 
 # Module options
 

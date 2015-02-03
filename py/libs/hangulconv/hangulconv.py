@@ -11,7 +11,7 @@ from sakurakit.skclass import memoized
 #HANGUL_DIC_DIR = '' # to be set
 #HANGUL_DIC_CONV = 'dic6.txt'
 
-HANGUL_DIC_PATH = '' # to be set
+HANGUL_DIC_PATH = './dic6.txt' # to be set
 
 def setdicpath(path):
   global HANGUL_DIC_PATH

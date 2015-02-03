@@ -73,7 +73,7 @@ def main():
 
   dprint("init opencc")
   from opencc import opencc
-  opencc.setdicdir(config.OPENCC_LOCATION)
+  opencc.setdicpaths(config.OPENCC_DICS)
 
   dprint("create app")
   import app

@@ -9,8 +9,8 @@
 from sakurakit.skclass import memoized
 
 HANVIET_DIC_PATHS = {
-  'word': '',
-  'phrase': '',
+  'word': 'ChinesePhienAmWords.txt',
+  'phrase': 'VietPhrase.txt',
 }
 
 def setdicpaths(paths): # {str key:unicode path}
