@@ -3,7 +3,7 @@
 
 #include "hanjaconv/hanjaconv_p.h"
 #include "hanjaconv/hanjaconfig.h"
-#include "hanjaconv/hanjachars.h"
+#include "unistr/unichar.h"
 #include <boost/algorithm/string.hpp>
 
 #ifdef __clang__
@@ -48,7 +48,7 @@ void HanjaConverterPrivate::collect(const std::wstring &text, const Q::collect_f
 size_t HanjaConverterPrivate::replace_first(std::wstring &text, size_t start) const
 {
   if (text.size() < HANJA_MIN_SIZE || start > text.size() - HANJA_MIN_SIZE ||
-      !::is_hangul(text[start]) || !::is_hangul(text[start + 1]))
+      !unistr::ishangul(text[start]) || !unistr::ishangul(text[start + 1]))
     return 0;
   for (size_t ei = 0; ei < entry_count; ei++) {
     const auto &e = entries[ei];
@@ -67,7 +67,7 @@ size_t HanjaConverterPrivate::replace_first(std::wstring &text, size_t start) co
 size_t HanjaConverterPrivate::collect_first(const std::wstring &text, size_t start, size_t last, const Q::collect_fun_t &fun) const
 {
   if (text.size() < HANJA_MIN_SIZE || start > text.size() - HANJA_MIN_SIZE ||
-      !::is_hangul(text[start]) || !::is_hangul(text[start + 1]))
+      !unistr::ishangul(text[start]) || !unistr::ishangul(text[start + 1]))
     return 0;
   for (size_t ei = 0; ei < entry_count; ei++) {
     const auto &e = entries[ei];
@@ -104,7 +104,7 @@ struct ParseIndex
     if (start == 0)
       return 0;
     for (size_t pos = start; pos < text.size(); pos++)
-      if (!::is_hangul(text[pos - 1]))
+      if (!unistr::ishangul(text[pos - 1]))
         return pos;
     return std::string::npos;
   }

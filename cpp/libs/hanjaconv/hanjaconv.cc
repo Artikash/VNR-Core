@@ -17,9 +17,9 @@
 namespace { // unnamed
 
 enum : char {
-  CH_COMMENT = '#'
-  , CH_DELIM = '\t'
-}; // beginning of a comment
+  CH_COMMENT = '#'  // beginning of a comment
+  , CH_DELIM = '\t' // deliminator
+};
 
 const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
@@ -50,7 +50,7 @@ bool HanjaConverter::loadFile(const std::wstring &path)
     return false;
   fin.imbue(UTF8_LOCALE);
 
-  std::list<std::pair<std::wstring, std::wstring> > lines; // pattern, text, regex
+  std::list<std::pair<std::wstring, std::wstring> > lines; // hanja, hangul
 
   for (std::wstring line; std::getline(fin, line);)
     if (line.size() >= 3 && line[0] != CH_COMMENT) {

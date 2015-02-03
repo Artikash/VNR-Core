@@ -20,7 +20,6 @@ int main()
   //path = L"/Users/jichi/tmp/escape_input.txt";
 
   TranslationScriptManager m;
-  m.setLinkEnabled(true);
   m.loadFile(path);
   qDebug() << m.size();
 

@@ -23,8 +23,8 @@ MACROS = {
   'eos': u"(?:^|(?<=[{{:eos:}}]))",
 
   ':kanji:': u'一-龥',
-  ':hira:': u'あ-ん',
-  ':kata:': u'ア-ヴ',
+  ':hira:': u'ぁ-ゖ',
+  ':kata:': u'ァ-ヺ',
   ':kana:': u'{{:hira:}}{{:kata:}}',
 
   'kanji': u'[{{:kanji:}}]',

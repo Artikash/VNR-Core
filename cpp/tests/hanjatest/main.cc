@@ -1,7 +1,6 @@
 // main.cc
 // 1/6/2014 jichi
 #include "hanjaconv/hanjaconv.h"
-#include "hanjaconv/hanjachars.h"
 #include <QtCore>
 
 int main()
