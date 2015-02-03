@@ -44,4 +44,4 @@ public:
                        bool capital = true) const;
 };
 
-#endif // SIMPLECC_H
+#endif // PINYINCONV_H

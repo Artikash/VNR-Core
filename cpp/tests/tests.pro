@@ -9,6 +9,7 @@ SUBDIRS += \
   avtest \
   cctest \
   hanjatest \
+  hanviettest \
   hashtest \
   jsontest \
   pinyintest \
