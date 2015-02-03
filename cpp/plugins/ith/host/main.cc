@@ -138,7 +138,7 @@ DWORD Inject(HANDLE hProc)
   NtWriteVirtualMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
   hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
   if (hTH == 0 || hTH == INVALID_HANDLE_VALUE) {
-    ConsoleOutput("vnrsrv:inject: ERROR: failed to create remote cli thread");
+    ConsoleOutput("vnrhost:inject: ERROR: failed to create remote cli thread");
     //ConsoleOutput(ErrorRemoteThread);
     return -1;
   }
@@ -159,7 +159,7 @@ DWORD Inject(HANDLE hProc)
   //  hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
   //  if (hTH == 0 || hTH == INVALID_HANDLE_VALUE) {
   //    //ConsoleOutput(ErrorRemoteThread);
-  //    ConsoleOutput("vnrsrv:inject: ERROR: failed to create remote eng thread");
+  //    ConsoleOutput("vnrhost:inject: ERROR: failed to create remote eng thread");
   //    return error;
   //  }
   //
@@ -326,7 +326,7 @@ IHFSERVICE DWORD IHFAPI IHF_GetPIDByName(LPCWSTR pwcTarget)
     }
   }
   if (!dwPid)
-    ConsoleOutput("vnrsrv:IHF_GetPIDByName: pid not found");
+    ConsoleOutput("vnrhost:IHF_GetPIDByName: pid not found");
   //if (dwPid == 0) ConsoleOutput(ErrorNoProcess);
 _end:
   NtFreeVirtualMemory(NtCurrentProcess(),&pBuffer,&dwSize,MEM_RELEASE);
@@ -340,12 +340,12 @@ IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid)
     return 0;
   if (pid == current_process_id) {
     //ConsoleOutput(SelfAttach);
-    ConsoleOutput("vnrsrv:IHF_InjectByPID: refuse to inject myself");
+    ConsoleOutput("vnrhost:IHF_InjectByPID: refuse to inject myself");
     return -1;
   }
   if (man->GetProcessRecord(pid)) {
     //ConsoleOutput(AlreadyAttach);
-    ConsoleOutput("vnrsrv:IHF_InjectByPID: already attached");
+    ConsoleOutput("vnrhost:IHF_InjectByPID: already attached");
     return -1;
   }
   swprintf(str, ITH_HOOKMAN_MUTEX_ L"%d", pid);
@@ -367,7 +367,7 @@ IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid)
       PROCESS_VM_WRITE,
       &oa, &id))) {
     //ConsoleOutput(ErrorOpenProcess);
-    ConsoleOutput("vnrsrv:IHF_InjectByPID: failed to open process");
+    ConsoleOutput("vnrhost:IHF_InjectByPID: failed to open process");
     return -1;
   }
 
@@ -379,7 +379,7 @@ IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid)
     return -1;
   //swprintf(str, FormatInject, pid, module);
   //ConsoleOutput(str);
-  ConsoleOutput("vnrsrv:IHF_InjectByPID: inject succeed");
+  ConsoleOutput("vnrhost:IHF_InjectByPID: inject succeed");
   return module;
 }
 
@@ -427,7 +427,7 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
-    ConsoleOutput("vnrsrv::activeDetach: process has terminated");
+    ConsoleOutput("vnrhost::activeDetach: process has terminated");
     return FALSE;
   }
 
@@ -438,9 +438,9 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
   SendParam sp = {};
   sp.type = 4;
 
-  ConsoleOutput("vnrsrv:IHF_ActiveDetachProcess: sending cmd");
+  ConsoleOutput("vnrhost:IHF_ActiveDetachProcess: sending cmd");
   NtWriteFile(hCmd, 0,0,0, &ios, &sp, sizeof(SendParam), 0,0);
-  ConsoleOutput("vnrsrv:IHF_ActiveDetachProcess: cmd sent");
+  ConsoleOutput("vnrhost:IHF_ActiveDetachProcess: cmd sent");
 
   //cmdq->AddRequest(sp, pid);
 ////#ifdef ITH_WINE // Nt series crash on wine
@@ -458,7 +458,7 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
-    ConsoleOutput("vnrsrv::activeDetach: process has terminated");
+    ConsoleOutput("vnrhost:activeDetach: process has terminated");
     return FALSE;
   }
 

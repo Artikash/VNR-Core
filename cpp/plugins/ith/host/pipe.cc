@@ -102,7 +102,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    ConsoleOutput("vnrsrv:CreateNewPipe: failed to create recv pipe");
+    ConsoleOutput("vnrhost:CreateNewPipe: failed to create recv pipe");
     return;
   }
 
@@ -120,7 +120,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    ConsoleOutput("vnrsrv:CreateNewPipe: failed to create cmd pipe");
+    ConsoleOutput("vnrhost:CreateNewPipe: failed to create cmd pipe");
     return;
   }
 
@@ -309,7 +309,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   delete[] buff;
 
   if (::running)
-    ConsoleOutput("vnrsrv:DetachFromProcess: detached");
+    ConsoleOutput("vnrhost:DetachFromProcess: detached");
 
   //if (::running) {
   //  swprintf((LPWSTR)buff, FormatDetach, pid);
