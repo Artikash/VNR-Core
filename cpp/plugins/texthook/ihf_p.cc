@@ -309,7 +309,7 @@ bool Ihf::updateHook(ulong pid, const QString &code)
 {
   DOUT("enter: pid =" << pid << ", code =" << code);
   Q_ASSERT(pid);
-  HookParam hp;
+  HookParam hp = {};
   if (!Ith::parseHookCode(code, &hp)) {
     DOUT("leave: failed to parse hook code");
     return false;
