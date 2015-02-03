@@ -19,8 +19,8 @@ enum : wchar_t { wide_min = thin_min + thin_wide_dist, wide_max = thin_max + thi
 inline bool isthin(int ch) { return thin_min <= ch && ch <= thin_max; }
 inline bool iswide(int ch) { return wide_min <= ch && ch <= wide_max; }
 
-inline int wide2thin(int ch) { return isthin(ch) ? ch + thin_wide_dist : ch; }
-inline int thin2wide(int ch) { return iswide(ch) ? ch - thin_wide_dist : ch; }
+inline int thin2wide(int ch) { return isthin(ch) ? ch + thin_wide_dist : ch; }
+inline int wide2thin(int ch) { return iswide(ch) ? ch - thin_wide_dist : ch; }
 
 // Japanese
 
