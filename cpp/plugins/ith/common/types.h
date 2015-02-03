@@ -43,8 +43,8 @@ struct HookParam {
        recover_len; // ?
 
   // 2/2/2015: jichi number of times - 1 to run the hook
-  //BYTE extra_text_count; // odd BYTE type might crash VNR?: http://sakuradite.com/topic/639
-  DWORD extra_text_count; // there must be at least two BYTES
+  BYTE extra_text_count;
+  BYTE _unused; // jichi 2/2/2015: add a BYTE type to make to total sizeof(HookParam) even.
 
   // 7/20/2014: jichi additional parameters for PSP games
   DWORD user_flags,
