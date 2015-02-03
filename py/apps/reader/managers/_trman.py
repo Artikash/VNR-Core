@@ -1595,7 +1595,7 @@ class NaverTranslator(OnlineMachineTranslator):
     if fr == 'ja':
       return 'ko', 'ja'
     elif fr == 'en':
-      if to not in ('en', 'ko', 'zhs', 'zht'):
+      if to not in ('ko', 'es', 'pt', 'id', 'th'):
         return 'ko', 'en'
     elif fr == 'ko':
       if to not in ('en', 'ko', 'zhs', 'zht'):
