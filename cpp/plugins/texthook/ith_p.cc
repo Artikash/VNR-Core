@@ -108,7 +108,7 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
     t = Convert(offset, data, delim);
     if (t < 0)
       return false; //ConsoleOutput(L"Syntax error.");
-    offset = wcschr(offset , delim[t]);
+    offset = ::wcschr(offset , delim[t]);
     if (offset)
       offset++;   // skip the current delim
     else //goto _error;
@@ -143,11 +143,11 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
   if (hp.split & 0x80000000)
     hp.split -= 4;
   LPWSTR temp = offset;
-  offset = wcschr(offset, L':');
+  offset = ::wcschr(offset, L':');
   if (offset) {
     hp.type |= MODULE_OFFSET;
     offset++;
-    delim = wcschr(offset, L':');
+    delim = ::wcschr(offset, L':');
 
     if (delim) {
       *delim = 0;
@@ -161,11 +161,11 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
       hp.module = Hash(_wcslwr(offset));
 
   } else {
-    offset = wcschr(temp, L'!');
+    offset = ::wcschr(temp, L'!');
     if (offset) {
       hp.type |= MODULE_OFFSET;
       swscanf(offset + 1, L"%x", &hp.module);
-      offset = wcschr(offset + 1, L'!');
+      offset = ::wcschr(offset + 1, L'!');
       if (offset) {
         hp.type |= FUNCTION_OFFSET;
         swscanf(offset + 1, L"%x", &hp.function);
