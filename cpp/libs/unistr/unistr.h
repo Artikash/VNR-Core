@@ -5,6 +5,7 @@
 // 2/2/2015 jichi
 
 #include "unistr/unichar.h"
+#include <algorithm> // for transform
 #include <iterator> // for back_inserter
 
 namespace unistr {

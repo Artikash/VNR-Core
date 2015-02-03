@@ -535,10 +535,14 @@ opencc:
   location:         $PWD/../../Dictionaries/opencc
 
 hangul:
-  location:         $PWD/../../Dictionaries/hanja
+  path:             $PWD/../../Dictionaries/hanja/dic6.txt
 
 pinyin:
   path:             $PWD/../../Dictionaries/pinyin/Mandarin.dat
+
+hanviet:
+  word:             $PWD/../../Dictionaries/hanviet/ChinesePhienAmWords.txt
+  phrase:           $PWD/../../Dictionaries/hanviet/VietPhrase.txt
 
 # Module options
 

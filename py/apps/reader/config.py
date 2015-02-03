@@ -436,7 +436,7 @@ FONT_LOCATION = parse_path(SHARE_YAML['font']['location']) # unicode abspath
 
 OPENCC_DIC_LOCATION = parse_path(SHARE_YAML['opencc']['location']) # unicode abspath
 
-HANGUL_DIC_LOCATION = parse_path(SHARE_YAML['hangul']['location']) # unicode abspath
+HANGUL_DIC_PATH = parse_path(SHARE_YAML['hangul']['path']) # unicode abspath
 
 PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
 

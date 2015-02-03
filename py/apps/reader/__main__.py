@@ -118,7 +118,7 @@ def main():
   opencc.setdicdir(config.OPENCC_DIC_LOCATION)
 
   from hangulconv import hangulconv
-  hangulconv.setdicdir(config.HANGUL_DIC_LOCATION)
+  hangulconv.setdicpath(config.HANGUL_DIC_PATH)
 
   from pinyinconv import pinyinconv
   pinyinconv.setdicpath(config.PINYIN_DIC_PATH)

@@ -8,18 +8,21 @@ if __name__ == '__main__': # DEBUG
 
 from sakurakit.skclass import memoized
 
-HANGUL_DIC_DIR = '' # to be set
-HANGUL_DIC_CONV = 'dic6.txt'
+#HANGUL_DIC_DIR = '' # to be set
+#HANGUL_DIC_CONV = 'dic6.txt'
 
-def setdicdir(path):
-  global HANGUL_DIC_DIR
-  HANGUL_DIC_DIR = path
+HANGUL_DIC_PATH = '' # to be set
+
+def setdicpath(path):
+  global HANGUL_DIC_PATH
+  HANGUL_DIC_PATH = path
 
 @memoized
 def converter():
   import os
   from pyhangul import HangulHanjaConverter
-  path = os.path.join(HANGUL_DIC_DIR, HANGUL_DIC_CONV)
+  #path = os.path.join(HANGUL_DIC_DIR, HANGUL_DIC_CONV)
+  path = HANGUL_DIC_PATH
   ret = HangulHanjaConverter()
   if os.path.exists(path):
     ret.loadFile(path)

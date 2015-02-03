@@ -25,8 +25,8 @@ inline int wide2thin(int ch) { return iswide(ch) ? ch - thin_wide_dist : ch; }
 // Japanese
 
 enum { hira_kata_dist = 96 };
-enum : wchar_t { hira_min = 12353, hira_max = 12438 }; // ぁ-ゖ
-enum : wchar_t { kata_min = 12449, kata_max = 12538 }; // ァ-ヺ
+enum : wchar_t { hira_min = 12353, hira_max = 12438 }; // xa-xge
+enum : wchar_t { kata_min = 12449, kata_max = 12538 }; // xa-vo
 
 inline bool ishira(int ch) { return hira_min <= ch && ch <= hira_max; }
 inline bool iskata(int ch) { return kata_min <= ch && ch <= kata_max; }
