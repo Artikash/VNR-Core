@@ -211,16 +211,26 @@ class GrimoireBean(QObject):
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
-  @Slot(unicode, unicode, int, float, bool, bool, bool, bool, bool, result=unicode)
-  def renderRuby(self, text, language, charPerLine, rubySize, invertRuby, colorize, center,
+  @Slot(unicode, int, float, bool, bool, bool, bool, bool, result=unicode)
+  def renderKoreanRuby(self, text, charPerLine, rubySize, invertRuby, colorize, center,
       romajaRubyEnabled, hanjaRubyEnabled):
     """
     @return  unicode  html
     """
     import uniroman
     text = textutil.remove_html_tags(text).strip()
-    return uniroman.rendertable(text, language, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
+    return uniroman.rendertable(text, 'ko', charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
         hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
+
+  @Slot(unicode, bool, int, float, bool, bool, bool, result=unicode)
+  def renderChineseRuby(self, text, simplified, charPerLine, rubySize, invertRuby, colorize, center):
+    """
+    @return  unicode  html
+    """
+    import uniroman
+    text = textutil.remove_html_tags(text).strip()
+    lang = 'zhs' if simplified else 'zht'
+    return uniroman.rendertable(text, lang, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
 
   @Slot(unicode, unicode, QObject, int, float, bool, bool, result=unicode)
   def renderAlignment(self, text, language, align, charPerLine, rubySize, colorize, center):

@@ -315,7 +315,6 @@ class _MainObject(object):
     tm = self.textManager
     ret.processDetached.connect(tm.clear)
 
-
     ret.languageChanged.connect(tm.setGameLanguage)
     ret.encodingChanged.connect(tm.setEncoding)
     ret.threadChanged.connect(tm.setScenarioThread)

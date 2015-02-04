@@ -225,15 +225,24 @@ Item { id: root_
                 : lang.indexOf('zh') === 0 ? 18
                 : 10
     var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
-    return bean_.renderRuby(text, lang
-      , chperline
-      , 10 * root_._zoomFactor // ruby size of furigana
-      , root_.rubyInverted // ruby inverted
-      , colorize // colorize
-      , root_.alignCenter
-      , root_.romajaRubyEnabled
-      , root_.hanjaRubyEnabled
-    )
+    if (lang == 'ko')
+      return bean_.renderKoreanRuby(text
+        , chperline
+        , 10 * root_._zoomFactor // ruby size of furigana
+        , root_.rubyInverted // ruby inverted
+        , colorize // colorize
+        , root_.alignCenter
+        , root_.romajaRubyEnabled
+        , root_.hanjaRubyEnabled
+      )
+    else
+      return bean_.renderChineseRuby(text, lang == 'zhs' // lang needed to determine if it is simplified
+        , chperline
+        , 10 * root_._zoomFactor // ruby size of furigana
+        , root_.rubyInverted // ruby inverted
+        , colorize // colorize
+        , root_.alignCenter
+      )
   }
 
   function renderAlignment(text, lang, alignObject, colorize) { // string, string, QObject -> string
