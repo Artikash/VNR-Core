@@ -2,7 +2,7 @@
 # convutil.py
 # 10/18/2014 jichi
 
-from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin, wide2thin_digit
+from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin
 from unidecode import unidecode
 from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th \
                         , kana2name, kana2reading, capitalizeromaji

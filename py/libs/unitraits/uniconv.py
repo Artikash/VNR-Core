@@ -54,6 +54,8 @@ def _wide2thin_repl(m): # re match -> unicode
   return unichr(ord(m.group(0)) - WIDE_DIST)
 
 def wide2thin_digit(text): return wide2thin_class(text, 'digit')
+def wide2thin_alpha(text): return wide2thin_class(text, 'alpha')
+def wide2thin_alnum(text): return wide2thin_class(text, 'alnum')
 
 if __name__ == '__main__':
   t = u'、？！。'
