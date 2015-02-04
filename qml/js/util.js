@@ -163,6 +163,7 @@ var TRANSLATOR_HOST_KEYS = [
   , 'eztrans'
   , 'atlas'
   , 'lec'
+  , 'hanviet'
 ];
 
 var TRANSLATOR_NAME = {
@@ -181,8 +182,8 @@ var TRANSLATOR_NAME = {
   , lec: "LEC"
   , lecol: "LEC Online"
   , transru: "Translate.Ru"
-  , hanviet: "Hán Việt"
   , lou: "ルー語"
+  , hanviet: "Hán Việt"
 };
 function translatorName(tr) { return TRANSLATOR_NAME[tr]; }
 

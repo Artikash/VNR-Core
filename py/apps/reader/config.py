@@ -464,6 +464,7 @@ OPENCC_DICS = {k: parse_path(v) # {str key:unicode relpath}
 
 HANVIET_DICS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['hanviet'].iteritems()}
+HANVIET_DIC_LOCATION = os.path.dirname(HANVIET_DICS.itervalues().next())
 
 MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
     for k,v in SHARE_YAML['mecab']['dicdir'].iteritems()}

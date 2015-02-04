@@ -1538,7 +1538,7 @@ class _TtsTab(object):
     ret = create_toggle_button("+")
     if isinstance(path, basestring):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
-      open = osutil.open_url if path.startswith('http') else osutil.open_url
+      open = osutil.open_url if path.startswith('http') else osutil.open_location
       slot = partial(open, path)
     else:
       ret.setToolTip(tr_("Browse"))
@@ -2870,7 +2870,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
     if 'vi' not in blans: #and 'zh' not in blans:
       r += 1
-      #grid.addWidget(self.hanVietBrowseButton, r, 0)
+      grid.addWidget(self.hanVietBrowseButton, r, 0)
       grid.addWidget(self.hanVietButton, r, 1)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
@@ -3103,6 +3103,9 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     ret.setChecked(settings.global_().isHanVietEnabled())
     ret.toggled.connect(settings.global_().setHanVietEnabled)
     return ret
+  @memoizedproperty
+  def hanVietBrowseButton(self):
+    return self._createBrowseButton(config.HANVIET_DIC_LOCATION)
 
   @memoizedproperty
   def atlasButton(self):
