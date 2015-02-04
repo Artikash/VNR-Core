@@ -82,6 +82,8 @@ class reader(QObject):
 
       self.tr("New"),
 
+      self.tr("C/K Ruby"),
+
       self.tr("Taiwan Standard Chinese"),
       self.tr("Hong Kong Traditional Chinese"),
       self.tr("Japanese Kanji"),
