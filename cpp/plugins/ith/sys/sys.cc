@@ -42,6 +42,8 @@ BOOL IthIsWindowsXp()
   return ret;
 }
 
+// https://msdn.microsoft.com/en-us/library/windows/desktop/dn424972%28v=vs.85%29.aspx
+// The same as IsWindows8OrGreater, which I don't know if the function is available to lower Windows.
 static BOOL IthIsWindows8OrGreater() // this function is not exported
 {
   static BOOL ret = -1; // cached
