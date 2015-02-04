@@ -55,4 +55,8 @@ def _wide2thin_repl(m): # re match -> unicode
 
 def wide2thin_digit(text): return wide2thin_class(text, 'digit')
 
+if __name__ == '__main__':
+  t = u'、？！。'
+  print wide2thin(t)
+
 # EOF

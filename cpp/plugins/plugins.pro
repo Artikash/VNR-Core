@@ -13,7 +13,6 @@ SUBDIRS += qmltexscriptplugin
 SUBDIRS += qmltextplugin
 
 SUBDIRS += pyhangul
-SUBDIRS += pyhanviet
 SUBDIRS += pytahscript
 SUBDIRS += pyvnrmem
 #SUBDIRS += pyreader
@@ -24,6 +23,7 @@ SUBDIRS += pyvnrmem
 #win32: SUBDIRS += mousehook #pymousehook
 
 win32: SUBDIRS += pycc
+win32: SUBDIRS += pyhanviet
 win32: SUBDIRS += pypinyin
 win32: SUBDIRS += pytrscript
 
