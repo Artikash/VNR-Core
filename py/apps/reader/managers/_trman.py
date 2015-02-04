@@ -191,6 +191,10 @@ class LougoTranslator(Translator):
 class HanVietTranslator(Translator):
   key = 'hanviet' # override
 
+  def __init__(self):
+    from hanviet import hanviet
+    self.engine = hanviet
+
   def translate(self, text, to='vi', fr='zhs', emit=False, **kwargs):
     """
     @param  text  unicode
@@ -218,21 +222,21 @@ class HanVietTranslator(Translator):
     if emit and text != t:
       self.emitSourceText(text)
 
-    from hanviet.hanviet import han2viet
-    sub = han2viet(text)
+    sub = self.engine.translate(text)
     if sub:
       if emit:
         self.emitJointTranslation(sub)
       sub = textutil.beautify_subtitle(sub)
     return sub, 'vi', self.key
 
-  def translateTest(self, text, **kwargs):
+  def translateTest(self, text, fr='zhs', **kwargs):
     """
     @param  text  unicode
     @return  unicode sub
     """
-    from hanviet.hanviet import han2viet
-    return han2viet(text)
+    if fr == 'zht':
+      text = zht2zhs(text)
+    return self.engine.translate(text)
 
 ## Text processing
 
