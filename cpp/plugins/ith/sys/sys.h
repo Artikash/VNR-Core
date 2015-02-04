@@ -116,9 +116,11 @@ public:
   void unlock()  { if (m != INVALID_HANDLE_VALUE) { IthReleaseMutex(m); m = INVALID_HANDLE_VALUE; } }
 };
 
+void IthCoolDown();
+
 BOOL IthIsWine();
 BOOL IthIsWindowsXp();
-void IthCoolDown();
+//BOOL IthIsWindows8OrGreater(); // not public
 
 /** Get current dll path.
  *  @param  buf

@@ -15,10 +15,16 @@
 
 // jichi 9/28/2013: Weither use NtThread or RemoteThread
 // RemoteThread works on both Windows 7 or Wine, while NtThread does not work on wine
-#define ITH_ENABLE_THREADMAN    !IthIsWine()
+#define ITH_ENABLE_THREADMAN    (!IthIsWindows8OrGreater() && !IthIsWine())
 //#define ITH_ENABLE_THREADMAN    true
 
 // Helpers
+
+// jichi 2/3/2015: About GetVersion
+// Windows XP SP3: 5.1
+// Windows 7: 6.1, 0x1db10106
+// Windows 8: 6.2, 0x23f00206
+// Windows 10: 6.2, 0x23f00206 (build 9926):
 
 BOOL IthIsWindowsXp()
 {
@@ -26,12 +32,28 @@ BOOL IthIsWindowsXp()
   if (ret < 0) {
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439%28v=vs.85%29.aspx
     DWORD v = ::GetVersion();
-    DWORD major = (DWORD)(LOBYTE(LOWORD(v)));
+    BYTE major = LOBYTE(LOWORD(v));
     //DWORD minor = (DWORD)(HIBYTE(LOWORD(v)));
 
     // Windows XP = 5.1
     //ret =  major < 6 ? 1 : 0;
-    ret =  major < 6 ? TRUE : FALSE;
+    ret = major < 6;
+  }
+  return ret;
+}
+
+static BOOL IthIsWindows8OrGreater() // this function is not exported
+{
+  static BOOL ret = -1; // cached
+  if (ret < 0) {
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439%28v=vs.85%29.aspx
+    DWORD v = ::GetVersion();
+    BYTE major = LOBYTE(LOWORD(v)),
+         minor = HIBYTE(LOWORD(v));
+    //DWORD minor = (DWORD)(HIBYTE(LOWORD(v)));
+
+    // Windows 8/10 = 6.2
+    ret = major > 6 || (major == 6 && minor >= 2);
   }
   return ret;
 }
@@ -346,6 +368,11 @@ void CheckThreadStart()
 {
   if (thread_man_)
     thread_man_->CheckProcessMemory();
+
+    // jichi 2/2/2015: This function is only used to wait for injected threads vnrhost.
+    // Sleep for 100 ms to wait for remote thread to start
+    //IthSleep(100);
+    //IthCoolDown();
 }
 
 void IthSleep(int time)
@@ -1169,7 +1196,7 @@ HANDLE IthCreateThread(LPCVOID start_addr, DWORD param, HANDLE hProc)
 {
   HANDLE hThread;
   // jichi 9/27/2013: NtCreateThread is not implemented in Wine 1.7
-  if (thread_man_) { // Native windows
+  if (thread_man_) { // Windows XP
     // jichi 9/29/2013: Reserved && commit stack size
     // See: http://msdn.microsoft.com/en-us/library/windows/desktop/aa366803%28v=vs.85%29.aspx
     // See: http://msdn.microsoft.com/en-us/library/ms810627.aspx
