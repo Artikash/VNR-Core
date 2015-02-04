@@ -1430,6 +1430,8 @@ class GameManager(QtCore.QObject):
         task = partial(dataman.manager().updateGame, gameData)
         skevents.runlater(task, 200)
 
+        dataman.manager().setGameLanguage(lang, md5)
+
     self.languageChanged.emit(lang)
     dprint("leave")
 
