@@ -3316,9 +3316,9 @@ class _RomanTranslationTab(object):
     layout.addWidget(self.infoLabel)
     layout.addWidget(self.optionGroup)
     blans = settings.global_().blockedLanguages()
+    layout.addWidget(self.languageGroup)
     if 'ko' not in blans:
       layout.addWidget(self.koreanGroup)
-    layout.addWidget(self.languageGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -3345,7 +3345,7 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
 
   @memoizedproperty
   def invertRubyButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Display yomigana below instead of above kanji"))
+    ret = QtWidgets.QCheckBox(my.tr("Display ruby below instead of above kanji"))
     ss = settings.global_()
     ret.setChecked(ss.isRubyInverted())
     ret.toggled.connect(ss.setRubyInverted)

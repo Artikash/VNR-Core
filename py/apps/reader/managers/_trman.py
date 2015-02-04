@@ -769,6 +769,7 @@ class HanVietTranslator(OfflineMachineTranslator):
     text = self.engine.translate(text, bool(mark))
     text = wide2thin(text)
     text = text.replace(u'、', ", ")
+    text = text.replace(u'。', ". ")
     return text
 
   def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, **kwargs):

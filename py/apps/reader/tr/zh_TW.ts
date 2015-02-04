@@ -4266,7 +4266,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3575"/>
-        <source>Display yomigana below instead of above kanji</source>
+        <source>Display ruby below instead of above kanji</source>
         <translation>上下顛倒漢字和讀音的位置，在讀音上邊顯示漢字</translation>
     </message>
     <message>
