@@ -27,11 +27,11 @@ class _GameEditor(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.infoGroup)
     layout.addWidget(self.locationGroup)
+    layout.addWidget(self.textGroup)
+    layout.addWidget(self.hookGroup)
     if not features.WINE:
       layout.addWidget(self.loaderGroup)
     layout.addWidget(self.timeZoneGroup)
-    layout.addWidget(self.hookGroup)
-    layout.addWidget(self.textGroup)
     q.setCentralWidget(skwidgets.SkLayoutWidget(layout))
 
   def refresh(self):
@@ -41,7 +41,6 @@ class _GameEditor(object):
     self._loadText()
     self._loadLocation()
     self._loadLoader()
-    self._loadLaunchLanguage()
     self._loadTimeZone()
 
     # Enabled
@@ -161,18 +160,8 @@ class _GameEditor(object):
     row.addWidget(self.encodingEdit)
     layout.addLayout(row)
 
-    ret = QtWidgets.QGroupBox("%s (%s)" % (mytr_("Game language"), tr_("read-only")))
+    ret = QtWidgets.QGroupBox(mytr_("Game language"))
     ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def languageEdit(self):
-    ret = QtWidgets.QLineEdit()
-    skqss.class_(ret, 'readonly')
-    ret.setReadOnly(True)
-    ret.setPlaceholderText(tr_("Not specified"))
-    ret.setToolTip(tr_("Read-only"))
-    ret.setStatusTip(ret.toolTip())
     return ret
 
   @memoizedproperty
@@ -185,15 +174,44 @@ class _GameEditor(object):
     ret.setStatusTip(ret.toolTip())
     return ret
 
-  def _loadText(self):
-    g = self.game
-    self.languageEdit.setText(i18n.language_name2(g.language))
-    self.encodingEdit.setText(g.encoding.upper())
+  @memoizedproperty
+  def languageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLanguage)
+    return ret
 
-    if g.language == 'ja':
-      skqss.removeclass(self.languageEdit, 'warning')
+  def _loadLanguage(self):
+    lang = self.game.language
+    try: langIndex = config.LANGUAGES.index(lang)
+    except ValueError: langIndex = 0 # 'default'
+    w = self.languageEdit
+    w.setCurrentIndex(langIndex)
+    if lang == 'ja':
+      skqss.removeclass(w, 'warning')
     else:
-      skqss.addclass(self.languageEdit, 'warning')
+      skqss.addclass(w, 'warning')
+
+  def _saveLanguage(self):
+    w = self.languageEdit
+    index = w.currentIndex()
+    lang = config.LANGUAGES[index]
+    if lang != self.game.language:
+      dataman.manager().setGameLanguage(lang, md5=self.game.md5)
+    if lang == 'ja':
+      skqss.removeclass(w, 'warning')
+    else:
+      skqss.addclass(w, 'warning')
+
+  def _loadText(self):
+    self._loadLanguage()
+
+    # Load encoding
+    g = self.game
+    self.encodingEdit.setText(g.encoding.upper())
+    #self.languageEdit.setText(i18n.language_name2(g.language))
     if g.encoding in ('shift-jis', 'utf-16'):
       skqss.removeclass(self.encodingEdit, 'warning')
     else:
@@ -415,16 +433,26 @@ By default it is the same as the executable of the game process."""))
     lang = self.game.launchLanguage
     try: langIndex = config.LANGUAGES.index(lang) + 1
     except ValueError: langIndex = 0 # 'default'
-    self.launchLanguageEdit.setCurrentIndex(langIndex)
+    w = self.launchLanguageEdit
+    w.setCurrentIndex(langIndex)
+    if lang in ('', 'ja'):
+      skqss.removeclass(w, 'warning')
+    else:
+      skqss.addclass(w, 'warning')
 
   def _saveLaunchLanguage(self):
-    index = self.launchLanguageEdit.currentIndex()
+    w = self.launchLanguageEdit
+    index = w.currentIndex()
     if not index:
       lang = ''
     else:
       lang = config.LANGUAGES[index - 1]
     if lang != self.game.launchLanguage:
       dataman.manager().setGameLaunchLanguage(lang, md5=self.game.md5)
+    if lang in ('', 'ja'):
+      skqss.removeclass(w, 'warning')
+    else:
+      skqss.addclass(w, 'warning')
 
   def _loadLoader(self):
     loader = self.game.loader
@@ -437,6 +465,8 @@ By default it is the same as the executable of the game process."""))
          self.defaultLoaderButton)
     if not b.isChecked():
       b.setChecked(True)
+
+    self._loadLaunchLanguage()
 
     t = b is self.disableLoaderButton or b is self.localeEmulatorButton
     self.launchLanguageEdit.setEnabled(not t)
