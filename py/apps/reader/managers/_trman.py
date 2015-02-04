@@ -21,6 +21,7 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
+from opencc.opencc import ja2zhs
 from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
 from unitraits import unichars, jpmacros
@@ -206,8 +207,9 @@ class HanVietTranslator(Translator):
       self.emitLanguages(fr=fr, to='vi')
     #if not fr.startswith('zh'):
     #  return None, None, None
-    if fr == 'zht':
-      text = zht2zhs(text)
+    #if fr == 'zht':
+    #text = zht2zhs(text)
+    text = ja2zhs(text)
 
     #if scriptEnabled:
     #  sm = trscriptman.manager()
@@ -491,6 +493,8 @@ class MachineTranslator(Translator):
         text = self.postprocess(text, to)
       if config.is_latin_language(to):
         text = textutil.capitalize_html_sentence(text)
+      if not (to.startswith('zh') and to in ('ja', 'ar')):
+        text = textutil.remove_html_punct_space(text)
       text = textutil.beautify_subtitle(text)
     return text.strip() # escape could produce trailing " "
 
