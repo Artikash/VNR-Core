@@ -115,10 +115,13 @@ def main():
 
   dprint("init dic locations")
   from opencc import opencc
-  opencc.setdicdir(config.OPENCC_DIC_LOCATION)
+  opencc.setdicpaths(config.OPENCC_DICS)
+
+  from hanviet import hanviet
+  hanviet.setdicpaths(config.HANVIET_DICS)
 
   from hangulconv import hangulconv
-  hangulconv.setdicdir(config.HANGUL_DIC_LOCATION)
+  hangulconv.setdicpath(config.HANGUL_DIC_PATH)
 
   from pinyinconv import pinyinconv
   pinyinconv.setdicpath(config.PINYIN_DIC_PATH)

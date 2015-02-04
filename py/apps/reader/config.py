@@ -434,9 +434,7 @@ AVATARS_COUNT = parse_int(SHARE_YAML['avatars']['count'])
 
 FONT_LOCATION = parse_path(SHARE_YAML['font']['location']) # unicode abspath
 
-OPENCC_DIC_LOCATION = parse_path(SHARE_YAML['opencc']['location']) # unicode abspath
-
-HANGUL_DIC_LOCATION = parse_path(SHARE_YAML['hangul']['location']) # unicode abspath
+HANGUL_DIC_PATH = parse_path(SHARE_YAML['hangul']['path']) # unicode abspath
 
 PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
 
@@ -460,6 +458,12 @@ JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspat
 
 TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['tahscript'].iteritems()}
+
+OPENCC_DICS = {k: parse_path(v) # {str key:unicode relpath}
+    for k,v in SHARE_YAML['opencc'].iteritems()}
+
+HANVIET_DICS = {k: parse_path(v) # {str key:unicode relpath}
+    for k,v in SHARE_YAML['hanviet'].iteritems()}
 
 MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
     for k,v in SHARE_YAML['mecab']['dicdir'].iteritems()}

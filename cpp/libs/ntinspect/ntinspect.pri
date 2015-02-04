@@ -9,7 +9,7 @@ DEPENDPATH += $$PWD
 HEADERS += $$PWD/ntinspect.h
 SOURCES += $$PWD/ntinspect.cc
 
-LIBS += -L$$WDK_HOME/lib/wxp/i386 -lntdll
+LIBS += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
 
 }
 

@@ -3,41 +3,31 @@
 # 10/18/2014 jichi
 
 import os
+from sakurakit.skdebug import dwarn
 
-TYPE_ZH = 0
-TYPE_ZHS = 1
-TYPE_ZHT = 2
-TYPE_TW = 3
-TYPE_HK = 4
-TYPE_JA = 5
-TYPE_KO = 6
-
-DIC_NAMES = { # {(int fr,int to):str}
-  (TYPE_ZHS, TYPE_ZHT): "STCharacters.txt",
-  (TYPE_ZHT, TYPE_ZHS): "TSCharacters.txt",
-  (TYPE_ZHT, TYPE_TW):  "TWVariants.txt",
-  (TYPE_ZHT, TYPE_HK):  "HKVariants.txt",
-  (TYPE_ZHT, TYPE_JA):  "JPVariants.txt",
-
-  (TYPE_ZHT, TYPE_KO):  "../hanja/dic0.txt",
+OPENCC_DIC_PATHS = { # {(int fr,int to):str}
+  's2t': "STCharacters.txt",
+  't2s': "TSCharacters.txt",
+  't2tw': "TWVariants.txt",
+  't2hk': "HKVariants.txt",
+  't2ja': "JPVariants.txt",
+  't2ko': "../hanja/dic0.txt",
 }
 
-# Initialization
+OPENCC_LANG_DELIM = '2'
 
-OPENCC_DICDIR = "" # unicode  directory of OpenCC's plain-text dictionaries
-
-def setdicdir(path):
-  global OPENCC_DICDIR
-  OPENCC_DICDIR = path
+def setdicpaths(paths): # {str key:unicode path}
+  for k in OPENCC_DIC_PATHS:
+    OPENCC_DIC_PATHS[k] = paths[k]
 
 _CONVERTERS = {}
 def getconverter(fr, to):
   """
-  @param  fr  int
-  @param  to  int
+  @param  fr  str
+  @param  to  str
   @return  SimpleChineseConverter
   """
-  key = fr * 10 + to
+  key = OPENCC_LANG_DELIM.join((fr, to))
   ret = _CONVERTERS.get(key)
   if not ret:
     ret = _CONVERTERS[key] = makeconverter(fr, to)
@@ -45,20 +35,21 @@ def getconverter(fr, to):
 
 def makeconverter(fr, to):
   """
-  @param  fr  int
-  @param  to  int
+  @param  fr  str
+  @param  to  str
   @return  SimpleChineseConverter or None
   """
   from pycc import SimpleChineseConverter
   ret = SimpleChineseConverter()
   reverse = False
-  txt = DIC_NAMES.get((fr, to))
-  if not txt:
-    txt = DIC_NAMES.get((to, fr))
+  key = OPENCC_LANG_DELIM.join((fr, to))
+  path = OPENCC_DIC_PATHS.get(key)
+  if not path:
+    key = OPENCC_LANG_DELIM.join((to, fr))
+    path = OPENCC_DIC_PATHS.get(key)
     reverse = True
-  if txt:
-    #print txt, reverse
-    path = os.path.join(OPENCC_DICDIR, txt)
+  if path:
+    #print path, reverse
     if os.path.exists(path):
       #from sakurakit.skprof import SkProfiler
       #with SkProfiler(): # 10/19/2014: 0.006 seconds for zhs2zht
@@ -73,24 +64,26 @@ def makeconverter(fr, to):
 def convert(text, fr, to):
   """
   @param  text  unicode
-  @param  fr  int
-  @param  to  int
+  @param  fr  str
+  @param  to  str
   @return  unicode
   """
   try: return getconverter(fr, to).convert(text)
-  except: return text
+  except Exception, e:
+    dwarn(e)
+    return text
 
-def zht2zhs(text): return convert(text, TYPE_ZHT, TYPE_ZHS)
-def zht2tw(text): return convert(text, TYPE_ZHT, TYPE_TW)
-def zht2hk(text): return convert(text, TYPE_ZHT, TYPE_HK)
-def zht2ja(text): return convert(text, TYPE_ZHT, TYPE_JA)
-def zht2ko(text): return convert(text, TYPE_ZHT, TYPE_KO)
+def zht2zhs(text): return convert(text, 't', 's')
+def zht2tw(text): return convert(text, 't', 'tw')
+def zht2hk(text): return convert(text, 't', 'hk')
+def zht2ja(text): return convert(text, 't', 'ja')
+def zht2ko(text): return convert(text, 't', 'ko')
 
-def zhs2zht(text): return convert(text, TYPE_ZHS, TYPE_ZHT)
-def tw2zht(text): return convert(text, TYPE_TW, TYPE_ZHT)
-def hk2zht(text): return convert(text, TYPE_HK, TYPE_ZHT)
-def ja2zht(text): return convert(text, TYPE_JA, TYPE_ZHT)
-def ko2zht(text): return convert(text, TYPE_KO, TYPE_ZHT)
+def zhs2zht(text): return convert(text, 's', 't')
+def tw2zht(text): return convert(text, 'tw', 't')
+def hk2zht(text): return convert(text, 'hk', 't')
+def ja2zht(text): return convert(text, 'ja', 't')
+def ko2zht(text): return convert(text, 'ko', 't')
 
 # Following are for convenient usage
 
@@ -102,20 +95,20 @@ def zhs2ko(text): return zht2ko(zhs2zht(text))
 def ja2zhs(text): return zht2zhs(ja2zht(text))
 def ko2zhs(text): return zht2zhs(ko2zht(text))
 
-def contains(text, fr, to=TYPE_ZHT):
+def contains(text, fr, to='t'):
   """
   @param  text  unicode
-  @param  fr  int
-  @param  to  int  dummy
+  @param  fr  str
+  @param  to  str  dummy
   @return  bool
   """
   try: return getconverter(fr, to).needsConvert(text)
   except: return False
 
-def containszhs(text): return contains(text, TYPE_ZHS)
-def containszht(text): return contains(text, TYPE_ZHT, TYPE_ZHS)
-def containsja(text): return contains(text, TYPE_JA)
-def containsko(text): return contains(text, TYPE_KO)
+def containszhs(text): return contains(text, 's')
+def containszht(text): return contains(text, 't', 's')
+def containsja(text): return contains(text, 'ja')
+def containsko(text): return contains(text, 'ko')
 
 # Aliases
 

@@ -4,7 +4,7 @@
 
 from sakurakit.skclass import memoized
 
-PINYIN_DIC_PATH = '' # to be set
+PINYIN_DIC_PATH = './Mandarin.dat' # to be set
 
 def setdicpath(path):
   global PINYIN_DIC_PATH

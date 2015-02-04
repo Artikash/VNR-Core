@@ -18,7 +18,8 @@ namespace { // unnamed
 
 enum : char {
   CH_COMMENT = L'#'  // beginning of a comment
-  , CH_DELIM = L'='  // deliminator
+  , CH_HAN_DELIM = L'='
+  , CH_VIET_DELIM = L'/'
 };
 
 const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
@@ -32,6 +33,17 @@ struct HanVietPhraseEntry
   {
     han = first;
     viet = second;
+  }
+
+  std::wstring first_viet() const
+  {
+    size_t i = viet.find(CH_VIET_DELIM);
+    return i == std::wstring::npos ? viet : viet.substr(0, i);
+  }
+
+  std::wstring render() const
+  {
+    return first_viet(); // not implemented
   }
 };
 
@@ -101,7 +113,7 @@ bool HanVietPhraseDictionary::addFile(const std::wstring &path)
 
   for (std::wstring line; std::getline(fin, line);)
     if (line.size() >= 3 && line[0] != CH_COMMENT) {
-      size_t pos = line.find(CH_DELIM);
+      size_t pos = line.find(CH_HAN_DELIM);
       if (pos != std::string::npos && 1 <= pos && pos < line.size() - 1)
         lines.push_back(std::make_pair(
             line.substr(0, pos),
@@ -146,10 +158,13 @@ std::wstring HanVietPhraseDictionary::translate(const std::wstring &text, bool m
 
   std::wstring ret = text;
 
-  for (size_t i = 0; i < d_->entry_count; i++) {
+  size_t free_size = text.size();
+  for (size_t i = 0; i < d_->entry_count && free_size; i++) {
     const auto &e = d_->entries[i];
-    if (boost::contains(ret, e.han))
-      boost::replace_all(ret, e.han, e.viet); // TODO: Render viet
+    if (e.han.size() <= free_size && boost::contains(ret, e.han)) {
+      boost::replace_all(ret, e.han, mark ? e.render() : e.first_viet());
+      free_size -= e.han.size(); // should subtract number of matches, which I don't know how ot get
+    }
   }
 
   return ret;
