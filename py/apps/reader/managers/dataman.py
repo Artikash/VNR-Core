@@ -6801,7 +6801,7 @@ class _DataManager(object):
       g.visitCount += 1
       g.md5 = game.md5 # enforce md5
 
-      for pty in 'id', 'itemId', 'encoding', 'language', 'launchLanguage', 'visitTime', 'commentCount', 'path', 'launchPath':
+      for pty in 'id', 'itemId', 'encoding', 'language', 'launchLanguage', 'commentCount', 'path', 'launchPath':
         v = getattr(g, pty)
         if v:
           setattr(game, pty, v)
@@ -9584,6 +9584,7 @@ class DataManager(QObject):
       game.md5 = self.queryGameMd5(game.id) or ""
 
     g = d.games.get(game.md5)
+    g.visitTime = skdatetime.current_unixtime()
     oldCommentCount = g.commentCount if g else 0
 
     if not d.updateGame(game):
