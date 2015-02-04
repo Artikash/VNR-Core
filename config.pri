@@ -87,7 +87,8 @@ win32 {
   QT_SRC        = c:/qt
   SAPI_HOME     = "$$PROGRAMFILES/Microsoft Speech SDK 5.1"
   #WMSDK_HOME    = c:/wmsdk/wmpsdk9
-  WDK_HOME      = c:/winddk/7600.16385.1
+  WDK7_HOME     = c:/winddk/7600.16385.1
+  WDK8_HOME     = "$$PROGRAMFILES/Windows Kits/8.1"
   UTF8_HOME     = z:/users/jichi/opt/utf8
 }
 mac {
