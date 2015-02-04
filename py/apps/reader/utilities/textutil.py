@@ -220,9 +220,33 @@ def validate_macro(text):
   """
   return not text or skstr.checkpair(text, pair=('{','}'))
 
-_S_PUNCT = unichars.s_ascii_punct + jpchars.s_punct
+_s_punct = unichars.s_ascii_punct + jpchars.s_punct
 def ispunct(ch):
-  return ch in _S_PUNCT
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return ch in _s_punct
+
+_re_punct_space = re.compile(r' +(?=[%s])' % re.escape('-' + _s_punct) )
+def remove_punct_space(text):
+  """
+  @param  text  unicode
+  @return  text
+  """
+  return _re_punct_space.sub('', text) if ' ' in text else text
+
+_re_html_punct_space = re.compile(r' +(?=<[^>]+>[%s])' % re.escape('-' + _s_punct) )
+def remove_html_punct_space(text):
+  """
+  @param  text  unicode
+  @return  text
+  """
+  if ' ' in text:
+    text = _re_punct_space.sub('', text)
+    if '<' in text:
+      text = _re_html_punct_space.sub('', text)
+  return text
 
 if __name__ == '__main__':
   t = u"かたがな"
