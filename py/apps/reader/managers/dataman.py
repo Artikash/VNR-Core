@@ -2613,8 +2613,8 @@ class _Term(object):
   TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'game', 'tts', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
-  HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec'
-  TR_HOSTS = "Bing.com", "Google.com", mytr_("LEC Online"), "Infoseek.co.jp", "Excite.co.jp", "Translate.Ru", "Naver.com", mytr_("Baidu") + '.com', mytr_("JBeijing"), mytr_("FastAIT"), "Dr.eye", "ezTrans XP", "Atlas", "LEC"
+  HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec', 'hanviet'
+  TR_HOSTS = "Bing.com", "Google.com", mytr_("LEC Online"), "Infoseek.co.jp", "Excite.co.jp", "Translate.Ru", "Naver.com", mytr_("Baidu") + '.com', mytr_("JBeijing"), mytr_("FastAIT"), "Dr.eye", "ezTrans XP", "Atlas", "LEC", u"Hán Việt"
 
   # Errors, the larger (warning) or smaller (error) the worse
   OK = 0

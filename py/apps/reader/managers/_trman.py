@@ -21,7 +21,6 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
-from opencc.opencc import ja2zhs
 from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
 from unitraits import unichars, jpmacros
@@ -153,12 +152,7 @@ class LougoTranslator(Translator):
   key = 'lou' # override
 
   def translate(self, text, to='en', fr='ja', emit=False, **kwargs):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* emit  bool
-    @return  unicode sub, unicode lang, unicode provider
-    """
+    """@reimp"""
     if emit:
       self.emitLanguages(fr='ja', to='en')
     if fr != 'ja':
@@ -183,62 +177,8 @@ class LougoTranslator(Translator):
     return sub, 'ja', self.key
 
   def translateTest(self, text, **kwargs):
-    """
-    @param  text  unicode
-    @return  unicode sub
-    """
+    """@reimp"""
     return mecabman.tolou(text)
-
-class HanVietTranslator(Translator):
-  key = 'hanviet' # override
-
-  def __init__(self):
-    from hanviet import hanviet
-    self.engine = hanviet
-
-  def translate(self, text, to='vi', fr='zhs', emit=False, **kwargs):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* emit  bool
-    @return  unicode sub, unicode lang, unicode provider
-    """
-    if emit:
-      self.emitLanguages(fr=fr, to='vi')
-    #if not fr.startswith('zh'):
-    #  return None, None, None
-    #if fr == 'zht':
-    #text = zht2zhs(text)
-    text = ja2zhs(text)
-
-    #if scriptEnabled:
-    #  sm = trscriptman.manager()
-    #  t = text
-    #  text = sm.normalizeText(text, fr=fr, to=to)
-    #  if emit and text != t:
-    #    self.emitNormalizedText(text)
-
-    tm = termman.manager()
-    t = text
-    text = tm.applySourceTerms(text, to='vi', fr='zhs', host=self.key)
-    if emit and text != t:
-      self.emitSourceText(text)
-
-    sub = self.engine.translate(text)
-    if sub:
-      if emit:
-        self.emitJointTranslation(sub)
-      sub = textutil.beautify_subtitle(sub)
-    return sub, 'vi', self.key
-
-  def translateTest(self, text, fr='zhs', **kwargs):
-    """
-    @param  text  unicode
-    @return  unicode sub
-    """
-    if fr == 'zht':
-      text = zht2zhs(text)
-    return self.engine.translate(text)
 
 ## Text processing
 
@@ -588,12 +528,7 @@ class AtlasTranslator(OfflineMachineTranslator):
     self.engine.warmup()
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
@@ -678,12 +613,7 @@ class LecTranslator(OfflineMachineTranslator):
       self.engine.warmup()
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e:
@@ -771,12 +701,7 @@ class EzTranslator(OfflineMachineTranslator):
     self.engine.warmup()
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
@@ -831,6 +756,54 @@ class EzTranslator(OfflineMachineTranslator):
             growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")),
                 async=async)
     return None, None, None
+
+class HanVietTranslator(OfflineMachineTranslator):
+  key = 'hanviet' # override
+
+  def __init__(self, **kwargs):
+    super(HanVietTranslator, self).__init__(**kwargs)
+    from hanviet import hanviet
+    self.engine = hanviet
+
+  def _translateApi(self, text, fr='', to='', mark=False): # unicode, bol -> unicode
+    text = self.engine.translate(text, bool(mark))
+    text = wide2thin(text)
+    text = text.replace(u'、', ", ")
+    return text
+
+  def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, **kwargs):
+    """@reimp"""
+    async = False # disable async
+    to = 'vi'
+    if fr not in ('zhs', 'zht', 'ja', 'vi'):
+      if emit:
+        self.emitLanguages(fr=fr, to=to)
+      return None, None, None
+    if fr != 'zhs':
+      text = zht2zhs(text)
+      fr = 'zhs'
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    if not emit:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    #with SkProfiler():
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl,
+          partial(self._translateApi, mark=True), # always enable html mark
+          to, fr, async) # 0.1 seconds
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit) # 0.1 seconds
+        self.cache.update(text, repl)
+        return repl, to, self.key
+    return None, None, None
+
+  def translateTest(self, text, **kwargs):
+    """@reimp"""
+    text = ja2zhs(text)
+    return self._translateApi(text, mark=True)
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override
@@ -888,12 +861,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
     self.engine.warmup()
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     simplified = to == 'zhs'
     try: return self._translateTest(self.engine.translate, text, async=async, simplified=simplified)
     except Exception, e:
@@ -929,7 +897,8 @@ class JBeijingTranslator(OfflineMachineTranslator):
             to, fr, async) # 0.1 seconds
         if repl:
           #with SkProfiler():
-          repl = wide2thin_digit(repl) # convert wide digits to thin digits
+          #repl = wide2thin_digit(repl) # convert wide digits to thin digits
+          repl = wide2thin(repl) # convert all wide characters to thin
           repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit) # 0.1 seconds
           self.cache.update(text, repl)
           return repl, to, self.key
@@ -1058,12 +1027,7 @@ class FastAITTranslator(OfflineMachineTranslator):
     return to, fr
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try:
       engine = self.getEngine(fr=fr, to=to)
@@ -1168,12 +1132,7 @@ class DreyeTranslator(OfflineMachineTranslator):
     return ret
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     try:
       engine = self.jcEngine if fr == 'ja' else self.ecEngine
       return self._translateTest(engine.translate, text, to=to, fr=fr, async=async)
@@ -1282,12 +1241,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1341,12 +1295,7 @@ class ExciteTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1402,12 +1351,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1458,12 +1402,7 @@ class TransruTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1516,12 +1455,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     #async = True # force enable async
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
@@ -1570,12 +1504,7 @@ class BingTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -1647,12 +1576,7 @@ class NaverTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1737,12 +1661,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub
-    """
+    """@reimp"""
     engine = self.getEngine(fr=fr, to=to)
     try: return self._translateTest(engine.translate,
             text, to=to, fr=fr, async=async)

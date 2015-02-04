@@ -156,13 +156,17 @@ std::wstring HanVietPhraseDictionary::translate(const std::wstring &text, bool m
   if (text.empty() || !d_->entries) // at least two elements
     return text;
 
+  enum : wchar_t { delim = L' ' };
+
   std::wstring ret = text;
 
   size_t free_size = text.size();
   for (size_t i = 0; i < d_->entry_count && free_size; i++) {
     const auto &e = d_->entries[i];
     if (e.han.size() <= free_size && boost::contains(ret, e.han)) {
-      boost::replace_all(ret, e.han, mark ? e.render() : e.first_viet());
+      std::wstring repl = mark ? e.render() : e.first_viet();
+      repl.push_back(delim);
+      boost::replace_all(ret, e.han, repl);
       free_size -= e.han.size(); // should subtract number of matches, which I don't know how ot get
     }
   }
