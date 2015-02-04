@@ -44,33 +44,7 @@ def _toroman(text, language=''):
     text = text.title()
   return text
 
-def _iterparseruby(text, language, **kwargs):
-  """
-  @param  text  unicode
-  @param  language  str
-  @param* kwargs  passed to Korean
-  @yield  (unicode surface, unicode yomi or None, int groupId or None)
-  """
-  return _iterparseruby_ko(text, **kwargs) if language == 'ko' else _iterparseruby_default(text, language)
-  #return _iterparseruby_default(text, language)
-
-def _iterparseruby_default(text, language):
-  """
-  @param  text  unicode
-  @param  language  str
-  @yield  (unicode surface, unicode yomi or None, int groupId or None)
-  """
-  for group, surface in enumerate(_splittext(text, language)):
-    if len(surface) == 1 and surface in _s_punct:
-      group = None
-      yomi = None
-    else:
-      yomi = _toroman(surface, language)
-      if yomi == surface:
-        yomi = None
-    yield surface, yomi, group
-
-def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
+def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True, **kwargs):
   """
   @param  text  unicode
   @param* romajaRubyEnabled  bool
@@ -97,6 +71,51 @@ def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
       if group is not None:
         group /= 2
       yield surface, yomi, group
+
+def _iterparseruby_zh(text, language, **kwargs):
+  """
+  @param  text  unicode
+  @param  language  str
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  for group, surface in enumerate(_splittext(text, language)):
+    if len(surface) == 1 and surface in _s_punct:
+      group = None
+      yomi = None
+    else:
+      yomi = _toroman(surface, language)
+      if yomi == surface:
+        yomi = None
+    yield surface, yomi, group
+
+def _iterparseruby_default(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  for group, surface in enumerate(_splittext(text, language)):
+    if len(surface) == 1 and surface in _s_punct:
+      group = None
+      yomi = None
+    else:
+      yomi = _toroman(surface, language)
+      if yomi == surface:
+        yomi = None
+    yield surface, yomi, group
+
+def _iterparseruby(text, language, **kwargs):
+  """
+  @param  text  unicode
+  @param  language  str
+  @param* kwargs  passed to Korean
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  if language == 'ko':
+    return _iterparseruby_ko(text, **kwargs)
+  if language.startswith('zh'):
+    return _iterparseruby_zh(text, lanuage, **kwargs)
+  return _iterparseruby_default(text, language)
 
 def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=False, center=True, invertRuby=False, **kwargs):
   """
