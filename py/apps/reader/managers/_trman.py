@@ -21,7 +21,8 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
-from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
+from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
+from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
 from unitraits import unichars, jpmacros
 import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
@@ -899,7 +900,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
         if repl:
           #with SkProfiler():
           #repl = wide2thin_digit(repl) # convert wide digits to thin digits
-          repl = wide2thin(repl) # convert all wide characters to thin
+          repl = wide2thin_alnum(repl) # convert all wide characters to thin
           repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit) # 0.1 seconds
           self.cache.update(text, repl)
           return repl, to, self.key
