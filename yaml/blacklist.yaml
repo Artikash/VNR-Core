@@ -202,6 +202,7 @@ processes:
   - Uedit32.exe         # UltraEdit
   - WinRAR.exe          # WinRAR
   - WINWORD.EXE         # Microsoft Office
+  - XDict.exe           # Kingsoft
   - XMP.EXE             # Xunlei
   - XMP.exe             # Xunlei
   - Xmp.exe             # Xunlei
