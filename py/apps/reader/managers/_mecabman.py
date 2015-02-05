@@ -13,7 +13,9 @@ from sakurakit import skstr
 from sakurakit.skdebug import dprint, dwarn
 from unitraits import jpchars
 from mecabjlp import mecabdef, mecabfmt, mecabtag
-import convutil, defs, dicts, osutil, termman
+from hanviet import hanviet
+from opencc import opencc
+import convutil, defs, dicts, osutil
 
 from msime import msime
 HAS_MSIME = msime.ja_valid() # cached
@@ -37,6 +39,15 @@ def _wordtrans(text):
   if text not in _WORDTRANS:
     _WORDTRANS[text] = dicts.edict().translate(text)
   return _WORDTRANS[text]
+
+def _kanji2vi(text):
+  """
+  @param  text  unicode
+  @return  unicode or None
+  """
+  ret = hanviet.toreading(opencc.ja2zhs(text))
+  if ret and ret != text:
+    return convutil.kana2romaji(ret)
 
 ## Parser ##
 
@@ -114,10 +125,9 @@ class MeCabParser:
   #  """
   #  return text
 
-  def toyomi(self, text, termEnabled=False, furiType=defs.FURI_HIRA):
+  def toyomi(self, text, furiType=defs.FURI_HIRA):
     """
     @param  text  unicode
-    @param* termEnabled  bool  whether query terms
     @param* type  bool  whether return type
     @param* furiType  unicode
     @return  unicode
@@ -134,65 +144,62 @@ class MeCabParser:
                  convutil.kata2hira)
     # Add space between words
     return ' '.join(furigana or furitrans(surface) for surface,furigana in
-        self.parse(text, termEnabled=termEnabled, reading=True, furiType=furiType))
+        self.parse(text, reading=True, furiType=furiType))
 
-  def tolou(self, text, termEnabled=False, furiType=defs.FURI_TR):
+  #def tolou(self, text, furiType=defs.FURI_TR):
+  #  """
+  #  @param  text  unicode
+  #  @param* type  bool  whether return type
+  #  @param* furiType  unicode
+  #  @return  unicode
+  #  """
+  #  if not self.enabled:
+  #    return ''
+  #  # Add space between words
+  #  return ' '.join(furigana or surface for surface,furigana in
+  #      self.parse(text, reading=True, lougo=True, furiType=furiType))
+
+  def parse(self, text, type=False, fmt=None, reading=False, feature=False, furiType=defs.FURI_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
     """
     @param  text  unicode
-    @param* termEnabled  bool  whether query terms
-    @param* type  bool  whether return type
-    @param* furiType  unicode
-    @return  unicode
-    """
-    if not self.enabled:
-      return ''
-    # Add space between words
-    return ' '.join(furigana or surface for surface,furigana in
-        self.parse(text, termEnabled=termEnabled, reading=True, lougo=True, furiType=furiType))
-
-  def parse(self, text, termEnabled=False, type=False, fmt=None, reading=False, feature=False, lougo=False, furiType=defs.FURI_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
-    """
-    @param  text  unicode
-    @param* termEnabled  bool  whether query terms
     @param* type  bool  whether return type
     @param* reading  bool   whether return yomigana
     @param* feature  bool   whether return feature
     @param* furiType  unicode
     @param* readingTypes  (int type) or [int type]
-    @param* lougo  bool
     @yield  (unicode surface, int type, unicode yomigana or None, unicode feature, fmt or None)
     """
     tagger = self.tagger()
     if not tagger:
       raise StopIteration
-    termEnabled = False # Force disabling terms for being slow
-    if termEnabled:
-      tm = termman.manager()
-      termEnabled = tm.isEnabled()
+    #termEnabled = False # Force disabling terms for being slow
     #if termEnabled:
-    #  text = tm.applyWordTerms(text)
+    #  tm = termman.manager()
+    #  termEnabled = tm.isEnabled()
     if not fmt:
       fmt = self.fmt # mecabfmt
     if reading:
-      wordtrans = _wordtrans if furiType == defs.FURI_TR else None
+      surftrans = (_wordtrans if furiType == defs.FURI_TR else
+                   _kanji2vi if furiType == defs.FURI_VI else
+                   None)
       katatrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
                    convutil.kata2ko if furiType == defs.FURI_HANGUL else
                    convutil.kata2th if furiType == defs.FURI_THAI else
                    #convutil.kata2kanji if furiType == defs.FURI_KANJI else
                    convutil.kata2ru if furiType == defs.FURI_ROMAJI_RU else
-                   convutil.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR) else
+                   convutil.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR, defs.FURI_VI) else
                    None)
-      if termEnabled:
-        furitrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
-                     convutil.hira2kata if furiType == defs.FURI_KATA else
-                     convutil.kana2ko if furiType == defs.FURI_HANGUL else
-                     convutil.kana2th if furiType == defs.FURI_THAI else
-                     convutil.kana2ru if furiType == defs.FURI_ROMAJI_RU else
-                     convutil.kana2romaji)
-      if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_HANGUL, defs.FURI_THAI): # , defs.FURI_KANJI
+      #if termEnabled:
+      #  furitrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
+      #               convutil.hira2kata if furiType == defs.FURI_KATA else
+      #               convutil.kana2ko if furiType == defs.FURI_HANGUL else
+      #               convutil.kana2th if furiType == defs.FURI_THAI else
+      #               convutil.kana2ru if furiType == defs.FURI_ROMAJI_RU else
+      #               convutil.kana2romaji)
+      if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_VI, defs.FURI_HANGUL, defs.FURI_THAI): # , defs.FURI_KANJI
         readingTypes = None
     encoding = mecabdef.DICT_ENCODING
-    feature2katana = fmt.getkata
+    feature2kata = fmt.getkata
     node = tagger.parseToNode(text.encode(encoding))
     while node:
       if node.stat not in (MeCab.MECAB_BOS_NODE, MeCab.MECAB_EOS_NODE):
@@ -211,53 +218,47 @@ class MeCabParser:
             f = None
             if feature:
               f = node.feature.decode(encoding, errors='ignore')
-            if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
-              if wordtrans:
-                if termEnabled:
-                  yomigana = tm.queryLatinWordTerms(surface)
-                if not yomigana:
-                  yomigana = wordtrans(surface)
-              if not yomigana and not lougo:
+            if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and surftrans: # always translate katagana
+              if surftrans:
+                #if termEnabled:
+                #  yomigana = tm.queryLatinWordTerms(surface)
+                #if not yomigana:
+                yomigana = surftrans(surface)
+              if not yomigana: #and not lougo:
                 if not feature:
                   f = node.feature.decode(encoding, errors='ignore')
-                katagana = feature2katana(f)
-                if katagana:
-                  furigana = tm.queryFuriTerms(surface) if termEnabled else None
-                  if furigana:
-                    furigana = furitrans(furigana)
-                    if furigana != surface:
-                      yomigana = furigana
-                  elif katagana == '*':
-                    # Use MSIME as fallback
-                    unknownYomi = True
-                    if HAS_MSIME and len(surface) < msime.IME_MAX_SIZE:
-                      if furiType == defs.FURI_HIRA:
-                        yomigana = msime.to_hira(surface)
-                      else:
-                        yomigana = msime.to_kata(surface)
-                        if yomigana:
-                          if furiType == defs.FURI_HIRA:
-                            pass
-                          elif furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU):
-                            if furiType == defs.FURI_ROMAJI_RU:
-                              conv = convutil.kata2ru
-                            else:
-                              conv = convutil.kata2romaji
-                            yomigana = convutil.wide2thin(conv(yomigana))
-                            if yomigana == surface:
-                              yomigana = None
-                              unknownYomi = False
-                          elif furiType == defs.FURI_HANGUL:
-                            yomigana = convutil.kata2ko(yomigana)
-                          #elif furiType == defs.FURI_KANJI:
-                          #  yomigana = convutil.kata2kanji(yomigana)
-                    if not yomigana and unknownYomi and readingTypes:
-                      yomigana = '?'
-                  else:
-                    #katagana = self._repairkatagana(katagana)
-                    yomigana = katatrans(katagana) if katatrans else katagana
-                    if yomigana == surface:
-                      yomigana = None
+                katagana = feature2kata(f)
+                if katagana == '*':
+                  # Use MSIME as fallback
+                  unknownYomi = True
+                  if HAS_MSIME and len(surface) < msime.IME_MAX_SIZE:
+                    if furiType == defs.FURI_HIRA:
+                      yomigana = msime.to_hira(surface)
+                    else:
+                      yomigana = msime.to_kata(surface)
+                      if yomigana:
+                        if furiType == defs.FURI_HIRA:
+                          pass
+                        elif furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU):
+                          if furiType == defs.FURI_ROMAJI_RU:
+                            conv = convutil.kata2ru
+                          else:
+                            conv = convutil.kata2romaji
+                          yomigana = convutil.wide2thin(conv(yomigana))
+                          if yomigana == surface:
+                            yomigana = None
+                            unknownYomi = False
+                        elif furiType == defs.FURI_HANGUL:
+                          yomigana = convutil.kata2ko(yomigana)
+                        #elif furiType == defs.FURI_KANJI:
+                        #  yomigana = convutil.kata2kanji(yomigana)
+                  if not yomigana and unknownYomi and readingTypes:
+                    yomigana = '?'
+                elif katagana:
+                  #katagana = self._repairkatagana(katagana)
+                  yomigana = katatrans(katagana) if katatrans else katagana
+                  if yomigana == surface:
+                    yomigana = None
             if not type and not feature:
               yield surface, yomigana
             elif type and not feature:

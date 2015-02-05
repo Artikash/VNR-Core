@@ -557,15 +557,6 @@ class Settings(QSettings):
       self.setValue('LecOnlineColor', value)
       self.lecOnlineColorChanged.emit(value)
 
-  lougoColorChanged = Signal(str)
-  def lougoColor(self):
-    return self.value('LougoColor', config.SETTINGS_LOUGO_COLOR)
-  def setLougoColor(self, value):
-    value = value or config.SETTINGS_LOUGO_COLOR
-    if value != self.lougoColor():
-      self.setValue('LougoColor', value)
-      self.lougoColorChanged.emit(value)
-
   transruColorChanged = Signal(str)
   def transruColor(self):
     return self.value('TransruColor', config.SETTINGS_TRANSRU_COLOR)
@@ -1320,15 +1311,6 @@ class Settings(QSettings):
       self.setValue('TransruEnabled', value)
       self.transruEnabledChanged.emit(value)
 
-  lougoEnabledChanged = Signal(bool)
-  def isLougoEnabled(self):
-    #return to_bool(self.value('LougoEnabled'))
-    return False # always disable
-  def setLougoEnabled(self, value):
-    if value != self.isLougoEnabled():
-      self.setValue('LougoEnabled', value)
-      self.lougoEnabledChanged.emit(value)
-
   machineTranslatorChanged = Signal()
 
   hanVietEnabledChanged = Signal(bool)
@@ -1876,7 +1858,6 @@ class SettingsProxy(QObject):
     g.baiduColorChanged.connect(self.baiduColorChanged)
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.transruColorChanged.connect(self.transruColorChanged)
-    g.lougoColorChanged.connect(self.lougoColorChanged)
     g.hanVietColorChanged.connect(self.hanVietColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
     g.fastaitColorChanged.connect(self.fastaitColorChanged)
@@ -2176,8 +2157,6 @@ class SettingsProxy(QObject):
   lecOnlineColor = unicode_property('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR, notify=lecOnlineColorChanged)
   transruColorChanged = Signal(unicode)
   transruColor = unicode_property('TransruColor', config.SETTINGS_TRANSRU_COLOR, notify=transruColorChanged)
-  lougoColorChanged = Signal(unicode)
-  lougoColor = unicode_property('LougoColor', config.SETTINGS_LOUGO_COLOR, notify=lougoColorChanged)
   hanVietColorChanged = Signal(unicode)
   hanVietColor = unicode_property('HanVietColor', config.SETTINGS_HANVIET_COLOR, notify=hanVietColorChanged)
   jbeijingColorChanged = Signal(unicode)

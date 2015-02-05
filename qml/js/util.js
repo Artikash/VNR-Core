@@ -182,7 +182,7 @@ var TRANSLATOR_NAME = {
   , lec: "LEC"
   , lecol: "LEC Online"
   , transru: "Translate.Ru"
-  , lou: "ルー語"
+  //, lou: "ルー語"
   , hanviet: "Hán Việt"
 };
 function translatorName(tr) { return TRANSLATOR_NAME[tr]; }

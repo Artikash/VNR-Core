@@ -40,7 +40,6 @@ class _TranslatorManager(object):
     self.baiduEnabled = \
     self.lecOnlineEnabled = \
     self.transruEnabled = \
-    self.lougoEnabled = \
     self.hanVietEnabled = \
     self.jbeijingEnabled = \
     self.fastaitEnabled = \
@@ -86,9 +85,6 @@ class _TranslatorManager(object):
   def yueTranslator(self): # no an independent machine translator
     return _trman.YueTranslator(
           abortSignal=self.abortSignal, session=self.session)
-
-  @memoizedproperty
-  def lougoTranslator(self): return self._newtr(_trman.LougoTranslator())
 
   @memoizedproperty
   def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
@@ -205,8 +201,6 @@ class _TranslatorManager(object):
       return 'transruTranslator'
     if key == 'hanviet':
       return 'hanVietTranslator'
-    if key == 'lou':
-      return 'elf.lougoTranslator'
     return key + 'Translator'
 
   def getTranslator(self, key):
@@ -230,7 +224,6 @@ class _TranslatorManager(object):
     """
     @yield  Translator
     """
-    #if self.lougoEnabled: yield self.lougoTranslator
     if self.jbeijingEnabled: yield self.jbeijingTranslator
     if self.fastaitEnabled: yield self.fastaitTranslator
     if self.dreyeEnabled: yield self.dreyeTranslator
@@ -345,9 +338,6 @@ class TranslatorManager(QObject):
   def isTransruEnabled(self): return self.__d.transruEnabled
   def setTransruEnabled(self, value): self.__d.transruEnabled = value
 
-  def isLougoEnabled(self): return self.__d.lougoEnabled
-  def setLougoEnabled(self, value): self.__d.lougoEnabled = value
-
   def isHanVietEnabled(self): return self.__d.hanVietEnabled
   def setHanVietEnabled(self, value): self.__d.hanVietEnabled = value
 
@@ -414,7 +404,6 @@ class TranslatorManager(QObject):
     """
     d = self.__d
     return any((
-      #d.lougoEnabled,
       d.hanVietEnabled,
       d.jbeijingEnabled,
       d.fastaitEnabled,

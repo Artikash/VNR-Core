@@ -542,9 +542,6 @@ def migrate(ss_version): # long ->
         skfileio.removetree(path)
         skfileio.makedirs(path)
 
-    if ss_version <= 1392183792: # disable lougo
-      ss.setValue('LougoEnabled', False)
-
     if ss_version <= 1391988443: # disable lingoes dictionary
       for k in 'EdictEnabled', 'LingoesJaZh', 'LingoesJaKo', 'LingoesJaVi':
         ss.setValue(k, False)
