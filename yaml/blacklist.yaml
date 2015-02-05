@@ -46,6 +46,7 @@ processes:
   - agth.exe            # AGTH
   - AlphaROM Cracker Build20121001.exe  # AlphaROM
   - AlphaROMdiE.exe     # AlphaROM
+  - alpharomdie.exe     # AlphaROM
   - AppUpdate.exe       # JBeijing
   - Atlas.exe           # Atlas
   - Apoint.exe          # Dell
