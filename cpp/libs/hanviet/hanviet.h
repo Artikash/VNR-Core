@@ -39,6 +39,8 @@ public:
 
   // Replacement
 
+  std::wstring toReading(const std::wstring &text) const;
+
   std::wstring translate(const std::wstring &text, bool mark = false) const;
 };
 

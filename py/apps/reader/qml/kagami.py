@@ -222,15 +222,16 @@ class GrimoireBean(QObject):
     return uniroman.rendertable(text, 'ko', charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
         hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
 
-  @Slot(unicode, bool, int, float, bool, bool, bool, result=unicode)
-  def renderChineseRuby(self, text, simplified, charPerLine, rubySize, invertRuby, colorize, center):
+  @Slot(unicode, bool, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderChineseRuby(self, text, simplified, chineseRubyType, charPerLine, rubySize, invertRuby, colorize, center):
     """
     @return  unicode  html
     """
     import uniroman
     text = textutil.remove_html_tags(text).strip()
     lang = 'zhs' if simplified else 'zht'
-    return uniroman.rendertable(text, lang, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
+    return uniroman.rendertable(text, lang, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
+        chineseRubyType=chineseRubyType)
 
   @Slot(unicode, unicode, QObject, int, float, bool, bool, result=unicode)
   def renderAlignment(self, text, language, align, charPerLine, rubySize, colorize, center):

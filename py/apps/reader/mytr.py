@@ -68,6 +68,9 @@ class reader(QObject):
 
       self.tr("Game engine"),
 
+      self.tr("with tone"),
+      self.tr("without tone"),
+
       self.tr("Recordings"),
 
       self.tr("Matched text"),

@@ -88,7 +88,8 @@ std::wstring HanVietWordDictionary::translate(const std::wstring &text) const
       auto p = d_->map.find(ch);
       if (p != d_->map.end()) {
         ret.append(p->second);
-        ret.push_back(delim);
+        if (i != text.size() - 1) // do not push delim for the last character
+          ret.push_back(delim);
         continue;
       }
     }

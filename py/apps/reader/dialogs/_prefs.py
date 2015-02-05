@@ -3317,6 +3317,8 @@ class _RomanTranslationTab(object):
     layout.addWidget(self.optionGroup)
     blans = settings.global_().blockedLanguages()
     layout.addWidget(self.languageGroup)
+    if 'zh' not in blans:
+      layout.addWidget(self.chineseGroup)
     if 'ko' not in blans:
       layout.addWidget(self.koreanGroup)
     layout.addStretch()
@@ -3367,37 +3369,6 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
     ret.toggled.connect(settings.global_().setRubyTranslationEnabled)
     return ret
 
-  # Korean group
-
-  @memoizedproperty
-  def koreanGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.romajaButton)
-    layout.addWidget(self.hanjaButton)
-    ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Korean text"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def romajaButton(self):
-    ret = QtWidgets.QCheckBox(
-      "%s, %s: %s" %
-      (tr_("Romaja"), my.tr("like this"), u"공주님(gongjunim)"))
-    ss = settings.global_()
-    ret.setChecked(ss.isRomajaRubyEnabled())
-    ret.toggled.connect(ss.setRomajaRubyEnabled)
-    return ret
-
-  @memoizedproperty
-  def hanjaButton(self):
-    ret = QtWidgets.QCheckBox(
-      "%s, %s: %s" %
-      (tr_("Hanja"), my.tr("like this"), u"공주(公主)님"))
-    ss = settings.global_()
-    ret.setChecked(ss.isHanjaRubyEnabled())
-    ret.toggled.connect(ss.setHanjaRubyEnabled)
-    return ret
-
   # Language group
 
   LANGUAGES = OrderedDict((
@@ -3438,6 +3409,90 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
     ret.setChecked(getter())
     ret.clicked[bool].connect(setter)
     return ret
+
+  # Korean group
+
+  @memoizedproperty
+  def koreanGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.romajaButton)
+    layout.addWidget(self.hanjaButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Korean text"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def romajaButton(self):
+    ret = QtWidgets.QCheckBox(
+      "%s, %s: %s" %
+      (tr_("Romaja"), my.tr("like this"), u"공주님(gongjunim)"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRomajaRubyEnabled())
+    ret.toggled.connect(ss.setRomajaRubyEnabled)
+    return ret
+
+  @memoizedproperty
+  def hanjaButton(self):
+    ret = QtWidgets.QCheckBox(
+      "%s, %s: %s" %
+      (tr_("Hanja"), my.tr("like this"), u"공주(公主)님"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHanjaRubyEnabled())
+    ret.toggled.connect(ss.setHanjaRubyEnabled)
+    return ret
+
+  # Chinese group
+
+  @memoizedproperty
+  def chineseGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.pinyinButton)
+    layout.addWidget(self.romajiButton)
+    layout.addWidget(self.viButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Chinese text"))
+    ret.setLayout(layout)
+    self._loadChineseGroup()
+    return ret
+
+  @memoizedproperty
+  def pinyinButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s (%s, %s), %s: %s" %
+      (tr_("Pinyin"), mytr_("with tone"), tr_("default"), my.tr("like this"), u"麻婆豆腐（má pó dòu fǔ）"))
+    ret.toggled.connect(self._saveChineseGroup)
+    return ret
+
+  @memoizedproperty
+  def romajiButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s (%s), %s: %s" %
+      (tr_("Pinyin"), mytr_("without tone"), my.tr("like this"), u"麻婆豆腐（ma po dou fu）"))
+    ret.toggled.connect(self._saveChineseGroup)
+    return ret
+
+  @memoizedproperty
+  def viButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (notr_("Phiên âm"), my.tr("like this"), u"麻婆豆腐（ma bà đậu hủ）"))
+    ret.toggled.connect(self._saveChineseGroup)
+    return ret
+
+  def _loadChineseGroup(self):
+    t = settings.global_().chineseRubyType()
+    b = (self.pinyinButton if t == defs.PINYIN_TONE else
+         self.romajiButton if t == defs.PINYIN_ROMAJI else
+         self.viButton if t == defs.PINYIN_VI else
+         self.pinyinButton)
+    if not b.isChecked():
+      b.setChecked(True)
+
+  def _saveChineseGroup(self):
+    t = (defs.PINYIN_TONE if self.pinyinButton.isChecked() else
+         defs.PINYIN_ROMAJI if self.romajiButton.isChecked() else
+         defs.PINYIN_VI if self.viButton.isChecked() else
+         defs.PINYIN_TONE)
+    settings.global_().setChineseRubyType(t)
 
 class RomanTranslationTab(QtWidgets.QDialog):
 

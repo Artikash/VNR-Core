@@ -45,8 +45,11 @@ struct PinyinEntry
   {
     std::wstring ret(latin.begin(), latin.end());
     size_t pos = latin.find_first_of("aeiouv");
-    if (pos != std::string::npos)
+    if (pos != std::string::npos) {
+      if (latin[pos] == 'u' && pos < latin.size() - 1 && ::strchr("aeio", latin[pos + 1]))
+        pos++;
       ret[pos] = tone_char_of(latin[pos], tone);
+    }
     return ret;
   }
 

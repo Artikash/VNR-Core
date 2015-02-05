@@ -154,6 +154,8 @@ Item { id: root_
   property bool rubyTextEnabled
   property bool rubyTranslationEnabled
 
+  property string chineseRubyType
+
   property bool chineseRubyEnabled
   property bool koreanRubyEnabled
 
@@ -220,10 +222,9 @@ Item { id: root_
   }
 
   function renderRuby(text, lang, colorize) { // string, string, bool -> string
-    var chwidth = lang == 'ko' ? 13
+    var chwidth = lang == 'ko' ? 13 : 18 // Korean : Chinese
                 //: lang === 'ja' ? 22
-                : lang.indexOf('zh') === 0 ? 18
-                : 10
+                //: lang.indexOf('zh') === 0 ? 18
     var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
     if (lang == 'ko')
       return bean_.renderKoreanRuby(text
@@ -237,6 +238,7 @@ Item { id: root_
       )
     else
       return bean_.renderChineseRuby(text, lang == 'zhs' // lang needed to determine if it is simplified
+        , root_.chineseRubyType
         , chperline
         , 10 * root_._zoomFactor // ruby size of furigana
         , root_.rubyInverted // ruby inverted

@@ -6,8 +6,10 @@ from unidecode import unidecode
 from unitraits import jpchars
 from hangulconv import hangulconv
 from pinyinconv import pinyinconv
-from opencc.opencc import ja2zht
-import rc
+#from opencc.opencc import ja2zht
+from convutil import zht2zhs
+from hanviet import hanviet
+import defs, rc
 
 __other_punct = u'《》“”‘’"\'，,? 　' # Chinese/English punctuations
 _s_punct = jpchars.s_punct + __other_punct + '.()'
@@ -23,54 +25,41 @@ def _splittext(text, language):
   else:
     return filter(bool, _re_punct.split(text)) # split by space and punctuation
 
-def _toroman(text, language=''):
+def _toroman(text, language='', type=''):
   """
   @param  text  unicode
   @param* language  str
+  @param* type  str
   """
   if not text or not isinstance(text, unicode):
     return text
   if language.startswith('zh'):
-    text = ja2zht(text)
+    #text = ja2zht(text)
     #text = ko2zht(text)
-    if len(text) == 1:
-      t = pinyinconv.lookup(text, tone=True)
-    else:
-      t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=False)
-    text = t if t and t != text else unidecode(text)
+    t = text
+    if type == defs.PINYIN_VI:
+      if language == 'zht':
+        t = zht2zhs(t)
+      if len(t) == 1:
+        t = hanviet.lookupword(t) # faster
+      else:
+        t = hanviet.toreading(t)
+    elif type == defs.PINYIN_TONE:
+      if len(t) == 1:
+        t = pinyinconv.lookup(t, tone=True)
+      else:
+        t = pinyinconv.to_pinyin(t, delim='', tone=True, capital=False)
+    if not t or t == text:
+      t = unidecode(text)
+    if t:
+      text = t.title() # always title
   else:
     text = unidecode(text)
-  if language == 'ko':
-    text = text.title()
+    if language == 'ko':
+      text = text.title()
   return text
 
-def _iterparseruby(text, language, **kwargs):
-  """
-  @param  text  unicode
-  @param  language  str
-  @param* kwargs  passed to Korean
-  @yield  (unicode surface, unicode yomi or None, int groupId or None)
-  """
-  return _iterparseruby_ko(text, **kwargs) if language == 'ko' else _iterparseruby_default(text, language)
-  #return _iterparseruby_default(text, language)
-
-def _iterparseruby_default(text, language):
-  """
-  @param  text  unicode
-  @param  language  str
-  @yield  (unicode surface, unicode yomi or None, int groupId or None)
-  """
-  for group, surface in enumerate(_splittext(text, language)):
-    if len(surface) == 1 and surface in _s_punct:
-      group = None
-      yomi = None
-    else:
-      yomi = _toroman(surface, language)
-      if yomi == surface:
-        yomi = None
-    yield surface, yomi, group
-
-def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
+def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True, **kwargs):
   """
   @param  text  unicode
   @param* romajaRubyEnabled  bool
@@ -97,6 +86,51 @@ def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
       if group is not None:
         group /= 2
       yield surface, yomi, group
+
+def _iterparseruby_zh(text, language, chineseRubyType='', **kwargs):
+  """
+  @param  text  unicode
+  @param  language  str
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  for group, surface in enumerate(_splittext(text, language)):
+    if len(surface) == 1 and surface in _s_punct:
+      group = None
+      yomi = None
+    else:
+      yomi = _toroman(surface, language, chineseRubyType)
+      if yomi == surface:
+        yomi = None
+    yield surface, yomi, group
+
+def _iterparseruby_default(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  for group, surface in enumerate(_splittext(text, language)):
+    if len(surface) == 1 and surface in _s_punct:
+      group = None
+      yomi = None
+    else:
+      yomi = _toroman(surface, language)
+      if yomi == surface:
+        yomi = None
+    yield surface, yomi, group
+
+def _iterparseruby(text, language, **kwargs):
+  """
+  @param  text  unicode
+  @param  language  str
+  @param* kwargs  passed to Korean
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  if language == 'ko':
+    return _iterparseruby_ko(text, **kwargs)
+  if language.startswith('zh'):
+    return _iterparseruby_zh(text, language, **kwargs)
+  return _iterparseruby_default(text, language)
 
 def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=False, center=True, invertRuby=False, **kwargs):
   """
@@ -128,8 +162,8 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   )
 
   PADDING_FACTOR = 0.3
-  LATIN_YOMI_WIDTH = 0.33 # = 2/6
-  KANJI_YOMI_WIDTH = 0.55 # = 1/2
+  LATIN_YOMI_WIDTH = 0.45 # 2/6 ~ 1/2 # tuned for Vietnamese
+  KANJI_YOMI_WIDTH = 0.55 # = 1/2 + 0.05
   # yomi size / surface size
 
   roundRubySize = int(round(rubySize)) or 1
@@ -137,8 +171,8 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   if paddingSize and language == 'ko' and not kwargs.get('romajaRubyEnabled'):
     paddingSize = 0
 
-  romaji = True # this value is not changed
-  yomiWidth = LATIN_YOMI_WIDTH if not romaji else KANJI_YOMI_WIDTH
+  romajiRuby = language.startswith('zh') # use romaji width only for pinyin
+  yomiWidth = LATIN_YOMI_WIDTH if romajiRuby else KANJI_YOMI_WIDTH
 
   for paragraph in text.split('\n'):
     for surface, yomi, group in _iterparseruby(paragraph, language, **kwargs):

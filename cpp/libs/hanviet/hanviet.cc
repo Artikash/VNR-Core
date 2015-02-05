@@ -61,6 +61,9 @@ std::wstring HanVietTranslator::lookupWord(int ch) const
 std::wstring HanVietTranslator::lookupPhrase(const std::wstring &text) const
 { return d_->phraseDic->lookup(text); }
 
+std::wstring HanVietTranslator::toReading(const std::wstring &text) const
+{ return d_->wordDic->translate(text); }
+
 std::wstring HanVietTranslator::translate(const std::wstring &text, bool mark) const
 {
   std::wstring ret = d_->phraseDic->translate(text);

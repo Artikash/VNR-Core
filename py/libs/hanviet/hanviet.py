@@ -43,12 +43,17 @@ def lookupphrase(text):
   """
   return hvt().lookupPhrase(text)
 
+def toreading(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return hvt().toReading(text)
+
 def translate(text, mark=False):
   """
   @param  text  unicode
   @param* delim  unicode
-  @param* tone  bool
-  @param* capital  bool
   @return  unicode
   """
   return hvt().translate(text, mark)

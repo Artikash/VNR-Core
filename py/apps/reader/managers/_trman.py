@@ -767,10 +767,20 @@ class HanVietTranslator(OfflineMachineTranslator):
     self.engine = hanviet
 
   def _translateApi(self, text, fr='', to='', mark=False): # unicode, bol -> unicode
-    text = self.engine.translate(text, bool(mark))
-    text = wide2thin(text)
-    text = text.replace(u'、', ", ")
+    # Wide to thin and padding space as well
+    text = text.replace(u'，', ", ")
     text = text.replace(u'。', ". ")
+    text = text.replace(u'、', ", ")
+    text = text.replace(u'？', "? ")
+    text = text.replace(u'！', "! ")
+    text = text.replace(u'（', " (")
+    text = text.replace(u'）', ") ")
+    text = text.replace(u'”', ' "')
+    text = text.replace(u'”', '" ')
+    text = text.replace(u'‘', " '")
+    text = text.replace(u'’', "' ")
+    text = self.engine.translate(text, bool(mark))
+    #text = wide2thin(text) # not needed
     return text
 
   def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, **kwargs):
