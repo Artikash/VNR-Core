@@ -37,7 +37,7 @@ def create_label(text=""): # unicode -> QLabel
   ret.setAlignment(Qt.AlignRight)
   return ret
 
-ALL_LANGUAGES = 'ja', 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'ar', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+ALL_LANGUAGES = config.LANGUAGES2 # merge zhs
 
 DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
@@ -3446,7 +3446,11 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.pinyinButton)
     layout.addWidget(self.romajiButton)
-    layout.addWidget(self.viButton)
+
+    blans = settings.global_().blockedLanguages()
+    if 'vi' not in blans:
+      layout.addWidget(self.viButton)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Chinese text"))
     ret.setLayout(layout)
     self._loadChineseGroup()
@@ -3693,8 +3697,8 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.romajiButton)
     if 'ru' not in blans:
       layout.addWidget(self.romajiRuButton)
-    #if 'en' not in blans:
-    layout.addWidget(self.trButton)
+    if 'en' not in blans:
+      layout.addWidget(self.trButton)
     if 'ko' not in blans:
       layout.addWidget(self.hangulButton)
     if 'vi' not in blans:

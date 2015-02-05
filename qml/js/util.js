@@ -10,7 +10,7 @@ var LANGUAGES = [
   , 'en'
   , 'zht', 'zhs'
   , 'ko'
-  , 'th', 'vi', 'ms', 'id', 'ar'
+  , 'vi', 'th', 'ms', 'id', 'ar'
   , 'de', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'ru'
 ];
 
@@ -28,8 +28,8 @@ var LANGUAGE_NAME = {
  , zht: "Chinese"
  , zhs: "Simplified Chinese"
  , ko: "Korean"
- , th: "Thai"
  , vi: "Vietnamese"
+ , th: "Thai"
  , ms: "Melayu"
  , id: "Indonesian"
  , ar: "Arabic"
@@ -47,7 +47,7 @@ function languageName(lang) { return LANGUAGE_NAME[lang]; }
 var LATIN_LANGUAGES = [
   'en'
   , 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
-  , 'th', 'vi', 'ms', 'id', 'ar'
+  , 'vi', 'th', 'ms', 'id', 'ar'
 ];
 /**
  *  @param  lang  string
