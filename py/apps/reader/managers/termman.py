@@ -556,6 +556,7 @@ class _TermManager:
     dm = dataman.manager()
 
     gameIds = dm.currentGameIds()
+    dprint("current series gameIds = %s" % gameIds)
     if gameIds:
       gameIds = set(gameIds) # in case it is changed during iteration
 
