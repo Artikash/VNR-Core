@@ -624,6 +624,8 @@ Item { id: root_
         hanjaRubyEnabled: settings_.hanjaRubyEnabled
         romajaRubyEnabled: settings_.romajaRubyEnabled
 
+        chineseRubyType: settings_.chineseRubyType
+
         rubyType: settings_.rubyType
         rubyDic: settings_.meCabDictionary
         caboChaEnabled: settings_.caboChaEnabled

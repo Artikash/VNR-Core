@@ -6801,15 +6801,15 @@ class _DataManager(object):
       g.visitCount += 1
       g.md5 = game.md5 # enforce md5
 
-      for pty in 'id', 'itemId', 'encoding', 'language', 'launchLanguage', 'commentCount', 'path', 'launchPath':
-        v = getattr(g, pty)
+      for pty in 'id', 'itemId', 'encoding', 'language', 'launchLanguage', 'commentCount', 'visitTime', 'path', 'launchPath':
+        v = getattr(game, pty)
         if v:
-          setattr(game, pty, v)
+          setattr(g, pty, v)
 
       for pty in 'nameThreadDisabled', 'hookDisabled', 'threadKept', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'timeZoneEnabled':
-        v = getattr(g, pty)
+        v = getattr(game, pty)
         if v is not None:
-          setattr(game, pty, v)
+          setattr(g, pty, v)
 
       if game.threadSignature:
         g.threadSignature = game.threadSignature
@@ -9584,7 +9584,6 @@ class DataManager(QObject):
       game.md5 = self.queryGameMd5(game.id) or ""
 
     g = d.games.get(game.md5)
-    g.visitTime = skdatetime.current_unixtime()
     oldCommentCount = g.commentCount if g else 0
 
     if not d.updateGame(game):

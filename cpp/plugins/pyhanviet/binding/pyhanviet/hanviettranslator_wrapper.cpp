@@ -259,6 +259,53 @@ static PyObject* Sbk_HanVietTranslatorFunc_lookupWord(PyObject* self, PyObject* 
         return 0;
 }
 
+static PyObject* Sbk_HanVietTranslatorFunc_toReading(PyObject* self, PyObject* pyArg)
+{
+    ::HanVietTranslator* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::HanVietTranslator*)Shiboken::Conversions::cppPointer(SbkpyhanvietTypes[SBK_HANVIETTRANSLATOR_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: toReading(std::wstring)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // toReading(std::wstring)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_HanVietTranslatorFunc_toReading_TypeError;
+
+    // Call function/method
+    {
+        ::std::wstring cppArg0 = ::std::wstring();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // toReading(std::wstring)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            std::wstring cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->toReading(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_HanVietTranslatorFunc_toReading_TypeError:
+        const char* overloads[] = {"std::wstring", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanviet.HanVietTranslator.toReading", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_HanVietTranslatorFunc_translate(PyObject* self, PyObject* args, PyObject* kwds)
 {
     ::HanVietTranslator* cppSelf = 0;
@@ -345,6 +392,7 @@ static PyMethodDef Sbk_HanVietTranslator_methods[] = {
     {"clear", (PyCFunction)Sbk_HanVietTranslatorFunc_clear, METH_NOARGS},
     {"lookupPhrase", (PyCFunction)Sbk_HanVietTranslatorFunc_lookupPhrase, METH_O},
     {"lookupWord", (PyCFunction)Sbk_HanVietTranslatorFunc_lookupWord, METH_O},
+    {"toReading", (PyCFunction)Sbk_HanVietTranslatorFunc_toReading, METH_O},
     {"translate", (PyCFunction)Sbk_HanVietTranslatorFunc_translate, METH_VARARGS|METH_KEYWORDS},
 
     {0} // Sentinel

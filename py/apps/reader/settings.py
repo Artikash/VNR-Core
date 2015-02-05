@@ -249,6 +249,13 @@ class Settings(QSettings):
       self.setValue('InvertRuby', t)
       self.rubyInvertedChanged.emit(t)
 
+  chineseRubyTypeChanged = Signal(unicode)
+  def chineseRubyType(self): return self.value('ChineseRubyType', 'pinyin')
+  def setChineseRubyType(self, value):
+    if value != self.chineseRubyType():
+      self.setValue('ChineseRubyType', value)
+      self.chineseRubyTypeChanged.emit(value)
+
   chineseRubyEnabledChanged = Signal(bool)
   def isChineseRubyEnabled(self): return to_bool(self.value('ChineseRuby', True))
   def setChineseRubyEnabled(self, value):
@@ -1937,6 +1944,8 @@ class SettingsProxy(QObject):
     g.rubyTranslationEnabledChanged.connect(self.rubyTranslationEnabledChanged)
 
     g.chineseRubyEnabledChanged.connect(self.chineseRubyEnabledChanged)
+    g.chineseRubyTypeChanged.connect(self.chineseRubyTypeChanged)
+
     g.koreanRubyEnabledChanged.connect(self.koreanRubyEnabledChanged)
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
     g.hanjaRubyEnabledChanged.connect(self.hanjaRubyEnabledChanged)
@@ -2113,6 +2122,9 @@ class SettingsProxy(QObject):
 
   chineseRubyEnabledChanged = Signal(bool)
   chineseRubyEnabled = bool_property('ChineseRuby', True, notify=chineseRubyEnabledChanged)
+
+  chineseRubyTypeChanged = Signal(unicode)
+  chineseRubyType = unicode_property('ChineseRubyType', 'pinyin', notify=chineseRubyTypeChanged)
 
   grimoireNormalizedXChanged = Signal(float)
   grimoireNormalizedX = float_property('GrimoireNormalizedX', 0.0, notify=grimoireNormalizedXChanged)

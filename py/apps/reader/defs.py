@@ -114,6 +114,10 @@ FURI_HANGUL = 'hangul'
 FURI_THAI = 'thai'
 FURI_TR = 'tr'
 
+PINYIN_TONE = 'pinyin' # pinyin with tone
+PINYIN_ROMAJI = 'romaji' # pinyin without tone
+PINYIN_VI = 'vi' # Phiên âm
+
 # Upload
 UPLOAD_IMAGE_SUFFICES = (
   'jpg',
