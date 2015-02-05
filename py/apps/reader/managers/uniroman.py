@@ -52,7 +52,8 @@ def _toroman(text, language='', type=''):
     if not t or t == text:
       t = unidecode(text)
     if t:
-      text = t.title() # always title
+      text = t
+      #text = t.title() # always title
   else:
     text = unidecode(text)
     if language == 'ko':
@@ -161,18 +162,23 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
     "rgba(0,0,255,40)", # blue
   )
 
-  PADDING_FACTOR = 0.3
+  PADDING_FACTOR = 0.1
   LATIN_YOMI_WIDTH = 0.45 # 2/6 ~ 1/2 # tuned for Vietnamese
   KANJI_YOMI_WIDTH = 0.55 # = 1/2 + 0.05
   # yomi size / surface size
 
-  roundRubySize = int(round(rubySize)) or 1
-  paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
-  if paddingSize and language == 'ko' and not kwargs.get('romajaRubyEnabled'):
-    paddingSize = 0
-
   romajiRuby = language.startswith('zh') # use romaji width only for pinyin
   yomiWidth = LATIN_YOMI_WIDTH if romajiRuby else KANJI_YOMI_WIDTH
+
+  roundRubySize = int(round(rubySize)) or 1
+  paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 # at least 1 pixel
+
+  if invertRuby:
+    paddingSize *= 2 # increase padding size when invert
+    yomiWidth *= 1.2 # increase yomi font size when invert
+
+  #if paddingSize and language == 'ko' and not kwargs.get('romajaRubyEnabled'):
+  #  paddingSize = 0
 
   for paragraph in text.split('\n'):
     for surface, yomi, group in _iterparseruby(paragraph, language, **kwargs):

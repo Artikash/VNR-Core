@@ -651,7 +651,6 @@ Item { id: root_
         googleColor: settings_.googleColor
         naverColor: settings_.naverColor
         baiduColor: settings_.baiduColor
-        lougoColor: settings_.lougoColor
         hanVietColor: settings_.hanVietColor
         jbeijingColor: settings_.jbeijingColor
         fastaitColor: settings_.fastaitColor

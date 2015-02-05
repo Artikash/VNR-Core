@@ -55,7 +55,7 @@ DEBUG = False
 
 ## Parser ##
 
-def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, group=False, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
+def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, group=False, reading=False, feature=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
   """
   @param  text  unicode
   @param  parser  CaboCha.Parser
@@ -67,7 +67,6 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
   @param* feature  bool   whether return feature
   @param* ruby  unicode
   @param* readingTypes  (int type) or [int type]
-  @param* lougo  bool
   @yield  (unicode surface, int type, unicode yomigana or None, unicode feature or None)
   """
   if not parser:
@@ -85,7 +84,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
     if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
       readingTypes = None
   encoding = cabochadef.DICT_ENCODING
-  feature2katana = fmt.getkata
+  feature2kata = fmt.getkata
 
   tree = parser.parse(text.encode(encoding))
   size = tree.token_size()
@@ -119,10 +118,10 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
         if wordtr:
           if not yomigana:
             yomigana = wordtr(surface)
-        if not yomigana and not lougo:
+        if not yomigana: #and not lougo:
           if not feature:
             f = token.feature.decode(encoding, errors='ignore')
-          katagana = feature2katana(f)
+          katagana = feature2kata(f)
           if katagana:
             furigana = None
             if katagana == '*':

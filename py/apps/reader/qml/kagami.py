@@ -207,7 +207,7 @@ class GrimoireBean(QObject):
     fmt = mecabfmt.getfmt(meCabDic)
     render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     return ''.join(
-        render(t, termEnabled=True, features=d.features if feature else None,
+        render(t, features=d.features if feature else None,
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
@@ -595,7 +595,7 @@ class MirageBean(QObject):
     render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     fmt = mecabfmt.getfmt(meCabDic)
     return ''.join( # disable term by default
-        render(t, termEnabled=False, features=d.features if feature else None,
+        render(t, features=d.features if feature else None,
             furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t) or text # return the original text if failed
 

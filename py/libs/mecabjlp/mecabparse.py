@@ -35,7 +35,7 @@ else:
 #  """
 #  return _rx_cypher.sub(u'ウ', text)
 
-def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
   """
   @param  text  unicode
   @param  tagger  MeCabTagger
@@ -46,7 +46,6 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
   @param* feature  bool   whether return feature
   @param* ruby  unicode
   @param* readingTypes  (int type) or [int type]
-  @param* lougo  bool
   @yield  (unicode surface, int type, unicode yomigana or None, unicode feature or None)
   """
   if not tagger:
@@ -64,7 +63,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
     if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
       readingTypes = None
   encoding = mecabdef.DICT_ENCODING
-  feature2katana = fmt.getkata
+  feature2kata = fmt.getkata
   node = tagger.parseToNode(text.encode(encoding))
   while node:
     if node.stat not in (MeCab.MECAB_BOS_NODE, MeCab.MECAB_EOS_NODE):
@@ -88,10 +87,10 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
           if wordtr:
             if not yomigana:
               yomigana = wordtr(surface)
-          if not yomigana and not lougo:
+          if not yomigana:
             if not feature:
               f = node.feature.decode(encoding, errors='ignore')
-            katagana = feature2katana(f)
+            katagana = feature2kata(f)
             if katagana:
               furigana = None
               if katagana == '*':

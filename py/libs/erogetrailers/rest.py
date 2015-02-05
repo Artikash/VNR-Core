@@ -48,6 +48,7 @@ _PATCHES = { # {long id:kw}
   11992: {'amazon': ''}, # 廻る娼館街のリィナ -- delete wrong amazon
   12410: {'releaseDayNumber': '20141230'},
   12712: {'releaseDayNumber': '20141128'},
+  13100: {'releaseDayNumber': '20150130'},
 }
 
 # API is stateless

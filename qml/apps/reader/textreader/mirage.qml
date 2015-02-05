@@ -146,7 +146,6 @@ Item { id: root_
   property color googleColor: settings_.googleColor
   property color naverColor: settings_.naverColor
   property color baiduColor: settings_.baiduColor
-  property color lougoColor: settings_.lougoColor
   property color hanVietColor: settings_.hanVietColor
   property color jbeijingColor: settings_.jbeijingColor
   property color fastaitColor: settings_.fastaitColor
@@ -912,7 +911,6 @@ Item { id: root_
               case 'google': return root_.googleColor
               case 'naver': return root_.naverColor
               case 'baidu': return root_.baiduColor
-              case 'lou': return root_.lougoColor
               default: return root_.translationColor
               }
             default: return  'transparent'

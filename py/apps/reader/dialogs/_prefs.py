@@ -2502,7 +2502,6 @@ class _TextTab(object):
     # 8 Total
     blans = settings.global_().blockedLanguages()
     conf = ( # Name, name, tr, lang
-      #('Lougo', None,  u"ルー語", None),
       ('Bing', None,  "Bing.com", None),
       ('Google', None,  "Google.com", None),
       ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
@@ -2569,7 +2568,6 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 #'Lougo',
                  'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
@@ -3699,6 +3697,8 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.trButton)
     if 'ko' not in blans:
       layout.addWidget(self.hangulButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.viButton)
     if 'th' not in blans:
       layout.addWidget(self.thaiButton)
     #if 'zh' not in blans:
@@ -3764,6 +3764,14 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(self._saveFurigana)
     return ret
 
+  @memoizedproperty
+  def viButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (notr_("Phiên âm"), my.tr("like this"), u"可愛い（khả ái i）"))
+    ret.toggled.connect(self._saveFurigana)
+    return ret
+
   #@memoizedproperty
   #def kanjiButton(self):
   #  ret = QtWidgets.QRadioButton(
@@ -3787,6 +3795,7 @@ class _DictionaryTranslationTab(object):
          self.romajiRuButton if t == defs.FURI_ROMAJI_RU else
          self.hangulButton if t == defs.FURI_HANGUL else
          self.thaiButton if t == defs.FURI_THAI else
+         self.viButton if t == defs.FURI_VI else
          self.trButton if t == defs.FURI_TR else
          #self.kanjiButton if t == defs.FURI_KANJI else
          self.kataganaButton if t == defs.FURI_KATA else
@@ -3799,6 +3808,7 @@ class _DictionaryTranslationTab(object):
          defs.FURI_ROMAJI_RU if self.romajiRuButton.isChecked() else
          defs.FURI_HANGUL if self.hangulButton.isChecked() else
          defs.FURI_THAI if self.thaiButton.isChecked() else
+         defs.FURI_VI if self.viButton.isChecked() else
          defs.FURI_TR if self.trButton.isChecked() else
          #defs.FURI_KANJI if self.kanjiButton.isChecked() else
          defs.FURI_KATA if self.kataganaButton.isChecked() else

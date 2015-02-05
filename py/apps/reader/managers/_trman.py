@@ -21,10 +21,11 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
-from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
+from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
 from unitraits import unichars, jpmacros
+from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
 import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
@@ -149,37 +150,37 @@ class Translator(object):
   def emitSplitTranslations(self, l):
     trman.manager().splitTranslationsReceived.emit(l)
 
-class LougoTranslator(Translator):
-  key = 'lou' # override
-
-  def translate(self, text, to='en', fr='ja', emit=False, **kwargs):
-    """@reimp"""
-    if emit:
-      self.emitLanguages(fr='ja', to='en')
-    if fr != 'ja':
-      return None, None, None
-
-    #if scriptEnabled:
-    #  t = text
-    #  text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
-    #  if emit and text != t:
-    #    self.emitNormalizedText(text)
-
-    tm = termman.manager()
-    t = text
-    text = tm.applySourceTerms(text, to='en', fr='ja', host=self.key)
-    if emit and text != t:
-      self.emitSourceText(text)
-    sub = mecabman.tolou(text)
-    if sub:
-      if emit:
-        self.emitJointTranslation(text)
-      sub = textutil.beautify_subtitle(sub)
-    return sub, 'ja', self.key
-
-  def translateTest(self, text, **kwargs):
-    """@reimp"""
-    return mecabman.tolou(text)
+#class LougoTranslator(Translator):
+#  key = 'lou' # override
+#
+#  def translate(self, text, to='en', fr='ja', emit=False, **kwargs):
+#    """@reimp"""
+#    if emit:
+#      self.emitLanguages(fr='ja', to='en')
+#    if fr != 'ja':
+#      return None, None, None
+#
+#    #if scriptEnabled:
+#    #  t = text
+#    #  text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
+#    #  if emit and text != t:
+#    #    self.emitNormalizedText(text)
+#
+#    tm = termman.manager()
+#    t = text
+#    text = tm.applySourceTerms(text, to='en', fr='ja', host=self.key)
+#    if emit and text != t:
+#      self.emitSourceText(text)
+#    sub = mecabman.tolou(text)
+#    if sub:
+#      if emit:
+#        self.emitJointTranslation(text)
+#      sub = textutil.beautify_subtitle(sub)
+#    return sub, 'ja', self.key
+#
+#  def translateTest(self, text, **kwargs):
+#    """@reimp"""
+#    return mecabman.tolou(text)
 
 ## Text processing
 
@@ -791,15 +792,17 @@ class HanVietTranslator(OfflineMachineTranslator):
       if emit:
         self.emitLanguages(fr=fr, to=to)
       return None, None, None
-    if fr != 'zhs':
-      text = zht2zhs(text)
-      fr = 'zhs'
+    #if fr != 'zhs':
+    #  text = zht2zhs(text)
+    #  fr = 'zhs'
+    fr = 'zhs'
     if emit:
       self.emitLanguages(fr=fr, to=to)
     if not emit:
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
+    text = opencc.ja2zhs(text)
     #with SkProfiler():
     repl = self._escapeText(text, to=to, fr=fr, emit=emit)
     if repl:
@@ -814,7 +817,7 @@ class HanVietTranslator(OfflineMachineTranslator):
 
   def translateTest(self, text, **kwargs):
     """@reimp"""
-    text = ja2zhs(text)
+    text = opencc.ja2zhs(text)
     return self._translateApi(text, mark=True)
 
 class JBeijingTranslator(OfflineMachineTranslator):

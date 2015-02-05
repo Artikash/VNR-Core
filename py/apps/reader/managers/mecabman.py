@@ -51,7 +51,7 @@ _MP = _mecabman.MeCabParser()
 #warmup = _MP.warmup
 parse = _MP.parse
 
-tolou = _MP.tolou
+#tolou = _MP.tolou
 #def tolou(text, **kwargs):
 #  """
 #  @param  text  unicode
@@ -491,6 +491,6 @@ if __name__ == '__main__':
   t = u"ユーザ設定が必要です。"
   t = u"遊星が必要です。"
   t = u"桜小路ルナが必要です。"
-  print 'tolou:', tolou(t)
+  #print 'tolou:', tolou(t)
 
 # EOF

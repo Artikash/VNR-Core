@@ -63,7 +63,6 @@ Item { id: root_
   property color exciteColor
   property color naverColor
   property color baiduColor
-  property color lougoColor
   property color hanVietColor
   property color jbeijingColor
   property color fastaitColor
@@ -1055,7 +1054,6 @@ Item { id: root_
           case 'google': return root_.googleColor
           case 'naver': return root_.naverColor
           case 'baidu': return root_.baiduColor
-          case 'lou': return root_.lougoColor
           default: return root_.translationColor
           }
         default: return  'transparent'
