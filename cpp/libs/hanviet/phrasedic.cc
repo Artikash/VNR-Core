@@ -79,12 +79,13 @@ struct HanVietPhraseEntry
 
 struct Segment
 {
-  std::wstring source;
+  std::wstring source, target;
   const HanVietPhraseEntry *phrase;
 
   Segment() : phrase(nullptr) {}
-  explicit Segment(const std::wstring &source) : source(source), phrase(nullptr) {}
   explicit Segment(const HanVietPhraseEntry *phrase) : phrase(phrase) {}
+  explicit Segment(const std::wstring &source, const std::wstring &target = std::wstring())
+    : source(source), target(target), phrase(nullptr) {}
 };
 
 typedef std::list<Segment> SegmentList;
@@ -224,7 +225,8 @@ std::wstring HanVietPhraseDictionary::translate(const std::wstring &text, bool m
   return ret;
 }
 
-std::wstring HanVietPhraseDictionary::analyze(const std::wstring &text, bool mark, align_fun_t align) const
+std::wstring HanVietPhraseDictionary::analyze(const std::wstring &text, bool mark,
+                                              const align_fun_t &align, const transform_fun_t &fallback) const
 {
   if (text.empty() || !d_->entries) // at least two elements
     return text;
@@ -259,18 +261,28 @@ std::wstring HanVietPhraseDictionary::analyze(const std::wstring &text, bool mar
         break;
       }
     }
-    if (!found)
-      segs.insert(top.it, Segment(source));
+    if (!found) {
+      if (fallback)
+        segs.insert(top.it, Segment(source, fallback(source)));
+      else
+        segs.insert(top.it, Segment(source));
+    }
   }
 
   std::wstring ret;
   BOOST_FOREACH (const auto &seg, segs)
     if (auto p = seg.phrase) {
-      align(p->han, p->first_viet());
+      if (align)
+        align(p->han, p->first_viet());
       ret.append(mark ? p->render() : p->first_viet())
          .push_back(delim);
-    } else
+    } else if (seg.target.empty() || seg.target == seg.source)
       ret.append(seg.source);
+    else {
+      if (align)
+        align(seg.source, seg.target);
+      ret.append(seg.target);
+    }
   return ret;
 }
 

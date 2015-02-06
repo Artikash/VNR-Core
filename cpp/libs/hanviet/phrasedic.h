@@ -44,7 +44,10 @@ public:
 
   // Translate with alignment
   typedef std::function<void (const std::wstring &, const std::wstring &)> align_fun_t;
-  std::wstring analyze(const std::wstring &text, bool mark, align_fun_t align) const;
+  typedef std::function<std::wstring (const std::wstring &)> transform_fun_t;
+  std::wstring analyze(const std::wstring &text, bool mark = false,
+                       const align_fun_t &align = align_fun_t(),
+                       const transform_fun_t &fallback = transform_fun_t()) const;
 };
 
 #endif // PHRASEDIC_H

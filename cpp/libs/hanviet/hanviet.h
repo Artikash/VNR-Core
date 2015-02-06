@@ -6,6 +6,7 @@
 
 #include "sakurakit/skglobal.h"
 #include <string>
+#include <functional>
 
 class HanVietWordDictionary;
 class HanVietPhraseDictionary;
@@ -42,6 +43,11 @@ public:
   std::wstring toReading(const std::wstring &text) const;
 
   std::wstring translate(const std::wstring &text, bool mark = false) const;
+
+  // Translate with alignment
+  typedef std::function<void (const std::wstring &, const std::wstring &)> align_fun_t;
+  std::wstring analyze(const std::wstring &text, bool mark = false,
+                       const align_fun_t &align = align_fun_t());
 };
 
 #endif // HANVIET_H

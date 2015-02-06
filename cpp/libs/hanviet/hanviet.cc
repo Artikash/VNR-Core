@@ -5,8 +5,11 @@
 #include "hanviet/phrasedic.h"
 #include "hanviet/worddic.h"
 #include "unistr/unistr.h"
+#include <functional> // for bind
 //#include <iostream>
 //#include <QDebug>
+
+using namespace std::placeholders; // for _1, _2, etc.
 
 /** Private class */
 
@@ -70,6 +73,13 @@ std::wstring HanVietTranslator::translate(const std::wstring &text, bool mark) c
   ret = d_->wordDic->translate(ret);
   unistr::to_thin(ret);
   return ret;
+}
+
+std::wstring HanVietTranslator::analyze(const std::wstring &text, bool mark, const align_fun_t &align)
+{
+  //unistr::to_thin(text); // not applied
+  auto fallback = std::bind(&HanVietWordDictionary::translate, d_->wordDic, _1);
+  return d_->phraseDic->analyze(text, mark, align, fallback);
 }
 
 // EOF
