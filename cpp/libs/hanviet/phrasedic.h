@@ -6,6 +6,7 @@
 
 #include "sakurakit/skglobal.h"
 #include <string>
+#include <functional>
 
 class HanVietPhraseDictionaryPrivate;
 class HanVietPhraseDictionary
@@ -40,6 +41,10 @@ public:
 
   // Replace the characters according to the script
   std::wstring translate(const std::wstring &text, bool mark = false) const;
+
+  // Translate with alignment
+  typedef std::function<void (const std::wstring &, const std::wstring &)> align_fun_t;
+  std::wstring analyze(const std::wstring &text, bool mark, align_fun_t align) const;
 };
 
 #endif // PHRASEDIC_H

@@ -8,7 +8,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <fstream>
+#include <iterator>
 #include <list>
+#include <stack>
 #include <utility>
 //#include <iostream>
 //#include <QDebug>
@@ -39,13 +41,13 @@ struct HanVietPhraseEntry
   std::wstring first_viet() const
   {
     size_t i = viet.find(CH_VIET_DELIM);
-    return i == std::wstring::npos ? viet : viet.substr(0, i);
+    return i == std::string::npos ? viet : viet.substr(0, i);
   }
 
   std::wstring render() const
   {
     size_t i = viet.find(CH_VIET_DELIM);
-    if (i == std::wstring::npos)
+    if (i == std::string::npos)
       return viet;
     std::wstring first = viet.substr(0, i);
 
@@ -71,6 +73,16 @@ struct HanVietPhraseEntry
        .append(L"</a>");
     return ret;
   }
+};
+
+typedef std::list<const HanVietPhraseEntry *> SegmentList;
+struct SegmentIndex
+{
+  size_t start, length;
+  SegmentList::iterator it;
+
+  explicit SegmentIndex(size_t start = 0, size_t length = 0, SegmentList::iterator it = SegmentList::iterator())
+    : start(start), length(length), it(it) {}
 };
 
 } // unnamed namespace
@@ -197,6 +209,48 @@ std::wstring HanVietPhraseDictionary::translate(const std::wstring &text, bool m
     }
   }
 
+  return ret;
+}
+
+std::wstring HanVietPhraseDictionary::analyze(const std::wstring &text, bool mark, align_fun_t align) const
+{
+  if (text.empty() || !d_->entries) // at least two elements
+    return text;
+
+  enum : wchar_t { delim = L' ' };
+
+  SegmentList segs;
+  std::stack<SegmentIndex> indices;
+
+  indices.push(SegmentIndex(
+       0, text.size(),  segs.end()));
+
+  while (!indices.empty()) {
+    auto top = indices.top();
+    indices.pop();
+    std::wstring source = text.substr(top.start, top.length);
+
+    for (size_t i = 0; i < d_->entry_count; i++) {
+      const auto &e = d_->entries[i];
+      auto pos = source.find(e.han);
+      if (pos != std::string::npos) {
+        segs.insert(top.it, &e);
+        if (pos > 0)
+          indices.push(SegmentIndex(
+              top.start, pos, std::prev(top.it)));
+        size_t offset = pos + e.han.size();
+        if (offset < source.size() - 1)
+          indices.push(SegmentIndex(
+              top.start + offset, top.length - offset, top.it));
+        break;
+      }
+    }
+  }
+
+  std::wstring ret;
+  BOOST_FOREACH (auto p, segs)
+    ret.append(mark ? p->render() : p->first_viet())
+       .push_back(delim);
   return ret;
 }
 

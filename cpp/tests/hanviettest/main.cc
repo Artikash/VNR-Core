@@ -1,6 +1,8 @@
 // main.cc
 // 2/2/2015 jichi
 #include "hanviet/hanviet.h"
+#include "hanviet/phrasedic.h"
+#include "hanviet/worddic.h"
 #include <QtCore>
 
 int main()
@@ -12,13 +14,19 @@ int main()
                phrasedic = dicdir + L"VietPhrase.txt";
 
   std::wstring t;
-  std::wstring s = L"你在说什么？顶。";
+  std::wstring s = L"我说你在说什么？顶。我说";
 
   HanVietTranslator ht;
   ht.addPhraseFile(phrasedic);
   ht.addWordFile(worddic);
 
-  t = ht.translate(s, true);
+  enum : bool { mark = false };
+
+  t = ht.translate(s, mark);
+  qDebug() << QString::fromStdWString(t);
+
+  t = ht.phraseDicionary()->analyze(s, mark, [](const std::wstring &s, const std::wstring &t) {
+  });
   qDebug() << QString::fromStdWString(t);
 
   qDebug() << "leave";
