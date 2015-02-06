@@ -10557,7 +10557,7 @@ bool InsertFocasLensHook()
 }
 
 /** jichi 2/6/2015 Syuntada
- *  Sample game: [140816] [平安亭] カノジョのお母さんは好きですか？-- /HA-18@6944C:kanojo.exe
+ *  Sample game: [140816] [平安亭] カノジョのお母さんは好きですか？ -- /HA-18@6944C:kanojo.exe
  *
  *  /HA-18@6944C:kanojo.exe
  *  - addr: 431180 = 0x6944c
