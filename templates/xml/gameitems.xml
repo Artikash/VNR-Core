@@ -56,6 +56,11 @@
 %	if it.otome
 			<otome>true</otome>
 %	endif
+%	if it.ecchi
+			<ecchi>true</ecchi>
+%	else
+			<ecchi>false</ecchi>
+%	endif
 %	if it.okazu
 			<okazu>true</okazu>
 %	endif

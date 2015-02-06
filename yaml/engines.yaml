@@ -151,6 +151,7 @@ simple:
   - Elf
   - Eushully
   - FELISTELLA PSP
+  #- FocasLens # I am not sure. 幻想人形演舞 cannot go full screen anyway
   - HorkEye
   - Intense PSP
   - Imageepoch2 PSP
@@ -217,8 +218,10 @@ simple:
   - YukaSystem2
 
 single: # single thread
+  # PC
   - AB2Try
   - Eushully
+  - FocasLens
   - HorkEye
   - Rejet
   - SiglusEngine2
@@ -340,6 +343,7 @@ char:
   - EmonEngine
   - Eushully
   - EXP
+  - FocasLens
   - Gesen18
   - HorkEye
   - Intense PSP
@@ -483,6 +487,7 @@ focus:
   - CatSystem2
   - CatSystem3
   - EAGLS
+  - FocasLens
   - HorkEye
   - KAGParser
   - KAGParserEx
