@@ -31,6 +31,7 @@ class _TranslatorManager(object):
     self.yueEnabled = False # translate zh to yue
 
     self.allTranslators = [] # all created translators
+    self.marked = False
 
     self.infoseekEnabled = \
     self.exciteEnabled = \
@@ -305,6 +306,9 @@ class TranslatorManager(QObject):
 
   ## Properties ##
 
+  def isMarked(self): return self.__d.marked
+  def setMarked(self, t): self.__d.marked = t
+
   def language(self): return self.__d.language
   def setLanguage(self, value): self.__d.language = value
 
@@ -558,6 +562,8 @@ class TranslatorManager(QObject):
       return
     d = self.__d
     text = d.normalizeText(text)
+    if mark is None:
+      mark = d.marked
 
     for it in d.iterOfflineTranslators():
       align = [] if it.alignSupported and it.alignEnabled else None

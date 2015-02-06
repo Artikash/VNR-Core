@@ -87,6 +87,9 @@ class _ShioriBean:
           'i18n': i18n,
           'tr': i18n.autotr_,
         })
+    elif type == 'tip':
+      l = filter(bool, (source, target))
+      return ': '.join(l)
 
 #@QmlObject
 class ShioriBean(QObject):
@@ -112,7 +115,7 @@ class ShioriBean(QObject):
   enabled = Property(bool, isEnabled, setEnabled, notify=enabledChanged)
 
   @Slot(unicode, unicode, result=unicode)
-  def renderText(self, text, language):
+  def renderLookup(self, text, language):
     """
     @param  text  Japanese phrase
     @param  language
@@ -132,10 +135,10 @@ class ShioriBean(QObject):
     """
     return self.__d.renderJson(json)
 
-  popupText = Signal(unicode, unicode, int, int)  # text, language, x, y
+  popupLookup = Signal(unicode, unicode, int, int)  # text, language, x, y
   popupJson = Signal(unicode, int, int)  # json, x, y
 
-def popupshiori(text, language, x, y):
+def lookupat(text, language, x, y):
   """
   @param  text  unicode
   @param  x  int
@@ -144,7 +147,7 @@ def popupshiori(text, language, x, y):
   #dprint("x = %s, y = %s" % (x,y))
   if ShioriBean.instance.isEnabled():
     qmldialog.Kagami.instance.raise_()
-    ShioriBean.instance.popupText.emit(text, language, x, y)
+    ShioriBean.instance.popupLookup.emit(text, language, x, y)
 
 def showjsonat(data, x, y):
   """
@@ -185,7 +188,7 @@ class ShioriQmlProxy(QObject):
 
   @Slot(unicode, unicode, int, int)
   def popup(self, language, text, x, y):
-    popupshiori(text, x, y)
+    lookupat(text, x, y)
 
 class ShioriCoffeeProxy(QObject):
   def __init__(self, parent=None):
@@ -193,6 +196,6 @@ class ShioriCoffeeProxy(QObject):
 
   @Slot(unicode, unicode, int, int)
   def popup(self, text, language, x, y):
-    popupshiori(text, language, x, y)
+    lookupat(text, language, x, y)
 
 # EOF

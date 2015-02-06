@@ -12,7 +12,7 @@ import '../../../components' as Components
 import '../share' as Share
 
 Item { id: root_
-  signal yakuAt(string text, string language, int x, int y) // popup honyaku of text at (x, y)
+  signal lookupRequested(string text, string language, int x, int y) // popup honyaku of text at (x, y)
 
   property int contentHeight: shadow_.y + shadow_.height
 
@@ -808,7 +808,7 @@ Item { id: root_
               lastSelectedText = t
               //var gp = Util.itemGlobalPos(parent)
               var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-              root_.yakuAt(t, 'ja', gp.x, gp.y)
+              root_.lookupRequested(t, 'ja', gp.x, gp.y)
             }
           }
 
@@ -822,7 +822,7 @@ Item { id: root_
                 if (root_.popupEnabled && model.language === 'ja') {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                  root_.yakuAt(t, 'ja', gp.x, gp.y)
+                  root_.lookupRequested(t, 'ja', gp.x, gp.y)
                 }
                 if (root_.copyEnabled)
                   textEdit_.copy()

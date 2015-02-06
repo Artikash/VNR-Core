@@ -24,15 +24,40 @@ Rectangle { id: root_
   property bool ignoresFocus: false
   property bool toolTipEnabled: true
 
-  signal yakuAt(string text, string language, int x, int y) // popup honyaku of text at (x, y)
-
   property real globalZoomFactor: 1.0
 
   property real zoomFactor: 1.0
 
   property int defaultWidth //: textEdit_.width / (zoomFactor * globalZoomFactor)
 
+  function popupJson(json, x, y) { // string, int, int ->
+    if (root_.locked)
+      return
+    root_.locked = true
+    var html = bean_.renderJson(json)
+    if (!html) { // thread contention, ignore
+      root_.locked = false
+      return
+    }
+    showPopup(html, x, y, 0.9)
+    root_.locked = false
+  }
+
+  function popupLookup(text, language, x, y) { // string, string, int, int
+    if (root_.locked || !root_.enabled)
+      return
+    root_.locked = true
+    var html = bean_.renderLookup(text, language)
+    if (!html) { // thread contention, ignore
+      root_.locked = false
+      return
+    }
+    showPopup(html, x, y, 1.0)
+    root_.locked = false
+  }
+
   // - Private -
+  property bool locked: false
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
@@ -46,11 +71,14 @@ Rectangle { id: root_
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_HEIGHT: 240 * _zoomFactor
+  property int _MAX_HEIGHT: 240 * _zoomFactor * heightFactor
+
+  property real widthFactor: 1.0
+  property real heightFactor: 1.0
 
   //property int _DEFAULT_WIDTH: 300 * zoomFactor
   property int _MIN_WIDTH: 50 * _zoomFactor
-  property int _MAX_WIDTH: 800 * _zoomFactor
+  property int _MAX_WIDTH: 800 * _zoomFactor * widthFactor
 
   property int _CONTENT_MARGIN: 10
 
@@ -91,7 +119,7 @@ Rectangle { id: root_
 
   Plugin.ShioriBean { id: bean_
     Component.onCompleted: {
-      bean_.popupText.connect(root_.popupText)
+      bean_.popupLookup.connect(root_.popupLookup)
       bean_.popupJson.connect(root_.popupJson)
     }
   }
@@ -144,7 +172,7 @@ Rectangle { id: root_
         var dx = mouseX - pressedX
         var w = textEdit_.width - dx
         if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
-          root_.defaultWidth = w / root_._zoomFactor
+          root_.defaultWidth = w / (root_._zoomFactor * root_.widthFactor)
           root_.x += dx
         }
       }
@@ -169,7 +197,7 @@ Rectangle { id: root_
       if (pressed) {
         var w = textEdit_.width + mouseX - pressedX
         if (w > _MIN_WIDTH && w < _MAX_WIDTH)
-          root_.defaultWidth = w / root_._zoomFactor
+          root_.defaultWidth = w / (root_._zoomFactor * root_.widthFactor)
       }
 
     Desktop.TooltipArea { id: rightResizeTip_
@@ -203,7 +231,7 @@ Rectangle { id: root_
 
     Qt5.TextEdit5 { id: textEdit_
       anchors.centerIn: parent
-      width: root_.defaultWidth * root_._zoomFactor
+      width: root_.defaultWidth * root_._zoomFactor * root_.widthFactor
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
@@ -316,36 +344,17 @@ Rectangle { id: root_
     opacity = 0
   }
 
-  function reset() {
-    //textEdit_.width = _DEFAULT_WIDTH
-  }
-
-  property bool locked: false
-  function popup(text, language, x, y, json) { // string, string, int, int, string
-    if (root_.locked ||
-        !root_.enabled && !json)
-      return
-    root_.locked = true
-    var html = json ? bean_.renderJson(json) : bean_.renderText(text, language)
-    if (!html) { // thread contention, ignore
-      root_.locked = false
-      return
-    }
-    reset()
-    root_.x = x + _X_OFFSET; root_.y = y + _Y_OFFSET
-    textEdit_.text = html
+  function showPopup(text, x, y, w, h) { // string, string, int, int, real, real
+    if (w)
+      root_.widthFactor = w
+    if (h)
+      root_.heightFactor = h
+    root_.x = x + _X_OFFSET
+    root_.y = y + _Y_OFFSET
+    textEdit_.text = text
     //textEdit_.text = bean_.render(text)
     ensureVisible()
     show()
-    root_.locked = false
-  }
-
-  function popupJson(json, x, y) { // string, int, int ->
-    popup('', '', x, y, json)
-  }
-
-  function popupText(text, language, x, y) { // string, string, int, int
-    popup(text, language, x, y)
   }
 
   // So that the popup will not be out of screen
@@ -419,7 +428,7 @@ Rectangle { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          yakuAt(t, 'ja', contextMenu_.popupX, contextMenu_.popupY)
+          popupLookup(t, 'ja', contextMenu_.popupX, contextMenu_.popupY)
       }
     }
 

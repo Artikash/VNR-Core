@@ -18,7 +18,7 @@ int main()
   ht.addPhraseFile(phrasedic);
   ht.addWordFile(worddic);
 
-  t = ht.translate(s);
+  t = ht.translate(s, true);
   qDebug() << QString::fromStdWString(t);
 
   qDebug() << "leave";

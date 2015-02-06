@@ -1127,9 +1127,8 @@ Item { id: root_
       globalZoomFactor: root_.globalZoomFactor
 
       Component.onCompleted: {
-        shiori_.yakuAt.connect(popup)
-        grimoire_.yakuAt.connect(popup)
-        //graffiti_.yakuAt.connect(popup)
+        grimoire_.lookupRequested.connect(popupLookup)
+        grimoire_.jsonPopupRequested.connect(popupJson)
       }
     }
 
@@ -1211,7 +1210,7 @@ Item { id: root_
         , height: 480
       });
       if (mirage) {
-        mirage.yakuAt.connect(shiori_.popup)
+        mirage.lookupRequested.connect(shiori_.popupLookup)
         console.log("kagami.qml: mirage created")
       } else
         console.log("kagami.qml: ERROR: failed to create mirage object")

@@ -4,6 +4,7 @@
 #include "hanviet/phrasedic.h"
 #include "cpputil/cpplocale.h"
 #include "unistr/unichar.h"
+#include "trscript/trescape.h" // cross module include is bad
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <fstream>
@@ -43,7 +44,32 @@ struct HanVietPhraseEntry
 
   std::wstring render() const
   {
-    return first_viet(); // not implemented
+    size_t i = viet.find(CH_VIET_DELIM);
+    if (i == std::wstring::npos)
+      return viet;
+    std::wstring first = viet.substr(0, i);
+
+    std::wstring ret = L"{\"type\":\"tip\"";
+
+    std::string t = ::trescape(han);
+    ret.append(L",\"source\":\"")
+       .append(t.cbegin(), t.cend())
+       .push_back('"');
+
+    t = ::trescape(viet);
+    ret.append(L",\"target\":\"")
+       .append(t.cbegin(), t.cend())
+       .push_back('"');
+
+    ret.push_back('}');
+
+    ret.insert(0, L"<a href='json://");
+    ret.push_back('\'');
+
+    ret.push_back('>');
+    ret.append(first)
+       .append(L"</a>");
+    return ret;
   }
 };
 
