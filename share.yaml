@@ -106,9 +106,10 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
 
-  moment: http://cdn.jsdelivr.net/momentjs/2.8.4/moment-with-locales.min.js
+  moment: http://cdn.jsdelivr.net/momentjs/2.9.0/moment-with-locales.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
-  underscore: http://cdn.jsdelivr.net/lodash/2.4.1/lodash.min.js
+  underscore: http://cdn.jsdelivr.net/lodash/3.0.0/lodash.min.js
+  # Underscore.string has been outdated
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
 
   spin: http://cdn.jsdelivr.net/spinjs/2.0.1/spin.min.js

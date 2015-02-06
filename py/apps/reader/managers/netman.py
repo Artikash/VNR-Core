@@ -390,7 +390,7 @@ class _NetworkManager(object):
               text = el.text
               if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'banner', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
                 setattr(e, tag, text)
-              elif tag in ('otome', 'okazu'):
+              elif tag in ('otome', 'ecchi', 'okazu'):
                 setattr(e, tag, text == 'true')
               elif tag in ('timestamp', 'fileSize', 'topicCount', 'annotCount', 'subtitleCount'):
                 setattr(e, tag, int(text))

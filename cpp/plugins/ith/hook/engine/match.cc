@@ -564,6 +564,10 @@ bool DetermineEngineAtLast()
     InsertAdobeFlash10Hook(); // only v10 might be supported. Otherwise, fallback to Lstr hooks
     return true;
   }
+  if (IthFindFile(L"dat\\*.arc")) { // jichi 2/6/2015
+    InsertFocasLensHook(); // Touhou
+    return true;
+  }
   return false;
 }
 

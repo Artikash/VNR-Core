@@ -803,6 +803,8 @@ class GameInfo(object):
 
   @property
   def ecchi(self): # bool not None
+    if self.ecchi0:
+      return True
     for r in self.trailers, self.freem, self.holyseal, self.dmm, self.amazon, self.dlsite:
       if r:
         return r.ecchi
@@ -1171,7 +1173,7 @@ class GameInfo(object):
         'dlsite.jp' in img or
         'digiket.net' in img or
         'freem.ne.jp' in img or
-        self.otome0 and 'images-amazon.com' in img)
+        'images-amazon.com' in img and (self.otome0 or not self.ecchi0))
 
   @property
   def imageUrl(self): # str or None
@@ -1421,6 +1423,7 @@ class GameItem(object):
     'timestamp',
     'date',
     'otome',
+    'ecchi',
     'okazu',
     'scapeMedian',
     'scapeCount',
@@ -1444,7 +1447,7 @@ class GameItem(object):
   def __init__(self, id=0,
       title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
       timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
-      otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
+      otome=False, ecchi=True, okazu=False, scapeMedian=0, scapeCount=0, tags='',
       topicCount=0, annotCount=0, subtitleCount=0,
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, #easyScoreSum=0, easyScoreCount=0,
     ):
@@ -1460,6 +1463,7 @@ class GameItem(object):
     self.timestamp = timestamp # int
     self.date = date # datetime or None
     self.otome = otome # bool
+    self.ecchi = ecchi # bool
     self.okazu = okazu # int
     self.scapeMedian = scapeMedian # int
     self.scapeCount = scapeCount # int
@@ -6953,7 +6957,7 @@ class _DataManager(object):
               setattr(e, tag, text)
             elif tag == 'keywords': # backward compatibility since 1386059148
               e.tags = text
-            elif tag in ('otome', 'okazu'):
+            elif tag in ('otome', 'ecchi', 'okazu'):
               setattr(e, tag, text == 'true')
             elif tag in ('timestamp', 'fileSize', 'topicCount', 'annotCount', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
               setattr(e, tag, int(text))
