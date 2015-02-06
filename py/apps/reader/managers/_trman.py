@@ -1569,6 +1569,9 @@ class NaverTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
+    if fr == 'zht': # traditional Chinese translation is not good
+      text = zht2zhs(text)
+      fr = 'zhs'
     repl = self._escapeText(text, to=to, fr=fr, emit=emit)
     if repl:
       alignCount = len(align) if align else 0
