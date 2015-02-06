@@ -1305,6 +1305,7 @@ Item { id: root_
             t = root_.splitTranslation(t, model.language)
           if (~t.indexOf("</a>"))
             t = '<style>a{color:"' + root_.fontColor + '"}</style>' + t
+          //clipboardPlugin_.text = t // for debugging purpose
           return t || ""
           //return !t ? "" : root_.shadowEnabled ? t :
           //  '<span style="background-color:rgba(0,0,0,10)">' + t + '</span>'
