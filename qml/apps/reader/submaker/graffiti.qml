@@ -37,7 +37,7 @@ Item { id: root_
   property bool commentVisible: true
   //onCommentVisibleChanged: console.log("graffiti.qml: comment visible =", commentVisible)
 
-  //signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  //signal lookupRequested(string text, int x, int y) // popup honyaku of text at (x, y)
 
   // FIXME: This is supposed to be the count of matched items
   property alias count: listModel_.count
@@ -422,7 +422,7 @@ Item { id: root_
         //      if (t && t !== lastSelectedText) {
         //        lastSelectedText = t
         //        var gp = Util.itemGlobalPos(parent)
-        //        root_.yakuAt(t, mouse.x + gp.x, mouse.y + gp.y)
+        //        root_.lookupRequested(t, mouse.x + gp.x, mouse.y + gp.y)
         //      }
         //    }
         //  }
