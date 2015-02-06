@@ -75,7 +75,19 @@ struct HanVietPhraseEntry
   }
 };
 
-typedef std::list<const HanVietPhraseEntry *> SegmentList;
+// Needed by analysis
+
+struct Segment
+{
+  std::wstring source;
+  const HanVietPhraseEntry *phrase;
+
+  Segment() : phrase(nullptr) {}
+  explicit Segment(const std::wstring &source) : source(source), phrase(nullptr) {}
+  explicit Segment(const HanVietPhraseEntry *phrase) : phrase(phrase) {}
+};
+
+typedef std::list<Segment> SegmentList;
 struct SegmentIndex
 {
   size_t start, length;
@@ -230,27 +242,35 @@ std::wstring HanVietPhraseDictionary::analyze(const std::wstring &text, bool mar
     indices.pop();
     std::wstring source = text.substr(top.start, top.length);
 
+    bool found = false;
     for (size_t i = 0; i < d_->entry_count; i++) {
       const auto &e = d_->entries[i];
       auto pos = source.find(e.han);
       if (pos != std::string::npos) {
-        segs.insert(top.it, &e);
+        segs.insert(top.it, Segment(&e));
         if (pos > 0)
           indices.push(SegmentIndex(
               top.start, pos, std::prev(top.it)));
         size_t offset = pos + e.han.size();
-        if (offset < source.size() - 1)
+        if (offset < source.size())
           indices.push(SegmentIndex(
               top.start + offset, top.length - offset, top.it));
+        found = true;
         break;
       }
     }
+    if (!found)
+      segs.insert(top.it, Segment(source));
   }
 
   std::wstring ret;
-  BOOST_FOREACH (auto p, segs)
-    ret.append(mark ? p->render() : p->first_viet())
-       .push_back(delim);
+  BOOST_FOREACH (const auto &seg, segs)
+    if (auto p = seg.phrase) {
+      align(p->han, p->first_viet());
+      ret.append(mark ? p->render() : p->first_viet())
+         .push_back(delim);
+    } else
+      ret.append(seg.source);
   return ret;
 }
 

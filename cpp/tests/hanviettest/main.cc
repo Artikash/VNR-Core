@@ -14,7 +14,7 @@ int main()
                phrasedic = dicdir + L"VietPhrase.txt";
 
   std::wstring t;
-  std::wstring s = L"我说你在说什么？顶。我说";
+  std::wstring s = L"我说你在说什么？顶。我说。";
 
   HanVietTranslator ht;
   ht.addPhraseFile(phrasedic);
