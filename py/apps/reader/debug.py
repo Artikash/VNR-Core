@@ -44,18 +44,19 @@ def app_exec(timeout=1000):
   QTimer.singleShot(timeout, app.quit)
   return app.exec_()
 
-SHOW_WIDGET = None
-def show(text):
-  global SHOW_WIDGET
-  if not SHOW_WIDGET:
+SHOW_WIDGETS = {}
+def show(text, key=None):
+  w = SHOW_WIDGETS.get(key)
+  if not w:
     from Qt5 import QtWidgets
-    SHOW_WIDGET = QtWidgets.QTextEdit()
-    SHOW_WIDGET.setAcceptRichText(False)
+    SHOW_WIDGETS[key] = w = QtWidgets.QTextEdit()
+    w.setAcceptRichText(False)
   if not isinstance(text, basestring):
     import json
     text = json.dumps(text, indent=2, ensure_ascii=False)
-  SHOW_WIDGET.setPlainText(text)
-  SHOW_WIDGET.show()
+  w.setWindowTitle("key: %s" % key)
+  w.setPlainText(text)
+  w.show()
 
 if __name__ == '__main__':
   print "debug: enter"

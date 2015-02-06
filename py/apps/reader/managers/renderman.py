@@ -110,9 +110,10 @@ class RenderManager:
         #'groupColor': groupColor,
       })
 
-  def _fixHtmlTag(self, left, right):
+  def _fixHtmlTag(self, left, mid, right):
     """Find unbalanced close tag on the right, and move it to the left
     @param  left  unicode
+    @param  mid  unicode
     @param  right  unicode
     @return  (unicode left, unicode right) not None
     """
@@ -124,10 +125,16 @@ class RenderManager:
         if stop > start:
           tag = right[start+2:stop]
           if tag:
-            right = right[:start] + right[stop+1]
+            right = right[:start] + right[stop+1:] # remove right tag
+            if left[-1] == '>':
+              pos = left.rfind('<' + tag)
+              if pos != -1:
+                mid = left[pos:] + mid + "</%s>" % tag
+                left = left[:pos] # remove left tag
+                return left, mid, right
             left += "</%s>" % tag
     except IndexError: pass
-    return left, right
+    return left, mid, right
 
   def _iterParseAlignment(self, text, language, align, alignIndex):
     """
@@ -154,8 +161,9 @@ class RenderManager:
             mid = text[index:index + len(v)]
             text = text[index + len(v):]
             if left:
-              left, text = self._fixHtmlTag(left, text)
-              yield left, None, alignIndex
+              left, mid, text = self._fixHtmlTag(left, mid, text)
+              if left:
+                yield left, None, alignIndex
             alignIndex = i
 
             if isinstance(k, list):

@@ -8,12 +8,12 @@ DEPENDPATH += $$PWD
 #QT += core
 
 HEADERS += \
-  $$PWD/hanviet.h \
+  $$PWD/hanvietconv.h \
   $$PWD/phrasedic.h \
   $$PWD/worddic.h
 
 SOURCES += \
-  $$PWD/hanviet.cc \
+  $$PWD/hanvietconv.cc \
   $$PWD/phrasedic.cc \
   $$PWD/worddic.cc
 

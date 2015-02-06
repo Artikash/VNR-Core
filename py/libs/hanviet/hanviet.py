@@ -50,12 +50,18 @@ def toreading(text):
   """
   return hvt().toReading(text)
 
-def translate(text, mark=False):
+def translate(text, mark=False, align=None):
   """
   @param  text  unicode
   @param* delim  unicode
+  @param* align  list or None
   @return  unicode
   """
-  return hvt().translate(text, mark)
+  if align is not None:
+    ret, l = hvt().analyze(text, mark)
+    align.extend(l)
+    return ret
+  else:
+    return hvt().translate(text, mark)
 
 # EOF

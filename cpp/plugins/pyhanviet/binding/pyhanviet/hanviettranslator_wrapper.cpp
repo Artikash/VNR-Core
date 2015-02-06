@@ -1,6 +1,10 @@
 
 // default includes
 #include <shiboken.h>
+#include <pysidesignal.h>
+#include <pysideproperty.h>
+#include <pyside.h>
+#include <destroylistener.h>
 #include <typeresolver.h>
 #include <typeinfo>
 #include "pyhanviet_python.h"
@@ -8,7 +12,9 @@
 #include "hanviettranslator_wrapper.h"
 
 // Extra includes
-#include <hanviet.h>
+#include <QList>
+#include <QPair>
+#include <hanviettrans.h>
 
 
 
@@ -59,9 +65,9 @@ static PyObject* Sbk_HanVietTranslatorFunc_addPhraseFile(PyObject* self, PyObjec
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: addPhraseFile(std::wstring)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // addPhraseFile(std::wstring)
+    // 0: addPhraseFile(QString)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // addPhraseFile(QString)
     }
 
     // Function signature not found.
@@ -69,11 +75,11 @@ static PyObject* Sbk_HanVietTranslatorFunc_addPhraseFile(PyObject* self, PyObjec
 
     // Call function/method
     {
-        ::std::wstring cppArg0 = ::std::wstring();
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // addPhraseFile(std::wstring)
+            // addPhraseFile(QString)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             bool cppResult = cppSelf->addPhraseFile(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -88,7 +94,7 @@ static PyObject* Sbk_HanVietTranslatorFunc_addPhraseFile(PyObject* self, PyObjec
     return pyResult;
 
     Sbk_HanVietTranslatorFunc_addPhraseFile_TypeError:
-        const char* overloads[] = {"std::wstring", 0};
+        const char* overloads[] = {"unicode", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanviet.HanVietTranslator.addPhraseFile", overloads);
         return 0;
 }
@@ -106,9 +112,9 @@ static PyObject* Sbk_HanVietTranslatorFunc_addWordFile(PyObject* self, PyObject*
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: addWordFile(std::wstring)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // addWordFile(std::wstring)
+    // 0: addWordFile(QString)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // addWordFile(QString)
     }
 
     // Function signature not found.
@@ -116,11 +122,11 @@ static PyObject* Sbk_HanVietTranslatorFunc_addWordFile(PyObject* self, PyObject*
 
     // Call function/method
     {
-        ::std::wstring cppArg0 = ::std::wstring();
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // addWordFile(std::wstring)
+            // addWordFile(QString)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             bool cppResult = cppSelf->addWordFile(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -135,8 +141,88 @@ static PyObject* Sbk_HanVietTranslatorFunc_addWordFile(PyObject* self, PyObject*
     return pyResult;
 
     Sbk_HanVietTranslatorFunc_addWordFile_TypeError:
-        const char* overloads[] = {"std::wstring", 0};
+        const char* overloads[] = {"unicode", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanviet.HanVietTranslator.addWordFile", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_HanVietTranslatorFunc_analyze(PyObject* self, PyObject* args, PyObject* kwds)
+{
+    ::HanVietTranslator* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::HanVietTranslator*)Shiboken::Conversions::cppPointer(SbkpyhanvietTypes[SBK_HANVIETTRANSLATOR_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
+    SBK_UNUSED(pythonToCpp)
+    int numNamedArgs = (kwds ? PyDict_Size(kwds) : 0);
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+    if (numArgs + numNamedArgs > 2) {
+        PyErr_SetString(PyExc_TypeError, "pyhanviet.HanVietTranslator.analyze(): too many arguments");
+        return 0;
+    } else if (numArgs < 1) {
+        PyErr_SetString(PyExc_TypeError, "pyhanviet.HanVietTranslator.analyze(): not enough arguments");
+        return 0;
+    }
+
+    if (!PyArg_ParseTuple(args, "|OO:analyze", &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
+
+    // Overloaded function decisor
+    // 0: analyze(QString,bool)const
+    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[0])))) {
+        if (numArgs == 1) {
+            overloadId = 0; // analyze(QString,bool)const
+        } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1])))) {
+            overloadId = 0; // analyze(QString,bool)const
+        }
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_HanVietTranslatorFunc_analyze_TypeError;
+
+    // Call function/method
+    {
+        if (kwds) {
+            PyObject* value = PyDict_GetItemString(kwds, "mark");
+            if (value && pyArgs[1]) {
+                PyErr_SetString(PyExc_TypeError, "pyhanviet.HanVietTranslator.analyze(): got multiple values for keyword argument 'mark'.");
+                return 0;
+            } else if (value) {
+                pyArgs[1] = value;
+                if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1]))))
+                    goto Sbk_HanVietTranslatorFunc_analyze_TypeError;
+            }
+        }
+        ::QString cppArg0 = ::QString();
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        bool cppArg1 = false;
+        if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
+
+        if (!PyErr_Occurred()) {
+            // analyze(QString,bool)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            QPair<QString, QList<QPair<QString, QString > > > cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->analyze(cppArg0, cppArg1);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkpyhanvietTypeConverters[SBK_PYHANVIET_QPAIR_QSTRING_QLIST_QPAIR_QSTRING_QSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_HanVietTranslatorFunc_analyze_TypeError:
+        const char* overloads[] = {"unicode, bool = false", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyhanviet.HanVietTranslator.analyze", overloads);
         return 0;
 }
 
@@ -178,9 +264,9 @@ static PyObject* Sbk_HanVietTranslatorFunc_lookupPhrase(PyObject* self, PyObject
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: lookupPhrase(std::wstring)const
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // lookupPhrase(std::wstring)const
+    // 0: lookupPhrase(QString)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // lookupPhrase(QString)const
     }
 
     // Function signature not found.
@@ -188,15 +274,15 @@ static PyObject* Sbk_HanVietTranslatorFunc_lookupPhrase(PyObject* self, PyObject
 
     // Call function/method
     {
-        ::std::wstring cppArg0 = ::std::wstring();
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // lookupPhrase(std::wstring)const
+            // lookupPhrase(QString)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->lookupPhrase(cppArg0);
+            QString cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->lookupPhrase(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -207,7 +293,7 @@ static PyObject* Sbk_HanVietTranslatorFunc_lookupPhrase(PyObject* self, PyObject
     return pyResult;
 
     Sbk_HanVietTranslatorFunc_lookupPhrase_TypeError:
-        const char* overloads[] = {"std::wstring", 0};
+        const char* overloads[] = {"unicode", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanviet.HanVietTranslator.lookupPhrase", overloads);
         return 0;
 }
@@ -241,9 +327,9 @@ static PyObject* Sbk_HanVietTranslatorFunc_lookupWord(PyObject* self, PyObject* 
         if (!PyErr_Occurred()) {
             // lookupWord(int)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->lookupWord(cppArg0);
+            QString cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->lookupWord(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -272,9 +358,9 @@ static PyObject* Sbk_HanVietTranslatorFunc_toReading(PyObject* self, PyObject* p
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: toReading(std::wstring)const
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // toReading(std::wstring)const
+    // 0: toReading(QString)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // toReading(QString)const
     }
 
     // Function signature not found.
@@ -282,15 +368,15 @@ static PyObject* Sbk_HanVietTranslatorFunc_toReading(PyObject* self, PyObject* p
 
     // Call function/method
     {
-        ::std::wstring cppArg0 = ::std::wstring();
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // toReading(std::wstring)const
+            // toReading(QString)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->toReading(cppArg0);
+            QString cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->toReading(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -301,7 +387,7 @@ static PyObject* Sbk_HanVietTranslatorFunc_toReading(PyObject* self, PyObject* p
     return pyResult;
 
     Sbk_HanVietTranslatorFunc_toReading_TypeError:
-        const char* overloads[] = {"std::wstring", 0};
+        const char* overloads[] = {"unicode", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanviet.HanVietTranslator.toReading", overloads);
         return 0;
 }
@@ -335,12 +421,12 @@ static PyObject* Sbk_HanVietTranslatorFunc_translate(PyObject* self, PyObject* a
 
 
     // Overloaded function decisor
-    // 0: translate(std::wstring,bool)const
-    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], (pyArgs[0])))) {
+    // 0: translate(QString,bool)const
+    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[0])))) {
         if (numArgs == 1) {
-            overloadId = 0; // translate(std::wstring,bool)const
+            overloadId = 0; // translate(QString,bool)const
         } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1])))) {
-            overloadId = 0; // translate(std::wstring,bool)const
+            overloadId = 0; // translate(QString,bool)const
         }
     }
 
@@ -360,17 +446,17 @@ static PyObject* Sbk_HanVietTranslatorFunc_translate(PyObject* self, PyObject* a
                     goto Sbk_HanVietTranslatorFunc_translate_TypeError;
             }
         }
-        ::std::wstring cppArg0 = ::std::wstring();
+        ::QString cppArg0 = ::QString();
         pythonToCpp[0](pyArgs[0], &cppArg0);
         bool cppArg1 = false;
         if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // translate(std::wstring,bool)const
+            // translate(QString,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->translate(cppArg0, cppArg1);
+            QString cppResult = const_cast<const ::HanVietTranslator*>(cppSelf)->translate(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkpyhanvietTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -381,7 +467,7 @@ static PyObject* Sbk_HanVietTranslatorFunc_translate(PyObject* self, PyObject* a
     return pyResult;
 
     Sbk_HanVietTranslatorFunc_translate_TypeError:
-        const char* overloads[] = {"std::wstring, bool = false", 0};
+        const char* overloads[] = {"unicode, bool = false", 0};
         Shiboken::setErrorAboutWrongArguments(args, "pyhanviet.HanVietTranslator.translate", overloads);
         return 0;
 }
@@ -389,6 +475,7 @@ static PyObject* Sbk_HanVietTranslatorFunc_translate(PyObject* self, PyObject* a
 static PyMethodDef Sbk_HanVietTranslator_methods[] = {
     {"addPhraseFile", (PyCFunction)Sbk_HanVietTranslatorFunc_addPhraseFile, METH_O},
     {"addWordFile", (PyCFunction)Sbk_HanVietTranslatorFunc_addWordFile, METH_O},
+    {"analyze", (PyCFunction)Sbk_HanVietTranslatorFunc_analyze, METH_VARARGS|METH_KEYWORDS},
     {"clear", (PyCFunction)Sbk_HanVietTranslatorFunc_clear, METH_NOARGS},
     {"lookupPhrase", (PyCFunction)Sbk_HanVietTranslatorFunc_lookupPhrase, METH_O},
     {"lookupWord", (PyCFunction)Sbk_HanVietTranslatorFunc_lookupWord, METH_O},

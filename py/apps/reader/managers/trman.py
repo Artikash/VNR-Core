@@ -88,9 +88,6 @@ class _TranslatorManager(object):
           abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
-  def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
-
-  @memoizedproperty
   def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator())
 
   @memoizedproperty
@@ -110,6 +107,10 @@ class _TranslatorManager(object):
   @memoizedproperty
   def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(
       postprocess=self.postprocess))
+
+  @memoizedproperty
+  def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator(
+      alignEnabled=self.getAlignEnabled('hanviet')))
 
   @memoizedproperty
   def googleTranslator(self):
@@ -374,6 +375,9 @@ class TranslatorManager(QObject):
 
   def isGoogleAlignEnabled(self): return self.__d.getAlignEnabled('google')
   def setGoogleAlignEnabled(self, t): self.__d.setAlignEnabled('google', t)
+
+  def isHanVietAlignEnabled(self): return self.__d.getAlignEnabled('hanviet')
+  def setHanVietAlignEnabled(self, t): self.__d.setAlignEnabled('hanviet', t)
 
   def isInfoseekAlignEnabled(self): return self.__d.getAlignEnabled('infoseek')
   def setInfoseekAlignEnabled(self, t): self.__d.setAlignEnabled('infoseek', t)

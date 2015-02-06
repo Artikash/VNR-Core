@@ -4,7 +4,7 @@
 #
 # Though Qt is not indispensible, it's containers could same memory.
 
-CONFIG += pyplugin shiboken noqt
+CONFIG += pysideplugin noqtgui
 include(../../../config.pri)
 include($$LIBDIR/hanviet/hanviet.pri)
 
@@ -27,11 +27,13 @@ TEMPLATE = lib
 TARGET = pyhanviet
 
 HEADERS += \
+  hanviettrans.h \
   pyhanviet_config.h \
   $$SRCPATH/hanviettranslator_wrapper..h \
   $$SRCPATH/pyhanviet_python.h
 
 SOURCES += \
+  hanviettrans.cc \
   $$SRCPATH/hanviettranslator_wrapper.cpp \
   $$SRCPATH/pyhanviet_module_wrapper.cpp
 
