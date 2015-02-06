@@ -807,7 +807,7 @@ class HanVietTranslator(OfflineMachineTranslator):
     repl = self._escapeText(text, to=to, fr=fr, emit=emit)
     if repl:
       repl = self._translate(emit, repl,
-          partial(self._translateApi, mark=True), # always enable html mark
+          partial(self._translateApi, mark=mark),
           to, fr, async) # 0.1 seconds
       if repl:
         repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit) # 0.1 seconds
@@ -818,7 +818,7 @@ class HanVietTranslator(OfflineMachineTranslator):
   def translateTest(self, text, **kwargs):
     """@reimp"""
     text = opencc.ja2zhs(text)
-    return self._translateApi(text, mark=True)
+    return self._translateApi(text, mark=False)
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override

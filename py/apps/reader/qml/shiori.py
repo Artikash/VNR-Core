@@ -87,6 +87,9 @@ class _ShioriBean:
           'i18n': i18n,
           'tr': i18n.autotr_,
         })
+    elif type == 'tip':
+      l = filter(bool, (source, target))
+      return ': '.join(l)
 
 #@QmlObject
 class ShioriBean(QObject):

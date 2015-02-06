@@ -680,6 +680,9 @@ class _MainObject(object):
     ret.setLanguage(ss.userLanguage())
     ss.userLanguageChanged.connect(ret.setLanguage)
 
+    ret.setMarked(ss.isTermMarked())
+    ss.termMarkedChanged.connect(ret.setMarked)
+
     ret.setYueEnabled(ss.isYueEnabled())
     ss.yueEnabledChanged.connect(ret.setYueEnabled)
 

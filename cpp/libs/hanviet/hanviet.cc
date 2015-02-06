@@ -66,7 +66,7 @@ std::wstring HanVietTranslator::toReading(const std::wstring &text) const
 
 std::wstring HanVietTranslator::translate(const std::wstring &text, bool mark) const
 {
-  std::wstring ret = d_->phraseDic->translate(text);
+  std::wstring ret = d_->phraseDic->translate(text, mark);
   ret = d_->wordDic->translate(ret);
   unistr::to_thin(ret);
   return ret;

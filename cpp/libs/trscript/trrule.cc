@@ -2,24 +2,11 @@
 // 9/20/2014 jichi
 
 #include "trscript/trrule.h"
-#include "cppjson/jsonescape.h"
+#include "trscript/trescape.h"
 
 #define SK_NO_QT
 #define DEBUG "trrule.cc"
 #include "sakurakit/skdebug.h"
-
-// Helpers
-namespace { // unnamed
-
-inline std::string escape(const std::wstring &t)
-{
-  std::string r = cpp_json::escape_basic_string(t, true); // true = escape all chars
-  if (r.find('\'') != std::string::npos)
-    boost::replace_all(r, "'", "\\'");
-  return r;
-}
-
-} // unnamed namespace
 
 // Construction
 
@@ -79,13 +66,13 @@ std::wstring TranslationScriptRule::render_target() const
   // do not save regex pattern to save memory
   if (!is_regex() && !source.empty()
       && !(source.size() > 1 && ::isdigit(source[source.size() - 2]))) { // do not save escaped floating number
-    std::string s = escape(source);
+    std::string s = ::trescape(source);
     ret.append(L",\"source\":\"")
        .append(s.cbegin(), s.cend())
        .push_back('"');
   }
   if (!target.empty()) {
-    std::string s = escape(target);
+    std::string s = ::trescape(target);
     ret.append(L",\"target\":\"")
        .append(s.cbegin(), s.cend())
        .push_back('"');
