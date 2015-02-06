@@ -2870,6 +2870,8 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       r += 1
       grid.addWidget(self.hanVietBrowseButton, r, 0)
       grid.addWidget(self.hanVietButton, r, 1)
+      r += 1
+      grid.addWidget(self.hanVietRubyButton, r, 1)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     ret.setLayout(grid)
@@ -3104,6 +3106,15 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
   @memoizedproperty
   def hanVietBrowseButton(self):
     return self._createBrowseButton(config.HANVIET_DIC_LOCATION)
+  @memoizedproperty
+  def hanVietRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHanVietRubyEnabled())
+    ret.toggled.connect(ss.setHanVietRubyEnabled)
+    ret.setEnabled(ss.isHanVietEnabled())
+    ss.hanVietEnabledChanged.connect(ret.setEnabled)
+    return ret
 
   @memoizedproperty
   def atlasButton(self):

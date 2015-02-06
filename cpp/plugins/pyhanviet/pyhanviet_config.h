@@ -15,8 +15,8 @@
 #endif // __clang__
 
 //#include <PySide/globalreceiver.h>
-//#include <pyside_global.h>  // Essential for Qt applications
+#include <pyside_global.h>  // Essential for Qt applications
 //#include <QtCore>
-#include "hanviet/hanviet.h"
+#include "hanviettrans.h"
 
 // EOF

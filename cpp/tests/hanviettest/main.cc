@@ -1,6 +1,6 @@
 // main.cc
 // 2/2/2015 jichi
-#include "hanviet/hanviet.h"
+#include "hanviet/hanvietconv.h"
 #include "hanviet/phrasedic.h"
 #include "hanviet/worddic.h"
 #include <functional>
@@ -17,9 +17,10 @@ int main()
                phrasedic = dicdir + L"VietPhrase.txt";
 
   std::wstring t;
-  std::wstring s = L"我说你在说什么？顶。我说。麻婆豆腐";
+  //std::wstring s = L"我说你在说什么？顶。我说。麻婆豆腐";
+  std::wstring s = L"以及玻璃窗上的店名──『LaSoleil』。";
 
-  HanVietTranslator ht;
+  HanVietConverter ht;
   ht.addPhraseFile(phrasedic);
   ht.addWordFile(worddic);
 
@@ -31,6 +32,7 @@ int main()
   auto trans = std::bind(&HanVietWordDictionary::translate, ht.wordDicionary(), _1);
 
   t = ht.phraseDicionary()->analyze(s, mark, [](const std::wstring &s, const std::wstring &t) {
+    qDebug() << "align:" << QString::fromStdWString(s) << "=>" << QString::fromStdWString(t);
   }, trans);
   qDebug() << QString::fromStdWString(t);
 

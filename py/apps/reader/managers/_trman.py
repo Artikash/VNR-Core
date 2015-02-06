@@ -761,13 +761,16 @@ class EzTranslator(OfflineMachineTranslator):
 
 class HanVietTranslator(OfflineMachineTranslator):
   key = 'hanviet' # override
+  alignSupported = True # override
 
-  def __init__(self, **kwargs):
+  def __init__(self, alignEnabled=False, **kwargs):
     super(HanVietTranslator, self).__init__(**kwargs)
+    self.alignEnabled = alignEnabled
+
     from hanviet import hanviet
     self.engine = hanviet
 
-  def _translateApi(self, text, fr='', to='', mark=False): # unicode, bol -> unicode
+  def _translateApi(self, text, fr='', to='', mark=False, align=None): # unicode, bol -> unicode
     # Wide to thin and padding space as well
     text = text.replace(u'，', ", ")
     text = text.replace(u'。', ". ")
@@ -780,11 +783,11 @@ class HanVietTranslator(OfflineMachineTranslator):
     text = text.replace(u'”', '" ')
     text = text.replace(u'‘', " '")
     text = text.replace(u'’', "' ")
-    text = self.engine.translate(text, bool(mark))
+    text = self.engine.translate(text, mark=bool(mark), align=align)
     #text = wide2thin(text) # not needed
     return text
 
-  def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, **kwargs):
+  def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, align=None, **kwargs):
     """@reimp"""
     async = False # disable async
     to = 'vi'
@@ -808,7 +811,7 @@ class HanVietTranslator(OfflineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           partial(self._translateApi, mark=mark),
-          to, fr, async) # 0.1 seconds
+          to, fr, async, align=align)
       if repl:
         repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit) # 0.1 seconds
         self.cache.update(text, repl)

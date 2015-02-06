@@ -731,6 +731,9 @@ class _MainObject(object):
     ret.setHanVietEnabled(ss.isHanVietEnabled())
     ss.hanVietEnabledChanged.connect(ret.setHanVietEnabled)
 
+    ret.setHanVietAlignEnabled(ss.isHanVietRubyEnabled())
+    ss.hanVietRubyEnabledChanged.connect(ret.setHanVietAlignEnabled)
+
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
 

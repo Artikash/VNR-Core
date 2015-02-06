@@ -1,7 +1,7 @@
-// hanviet.cc
+// hanvietconv.cc
 // 2/2/2015 jichi
 
-#include "hanviet/hanviet.h"
+#include "hanviet/hanvietconv.h"
 #include "hanviet/phrasedic.h"
 #include "hanviet/worddic.h"
 #include "unistr/unistr.h"
@@ -13,18 +13,18 @@ using namespace std::placeholders; // for _1, _2, etc.
 
 /** Private class */
 
-class HanVietTranslatorPrivate
+class HanVietConverterPrivate
 {
 public:
   HanVietWordDictionary *wordDic;
   HanVietPhraseDictionary *phraseDic;
 
-  HanVietTranslatorPrivate()
+  HanVietConverterPrivate()
     : wordDic(new HanVietWordDictionary)
     , phraseDic(new HanVietPhraseDictionary)
   {}
 
-  ~HanVietTranslatorPrivate()
+  ~HanVietConverterPrivate()
   {
     delete wordDic;
     delete phraseDic;
@@ -35,39 +35,45 @@ public:
 
 // Construction
 
-HanVietTranslator::HanVietTranslator() : d_(new D) {}
-HanVietTranslator::~HanVietTranslator() { delete d_; }
+HanVietConverter::HanVietConverter() : d_(new D) {}
+HanVietConverter::~HanVietConverter() { delete d_; }
 
-void HanVietTranslator::clear()
+void HanVietConverter::clear()
 {
   d_->wordDic->clear();
   d_->phraseDic->clear();
 }
 
-HanVietWordDictionary *HanVietTranslator::wordDicionary() const
+HanVietWordDictionary *HanVietConverter::wordDicionary() const
 { return d_->wordDic; }
 
-HanVietPhraseDictionary *HanVietTranslator::phraseDicionary() const
+HanVietPhraseDictionary *HanVietConverter::phraseDicionary() const
 { return d_->phraseDic; }
 
-bool HanVietTranslator::addWordFile(const std::wstring &path)
+size_t HanVietConverter::wordSize() const
+{ return d_->wordDic->size(); }
+
+size_t HanVietConverter::phraseSize() const
+{ return d_->phraseDic->size(); }
+
+bool HanVietConverter::addWordFile(const std::wstring &path)
 { return d_->wordDic->addFile(path); }
 
-bool HanVietTranslator::addPhraseFile(const std::wstring &path)
+bool HanVietConverter::addPhraseFile(const std::wstring &path)
 { return d_->phraseDic->addFile(path); }
 
 // Conversion
 
-std::wstring HanVietTranslator::lookupWord(int ch) const
+std::wstring HanVietConverter::lookupWord(int ch) const
 { return d_->wordDic->lookup(ch); }
 
-std::wstring HanVietTranslator::lookupPhrase(const std::wstring &text) const
+std::wstring HanVietConverter::lookupPhrase(const std::wstring &text) const
 { return d_->phraseDic->lookup(text); }
 
-std::wstring HanVietTranslator::toReading(const std::wstring &text) const
+std::wstring HanVietConverter::toReading(const std::wstring &text) const
 { return d_->wordDic->translate(text); }
 
-std::wstring HanVietTranslator::translate(const std::wstring &text, bool mark) const
+std::wstring HanVietConverter::translate(const std::wstring &text, bool mark) const
 {
   std::wstring ret = d_->phraseDic->translate(text, mark);
   ret = d_->wordDic->translate(ret);
@@ -75,7 +81,7 @@ std::wstring HanVietTranslator::translate(const std::wstring &text, bool mark) c
   return ret;
 }
 
-std::wstring HanVietTranslator::analyze(const std::wstring &text, bool mark, const align_fun_t &align)
+std::wstring HanVietConverter::analyze(const std::wstring &text, bool mark, const align_fun_t &align) const
 {
   //unistr::to_thin(text); // not applied
   auto fallback = std::bind(&HanVietWordDictionary::translate, d_->wordDic, _1);

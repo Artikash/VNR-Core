@@ -3,7 +3,7 @@
 
 #include <shiboken.h>
 
-#include <hanviet.h>
+#include <hanviettrans.h>
 
 #endif // SBK_HANVIETTRANSLATOR_H
 

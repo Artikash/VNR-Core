@@ -1322,6 +1322,14 @@ class Settings(QSettings):
       self.hanVietEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
+  hanVietRubyEnabledChanged = Signal(bool)
+  def isHanVietRubyEnabled(self):
+    return to_bool(self.value('HanVietRubyEnabled'))
+  def setHanVietRubyEnabled(self, value):
+    if value != self.isHanVietRubyEnabled():
+      self.setValue('HanVietRubyEnabled', value)
+      self.hanVietRubyEnabledChanged.emit(value)
+
   atlasEnabledChanged = Signal(bool)
   def isAtlasEnabled(self):
     return to_bool(self.value('AtlasEnabled'))
