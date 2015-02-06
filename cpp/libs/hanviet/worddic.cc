@@ -78,6 +78,8 @@ std::wstring HanVietWordDictionary::translate(const std::wstring &text) const
 {
   if (text.empty() || d_->map.empty())
     return text;
+  if (text.size() == 1)
+    return lookup(text[0]);
 
   enum : wchar_t { delim = L' ' };
 
