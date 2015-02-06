@@ -793,9 +793,9 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
 
   @memoizedproperty
   def ntleasButton(self):
-    ret = QtWidgets.QRadioButton("%s (%s)" % (
+    ret = QtWidgets.QRadioButton("%s (%s, %s)" % (
         my.tr("Use {0} to change game locale").format(notr_("Ntleas")),
-        tr_("download")))
+        tr_("download"), tr_("recommended")))
     #if features.ADMIN == False:
     #  skqss.class_(ret, 'warning')
     ret.toggled.connect(self._saveLauncher)

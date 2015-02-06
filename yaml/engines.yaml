@@ -201,6 +201,7 @@ simple:
   - SystemC
   - System43
   - SystemAoi
+  - Syuntada
   - Taskforce2
   - TinkerBell0
   - TinkerBell1
@@ -388,6 +389,7 @@ char:
   - System40
   - System43
   - SystemC
+  - Syuntada
   - TanukiSoft
   - Taskforce2
   - Tenco
@@ -496,6 +498,7 @@ focus:
   - Majiro2
   - SiglusEngine2
   - SiglusEngine3
+  - Syuntada
   - WillPlus
   - YU-RIS2
 # No focus:
