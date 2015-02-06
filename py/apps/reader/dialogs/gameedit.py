@@ -331,6 +331,13 @@ By default it is the same as the executable of the game process."""))
   @memoizedproperty
   def loaderGroup(self):
     layout = QtWidgets.QVBoxLayout()
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(tr_("Locale") + ":"))
+    row.addWidget(self.launchLanguageEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
     layout.addWidget(self.defaultLoaderButton)
     layout.addWidget(self.disableLoaderButton)
     layout.addWidget(self.applocButton)
@@ -338,18 +345,6 @@ By default it is the same as the executable of the game process."""))
     layout.addWidget(self.ntleasButton)
     layout.addWidget(self.ntleaButton)
     layout.addWidget(self.localeSwitchButton)
-
-    #introLabel = QtWidgets.QLabel(my.tr(
-    #  "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
-    # ))
-    #introLabel.setWordWrap(True)
-    #layout.addWidget(introLabel)
-
-    row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Locale") + ":"))
-    row.addWidget(self.launchLanguageEdit)
-    row.addStretch()
-    layout.addLayout(row)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)

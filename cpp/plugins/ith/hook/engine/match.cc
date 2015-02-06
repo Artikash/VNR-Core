@@ -326,6 +326,11 @@ bool DetermineEngineByFile3()
 
 bool DetermineEngineByFile4()
 {
+  if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
+    //ConsoleOutput("vnreng: IGNORE EAGLS");
+    InsertEaglsHook();
+    return true;
+  }
   if (IthCheckFile(L"bmp.pak") && IthCheckFile(L"dsetup.dll")) {
     InsertDebonosuHook();
     return true;
@@ -359,13 +364,15 @@ bool DetermineEngineByFile4()
     InsertYukaSystem2Hook();
     return true;
   }
-  if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
-    //ConsoleOutput("vnreng: IGNORE EAGLS");
-    InsertEaglsHook();
-    return true;
-  }
   if (IthFindFile(L"model\\*.hed")) { // jichi 9/8/2014: EXP
     InsertExpHook();
+    return true;
+  }
+  // jichi 2/6/2015 平安亭
+  // dPi.dat, dPih.dat, dSc.dat, dSch.dat, dSo.dat, dSoh.dat, dSy.dat
+  //if (IthCheckFile(L"dSoh.dat")) { // no idea why this file does not work
+  if (IthCheckFile(L"dSch.dat")) {
+    InsertSyuntadaHook();
     return true;
   }
   return false;

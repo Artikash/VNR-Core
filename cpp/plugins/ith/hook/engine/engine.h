@@ -129,14 +129,15 @@ bool InsertRREHook();           // RunrunEngine: rrecfg.rcf
 bool InsertShinaHook();         // ShinaRio: Rio.ini
 bool InsertShinyDaysHook();     // ShinyDays
 bool InsertElfHook();           // elf: Silky.exe
-bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
+bool InsertScenarioPlayerHook();// sol-fa-soft: *.iar && *.sec5
 bool InsertSiglusHook();        // SiglusEngine: SiglusEngine.exe
 bool InsertSideBHook();         // SideB: Copyright side-B
+bool InsertSyuntadaHook();      // Syuntada: dSoh.dat
+bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
 bool InsertTanukiHook();        // Tanuki: *.tak
 bool InsertTaskforce2Hook();    // Taskforce2.exe
 bool InsertTencoHook();         // Tenco: Check.mdx
 bool InsertTriangleHook();      // Triangle: Execle.exe
-bool InsertScenarioPlayerHook();// sol-fa-soft: *.iar && *.sec5
 bool InsertYukaSystem2Hook();   // YukaSystem2: *.ykc
 bool InsertYurisHook();         // YU-RIS: *.ypf
 bool InsertWillPlusHook();      // WillPlus: Rio.arc
