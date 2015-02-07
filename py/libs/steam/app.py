@@ -87,7 +87,20 @@ class AppApi(object):
         'ratingValue': self._parseratingvalue(h),
       }
       ret.update(self._iterparsefields(h))
+      if 'developer' in ret:
+        ret['developer'] = self._fixbrand(ret['developer'])
       return ret
+
+  _rx_brand = re.compile(r', ?inc$', re.IGNORECASE)
+  def _fixbrand(self, t):
+    """
+    @param  unicode
+    @return  unicode
+    """
+    t = self._rx_brand.sub('', t)
+    if t[-1] == u'®':
+      t = t[:-1]
+    return t
 
   _re_fields = (
     # Example:
