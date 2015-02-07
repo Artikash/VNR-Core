@@ -11,17 +11,6 @@ DesktopEx.MultiComboBox { id: root_
 
   // - Private -
 
-  Component.onCompleted: {
-    for (var i in menuItems) {
-      var item = menuItems[i]
-      if (~selectedValues.indexOf(item.value))
-        item.checked = true
-    }
-  }
-
-  //seperatorText: "|"
-  emptyText: "*"
-
   TermView.HostMenuItem { id: i1, value: 'bing' }
   TermView.HostMenuItem { id: i2, value: 'google' }
   TermView.HostMenuItem { id: i3, value: 'lecol' }
@@ -40,6 +29,24 @@ DesktopEx.MultiComboBox { id: root_
 
   menuItems: [i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15]
 
+  //seperatorText: "|"
+  emptyText: "*"
+
+  property string seperator: ','
+
+  Component.onCompleted: {
+    if (selectedValues) {
+      enabled = false
+      var l = selectedValues.split(seperator)
+      for (var i in menuItems) {
+        var item = menuItems[i]
+        if (~l.indexOf(item.value))
+          item.checked = true
+      }
+      enabled = true
+    }
+  }
+
   onSelectionChanged: updateSelectedValues()
 
   function updateSelectedValues() {
@@ -49,6 +56,6 @@ DesktopEx.MultiComboBox { id: root_
       if (item.checked)
         l.push(item.value)
     }
-    selectedValues = l.join(',')
+    selectedValues = l.join(seperator)
   }
 }

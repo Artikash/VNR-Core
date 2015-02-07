@@ -18,6 +18,7 @@ client:
 - kagami.qml: indonesianFont
 - grimoire.qml: ..
 - mirage.qml: ..
+- hostcombobox.qml: .., plus the menuItems
 - windefs.py
 - tsupdate.py: 'id'
 - sktr.py: "id" "Indonesian"
