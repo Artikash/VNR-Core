@@ -89,7 +89,7 @@ class AppApi(object):
       ret.update(self._iterparsefields(h))
       for k in ('developer', 'publisher'):
         if k in ret:
-          ret['k'] = self._fixbrand(ret['k'])
+          ret[k] = self._fixbrand(ret[k])
       return ret
 
   _rx_brand = re.compile(r', ?inc$', re.IGNORECASE)
