@@ -220,7 +220,7 @@ Rectangle { id: root_
       //anchors.margins: _ROOT_MARGIN
       anchors.margins: 4
 
-      contextMenuEnabled: !root_.ignoresFocus
+      menuEnabled: !root_.ignoresFocus
 
       textEdit { // id: textEdit_  -- such syntax is not allowed
         textFormat: TextEdit.PlainText

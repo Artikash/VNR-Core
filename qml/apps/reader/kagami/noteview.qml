@@ -330,7 +330,7 @@ Item { id: root_
 
   // - Context Menu -
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
@@ -384,7 +384,7 @@ Item { id: root_
     onPressed: if (!root_.ignoresFocus) {
       //var gp = Util.itemGlobalPos(parent)
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      contextMenu_.showPopup(gp.x, gp.y)
+      menu_.showPopup(gp.x, gp.y)
     }
   }
 

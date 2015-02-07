@@ -459,7 +459,7 @@ Item { id: root_
         pageSize: scrollArea_.visibleArea.heightRatio
       }
 
-      Desktop.ContextMenu { id: contextMenu_
+      Desktop.Menu { id: menu_
         //property int popupX
         //property int popupY
 
@@ -502,7 +502,7 @@ Item { id: root_
         onPressed: if (!root_.ignoresFocus) {
           //var gp = Util.itemGlobalPos(parent)
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-          contextMenu_.showPopup(gp.x, gp.y)
+          menu_.showPopup(gp.x, gp.y)
         }
       }
 

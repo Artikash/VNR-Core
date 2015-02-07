@@ -382,7 +382,7 @@ Item { id: root_
           acceptedButtons: Qt.RightButton
           onPressed: {
             var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-            contextMenu_.popup(gp.x, gp.y, model, textEdit_)
+            menu_.popup(gp.x, gp.y, model, textEdit_)
           }
         }
 
@@ -429,7 +429,7 @@ Item { id: root_
 
         //  onClicked: {
         //    var gp = Util.itemGlobalPos(parent)
-        //    contextMenu_.showPopup(mouse.x + gp.x, mouse.y + gp.y)
+        //    menu_.showPopup(mouse.x + gp.x, mouse.y + gp.y)
         //  }
         //}
 
@@ -933,7 +933,7 @@ Item { id: root_
     return e.selectedText
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     //Desktop.MenuItem { id: editAct_
     //  text: qsTr("Edit Subtitle in New Window")
@@ -1038,7 +1038,7 @@ Item { id: root_
   //  acceptedButtons: Qt.RightButton
   //  onPressed: {
   //    var gp = mapToItem(null, mouse.x, mouse.y)
-  //    contextMenu_.popup(gp.x, gp.y)
+  //    menu_.popup(gp.x, gp.y)
   //  }
   //}
 }

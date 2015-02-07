@@ -345,7 +345,7 @@ Item { id: root_
       //    danmaku_.pause()
       //    if (mouse.button === Qt.RightButton) {
       //      var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      //      contextMenu_.popup(model, gp.x, gp.y)
+      //      menu_.popup(model, gp.x, gp.y)
       //    }
       //  }
       //}
@@ -410,7 +410,7 @@ Item { id: root_
 
   function hide() { hideAct_.triggered() }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
@@ -467,8 +467,8 @@ Item { id: root_
     enabled: !root_.ignoresFocus
     onPressed: if (!root_.ignoresFocus) {
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      //contextMenu_.showPopup(gp.x, gp.y)
-      contextMenu_.popup(gp.x, gp.y)
+      //menu_.showPopup(gp.x, gp.y)
+      menu_.popup(gp.x, gp.y)
     }
   }
 

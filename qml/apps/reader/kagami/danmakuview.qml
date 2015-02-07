@@ -150,7 +150,7 @@ Item { id: root_
           danmaku_.pause()
           if (mouse.button === Qt.RightButton && !root_.ignoresFocus) {
             var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-            contextMenu_.popup(model, gp.x, gp.y)
+            menu_.popup(model, gp.x, gp.y)
           }
         }
       }
@@ -178,23 +178,23 @@ Item { id: root_
     }
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     //Desktop.MenuItem {
     //  text: Sk.tr("Pause") + " (" + Sk.tr("Click") + ")"
-    //  onTriggered: contextMenu_.getItem().pause()
+    //  onTriggered: menu_.getItem().pause()
     //}
     Desktop.MenuItem {
       text: Sk.tr("Resume") + " (" + Sk.tr("Double-click") + ")"
-      onTriggered: contextMenu_.getItem().resume()
+      onTriggered: menu_.getItem().resume()
     }
     Desktop.MenuItem {
       text: Sk.tr("Edit")
-      onTriggered: mainPlugin_.showSubtitleEditor(contextMenu_.getComment())
+      onTriggered: mainPlugin_.showSubtitleEditor(menu_.getComment())
     }
     Desktop.Separator {}
     Desktop.MenuItem {
       text: Sk.tr("Remove")
-      onTriggered: contextMenu_.getItem().remove()
+      onTriggered: menu_.getItem().remove()
     }
 
     property variant modelData

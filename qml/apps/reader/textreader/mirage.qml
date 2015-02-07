@@ -375,8 +375,7 @@ Item { id: root_
       }
     }
 
-
-    Desktop.ContextMenu { id: headerMenu_
+    Desktop.Menu { id: headerMenu_
 
       //Desktop.MenuItem {
       //  text: qsTr("Scroll to the beginning")
@@ -1126,7 +1125,7 @@ Item { id: root_
     return textEdit.selectedText
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: contextMenu_
     function popup(x, y) {
       popupX = x; popupY = y
 

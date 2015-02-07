@@ -372,14 +372,13 @@ Rectangle { id: root_
   // - Context Menu -
 
   function hoverText() {
-    var pos = textEdit_.mapFromItem(null,
-        contextMenu_.popupX, contextMenu_.popupY)
+    var pos = textEdit_.mapFromItem(null, menu_.popupX, menu_.popupY)
     textEdit_.cursorPosition = textEdit_.positionAt(pos.x, pos.y)
     textEdit_.selectWord()
     return textEdit_.selectedText
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     property int popupX
     property int popupY
 
@@ -409,8 +408,7 @@ Rectangle { id: root_
       text: Sk.tr("Select Word")
       //shortcut: "Ctrl+A"
       onTriggered: {
-        var pos = textEdit_.mapFromItem(null,
-            contextMenu_.popupX, contextMenu_.popupY)
+        var pos = textEdit_.mapFromItem(null, menu_.popupX, menu_.popupY)
         textEdit_.cursorPosition = textEdit_.positionAt(pos.x, pos.y)
         textEdit_.selectWord()
       }
@@ -428,7 +426,7 @@ Rectangle { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          popupLookup(t, 'ja', contextMenu_.popupX, contextMenu_.popupY)
+          popupLookup(t, 'ja', menu_.popupX, menu_.popupY)
       }
     }
 
@@ -481,7 +479,7 @@ Rectangle { id: root_
     onPressed: if (!root_.ignoresFocus) {
       //var gp = Util.itemGlobalPos(parent)
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      contextMenu_.popup(gp.x, gp.y)
+      menu_.popup(gp.x, gp.y)
     }
   }
 

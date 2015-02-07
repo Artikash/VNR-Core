@@ -10,7 +10,7 @@ import '../../../components' as Components
 
 Item { id: root_
   property alias textEdit: textEdit_
-  property bool contextMenuEnabled: true
+  property bool menuEnabled: true
 
   signal copyTriggered
 
@@ -96,7 +96,7 @@ Item { id: root_
   //  pageSize: scrollArea_.visibleArea.widthRatio
   //}
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     Desktop.MenuItem { //id: copyAct_
       text: Sk.tr("Copy")
       shortcut: "Ctrl+C"
@@ -111,10 +111,10 @@ Item { id: root_
     //onEntered: item_.show()
     //onExited: item_.show() // bypass restart timer issue
     onPressed:
-      if (root_.contextMenuEnabled) {
+      if (root_.menuEnabled) {
         //var gp = Util.itemGlobalPos(parent)
         var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-        contextMenu_.showPopup(gp.x, gp.y)
+        menu_.showPopup(gp.x, gp.y)
       }
   }
 }
