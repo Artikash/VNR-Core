@@ -507,7 +507,7 @@ class FreemApi(object):
             d = skdatetime.date2timestamp(d)
           except: dwarn("failed to parse date")
         item['date'] = d
-        item['image'] = item['img']
+        item['image'] = item.get('img')
 
         ret.append(item)
     except Exception, e: dwarn(e)
@@ -623,7 +623,7 @@ class GetchuApi(object):
           continue
         item['title'] = title
 
-        d = item['date'] or 0 # int
+        d = item.get('date') or 0 # int
         if d:
           try:
             d = datetime.strptime(d, '%Y/%m/%d')
@@ -970,7 +970,7 @@ class DLsiteApi(object):
           continue
         item['key'] = k
 
-        d = item['date'] or 0 # int
+        d = item.get('date') or 0 # int
         if d:
           d = skdatetime.date2timestamp(d)
         item['date'] = d
