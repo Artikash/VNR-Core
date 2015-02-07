@@ -87,8 +87,9 @@ class AppApi(object):
         'ratingValue': self._parseratingvalue(h),
       }
       ret.update(self._iterparsefields(h))
-      if 'developer' in ret:
-        ret['developer'] = self._fixbrand(ret['developer'])
+      for k in ('developer', 'publisher'):
+        if k in ret:
+          ret[k] = self._fixbrand(ret[k])
       return ret
 
   _rx_brand = re.compile(r', ?inc$', re.IGNORECASE)
