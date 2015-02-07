@@ -14,9 +14,9 @@ Desktop.Menu { id: root_
   signal selectionChanged()
 
   property string selectedText
-  property string seperatorText: ", "
+  property string seperatorText: "|"
 
-  property variant selectedItems
+  //property variant selectedItems // not used
 
   // 'centerSelectedText' means that the menu will be positioned
   //  so that the selected text' top left corner will be at x, y.
@@ -60,30 +60,16 @@ Desktop.Menu { id: root_
 
   function updateSelection() {
     updateSelectedText()
-    updateSelectedItems()
+    //updateSelectedItems() // not used
   }
 
   function updateSelectedText() {
-    var t = ""
-    for (var i in items) {
-      var item = items[i]
-      if (item.checked) {
-        if (t)
-          t += seperatorText + item.text
-        else
-          t = item.text
-      }
-    }
-    selectedText = t
-  }
-
-  function updateSelectedItems() {
     var l = []
     for (var i in items) {
       var item = items[i]
       if (item.checked)
-        l.push(item)
+        l.push(item.text)
     }
-    selectedItems = l
+    selectedText = l.join(seperatorText)
   }
 }

@@ -16,35 +16,55 @@ Item {
     width: 200
     height: 30
 
-    seperatorText: "|"
+    //seperatorText: "|"
 
     //property list<MenuItem> l: [
     Desktop.MenuItem { id: act1_
       text: "Naver"
       property string value: "naver"
       checkable: true
-      checked: true
     }
     Desktop.MenuItem { id: act2_
       text: "Google"
       property string value: "google"
       checkable: true
-      checked: true
     }
     Desktop.MenuItem { id: act3_
       text: "Bing"
       property string value: "bing"
       checkable: true
-      checked: true
     }
     Desktop.MenuItem { id: act4_
       text: "Infoseek"
       property string value: "infoseek"
       checkable: true
-      checked: true
     }
 
+    emptyText: "*"
+
     menuItems: [act1_, act2_, act3_, act4_]
+
+    property string selectedValues: 'google,bing'
+
+    onSelectionChanged: updateSelectedValues()
+
+    Component.onCompleted: {
+      for (var i in menuItems) {
+        var item = menuItems[i]
+        if (~selectedValues.indexOf(item.value))
+          item.checked = true
+      }
+    }
+
+    function updateSelectedValues() {
+      var l = []
+      for (var i in menuItems) {
+        var item = menuItems[i]
+        if (item.checked)
+          l.push(item.value)
+      }
+      selectedValues = l.join(',')
+    }
   }
 
   //ButtonGroup.ButtonRow {

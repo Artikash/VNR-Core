@@ -12,7 +12,11 @@ DesktopCustom.BasicButton { id: root_
   property alias selectedText: popup_.selectedText
   property alias seperatorText: popup_.seperatorText
 
-  property alias selectedItems: popup_.selectedItems
+  property string emptyText
+
+  signal selectionChanged
+
+  //property alias selectedItems: popup_.selectedItems // not used
 
   property alias popupOpen: popup_.visible
 
@@ -27,7 +31,7 @@ DesktopCustom.BasicButton { id: root_
     raised: !sunken
     hover: root_.containsMouse
     enabled: root_.enabled
-    text: root_.selectedText
+    text: root_.selectedText ? root_.selectedText : root_.emptyText
     hasFocus: root_.focus
     contentHeight: 18
   }
@@ -47,6 +51,8 @@ DesktopCustom.BasicButton { id: root_
     property bool center: backgroundItem.styleHint("comboboxpopup")
     centerSelectedText: center
     y: center ? 0 : root_.height
+
+    onSelectionChanged: root_.selectionChanged()
   }
 
   // The key bindings below will only be in use when popup is
