@@ -53,57 +53,70 @@ class SearchApi(object):
       if h:
         return self._iterparse(h)
 
-  # Example: TODO
+  # Example:
   # http://store.steampowered.com/search?term=Birth&sort_by=_ASC&category1=998
+  #
+  # <a href="http://store.steampowered.com/app/282900/?snr=1_7_7_151_150_1"  data-ds-appid="282900" onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:282900,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+  # <div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/282900/capsule_sm_120.jpg?t=1422919039" alt="Buy Hyperdimension Neptunia Re;Birth1" width="120" height="45"></div>
+  # <div class="col search_name ellipsis">
+  # <span class="title">Hyperdimension Neptunia Re;Birth1</span>
+  # <p>
+  # <span class="platform_img win"></span></p>
+  # </div>
+  # <div class="col search_released">Jan 29, 2015</div>
+  # <div class="col search_reviewscore">
+  # <span class="search_review_summary positive" data-store-tooltip="Very Positive&lt;br&gt;94% of the 1,093 user reviews for this game are positive.">
+  # </span>
+  # </div>
+  #
+  # <div class="col search_discount">
+  #
+  # </div>
+  # <div class="col search_price ">
+  # &#36;29.99</div>
+  #
+  # </a>
   _rx_parse = re.compile(
-    r'/soft.phtml\?id=([0-9]+?)" class="blueb">([^<]+?)</A>'
+    r'data-ds-appid="([0-9]+?)"'
     r'.*?'
-    r'<!--PRICE-->'
+    r'<div class="col search_reviewscore">'
   , re.IGNORECASE|re.DOTALL)
-  _rx_media = re.compile(ur'メディア：([^<]+?)<!--MEDIA-->')
-  _rx_date = re.compile(ur'発売日：([0-9/]+)<!--発売日-->')
-  _rx_price = re.compile(ur'定価：\s*￥([0-9,]+)')
-  _rx_brand = re.compile(ur'ブランド名：(.*?)<!--BRAND-->')
-  _rx_brand2 = re.compile(r'>([^<]+)<')
   def _iterparse(self, h):
     """
     @param  h  unicode
     @yield  {kw}
     """
     for m in self._rx_parse.finditer(h):
-      key = m.group(1)
-      title = m.group(2)
-      if key and title:
-        url = "http://getchu.com/soft.phtml?id=%s" % key
-        img = '/brandnew/%s/c%spackage' % (key, key)
-        img = self.HOST + img + '.jpg' if img in h else ''
-
+      id = 0
+      try: id = int(m.group(1))
+      except: pass
+      if id:
+        url = "http://store.steampowered.com/app/%s" % id
         item = {
-          'id': key,
+          'id': id,
           'url': url,
-          'img': img,
-          'title': unescapehtml(title),
         }
 
-        hh = m.group()
-        mm = self._rx_media.search(hh)
-        item['media'] = unescapehtml(mm.group(1)).strip() if mm else '' # strip
-
-        mm = self._rx_date.search(hh)
-        item['date'] = mm.group(1) or ''
-
-        mm = self._rx_price.search(hh)
-        try: item['price'] = int(mm.group(1).replace(',', ''))
-        except (KeyError, ValueError, AttributeError): item['price'] = 0
-
-        mm = self._rx_brand.search(hh)
-        brand = mm.group(1) if mm else ''
-        if brand:
-          mm = self._rx_brand2.search(brand)
-          if mm:
-            brand = mm.group(1)
-        item['brand'] = unescapehtml(brand).strip() if brand else '' # strip
+        item.update(self._iterparsefields(h))
         yield item
+
+  _rx_fields = (
+      # Example: <span class="title">Hyperdimension Neptunia Re;Birth1</span>
+    ('title', re.compile('class="title">([^<]+?)<')),
+    # Example: <div class="col search_released">Jan 29, 2015</div>
+    ('date', re.compile(r'col search_released">([a-zA-Z0-9, ]+?)</div>')),
+    # Example: <div class="col search_price "># &#36;29.99</div>
+    ('price', re.compile(r'(&#36;[0-9.]+?)<')),
+  )
+  def _iterparsefields(self, h):
+    """
+    @param  h  unicode
+    @yield  (str key, unicode or None)
+    """
+    for k,rx in self._rx_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1))
 
 if __name__ == '__main__':
   api = SearchApi()
