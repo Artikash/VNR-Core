@@ -360,12 +360,18 @@ dmm: # DMM
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/dd317756%28v=vs.85%29.aspx
 encodings:
- - shift-jis    # cp932
+ - shift-jis    # cp932, ja
  - utf-16
  - utf-8
- - gbk          # cp936
- - big5         # cp950
- - ks_c_5601    # cp949
+ - big5         # cp950, zht
+ - gbk          # cp936, zhs
+ - euc-kr       # cp949, ko
+ - windows-1258 # cp1258, vi
+ - tis-620      # cp874, th
+ - windows-1256 # cp1256, ar
+ - windows-1250 # cp1250, central/eastern europe
+ - windows-1251 # cp1251, cyrillic
+ - latin1       # cp1252, latin
 
 languages:
   all:
