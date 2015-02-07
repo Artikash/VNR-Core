@@ -78,8 +78,12 @@
             -elif game.recent
               %b.text-danger (新作)
           -if game.romajiTitle
-            .romaji
+            .title-romaji
               %a(href="#{GG_Q}#{game.romajiTitle}",title="#{tr('Google')}") #{game.romajiTitle}
+          -if game.englishTitle
+            .title-en
+              %span.text-danger #{"en: "}
+              %a.text-success(href="#{GG_Q}#{game.englishTitle}",title="#{tr('Google')}") #{game.englishTitle}
           -if game.itemId
             .buttons
               %button.btn.btn-default.btn-xs.btn-dl-img(type="button",title="画像"")

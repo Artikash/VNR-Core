@@ -193,6 +193,7 @@ Item { id: root_
               case 'dmm': return "DMM"
               case 'amazon': return "Amazon"
               case 'freem': return "FreeM"
+              case 'steam': return "Steam"
               default: return Sk.tr("Unknown")
             }
           }

@@ -567,7 +567,7 @@ class TermInput(QtWidgets.QDialog):
     self.__d = _TermInput(self)
     #self.__d.autofill()
     #self.resize(300, 270)
-    self.resize(300, 320)
+    self.resize(280, 320)
     #self.statusBar() # show status bar
 
     import dataman

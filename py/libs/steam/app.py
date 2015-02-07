@@ -107,8 +107,8 @@ class AppApi(object):
 
     # Example:
     # <h2>About This Game</h2> When a feud with her brother gets too hot, Princess Ahri Remono, a young woman with a heart of fire, accepts a challenge that she cannot thrive in the world outside the Imperial Palace. In her first day in class, the boisterous princess finds a potential rival in the student body president.</div>
-    ('description', re.compile(r'About This Game</h2>\s*(.*?)\s*(?:<h2|</div)', re.DOTALL)),
-    ('review', re.compile(r'Reviews</h2>\s*(.*?)\s*(?:<h2|</div)', re.DOTALL)),
+    ('description', re.compile(r'About This Game</h2>\s*(.*?)\s*</div', re.DOTALL)),
+    ('review', re.compile(r'Reviews</h2>\s*(.*?)\s*</div>', re.DOTALL)),
   )
   def _iterparsefields(self, h):
     """
@@ -185,12 +185,14 @@ class AppApi(object):
 
 if __name__ == '__main__':
   api = AppApi()
-  k = 282900
   k = 324170 # otome
   k = 214170 # review
+  k = 282900
   print '-' * 10
   q = api.query(k)
-  for k,v in q.iteritems():
-    print k,':',v
+  #for k,v in q.iteritems():
+  #  print k,':',v
+  print q['description']
+  #print q['review']
 
 # EOF

@@ -409,10 +409,116 @@ class HolysealApi(object):
           try:
             d = datetime.strptime(d, '%Y/%m/%d')
             d = skdatetime.date2timestamp(d)
-          except: dwarn("failed to parse date")
+          except:
+            dwarn("failed to parse date")
+            d = 0
         item['date'] = d
 
         item['url'] = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % id
+
+        ret.append(item)
+    except Exception, e: dwarn(e)
+    dprint("leave: count = %s" % len(ret))
+    return ret
+
+## Steam API ##
+
+class SteamApi(object):
+
+  def __init__(self, online=True):
+    """
+    @param* online  bool
+    """
+    self.online = online
+
+    import parsedatetime
+    self.pdtc = parsedatetime.Calendar()
+
+  def setOnline(self, v):
+    if self.online !=  v:
+      self.online = v
+      if hasmemoizedproperty(self, 'cachingAppApi'):
+        self.cachingGameApi.online = v
+
+  @memoizedproperty
+  def cachingAppApi(self):
+    from steam.caching import CachingAppApi
+    return CachingAppApi(
+        cachedir=rc.DIR_CACHE_STEAM,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  @memoizedproperty
+  def searchApi(self):
+    from steam.search import SearchApi
+    return SearchApi()
+
+  def _search(self, text=None, key=None, cache=True):
+    """
+    @param  cache  bool  not used
+    @yield  kw
+    """
+    dprint("key, text =", key, text)
+    if key:
+      kw = self.cachingAppApi.query(key)
+      if kw:
+        yield kw
+    elif text:
+      q = self.searchApi.query(text)
+      if q:
+        for it in q:
+          yield it
+
+  def cache(self, text=None, key=None):
+    if key:
+      dprint("enter")
+      self.cachingAppApi.cache(key)
+      dprint("leave")
+
+  @staticmethod
+  def _parsekey(url):
+    """
+    @param  url  unicode
+    @return  unicode or None
+    """
+    if url:
+      m = re.search(r"/([0-9]+)", url)
+      if m:
+        return m.group(1)
+
+  # See: https://affiliate.dmm.com/api/reference/r18/pcgame/
+  def query(self, key=None, text=None, **kwargs):
+    """
+    @return  iter not None
+    """
+    dprint("enter")
+    ret = []
+    if not key and text:
+      if text.isdigit():
+        key = text
+      elif 'steampowered.com' in text:
+        k = self._parsekey(text)
+        if k:
+          key = k
+    s = self._search(key=key, text=text, **kwargs)
+    try:
+      for item in s:
+        k = str(item.pop('id'))
+        item['key'] = k
+        d = item.get('date') or 0 # int
+        if d:
+          try:
+            d = datetime(*self.pdtc.parseDateText(d)[:6])
+            d = skdatetime.date2timestamp(d)
+          except:
+            dwarn("failed to parse date")
+            d = 0
+        item['date'] = d
+
+        if 'img' in item:
+          item['image'] = item.pop('img')
+
+        item['brand'] = item.get('developer') or item.get('publisher') or ''
 
         ret.append(item)
     except Exception, e: dwarn(e)
@@ -500,14 +606,18 @@ class FreemApi(object):
       for item in s:
         k = str(item.pop('id'))
         item['key'] = k
-        d = item['date'] or 0 # int
+        d = item.get('date') or 0 # int
         if d:
           try:
             d = datetime.strptime(d, '%Y-%m-%d')
             d = skdatetime.date2timestamp(d)
-          except: dwarn("failed to parse date")
+          except:
+            dwarn("failed to parse date")
+            d = 0
         item['date'] = d
-        item['image'] = item.get('img')
+
+        if 'img' in item:
+          item['image'] = item.pop('img')
 
         ret.append(item)
     except Exception, e: dwarn(e)
@@ -628,7 +738,9 @@ class GetchuApi(object):
           try:
             d = datetime.strptime(d, '%Y/%m/%d')
             d = skdatetime.date2timestamp(d)
-          except: dwarn("failed to parse date")
+          except:
+            dwarn("failed to parse date")
+            d = 0
         item['date'] = d
         item['image'] = item['img']
 
@@ -1501,7 +1613,7 @@ class AsyncApi:
 
 class _ReferenceManager(object):
   # The same as dataman.Reference.TYPES
-  API_TYPES = frozenset(('trailers', 'scape', 'freem', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
+  API_TYPES = frozenset(('trailers', 'scape', 'freem', 'steam', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
 
   def __init__(self):
     self.online = True
@@ -1529,6 +1641,9 @@ class _ReferenceManager(object):
 
   @memoizedproperty
   def freemApi(self): return self._createApi(FreemApi)
+
+  @memoizedproperty
+  def steamApi(self): return self._createApi(SteamApi)
 
   @memoizedproperty
   def holysealApi(self): return self._createApi(HolysealApi)
