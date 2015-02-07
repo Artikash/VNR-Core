@@ -97,7 +97,7 @@ class SearchApi(object):
           'url': url,
         }
 
-        item.update(self._iterparsefields(h))
+        item.update(self._iterparsefields(m.group()))
         yield item
 
   _rx_fields = (
@@ -105,8 +105,8 @@ class SearchApi(object):
     ('title', re.compile('class="title">([^<]+?)<')),
     # Example: <div class="col search_released">Jan 29, 2015</div>
     ('date', re.compile(r'col search_released">([a-zA-Z0-9, ]+?)</div>')),
-    # Example: <div class="col search_price "># &#36;29.99</div>
-    ('price', re.compile(r'(&#36;[0-9.]+?)<')),
+    # Example: <div class="col search_price "> &#36;29.99</div>
+    #('price', re.compile(r'(&#36;[0-9.]+?)<')),
   )
   def _iterparsefields(self, h):
     """

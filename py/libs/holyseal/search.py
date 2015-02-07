@@ -92,7 +92,6 @@ class SearchApi(object):
         if not years:
           dwarn("cannot find release years, maybe, unknown years")
 
-
         id0 = title0 = None
 
         # first, yield the matched game
