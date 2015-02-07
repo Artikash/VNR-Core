@@ -81,7 +81,7 @@ Item { id: root_
       bottomMargin: 5
     }
 
-    spacing: 20
+    spacing: 10
 
     //property int cellWidth: 80
     property int pixelSize: 12
@@ -174,6 +174,15 @@ Item { id: root_
       wrapMode: Text.NoWrap
       onLinkActivated: root_.openUrl(link)
       text: root_.formatText('FreeM', 'freem.ne.jp', model.freemItem)
+    }
+
+    Text {
+      //width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: root_.openUrl(link)
+      text: root_.formatText('Steam', 'steampowered.com', model.steamItem)
     }
   }
 

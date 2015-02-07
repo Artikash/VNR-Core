@@ -59,6 +59,7 @@ DIR_CACHE_TOKUTEN = DIR_USER_CACHE + '/tokuten' # $user/caches/tokuten
 DIR_CACHE_TRAILERS = DIR_USER_CACHE + '/trailers' # $user/caches/trailers
 DIR_CACHE_SCAPE = DIR_USER_CACHE + '/scape'     # $user/caches/scape
 DIR_CACHE_FREEM = DIR_USER_CACHE + '/freem'     # $user/caches/freem
+DIR_CACHE_STEAM = DIR_USER_CACHE + '/steam'     # $user/caches/steam
 DIR_CACHE_GETCHU = DIR_USER_CACHE + '/getchu'   # $user/caches/getchu
 DIR_CACHE_GYUTTO = DIR_USER_CACHE + '/gyutto'   # $user/caches/gyutto
 DIR_CACHE_DIGIKET = DIR_USER_CACHE + '/digiket'   # $user/caches/digiket

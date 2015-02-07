@@ -247,18 +247,20 @@ std::wstring HanVietPhraseDictionary::analyze(const std::wstring &text, bool mar
     bool found = false;
     for (size_t i = 0; i < d_->entry_count; i++) {
       const auto &e = d_->entries[i];
-      auto pos = source.find(e.han);
-      if (pos != std::string::npos) {
-        segs.insert(top.it, Segment(&e));
-        if (pos > 0)
-          indices.push(SegmentIndex(
-              top.start, pos, std::prev(top.it)));
-        size_t offset = pos + e.han.size();
-        if (offset < source.size())
-          indices.push(SegmentIndex(
-              top.start + offset, top.length - offset, top.it));
-        found = true;
-        break;
+      if (e.han.size() <= source.size()) {
+        auto pos = source.find(e.han);
+        if (pos != std::string::npos) {
+          segs.insert(top.it, Segment(&e));
+          if (pos > 0)
+            indices.push(SegmentIndex(
+                top.start, pos, std::prev(top.it)));
+          size_t offset = pos + e.han.size();
+          if (offset < source.size())
+            indices.push(SegmentIndex(
+                top.start + offset, top.length - offset, top.it));
+          found = true;
+          break;
+        }
       }
     }
     if (!found) {

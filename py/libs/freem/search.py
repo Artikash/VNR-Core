@@ -70,8 +70,6 @@ class SearchApi(object):
     r'.*?'
     r'/img/addtomylist.gif'
   )
-  _rx_brand = re.compile(r'"/brand/\d+">([^<]+)<')
-  _rx_date = re.compile(ur'【公開日】([0-9-]+)')
   def _iterparse(self, h):
     """
     @param  h  unicode
@@ -91,14 +89,22 @@ class SearchApi(object):
           'title': unescapehtml(title),
         }
 
-        hh = m.group()
-        mm = self._rx_brand.search(hh)
-        item['brand'] = unescapehtml(mm.group(1)) if mm else ''
-
-        mm = self._rx_date.search(hh)
-        item['date'] = mm.group(1) or ''
-
+        item.update(self._iterparsefields(m.group()))
         yield item
+
+  _rx_fields = (
+    ('brand', re.compile(r'"/brand/\d+">([^<]+)<')),
+    ('date', re.compile(ur'【公開日】([0-9-]+)')),
+  )
+  def _iterparsefields(self, h):
+    """
+    @param  h  unicode
+    @yield  (str key, unicode or None)
+    """
+    for k,rx in self._rx_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1)).strip()
 
   # Example: RPGを初めて遊ぶ人のためのRPG ver1.32
   _re_fixtitle = re.compile(' ver[0-9. ]+$')

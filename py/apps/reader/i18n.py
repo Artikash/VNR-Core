@@ -96,6 +96,7 @@ SITE_NAMES = {
   'digiket': "DiGiket",
   'dmm': "DMM",
   'freem': "FreeM",
+  'steam': "Steam",
   'getchu': "Getchu", #u"げっちゅ屋",
   'gyutto': "Gyutto", #u"ギュット!",
   'dlsite': "DLsite",

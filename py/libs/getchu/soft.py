@@ -121,19 +121,17 @@ class SoftApi(object):
         # See: http://www.getchu.com/pc/genre.html
         subgenres = uniquelist(self._iterparsesubgenres(h))
         categories = uniquelist(self._iterparsecateories(h))
-        return {
+        ret = {
           'title': title, # unicode or None
           'writers': writers, # [unicode]
           'artists': artists, # [unicode]
           'sdartists': sdartists, # [unicode]
           'musicians': list(self._iterparsemusicians(h)), # [unicode]
           'brand': self._fixbrand(meta.get(u"ブランド") or meta.get(u"サークル")), # unicode or None
-          'genre': self._parsegenre(h), # unicode or None
           'subgenres': subgenres, # [unicode]
           'categories': categories, # [unicode]
           'otome': u"乙女ゲー" in categories, # bool
           'price': price,                     # int
-          'date': self._parsedate(h),         # str or None, such as 2013/10/25
           #'imageCount': self._parseimagecount(h),
           'sampleImages': list(self._iterparsesampleimages(h)), # [kw]
           'descriptions': list(self._iterparsedescriptions(h)), # [unicode]
@@ -146,6 +144,8 @@ class SoftApi(object):
           'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
           #'characters': [],
         }
+        ret.update(self._iterparsefields(h))
+        return ret
 
   def _fixtitle(self, t):
     """
@@ -171,16 +171,25 @@ class SoftApi(object):
   #  if t:
   #    return t.replace(u"、他", '')
 
-  _rx_genre = re.compile(
-      u'ジャンル：.+?>([^><]+?)<')
-  def _parsegenre(self, h):
+  _re_fields = (
+    # Example:
+    # <b>Developer:</b>
+    # <a href="http://store.steampowered.com/search/?developer=Idea%20Factory%2C%20Inc.&snr=1_5_9__408">Idea Factory, Inc.</a>
+    ('genre', re.compile(ur'ジャンル：.+?>([^><]+?)<')),
+
+    # Example: title="同じ発売日の同ジャンル商品を開く">2013/10/25</a>
+    # str or None, such as 2013/10/25
+    ('date', re.compile(ur'同じ発売日の同ジャンル商品を開く">([0-9/]+?)</a>')),
+  )
+  def _iterparsefields(self, h):
     """
-    @param  h  unicode  html
-    @return  kw
+    @param  h  unicode
+    @yield  (str key, unicode or None)
     """
-    m = self._rx_genre.search(h)
-    if m:
-      return unescapehtml(m.group(1))
+    for k,rx in self._re_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1))
 
   # Example:
   # <TR><TD valign="top" align="right">カテゴリ：</TD><TD align="top">シミュレーションRPG、<a href='php/search.phtml?category[0]=C3_F003'>ポリゴン・3D</a>、<a href='php/search.phtml?category[0]=C3_F026'>バトル</a>、<a href='php/search.phtml?category[0]=C3_F004'>アニメーション</a> <a href="/pc/genre.html">[一覧]</a></TD></TR>
@@ -307,20 +316,6 @@ class SoftApi(object):
     if m:
       try: return int(m.group(1).replace(',',''))
       except (ValueError, TypeError): pass
-
-  # Example: title="同じ発売日の同ジャンル商品を開く">2013/10/25</a>
-
-  # Example: 価格：	￥7,140 (税抜￥6,800)
-  _rx_date = re.compile(ur'同じ発売日の同ジャンル商品を開く">([0-9/]+?)</a>')
-  def _parsedate(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    # http://stackoverflow.com/questions/2802168/find-last-match-with-python-regular-expression
-    m = self._rx_date.search(h)
-    if m:
-      return m.group(1)
 
   #_rx_title = re.compile(ur'タイトル：([^"]+?)[,"]')
   #def _parsetitle(self, h):

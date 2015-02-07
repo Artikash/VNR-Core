@@ -76,17 +76,16 @@ class GameApi(object):
       bl = u'ＢＬゲーム' in h
       otome = bl or u'女性向' in h or u'乙女ゲーム' in h
       ecchi = u'全年齢' in h
-      return {
+      ret = {
         'title': title, # unicode
-        'slogan': self._parseslogan(h), # unicode or None
         'otome': otome, # bool
         'ecchi': ecchi, # bool
-        'brand': self._parsebrand(h), # unicode or None
-        'date': self._parsedate(h),  # str or None, such as 2013-10-25
         'filesize': self._parsesize(h), # int
         'description': self._parsedesc(h), # unicode or None
         'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
       }
+      ret.update(self._iterparsefields(h))
+      return ret
 
   # Example: RPGを初めて遊ぶ人のためのRPG ver1.32
   _re_fixtitle = re.compile(' ver[0-9. ]+$')
@@ -96,17 +95,6 @@ class GameApi(object):
     @return  unicode
     """
     return self._re_fixtitle.sub('', t)
-
-  # Example: <meta name="description" content="「赤い森の魔女」：樵の少年と魔女のお話" />
-  _re_slogan = re.compile(ur'<meta name="description" content="[^"]+」：([^"]+?)"')
-  def _parseslogan(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    m = self._re_slogan.search(h)
-    if m:
-      return unescapehtml(m.group(1))
 
   # Example: <meta name="twitter:title" content="「恋と友情の境界線-体験版-」：無料ゲーム by ふりーむ！">
   _re_title = re.compile(ur'<meta name="twitter:title" content="([^"]+?)：無料ゲーム by ふりーむ！"')
@@ -119,27 +107,22 @@ class GameApi(object):
     if m:
       return unescapehtml(m.group(1))
 
-  # Example: <p><a href="/brand/1666">mint wings</a></p>
-  _re_brand = re.compile(r'href="/brand/\d+">([^<]+)<')
-  def _parsebrand(self, h):
+  _re_fields = (
+    # Example: <meta name="description" content="「赤い森の魔女」：樵の少年と魔女のお話" />
+    ('slogan', re.compile(ur'<meta name="description" content="[^"]+」：([^"]+?)"')),
+    ('brand', re.compile(r'href="/brand/\d+">([^<]+)<')),
+    # Example: ■登録日<br />2015-01-11<br />
+    ('date', re.compile(ur'■登録日<br />([0-9-]+)<')),
+  )
+  def _iterparsefields(self, h):
     """
-    @param  h  unicode  html
-    @return  unicode or None
+    @param  h  unicode
+    @yield  (str key, unicode or None)
     """
-    m = self._re_brand.search(h)
-    if m:
-      return unescapehtml(m.group(1))
-
-  # Example: ■登録日<br />2015-01-11<br />
-  _re_date = re.compile(ur'■登録日<br />([0-9-]+)<')
-  def _parsedate(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    m = self._re_date.search(h)
-    if m:
-      return m.group(1)
+    for k,rx in self._re_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1))
 
   # Example:
   # ■容量<br />
