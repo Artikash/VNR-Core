@@ -393,7 +393,7 @@ Item { id: root_
 
             Share.TextButton { id: speakTextButton_
               height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
-              text: slimChecked ? qsTr("Original").charAt(0) : qsTr("Original")
+              text: slimChecked ? Sk.tr("Text").charAt(0) : Sk.tr("Text")
               font.pixelSize: buttonCol_.pixelSize
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
@@ -412,7 +412,7 @@ Item { id: root_
             Share.TextButton { id: speakTranslationButton_
               height: buttonCol_.cellHeight
               width: buttonCol_.cellWidth
-              text: slimChecked ? Sk.tr("Translation").charAt(0) : Sk.tr("Translation")
+              text: slimChecked ? qsTr("Trans").charAt(1).toUpperCase() : qsTr("Trans")
               font.pixelSize: buttonCol_.pixelSize
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
