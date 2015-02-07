@@ -48,6 +48,10 @@ class sakurakit(QObject):
       self.tr("Indonesian"),
       self.tr("Arabic"),
 
+      self.tr("Latin"),
+      self.tr("Cyrillic"),
+
+      self.tr("Traditional Chinese"),
       self.tr("Simplified Chinese"),
 
       self.tr("ja"),

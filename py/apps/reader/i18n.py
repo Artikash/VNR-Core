@@ -71,8 +71,8 @@ ENCODING_DESCS = {
   'euc-kr':       "%s (CP949, EUC-KR)" % tr_("Korean"),
   'windows-1258': "%s (CP1258)" % tr_("Vietnamese"),
   'tis-620':      "%s (CP874, TIS-620)" % tr_("Thai"),
-  'windows-1256': "%s (CP1256)" % tr_("Arabian"),
-  'windows-1250': "%s (CP1250)" % my.tr("Central/Esternal Europe"),
+  'windows-1256': "%s (CP1256)" % tr_("Arabic"),
+  'windows-1250': "%s (CP1250)" % my.tr("Central and Eastern Europe"),
   'windows-1251': "%s (CP1251)" % tr_("Cyrillic"),
   'latin1':       "%s (CP1252, ISO-8859-1)" % tr_("Latin"),
 }
@@ -81,7 +81,7 @@ def encoding_desc(enc):
   @param  lang  str
   @return  unicode
   """
-  return ENCODING_DESCS.get(enc) or ''
+  return ENCODING_DESCS.get(enc) or enc.upper()
 
 def topic_type_name(type):
   """

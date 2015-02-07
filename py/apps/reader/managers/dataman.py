@@ -9716,7 +9716,7 @@ class DataManager(QObject):
       return
 
     if (game.id and game.id == self.currentGameId() or
-        gamd.md5 and game.md5 == self.currentGameMd5()):
+        game.md5 and game.md5 == self.currentGameMd5()):
       g = d.currentGame = d.games[game.md5]
       d.currentGameObject = None
       d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id]

@@ -786,7 +786,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
     self._encodingEdit = QtWidgets.QComboBox()
     self._encodingEdit.setEditable(False)
     self._encodingEdit.setToolTip(tr_("Text encoding"))
-    self._encodingEdit.addItems(map(str.upper, config.ENCODINGS))
+    self._encodingEdit.addItems(map(i18n.encoding_desc, config.ENCODINGS))
     self._encodingEdit.currentIndexChanged.connect(self._refresh)
 
     self._keepsSpaceButton = QtWidgets.QCheckBox(
@@ -998,7 +998,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
       self._refresh()
 
   def _currentEncoding(self):
-    return self._encodingEdit.currentText().lower()
+    return config.ENCODINGS[self._encodingEdit.currentIndex()]
 
   def _currentSignature(self):
     sig = self._grid.currentValue() # ASSUME THE VALUE IS THE SIGNATURE

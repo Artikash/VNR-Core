@@ -210,7 +210,7 @@ class _GameEditor(object):
 
     # Load encoding
     g = self.game
-    self.encodingEdit.setText(g.encoding.upper())
+    self.encodingEdit.setText(i18n.encoding_desc(g.encoding))
     #self.languageEdit.setText(i18n.language_name2(g.language))
     if g.encoding in ('shift-jis', 'utf-16'):
       skqss.removeclass(self.encodingEdit, 'warning')

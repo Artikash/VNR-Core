@@ -316,7 +316,7 @@ if __name__ == '__main__':
     print k, hira2th(k), v
     assert kana2th(k) == v
 
-  # Arabian
+  # Arabic
   l = [
     (u'さくら', u'ساكورا'),
     (u'さと', u'ساتو'),

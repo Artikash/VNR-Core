@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_TW">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_TW">
 <context>
     <name>my</name>
     <message>
@@ -549,10 +550,10 @@ Especially if you would like to translate this game.</source>
 如果可能的話，強烈建議你&lt;b&gt;調整遊戲文字速度到最快&lt;/b&gt;。
 特別是當你打算翻譯這個遊戲的時候。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="3895"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
-        <translation type="obsolete">広辞苑日日字典</translation>
+        <translation>広辞苑日日字典</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3067"/>
@@ -875,72 +876,72 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>載入其他同學的自定義辭書</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6714"/>
+        <location filename="managers/dataman.py" line="6778"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>登入為&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6715"/>
+        <location filename="managers/dataman.py" line="6779"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>語言是&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6720"/>
+        <location filename="managers/dataman.py" line="6784"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>登入&apos;{0}&apos;失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7870"/>
+        <location filename="managers/dataman.py" line="7934"/>
         <source>Fetching comments</source>
         <translation>更新評論中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7881"/>
+        <location filename="managers/dataman.py" line="7945"/>
         <source>Loading offline comments</source>
         <translation>載入離線評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7891"/>
+        <location filename="managers/dataman.py" line="7955"/>
         <source>Found {0} comments</source>
         <translation>找到{0}條評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8443"/>
+        <location filename="managers/dataman.py" line="8507"/>
         <source>Failed to save changes, will try later</source>
         <translation>這次儲存變更沒有成功呢，VNR等下會重試的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9258"/>
+        <location filename="managers/dataman.py" line="9322"/>
         <source>Found {0} terms</source>
         <translation>找到{0}個詞條</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9264"/>
+        <location filename="managers/dataman.py" line="9328"/>
         <source>Failed to download terms online</source>
         <translation>更新詞條失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9265"/>
+        <location filename="managers/dataman.py" line="9329"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也許網路連線不暢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9651"/>
+        <location filename="managers/dataman.py" line="9715"/>
         <source>Failed to get game information</source>
         <translation>獲取遊戲資訊失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9839"/>
+        <location filename="managers/dataman.py" line="9903"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>遊戲並不存在。是不是已經被你刪除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10418"/>
+        <location filename="managers/dataman.py" line="10482"/>
         <source>Please sign in to submit comment</source>
         <translation>請先登入再提交評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10435"/>
+        <location filename="managers/dataman.py" line="10499"/>
         <source>Cannot connect to the Internet</source>
         <translation>無法連線到網路</translation>
     </message>
@@ -1055,17 +1056,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>請選擇圖片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9131"/>
+        <location filename="managers/dataman.py" line="9195"/>
         <source>Updating game database online</source>
         <translation>更新線上遊戲資料庫中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9154"/>
+        <location filename="managers/dataman.py" line="9218"/>
         <source>Failed to update game database</source>
         <translation>更新遊戲資料庫沒有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9171"/>
+        <location filename="managers/dataman.py" line="9235"/>
         <source>Game database is updated</source>
         <translation>遊戲資料庫更新完成</translation>
     </message>
@@ -1086,7 +1087,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望現在就更新嗎？
 這會花費幾秒鐘來完成。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="3909"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中統合辭典</translation>
@@ -1112,22 +1113,22 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10491"/>
+        <location filename="managers/dataman.py" line="10555"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辭書是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10488"/>
+        <location filename="managers/dataman.py" line="10552"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>詞條資料儲存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10534"/>
+        <location filename="managers/dataman.py" line="10598"/>
         <source>There are no subtitles</source>
         <translation>這個遊戲還沒有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10531"/>
+        <location filename="managers/dataman.py" line="10595"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕資料儲存到了桌面</translation>
     </message>
@@ -1137,12 +1138,12 @@ It might take a couple of seconds to complete.</source>
         <translation>適用於日文編碼的Windows</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10095"/>
+        <location filename="managers/dataman.py" line="10159"/>
         <source>Please start the game to submit comment</source>
         <translation>請在開始遊戲後提交字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5484"/>
+        <location filename="managers/dataman.py" line="5543"/>
         <source>No user-contributed subtitles found</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1233,7 +1234,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9523"/>
+        <location filename="managers/dataman.py" line="9587"/>
         <source>Searching game information online</source>
         <translation>正在網上檢索遊戲資訊</translation>
     </message>
@@ -1243,7 +1244,7 @@ Kojien is detected on your system at the above location.</source>
         <translation type="obsolete">未知的遊戲，請在遊戲嚮導中手動新增</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9518"/>
+        <location filename="managers/dataman.py" line="9582"/>
         <source>The game already exists</source>
         <translation>遊戲已經存在了呢</translation>
     </message>
@@ -1275,10 +1276,10 @@ If yes, VNR will block all settings for this language.</source>
 它和你當前的使用者語言是相同的呢。
 如果遮蔽它，VNR會遮蔽所有與這個語言有關的設定。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="4688"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
-        <translation type="obsolete">和独日德辭書</translation>
+        <translation>和独日德辭書</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5587"/>
@@ -1368,7 +1369,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>百度中文翻譯服務</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8606"/>
+        <location filename="managers/dataman.py" line="8670"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
@@ -1449,22 +1450,22 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置並不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7240"/>
+        <location filename="managers/dataman.py" line="7304"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自動移除錯誤的特殊碼</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6086"/>
+        <location filename="managers/dataman.py" line="6145"/>
         <source>Update game information</source>
         <translation>更新遊戲資訊</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6094"/>
+        <location filename="managers/dataman.py" line="6153"/>
         <source>Found {0} references</source>
         <translation>找到{0}個遊戲的引用</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6096"/>
+        <location filename="managers/dataman.py" line="6155"/>
         <source>No game references found</source>
         <translation>沒有找到遊戲的資訊</translation>
     </message>
@@ -1474,7 +1475,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的遊戲。請更新下游戲資料庫。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9992"/>
+        <location filename="managers/dataman.py" line="10056"/>
         <source>Please sign in to submit reference</source>
         <translation>請先登入再提交資訊</translation>
     </message>
@@ -1499,7 +1500,7 @@ For example, you can put in &quot;typo&quot;, &quot;inaccurate&quot;, or &quot;s
         <translation>遊戲的名字還沒有指定呢。可以點選編輯來為遊戲新增名字。</translation>
     </message>
     <message>
-        <location filename="dialogs/refinput.py" line="596"/>
+        <location filename="dialogs/refinput.py" line="622"/>
         <source>Please select the game title</source>
         <translation>請選擇遊戲的名字</translation>
     </message>
@@ -1561,7 +1562,7 @@ VNR will automatically check for updates.</source>
 資料庫可以用來幫助識別新的遊戲。
 VNR會自動檢查更新的。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1617,7 +1618,7 @@ User privilege describes what you can do to other users&apos; efforts (like subs
 如果你有特權，你也許可以在經過/未經其他同學允許的情況下，改進來自其他同學的貢獻（比如字幕）。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6360"/>
+        <location filename="managers/dataman.py" line="6424"/>
         <source>Reference already existed</source>
         <translation>遊戲資訊已經存在了</translation>
     </message>
@@ -1725,22 +1726,22 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>如你所願以日本時間啟動遊戲</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="221"/>
+        <location filename="i18n.py" line="243"/>
         <source>Text thread from Windows Non-GUI function</source>
         <translation>文字來自非圖形介面的函數</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="222"/>
+        <location filename="i18n.py" line="244"/>
         <source>Text thread from Windows GUI function</source>
         <translation>文字來自圖形介面的函數</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="223"/>
+        <location filename="i18n.py" line="245"/>
         <source>Text thread from game-specific engine</source>
         <translation>文字來自遊戲引擎</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="220"/>
+        <location filename="i18n.py" line="242"/>
         <source>Text thread from user-defined H-code</source>
         <translation>文字來自自定義的特殊碼</translation>
     </message>
@@ -1831,7 +1832,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 那麼，如果你開啟這個選項，VNR將會翻譯全部KiriKiri的文字。
 這樣將會產生大量的垃圾文字，而這不會是你想要達到的！</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -1884,7 +1885,7 @@ After setting up online information for the game, VNR will be able to search cha
 The character names will then be used to correct the furigana and machine translation for these names.
 Current, there is no way to specify or edit the automatically detected character names.
 If you don&apos;t like the translation for certain names, you can create a new term in the Shared Dictionary to override the existing ones.</source>
-        <translation type="obsolete">&lt;h3&gt;簡介&lt;/h3&gt;
+        <translation>&lt;h3&gt;簡介&lt;/h3&gt;
 在VNR中，遊戲的各種設定，包括大家的人工字幕和共享辭書辭書中系列專用的條目，
 都是和遊戲的程式檔案關聯的。
 但是，即便是同一個遊戲也經常會有不同版本的檔案。
@@ -2013,7 +2014,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>保留（英文）單詞之間的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7279"/>
+        <location filename="managers/dataman.py" line="7343"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的遊戲</translation>
     </message>
@@ -2352,17 +2353,17 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}個YouTube動畫</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7270"/>
+        <location filename="managers/dataman.py" line="7334"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留遊戲的全部對話文字</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7261"/>
+        <location filename="managers/dataman.py" line="7325"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不過濾遊戲文字中的重複</translation>
     </message>
     <message>
-        <location filename="dialogs/refinput.py" line="260"/>
+        <location filename="dialogs/refinput.py" line="286"/>
         <source>Type part of the game title or game ID or URL of the webpage</source>
         <translation>輸入遊戲的名字或遊戲在網站上的ID或者URL</translation>
     </message>
@@ -2508,7 +2509,7 @@ VNR中可以共享對遊戲內容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要匯出字幕到XML檔案，可以在【字幕編輯器】中點選【匯出】按鈕。
 </translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -3054,7 +3055,7 @@ VNR預設會使用TTS讀出遊戲的原始文字。
 推薦使用VoiceText的TTS軟體。它不但支援日文，還支援中文、英文等其他語言。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7141"/>
+        <location filename="managers/dataman.py" line="7205"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR的遊戲設定（%s）損壞了呢。恢復到過去備份的設定。</translation>
     </message>
@@ -3242,7 +3243,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>在路徑中不可以有中文之類的非ASCII字元才好呢</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="785"/>
+        <location filename="dialogs/embedprefs.py" line="787"/>
         <source>Engine: VNR</source>
         <translation>文字提取：VNR</translation>
     </message>
@@ -3252,7 +3253,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>清除選定的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="966"/>
+        <location filename="dialogs/textprefs.py" line="968"/>
         <source>Engine: ITH</source>
         <translation>文字提取：ITH</translation>
     </message>
@@ -3272,7 +3273,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10347"/>
+        <location filename="managers/dataman.py" line="10411"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以編輯其他人的條目的</translation>
     </message>
@@ -3297,7 +3298,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10361"/>
+        <location filename="managers/dataman.py" line="10425"/>
         <source>{0} items updated</source>
         <translation>修改了{0}個條目</translation>
     </message>
@@ -3441,10 +3442,10 @@ VNR的提取方法支援內嵌翻譯到遊戲中去，但是支援的遊戲比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要啟用{0}個選定的條目嗎？</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="3887"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
-        <translation type="obsolete">大辞林日日/和英字典</translation>
+        <translation>大辞林日日/和英字典</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6344"/>
@@ -3671,7 +3672,7 @@ You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</
 它並不會影響到中文的機器翻譯。
 你可以將使用中遇到的問題報道到&lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -3699,7 +3700,7 @@ Contents after spaces will be ignored.
 Some games might not need H-code, but the game settings have to be adjusted.
 Check this wiki for what to do if there is no correct text.
 &lt;center&gt;&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Settings&lt;/a&gt;&lt;/center&gt;</source>
-        <translation type="obsolete">特殊碼是一串包含遊戲文字資訊的&lt;b&gt;字元串&lt;/b&gt;。
+        <translation>特殊碼是一串包含遊戲文字資訊的&lt;b&gt;字元串&lt;/b&gt;。
 特殊碼不是所有的遊戲都需要的，但是對有些遊戲是必不可少的。
 特殊碼字元總是以&lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;開頭的。
 &lt;br/&gt;&lt;br/&gt;
@@ -3829,7 +3830,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;，
         <translation>使用正體中文或日本漢字</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7223"/>
+        <location filename="managers/dataman.py" line="7287"/>
         <source>Disable keeping space for Kanji language</source>
         <translation>禁止為漢字語言的遊戲儲存空格</translation>
     </message>
@@ -4199,22 +4200,22 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
 但是如果你選擇【重置】，VNR會重新下載全部資料，會很慢。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9220"/>
+        <location filename="managers/dataman.py" line="9284"/>
         <source>Waiting for dictionary update</source>
         <translation>等待更新共享辭書</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9225"/>
+        <location filename="managers/dataman.py" line="9289"/>
         <source>Redownload the entire dictionary terms</source>
         <translation>重新下載共享辭書的全部詞條</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9227"/>
+        <location filename="managers/dataman.py" line="9291"/>
         <source>Update dictionary terms incrementally</source>
         <translation>更新共享辭書的變更</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9260"/>
+        <location filename="managers/dataman.py" line="9324"/>
         <source>No changes found for Shared Dictionary</source>
         <translation>沒有找到變更的詞條</translation>
     </message>
@@ -4234,17 +4235,17 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>人工字幕在{0}時已經更新過了。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7646"/>
+        <location filename="managers/dataman.py" line="7710"/>
         <source>Found {0} subtitles</source>
         <translation>找到{0}條人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8836"/>
+        <location filename="managers/dataman.py" line="8900"/>
         <source>Subtitles not found</source>
         <translation>沒有找到人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7623"/>
+        <location filename="managers/dataman.py" line="7687"/>
         <source>Updating online subtitles</source>
         <translation>更新線上字幕中</translation>
     </message>
@@ -4399,7 +4400,7 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/s
         <translation>使用韓文的同學推薦</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9513"/>
+        <location filename="managers/dataman.py" line="9577"/>
         <source>Failed to read game executable</source>
         <translation>無法讀取遊戲的可執行檔案</translation>
     </message>
@@ -4468,105 +4469,10 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/s
         <source>Not supported, please update VNR</source>
         <translation>當前版本不支援，請更新VNR</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="dialogs/info.py" line="200"/>
-        <source>&lt;h3&gt;Motivation&lt;/h3&gt;
-In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
-are bound with the game&apos;s executable.
-However, usually the same game has different versions of executables from
-&lt;span style=&quot;color:green&quot;&gt;「初回版」,「通常版」,「廉価版」&lt;/span&gt;, and different updates.
-For example, if you have series-specific character names in the Shared Dictionary,
-after the game is updated, the old terms might not work with the latest game anymore.
-&lt;br/&gt;&lt;br/&gt;
-When that happens, you can create a reference for different versions of the same game.
-&lt;span style=&quot;color:purple&quot;&gt;The games sharing the same reference will share the series-specific translations.&lt;/span&gt;
-
-&lt;h3&gt;Edit game references&lt;/h3&gt;
-Just open the Game Information from Spring Board,
-click the &lt;span style=&quot;color:green&quot;&gt;Edit&lt;/span&gt; button, search the game name,
-select the current one, and press Save.
-&lt;br/&gt;&lt;br/&gt;
-Then, you could find the game by refreshing the Game Information window.
-
-&lt;h3&gt;Limitations&lt;/h3&gt;
-* Currently, only enterprise games on &lt;a href=&quot;http://erogetrailers.com&quot;&gt;ErogeTrailers.com&lt;/a&gt;, &lt;a href=&quot;http://amazon.co.jp&quot;&gt;Amazon.co.jp&lt;/a&gt;, or &lt;a href=&quot;http://dmm.co.jp&quot;&gt;DMM.co.jp&lt;/a&gt; can be identified.
-VNR cannot recognize games from other sites like doujin games on &lt;a href=&quot;http://dlsite.com&quot;&gt;DLsite.com&lt;/a&gt;.
-&lt;br/&gt;
-* Each game can have at most one reference for each site.
-&lt;br/&gt;
-* Sometimes, there are multiple references of the same game.
-Let&apos;s make some conventions on which one to keep, as follows:
-&lt;br/&gt;
-- The one that has the earliest release date
-&lt;br/&gt;
-- The one that has the highest price
-&lt;br/&gt;
--「限定版」over「通常版」over「廉価版」etc.
-
-&lt;h3&gt;Game site differences&lt;/h3&gt;
-You can add games from different sites. Some differences are as follows:
-&lt;br/&gt;
-* ErogeTrailers has the information of amazon and dmm, so that you don&apos;t have to add other sites manually.
-&lt;br/&gt;
-* Amazon has popular games, but no 同人 games and no latest 独占 games.
-&lt;br/&gt;
-DMM covers most of recent games, but is missing old games (say, before 2008).
-&lt;br/&gt;
-* DMM has more game information than Amazon, including authors and CGs.
-&lt;br/&gt;
-* You can only visit DMM web pages from Japan.
-
-&lt;h3&gt;Improvement to Furigana and Machine Translation&lt;/h3&gt;
-After setting up online information for the game, VNR will be able to search character names specific for the game.
-The character names will then be used to correct the furigana and machine translation for these names.
-Current, there is no way to specify or edit the automatically detected character names.
-If you don&apos;t like the translation for certain names, you can create a new term in the Shared Dictionary to override the existing ones.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="dialogs/info.py" line="365"/>
-        <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
-It is not required by all the games, but is essential for some ones.
-It is a string that always starts with &lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;.
-&lt;br/&gt;&lt;br/&gt;
-
-If you have already got a good text thread, you can ignore the following text.
-Otherwise, you have to search for the correct hook code specific for the game, and type it here.
-&lt;br/&gt;&lt;br/&gt;
-
-Here&apos;s an example hook code for 「恋と選挙とチョコレート」:
-&lt;center style=&quot;color:green&quot;&gt;/HSN-4@B14B4:dirapi.dll&lt;/center&gt;
-
-You can find most game-specific hook code from these places:
-&lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;&lt;a href=&quot;{1}&quot;&gt;{1}&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;&lt;a href=&quot;{2}&quot;&gt;{2}&lt;/a&gt;&lt;/center&gt;
-&lt;br/&gt;
-
-Only /H code is supported, and other AGTH parameters are not supported (such as /P).
-I mean, there should be NO SPACES within the hook code.
-Contents after spaces will be ignored.
-&lt;br/&gt;&lt;br/&gt;
-
-Some games might not need H-code, but the game settings have to be adjusted.
-Check this wiki for what to do if there is no correct text.
-&lt;center&gt;&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Settings&lt;/a&gt;&lt;/center&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="3887"/>
-        <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="3895"/>
-        <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="4688"/>
-        <source>Wadoku (和独) Japanese-German dictionary</source>
-        <translation type="unfinished"></translation>
+    <message>
+        <location filename="i18n.py" line="75"/>
+        <source>Central and Eastern Europe</source>
+        <translation>中東歐</translation>
     </message>
 </context>
 </TS>
