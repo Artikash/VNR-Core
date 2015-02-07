@@ -1,22 +1,24 @@
 // multicombobox.qml
 // 2/7/2015 jichi
+// Modified from QtDesktop.ComboBox to support multiple selection.
 import QtQuick 1.1
-import QtDesktop 0.1
-import "../../../../Qt/imports/QtDesktop/custom" as Custom
+import QtDesktop 0.1 as Desktop
+import "../../../../Qt/imports/QtDesktop/custom" as DesktopCustom
+import "." as DesktopEx
 
-Custom.BasicButton { id: root_
+DesktopCustom.BasicButton { id: root_
 
-  default property alias menuItems: popup.menuItems
-  property alias model: popup.model
-  property alias popupOpen: popup.visible
+  default property alias menuItems: popup_.menuItems
+  property alias model: popup_.model
+  property alias popupOpen: popup_.visible
 
-  property alias selectedIndex: popup.selectedIndex
-  property alias hoveredIndex: popup.hoveredIndex
-  property alias selectedText: popup.selectedText
-  property alias hoveredText: popup.hoveredText
+  property alias selectedIndex: popup_.selectedIndex
+  property alias hoveredIndex: popup_.hoveredIndex
+  property alias selectedText: popup_.selectedText
+  property alias hoveredText: popup_.hoveredText
   property string styleHint
 
-  background: StyleItem {
+  background: Desktop.StyleItem {
     anchors.fill: parent
     elementType: "combobox"
     sunken: root_.pressed
@@ -34,13 +36,12 @@ Custom.BasicButton { id: root_
   implicitWidth: Math.max(80, backgroundItem.implicitWidth)
   implicitHeight: backgroundItem.implicitHeight
 
-  onWidthChanged: popup.setMinimumWidth(width)
+  onWidthChanged: popup_.setMinimumWidth(width)
   checkable: false
 
-  onPressedChanged: if (pressed) popup.visible = true
+  onPressedChanged: if (pressed) popup_.visible = true
 
-  ContextMenu {
-    id: popup
+  DesktopEx.MultiContextMenu { id: popup_
     property bool center: backgroundItem.styleHint("comboboxpopup")
     centerSelectedText: center
     y: center ? 0 : root_.height
