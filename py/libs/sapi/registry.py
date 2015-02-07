@@ -10,7 +10,7 @@ from sakurakit import skstr
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skunicode import u
-from windefs import windefs
+from windefs import winlocale
 
 SAPI_HKCU_PATH = r"SOFTWARE\Microsoft\Speech\Voices\TokenEnums"
 SAPI_HKLM_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
@@ -20,7 +20,10 @@ def _parselang(lcid):
   @param  lcid  int
   @return  str
   """
-  return windefs.lcid2locale(lcid)[:2] # only keep the first 2 characters
+  try: return winlocale.lcid2locale(lcid)[:2] # only keep the first 2 characters
+  except Exception, e:
+    dwarn(e)
+    return ''
 
 _GENDERS = {
  'Female': 'f',

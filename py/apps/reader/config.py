@@ -408,13 +408,13 @@ def htmllocale2language(lang): # str -> str
 
 def language2lcid(lang): # str -> long
   loc = language2locale(lang)
-  from windefs import windefs
-  return windefs.locale2lcid(loc)
+  from windefs import winlocale
+  return winlocale.locale2lcid(loc)
 
 def language2codepage(lang): # str -> long
   loc = language2locale(lang)
-  from windefs import windefs
-  return windefs.locale2codepage(loc)
+  from windefs import winlocale
+  return winlocale.locale2codepage(loc)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]

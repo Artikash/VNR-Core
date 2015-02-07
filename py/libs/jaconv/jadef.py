@@ -370,7 +370,7 @@ TH = u"""
 # http://ar.wikipedia.org/wiki/كاتاكانا (片仮名)
 # http://ar.wikipedia.org/wiki/نظام_كتابة_ياباني
 #
-# It seems that Arabian has different representeation for Katagana/Hiragana?
+# It seems that Arabic has different representeation for Katagana/Hiragana?
 AR = u"""
 #Single
 あ:أَ		い:ي		う:أُ		え:إيه		お:أُو

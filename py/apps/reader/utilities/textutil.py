@@ -4,19 +4,35 @@
 
 import re
 from sakurakit import skstr
-from sakurakit.skunicode import u
 from unitraits import unichars, jpchars
+from windefs import winlocale
 import defs
 
 ## Encoding ##
 
 # SHIFT-JIS VS CP932
 # http://d.hatena.ne.jp/r_ikeda/20111105/shift_jis
-def to_unicode(data, encoding): # str, str -> unicode
-  if encoding == 'shift-jis':
-    encoding = 'cp932'
-  return u(data, encoding)
-  #return qunicode(data, encoding)
+def to_unicode(s, enc, errors='ignore'):
+  """
+  @param  enc  str not None
+  @param  s  str or bytearray or None
+  @return  unicode or u""
+  """
+  if not s:
+    return u""
+  enc = winlocale.encoding2py(enc) or enc
+  return s.decode(enc, errors=errors)
+
+def from_unicode(s, enc, errors='ignore'):
+  """
+  @param  enc  str not None
+  @param  s  str or bytearray or None
+  @return  unicode or u""
+  """
+  if not s:
+    return u""
+  enc = winlocale.encoding2py(enc) or enc
+  return s.encode(enc, errors=errors)
 
 ## Helpers ##
 

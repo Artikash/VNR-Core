@@ -260,11 +260,11 @@ class _TextTab(object):
     option = QtWidgets.QGroupBox(tr_("Options"))
     optionLayout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Text encoding") + ":"))
-    row.addWidget(self.encodingEdit)
-    row.addStretch()
     row.addWidget(QtWidgets.QLabel(mytr_("Game language")+ ":"))
     row.addWidget(self.languageEdit)
+    row.addStretch()
+    row.addWidget(QtWidgets.QLabel(tr_("Text encoding") + ":"))
+    row.addWidget(self.encodingEdit)
     optionLayout.addLayout(row)
     optionLayout.addWidget(self.keepsThreadsButton)
     optionLayout.addWidget(self.removesRepeatButton)
@@ -342,7 +342,7 @@ class _TextTab(object):
     ret.setEditable(False)
     ret.setToolTip(tr_("Text encoding"))
     ret.setStatusTip(tr_("Text encoding"))
-    ret.addItems(map(str.upper, config.ENCODINGS))
+    ret.addItems(map(i18n.encoding_desc, config.ENCODINGS))
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._refresh)
     return ret
@@ -774,14 +774,16 @@ class _TextTab(object):
     ]
 
   def _encoding(self):
-    return self.encodingEdit.currentText().lower()
+    return config.ENCODINGS[self.encodingEdit.currentIndex()]
+    #return self.encodingEdit.currentText().lower()
 
   def _language(self):
     return config.LANGUAGES[self.languageEdit.currentIndex()]
 
-  def _setEncoding(self, value):
-    self.encodingEdit.setCurrentIndex(
-        self.encodingEdit.findText(value.upper()))
+  def _setEncoding(self, value): # str ->
+    try: index = config.ENCODINGS.index(value)
+    except ValueError: index = 0
+    self.encodingEdit.setCurrentIndex(index)
 
 class TextTab(QtWidgets.QWidget):
   def __init__(self, parent=None):
