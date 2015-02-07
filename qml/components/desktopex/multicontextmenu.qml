@@ -1,35 +1,51 @@
 // multicontextmenu.qml
 // 2/7/2015 jichi
-// Modified from QtDesktop.ContextMenu to support multiple selection.
+// Modified from QtContextMenu to support multiple selection.
 import QtQuick 1.1
-import QtDesktop 0.1
+import QtDesktop 0.1 as Desktop
 
-Menu { id: root_
-  property string selectedText: itemTextAt(selectedIndex)
-  property string hoveredText: itemTextAt(hoveredIndex)
+Desktop.Menu { id: root_
   property int x
   property int y
   property bool visible
-  property string textRole
+
+  property variant items // list<MenuItem>
+
+  signal selectionChanged()
+
+  property string selectedText
+  property string seperatorText: ", "
+
+  property variant selectedItems
 
   // 'centerSelectedText' means that the menu will be positioned
   //  so that the selected text' top left corner will be at x, y.
   property bool centerSelectedText: true
 
+
+  // - Private -
+
   visible: false
   onMenuClosed: visible = false
-  onModelChanged: if (Component.status === Component.Ready && model != undefined) rebuildMenu()
 
-  Component.onCompleted: if (model !== undefined) rebuildMenu()
+  onSelectionChanged: updateSelection()
 
-  onHoveredIndexChanged: {
-    if (hoveredIndex < menuItems.length)
-      menuItems[hoveredIndex].hovered()
+  Component.onCompleted: {
+    updateSelection()
+    connectActions()
+  }
+  Component.onDestruction: disconnectActions()
+
+  signal f()
+
+  function connectActions() {
+    for (var i in items)
+      items[i].toggled.connect(selectionChanged)
   }
 
-  onSelectedIndexChanged: {
-    if (hoveredIndex < menuItems.length)
-      menuItems[hoveredIndex].selected()
+  function disconnectActions() {
+    for (var i in items)
+      items[i].toggled.disconnect(selectionChanged)
   }
 
   onVisibleChanged: {
@@ -38,51 +54,36 @@ Menu { id: root_
       showPopup(globalPos.x, globalPos.y, centerSelectedText ? selectedIndex : 0)
     } else {
       hidePopup()
+      //updateSelectedText()
     }
   }
 
-  function rebuildMenu() {
-    clearMenuItems();
+  function updateSelection() {
+    updateSelectedText()
+    updateSelectedItems()
+  }
 
-    for (var i=0; i<menuItems.length; ++i)
-      addMenuItem(menuItems[i].text)
-
-    var nativeModel = root_.hasNativeModel()
-
-    if (model !== undefined) {
-      var modelCount = nativeModel ? root_.modelCount() : model.count;
-      for (var j = 0 ; j < modelCount; ++j) {
-        var textValue
-        if (nativeModel) {
-          textValue = root_.modelTextAt(j);
-        } else {
-          if (textRole !== "")
-            textValue = model.get(j)[textRole]
-          else if (model.count > 0 && root_.model.get && root_.model.get(0)) {
-            // ListModel with one role
-            var listElement = root_.model.get(0)
-            var oneRole = true
-            var roleName = ""
-            var roleCount = 0
-            for (var role in listElement) {
-              if (!roleName || role === "text")
-                roleName = role
-              ++roleCount
-            }
-            if (roleCount > 1 && roleName !== "text") {
-              oneRole = false
-              console.log("Warning: No textRole set for ComboBox.")
-              break
-            }
-
-            if (oneRole) {
-              root_.textRole = roleName
-              textValue = root_.model.get(j)[textRole]
-            }
-          }
-        }
-        addMenuItem(textValue)
+  function updateSelectedText() {
+    var t = ""
+    for (var i in items) {
+      var item = items[i]
+      if (item.checked) {
+        if (t)
+          t += seperatorText + item.text
+        else
+          t = item.text
       }
     }
+    selectedText = t
+  }
+
+  function updateSelectedItems() {
+    var l = []
+    for (var i in items) {
+      var item = items[i]
+      if (item.checked)
+        l.push(item)
+    }
+    selectedItems = l
   }
 }

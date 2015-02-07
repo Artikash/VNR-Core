@@ -11,18 +11,40 @@ Item {
 
   // - Private -
 
-  DesktopEx.MultiComboBox {
+  DesktopEx.MultiComboBox { id: combo_
     anchors.centerIn: parent
-    width: 100
+    width: 200
     height: 30
 
-    model: ListModel { //id: typeModel_
-      Component.onCompleted: {
-        append({value:'google', text:"Google", checkable:true, checked:true})
-        append({value:'bing', text:"Bing", checkable:true, checked:true})
-        append({value:'naver', text:"Naver", checkable:true})
-      }
+    seperatorText: "|"
+
+    //property list<MenuItem> l: [
+    Desktop.MenuItem { id: act1_
+      text: "Naver"
+      property string value: "naver"
+      checkable: true
+      checked: true
     }
+    Desktop.MenuItem { id: act2_
+      text: "Google"
+      property string value: "google"
+      checkable: true
+      checked: true
+    }
+    Desktop.MenuItem { id: act3_
+      text: "Bing"
+      property string value: "bing"
+      checkable: true
+      checked: true
+    }
+    Desktop.MenuItem { id: act4_
+      text: "Infoseek"
+      property string value: "infoseek"
+      checkable: true
+      checked: true
+    }
+
+    menuItems: [act1_, act2_, act3_, act4_]
   }
 
   //ButtonGroup.ButtonRow {

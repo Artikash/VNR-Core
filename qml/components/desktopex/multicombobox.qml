@@ -7,16 +7,18 @@ import "../../../../Qt/imports/QtDesktop/custom" as DesktopCustom
 import "." as DesktopEx
 
 DesktopCustom.BasicButton { id: root_
+  property alias menuItems: popup_.items
 
-  default property alias menuItems: popup_.menuItems
-  property alias model: popup_.model
+  property alias selectedText: popup_.selectedText
+  property alias seperatorText: popup_.seperatorText
+
+  property alias selectedItems: popup_.selectedItems
+
   property alias popupOpen: popup_.visible
 
-  property alias selectedIndex: popup_.selectedIndex
-  property alias hoveredIndex: popup_.hoveredIndex
-  property alias selectedText: popup_.selectedText
-  property alias hoveredText: popup_.hoveredText
-  property string styleHint
+  // - Private -
+
+  default property alias defaultMenuItems_: popup_.menuItems
 
   background: Desktop.StyleItem {
     anchors.fill: parent
@@ -49,7 +51,8 @@ DesktopCustom.BasicButton { id: root_
 
   // The key bindings below will only be in use when popup is
   // not visible. Otherwise, native popup key handling will take place:
+  //Keys.onUpPressed: { if (selectedIndex < model.count - 1) selectedIndex++ }
+  //Keys.onDownPressed: { if (selectedIndex > 0) selectedIndex-- }
+
   Keys.onSpacePressed: { root_.popupOpen = !root_.popupOpen }
-  Keys.onUpPressed: { if (selectedIndex < model.count - 1) selectedIndex++ }
-  Keys.onDownPressed: { if (selectedIndex > 0) selectedIndex-- }
 }
