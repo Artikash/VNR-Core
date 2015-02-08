@@ -409,6 +409,8 @@ class TermWriter:
     #  types.append('name')
     #  types.append('yomi')
 
+    patterns = set() # skip duplicate names
+
     types = frozenset(types)
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
@@ -419,7 +421,9 @@ class TermWriter:
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           #and td.syntax == syntax
         ):
-        yield td
+        if td.pattern not in patterns:
+          patterns.add(td.pattern)
+          yield td
 
   def queryTermMacros(self, to, fr):
     """
