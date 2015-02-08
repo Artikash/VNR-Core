@@ -25,6 +25,9 @@ import config, cabochaman, dataman, defs, i18n, rc
 if skos.WIN:
   from pytrscript import TranslationScriptManager
 
+@memoized
+def manager(): return TermManager()
+
 LANG_SUFFIX_TR = {
   'en': ((u"の", u"'s"),),
   'ko': ((u"の", u"의"),),
@@ -60,8 +63,32 @@ def _partition_punct(text, punct=S_PUNCT):
     text = text[count:]
   return left, text, right
 
-@memoized
-def manager(): return TermManager()
+def __lang_level(lang):
+  """Larger applied first
+  @param  lang  str
+  @return  int
+  """
+  if not lang or lang == 'ja':
+    return 0
+  if lang == 'en':
+    return 1
+  if config.is_latin_language(lang):
+    return 2
+  return 3
+def _lang_sort_key(t, s):
+  """Larger applied first
+  @param  t  str  target language
+  @param  s  str  source language
+  @return  int
+  """
+  return __lang_level(t) * 10 + __lang_level(s)
+
+def _td_sort_key(td):
+  """Larger applied first, true is applied first
+  @param  td  _Term
+  @return  tuple
+  """
+  return (len(td.pattern), td.private, td.special, not td.icase, _lang_sort_key(td.language, td.sourceLanguage), td.id) #, it.regex)
 
 #_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
 #def _remove_marks(text): #return _re_marks.sub('', text) # unicode -> unicode
@@ -89,7 +116,7 @@ def _host_categories(host): # str -> int
 
 class TermTitle(object):
   __slots__ = 'pattern', 'text', 'regex', 'icase', 'sortKey'
-  def __init__(self, pattern='', text='', regex=False, icase=False, sortKey=0):
+  def __init__(self, sortKey, pattern='', text='', regex=False, icase=False):
     self.pattern = pattern # unicode
     self.text = text # unicode
     self.regex = regex # bool
@@ -442,7 +469,7 @@ class TermWriter:
     s = _get_lang_suffices(to)
     if s:
       for k,v in s:
-        l.append(TermTitle(pattern=k, text=v))
+        l.append(TermTitle(pattern=k, text=v, sortKey=(0,0)))
     for td in self._iterTermData('suffix', to, fr):
       pat = td.pattern
       if td.regex:
@@ -452,7 +479,7 @@ class TermWriter:
         pat = zhs2zht(pat)
         if repl: # and self.convertsChinese:
           repl = zhs2zht(repl)
-      sortKey = td.updateTimestamp or td.timestamp
+      sortKey = _lang_sort_key(td.language, td.sourceLanguage), td.updateTimestamp or td.timestamp
       l.append(TermTitle(sortKey=sortKey,
         pattern=pat,
         text=repl,
@@ -573,15 +600,14 @@ class _TermManager:
     if gameIds:
       gameIds = set(gameIds) # in case it is changed during iteration
 
-    termData = (t.d for t in dm.terms() if not t.d.disabled and not t.d.deleted and t.d.pattern) # filtered
-    termData = sorted(termData, reverse=True, key=lambda td:
-          (len(td.pattern), td.private, td.special, not td.icase, td.id)) # it.regex  true is applied first
+    l = [t.d for t in dm.terms() if not t.d.disabled and not t.d.deleted and t.d.pattern] # filtered
+    l.sort(reverse=True, key=_td_sort_key)
 
     if scriptTimes and createTime >= self.updateTime:
-      self._saveScriptTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=scriptTimes)
+      self._saveScriptTerms(termData=l, createTime=createTime, gameIds=gameIds, times=scriptTimes)
 
     #if rbmtTimes and createTime >= self.updateTime:
-    #  self._saveSyntaxTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=rbmtTimes)
+    #  self._saveSyntaxTerms(createTime=createTime, termData=l, gameIds=gameIds, times=rbmtTimes)
 
     if createTime >= self.updateTime:
       dprint("cache changed")
