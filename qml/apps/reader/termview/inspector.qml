@@ -29,7 +29,9 @@ Item { id: root_
       topMargin: 3
       leftMargin: 9
     }
-    width: 75; height: 75
+    width: 75
+    //height: 75
+    fillMode: Image.PreserveAspectFit
     userId: currentItem ? currentItem.userId : 0
     userHash: currentItem ? currentItem.userHash : 0
   }
