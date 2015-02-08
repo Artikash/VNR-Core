@@ -21,6 +21,20 @@ options:
   --nosplash    Do not display splash screen
   --pid PID     Attach to the process with PID"""
 
+def guess_language():
+  """
+  @return  str  language
+  """
+  import locale
+  lc = locale.getdefaultlocale()[0]
+  if lc:
+    if lc.startswith('zh'):
+      return 'zht' # force using Taiwan as Chinese variant
+    import config
+    if lc in config.LANGUAGE_LOCALES.values():
+      return lc[:2]
+  return 'en'
+
 def main():
   """
   @return  int
@@ -83,16 +97,15 @@ def main():
   import settings
 
   ss = settings.global_()
+
+  uilang = ss.uiLanguage()
+  if not uilang:
+    uilang = guess_language()
+    ss.setValue('Language', uilang)
+
   lang = ss.userLanguage()
   if not lang:
-    import locale
-    lc = locale.getdefaultlocale()[0]
-    if lc and lc.startswith('zh'):
-      lang = 'zht'
-    elif lc and lc in config.LANGUAGE_LOCALES.values():
-      lang = lc[:2]
-    else:
-      lang = 'en'
+    lang = guess_language()
     ss.setValue('UserLanguage', lang)
 
   dprint("user language = %s" % lang)

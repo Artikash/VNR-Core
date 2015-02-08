@@ -29,7 +29,7 @@ def create_label(text=""): # unicode -> QLabel
   ret = QtWidgets.QLabel()
   if text:
     ret.setText(text + ":")
-  ret.setAlignment(Qt.AlignRight)
+  ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
   return ret
 
 class _SyntaxTester(object):
