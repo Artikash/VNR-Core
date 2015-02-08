@@ -91,7 +91,8 @@ ERROR MESSAGE END""" % e,
   @staticmethod
   def applicationLocale():
     import settings
-    lang = settings.global_().userLanguage()
+    #lang = settings.global_().userLanguage()
+    lang = settings.global_().uiLanguage()
     locale = config.language2locale(lang)
     return locale
 

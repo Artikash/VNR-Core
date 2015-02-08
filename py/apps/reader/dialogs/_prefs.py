@@ -34,7 +34,8 @@ def create_label(text=""): # unicode -> QLabel
   ret = QtWidgets.QLabel()
   if text:
     ret.setText(text + ":")
-  ret.setAlignment(Qt.AlignRight)
+  ret.setAlignment(Qt.AlignRight|Qt.AlignTop)
+  #ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
   return ret
 
 ALL_LANGUAGES = config.LANGUAGES2 # merge zhs
@@ -144,6 +145,13 @@ class _UserTab(object):
     grid = QtWidgets.QGridLayout()
 
     r = 0
+    grid.addWidget(create_label(notr_("UI")), r, 0)
+    grid.addWidget(self.uiLanguageEdit, r, 1)
+
+    r += 1 # add a vertical space
+    grid.addWidget(QtWidgets.QLabel(), r, 0)
+
+    r += 1
     grid.addWidget(create_label(tr_("Avatar")), r, 0)
     grid.addWidget(self.userAvatarLabel, r, 1)
 
@@ -155,9 +163,8 @@ class _UserTab(object):
     grid.addWidget(create_label(tr_("Password")), r, 0)
     grid.addWidget(self.userPasswordEdit, r, 1)
 
-    # Language name is not translated
     r += 1
-    grid.addWidget(create_label(notr_("Language")), r, 0)
+    grid.addWidget(create_label(tr_("Language")), r, 0)
     grid.addWidget(self.userLanguageEdit, r, 1)
 
     r += 1
@@ -305,18 +312,38 @@ class _UserTab(object):
     return ret
 
   @memoizedproperty
-  def userLanguageEdit(self):
+  def uiLanguageEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
     ret.addItems(map(config.language_name, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
+    try: langIndex = config.LANGUAGES.index(settings.global_().uiLanguage())
+    except ValueError: langIndex = 1 # 'en'
+    ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(self._saveUiLanguage)
+    return ret
+
+  @memoizedproperty
+  def userLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ss = settings.global_()
+
     def _load():
-      try: langIndex = config.LANGUAGES.index(settings.global_().userLanguage())
+      try: langIndex = config.LANGUAGES.index(ss.userLanguage())
       except ValueError: langIndex = 1 # 'en'
       ret.setCurrentIndex(langIndex)
+
+    def _save():
+      try: lang = config.LANGUAGES[ret.currentIndex()]
+      except ValueError: lang = 'en'
+      ss.setUserLanguage(lang)
+
     _load()
-    settings.global_().userLanguageChanged.connect(_load)
-    ret.currentIndexChanged.connect(self._saveLanguage)
+    ss.userLanguageChanged.connect(_load)
+    ret.currentIndexChanged.connect(_save)
     return ret
 
   @memoizedproperty
@@ -375,13 +402,15 @@ class _UserTab(object):
       except IndexError: genderIndex = 1 # male
       self.userGenderEdit.setCurrentIndex(genderIndex)
 
-  def _saveLanguage(self):
-    lang = config.LANGUAGES[self.userLanguageEdit.currentIndex()]
+  def _saveUiLanguage(self):
+    lang = config.LANGUAGES[self.uiLanguageEdit.currentIndex()]
     ss = settings.global_()
-    if lang != ss.userLanguage():
+    if lang != ss.uiLanguage():
       growl.notify("<br/>".join((
-        my.tr("GUI language changed."),
-        my.tr("VNR will use the new language next time."),
+        #my.tr("GUI language changed."),
+        #my.tr("VNR will use the new language next time."),
+        notr_("GUI language changed to {0}.").format(lang),
+        tr_("VNR will use the new language next time."),
       )))
       #elif lang in ('vi', 'id', 'ms', 'th'):
       #  growl.notify("<br/>".join((
@@ -395,7 +424,7 @@ class _UserTab(object):
       #    my.tr("Currently, {0} is the only machine translator that supports {1}.")
       #      .format(mytr_("Bing"), i18n.language_name(lang)),
       #  )))
-      ss.setUserLanguage(lang)
+      ss.setUiLanguage(lang)
 
   def _saveLogin(self):
     """

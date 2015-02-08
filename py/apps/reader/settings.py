@@ -125,8 +125,7 @@ class Settings(QSettings):
       self.setValue('UserId', value)
       self.userIdChanged.emit(value)
 
-  def setUserName(self, value):
-    self.setValue('UserName', value)
+  def setUserName(self, value): self.setValue('UserName', value)
   def userName(self): return self.value('UserName')
 
   # TODO: encrypt password
@@ -136,6 +135,9 @@ class Settings(QSettings):
   loginChanged = Signal(unicode, unicode) # username, password
   def invalidateLogin(self):
     self.loginChanged.emit(self.userName(), self.userPassword())
+
+  def uiLanguage(self): return self.value('Language')
+  def setUiLanguage(self, value): self.setValue('Language', value)
 
   userLanguageChanged = Signal(str)
   def userLanguage(self):

@@ -19,7 +19,7 @@ def create_label(text=""): # unicode -> QLabel
   ret = QtWidgets.QLabel()
   if text:
     ret.setText(text + ":")
-  #ret.setAlignment(Qt.AlignRight) # disable alignment
+  #ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter) # disable alignment
   return ret
 
 @Q_Q
