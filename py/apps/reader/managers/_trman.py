@@ -552,7 +552,8 @@ class AtlasTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    if scriptEnabled and to == 'en' and fr == 'ja':
+    #if scriptEnabled and to == 'en' and fr == 'ja':
+    if scriptEnabled and fr == 'ja':
       # 8/19/2014: Only test 0.007 second, with or without locks
       #with SkProfiler():
       t = text
