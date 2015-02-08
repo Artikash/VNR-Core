@@ -6068,6 +6068,8 @@ class _ReferenceModel(object):
     q.dmmItemChanged.emit(q.dmmItem)
     q.amazonItemChanged.emit(q.amazonItem)
     q.dlsiteItemChanged.emit(q.dlsiteItem)
+    q.freemItemChanged.emit(q.freemItem)
+    q.steamItemChanged.emit(q.steamItem)
 
     self.invalidateActiveItem()
 
