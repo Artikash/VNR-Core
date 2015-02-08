@@ -16,7 +16,7 @@ Image { //id: root_
   //fillMode: Image.Stretch
   //visible: status == Image.Ready
 
-  sourceSize: Qt.size(50, 50) // small: 50x50
+  sourceSize: Qt.size(width, height)
 
   visible: !!source && status === Image.Ready
 

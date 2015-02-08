@@ -193,7 +193,7 @@ Item { id: root_
     }
   }
 
-  Desktop.ContextMenu { id: submitMenu_
+  Desktop.Menu { id: submitMenu_
     Desktop.MenuItem { id: returnAct_
       text: qsTr("Enter to Submit")
       checkable: true

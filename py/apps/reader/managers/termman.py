@@ -66,13 +66,26 @@ def manager(): return TermManager()
 #_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
 #def _remove_marks(text): #return _re_marks.sub('', text) # unicode -> unicode
 
-def _translator_category(host): # str -> int
+def _host_category(host): # str -> int
   if host:
     if host == 'lecol':
       host = 'lec'
-    try: return dataman.Term.HOSTS.index(host) + 1
+    try: return 1 << dataman.Term.HOSTS.index(host)
     except: pass
   return 0
+
+def _host_categories(host): # str -> int
+  if not host:
+    return 0
+  sep = ','
+  if sep not in host:
+    return _host_category(host)
+  ret = 0
+  l = host.split(sep)
+  for i,h in enumerate(dataman.Term.HOSTS):
+    if h in l:
+      ret |= 1 << i
+  return ret
 
 class TermTitle(object):
   __slots__ = 'pattern', 'text', 'regex', 'icase', 'sortKey'
@@ -317,7 +330,7 @@ class TermWriter:
     if '\n' in pattern or '\n' in repl:
       dwarn("skip new line in term: id = %s" % tid)
       return
-    cat = _translator_category(host)
+    cat = _host_categories(host)
     cols = [str(tid), str(cat), pattern]
     if repl:
       cols.append(repl)
@@ -678,7 +691,7 @@ class _TermManager:
     if man is None:
       self.scriptTimes[key] = 0
       self.rebuildCacheLater()
-    category = _translator_category(host)
+    category = _host_category(host)
     return man.translate(text, category, mark) if man and not man.isEmpty() else text
 
 class TermManager(QObject):

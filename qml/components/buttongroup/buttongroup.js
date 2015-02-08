@@ -38,7 +38,7 @@ function build() {
   visibleButtons = [];
   nonVisibleButtons = [];
 
-  for (var i = 0, item; (item = root.children[i]); i++) {
+  for (var i = 0, item; (item = root.children[i]); ++i) {
 
     //if (item.hasOwnProperty("styleHint"))
     //  item.styleHint = styleHint;
@@ -80,7 +80,7 @@ function build() {
   //  finishButton(visibleButtons[0], "only");
   //} else {
   //  finishButton(visibleButtons[0], direction == Qt.Horizontal ? "leftmost" : "top");
-  //  for (var i = 1; i < nrButtons - 1; i++)
+  //  for (var i = 1; i < nrButtons - 1; ++i)
   //    finishButton(visibleButtons[i], direction == Qt.Horizontal ? "h_middle": "v_middle");
   //  finishButton(visibleButtons[nrButtons - 1], direction == Qt.Horizontal ? "rightmost" : "bottom");
   //}
@@ -135,7 +135,7 @@ function resizeChildren() {
 function checkExclusive(item) {
   var button = item;
   return function() {
-    for (var i = 0, ref; (ref = visibleButtons[i]); i++) {
+    for (var i = 0, ref; (ref = visibleButtons[i]); ++i) {
       if (ref.checked == (button === ref))
         continue;
 

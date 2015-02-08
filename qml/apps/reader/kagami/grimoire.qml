@@ -579,7 +579,7 @@ Item { id: root_
     //  //styleColor: 'black'
     //}
 
-    //Desktop.ContextMenu { id: headerMenu_
+    //Desktop.Menu { id: headerMenu_
 
     //  //Desktop.MenuItem {
     //  //  text: qsTr("Scroll to the beginning")
@@ -1526,7 +1526,7 @@ Item { id: root_
     return e ? textEditHoveredText(e) : ''
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     function popup(x, y) {
       popupX = x; popupY = y
 
@@ -1769,7 +1769,7 @@ Item { id: root_
       case Qt.RightButton:
         if (!root_.ignoresFocus) {
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-          contextMenu_.popup(gp.x, gp.y)
+          menu_.popup(gp.x, gp.y)
         } break
       case Qt.MiddleButton:
         root_.speakTextRequested()

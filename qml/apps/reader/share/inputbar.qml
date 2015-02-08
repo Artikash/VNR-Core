@@ -123,7 +123,7 @@ Rectangle { id: root_
 
   // - Context Menu -
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     Desktop.MenuItem {
       text: Sk.tr("Copy")
       //shortcut: "Ctrl+C"
@@ -164,7 +164,7 @@ Rectangle { id: root_
     onPressed: {
       //var gp = Util.itemGlobalPos(parent)
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      contextMenu_.showPopup(gp.x, gp.y)
+      menu_.showPopup(gp.x, gp.y)
     }
   }
 }

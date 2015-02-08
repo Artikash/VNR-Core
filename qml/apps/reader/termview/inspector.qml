@@ -18,7 +18,7 @@ Item { id: root_
 
   // - Private -
 
-  height: Math.max(80, text_.height + 7)
+  height: Math.max(120, text_.height + 7)
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
@@ -29,7 +29,7 @@ Item { id: root_
       topMargin: 3
       leftMargin: 9
     }
-    width: 50; height: 50
+    width: 75; height: 75
     userId: currentItem ? currentItem.userId : 0
     userHash: currentItem ? currentItem.userHash : 0
   }
@@ -63,6 +63,33 @@ Item { id: root_
 
   Plugin.JlpUtil { id: jlp_ }
 
+  property variant _TYPE_NAMES: {
+    trans: Sk.tr("Translation")
+    , input: My.tr("Input")
+    , output: My.tr("Output")
+    , name: My.tr("Name")
+    , yomi: My.tr("Yomi")
+    , suffix: My.tr("Suffix")
+    , game: Sk.tr("Game")
+    , tts: My.tr("TTS")
+    , ocr: My.tr("OCR")
+    , macro: Sk.tr("Macro")
+  }
+  function typeName(type) {
+    return _TYPE_NAMES[type] // string -> string
+  }
+
+  function hostName(host) { // string -> string
+    if (~host.indexOf(',')) {
+      var names = []
+      var hosts = host.split(',')
+      for (var i in hosts)
+        names.push(Util.translatorName(hosts[i]) || '(' + hosts[i] + ')')
+      return '+ ' + names.join(' + ')
+    } else
+      return '+ ' + Util.translatorName(host)
+  }
+
   function summary() {
     if (!currentItem)
       return ""
@@ -93,6 +120,13 @@ Item { id: root_
 
     if (text && (type == 'trans' || type == 'output' || type == 'name' || type == 'suffix') && lang != 'en' && lang != 'ja')
       ret += "<br/>" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
+
+    ret += "<br/>" + Sk.tr("Type") + ": " + typeName(currentItem.type)
+        + " (" + (Sk.tr(Util.languageName(currentItem.sourceLanguage)) || currentItem.sourceLanguage)
+        + " &rArr; " + (Sk.tr(currentItem.language == 'ja' ? "All" : Util.languageName(currentItem.language)) || currentItem.Language)
+        + ")"
+    if (currentItem.host)
+      ret += " " + hostName(currentItem.host)
 
     if (currentItem.gameId > 0)
       ret += "<br/>" + Sk.tr("Game") + ": " + gameSummary(currentItem.gameId)

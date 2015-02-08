@@ -7,6 +7,7 @@ import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
+import '.' as TermView
 
 Item { id: root_
 
@@ -90,6 +91,17 @@ Item { id: root_
   function updateCommentColor(term) { // object -> string
     return datamanPlugin_.queryUserColor(term.updateUserId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
+  }
+
+  function hostName(host) { // string -> string
+    if (~host.indexOf(',')) {
+      var names = []
+      var hosts = host.split(',')
+      for (var i in hosts)
+        names.push(Util.translatorName(hosts[i]) || '(' + hosts[i] + ')')
+      return '+' + names.join('+')
+    } else
+      return Util.translatorName(host)
   }
 
   function typeAllowsHost(type) { // string -> bool
@@ -480,52 +492,25 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          text: itemValue.host ? Util.translatorName(itemValue.host) || ('(' + itemValue.host + ')')
-              : root_.typeAllowsHost(itemValue.type) ? '*' : '-'
+          text: itemValue.host ? root_.hostName(itemValue.host) : root_.typeAllowsHost(itemValue.type) ? '*' : '-'
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : root_.typeAllowsHost(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
           font.strikeout: itemValue.disabled
           font.bold: itemValue.regex //|| itemValue.syntax
         }
-        Desktop.ComboBox {
+        TermView.HostComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          model: ListModel { //id: typeModel_
-            Component.onCompleted: {
-              append({value:'', text:'*'})
-              for (var i in Util.TRANSLATOR_HOST_KEYS) {
-                var key = Util.TRANSLATOR_HOST_KEYS[i]
-                append({value:key, text:Util.translatorName(key)})
-              }
-              append({value:null, text:'(' + Sk.tr('Unknown') + ')'})
-            }
-          }
 
-          tooltip: My.tr("Translator")
           visible: itemSelected && editable
 
-          onSelectedIndexChanged:
-            if (editable && selectedIndex !== Util.TRANSLATOR_HOST_KEYS.length + 1) {
-              var host = model.get(selectedIndex).value
-              if (host !== itemValue.host) {
-                itemValue.host = host
-                itemValue.updateUserId = root_.userId
-                itemValue.updateTimestamp = Util.currentUnixTime()
-              }
-            }
+          selectedValue: itemValue.host
 
-          selectedText: model.get(selectedIndex).text
-          Component.onCompleted: {
-            var host = itemValue.host
-            if (!host)
-              selectedIndex = 0
-            else {
-              var i = Util.TRANSLATOR_HOST_KEYS.indexOf(host)
-              if (i !== -1)
-                selectedIndex = i + 1
-              else
-                selectedIndex = Util.TRANSLATOR_HOST_KEYS.length + 1
+          onSelectedValueChanged:
+            if (editable && itemValue.host !== selectedValue) {
+              itemValue.host = selectedValue
+              itemValue.updateUserId = root_.userId
+              itemValue.updateTimestamp = Util.currentUnixTime()
             }
-          }
         }
       }
     }

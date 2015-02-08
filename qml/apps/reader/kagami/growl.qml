@@ -210,7 +210,7 @@ Item { id: root_
           onPressed: if (!root_.ignoresFocus) {
             //var gp = Util.itemGlobalPos(parent)
             var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-            contextMenu_.popup(gp.x, gp.y, textEdit_)
+            menu_.popup(gp.x, gp.y, textEdit_)
           }
         }
       }
@@ -329,7 +329,7 @@ Item { id: root_
   // - Context Menu -
 
   property QtObject selectedTextEdit
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     function popup(x, y, textEdit) {
       selectedTextEdit = textEdit

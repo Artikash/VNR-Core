@@ -70,7 +70,7 @@ public:
 
   bool is_valid() const { return valid; }
 
-  bool match_category(int v) const { return !v || !category || v == category; }
+  bool match_category(int v) const { return !v || !category || v & category; }
 
   void init(const param_type &param, bool precompile_regex = true);
   void init_list(const param_type &param,

@@ -19,7 +19,7 @@ import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 
 Item {
-  function showPopup(x, y) { contextMenu_.showPopup(x, y) }
+  function showPopup(x, y) { menu_.showPopup(x, y) }
 
   // - Private -
 
@@ -30,7 +30,7 @@ Item {
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.SystemStatus { id: statusPlugin_ }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem {
       text: My.tr("Sync with Running Game")

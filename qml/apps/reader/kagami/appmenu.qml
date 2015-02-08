@@ -20,7 +20,7 @@ Item {
   function showPopup(x, y) {
     updateSubtitleAct_.enabled = updateCommentAct_.enabled = statusPlugin_.online
     visible = true
-    contextMenu_.showPopup(x, y)
+    menu_.showPopup(x, y)
     visible = false
   }
 
@@ -36,7 +36,7 @@ Item {
   //Plugin.TextManagerProxy { id: textmanPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem {
       text: My.tr("Text Settings")
