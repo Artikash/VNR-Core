@@ -31,7 +31,6 @@ Item { id: root_
     }
     width: 75
     //height: 75
-    fillMode: Image.PreserveAspectFit
     userId: currentItem ? currentItem.userId : 0
     userHash: currentItem ? currentItem.userHash : 0
   }

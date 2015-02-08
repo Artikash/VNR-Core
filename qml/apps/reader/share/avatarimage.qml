@@ -11,7 +11,9 @@ Image { //id: root_
 
   // - Private -
 
-  fillMode: Image.PreserveAspectCrop
+  //fillMode: Image.PreserveAspectCrop
+  fillMode: Image.PreserveAspectFit
+
   //clip: true
   //fillMode: Image.Stretch
   //visible: status == Image.Ready
