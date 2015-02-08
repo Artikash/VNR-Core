@@ -138,6 +138,12 @@ def kana2reading(text, lang):
   @param  lang  str
   @return  unicode or None
   """
+  if lang in ('ko', 'th'):
+    # remove xtu in name
+    text = text.replace(u'っ', '')
+    text = text.replace(u'ッ', '')
+    if not text:
+      return ''
   if lang == 'ko':
     return kana2ko(text)
   elif lang == 'th':
