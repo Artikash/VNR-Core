@@ -4348,7 +4348,7 @@ class _GameModel(object):
       #col = self.COLUMNS[self.sortingColumn]
       #self._sortedData = sorted(data,
       #    key=operator.attrgetter(col),
-      #    reverse=self.sortingReverse,)
+      #    reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -4895,7 +4895,7 @@ class _TermModel(object):
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
             key=operator.attrgetter(col),
-            reverse=self.sortingReverse,)
+            reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -5463,7 +5463,7 @@ class _CommentModel(object):
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
             key=operator.attrgetter(col),
-            reverse=self.sortingReverse,)
+            reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -6097,7 +6097,7 @@ class _ReferenceModel(object):
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
             key=operator.attrgetter(col),
-            reverse=self.sortingReverse,)
+            reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
