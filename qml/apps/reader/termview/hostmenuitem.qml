@@ -7,7 +7,7 @@ import '../../../js/util.min.js' as Util
 
 Desktop.MenuItem {
 
-  property string value: "naver"
+  property string value
 
   // - Private -
 

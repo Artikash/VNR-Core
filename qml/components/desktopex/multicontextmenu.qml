@@ -14,7 +14,7 @@ Desktop.Menu { id: root_
   signal selectionChanged()
 
   property string selectedText
-  property string seperatorText: "|"
+  property string seperator: ','
 
   //property variant selectedItems // not used
 
@@ -34,9 +34,7 @@ Desktop.Menu { id: root_
     updateSelection()
     connectActions()
   }
-  Component.onDestruction: disconnectActions()
-
-  signal f()
+  //Component.onDestruction: disconnectActions() // this would raise
 
   function connectActions() {
     for (var i in items)
@@ -70,6 +68,6 @@ Desktop.Menu { id: root_
       if (item.checked)
         l.push(item.text)
     }
-    selectedText = l.join(seperatorText)
+    selectedText = l.join(seperator)
   }
 }

@@ -3,16 +3,18 @@
 // Modified from QtDesktop.ComboBox to support multiple selection.
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
-import "../../../../Qt/imports/QtDesktop/custom" as DesktopCustom
-import "." as DesktopEx
+import '../../../../Qt/imports/QtDesktop/custom' as DesktopCustom
+import '.' as DesktopEx
 
 DesktopCustom.BasicButton { id: root_
   property alias menuItems: popup_.items
 
   property alias selectedText: popup_.selectedText
-  property alias seperatorText: popup_.seperatorText
+  property alias seperator: popup_.seperator
 
-  property string emptyText
+  property string placeholderText: "-"
+  property string prefix
+  property string suffix
 
   signal selectionChanged
 
@@ -31,7 +33,7 @@ DesktopCustom.BasicButton { id: root_
     raised: !sunken
     hover: root_.containsMouse
     enabled: root_.enabled
-    text: root_.selectedText ? root_.selectedText : root_.emptyText
+    text: root_.selectedText ? root_.prefix + root_.selectedText + root_.suffix : root_.placeholderText
     hasFocus: root_.focus
     contentHeight: 18
   }

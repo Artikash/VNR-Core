@@ -40,8 +40,6 @@ Item {
       checkable: true
     }
 
-    emptyText: "*"
-
     menuItems: [act1_, act2_, act3_, act4_]
 
     property string selectedValues: 'google,bing'

@@ -1333,7 +1333,7 @@ class GameInfo(object):
   #  if r and r.hasSampleImages():
   #    for it in r.iterSampleImageUrls():
   #      yield it
-  #  r = self.getchu # show gechu banner as sample images
+  #  r = self.getchu # show getchu banner as sample images
   #  if r and r.hasBannerImages():
   #    for it in r.iterBannerImageUrls():
   #      yield it
