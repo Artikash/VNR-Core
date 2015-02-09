@@ -435,7 +435,7 @@ Item { id: root_
     //visible: !root_.locked
     visible: root_.containsVisibleText
 
-    property bool active: toolTip_.containsMouse ||
+    property bool active: headerToolTip_.containsMouse ||
                           listTopMouseTip_.containsMouse ||
                           listBottomMouseTip_.containsMouse ||
                           buttonRow_.hover ||
@@ -479,7 +479,7 @@ Item { id: root_
         anchors.margins: -9
         color: '#01000000'
 
-        Desktop.TooltipArea { id: toolTip_
+        Desktop.TooltipArea { id: headerToolTip_
           anchors.fill: parent
           text: qsTr("You can drag me to move the text box.")
         }
@@ -761,9 +761,9 @@ Item { id: root_
           //maximumX: root_.maximumX; maximumY: root_.maximumY
         }
 
-        property alias hover: toolTip_.containsMouse
+        property alias hover: highlightToolTip_.containsMouse
 
-        Desktop.TooltipArea { id: toolTip_
+        Desktop.TooltipArea { id: highlightToolTip_
           anchors.fill: parent
           text: qsTr("You can drag this black bar to move the text box.")
         }
@@ -1341,7 +1341,7 @@ Item { id: root_
     if (modelLocked)
       return
     modelLocked = true
-    var item = createTextItem.apply(this, arguments)
+    var item = createTextItem(text, lang, type, null, provider, comment)
     listModel_.append(item) // I assume the text always comes before translation
     listView_.currentIndex = _pageIndex
     modelLocked = false
