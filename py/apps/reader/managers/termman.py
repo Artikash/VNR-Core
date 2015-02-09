@@ -29,22 +29,29 @@ if skos.WIN:
 def manager(): return TermManager()
 
 LANG_SUFFIX_TR = {
-  'en': ((u"の", u"'s"),),
-  'ko': ((u"の", u"의"),),
-  #'zh': ((u"の", u"的"),),
+  ('ja', 'en'): ((u"の", u"'s"),),
+  ('ja', 'ko'): ((u"の", u"의"),),
+  #('ja', 'zh'): ((u"の", u"的"),),
+
+  ('en', 'zh'): ((u"'s", u"的"),),
+  ('en', 'ko'): ((u"'s", u"의"),),
+  ('en', 'ja'): ((u"'s", u"の"),),
+
+  ('zh', 'en'): ((u"的", u"'s"),),
+  ('zh', 'ko'): ((u"的", u"'의"),),
+  ('zh', 'ja'): ((u"的", u"'の"),),
 }
-def _get_lang_suffices(lang):
+def _get_lang_suffices(to, fr):
   """
-  @param  lang  str
+  @param  to  str
+  @param  fr  str
   @return  [(unicode pattern, unicode replacement)] or None
   """
   # Disabled for Chinese as it might use lots of memory and
   # it will break のほう
   #if lang.startswith('zh'):
   #  return LANG_SUFFIX_TR['zh']
-  if config.is_latin_language(lang):
-    return LANG_SUFFIX_TR['en']
-  return LANG_SUFFIX_TR.get(lang)
+  return LANG_SUFFIX_TR.get((fr[:2], to[:2]))
 
 S_PUNCT = u"、？！。…「」『』【】" # full-width punctuations
 def _partition_punct(text, punct=S_PUNCT):
@@ -410,7 +417,7 @@ class TermWriter:
     #  types.append('yomi')
 
     # Types do not apply to non-Japanese languages
-    jatypes = frozenset(('name', 'yomi', 'trans', 'input', 'output', 'tts'))
+    jatypes = frozenset(('name', 'yomi', 'trans', 'input', 'output', 'tts', 'suffix'))
 
     fr2 = fr[:2]
     patterns = set() # skip duplicate names
@@ -474,7 +481,7 @@ class TermWriter:
     l = [] # [long id, unicode pattern, unicode replacement, bool regex]
     #ret = OrderedDict({'':''})
     #ret = OrderedDict()
-    s = _get_lang_suffices(to)
+    s = _get_lang_suffices(to, fr)
     if s:
       for k,v in s:
         l.append(TermTitle(pattern=k, text=v, sortKey=(0,0)))
