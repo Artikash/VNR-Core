@@ -407,7 +407,7 @@ class TermWriter:
     @param  fr  str
     @yield  _Term
     """
-    if type.startswith('trans'):
+    if type.startswith('trans'): # trans, trans_input, trans_output
       types = ['trans', 'name']
       if not to.startswith('zh'):
         types.append('yomi')
@@ -422,6 +422,7 @@ class TermWriter:
     jatypes = frozenset(('name', 'yomi', 'trans', 'input', 'output', 'tts', 'suffix'))
 
     fr2 = fr[:2]
+    fr_is_latin = config.is_latin_language(fr)
     patterns = set() # skip duplicate names
     types = frozenset(types)
     for td in self.termData:
@@ -430,9 +431,10 @@ class TermWriter:
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
-          and (td.sourceLanguage.startswith(fr2) or i18n.language_compatible_to(td.sourceLanguage, fr) and (
-            fr == 'ja' or td.sourceLanguage != 'ja' or td.type not in jatypes
-          ))
+          and (fr == 'ja' or td.sourceLanguage.startswith(fr2)
+            or fr != 'ja' and td.sourceLanguage == 'ja' and td.type not in jatypes
+            or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
+          )
         ):
         if td.pattern not in patterns:
           patterns.add(td.pattern)
@@ -728,7 +730,6 @@ class _TermManager:
     """
     if mark is None:
       mark = self.marked
-    # TODO: Schedule to update terms when man is missing
     key = type, to, fr
     man = self.scripts.get(key)
     if man is None:

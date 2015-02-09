@@ -657,7 +657,7 @@ class LecTranslator(OfflineMachineTranslator):
       text = tahscript.manager().apply(text, self.key)
       if emit and text != t:
         self.emitNormalizedText(text)
-    repl = self._escapeText(text, to=to, fr=to, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
     if repl:
       try:
         repl = self._translate(emit, repl,
