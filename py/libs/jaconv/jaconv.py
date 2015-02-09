@@ -147,6 +147,7 @@ def kana2reading(text, lang):
   if lang == 'ko':
     return kana2ko(text)
   elif lang == 'th':
+    text = text.replace(u'おお', u'お')
     return kana2th(text)
   #elif lang == 'ar':
   #  return kana2ar(text)
