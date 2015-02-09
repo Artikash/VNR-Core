@@ -1535,6 +1535,7 @@ class _NetworkManager(object):
       'login': userName,
       'password': password,
       'lang': td.language,
+      'sourcelang': td.sourceLanguage,
       'type': td.type,
     }
     if td.host:
