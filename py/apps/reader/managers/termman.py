@@ -409,17 +409,21 @@ class TermWriter:
     #  types.append('name')
     #  types.append('yomi')
 
-    patterns = set() # skip duplicate names
+    # Types do not apply to non-Japanese languages
+    jatypes = frozenset(('name', 'yomi', 'trans', 'input', 'output', 'tts'))
 
+    fr2 = fr[:2]
+    patterns = set() # skip duplicate names
     types = frozenset(types)
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
           td.type in types
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
-          and i18n.language_compatible_to(td.sourceLanguage, fr)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
-          #and td.syntax == syntax
+          and (td.sourceLanguage.startswith(fr2) or i18n.language_compatible_to(td.sourceLanguage, fr) and (
+            fr == 'ja' or td.sourceLanguage != 'ja' or td.type not in jatypes
+          ))
         ):
         if td.pattern not in patterns:
           patterns.add(td.pattern)

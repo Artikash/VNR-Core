@@ -1035,8 +1035,8 @@ Item { id: root_
         switch (model.type) {
         case 'text':
         case 'name': return root_.textColor
-        case 'comment': return model.comment.color || root_.commentColor
-        case 'sub': return model.sub.color || root_.commentColor
+        case 'comment': return (model.comment && model.comment.color) || root_.commentColor
+        case 'sub': return (model.sub && model.sub.color) || root_.commentColor
         case 'tr':
         case 'name.tr':
           switch(model.provider) {
