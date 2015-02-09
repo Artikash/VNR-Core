@@ -395,7 +395,7 @@ class TermWriter:
 # Modifying this file will NOT affect VNR.
 #
 # Unix time: %s
-# Options: type = %s, to = %s, fr = %s, hentai = %s, games = (%s)
+# Options: type = %s, to = %s, fr = %s, hentai = %s, files = (%s)
 #
 """ % (self.createTime, type, to, fr, self.hentai,
     ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
