@@ -51,6 +51,8 @@ def _get_lang_suffices(to, fr):
   # it will break のほう
   #if lang.startswith('zh'):
   #  return LANG_SUFFIX_TR['zh']
+  if config.is_latin_language(to):
+    to = 'en'
   return LANG_SUFFIX_TR.get((fr[:2], to[:2]))
 
 S_PUNCT = u"、？！。…「」『』【】" # full-width punctuations
