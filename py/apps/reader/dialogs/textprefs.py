@@ -90,7 +90,7 @@ class _TextThreadView(object):
     enc = config.guess_thread_encoding(self.name)
     if enc:
       title += ' <span style="color:#333">%s</span>' % enc
-    elif self.name and self.name not in (defs.HCODE_THREAD_NAME, defs.HCODE_THREAD_NAME) and 'PSP' not in self.name:
+    elif self.name and self.name not in (defs.HCODE_THREAD_NAME, defs.NULL_THREAD_NAME) and 'PSP' not in self.name:
       title += '<br/><span style="color:red;font-weight:bold">(%s)</span>' % my.tr("Not supported, please update VNR")
 
     label = QtWidgets.QLabel(title)
