@@ -217,7 +217,8 @@ def translate(text, to='zhs', fr='ja', align=None):
       data={
         'query': text, #.decode('utf8'),
         'from': baidudef.bdlang(fr),
-        'to': baidudef.bdlang(to),
+        #'to': baidudef.bdlang(to),
+        'to': 'jpka',
         #'ie': 'utf-8',
         #'source': 'txt',
         #'t': _BaiduFanyi.timestamp(),
@@ -281,6 +282,11 @@ def _iteralign(data, encoding='utf8'):
 if __name__ == "__main__":
 
   def test():
+    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    t = translate(s, to='zh', fr='ja')
+    print t
+
+  def test_align():
     m = []
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
     #s = u"hello"
