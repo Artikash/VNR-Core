@@ -16,7 +16,7 @@ MT_LANGUAGES = frozenset((
   'ru',
 ))
 
-def mt_lang_test(to, fr='ja'):
+def mt_lang_test(to, fr='ja', online=True):
   """
   @param  to  str
   @param* fr  str

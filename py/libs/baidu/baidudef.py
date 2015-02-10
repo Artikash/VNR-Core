@@ -343,7 +343,7 @@ BD_LANGUAGES = {
 }
 def bdlang(lang): return BD_LANGUAGES.get(lang) or lang
 
-def mt_lang_test(to, fr='zh'):
+def mt_lang_test(to, fr='zh', online=True):
   """
   @param  to  str  language
   @param* fr  str  language

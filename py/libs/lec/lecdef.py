@@ -30,6 +30,12 @@ LEC_LANGUAGES = frozenset((
   'ps', # Pashto in Afghanistan
 ))
 
+POWERTRANS_LANGUAGES = ( # [(str fr, str to)]
+  ('ja', 'en'),
+  ('en', 'ru'),
+  ('ja', 'ru'),
+)
+
 def mt_lang_test(to, fr='ja', online=True):
   """
   @param  to  str
@@ -40,6 +46,6 @@ def mt_lang_test(to, fr='ja', online=True):
   if online:
     return fr[:2] in LEC_LANGUAGES and to[:2] in LEC_LANGUAGES
   else: # Offline
-    return fr == 'ja' and to in ('en', 'ru')
+    return (fr, to) in POWERTRANS_LANGUAGES
 
 # EOF

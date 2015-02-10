@@ -15,7 +15,7 @@ MT_LANGUAGES = { # {str fr:[str to]}
   'fi': ('ru',), # Finn
 }
 
-def mt_lang_test(to, fr='ru'):
+def mt_lang_test(to, fr='ru', online=True):
   """
   @param  to  str
   @param* fr  str

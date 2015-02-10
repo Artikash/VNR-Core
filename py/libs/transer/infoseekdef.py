@@ -137,7 +137,7 @@ def lang2engine(to, fr):
   """
   return INFOSEEK_ENGINES.get(fr + to) or 'JE' # from 'ja' to 'en'
 
-def mt_lang_test(to, fr='ja'):
+def mt_lang_test(to, fr='ja', online=True):
   """
   @param  to  str
   @param* fr  str

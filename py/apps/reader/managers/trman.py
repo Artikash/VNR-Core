@@ -553,9 +553,10 @@ class TranslatorManager(QObject):
     if not features.MACHINE_TRANSLATION or not text:
       return None, None, None
     d = self.__d
+    to = d.language
     kw = {
       'fr': fr,
-      'to': d.language,
+      'to': to,
       'mark': mark,
       'async': async,
       'emit': emit,
@@ -592,6 +593,8 @@ class TranslatorManager(QObject):
     if not features.MACHINE_TRANSLATION or not text:
       return
     d = self.__d
+    to = d.language
+
     text = d.normalizeText(text)
     if mark is None:
       mark = d.marked
@@ -600,7 +603,7 @@ class TranslatorManager(QObject):
       align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
       script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       #with SkProfiler(): # 0.3 seconds
-      r = it.translate(text, fr=fr, to=d.language, mark=mark, align=align, scriptEnabled=script, async=False)
+      r = it.translate(text, fr=fr, to=to, mark=mark, align=align, scriptEnabled=script, async=False)
       #with SkProfiler(): # 0.0004 seconds
       if r and r[0]:
         func(r[0], r[1], r[2], align, **kwargs)
@@ -610,7 +613,7 @@ class TranslatorManager(QObject):
       align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
       script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       skevents.runlater(partial(d.translateAndApply,
-          func, kwargs, it.translate, text, fr=fr, to=d.language, mark=mark, align=align, scriptEnabled=script, async=False))
+          func, kwargs, it.translate, text, fr=fr, to=to, mark=mark, align=align, scriptEnabled=script, async=False))
 
 @memoized
 def manager(): return TranslatorManager()
