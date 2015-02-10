@@ -304,8 +304,10 @@ class _TranslatorManager(object):
       return
     fr2 = fr[:2]
     to2 = to[:2]
-    if fr2 == to2] or mtinfo.test_lang(key, to=to, fr=fr):
+    if fr2 == to2:
       return
+    if mtinfo.test_lang(key, to=to, fr=fr):
+      return eng
     lang = conf.get('lang') or 'en'
     lang2 = lang[:2]
     if lang2 == fr2:
@@ -660,7 +662,7 @@ class TranslatorManager(QObject):
     if mark is None:
       mark = d.marked
 
-    for it ine d.iterOfflineTranslators():
+    for it in d.iterOfflineTranslators():
       it = d.findRetranslator(it, to=to, fr=fr) or it
       align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
       script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
