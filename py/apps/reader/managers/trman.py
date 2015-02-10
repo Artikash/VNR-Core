@@ -17,7 +17,7 @@ from sakurakit import skevents, skthreads
 from sakurakit.skclass import  memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from share.mt import mtinfo
-import features, textutil
+import features, settings, textutil
 import _trman
 
 #@Q_Q
@@ -55,8 +55,9 @@ class _TranslatorManager(object):
     self.scriptEnabled = {} # {str key:bool t}
 
     self.retrans = {} # {str key:_trman.Retranslator}
-    self.retransSettings = {} # {str key:{'yes':bool,'key':str,'lang':str}}
 
+    # {str key:{'yes':bool,'key':str,'lang':str}}
+    self.retransSettings = settings.global_().retranslatorSettings() or {}
     # Example:
     #self.retransSettings = {
     #  'jbeijing': {'yes':True, 'key': 'hanviet', 'lang':'zhs'},
@@ -80,6 +81,21 @@ class _TranslatorManager(object):
         mt = self.getTranslator(key)
         dprint("clear cache for %s" % key)
         mt.clearCache()
+
+  def updateRetransSettings(self, engine, key, value):
+    """
+    @param  engine  str
+    @param  key  str
+    @param  value  any
+    """
+    try:
+      s = self.retransSettings[engine]
+      if s[key] != value:
+        s[key] = value
+        settings.global_().setRetranslatorSettings(self.retransSettings)
+    except:
+      self.retransSettings[engine] = {key:value}
+      settings.global_().setRetranslatorSettings(self.retransSettings)
 
   def postprocess(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
@@ -469,6 +485,24 @@ class TranslatorManager(QObject):
 
   def isHanVietAlignEnabled(self): return self.__d.getAlignEnabled('hanviet')
   def setHanVietAlignEnabled(self, t): self.__d.setAlignEnabled('hanviet', t)
+
+  def isRetranslatorEnabled(self, key): # str -> bool
+    try: return bool(self.__d.retrans[key]['yes'])
+    except: return False
+  def setRetranslatorEnabled(self, key, t): # str, bool ->
+    self.__d.updateRetransSettings(key, 'yes', t)
+
+  def retranslatorLanguage(self, key): # str -> str or None
+    try: self.__d.retrans[key]['lang']
+    except: pass
+  def setRetranslatorLanguage(self, key, v): # str, str ->
+    self.__d.updateRetransSettings(key, 'lang', v)
+
+  def retranslatorEngine(self, key): # str -> str or None
+    try: self.__d.retrans[key]['key']
+    except: pass
+  def setRetranslatorEngine(self, key, v): # str, str ->
+    self.__d.updateRetransSettings(key, 'key', t)
 
   ## Queries ##
 
