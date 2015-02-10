@@ -116,7 +116,7 @@ class Translator(object):
     @param* align  list or None
     @param* mark  bool or None
     @param* scriptEnabled  bool
-    @return  (unicode sub or None, str lang or None, self.name or None)
+    @return  (unicode sub or None, str lang or None, str self.key or None)
     """
     return None, to, self.key
 
@@ -217,23 +217,21 @@ class Retranslator(Translator):
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, align=None, **kwargs):
     """@reimp"""
-    text = None
-    key = self.key
-    lang = self.language
-    if self.first:
-      if not self.second:
-        return self.first.translateTest(text, to=to, fr=fr,
-            mark=mark, align=align, emit=emit, **kwargs)
-      text, lang, key = self.first.translateTest(text, to=lang, fr=fr,
-          mark=False, align=None, emit=False, **kwargs)
-      if text:
-        text2, lang2, key2 = self.second.translateTest(text, to=to, fr=lang,
-            mark=mark, align=align, emit=emit, **kwargs)
-        if text2:
-          text = text2
-          lang = lang2
-          key += ',' + key2
-    return text, key, lang
+    if not self.first:
+      return None, None, None
+    if not self.second:
+      return self.first.translateTest(text, to=to, fr=fr,
+          mark=mark, align=align, emit=emit, **kwargs)
+    text, lang, key = self.first.translate(text, to=self.language, fr=fr,
+        mark=False, align=None, emit=False, **kwargs)
+    if text:
+      text2, lang2, key2 = self.second.translate(text, to=to, fr=lang,
+          mark=mark, align=align, emit=emit, **kwargs)
+      if text2:
+        text = text2
+        lang = lang2
+        key += ',' + key2
+    return text, lang, key
 
 ## Text processing
 

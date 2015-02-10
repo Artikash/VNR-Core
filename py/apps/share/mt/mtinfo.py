@@ -104,7 +104,7 @@ def get_mod_def(key):
     return bingdef
   if key == 'hanviet':
     from hanviet import hanvietdef
-    return hanviet
+    return hanvietdef
   return None
 
 # EOF

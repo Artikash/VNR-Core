@@ -57,6 +57,11 @@ class _TranslatorManager(object):
     self.retrans = {} # {str key:_trman.Retranslator}
     self.retransSettings = {} # {str key:{'yes':bool,'key':str,'lang':str}}
 
+    # Example:
+    #self.retransSettings = {
+    #  'jbeijing': {'yes':True, 'key': 'hanviet', 'lang':'zhs'},
+    #}
+
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
     from qtrequests import qtrequests
@@ -318,7 +323,7 @@ class _TranslatorManager(object):
       return
     if not mtinfo.test_lang(key2, fr=lang):
       return
-    return d.getRetranslator(key, key2, lang)
+    return self.getRetranslator(key, key2, lang)
 
 class TranslatorManager(QObject):
 
