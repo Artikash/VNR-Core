@@ -64,7 +64,13 @@ class _TranslatorManager(object):
   def setAlignEnabled(self, key, t): self.alignEnabled[key] = t # str, bool ->
 
   def getScriptEnabled(self, key): return self.scriptEnabled.get(key) or False # str -> bool
-  def setScriptEnabled(self, key, t): self.scriptEnabled[key] = t # str, bool ->
+  def setScriptEnabled(self, key, t): # str, bool ->
+    if self.scriptEnabled.get(key) != t:
+      self.scriptEnabled[key] = t
+      if self.hasTranslator(key):
+        mt = self.getTranslator(key)
+        dprint("clear cache for %s" % key)
+        mt.clearCache()
 
   def postprocess(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
@@ -575,7 +581,7 @@ class TranslatorManager(QObject):
         ) or (None, None, None)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja', mark=None, **kwargs):
+  def translateApply(self, func, text, fr='ja', mark=None, scriptEnabled=None, **kwargs):
     """Specialized for textman
     @param  func  function(unicode sub, unicode lang, unicode provider)
     @param  text  unicode
@@ -591,18 +597,20 @@ class TranslatorManager(QObject):
       mark = d.marked
 
     for it in d.iterOfflineTranslators():
-      align = [] if it.alignSupported and self.getAlignEnabled(it.key) else None
+      align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
+      script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       #with SkProfiler(): # 0.3 seconds
-      r = it.translate(text, fr=fr, to=d.language, mark=mark, align=align, async=False)
+      r = it.translate(text, fr=fr, to=d.language, mark=mark, align=align, scriptEnabled=script, async=False)
       #with SkProfiler(): # 0.0004 seconds
       if r and r[0]:
         func(r[0], r[1], r[2], align, **kwargs)
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
-      align = [] if it.alignSupported and self.getAlignEnabled(it.key) else None
+      align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
+      script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       skevents.runlater(partial(d.translateAndApply,
-          func, kwargs, it.translate, text, fr=fr, to=d.language, mark=mark, align=align, async=False))
+          func, kwargs, it.translate, text, fr=fr, to=d.language, mark=mark, align=align, scriptEnabled=script, async=False))
 
 @memoized
 def manager(): return TranslatorManager()

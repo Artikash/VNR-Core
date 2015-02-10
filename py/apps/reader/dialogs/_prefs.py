@@ -3075,9 +3075,8 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def lecOnlineScriptButton(self):
-    ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
-        my.tr("Enable Japanese-English translation script"),
-        tr_("default")))
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
     ss = settings.global_()
     ret.setChecked(ss.isLecOnlineScriptEnabled())
     ret.toggled.connect(ss.setLecOnlineScriptEnabled)
@@ -3247,7 +3246,7 @@ class _MachineTranslationTab(object):
   def atlasScriptButton(self):
     ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
         my.tr("Enable Japanese-English translation script"),
-        tr_("default")))
+        tr_("recommended")))
     ss = settings.global_()
     ret.setChecked(ss.isAtlasScriptEnabled())
     ret.toggled.connect(ss.setAtlasScriptEnabled)
@@ -3269,7 +3268,7 @@ class _MachineTranslationTab(object):
   def lecScriptButton(self):
     ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
         my.tr("Enable Japanese-English translation script"),
-        tr_("default")))
+        tr_("recommended")))
     ss = settings.global_()
     ret.setChecked(ss.isLecScriptEnabled())
     ret.toggled.connect(ss.setLecScriptEnabled)

@@ -4,7 +4,7 @@
 
 import re
 from sakurakit.skclass import memoized
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 
 _repeat_comma = re.compile(ur'。+')
 def repair_tah_text(t): # unicode -> unicode
@@ -17,18 +17,22 @@ class _TahScriptManager:
 
   def __init__(self):
     self.tah = {} # {str key:TahScriptManager}
+    self.locks = {} # {str key:bool}
 
   def getTah(self, key): # str key -> TahScriptManager
     ret = self.tah.get(key)
-    if not ret:
+    if not ret and not self.locks.get(key):
+      self.locks[key] = True
       import os
       from pytahscript import TahScriptManager
       import config
-      ret = self.tah[key] = TahScriptManager()
+      ret = TahScriptManager()
       path = config.TAHSCRIPT_LOCATIONS[key]
       if os.path.exists(path):
         ret.loadFile(path)
         dprint("load %s rules for %s" % (ret.size(), key))
+      self.tah[key] = ret
+      self.locks[key] = False
     return ret
 
 class TahScriptManager:
@@ -46,6 +50,9 @@ class TahScriptManager:
     if key != 'atlas':
       key = 'lec'
     tah = self.__d.getTah(key)
+    if not tah:
+      dwarn("tah locked due to thread contention, try next time")
+      return text
     return repair_tah_text(tah.translate(text)) or text # totally deleting ret is NOT allowed in case of malicious rule
 
 # EOF

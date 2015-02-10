@@ -966,17 +966,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用自定义特殊码</translation>
     </message>
     <message>
-        <location filename="main.py" line="1492"/>
+        <location filename="main.py" line="1516"/>
         <source>Please close the current game first before opening new games</source>
         <translation>打开新游戏前，请先关闭当前的游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1779"/>
+        <location filename="main.py" line="1803"/>
         <source>Found running game</source>
         <translation>发现运行中的游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1789"/>
+        <location filename="main.py" line="1813"/>
         <source>Found new game</source>
         <translation>发现新游戏</translation>
     </message>
@@ -986,32 +986,32 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation type="obsolete">因为没有网络连接，请在游戏向导中手动添加游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1580"/>
+        <location filename="main.py" line="1604"/>
         <source>File does not exist {0}</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="2084"/>
+        <location filename="main.py" line="2108"/>
         <source>Update requires Internet access</source>
         <translation>更新需要网络连接</translation>
     </message>
     <message>
-        <location filename="main.py" line="2097"/>
+        <location filename="main.py" line="2121"/>
         <source>You are using the latest app</source>
         <translation>已经是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="2102"/>
+        <location filename="main.py" line="2126"/>
         <source>Update released</source>
         <translation>发现软件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="2126"/>
+        <location filename="main.py" line="2150"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="2230"/>
+        <location filename="main.py" line="2254"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辞书是空的。请在有网络连接时再更新吧。</translation>
     </message>
@@ -1108,7 +1108,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理员权限。请以管理员身份重新启动VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="2249"/>
+        <location filename="main.py" line="2273"/>
         <source>There are no user-contributed subtitles</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
@@ -1148,7 +1148,7 @@ It might take a couple of seconds to complete.</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1904"/>
+        <location filename="main.py" line="1928"/>
         <source>Loading comment ... patient!</source>
         <translation>载入字幕中…请稍等片刻！</translation>
     </message>
@@ -1219,7 +1219,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>以日本时区启动游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1301"/>
+        <location filename="main.py" line="1325"/>
         <source>Analyzing data ... patient!</source>
         <translation>分析数据中…请稍等片刻！</translation>
     </message>
@@ -1470,7 +1470,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>没有找到游戏的信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1964"/>
+        <location filename="main.py" line="1988"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的游戏。请更新下游戏数据库。</translation>
     </message>
@@ -1678,7 +1678,7 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>是否允许其他人修改</translation>
     </message>
     <message>
-        <location filename="main.py" line="1524"/>
+        <location filename="main.py" line="1548"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1756,7 +1756,7 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>恢复到上次保存的设定</translation>
     </message>
     <message>
-        <location filename="main.py" line="1528"/>
+        <location filename="main.py" line="1552"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1804,7 +1804,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：请不要打开重复过滤的选项，除非文本中真的有重复！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1858"/>
+        <location filename="main.py" line="1882"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支持这个功能呢</translation>
     </message>
@@ -2182,67 +2182,67 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，�
         <translation>用于匹配游戏专用词条的当前的游戏</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="390"/>
+        <location filename="dialogs/mttest.py" line="391"/>
         <source>Text language</source>
         <translation>文本的语言</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="399"/>
+        <location filename="dialogs/mttest.py" line="400"/>
         <source>User language</source>
         <translation>用户的语言</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="410"/>
+        <location filename="dialogs/mttest.py" line="411"/>
         <source>Current translator</source>
         <translation>当前的翻译器</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="426"/>
+        <location filename="dialogs/mttest.py" line="427"/>
         <source>Language adjusted for the translator</source>
         <translation>根据翻译器而调整的语言</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="526"/>
+        <location filename="dialogs/mttest.py" line="527"/>
         <source>Original text to translate</source>
         <translation>需要翻译的原始文本</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="554"/>
+        <location filename="dialogs/mttest.py" line="555"/>
         <source>Direct translation</source>
         <translation>直接翻译的结果</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="563"/>
+        <location filename="dialogs/mttest.py" line="564"/>
         <source>Concatenated translation</source>
         <translation>合并后的翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="570"/>
+        <location filename="dialogs/mttest.py" line="571"/>
         <source>Final translation</source>
         <translation>最终的翻译结果</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="603"/>
+        <location filename="dialogs/mttest.py" line="604"/>
         <source>Prepare escaped terms and names</source>
         <translation>使用转义词条和姓名翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="611"/>
+        <location filename="dialogs/mttest.py" line="612"/>
         <source>Unescape terms and names</source>
         <translation>恢复转义词条和姓名翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="627"/>
+        <location filename="dialogs/mttest.py" line="628"/>
         <source>Split by punctuations</source>
         <translation>按标点分割文本</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="630"/>
+        <location filename="dialogs/mttest.py" line="631"/>
         <source>Split either by sentences for offline Latin languages or by paragraphs otherwise</source>
         <translation>如果是离线拉丁语言，那么逐句分割；否则按段落分割</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="634"/>
+        <location filename="dialogs/mttest.py" line="635"/>
         <source>Separated translations</source>
         <translation>分割后的翻译</translation>
     </message>
@@ -2252,32 +2252,32 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，�
         <translation>被标记为 {0} 的操作因不同的语言而不同。</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="557"/>
+        <location filename="dialogs/mttest.py" line="558"/>
         <source>Direct translation without modifications by VNR</source>
         <translation>不修改日文文本直接用翻译器来翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="566"/>
+        <location filename="dialogs/mttest.py" line="567"/>
         <source>Join split translations</source>
         <translation>合并分割的翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="599"/>
+        <location filename="dialogs/mttest.py" line="600"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages</source>
         <translation>共享辞书和游戏情报中的人物名称仅对基于拉丁字符的语言有效</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="614"/>
+        <location filename="dialogs/mttest.py" line="615"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages</source>
         <translation>共享辞书和游戏情报中的人物名称仅对基于汉字的语言有效</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="637"/>
+        <location filename="dialogs/mttest.py" line="638"/>
         <source>Translations for split texts</source>
         <translation>对分割后文本的翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="573"/>
+        <location filename="dialogs/mttest.py" line="574"/>
         <source>Actual translation used by VNR</source>
         <translation>最终被VNR采用的翻译</translation>
     </message>
@@ -2663,7 +2663,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>请再检查下使用偏好中程序的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="1934"/>
+        <location filename="main.py" line="1958"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的游戏。请尝试编辑下游戏情报。</translation>
     </message>
@@ -3263,7 +3263,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>VNR的内嵌引擎不支持/H特殊码</translation>
     </message>
     <message>
-        <location filename="main.py" line="2002"/>
+        <location filename="main.py" line="2026"/>
         <source>Unknown game engine</source>
         <translation>未知的游戏引擎</translation>
     </message>
@@ -3620,7 +3620,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>请再重试下吧</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="590"/>
+        <location filename="dialogs/mttest.py" line="591"/>
         <source>Rewrite Japanese according to the rules in TAH script</source>
         <translation>使用TAH脚本中的规则改写日英机器翻译</translation>
     </message>
@@ -3647,7 +3647,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
     <message>
         <location filename="dialogs/mttest.py" line="585"/>
         <source>Apply TAH script</source>
-        <translation>使用TAH日英翻译规则</translation>
+        <translation type="obsolete">使用TAH日英翻译规则</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2733"/>
@@ -3835,7 +3835,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
         <translation>禁止为汉字语言的游戏保存空格</translation>
     </message>
     <message>
-        <location filename="main.py" line="2032"/>
+        <location filename="main.py" line="2056"/>
         <source>Browse current enabled terms</source>
         <translation>浏览当前开启的词条</translation>
     </message>
@@ -3845,12 +3845,12 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
         <translation>人物的姓名</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="543"/>
+        <location filename="dialogs/mttest.py" line="544"/>
         <source>Apply game terms</source>
         <translation>使用游戏词条</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="546"/>
+        <location filename="dialogs/mttest.py" line="547"/>
         <source>Apply game terms in the Shared Dictionary to correct game text</source>
         <translation>使用共享辞书中的游戏词条修正文本</translation>
     </message>
@@ -3885,22 +3885,22 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
         <translation>修正光学识别后的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="596"/>
+        <location filename="dialogs/mttest.py" line="597"/>
         <source>Apply input terms and names</source>
         <translation>使用输入词条和姓名翻译</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="619"/>
+        <location filename="dialogs/mttest.py" line="620"/>
         <source>Apply output terms</source>
         <translation>使用输出词条</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="622"/>
+        <location filename="dialogs/mttest.py" line="623"/>
         <source>Apply output terms in the Shared Dictionary to correct translations from the machine translator</source>
         <translation>使用共享辞书中的输出词条来修正机翻后的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="511"/>
+        <location filename="dialogs/mttest.py" line="512"/>
         <source>Original text</source>
         <translation>原文</translation>
     </message>
@@ -4478,6 +4478,11 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/s
         <location filename="dialogs/_prefs.py" line="3271"/>
         <source>Enable Japanese-English translation script</source>
         <translation>对日英翻译使用改善翻译的脚本</translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="586"/>
+        <source>Apply translation script</source>
+        <translation>应用日英翻译脚本</translation>
     </message>
 </context>
 </TS>

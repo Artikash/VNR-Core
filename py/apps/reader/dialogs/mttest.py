@@ -380,7 +380,7 @@ class _MTTester(object):
 
   def _onTranslatorChanged(self):
     key = self._currentTranslator()
-    tah = trtraits.TRAITS[key]['script']
+    tah = trtraits.gettrait(key=key)['script']
     self.normalizedTextButton.setEnabled(tah)
     self.normalizedTextLabel.setEnabled(tah)
     self.normalizedTextEdit.setEnabled(tah)
@@ -579,18 +579,13 @@ class _MTTester(object):
   def normalizedTextButton(self):
     ret = QtWidgets.QCheckBox();
     ret.setChecked(True)
-    ret.setEnabled(False)
     return ret
   @memoizedproperty
   def normalizedTextLabel(self):
-    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation script"))
-    ret.setEnabled(False)
-    return ret
+    return self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation script"))
   @memoizedproperty
   def normalizedTextEdit(self):
-    ret = self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
-    ret.setEnabled(False)
-    return ret
+    return self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
 
   @memoizedproperty
   def sourceTextLabel(self):

@@ -22,4 +22,9 @@ TRAITS = [ # [TranslatorTraits]
   {'key':'hanviet',     'name':u"Hán Việt",             'online':False, 'align':True,   'script':False, },
 ]
 
+def gettrait(key): # str -> dict or None
+  for it in TRAITS:
+    if it['key'] == key:
+      return it
+
 # EOF

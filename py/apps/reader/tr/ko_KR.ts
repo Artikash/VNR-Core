@@ -965,17 +965,17 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>사용자 후킹코드 적용</translation>
     </message>
     <message>
-        <location filename="main.py" line="1492"/>
+        <location filename="main.py" line="1516"/>
         <source>Please close the current game first before opening new games</source>
         <translation>새로운 게임을 열기전에, 현재 게임을 먼저 닫아주세요.</translation>
     </message>
     <message>
-        <location filename="main.py" line="1779"/>
+        <location filename="main.py" line="1803"/>
         <source>Found running game</source>
         <translation>실행중 게임 찾음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1789"/>
+        <location filename="main.py" line="1813"/>
         <source>Found new game</source>
         <translation>새로운 게임 찾음</translation>
     </message>
@@ -985,32 +985,32 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation type="obsolete">오프라인이기 때문에, 게임 마법사를 이용해서 게임을 수동으로 추가해주세요</translation>
     </message>
     <message>
-        <location filename="main.py" line="1580"/>
+        <location filename="main.py" line="1604"/>
         <source>File does not exist {0}</source>
         <translation>파일이 존재하지 않습니다:{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="2084"/>
+        <location filename="main.py" line="2108"/>
         <source>Update requires Internet access</source>
         <translation>업데이트를 하려면 인터넷 연결이 필요합니다</translation>
     </message>
     <message>
-        <location filename="main.py" line="2097"/>
+        <location filename="main.py" line="2121"/>
         <source>You are using the latest app</source>
         <translation>이미 최신 버전입니다</translation>
     </message>
     <message>
-        <location filename="main.py" line="2102"/>
+        <location filename="main.py" line="2126"/>
         <source>Update released</source>
         <translation>새로운 업데이트 발견</translation>
     </message>
     <message>
-        <location filename="main.py" line="2126"/>
+        <location filename="main.py" line="2150"/>
         <source>Critical update message</source>
         <translation>매우 중요한 업데이트 발견</translation>
     </message>
     <message>
-        <location filename="main.py" line="2230"/>
+        <location filename="main.py" line="2254"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>사전이 비어있습니다. 인터넷에 연결하고 새로고침 해주세요.</translation>
     </message>
@@ -1107,7 +1107,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}은 관리자 권한이 필요합니다. VNR을 관리자 권한으로 재실행 해주세요</translation>
     </message>
     <message>
-        <location filename="main.py" line="2249"/>
+        <location filename="main.py" line="2273"/>
         <source>There are no user-contributed subtitles</source>
         <translation>사용자 번역문이 없습니다</translation>
     </message>
@@ -1147,7 +1147,7 @@ It might take a couple of seconds to complete.</source>
         <translation>사용자 자막을 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1904"/>
+        <location filename="main.py" line="1928"/>
         <source>Loading comment ... patient!</source>
         <translation>댓글 로딩 중…잠시만 기다리세요!</translation>
     </message>
@@ -1218,7 +1218,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>일본 표준시로 게임 실행</translation>
     </message>
     <message>
-        <location filename="main.py" line="1301"/>
+        <location filename="main.py" line="1325"/>
         <source>Analyzing data ... patient!</source>
         <translation>데이터 분석 중… 잠시만 기다려주세요!</translation>
     </message>
@@ -1469,7 +1469,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>게임 참조 찾을수 없음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1964"/>
+        <location filename="main.py" line="1988"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>알 수 없는 게임. 데이터베이스를 업데이트 해주세요.</translation>
     </message>
@@ -1689,7 +1689,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>다른 사용자에게 덮어쓰기를 허용하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main.py" line="1524"/>
+        <location filename="main.py" line="1548"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1767,7 +1767,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>마지막 저장한 설정으로 복귀</translation>
     </message>
     <message>
-        <location filename="main.py" line="1528"/>
+        <location filename="main.py" line="1552"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1815,7 +1815,7 @@ than turning on global repetition filters here.</source>
         <translation>경고: 반복이 없다면 반복필터를 켜지 말아주세요!</translation>
     </message>
     <message>
-        <location filename="main.py" line="1858"/>
+        <location filename="main.py" line="1882"/>
         <source>The feature is not available on Wine</source>
         <translation>이 기능은 Wine에서는 아직 이용할수 없습니다.</translation>
     </message>
@@ -2194,67 +2194,67 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
         <translation>공유사전에 현재게임 지정 용어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="390"/>
+        <location filename="dialogs/mttest.py" line="391"/>
         <source>Text language</source>
         <translation>텍스트 언어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="399"/>
+        <location filename="dialogs/mttest.py" line="400"/>
         <source>User language</source>
         <translation>사용자 언어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="410"/>
+        <location filename="dialogs/mttest.py" line="411"/>
         <source>Current translator</source>
         <translation>현재 번역기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="426"/>
+        <location filename="dialogs/mttest.py" line="427"/>
         <source>Language adjusted for the translator</source>
         <translation>번역기를 위해 언어 재배열</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="526"/>
+        <location filename="dialogs/mttest.py" line="527"/>
         <source>Original text to translate</source>
         <translation>번역할 원문</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="554"/>
+        <location filename="dialogs/mttest.py" line="555"/>
         <source>Direct translation</source>
         <translation>직역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="563"/>
+        <location filename="dialogs/mttest.py" line="564"/>
         <source>Concatenated translation</source>
         <translation>결합된 번역문</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="570"/>
+        <location filename="dialogs/mttest.py" line="571"/>
         <source>Final translation</source>
         <translation>최종 번역 결과</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="603"/>
+        <location filename="dialogs/mttest.py" line="604"/>
         <source>Prepare escaped terms and names</source>
         <translation>용어와 이름을 사용해 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="611"/>
+        <location filename="dialogs/mttest.py" line="612"/>
         <source>Unescape terms and names</source>
         <translation>용어와 이름을 사용하지 않고 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="627"/>
+        <location filename="dialogs/mttest.py" line="628"/>
         <source>Split by punctuations</source>
         <translation>문장부호로 나누기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="630"/>
+        <location filename="dialogs/mttest.py" line="631"/>
         <source>Split either by sentences for offline Latin languages or by paragraphs otherwise</source>
         <translation>오프라인 라틴계 언어의 문장이거나, 단락이 나누어져있으면 나눠서 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="634"/>
+        <location filename="dialogs/mttest.py" line="635"/>
         <source>Separated translations</source>
         <translation>나눠진 번역문</translation>
     </message>
@@ -2264,32 +2264,32 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
         <translation>사용자 언어와 {0}로 생성된 번역이 다른 언어입니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="557"/>
+        <location filename="dialogs/mttest.py" line="558"/>
         <source>Direct translation without modifications by VNR</source>
         <translation>VNR에 의한 변경사항없이 바로 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="566"/>
+        <location filename="dialogs/mttest.py" line="567"/>
         <source>Join split translations</source>
         <translation>나눠서 번역하기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="599"/>
+        <location filename="dialogs/mttest.py" line="600"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages</source>
         <translation>공유사전/게임정보의 캐릭터 이름은 라틴어 언어로만 적용됩니다</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="614"/>
+        <location filename="dialogs/mttest.py" line="615"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages</source>
         <translation>공유사전/게임정보에서 캐릭터 이름은 간지(일본어 한자) 언어에만 적용됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="637"/>
+        <location filename="dialogs/mttest.py" line="638"/>
         <source>Translations for split texts</source>
         <translation>나눠진 텍스트 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="573"/>
+        <location filename="dialogs/mttest.py" line="574"/>
         <source>Actual translation used by VNR</source>
         <translation>VNR을 이용한 실제 번역</translation>
     </message>
@@ -2675,7 +2675,7 @@ VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습
         <translation>환경설정에서 위치를 다시 확인해 주세요.</translation>
     </message>
     <message>
-        <location filename="main.py" line="1934"/>
+        <location filename="main.py" line="1958"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>알 수 없는 게임. 게임 정보를 수정해 주세요.</translation>
     </message>
@@ -3275,7 +3275,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>VNR 내장 후커는 H코드를 지원하지 않음</translation>
     </message>
     <message>
-        <location filename="main.py" line="2002"/>
+        <location filename="main.py" line="2026"/>
         <source>Unknown game engine</source>
         <translation>알 수 없는 게임 엔진</translation>
     </message>
@@ -3632,7 +3632,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>나중에 다시 시도해주세요</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="590"/>
+        <location filename="dialogs/mttest.py" line="591"/>
         <source>Rewrite Japanese according to the rules in TAH script</source>
         <translation>TAH 일ㆍ영 기계번역 규칙을 사용해서 일본어 다시쓰기</translation>
     </message>
@@ -3659,7 +3659,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
     <message>
         <location filename="dialogs/mttest.py" line="585"/>
         <source>Apply TAH script</source>
-        <translation>일ㆍ영 기계번역에 TAH 규칙 적용</translation>
+        <translation type="obsolete">일ㆍ영 기계번역에 TAH 규칙 적용</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2733"/>
@@ -3847,7 +3847,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>간지언어에 공백 유지하지 않기</translation>
     </message>
     <message>
-        <location filename="main.py" line="2032"/>
+        <location filename="main.py" line="2056"/>
         <source>Browse current enabled terms</source>
         <translation>현재 사용가능한 용어 찾아보기</translation>
     </message>
@@ -3857,12 +3857,12 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>캐릭터 이름</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="543"/>
+        <location filename="dialogs/mttest.py" line="544"/>
         <source>Apply game terms</source>
         <translation>게임 용어 적용</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="546"/>
+        <location filename="dialogs/mttest.py" line="547"/>
         <source>Apply game terms in the Shared Dictionary to correct game text</source>
         <translation>공유사전의 게임용어를 적용하여 게임원문 고치기</translation>
     </message>
@@ -3897,22 +3897,22 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>OCR광학인식 후 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="596"/>
+        <location filename="dialogs/mttest.py" line="597"/>
         <source>Apply input terms and names</source>
         <translation>입력한 용어와 이름 적용</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="619"/>
+        <location filename="dialogs/mttest.py" line="620"/>
         <source>Apply output terms</source>
         <translation>출력 용어 사용</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="622"/>
+        <location filename="dialogs/mttest.py" line="623"/>
         <source>Apply output terms in the Shared Dictionary to correct translations from the machine translator</source>
         <translation>기계번역에 공유사전의 출력용어를 적용해 번역하기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="511"/>
+        <location filename="dialogs/mttest.py" line="512"/>
         <source>Original text</source>
         <translation>원문</translation>
     </message>
@@ -4489,6 +4489,11 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
     <message>
         <location filename="dialogs/_prefs.py" line="3271"/>
         <source>Enable Japanese-English translation script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="586"/>
+        <source>Apply translation script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
