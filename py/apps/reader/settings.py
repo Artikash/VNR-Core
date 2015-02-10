@@ -1402,6 +1402,48 @@ class Settings(QSettings):
       self.setValue('LecScriptEnabled', value)
       self.lecScriptEnabledChanged.emit(value)
 
+  lecOnlineScriptEnabledChanged = Signal(bool)
+  def isLecOnlineScriptEnabled(self): return to_bool(self.value('LecOnlineScriptEnabled', True))
+  def setLecOnlineScriptEnabled(self, value):
+    if value != self.isLecOnlineScriptEnabled():
+      self.setValue('LecOnlineScriptEnabled', value)
+      self.lecOnlineScriptEnabledChanged.emit(value)
+
+  googleScriptEnabledChanged = Signal(bool)
+  def isGoogleScriptEnabled(self): return to_bool(self.value('GoogleScriptEnabled'))
+  def setGoogleScriptEnabled(self, value):
+    if value != self.isGoogleScriptEnabled():
+      self.setValue('GoogleScriptEnabled', value)
+      self.googleScriptEnabledChanged.emit(value)
+
+  bingScriptEnabledChanged = Signal(bool)
+  def isBingScriptEnabled(self): return to_bool(self.value('BingScriptEnabled'))
+  def setBingScriptEnabled(self, value):
+    if value != self.isBingScriptEnabled():
+      self.setValue('BingScriptEnabled', value)
+      self.bingScriptEnabledChanged.emit(value)
+
+  infoseekScriptEnabledChanged = Signal(bool)
+  def isInfoseekScriptEnabled(self): return to_bool(self.value('InfoseekScriptEnabled'))
+  def setInfoseekScriptEnabled(self, value):
+    if value != self.isInfoseekScriptEnabled():
+      self.setValue('InfoseekScriptEnabled', value)
+      self.infoseekScriptEnabledChanged.emit(value)
+
+  exciteScriptEnabledChanged = Signal(bool)
+  def isExciteScriptEnabled(self): return to_bool(self.value('ExciteScriptEnabled'))
+  def setExciteScriptEnabled(self, value):
+    if value != self.isExciteScriptEnabled():
+      self.setValue('ExciteScriptEnabled', value)
+      self.exciteScriptEnabledChanged.emit(value)
+
+  transruScriptEnabledChanged = Signal(bool)
+  def isTransruScriptEnabled(self): return to_bool(self.value('TransruScriptEnabled'))
+  def setTransruScriptEnabled(self, value):
+    if value != self.isTransruScriptEnabled():
+      self.setValue('TransruScriptEnabled', value)
+      self.transruScriptEnabledChanged.emit(value)
+
   #translationScriptJaEnabledChanged = Signal(bool)
   #def isTranslationScriptJaEnabled(self): return to_bool(self.value('TranslationScriptJaEnabled', True))
   #def setTranslationScriptJaEnabled(self, value):

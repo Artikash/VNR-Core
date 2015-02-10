@@ -51,6 +51,7 @@ class _TranslatorManager(object):
     True # bool
 
     self.alignEnabled = {} # {str key:bool t}
+    self.scriptEnabled = {} # {str key:bool t}
 
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
@@ -59,14 +60,11 @@ class _TranslatorManager(object):
 
   normalizeText = staticmethod(textutil.normalize_punct)
 
-  def getAlignEnabled(self, key): # str -> bool
-    return self.alignEnabled.get(key) or False
+  def getAlignEnabled(self, key): return self.alignEnabled.get(key) or False # str -> bool
+  def setAlignEnabled(self, key, t): self.alignEnabled[key] = t # str, bool ->
 
-  def setAlignEnabled(self, key, t): # str, bool ->
-    if t != self.getAlignEnabled(key):
-      self.alignEnabled[key] = t
-      if self.hasTranslator(key):
-        self.getTranslator(key).alignEnabled = t
+  def getScriptEnabled(self, key): return self.scriptEnabled.get(key) or False # str -> bool
+  def setScriptEnabled(self, key, t): self.scriptEnabled[key] = t # str, bool ->
 
   def postprocess(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
@@ -109,40 +107,35 @@ class _TranslatorManager(object):
       postprocess=self.postprocess))
 
   @memoizedproperty
-  def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator(
-      alignEnabled=self.getAlignEnabled('hanviet')))
+  def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
 
   @memoizedproperty
   def googleTranslator(self):
     return self._newtr(_trman.GoogleTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess,
-        alignEnabled=self.getAlignEnabled('google')))
+        postprocess=self.postprocess))
 
   @memoizedproperty
   def bingTranslator(self):
     return self._newtr(_trman.BingTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess,
-        alignEnabled=self.getAlignEnabled('bing')))
+        postprocess=self.postprocess))
 
   @memoizedproperty
   def baiduTranslator(self):
     return self._newtr(_trman.BaiduTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess,
-        alignEnabled=self.getAlignEnabled('baidu')))
+        postprocess=self.postprocess))
 
   @memoizedproperty
   def naverTranslator(self):
     return self._newtr(_trman.NaverTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess,
-        alignEnabled=self.getAlignEnabled('naver')))
+        postprocess=self.postprocess))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
@@ -160,8 +153,7 @@ class _TranslatorManager(object):
   def infoseekTranslator(self):
     return self._newtr(_trman.InfoseekTranslator(
         abortSignal=self.abortSignal,
-        session=self.session,
-        alignEnabled=self.getAlignEnabled('infoseek')))
+        session=self.session))
 
   @memoizedproperty
   def exciteTranslator(self):
@@ -364,11 +356,33 @@ class TranslatorManager(QObject):
   def isAtlasEnabled(self): return self.__d.atlasEnabled
   def setAtlasEnabled(self, value): self.__d.atlasEnabled = value
 
-  def isBaiduAlignEnabled(self): return self.__d.getAlignEnabled('baidu')
-  def setBaiduAlignEnabled(self, t): self.__d.setAlignEnabled('baidu', t)
+  # Script
 
-  def isNaverAlignEnabled(self): return self.__d.getAlignEnabled('naver')
-  def setNaverAlignEnabled(self, t): self.__d.setAlignEnabled('naver', t)
+  def isAtlasScriptEnabled(self): return self.__d.getScriptEnabled('atlas')
+  def setAtlasScriptEnabled(self, t): self.__d.setScriptEnabled('atlas', t)
+
+  def isLecScriptEnabled(self): return self.__d.getScriptEnabled('lec')
+  def setLecScriptEnabled(self, t): self.__d.setScriptEnabled('lec', t)
+
+  def isLecOnlineScriptEnabled(self): return self.__d.getScriptEnabled('lecol')
+  def setLecOnlineScriptEnabled(self, t): self.__d.setScriptEnabled('lecol', t)
+
+  def isBingScriptEnabled(self): return self.__d.getScriptEnabled('bing')
+  def setBingScriptEnabled(self, t): self.__d.setScriptEnabled('bing', t)
+
+  def isGoogleScriptEnabled(self): return self.__d.getScriptEnabled('google')
+  def setGoogleScriptEnabled(self, t): self.__d.setScriptEnabled('google', t)
+
+  def isInfoseekScriptEnabled(self): return self.__d.getScriptEnabled('infoseek')
+  def setInfoseekScriptEnabled(self, t): self.__d.setScriptEnabled('infoseek', t)
+
+  def isExciteScriptEnabled(self): return self.__d.getScriptEnabled('excite')
+  def setExciteScriptEnabled(self, t): self.__d.setScriptEnabled('excite', t)
+
+  def isTransruScriptEnabled(self): return self.__d.getScriptEnabled('transru')
+  def setTransruScriptEnabled(self, t): self.__d.setScriptEnabled('transru', t)
+
+  # Alignment
 
   def isBingAlignEnabled(self): return self.__d.getAlignEnabled('bing')
   def setBingAlignEnabled(self, t): self.__d.setAlignEnabled('bing', t)
@@ -376,11 +390,17 @@ class TranslatorManager(QObject):
   def isGoogleAlignEnabled(self): return self.__d.getAlignEnabled('google')
   def setGoogleAlignEnabled(self, t): self.__d.setAlignEnabled('google', t)
 
-  def isHanVietAlignEnabled(self): return self.__d.getAlignEnabled('hanviet')
-  def setHanVietAlignEnabled(self, t): self.__d.setAlignEnabled('hanviet', t)
+  def isBaiduAlignEnabled(self): return self.__d.getAlignEnabled('baidu')
+  def setBaiduAlignEnabled(self, t): self.__d.setAlignEnabled('baidu', t)
+
+  def isNaverAlignEnabled(self): return self.__d.getAlignEnabled('naver')
+  def setNaverAlignEnabled(self, t): self.__d.setAlignEnabled('naver', t)
 
   def isInfoseekAlignEnabled(self): return self.__d.getAlignEnabled('infoseek')
   def setInfoseekAlignEnabled(self, t): self.__d.setAlignEnabled('infoseek', t)
+
+  def isHanVietAlignEnabled(self): return self.__d.getAlignEnabled('hanviet')
+  def setHanVietAlignEnabled(self, t): self.__d.setAlignEnabled('hanviet', t)
 
   ## Queries ##
 
@@ -511,7 +531,7 @@ class TranslatorManager(QObject):
     for it in d.iterOnlineTranslators():
       return it.translateTest(text, **kw)
 
-  def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=True):
+  def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None):
     """Translate using any translator
     @param  text  unicode
     @param* fr  unicode  language
@@ -520,7 +540,7 @@ class TranslatorManager(QObject):
     @param* async  bool
     @param* online  bool
     @param* emit  bool  whether emit intermediate results
-    @param* scriptEnabled  bool  whether enable the translation script
+    @param* scriptEnabled  bool or None  whether enable the translation script
     @param* cached  bool  NOT USED, always cached
     @return  unicode sub or None, unicode lang, unicode provider
     """
@@ -533,22 +553,23 @@ class TranslatorManager(QObject):
       'mark': mark,
       'async': async,
       'emit': emit,
-      'scriptEnabled': scriptEnabled,
     }
     text = d.normalizeText(text)
     if engine:
       e = d.getTranslator(engine)
       if e:
+        kw['scriptEnabled'] = d.getScriptEnabled(e.key) if scriptEnabled is None else scriptEnabled
         return e.translate(text, **kw)
       #dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
+      kw['scriptEnabled'] = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       return it.translate(text, **kw)
     for it in d.iterOnlineTranslators():
+      kw['scriptEnabled'] = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       if emit or not it.asyncSupported:
         return it.translate(text, **kw)
       else: # not emit and asyncSupported
-        if async:
-          kw['async'] = False # use single thread
+        kw['async'] = False # force using single thread
         return skthreads.runsync(partial(it.translate, text, **kw),
           abortSignal=self.onlineAbortionRequested,
         ) or (None, None, None)
@@ -570,7 +591,7 @@ class TranslatorManager(QObject):
       mark = d.marked
 
     for it in d.iterOfflineTranslators():
-      align = [] if it.alignSupported and it.alignEnabled else None
+      align = [] if it.alignSupported and self.getAlignEnabled(it.key) else None
       #with SkProfiler(): # 0.3 seconds
       r = it.translate(text, fr=fr, to=d.language, mark=mark, align=align, async=False)
       #with SkProfiler(): # 0.0004 seconds
@@ -579,7 +600,7 @@ class TranslatorManager(QObject):
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
-      align = [] if it.alignSupported and it.alignEnabled else None
+      align = [] if it.alignSupported and self.getAlignEnabled(it.key) else None
       skevents.runlater(partial(d.translateAndApply,
           func, kwargs, it.translate, text, fr=fr, to=d.language, mark=mark, align=align, async=False))
 
@@ -602,7 +623,7 @@ class TranslatorCoffeeBean(QObject):
     # I should not hardcode fr = 'ja' here
     # Force async
     # Translate direct to disable Shared Dictionary
-    return manager().translateDirect(text, engine=engine, async=True) or ''
+    return manager().translateDirect(text, engine=engine, async=True, scriptEnabled=False) or ''
 
 class TranslatorQmlBean(QObject):
   def __init__(self, parent=None):
@@ -616,6 +637,6 @@ class TranslatorQmlBean(QObject):
   def translate(self, text, language, engine):
     # I should not hardcode fr = 'ja' here
     # Force async
-    return manager().translate(text, engine=engine, fr=language, mark=False, async=True) or ''
+    return manager().translate(text, engine=engine, fr=language, mark=False, async=True, scriptEnabled=False) or ''
 
 # EOF

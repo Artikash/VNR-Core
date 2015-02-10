@@ -359,14 +359,24 @@ class MachineTranslator(Translator):
     """
     return skthreads.runsync(partial(fn, text, **kwargs)) if async and self.asyncSupported else fn(text, **kwargs)
 
-  def _escapeText(self, text, to, fr, emit):
+  def _escapeText(self, text, to, fr, emit, scriptEnabled=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param  emit  bool
+    @param* scriptEnabled  bool
     @return  unicode
     """
+    #if scriptEnabled and to == 'en' and fr == 'ja':
+    if scriptEnabled and fr == 'ja' and to not in ('ko', 'zhs', 'zht'):
+      # 8/19/2014: Only test 0.007 second, with or without locks
+      #with SkProfiler():
+      t = text
+      text = tahscript.manager().apply(text, self.key)
+      if emit and text != t:
+        self.emitNormalizedText(text)
+
     #if scriptEnabled:
     #  # 8/19/2014: Only test 0.007 second, with or without locks
     #  #with SkProfiler():
@@ -541,7 +551,7 @@ class AtlasTranslator(OfflineMachineTranslator):
   def _translateApi(self, text, fr='', to=''): # unicode -> unicode
     return self.engine.translate(text)
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True, mark=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=False, mark=None, **kwargs):
     """@reimp"""
     to = 'en'
     if emit:
@@ -552,15 +562,7 @@ class AtlasTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    #if scriptEnabled and to == 'en' and fr == 'ja':
-    if scriptEnabled and fr == 'ja':
-      # 8/19/2014: Only test 0.007 second, with or without locks
-      #with SkProfiler():
-      t = text
-      text = tahscript.manager().apply(text, self.key)
-      if emit and text != t:
-        self.emitNormalizedText(text)
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       try:
         repl = self._translate(emit, repl,
@@ -641,7 +643,7 @@ class LecTranslator(OfflineMachineTranslator):
       fr = 'ja'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=True, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -652,12 +654,7 @@ class LecTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    if scriptEnabled and fr == 'ja':
-      t = text
-      text = tahscript.manager().apply(text, self.key)
-      if emit and text != t:
-        self.emitNormalizedText(text)
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       try:
         repl = self._translate(emit, repl,
@@ -764,9 +761,8 @@ class HanVietTranslator(OfflineMachineTranslator):
   key = 'hanviet' # override
   alignSupported = True # override
 
-  def __init__(self, alignEnabled=False, **kwargs):
+  def __init__(self, **kwargs):
     super(HanVietTranslator, self).__init__(**kwargs)
-    self.alignEnabled = alignEnabled
 
     from hanviet import hanviet
     self.engine = hanviet
@@ -1228,9 +1224,8 @@ class InfoseekTranslator(OnlineMachineTranslator):
       fr = 'en'
     return to, fr
 
-  def __init__(self, session=None, alignEnabled=False, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
-    self.alignEnabled = alignEnabled
 
     from transer import infoseek
     infoseek.session = session or requests.Session()
@@ -1240,7 +1235,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1249,7 +1244,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
@@ -1294,7 +1289,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1303,7 +1298,7 @@ class ExciteTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
@@ -1345,7 +1340,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
       fr = 'en'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=True, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1354,12 +1349,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    if scriptEnabled and to == 'en' and fr == 'ja':
-      t = text
-      text = tahscript.manager().apply(text, 'lec') # use 'lec' instead of 'lecol'
-      if emit and text != t:
-        self.emitNormalizedText(text)
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
@@ -1401,7 +1391,7 @@ class TransruTranslator(OnlineMachineTranslator):
       fr = 'en'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if emit:
@@ -1410,7 +1400,7 @@ class TransruTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
@@ -1433,9 +1423,8 @@ class GoogleTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
-  def __init__(self, session=None, alignEnabled=False, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
-    self.alignEnabled = alignEnabled
 
     import googleman
     googleman.setsession(session or requests.Session())
@@ -1449,7 +1438,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #}))
   # Fix numbers such as 929,005.678。
   __re_term_fix = re.compile(r'(?<=\d),(?=\d{2})')
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
     #to = 'vi'
@@ -1459,7 +1448,7 @@ class GoogleTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
@@ -1485,9 +1474,8 @@ class BingTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
-  def __init__(self, session=None, alignEnabled=False, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(BingTranslator, self).__init__(**kwargs)
-    self.alignEnabled = alignEnabled
 
     from microsoft import bingtrans
     bingtrans.session = session or requests.Session()
@@ -1500,7 +1488,7 @@ class BingTranslator(OnlineMachineTranslator):
   #  ']\n': u'】',
   #}))
   __fix_escape = re.compile(r'(?<=[0-9]),(?=[0-9])') # replace ',' between digits with '.'
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     #if fr != 'ja':
     #  return None, None, None
@@ -1511,7 +1499,7 @@ class BingTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
@@ -1532,9 +1520,8 @@ class NaverTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override  enable translation alignment
 
-  def __init__(self, session=None, alignEnabled=False, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(NaverTranslator, self).__init__(**kwargs)
-    self.alignEnabled = alignEnabled
 
     from naver import navertrans
     navertrans.session = session or requests.Session()
@@ -1609,9 +1596,8 @@ class BaiduTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override  enable translation alignment
 
-  def __init__(self, session=None, alignEnabled=False, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
-    self.alignEnabled = alignEnabled
 
     from kingsoft import iciba
     iciba.session = session or requests.Session()

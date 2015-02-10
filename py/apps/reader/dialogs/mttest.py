@@ -379,7 +379,8 @@ class _MTTester(object):
     return ret
 
   def _onTranslatorChanged(self):
-    tah = self._currentTranslator() in ('atlas', 'lec', 'lecol')
+    key = self._currentTranslator()
+    tah = trtraits.TRAITS[key]['script']
     self.normalizedTextButton.setEnabled(tah)
     self.normalizedTextLabel.setEnabled(tah)
     self.normalizedTextEdit.setEnabled(tah)
@@ -582,7 +583,7 @@ class _MTTester(object):
     return ret
   @memoizedproperty
   def normalizedTextLabel(self):
-    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply TAH script"))
+    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation script"))
     ret.setEnabled(False)
     return ret
   @memoizedproperty
