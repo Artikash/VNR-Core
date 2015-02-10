@@ -2,14 +2,14 @@
 # settings.py
 # 10/28/2012 jichi
 
+__all__ = 'SettingsProxy',
+
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QSettings, QTimer, QSize
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktypes import to_int, to_unicode #to_long
 import defs, config
-
-__all__ = 'SettingsProxy',
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 # win32con
@@ -909,7 +909,6 @@ class Settings(QSettings):
     """
     return to_dict(self.value('TTSSpeeds'))
   def setTtsSpeeds(self, value): self.setValue('TTSSpeeds', value)
-
 
   def ttsVolumes(self):
     """
