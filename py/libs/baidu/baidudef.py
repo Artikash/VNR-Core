@@ -343,18 +343,21 @@ BD_LANGUAGES = {
 }
 def bdlang(lang): return BD_LANGUAGES.get(lang) or lang
 
-def mt_lang_test(to, fr='zh', online=True):
+def mt_lang_test(to=None, fr=None, online=True):
   """
-  @param  to  str  language
+  @param* to  str  language
   @param* fr  str  language
+  @param* online  bool  ignored
   return bool
   """
-  return all((
-    to in BD_LANGUAGES,
-    fr in BD_LANGUAGES,
-    to not in ('yue', 'wyw') or fr.startswith('zh'),
-    fr not in ('yue', 'wyw') or to.startswith('zh'),
-  ))
+  return (fr and to and all((
+      to in BD_LANGUAGES,
+      fr in BD_LANGUAGES,
+      to not in ('yue', 'wyw') or fr.startswith('zh'),
+      fr not in ('yue', 'wyw') or to.startswith('zh'),
+    ))
+    or fr and fr in BD_LANGUAGES
+    or to and to in BD_LANGUAGES)
 
 def tts_lang_test(lang):
   """

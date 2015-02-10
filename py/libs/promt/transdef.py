@@ -15,13 +15,17 @@ MT_LANGUAGES = { # {str fr:[str to]}
   'fi': ('ru',), # Finn
 }
 
-def mt_lang_test(to, fr='ru', online=True):
+def mt_lang_test(to=None, fr=None, online=True):
   """
-  @param  to  str
+  @param* to  str
   @param* fr  str
+  @param* online  bool  ignored
   @return  bool
   """
-  try: return to in MT_LANGUAGES[fr]
-  except: return True
+  if fr and to:
+    try: return to in MT_LANGUAGES[fr]
+    except: return False
+  else:
+    return fr and fr in MT_LANGUAGES or to and to in MT_LANGUAGES
 
 # EOF

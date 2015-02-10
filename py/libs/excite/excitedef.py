@@ -16,16 +16,19 @@ MT_LANGUAGES = frozenset((
   'ru',
 ))
 
-def mt_lang_test(to, fr='ja', online=True):
+def mt_lang_test(to=None, fr=None, online=True):
   """
-  @param  to  str
+  @param* to  str
   @param* fr  str
+  @param* online  bool  ignored
   @return  bool
   """
-  return all((
-    fr in ('ja', 'en') or to in ('ja', 'en'),
-    fr[:2] in MT_LANGUAGES,
-    to[:2] in MT_LANGUAGES,
-  ))
+  return (fr and to and all((
+      fr in ('ja', 'en') or to in ('ja', 'en'),
+      fr[:2] in MT_LANGUAGES,
+      to[:2] in MT_LANGUAGES,
+    ))
+    or fr and fr[:2] in MT_LANGUAGES
+    or to and to[:2] in MT_LANGUAGES)
 
 # EOF

@@ -16,6 +16,7 @@ from PySide.QtCore import QObject, Signal, Slot, Qt
 from sakurakit import skevents, skthreads
 from sakurakit.skclass import  memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn
+from share.mt import mtinfo
 import features, textutil
 import _trman
 
@@ -53,6 +54,9 @@ class _TranslatorManager(object):
     self.alignEnabled = {} # {str key:bool t}
     self.scriptEnabled = {} # {str key:bool t}
 
+    self.retrans = {} # {str key:_trman.Retranslator}
+    self.retransSettings = {} # {str key:{'yes':bool,'key':str,'lang':str}}
+
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
     from qtrequests import qtrequests
@@ -85,6 +89,25 @@ class _TranslatorManager(object):
     """
     self.allTranslators.append(tr)
     return tr
+
+  def getRetranslator(self, key1, key2, language):
+    """
+    @param  key1  str
+    @param  key2  str
+    @param  language  str
+    """
+    ret = self.retrans.get(key1)
+    if ret:
+      if ret.language != language:
+        ret.language = language
+      if ret.second.key != key2:
+        ret.second = self.getTranslator(key2)
+    else:
+      ret = self.retrans[key1] = _trman.Retranslator(
+          first=self.getTranslator(key1),
+          second=self.getTranslator(key2),
+          language=language)
+    return ret
 
   @memoizedproperty
   def yueTranslator(self): # no an independent machine translator
@@ -262,6 +285,38 @@ class _TranslatorManager(object):
     @yield  Translator
     """
     return itertools.chain(self.iterOfflineTranslators(), self.iterOnlineTranslators())
+
+  def findRetranslator(self, eng, to, fr):
+    """
+    @param  eng  _trman.Translator
+    @param  to  str  language
+    @param  fr  str  language
+    @return  _trman.Retranslator or _trman.Translator or None
+    """
+    if not to or not fr:
+      return
+    key = eng.key
+    conf = self.retransSettings.get(key)
+    if not conf or not conf.get('yes'):
+      return
+    key2 = conf.get('key')
+    if not key2:
+      return
+    fr2 = fr[:2]
+    to2 = to[:2]
+    if fr2 == to2] or mtinfo.test_lang(key, to=to, fr=fr):
+      return
+    lang = conf.get('lang') or 'en'
+    lang2 = lang[:2]
+    if lang2 == fr2:
+      return eng
+    if lang2 == to2:
+      return self.getTranslator(key2)
+    if not mtinfo.test_lang(key, to=lang, fr=fr):
+      return
+    if not mtinfo.test_lang(key2, fr=lang):
+      return
+    return d.getRetranslator(key, key2, lang)
 
 class TranslatorManager(QObject):
 
@@ -528,13 +583,16 @@ class TranslatorManager(QObject):
       'async': async,
     }
     #text = d.normalizeText(text)
-    e = d.getTranslator(engine)
-    if e:
-      return e.translateTest(text, **kw)
+    it = d.getTranslator(engine)
+    if it:
+      it = d.findRetranslator(it, to=to, fr=fr) or it
+      return it.translateTest(text, **kw)
     #dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
+      it = d.findRetranslator(it, to=to, fr=fr) or it
       return it.translateTest(text, **kw)
     for it in d.iterOnlineTranslators():
+      it = d.findRetranslator(it, to=to, fr=fr) or it
       return it.translateTest(text, **kw)
 
   def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None):
@@ -563,15 +621,18 @@ class TranslatorManager(QObject):
     }
     text = d.normalizeText(text)
     if engine:
-      e = d.getTranslator(engine)
-      if e:
-        kw['scriptEnabled'] = d.getScriptEnabled(e.key) if scriptEnabled is None else scriptEnabled
-        return e.translate(text, **kw)
+      it = d.getTranslator(engine)
+      if it:
+        it = d.findRetranslator(it, to=to, fr=fr) or it
+        kw['scriptEnabled'] = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
+        return it.translate(text, **kw)
       #dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
+      it = d.findRetranslator(it, to=to, fr=fr) or it
       kw['scriptEnabled'] = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       return it.translate(text, **kw)
     for it in d.iterOnlineTranslators():
+      it = d.findRetranslator(it, to=to, fr=fr) or it
       kw['scriptEnabled'] = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       if emit or not it.asyncSupported:
         return it.translate(text, **kw)
@@ -599,7 +660,8 @@ class TranslatorManager(QObject):
     if mark is None:
       mark = d.marked
 
-    for it in d.iterOfflineTranslators():
+    for it ine d.iterOfflineTranslators():
+      it = d.findRetranslator(it, to=to, fr=fr) or it
       align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
       script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       #with SkProfiler(): # 0.3 seconds
@@ -610,6 +672,7 @@ class TranslatorManager(QObject):
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
+      it = d.findRetranslator(it, to=to, fr=fr) or it
       align = [] if it.alignSupported and d.getAlignEnabled(it.key) else None
       script = d.getScriptEnabled(it.key) if scriptEnabled is None else scriptEnabled
       skevents.runlater(partial(d.translateAndApply,

@@ -129,6 +129,23 @@ INFOSEEK_ENGINES = {
   'zhtko': 'CKT',
   'zhtpt': 'CPT',
 }
+
+INFOSEEK_LANGUAGES = frozenset((
+  'ja',
+  'zhs',
+  'zht',
+  'ko',
+  'vi',
+  'th',
+  'id',
+  'en',
+  'es',
+  'de',
+  'fr',
+  'it',
+  'pt',
+))
+
 def lang2engine(to, fr):
   """
   @param  to  unicode
@@ -137,12 +154,15 @@ def lang2engine(to, fr):
   """
   return INFOSEEK_ENGINES.get(fr + to) or 'JE' # from 'ja' to 'en'
 
-def mt_lang_test(to, fr='ja', online=True):
+def mt_lang_test(to=None, fr=None, online=True):
   """
-  @param  to  str
+  @param* to  str
   @param* fr  str
+  @param* online  bool  ignored
   @return  bool
   """
-  return (fr + to) in INFOSEEK_ENGINES
+  return (fr and to and (fr + to) in INFOSEEK_ENGINES
+      or fr and fr in INFOSEEK_LANGUAGES
+      or to and to in INFOSEEK_LANGUAGES)
 
 # EOF

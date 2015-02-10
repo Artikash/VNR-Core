@@ -35,17 +35,21 @@ POWERTRANS_LANGUAGES = ( # [(str fr, str to)]
   ('en', 'ru'),
   ('ja', 'ru'),
 )
+POWERTRANS_SOURCE_LANGUAGES = 'en', 'ja'
+POWERTRANS_TARGET_LANGUAGES = 'en', 'ru'
 
-def mt_lang_test(to, fr='ja', online=True):
+def mt_lang_test(to=None, fr=None, online=True):
   """
-  @param  to  str
+  @param* to  str
   @param* fr  str
   @param* online  bool
   @return  bool
   """
   if online:
-    return fr[:2] in LEC_LANGUAGES and to[:2] in LEC_LANGUAGES
+    return (not fr or fr[:2] in MT_LANGUAGES) and (not to or to[:2] in LEC_LANGUAGES)
   else: # Offline
-    return (fr, to) in POWERTRANS_LANGUAGES
+    return (fr and to and (fr, to) in POWERTRANS_LANGUAGES
+        or fr and fr in POWERTRANS_SOURCE_LANGUAGES
+        or to and to in POWERTRANS_TARGET_LANGUAGES)
 
 # EOF

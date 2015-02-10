@@ -194,25 +194,46 @@ class Retranslator(Translator):
     self.second = second # Translator
     self.language = language # str
 
-  def translateTest(self, text, to='en', fr='ja', mark=None, align=None, emit=False, **kwargs):
+  @property
+  def asyncSupported(self):
+    """@reimp"""
+    for it in (self.first, self.second):
+      if it and it.asyncSupported:
+        return True
+    return False
+
+  @property
+  def alignSupported(self):
+    """@reimp"""
+    return bool(self.second) and self.second.alignSupported
+
+  def translateTest(self, text, to='en', fr='ja', **kwargs):
     """@reimp"""
     if self.first:
       text = self.first.translateTest(text, to=self.language, fr=fr, **kwargs)
       if text and self.second:
-        return self.second.translateTest(text, to=to, fr=self.language,
-            mark=mark, align=align, emit=emit, **kwargs)
+        return self.second.translateTest(text, to=to, fr=self.language, **kwargs)
     return ''
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, align=None, **kwargs):
     """@reimp"""
+    text = None
+    key = self.key
+    lang = self.language
     if self.first:
-      text, lang, key1 = self.first.translateTest(text, to=self.language, fr=fr, **kwargs)
-      if text and self.second:
-        text, to, key1 = self.second.translateTest(text, to=to, fr=lang,
+      if not self.second:
+        return self.first.translateTest(text, to=to, fr=fr,
             mark=mark, align=align, emit=emit, **kwargs)
-        key = ','.join((key1, key2))
-        return text, to, key
-    return None, self.key, to
+      text, lang, key = self.first.translateTest(text, to=lang, fr=fr,
+          mark=False, align=None, emit=False, **kwargs)
+      if text:
+        text2, lang2, key2 = self.second.translateTest(text, to=to, fr=lang,
+            mark=mark, align=align, emit=emit, **kwargs)
+        if text2:
+          text = text2
+          lang = lang2
+          key += ',' + key2
+    return text, key, lang
 
 ## Text processing
 

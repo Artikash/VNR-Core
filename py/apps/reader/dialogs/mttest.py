@@ -19,6 +19,7 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
+from share.mt import mtinfo
 import config, evalutil, i18n, rc, settings, textutil, termman, trman, trtraits
 
 class MTTester(QtWidgets.QDialog):
@@ -380,7 +381,7 @@ class _MTTester(object):
 
   def _onTranslatorChanged(self):
     key = self._currentTranslator()
-    tah = trtraits.gettrait(key=key)['script']
+    tah = mtinfo.test_script(key)
     self.normalizedTextButton.setEnabled(tah)
     self.normalizedTextLabel.setEnabled(tah)
     self.normalizedTextEdit.setEnabled(tah)

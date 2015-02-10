@@ -2,21 +2,21 @@
 # 2/10/2015
 
 MT_INFO = {
-  'bing',        'online':True,  'align':True,   'script':True,  },
-  'google',      'online':True,  'align':True,   'script':True,  },
-  'lecol',       'online':True,  'align':False,  'script':True,  },
-  'infoseek',    'online':True,  'align':True,   'script':True,  },
-  'excite',      'online':True,  'align':False,  'script':True,  },
-  'transru',     'online':True,  'align':False,  'script':True,  },
-  'naver',       'online':True,  'align':True,   'script':False, },
-  'baidu',       'online':True,  'align':True,   'script':False, },
-  'jbeijing',    'online':False, 'align':False,  'script':False, },
-  'fastait',     'online':False, 'align':False,  'script':False, },
-  'dreye',       'online':False, 'align':False,  'script':False, },
-  'eztrans',     'online':False, 'align':False,  'script':False, },
-  'atlas',       'online':False, 'align':False,  'script':True,  },
-  'lec',         'online':False, 'align':False,  'script':True,  },
-  'hanviet',     'online':False, 'align':True,   'script':False, },
+  'bing':       {'online':True,  'align':True,   'script':True,  },
+  'google':     {'online':True,  'align':True,   'script':True,  },
+  'lecol':      {'online':True,  'align':False,  'script':True,  },
+  'infoseek':   {'online':True,  'align':True,   'script':True,  },
+  'excite':     {'online':True,  'align':False,  'script':True,  },
+  'transru':    {'online':True,  'align':False,  'script':True,  },
+  'naver':      {'online':True,  'align':True,   'script':False, },
+  'baidu':      {'online':True,  'align':True,   'script':False, },
+  'jbeijing':   {'online':False, 'align':False,  'script':False, },
+  'fastait':    {'online':False, 'align':False,  'script':False, },
+  'dreye':      {'online':False, 'align':False,  'script':False, },
+  'eztrans':    {'online':False, 'align':False,  'script':False, },
+  'atlas':      {'online':False, 'align':False,  'script':True,  },
+  'lec':        {'online':False, 'align':False,  'script':True,  },
+  'hanviet':    {'online':False, 'align':True,   'script':False, },
 }
 
 def test_online(key):
@@ -35,15 +35,21 @@ def test_align(key):
   try: MT_INFO[key]['align']
   except KeyError: return False
 
-def test_lang(key, to, fr='ja'):
+def test_script(key):
   """
   @param  key  str
-  @param  to  str  language
+  @return  bool
+  """
+  try: MT_INFO[key]['script']
+  except KeyError: return False
+
+def test_lang(key, to=None, fr=None):
+  """
+  @param  key  str
+  @param* to  str  language
   @param* fr  str  language
   @return bool
   """
-  if key == 'hanviet':
-    return fr.startswith('zh') and to == 'vi'
   if key in ('google', 'bing'):
     return True
   f = get_mod_def(key)
@@ -97,7 +103,7 @@ def get_mod_def(key):
     from bing import bingdef
     return bingdef
   if key == 'hanviet':
-    from hanviet import hanviet
+    from hanviet import hanvietdef
     return hanviet
   return None
 
