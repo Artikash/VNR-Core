@@ -1077,7 +1077,7 @@ class GameManager(QtCore.QObject):
       md5 = g.md5()
       oldGame = dataman.manager().queryGame(md5=md5, online=False)
       if oldGame:
-        for pty in 'encoding', 'language', 'launchLanguage', 'loader', 'launchPath':
+        for pty in 'encoding', 'language', 'launchLanguage', 'loader', 'launchPath', 'keepsSpace', 'removesRepeat': # , 'ignoresRepeat':
           v = getattr(g, pty)
           if not v:
             v = getattr(oldGame, pty)
