@@ -3895,10 +3895,10 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.zhongriButton)
     ret.setLayout(layout)
 
-    ss = settings.global_()
-    ret.setEnabled(bool(ss.meCabDictionary()))
-    ss.meCabDictionaryChanged.connect(lambda v:
-        ret.setEnabled(bool(v)))
+    #ss = settings.global_()
+    #ret.setEnabled(bool(ss.meCabDictionary()))
+    #ss.meCabDictionaryChanged.connect(lambda v:
+    #    ret.setEnabled(bool(v)))
     return ret
 
   @memoizedproperty
