@@ -510,7 +510,7 @@ class TranslatorManager(QObject):
     """
     return self.translateOne(*args, **kwargs)[0]
 
-  def translateDirect(self, text, fr='ja', engine='', async=False):
+  def translateTest(self, text, fr='ja', engine='', async=False):
     """
     @param  text  unicode
     @param* fr  unicode  language
@@ -631,7 +631,7 @@ class TranslatorCoffeeBean(QObject):
     # I should not hardcode fr = 'ja' here
     # Force async
     # Translate direct to disable Shared Dictionary
-    return manager().translateDirect(text, engine=engine, async=True, scriptEnabled=False) or ''
+    return manager().translateTest(text, engine=engine, async=True) or ''
 
 class TranslatorQmlBean(QObject):
   def __init__(self, parent=None):
