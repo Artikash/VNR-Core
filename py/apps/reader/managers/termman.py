@@ -19,6 +19,7 @@ from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
 from sakurakit import skfileio, skos, skstr, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
+from opencc import opencc
 from convutil import kana2name, zhs2zht
 import config, cabochaman, dataman, defs, i18n, rc
 
@@ -176,6 +177,8 @@ class TermWriter:
     if type not in ('input', 'trans_input', 'trans_output'):
       titles = None
 
+    fr2 = fr[:2]
+
     kanjiLanguage = config.is_kanji_language(to)
     latinLanguage = not kanjiLanguage
 
@@ -192,6 +195,8 @@ class TermWriter:
 
     trans_input = type == 'trans_input'
     trans_output = type == 'trans_output'
+
+    name_types = 'name', 'yomi'
 
     count = len(self.termData)
     try:
@@ -218,6 +223,12 @@ class TermWriter:
               pattern = self._applyMacros(pattern, macros)
             if z:
               pattern = zhs2zht(pattern)
+
+          if fr2 == 'zh' and td.sourceLanguage == 'ja' and td.type in name_types:
+            if fr == 'zhs':
+              pattern = opencc.ja2zhs(pattern)
+            elif fr == 'zht':
+              pattern = opencc.ja2zht(pattern)
 
           repl = td.text
           repl_left = repl_right = ''
@@ -291,7 +302,7 @@ class TermWriter:
           #    repl += " " # padding space
 
           name = None
-          if titleCount and td.type in ('name', 'yomi'):
+          if titleCount and td.type in name_types:
             if trans_input:
               name = True
               esc = NAME_ESCAPE + " " # padding space
@@ -419,8 +430,8 @@ class TermWriter:
     #  types.append('yomi')
 
     # Types do not apply to non-Japanese languages
-    jatypes = frozenset(('name', 'yomi', 'trans', 'input', 'output', 'tts', 'suffix'))
-
+    jatypes = 'macro', 'game', 'ocr'
+    zhtypes = 'name', 'yomi'
     fr2 = fr[:2]
     fr_is_latin = config.is_latin_language(fr)
     patterns = set() # skip duplicate names
@@ -432,8 +443,11 @@ class TermWriter:
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (fr == 'ja' or td.sourceLanguage.startswith(fr2)
-            or fr != 'ja' and td.sourceLanguage == 'ja' and td.type not in jatypes
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
+            or td.sourceLanguage == 'ja' and (
+              td.type in jatypes
+              or fr2 == 'zh' and td.type in zhtypes
+            )
           )
         ):
         if td.pattern not in patterns:

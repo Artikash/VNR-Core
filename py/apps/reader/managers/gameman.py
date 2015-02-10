@@ -1566,13 +1566,13 @@ class GameManager(QtCore.QObject):
         if pid and p.pid != pid:
           continue
         if p.path:
-          fileName = os.path.basename(p.path)
+          filename = os.path.basename(p.path).lower()
           for g in dm.games():
             if g.path:
-              if fileName.lower() == os.path.basename(g.path).lower():
+              if filename == os.path.basename(g.path).lower():
                 np = osutil.normalize_path(p.path)
                 if np == osutil.normalize_path(g.path) or hashutil.md5sum(np) == g.md5:
-                  g.path = p.path
+                  g.path = p.path # update game path in the database
                   return g
 
   @staticmethod
