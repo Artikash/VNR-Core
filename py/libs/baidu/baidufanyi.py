@@ -217,8 +217,7 @@ def translate(text, to='zhs', fr='ja', align=None):
       data={
         'query': text, #.decode('utf8'),
         'from': baidudef.bdlang(fr),
-        #'to': baidudef.bdlang(to),
-        'to': 'jpka',
+        'to': baidudef.bdlang(to),
         #'ie': 'utf-8',
         #'source': 'txt',
         #'t': _BaiduFanyi.timestamp(),

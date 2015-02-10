@@ -317,10 +317,6 @@ BD_LANGUAGES = {
   'zht': 'zh',
   'zh': 'zh',
 
-  # Chinese variants
-  'yue': 'yue', # 粤语
-  'wyw': 'wyw', # 文言文
-
   # The same
   'en': 'en',
   'th': 'th',
@@ -331,6 +327,13 @@ BD_LANGUAGES = {
   'ru': 'ru',
 
   'el': 'el', # Greek
+
+  # Chinese variants
+  'yue': 'yue', # 粤语
+  'wyw': 'wyw', # 文言文
+
+  # Japanese variants
+  'kana': 'jpka', # 仮名
 
   # Not supported by baidu
   #'ms': 'ms',
