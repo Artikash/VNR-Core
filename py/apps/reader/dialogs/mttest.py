@@ -290,7 +290,7 @@ class _MTTester(object):
         'fr': fr,
         'engine': self._currentTranslator(),
       }
-      raw = trman.manager().translateDirect(t, **params)
+      raw = trman.manager().translateTest(t, **params)
       if raw:
         self.directTranslationEdit.setPlainText(raw)
 
