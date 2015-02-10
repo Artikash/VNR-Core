@@ -24,7 +24,7 @@ def test_online(key):
   @param  key  str
   @return  bool
   """
-  try: MT_INFO[key]['online']
+  try: return MT_INFO[key]['online']
   except KeyError: return False
 
 def test_align(key):
@@ -32,7 +32,7 @@ def test_align(key):
   @param  key  str
   @return  bool
   """
-  try: MT_INFO[key]['align']
+  try: return MT_INFO[key]['align']
   except KeyError: return False
 
 def test_script(key):
@@ -40,7 +40,7 @@ def test_script(key):
   @param  key  str
   @return  bool
   """
-  try: MT_INFO[key]['script']
+  try: return MT_INFO[key]['script']
   except KeyError: return False
 
 def test_lang(key, to=None, fr=None):
