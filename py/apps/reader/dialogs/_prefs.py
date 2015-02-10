@@ -2942,6 +2942,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def bingButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBingEnabled())
     ret.toggled.connect(settings.global_().setBingEnabled)
     return ret
@@ -2970,6 +2971,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def googleButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isGoogleEnabled())
     ret.toggled.connect(settings.global_().setGoogleEnabled)
     return ret
@@ -3006,6 +3008,7 @@ class _MachineTranslationTab(object):
             tr_("pl"),
             tr_("ru"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isInfoseekEnabled())
     ret.toggled.connect(settings.global_().setInfoseekEnabled)
     return ret
@@ -3043,7 +3046,8 @@ class _MachineTranslationTab(object):
             tr_("ar"),
             tr_("nl"),
             tr_("pl"),
-            )))))
+    )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isExciteEnabled())
     ret.toggled.connect(settings.global_().setExciteEnabled)
     return ret
@@ -3077,6 +3081,7 @@ class _MachineTranslationTab(object):
   def lecOnlineScriptButton(self):
     ret = QtWidgets.QCheckBox("%s (by @riz)" %
         my.tr("Enable Japanese-English translation script"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ss = settings.global_()
     ret.setChecked(ss.isLecOnlineScriptEnabled())
     ret.toggled.connect(ss.setLecOnlineScriptEnabled)
@@ -3089,6 +3094,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Baidu.com Chinese translation service"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBaiduEnabled())
     ret.toggled.connect(settings.global_().setBaiduEnabled)
     return ret
@@ -3108,6 +3114,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Naver.com Korean translation service"),
         my.tr("recommended for Korean")))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isNaverEnabled())
     ret.toggled.connect(settings.global_().setNaverEnabled)
     return ret
@@ -3137,6 +3144,7 @@ class _MachineTranslationTab(object):
             tr_("pt"),
             tr_("ru"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isTransruEnabled())
     ret.toggled.connect(settings.global_().setTransruEnabled)
     return ret
@@ -3170,6 +3178,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def dreyeButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isDreyeEnabled())
     ret.toggled.connect(settings.global_().setDreyeEnabled)
     return ret
@@ -3182,6 +3191,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("JBeijing Chinese translator"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isJBeijingEnabled())
     ret.toggled.connect(settings.global_().setJBeijingEnabled)
     return ret
@@ -3194,6 +3204,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("FastAIT Chinese-Japanese/English translator"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isFastaitEnabled())
     ret.toggled.connect(settings.global_().setFastaitEnabled)
     return ret
@@ -3206,6 +3217,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("ezTrans XP Korean translator"),
         my.tr("recommended for Korean")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
     return ret
@@ -3216,6 +3228,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def hanVietButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isHanVietEnabled())
     ret.toggled.connect(settings.global_().setHanVietEnabled)
     return ret
@@ -3235,6 +3248,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def atlasButton(self):
     ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isAtlasEnabled())
     ret.toggled.connect(settings.global_().setAtlasEnabled)
     return ret
@@ -3257,6 +3271,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def lecButton(self):
     ret = QtWidgets.QCheckBox(my.tr("LEC English/Russian translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isLecEnabled())
     ret.toggled.connect(settings.global_().setLecEnabled)
     return ret
