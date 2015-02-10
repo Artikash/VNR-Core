@@ -281,6 +281,11 @@ def _iteralign(data, encoding='utf8'):
 if __name__ == "__main__":
 
   def test():
+    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    t = translate(s, to='zh', fr='ja')
+    print t
+
+  def test_align():
     m = []
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
     #s = u"hello"

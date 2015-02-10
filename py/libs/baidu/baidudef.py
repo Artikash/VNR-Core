@@ -88,26 +88,279 @@
 # 'uz': '乌兹别克语'
 # 'cy': '威尔士语'
 # 'yo': '约鲁巴语'
+#
+# Translation language pairs:
+#  'zh': [
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'yue'
+#    'ru'
+#    'wyw'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'en': [
+#    'zh'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'jp': [
+#    'zh'
+#    'en'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#    'jpka'
+#  ]
+#  'th': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'ara': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'fra': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'spa': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'kor': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'yue': [ 'zh' ]
+#  'wyw': [ 'zh' ]
+#  'ru': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'pt': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'de'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'de': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'it'
+#    'nl'
+#    'el'
+#  ]
+#  'it': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'nl'
+#    'el'
+#  ]
+#  'el': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'nl'
+#  ]
+#  'nl': [
+#    'zh'
+#    'en'
+#    'jp'
+#    'spa'
+#    'fra'
+#    'th'
+#    'ara'
+#    'kor'
+#    'ru'
+#    'pt'
+#    'de'
+#    'it'
+#    'el'
+#  ]
+
 BD_LANGUAGES = {
   'ar': 'ara',
   'ja': 'jp',
-  'zhs': 'zh',
-  'zht': 'zh',
   'ko': 'kor',
   'fr': 'fra',
   'es': 'spa',
-  #'en': 'en',
-  #'vi': 'vi',
-  #'th': 'th',
+
+  'zhs': 'zh',
+  'zht': 'zh',
+  'zh': 'zh',
+
+  # The same
+  'en': 'en',
+  'th': 'th',
+  'de': 'de',
+  'it': 'it',
+  'nl': 'nl',
+  'pt': 'pt',
+  'ru': 'ru',
+
+  'el': 'el', # Greek
+
+  # Chinese variants
+  'yue': 'yue', # 粤语
+  'wyw': 'wyw', # 文言文
+
+  # Japanese variants
+  'kana': 'jpka', # 仮名
+
+  # Not supported by baidu
   #'ms': 'ms',
+  #'vi': 'vi',
   #'id': 'id',
-  #'de': 'de',
-  #'it': 'it',
-  #'nl': 'nl',
   #'pl': 'pl',
-  #'pt': 'pt',
-  #'ru': 'ru',
 }
 def bdlang(lang): return BD_LANGUAGES.get(lang) or lang
+
+def mt_lang_test(to, fr='zh'):
+  """
+  @param  to  str  language
+  @param* fr  str  language
+  return bool
+  """
+  return all((
+    to in BD_LANGUAGES,
+    fr in BD_LANGUAGES,
+    to not in ('yue', 'wyw') or fr.startswith('zh'),
+    fr not in ('yue', 'wyw') or to.startswith('zh'),
+  ))
+
+def tts_lang_test(lang):
+  """
+  @param  lang
+  return bool
+  """
+  return lang in BD_LANGUAGES
 
 # EOF

@@ -692,8 +692,14 @@ class _MainObject(object):
     ret.setInfoseekAlignEnabled(ss.isInfoseekRubyEnabled())
     ss.infoseekRubyEnabledChanged.connect(ret.setInfoseekAlignEnabled)
 
+    ret.setInfoseekScriptEnabled(ss.isInfoseekScriptEnabled())
+    ss.infoseekScriptEnabledChanged.connect(ret.setInfoseekScriptEnabled)
+
     ret.setExciteEnabled(ss.isExciteEnabled())
     ss.exciteEnabledChanged.connect(ret.setExciteEnabled)
+
+    ret.setExciteScriptEnabled(ss.isExciteScriptEnabled())
+    ss.exciteScriptEnabledChanged.connect(ret.setExciteScriptEnabled)
 
     ret.setBingEnabled(ss.isBingEnabled())
     ss.bingEnabledChanged.connect(ret.setBingEnabled)
@@ -701,14 +707,23 @@ class _MainObject(object):
     ret.setBingAlignEnabled(ss.isBingRubyEnabled())
     ss.bingRubyEnabledChanged.connect(ret.setBingAlignEnabled)
 
+    ret.setBingScriptEnabled(ss.isBingScriptEnabled())
+    ss.bingScriptEnabledChanged.connect(ret.setBingScriptEnabled)
+
     ret.setGoogleEnabled(ss.isGoogleEnabled())
     ss.googleEnabledChanged.connect(ret.setGoogleEnabled)
 
     ret.setGoogleAlignEnabled(ss.isGoogleRubyEnabled())
     ss.googleRubyEnabledChanged.connect(ret.setGoogleAlignEnabled)
 
+    ret.setGoogleScriptEnabled(ss.isGoogleScriptEnabled())
+    ss.googleScriptEnabledChanged.connect(ret.setGoogleScriptEnabled)
+
     ret.setTransruEnabled(ss.isTransruEnabled())
     ss.transruEnabledChanged.connect(ret.setTransruEnabled)
+
+    ret.setTransruScriptEnabled(ss.isTransruScriptEnabled())
+    ss.transruScriptEnabledChanged.connect(ret.setTransruScriptEnabled)
 
     ret.setNaverEnabled(ss.isNaverEnabled())
     ss.naverEnabledChanged.connect(ret.setNaverEnabled)
@@ -724,6 +739,9 @@ class _MainObject(object):
 
     ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
     ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)
+
+    ret.setLecOnlineScriptEnabled(ss.isLecOnlineScriptEnabled())
+    ss.lecOnlineScriptEnabledChanged.connect(ret.setLecOnlineScriptEnabled)
 
     #ret.setYoudaoEnabled(ss.isYoudaoEnabled())
     #ss.youdaoEnabledChanged.connect(ret.setYoudaoEnabled)
@@ -749,8 +767,14 @@ class _MainObject(object):
     ret.setAtlasEnabled(ss.isAtlasEnabled())
     ss.atlasEnabledChanged.connect(ret.setAtlasEnabled)
 
+    ret.setAtlasScriptEnabled(ss.isAtlasScriptEnabled())
+    ss.atlasScriptEnabledChanged.connect(ret.setAtlasScriptEnabled)
+
     ret.setLecEnabled(ss.isLecEnabled())
     ss.lecEnabledChanged.connect(ret.setLecEnabled)
+
+    ret.setLecScriptEnabled(ss.isLecScriptEnabled())
+    ss.lecScriptEnabledChanged.connect(ret.setLecScriptEnabled)
 
     for sig in (
         self.termManager.cacheChanged,

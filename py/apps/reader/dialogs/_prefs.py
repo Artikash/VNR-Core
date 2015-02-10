@@ -2725,8 +2725,8 @@ class _MachineTranslationTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.honyakuGroup)
     #layout.addWidget(self.correctionGroup)
-    if 'en' not in blans:
-      layout.addWidget(self.tahGroup)
+    #if 'en' not in blans:
+    #  layout.addWidget(self.tahGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -2750,62 +2750,62 @@ class _MachineTranslationTab(object):
   #  ret.toggled.connect(settings.global_().setMsimeCorrectionEnabled)
   #  return ret
 
-  # TAH script group
-
-  @memoizedproperty
-  def tahGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.atlasTahButton)
-    layout.addWidget(self.lecTahButton)
-    layout.addWidget(self.tahInfoLabel)
-    #layout.addStretch()
-    ret = QtWidgets.QGroupBox(my.tr("TAH script for Japanese-English machine translators"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def atlasTahButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "ATLAS offline machine translation"))
-    ss = settings.global_()
-    ret.setChecked(ss.isAtlasScriptEnabled())
-    ret.toggled.connect(ss.setAtlasScriptEnabled)
-    ret.setEnabled(ss.isAtlasEnabled())
-    ss.atlasEnabledChanged.connect(ret.setEnabled)
-    return ret
-
-  @memoizedproperty
-  def lecTahButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "LEC online and offline machine translation"))
-    ss = settings.global_()
-    ret.setChecked(ss.isLecScriptEnabled())
-    ret.toggled.connect(ss.setLecScriptEnabled)
-    def load(): ret.setEnabled(ss.isLecEnabled() or ss.isLecOnlineEnabled())
-    load()
-    ss.lecEnabledChanged.connect(load)
-    ss.lecOnlineEnabledChanged.connect(load)
-    return ret
-
-  @memoizedproperty
-  def tahInfoLabel(self):
-    ret = QtWidgets.QLabel()
-    #ret.setTextFormat(Qt.RichText)
-    #ret.setWordWrap(True)
-    #ret.setOpenExternalLinks(True)
-    #skqss.class_(ret, 'texture')
-    #ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
-    #ret.setAlignment(Qt.AlignCenter)
-    #ret.setReadOnly(True)
-    ret.setWordWrap(True)
-    ret.setOpenExternalLinks(True)
-
-    email = 'TAHscript@outlook.com'
-    ret.setText(my.tr(
-"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
-You can report the bugs to <a href="mailto:{0}">{0}</a>."""
-).format(email))
-    return ret
+#  # TAH script group
+#
+#  @memoizedproperty
+#  def tahGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.atlasTahButton)
+#    layout.addWidget(self.lecTahButton)
+#    layout.addWidget(self.tahInfoLabel)
+#    #layout.addStretch()
+#    ret = QtWidgets.QGroupBox(my.tr("TAH script for Japanese-English machine translators"))
+#    ret.setLayout(layout)
+#    return ret
+#
+#  @memoizedproperty
+#  def atlasTahButton(self):
+#    ret = QtWidgets.QCheckBox(my.tr(
+#      "ATLAS offline machine translation"))
+#    ss = settings.global_()
+#    ret.setChecked(ss.isAtlasScriptEnabled())
+#    ret.toggled.connect(ss.setAtlasScriptEnabled)
+#    ret.setEnabled(ss.isAtlasEnabled())
+#    ss.atlasEnabledChanged.connect(ret.setEnabled)
+#    return ret
+#
+#  @memoizedproperty
+#  def lecTahButton(self):
+#    ret = QtWidgets.QCheckBox(my.tr(
+#      "LEC online and offline machine translation"))
+#    ss = settings.global_()
+#    ret.setChecked(ss.isLecScriptEnabled())
+#    ret.toggled.connect(ss.setLecScriptEnabled)
+#    def load(): ret.setEnabled(ss.isLecEnabled() or ss.isLecOnlineEnabled())
+#    load()
+#    ss.lecEnabledChanged.connect(load)
+#    ss.lecOnlineEnabledChanged.connect(load)
+#    return ret
+#
+#  @memoizedproperty
+#  def tahInfoLabel(self):
+#    ret = QtWidgets.QLabel()
+#    #ret.setTextFormat(Qt.RichText)
+#    #ret.setWordWrap(True)
+#    #ret.setOpenExternalLinks(True)
+#    #skqss.class_(ret, 'texture')
+#    #ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+#    #ret.setAlignment(Qt.AlignCenter)
+#    #ret.setReadOnly(True)
+#    ret.setWordWrap(True)
+#    ret.setOpenExternalLinks(True)
+#
+#    email = 'TAHscript@outlook.com'
+#    ret.setText(my.tr(
+#"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
+#You can report the bugs to <a href="mailto:{0}">{0}</a>."""
+#).format(email))
+#    return ret
 
   # Machine translator
 
@@ -2837,31 +2837,48 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     grid.addWidget(self.bingButton, r, 1)
     r += 1
     grid.addWidget(self.bingRubyButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.bingScriptButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
     grid.addWidget(self.googleButton, r, 1)
     r += 1
     grid.addWidget(self.googleRubyButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.googleScriptButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translation.infoseek.ne.jp"), r, 0)
     grid.addWidget(self.infoseekButton, r, 1)
     r += 1
     grid.addWidget(self.infoseekRubyButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.infoseekScriptButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.lec.com/translate-demos.asp"), r, 0)
     grid.addWidget(self.lecOnlineButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.lecOnlineScriptButton, r, 1)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.excite.co.jp/world"), r, 0)
     grid.addWidget(self.exciteButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.exciteScriptButton, r, 1)
 
     if 'ru' not in blans:
       r += 1
       grid.addWidget(self._createBrowseButton("http://www.translate.ru"), r, 0)
       grid.addWidget(self.transruButton, r, 1)
+      r += 1
+      grid.addWidget(self.transruScriptButton, r, 1)
 
     # Offline
     r += 1
@@ -2889,11 +2906,15 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       r += 1
       grid.addWidget(self.atlasBrowseButton, r, 0)
       grid.addWidget(self.atlasButton, r, 1)
+      r += 1
+      grid.addWidget(self.atlasScriptButton, r, 1)
 
     if 'en' not in blans or 'ru' not in blans:
       r += 1
       grid.addWidget(self.lecBrowseButton, r, 0)
       grid.addWidget(self.lecButton, r, 1)
+      r += 1
+      grid.addWidget(self.lecScriptButton, r, 1)
 
     if 'vi' not in blans: #and 'zh' not in blans:
       r += 1
@@ -2936,6 +2957,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def bingScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBingScriptEnabled())
+    ret.toggled.connect(ss.setBingScriptEnabled)
+    ret.setEnabled(ss.isBingEnabled())
+    ss.bingEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def googleButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
     ret.setChecked(settings.global_().isGoogleEnabled())
@@ -2948,6 +2980,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     ss = settings.global_()
     ret.setChecked(ss.isGoogleRubyEnabled())
     ret.toggled.connect(ss.setGoogleRubyEnabled)
+    ret.setEnabled(ss.isGoogleEnabled())
+    ss.googleEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def googleScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isGoogleScriptEnabled())
+    ret.toggled.connect(ss.setGoogleScriptEnabled)
     ret.setEnabled(ss.isGoogleEnabled())
     ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
@@ -2978,6 +3021,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def infoseekScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isInfoseekScriptEnabled())
+    ret.toggled.connect(ss.setInfoseekScriptEnabled)
+    ret.setEnabled(ss.isInfoseekEnabled())
+    ss.infoseekEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def exciteButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Excite.co.jp multilingual translation service"),
@@ -2995,6 +3049,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def exciteScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isExciteScriptEnabled())
+    ret.toggled.connect(ss.setExciteScriptEnabled)
+    ret.setEnabled(ss.isExciteEnabled())
+    ss.exciteEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def lecOnlineButton(self):
     ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
         my.tr("LEC.com multilingual translation service"),
@@ -3006,6 +3071,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     )))))
     ret.setChecked(settings.global_().isLecOnlineEnabled())
     ret.toggled.connect(settings.global_().setLecOnlineEnabled)
+    return ret
+
+  @memoizedproperty
+  def lecOnlineScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isLecOnlineScriptEnabled())
+    ret.toggled.connect(ss.setLecOnlineScriptEnabled)
+    ret.setEnabled(ss.isLecOnlineEnabled())
+    ss.lecOnlineEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3063,6 +3139,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     )))))
     ret.setChecked(settings.global_().isTransruEnabled())
     ret.toggled.connect(settings.global_().setTransruEnabled)
+    return ret
+
+  @memoizedproperty
+  def transruScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTransruScriptEnabled())
+    ret.toggled.connect(ss.setTransruScriptEnabled)
+    ret.setEnabled(ss.isTransruEnabled())
+    ss.transruEnabledChanged.connect(ret.setEnabled)
     return ret
 
   #@memoizedproperty
@@ -3156,6 +3243,18 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return self._createBrowseButton(libman.atlas().location)
 
   @memoizedproperty
+  def atlasScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
+        my.tr("Enable Japanese-English translation script"),
+        tr_("recommended")))
+    ss = settings.global_()
+    ret.setChecked(ss.isAtlasScriptEnabled())
+    ret.toggled.connect(ss.setAtlasScriptEnabled)
+    ret.setEnabled(ss.isAtlasEnabled())
+    ss.atlasEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def lecButton(self):
     ret = QtWidgets.QCheckBox(my.tr("LEC English/Russian translator"))
     ret.setChecked(settings.global_().isLecEnabled())
@@ -3164,6 +3263,18 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
   @memoizedproperty
   def lecBrowseButton(self):
     return self._createBrowseButton(libman.lec().location)
+
+  @memoizedproperty
+  def lecScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
+        my.tr("Enable Japanese-English translation script"),
+        tr_("recommended")))
+    ss = settings.global_()
+    ret.setChecked(ss.isLecScriptEnabled())
+    ret.toggled.connect(ss.setLecScriptEnabled)
+    ret.setEnabled(ss.isLecEnabled())
+    ss.lecEnabledChanged.connect(ret.setEnabled)
+    return ret
 
   #def selectedTranslator(self):
   #  return ('atlas' if self.atlasButton.isChecked() else
