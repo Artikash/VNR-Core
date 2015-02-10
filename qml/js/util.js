@@ -195,7 +195,17 @@ var TRANSLATOR_NAME = {
   //, lou: "ルー語"
   , hanviet: "Hán Việt"
 };
-function translatorName(tr) { return TRANSLATOR_NAME[tr]; }
+function translatorName(tr) {
+  var ret = TRANSLATOR_NAME[tr];
+  if (!ret && ~tr.indexOf(',')) {
+    var s = tr.split(','),
+        t = [];
+    for (var i in s)
+      t.push(TRANSLATOR_NAME[s[i]]);
+    ret = t.join(',');
+  }
+  return ret; //|| '';
+}
 
 // - Type constants -
 
