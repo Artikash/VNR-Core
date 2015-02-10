@@ -579,9 +579,10 @@ class TranslatorManager(QObject):
     if not text:
       return ''
     d = self.__d
+    to = d.language
     kw = {
       'fr': fr,
-      'to': d.language,
+      'to': to,
       'async': async,
     }
     #text = d.normalizeText(text)
