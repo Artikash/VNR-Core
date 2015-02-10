@@ -30,16 +30,16 @@ LEC_LANGUAGES = frozenset((
   'ps', # Pashto in Afghanistan
 ))
 
-def lang_test(to, fr='ja', online=True):
+def mt_lang_test(to, fr='ja', online=True):
   """
   @param  to  str
   @param* fr  str
   @param* online  bool
   @return  bool
   """
-  # Offline
-  if not online:
+  if online:
+    return fr[:2] in LEC_LANGUAGES and to[:2] in LEC_LANGUAGES
+  else: # Offline
     return fr == 'ja' and to in ('en', 'ru')
-  return fr[:2] in LEC_LANGUAGES and to[:2] in LEC_LANGUAGES
 
 # EOF

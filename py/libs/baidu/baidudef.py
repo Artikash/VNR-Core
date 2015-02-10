@@ -349,16 +349,12 @@ def mt_lang_test(to, fr='zh'):
   @param* fr  str  language
   return bool
   """
-  to = to[:2]
-  fr = fr[:2]
-
-  if to not in BD_LANGUAGES or fr not in BD_LANGUAGES:
-    return False
-
-  if fr == 'zh' and to in ('yue', 'wyw') or to == 'zh' and fr in ('yue', 'wyw'):
-    return False
-
-  return True
+  return all((
+    to in BD_LANGUAGES,
+    fr in BD_LANGUAGES,
+    to not in ('yue', 'wyw') or fr.startswith('zh'),
+    fr not in ('yue', 'wyw') or to.startswith('zh'),
+  ))
 
 def tts_lang_test(lang):
   """

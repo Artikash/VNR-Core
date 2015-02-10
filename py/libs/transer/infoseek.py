@@ -70,8 +70,8 @@ session = requests # global session
 INFOSEEK_API = ("http://translation.infoseek.ne.jp/clsoap/translate?"
                 "&key=infoseek/main+e3f33620ae053e48cdba30a16b1084b5d69a3a6c")
 
-INFOSEEK_QUERY_LANG = "e"
-INFOSEEK_QUERY_TEXT = "t"
+INFOSEEK_QUERY_LANG = "e" # translation engine for language pair
+INFOSEEK_QUERY_TEXT = "t" # source text to translate
 
 #__repl_unescape = skstr.multireplacer({ # unescape html special chars
 #  r'\u0022': '"',
@@ -95,7 +95,7 @@ def translate(text, to='en', fr='ja', align=None):
     r = session.post(INFOSEEK_API, # both post and get work
       headers=GZIP_HEADERS,
       data={
-        INFOSEEK_QUERY_LANG: infoseekdef.lang2lcode(to, fr),
+        INFOSEEK_QUERY_LANG: infoseekdef.lang2engine(to, fr),
         INFOSEEK_QUERY_TEXT: text,
         #'equiv': align is not None,
         'equiv': 'true' if align is not None else '',

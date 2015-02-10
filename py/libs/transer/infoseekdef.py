@@ -6,7 +6,7 @@
 # zhs-ja => CJ
 # ja-zht => JCT
 # zht-ja => CJT, not CTJ!
-#INFOSEEK_LCODE = {
+#INFOSEEK_ENGINES = {
 #  'en' : 'E',
 #  'ja' : 'J',
 #  'zht': 'CT',
@@ -23,17 +23,7 @@
 #
 #  'ru' : 'E', # Russia is not supported, use English instead
 #}
-#
-#def _lang(to, fr):
-#  """
-#  @param  to  unicode
-#  @param  fr  unicode
-#  @return  unicode
-#  """
-#  return (
-#      INFOSEEK_LCODE[fr] + INFOSEEK_LCODE[to] if fr != 'zht' else
-#      'C%sT' % INFOSEEK_LCODE[to])
-INFOSEEK_LCODE = {
+INFOSEEK_ENGINES = {
   'jade': 'JG',
   'jaen': 'JE',
   'jaes': 'JS',
@@ -139,24 +129,20 @@ INFOSEEK_LCODE = {
   'zhtko': 'CKT',
   'zhtpt': 'CPT',
 }
-def lang2lcode(to, fr):
+def lang2engine(to, fr):
   """
   @param  to  unicode
   @param  fr  unicode
   @return  unicode
   """
-  return INFOSEEK_LCODE.get(fr + to) or 'JE' # from 'ja' to 'en'
+  return INFOSEEK_ENGINES.get(fr + to) or 'JE' # from 'ja' to 'en'
 
-def lang_test(to, fr='ja'):
+def mt_lang_test(to, fr='ja'):
   """
   @param  to  str
   @param* fr  str
   @return  bool
   """
-  if to == 'zh':
-    to = 'zht'
-  if fr == 'zh':
-    fr = 'zht'
-  return (fr + to) in INFOSEEK_LCODE
+  return (fr + to) in INFOSEEK_ENGINES
 
 # EOF
