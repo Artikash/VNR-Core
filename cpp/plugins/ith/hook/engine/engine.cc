@@ -6287,7 +6287,8 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
       break;
     retn += l;
   }
-  if (*pw == 0xc483) {
+  // jichi 2/11/2015: Check baddaddr which might crash the game on Windows XP.
+  if (*pw == 0xc483 && !::IsBadReadPtr((LPCVOID)(pb + 2), 1) && !::IsBadReadPtr((LPCVOID)(*(pb + 2) - 8), 1)) {
     ConsoleOutput("vnreng: WillPlus1 pattern found");
     // jichi 1/18/2015:
     // By studying [honeybee] RE:BIRTHDAY SONG, it seems the scenario text is at fixed address
@@ -6299,7 +6300,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
     //hp->type ^= EXTERN_HOOK;
     char *str = *(char **)(esp_base + hp->off);
     *data = (DWORD)str;
-    *len = strlen(str);
+    *len = ::strlen(str);
     *split = 0; // 8/3/2014 jichi: use return address as split
 
   } else { // jichi 1/19/2015: Try willplus2
