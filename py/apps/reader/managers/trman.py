@@ -690,12 +690,12 @@ class TranslatorManager(QObject):
         'emit': emit,
       }
       it = d.findRetranslator(it, to=to, fr=fr) or it
-      if scriptEnabled:
+      if scriptEnabled != False:
         if it.key == 'retr':
-          kw['scriptEnabled1'] = d.getScriptEnabled(it.first.key)
-          kw['scriptEnabled2'] = d.getScriptEnabled(it.second.key)
+          kw['scriptEnabled1'] = scriptEnabled or d.getScriptEnabled(it.first.key)
+          kw['scriptEnabled2'] = scriptEnabled or d.getScriptEnabled(it.second.key)
         else:
-          kw['scriptEnabled'] = d.getScriptEnabled(it.key)
+          kw['scriptEnabled'] = scriptEnabled or d.getScriptEnabled(it.key)
       if emit or not it.onlineRequired or not it.asyncSupported:
         return it.translate(text, **kw)
       else: # not emit and asyncSupported
@@ -736,12 +736,12 @@ class TranslatorManager(QObject):
             align = []
       kw['align'] = align
 
-      if scriptEnabled:
+      if scriptEnabled != False:
         if it.key == 'retr':
-          kw['scriptEnabled1'] = d.getScriptEnabled(it.first.key)
-          kw['scriptEnabled2'] = d.getScriptEnabled(it.second.key)
+          kw['scriptEnabled1'] = scriptEnabled or d.getScriptEnabled(it.first.key)
+          kw['scriptEnabled2'] = scriptEnabled or d.getScriptEnabled(it.second.key)
         else:
-          kw['scriptEnabled'] = d.getScriptEnabled(it.key)
+          kw['scriptEnabled'] = scriptEnabled or d.getScriptEnabled(it.key)
 
       if it.onlineRequired:
         skevents.runlater(partial(d.translateAndApply,
