@@ -15,6 +15,7 @@ from sakurakit.sktr import tr_, notr_
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
 from msime import msime
+from share.mt import mtinfo
 from mytr import my, mytr_
 from dataman import GUEST
 import audioinfo, config, cacheman, dataman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, trman, ttsman
@@ -2879,6 +2880,8 @@ class _MachineTranslationTab(object):
     r += 1
     grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
     grid.addWidget(self.googleButton, r, 1)
+    r += 1
+    grid.addWidget(self.googleRubyButton, r, 1)
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.googleScriptButton, r, 1)
@@ -3036,18 +3039,30 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QComboBox()
     ret.setToolTip(my.tr("Intermediate language to connect two translators"))
     ret.setEditable(False)
-    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+
+    langs = mtinfo.get_t_langs(key)
+    if langs:
+      langs = [it for it in config.LANGUAGES if it in langs]
+    if not langs:
+      langs = config.LANGUAGES
+
+    ret.addItems(map(i18n.language_name, langs))
     ret.setMaxVisibleItems(ret.count())
     tm = trman.manager()
     lang = tm.retranslatorLanguage(key)
-    try: langIndex = config.LANGUAGES.index(lang)
-    except ValueError: langIndex = 1 # 'en'
-    ret.setCurrentIndex(langIndex)
-    ret.currentIndexChanged.connect(partial(self._saveRetransLanguage, key))
+    try: langIndex = langs.index(lang)
+    except ValueError:
+      if langs[0] == 'ja' and len(langs) > 1:
+        langIndex = 1
+      else:
+        langIndex = 0
+    if langIndex:
+      ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(partial(self._saveRetransLanguage, key, langs))
     return ret
 
-  def _saveRetransLanguage(self, key, index): # str, int ->
-    lang = config.LANGUAGES[index]
+  def _saveRetransLanguage(self, key, langs, index): # str, [str], int ->
+    lang = langs[index]
     tm = trman.manager()
     tm.setRetranslatorLanguage(key, lang)
 

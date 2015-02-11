@@ -231,15 +231,14 @@ class Retranslator(Translator):
     if not self.second:
       return self.first.translateTest(text, to=to, fr=fr,
           mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled1, **kwargs)
-    text, lang, key = self.first.translate(text, to=self.language, fr=fr,
+    lang = self.language
+    if lang == 'zht':
+      lang = 'zhs' # force using Simplified Chinese as intermediate language
+    text, lang, key = self.first.translate(text, to=lang, fr=fr,
         mark=False, align=None, emit=False, scriptEnabled=scriptEnabled1, **kwargs)
     if text:
-      if 'fr' == 'ja':
-        if lang == 'zhs':
-          text = opencc.ja2zhs(text)
-        elif lang == 'zht':
-          text = opencc.ja2zhs(text)
-          lang = 'zhs'
+      if fr == 'ja' and lang == 'zhs':
+        text = opencc.ja2zhs(text)
       text2, lang2, key2 = self.second.translate(text, to=to, fr=lang,
           mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled2, **kwargs)
       if text2:
@@ -1304,6 +1303,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
+  __fix_escape = re.compile(r'(?<=[0-9]) .(?=[0-9])') # replace ' .' between digits with '.'
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
@@ -1319,6 +1319,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async, align=align)
       if repl:
+        repl = self.__fix_escape.sub('.', repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
@@ -1668,9 +1669,11 @@ class BaiduTranslator(OnlineMachineTranslator):
   def __init__(self, session=None, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
 
-    from kingsoft import iciba
+    from kingsoft import iciba, icibadef
     iciba.session = session or requests.Session()
     self.iciba = iciba
+
+    self.ICIBA_LANGUAGES = icibadef.MT_LANGUAGES
 
     from baidu import baidufanyi
     baidufanyi.session = session or requests.Session()
@@ -1682,7 +1685,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param  to  str
     @return baidu.baidufanyi or kingsoft.iciba
     """
-    if fr in ('ja', 'en') and to.startswith('zh'):
+    if fr in self.ICIBA_LANGUAGES or to in self.ICIBA_LANGUAGES:
       return self.iciba
     else:
       return self.baidufanyi

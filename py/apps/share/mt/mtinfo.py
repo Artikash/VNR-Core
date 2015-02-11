@@ -48,15 +48,37 @@ def test_lang(key, to=None, fr=None):
   @param  key  str
   @param* to  str  language
   @param* fr  str  language
-  @return bool
+  @return  bool
   """
   if key in ('google', 'bing'):
     return True
   f = get_mod_def(key)
   if f:
     online = test_online(key)
-    return f.mt_lang_test(to=to, fr=fr, online=online)
+    return f.mt_test_lang(to=to, fr=fr, online=online)
   return False
+
+def get_s_langs(key):
+  """
+  @param  key  str
+  @return  [str] or None
+  """
+  if key not in ('google', 'bing'):
+    f = get_mod_def(key)
+    if f:
+      online = test_online(key)
+      return f.mt_s_langs(online=online)
+
+def get_t_langs(key):
+  """
+  @param  key  str
+  @return  [str] or None
+  """
+  if key not in ('google', 'bing'):
+    f = get_mod_def(key)
+    if f:
+      online = test_online(key)
+      return f.mt_t_langs(online=online)
 
 def get_mod_def(key):
   """
@@ -77,7 +99,7 @@ def get_mod_def(key):
     return jbdef
   if key == 'dreye':
     from dreye import dreyedef
-    return dreye
+    return dreyedef
   if key in ('fastait', 'iciba'):
     from kingsoft import icibadef
     return icibadef

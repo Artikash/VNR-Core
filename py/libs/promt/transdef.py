@@ -15,7 +15,12 @@ MT_LANGUAGES = { # {str fr:[str to]}
   'fi': ('ru',), # Finn
 }
 
-def mt_lang_test(to=None, fr=None, online=True):
+MT_SOURCE_LANGUAGES = MT_TARGET_LANGUAGES = frozenset(MT_LANGUAGES.keys())
+
+def mt_s_langs(online=True): return MT_SOURCE_LANGUAGES
+def mt_t_langs(online=True): return MT_TARGET_LANGUAGES
+
+def mt_test_lang(to=None, fr=None, online=True):
   """
   @param* to  str
   @param* fr  str
@@ -26,6 +31,6 @@ def mt_lang_test(to=None, fr=None, online=True):
     try: return to in MT_LANGUAGES[fr]
     except: return False
   else:
-    return fr and fr in MT_LANGUAGES or to and to in MT_LANGUAGES
+    return fr in MT_LANGUAGES or to in MT_LANGUAGES
 
 # EOF

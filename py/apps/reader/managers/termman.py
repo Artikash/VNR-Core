@@ -434,7 +434,7 @@ class TermWriter:
     zhtypes = 'name', 'yomi'
     fr2 = fr[:2]
     fr_is_latin = config.is_latin_language(fr)
-    patterns = set() # skip duplicate names
+    #items = set() # skip duplicate names
     types = frozenset(types)
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
@@ -449,10 +449,9 @@ class TermWriter:
               or fr2 == 'zh' and td.type in zhtypes
             )
           )
-        ):
-        if td.pattern not in patterns:
-          patterns.add(td.pattern)
-          yield td
+        ): #and (td.type, td.pattern) not in items:
+        #items.add((td.type, td.pattern))
+        yield td
 
   def queryTermMacros(self, to, fr):
     """
