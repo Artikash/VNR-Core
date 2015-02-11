@@ -135,7 +135,7 @@ class _TtsManager(object):
         return
 
     if termEnabled: #and (not language or language == 'ja'):
-      text = termman.manager().applySpeechTerms(text, language)
+      text = termman.manager().applyTtsTerms(text, language)
     # Even if text is empty, trigger stop tts
     #if not text:
     #  return

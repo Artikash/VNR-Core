@@ -21,7 +21,8 @@ from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
 from convutil import kana2name, zhs2zht
-import config, cabochaman, dataman, defs, i18n, rc
+from mytr import my
+import config, cabochaman, dataman, defs, growl, i18n, rc
 
 if skos.WIN:
   from pytrscript import TranslationScriptManager
@@ -569,6 +570,7 @@ class _TermManager:
     self.saveMutex = QMutex()
 
     self.scripts = {} # {(str lang, str fr, str to):TranslationScriptManager}
+    self.scriptLocks = {} #  {(str lang, str fr, str to):bool}
     self.scriptTimes = {} # [(str lang, str fr, str to):float time]
 
     #self.rbmt = {} # {str language:rbmt.api.Translator}
@@ -588,13 +590,13 @@ class _TermManager:
     else:
       self.saveTimer.start()
 
-  def _createScriptManager(self, type, to, fr): # str, str, str -> TranslationScriptManager
-    key = type, to, fr
-    ret = self.scripts.get(key)
-    if not ret:
-      ret = self.scripts[key] = TranslationScriptManager()
-      #ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
-    return ret
+  #def _getScriptManager(self, type, to, fr): # str, str, str -> TranslationScriptManager
+  #  key = type, to, fr
+  #  ret = self.scripts.get(key)
+  #  if not ret:
+  #    ret = self.scripts[key] = TranslationScriptManager()
+  #    #ret.setLinkEnabled(self.marked and type in ('output', 'trans_output'))
+  #  return ret
 
   #@classmethod
   #def needsEscape(cls):
@@ -722,17 +724,28 @@ class _TermManager:
         if not os.path.exists(dir):
           skfileio.makedirs(dir)
 
-        man = self._createScriptManager(type, to, fr)
-        if not man.isEmpty():
+        scriptKey = type, to, fr
+        if self.scriptLocks.get(scriptKey):
+          raise Exception("cancel saving locked terms")
+        self.scriptLocks[scriptKey] = True
+
+        man = self.scripts.get(scriptKey)
+        if not man:
+          man = self.scripts[scriptKey] = TranslationScriptManager()
+        elif not man.isEmpty():
           man.clear()
+        try:
+          if w.saveTerms(path, type, to, fr, macros, titles) and man.loadFile(path):
+            dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
+        except:
+          self.scriptLocks[scriptKey] = False
+          raise
 
-        if w.saveTerms(path, type, to, fr, macros, titles) and man.loadFile(path):
-          dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
-
+        self.scriptLocks[scriptKey] = False
         times[scriptKey] = createTime
     dprint("leave")
 
-  def applyTerms(self, text, type, to, fr, host='', mark=False):
+  def applyTerms(self, text, type, to, fr, host='', mark=False, ignoreIfNotReady=False):
     """
     @param  text  unicode
     @param  type  str
@@ -740,6 +753,7 @@ class _TermManager:
     @param* fr  str  language
     @param* key  str
     @param* mark  bool or None
+    @param* ignoreIfNotReady bool
     """
     if mark is None:
       mark = self.marked
@@ -748,6 +762,17 @@ class _TermManager:
     if man is None:
       self.scriptTimes[key] = 0
       self.rebuildCacheLater()
+      if ignoreIfNotReady:
+        dwarn("ignore text while processing shared dictionary")
+        growl.notify(my.tr("Processing Shared Dictionary") + "...")
+        return ''
+    if self.scriptLocks.get(key):
+      dwarn("skip applying locked script")
+      if ignoreIfNotReady:
+        dwarn("ignore text while processing shared dictionary")
+        growl.notify(my.tr("Processing Shared Dictionary") + "...")
+        return ''
+      return text
     category = _host_category(host)
     return man.translate(text, category, mark) if man and not man.isEmpty() else text
 
@@ -879,18 +904,19 @@ class TermManager(QObject):
   #  """
   #  return self.__d.iterTerms(terms, language)
 
-  def applyOriginTerms(self, text, to=None, fr=None):
+  def applyGameTerms(self, text, to=None, fr=None, ignoreIfNotReady=False):
     """
     @param  text  unicode
     @param* to  str
     @param* fr  str
+    @param* ignoreIfNotReady  bool
     @return  unicode
     """
     d = self.__d
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja') if d.enabled else text
+    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja', ignoreIfNotReady=ignoreIfNotReady) if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
@@ -901,7 +927,7 @@ class TermManager(QObject):
   #  """
   #  return self.__d.applyTerms(dataman.manager().iterNameTerms(), text, language)
 
-  def applySpeechTerms(self, text, language=None):
+  def applyTtsTerms(self, text, language=None):
     """
     @param  text  unicode
     @param* language  str
