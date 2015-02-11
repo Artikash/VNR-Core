@@ -419,6 +419,10 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+
+    if ss_version <= 1423633839: # reset retranslator
+      ss.setValue('Retranslator', '')
+
     if ss_version <= 1422396934:
       ss.setValue('RubyText', True)
 

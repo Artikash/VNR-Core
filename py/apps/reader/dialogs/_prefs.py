@@ -2861,9 +2861,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.naverButton, r, 1)
       r += 1
       grid.addWidget(self.naverRubyButton, r, 1)
-      r += 1
-      row = create_retrans_row('naver', self.naverButton)
-      grid.addLayout(row, r, 1, 1, 2)
+      #r += 1
+      #row = create_retrans_row('naver', self.naverButton)
+      #grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.bing.com/translator"), r, 0)
@@ -2873,9 +2873,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.bingScriptButton, r, 1)
-    r += 1
-    row = create_retrans_row('bing', self.bingButton)
-    grid.addLayout(row, r, 1, 1, 2)
+    #r += 1
+    #row = create_retrans_row('bing', self.bingButton)
+    #grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
@@ -2885,9 +2885,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.googleScriptButton, r, 1)
-    r += 1
-    row = create_retrans_row('google', self.googleButton)
-    grid.addLayout(row, r, 1, 1, 2)
+    #r += 1
+    #row = create_retrans_row('google', self.googleButton)
+    #grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translation.infoseek.ne.jp"), r, 0)
@@ -2927,9 +2927,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.transruButton, r, 1)
       r += 1
       grid.addWidget(self.transruScriptButton, r, 1)
-      r += 1
-      row = create_retrans_row('transru', self.transruButton)
-      grid.addLayout(row, r, 1, 1, 2)
+      #r += 1
+      #row = create_retrans_row('transru', self.transruButton)
+      #grid.addLayout(row, r, 1, 1, 2)
 
     # Offline
     r += 1
@@ -2961,9 +2961,9 @@ class _MachineTranslationTab(object):
       r += 1
       grid.addWidget(self.ezTransBrowseButton, r, 0)
       grid.addWidget(self.ezTransButton, r, 1)
-      r += 1
-      row = create_retrans_row('eztrans', self.ezTransButton)
-      grid.addLayout(row, r, 1, 1, 2)
+      #r += 1
+      #row = create_retrans_row('eztrans', self.ezTransButton)
+      #grid.addLayout(row, r, 1, 1, 2)
 
     if 'en' not in blans or 'ru' not in blans:
       r += 1
@@ -2991,9 +2991,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.hanVietButton, r, 1)
       r += 1
       grid.addWidget(self.hanVietRubyButton, r, 1)
-      r += 1
-      row = create_retrans_row('hanviet', self.hanVietButton)
-      grid.addLayout(row, r, 1, 1, 2)
+      #r += 1
+      #row = create_retrans_row('hanviet', self.hanVietButton)
+      #grid.addLayout(row, r, 1, 1, 2)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     ret.setLayout(grid)
