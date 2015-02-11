@@ -29,7 +29,6 @@ def pyunicode(s, enc):
   """
   if not s:
     return u""
-  from windefs import winlocale
   enc = winlocale.encoding2py(enc) or enc
   return s.decode(enc, errors='ignore')
 
@@ -41,7 +40,7 @@ def qunicode(s, enc):
   @param  s  str or bytearray or None
   @return  unicode or u""
   """
-  enc = winlocale.encoding2qt(enc)
+  enc = winlocale.encoding2qt(enc) or enc
   if isinstance(enc, unicode):
     enc = enc.encode('utf8', errors='ignore')
   try: d = _Q_D[enc]

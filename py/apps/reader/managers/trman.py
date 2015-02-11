@@ -363,9 +363,9 @@ class _TranslatorManager(object):
     lang = conf.get('lang') or 'en'
     lang2 = lang[:2]
     if lang2 == fr2:
-      return eng
-    if lang2 == to2:
       return self.getTranslator(key2)
+    #if lang2 == to2: # disable checking to language
+    #  return eng
     #if not mtinfo.test_lang(key, to=lang, fr=fr):
     if not mtinfo.test_lang(key, to=lang): # fr not used
       return
