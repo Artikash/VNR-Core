@@ -19,7 +19,8 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, evalutil, i18n, rc, settings, textutil, termman, trman, trtraits
+from share.mt import mtinfo
+import config, dataman, evalutil, i18n, rc, settings, textutil, termman, trman
 
 class MTTester(QtWidgets.QDialog):
 
@@ -259,7 +260,7 @@ class _MTTester(object):
   #def _currentToLanguage(self):
   #  return config.LANGUAGES[self.toLanguageEdit.currentIndex()]
   def _currentTranslator(self):
-    return trtraits.TRAITS[self.translatorEdit.currentIndex()]['key']
+    return dataman.Term.HOSTS[self.translatorEdit.currentIndex()]
 
   def _isOriginTermsEnabled(self): return self.originTextButton.isChecked()
   def _isTranslationScriptEnabled(self): return self.normalizedTextButton.isChecked()
@@ -373,14 +374,14 @@ class _MTTester(object):
   def translatorEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
-    ret.addItems([it['name'] for it in trtraits.TRAITS])
+    ret.addItems(dataman.Term.TR_HOSTS)
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._onTranslatorChanged)
     return ret
 
   def _onTranslatorChanged(self):
     key = self._currentTranslator()
-    tah = trtraits.gettrait(key=key)['script']
+    tah = mtinfo.test_script(key)
     self.normalizedTextButton.setEnabled(tah)
     self.normalizedTextLabel.setEnabled(tah)
     self.normalizedTextEdit.setEnabled(tah)

@@ -4,6 +4,7 @@
 
 __all__ = 'SettingsProxy',
 
+import json
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QSettings, QTimer, QSize
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dwarn
@@ -15,6 +16,14 @@ import defs, config
 # win32con
 VK_SHIFT = 0x10
 
+def parse_json(v): # str -> object or None
+  if v:
+    try: return json.loads(v)
+    except: pass
+
+def unparse_json(v): # object -> str
+  return json.dumps(v, ensure_ascii=False)
+
 def to_bool(value):
   return value == True or value  == 'true'
 
@@ -24,7 +33,7 @@ def to_bool(value):
 
 def to_float(value, default=0.0):
   try: return float(value)
-  except Exception: return default
+  except: return default
 
 def to_size(value):
   """
@@ -32,7 +41,7 @@ def to_size(value):
   @return  (int w, int h)
   """
   try: return value.width(), value.height()
-  except Exception: return 0,0
+  except: return 0,0
 
 def to_list(value):
   """
@@ -40,7 +49,7 @@ def to_list(value):
   @return  set
   """
   try: return value if isinstance(value, list) else list(value) if value is not None else list()
-  except Exception: return list()
+  except: return list()
 
 def to_set(value):
   """
@@ -48,7 +57,7 @@ def to_set(value):
   @return  set
   """
   try: return value if isinstance(value, set) else set(value) if value is not None else set()
-  except Exception: return set()
+  except: return set()
 
 def to_dict(value):
   """
@@ -227,6 +236,22 @@ class Settings(QSettings):
       self.blockedLanguagesChanged.emit(value)
 
   ## Romanize ##
+
+  rubyTypeChanged = Signal(str)
+  def rubyType(self):
+    return self.value('FuriganaType', 'hiragana')
+  def setRubyType(self, value):
+    if value != self.rubyType():
+      self.setValue('FuriganaType', value)
+      self.rubyTypeChanged.emit(value)
+
+  rubyJaInvertedChanged = Signal(bool)
+  def isRubyJaInverted(self):
+    return to_bool(self.value('InvertRubyJa'))
+  def setRubyJaInverted(self, t):
+    if t != self.isRubyJaInverted():
+      self.setValue('InvertRubyJa', t)
+      self.rubyJaInvertedChanged.emit(t)
 
   rubyLanguagesChanged = Signal(str)
   rubyTextEnabledChanged = Signal(bool)
@@ -1162,21 +1187,8 @@ class Settings(QSettings):
   #    self.setValue('MsimeParserEnabled', value)
   #    self.msimeParserEnabledChanged.emit(value)
 
-  rubyTypeChanged = Signal(str)
-  def rubyType(self):
-    return self.value('FuriganaType', 'hiragana')
-  def setRubyType(self, value):
-    if value != self.rubyType():
-      self.setValue('FuriganaType', value)
-      self.rubyTypeChanged.emit(value)
-
-  rubyJaInvertedChanged = Signal(bool)
-  def isRubyJaInverted(self):
-    return to_bool(self.value('InvertRubyJa'))
-  def setRubyJaInverted(self, t):
-    if t != self.isRubyJaInverted():
-      self.setValue('InvertRubyJa', t)
-      self.rubyJaInvertedChanged.emit(t)
+  def retranslatorSettings(self): return parse_json(self.value('Retranslator'))
+  def setRetranslatorSettings(self, v): return self.setValue('Retranslator', unparse_json(v))
 
   def jbeijingLocation(self):
     return to_unicode(self.value('JBeijingLocation'))

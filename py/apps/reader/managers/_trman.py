@@ -91,6 +91,7 @@ class Translator(object):
   key = 'tr' # str
   asyncSupported = True # bool  whether threading is supported
   alignSupported = False # bool  whether support translation alignment
+  onlineRequired = False # bool  whether translation requires Internet access
 
   def clearCache(self): pass
 
@@ -116,7 +117,7 @@ class Translator(object):
     @param* align  list or None
     @param* mark  bool or None
     @param* scriptEnabled  bool
-    @return  (unicode sub or None, str lang or None, self.name or None)
+    @return  (unicode sub or None, str lang or None, str self.key or None)
     """
     return None, to, self.key
 
@@ -194,25 +195,57 @@ class Retranslator(Translator):
     self.second = second # Translator
     self.language = language # str
 
-  def translateTest(self, text, to='en', fr='ja', mark=None, align=None, emit=False, **kwargs):
+  @property
+  def onlineRequired(self):
+    """@reimp"""
+    for it in (self.first, self.second):
+      if it and it.onlineRequired:
+        return True
+    return False
+
+  @property
+  def asyncSupported(self):
+    """@reimp"""
+    for it in (self.first, self.second):
+      if it and not it.asyncSupported:
+        return False
+    return True
+
+  @property
+  def alignSupported(self):
+    """@reimp"""
+    return bool(self.second) and self.second.alignSupported
+
+  def translateTest(self, text, to='en', fr='ja', **kwargs):
     """@reimp"""
     if self.first:
       text = self.first.translateTest(text, to=self.language, fr=fr, **kwargs)
       if text and self.second:
-        return self.second.translateTest(text, to=to, fr=self.language,
-            mark=mark, align=align, emit=emit, **kwargs)
+        return self.second.translateTest(text, to=to, fr=self.language, **kwargs)
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, align=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled1=False, scriptEnabled2=False, **kwargs):
     """@reimp"""
-    if self.first:
-      text, lang, key1 = self.first.translateTest(text, to=self.language, fr=fr, **kwargs)
-      if text and self.second:
-        text, to, key1 = self.second.translateTest(text, to=to, fr=lang,
-            mark=mark, align=align, emit=emit, **kwargs)
-        key = ','.join((key1, key2))
-        return text, to, key
-    return None, self.key, to
+    if not self.first:
+      return None, None, None
+    if not self.second:
+      return self.first.translateTest(text, to=to, fr=fr,
+          mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled1, **kwargs)
+    lang = self.language
+    if lang == 'zht':
+      lang = 'zhs' # force using Simplified Chinese as intermediate language
+    text, lang, key = self.first.translate(text, to=lang, fr=fr,
+        mark=False, align=None, emit=False, scriptEnabled=scriptEnabled1, **kwargs)
+    if text:
+      if fr == 'ja' and lang == 'zhs':
+        text = opencc.ja2zhs(text)
+      text2, lang2, key2 = self.second.translate(text, to=to, fr=lang,
+          mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled2, **kwargs)
+      if text2:
+        text = text2
+        lang = lang2
+        key += ',' + key2
+    return text, lang, key
 
 ## Text processing
 
@@ -528,11 +561,13 @@ class MachineTranslator(Translator):
     return text
 
 class OfflineMachineTranslator(MachineTranslator):
+  onlineRequired = False # overrie
   persistentCaching = False # bool  disable sqlite
   def __init__(self, *args, **kwargs):
     super(OfflineMachineTranslator, self).__init__(*args, **kwargs)
 
 class OnlineMachineTranslator(MachineTranslator):
+  onlineRequired = True # override
   #persistentCaching = True # bool  enable sqlite
   persistentCaching = False # bool  temporarily disabled, or it will break the syntax translator
   def __init__(self, *args, **kwargs):
@@ -1268,6 +1303,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
+  __fix_escape = re.compile(r'(?<=[0-9]) .(?=[0-9])') # replace ' .' between digits with '.'
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
@@ -1283,6 +1319,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async, align=align)
       if repl:
+        repl = self.__fix_escape.sub('.', repl)
         repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit)
         self.cache.update(text, repl)
     return repl, to, self.key
@@ -1632,9 +1669,11 @@ class BaiduTranslator(OnlineMachineTranslator):
   def __init__(self, session=None, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
 
-    from kingsoft import iciba
+    from kingsoft import iciba, icibadef
     iciba.session = session or requests.Session()
     self.iciba = iciba
+
+    self.ICIBA_LANGUAGES = icibadef.MT_LANGUAGES
 
     from baidu import baidufanyi
     baidufanyi.session = session or requests.Session()
@@ -1646,7 +1685,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param  to  str
     @return baidu.baidufanyi or kingsoft.iciba
     """
-    if fr in ('ja', 'en') and to.startswith('zh'):
+    if fr in self.ICIBA_LANGUAGES or to in self.ICIBA_LANGUAGES:
       return self.iciba
     else:
       return self.baidufanyi

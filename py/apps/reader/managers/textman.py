@@ -519,7 +519,7 @@ class _TextManager(object):
             return cd.text
 
     rawData = None
-    if text:
+    if text and self.encoding:
       try: rawData = textutil.from_unicode(text, self.encoding, errors=None)
       except UnicodeEncodeError:
         dwarn("cannot extract raw data from text")
@@ -552,7 +552,7 @@ class _TextManager(object):
     @param* text  unicode
     @param* agent  bool
     """
-    if not rawData and text:
+    if not rawData and text and self.encoding:
       rawData = textutil.from_unicode(text, self.encoding)
     if not rawData:
       growl.warn("%s (%s):<br/>%s" % (

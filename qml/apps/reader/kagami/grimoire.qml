@@ -258,6 +258,33 @@ Item { id: root_
     )
   }
 
+  function translatorColor(host) { // string -> color
+    switch(host) {
+    case 'hanviet': return root_.hanVietColor
+    case 'jbeijing': return root_.jbeijingColor
+    case 'fastait': return root_.fastaitColor
+    case 'dreye': return root_.dreyeColor
+    case 'eztrans': return root_.ezTransColor
+    case 'atlas': return root_.atlasColor
+    case 'lec': return root_.lecColor
+    case 'lecol': return root_.lecOnlineColor
+    case 'transru': return root_.transruColor
+    case 'infoseek': return root_.infoseekColor
+    case 'excite': return root_.exciteColor
+    case 'bing': return root_.bingColor
+    case 'google': return root_.googleColor
+    case 'naver': return root_.naverColor
+    case 'baidu': return root_.baiduColor
+    default:
+      if (host) {
+        var i = host.indexOf(',')
+        if (i !== -1)
+          return translatorColor(host.substr(0, i))
+      }
+      return root_.translationColor
+    }
+  }
+
   //property int _FADE_DURATION: 400
 
   // 10/15/2014: whether listmodel is locked. otherwise, VNR might crash when RBMT is turned on
@@ -1037,26 +1064,7 @@ Item { id: root_
         case 'name': return root_.textColor
         case 'comment': return (model.comment && model.comment.color) || root_.commentColor
         case 'sub': return (model.sub && model.sub.color) || root_.commentColor
-        case 'tr':
-        case 'name.tr':
-          switch(model.provider) {
-          case 'hanviet': return root_.hanVietColor
-          case 'jbeijing': return root_.jbeijingColor
-          case 'fastait': return root_.fastaitColor
-          case 'dreye': return root_.dreyeColor
-          case 'eztrans': return root_.ezTransColor
-          case 'atlas': return root_.atlasColor
-          case 'lec': return root_.lecColor
-          case 'lecol': return root_.lecOnlineColor
-          case 'transru': return root_.transruColor
-          case 'infoseek': return root_.infoseekColor
-          case 'excite': return root_.exciteColor
-          case 'bing': return root_.bingColor
-          case 'google': return root_.googleColor
-          case 'naver': return root_.naverColor
-          case 'baidu': return root_.baiduColor
-          default: return root_.translationColor
-          }
+        case 'tr': case 'name.tr': return root_.translatorColor(model.provider)
         default: return  'transparent'
         }
       }

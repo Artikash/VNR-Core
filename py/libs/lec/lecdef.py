@@ -7,7 +7,7 @@ DLL_BUFFER_SIZE = 0x2000 # output buffer size
 LEC_LANGUAGES = frozenset((
   'ja',
   'en',
-  'zh',
+  'zhs', 'zht',
   'ko',
   'id',
   'ar',
@@ -30,16 +30,29 @@ LEC_LANGUAGES = frozenset((
   'ps', # Pashto in Afghanistan
 ))
 
-def mt_lang_test(to, fr='ja', online=True):
+POWERTRANS_LANGUAGES = ( # [(str fr, str to)]
+  ('ja', 'en'),
+  ('en', 'ru'),
+  ('ja', 'ru'),
+)
+POWERTRANS_SOURCE_LANGUAGES = 'en', 'ja'
+POWERTRANS_TARGET_LANGUAGES = 'en', 'ru'
+
+def mt_s_langs(online=True): return LEC_LANGUAGES if online else POWERTRANS_SOURCE_LANGUAGES
+def mt_t_langs(online=True): return LEC_LANGUAGES if online else POWERTRANS_TARGET_LANGUAGES
+
+def mt_test_lang(to=None, fr=None, online=True):
   """
-  @param  to  str
+  @param* to  str
   @param* fr  str
   @param* online  bool
   @return  bool
   """
   if online:
-    return fr[:2] in LEC_LANGUAGES and to[:2] in LEC_LANGUAGES
+    return (not fr or fr in LEC_LANGUAGES) and (not to or to in LEC_LANGUAGES)
   else: # Offline
-    return fr == 'ja' and to in ('en', 'ru')
+    return ((fr, to) in POWERTRANS_LANGUAGES if fr and to else
+        fr in POWERTRANS_SOURCE_LANGUAGES or
+        to in POWERTRANS_TARGET_LANGUAGES)
 
 # EOF

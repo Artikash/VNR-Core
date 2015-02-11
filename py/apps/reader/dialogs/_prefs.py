@@ -12,12 +12,13 @@ from sakurakit import skevents, skpaths, skqss, skstr, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_, notr_
-from msime import msime
-from dataman import GUEST
-from mytr import my, mytr_
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
-import audioinfo, config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
+from msime import msime
+from share.mt import mtinfo
+from mytr import my, mytr_
+from dataman import GUEST
+import audioinfo, config, cacheman, dataman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, trman, ttsman
 
 def parent_window(): # replace self.q to make sure windows is always visible
   import windows
@@ -373,7 +374,6 @@ class _UserTab(object):
     """
     @return  bool
     """
-    import dataman
     if dataman.manager().user().isGuest():
       growl.warn(my.tr("Modification to guest account is not allowed"))
       return False
@@ -2112,7 +2112,6 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
   def languageGroup(self):
     import settings
     ss = settings.global_()
-
     layout = QtWidgets.QHBoxLayout()
     layout.addWidget(self.languageEdit)
     layout.addStretch()
@@ -2530,30 +2529,32 @@ class _TextTab(object):
 
     # 8 Total
     blans = settings.global_().blockedLanguages()
-    conf = ( # Name, name, tr, lang
-      ('Bing', None,  "Bing.com", None),
-      ('Google', None,  "Google.com", None),
-      ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
-      ('Infoseek', None,  "Infoseek.co.jp", None),
-      ('Excite', None,  "Excite.co.jp", None),
-      ('Transru', None,  "Translate.Ru", None),
-      ('Naver', None,  "Naver.com", 'ko'),
-      ('Baidu', None,  mytr_("Baidu") + ".com", 'zh'),
-      #('Youdao', None,  mytr_("Youdao") + '.com', 'zh'),
-      ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
-      ('Fastait', None,  mytr_("FastAIT"), 'zh'),
-      ('Dreye', None,  mytr_("Dr.eye"), 'zh'),
-      ('EzTrans', 'ezTrans',  mytr_("ezTrans"), 'ko'),
-      ('HanViet', 'hanViet',  u"Hán Việt", 'vi'),
-      ('Atlas', None,  "ATLAS", 'en'),
-      ('Lec', None,  "LEC", 'en'),
+    conf = ( # key, Name, name, lang
+      ('bing',      None, None,  None),
+      ('google',    None, None,  None),
+      ('lec',       'LecOnline', 'lecOnline',  None),
+      ('infoseek',  None, None,  None),
+      ('excite',    None, None,  None),
+      ('transru',   None, None,  None),
+      ('naver',     None, None,  'ko'),
+      ('baidu',     None, None,  'zh'),
+      ('jbeijing',  'JBeijing', None, 'zh'),
+      ('fastait',   None, None, 'zh'),
+      ('dreye',     None, None,  'zh'),
+      ('eztrans',  'EzTrans',  'ezTrans', 'ko'),
+      ('hanviet',  'HanViet',  'hanViet', 'vi'),
+      ('lec',       None, None, 'en'),
+      ('atlas',     None, None, 'en'),
     )
     i = 0
-    for Name, name, tr, lang in conf:
+    for key, Name, name, lang in conf:
       if not lang in blans:
+        if not Name:
+          Name = key.capitalize()
         if not name:
           name = Name.lower()
         NAME = Name.upper()
+        tr = i18n.translator_name(key)
         t = u"<= " + tr
         if lang:
           t += " (%s)" % i18n.language_name(lang)
@@ -2814,6 +2815,32 @@ class _MachineTranslationTab(object):
     blans = settings.global_().blockedLanguages()
     grid = QtWidgets.QGridLayout()
 
+    def refresh_enable(w, b, t): # QWidget, QAbstractButton, bool
+      w.setEnabled(b.isEnabled() and b.isChecked())
+    def create_retrans_row(engine, btn): # str, QAbstractButton -> QLayout
+      row = QtWidgets.QHBoxLayout()
+      b = self._createRetransButton(engine)
+      row.addWidget(b)
+      b.setEnabled(btn.isChecked())
+      btn.toggled.connect(b.setEnabled)
+
+      w1 = self._createRetransLanguageEdit(engine)
+      row.addWidget(w1)
+
+      row.addWidget(QtWidgets.QLabel("=>"))
+
+      w2 = self._createRetransEdit(engine)
+      row.addWidget(w2)
+
+      for w in (w1, w2):
+        w.setEnabled(b.isEnabled() and b.isChecked())
+        f = partial(refresh_enable, w, b)
+        b.toggled.connect(f)
+        btn.toggled.connect(f)
+
+      row.addStretch()
+      return row
+
     # Online
     r = 0
     grid.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"), r, 0, 1, 2)
@@ -2824,6 +2851,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.baiduButton, r, 1)
       r += 1
       grid.addWidget(self.baiduRubyButton, r, 1)
+      r += 1
+      row = create_retrans_row('baidu', self.baiduButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     if 'ko' not in blans:
       r += 1
@@ -2831,6 +2861,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.naverButton, r, 1)
       r += 1
       grid.addWidget(self.naverRubyButton, r, 1)
+      r += 1
+      row = create_retrans_row('naver', self.naverButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.bing.com/translator"), r, 0)
@@ -2840,6 +2873,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.bingScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('bing', self.bingButton)
+    grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
@@ -2849,6 +2885,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.googleScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('google', self.googleButton)
+    grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://translation.infoseek.ne.jp"), r, 0)
@@ -2858,6 +2897,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.infoseekScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('infoseek', self.infoseekButton)
+    grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.lec.com/translate-demos.asp"), r, 0)
@@ -2865,6 +2907,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.lecOnlineScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('lecol', self.lecOnlineButton)
+    grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
     grid.addWidget(self._createBrowseButton("http://www.excite.co.jp/world"), r, 0)
@@ -2872,6 +2917,9 @@ class _MachineTranslationTab(object):
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.exciteScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('excite', self.exciteButton)
+    grid.addLayout(row, r, 1, 1, 2)
 
     if 'ru' not in blans:
       r += 1
@@ -2879,6 +2927,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.transruButton, r, 1)
       r += 1
       grid.addWidget(self.transruScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('transru', self.transruButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     # Offline
     r += 1
@@ -2888,26 +2939,31 @@ class _MachineTranslationTab(object):
       r += 1
       grid.addWidget(self.jbeijingBrowseButton, r, 0)
       grid.addWidget(self.jbeijingButton, r, 1)
+      r += 1
+      row = create_retrans_row('jbeijing', self.jbeijingButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
       r += 1
       grid.addWidget(self.fastaitBrowseButton, r, 0)
       grid.addWidget(self.fastaitButton, r, 1)
+      r += 1
+      row = create_retrans_row('fastait', self.fastaitButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
       r += 1
       grid.addWidget(self.dreyeBrowseButton, r, 0)
       grid.addWidget(self.dreyeButton, r, 1)
+      r += 1
+      row = create_retrans_row('dreye', self.dreyeButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     if 'ko' not in blans:
       r += 1
       grid.addWidget(self.ezTransBrowseButton, r, 0)
       grid.addWidget(self.ezTransButton, r, 1)
-
-    if 'en' not in blans:
       r += 1
-      grid.addWidget(self.atlasBrowseButton, r, 0)
-      grid.addWidget(self.atlasButton, r, 1)
-      r += 1
-      grid.addWidget(self.atlasScriptButton, r, 1)
+      row = create_retrans_row('eztrans', self.ezTransButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     if 'en' not in blans or 'ru' not in blans:
       r += 1
@@ -2915,6 +2971,19 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.lecButton, r, 1)
       r += 1
       grid.addWidget(self.lecScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('lec', self.lecButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.atlasBrowseButton, r, 0)
+      grid.addWidget(self.atlasButton, r, 1)
+      r += 1
+      grid.addWidget(self.atlasScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('atlas', self.atlasButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     if 'vi' not in blans: #and 'zh' not in blans:
       r += 1
@@ -2922,6 +2991,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.hanVietButton, r, 1)
       r += 1
       grid.addWidget(self.hanVietRubyButton, r, 1)
+      r += 1
+      row = create_retrans_row('hanviet', self.hanVietButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     ret.setLayout(grid)
@@ -2939,9 +3011,70 @@ class _MachineTranslationTab(object):
     ret.clicked.connect(slot)
     return ret
 
+  def _createRetransButton(self, key): # str ->
+    ret = QtWidgets.QCheckBox()
+    tm = trman.manager()
+    ret.setChecked(tm.isRetranslatorEnabled(key))
+    ret.setToolTip(my.tr("Secondary translator"))
+    ret.toggled.connect(partial(tm.setRetranslatorEnabled, key))
+    return ret
+
+  def _createRetransEdit(self, key): # str ->
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(my.tr("Secondary translator"))
+    ret.setEditable(False)
+    ret.addItems(dataman.Term.TR_HOSTS)
+    ret.setMaxVisibleItems(ret.count())
+    tm = trman.manager()
+    host = tm.retranslatorEngine(key)
+    if host:
+      try:
+        index = dataman.Term.HOSTS.index(host)
+        ret.setCurrentIndex(index)
+      except ValueError: pass
+    ret.currentIndexChanged.connect(partial(self._saveRetransEngine, key))
+    return ret
+
+  def _createRetransLanguageEdit(self, key): # str ->
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(my.tr("Intermediate language to connect two translators"))
+    ret.setEditable(False)
+
+    langs = mtinfo.get_t_langs(key)
+    if langs:
+      langs = [it for it in config.LANGUAGES if it in langs]
+    if not langs:
+      langs = config.LANGUAGES
+
+    ret.addItems(map(i18n.language_name, langs))
+    ret.setMaxVisibleItems(ret.count())
+    tm = trman.manager()
+    lang = tm.retranslatorLanguage(key)
+    try: langIndex = langs.index(lang)
+    except ValueError:
+      if langs[0] == 'ja' and len(langs) > 1:
+        langIndex = 1
+      else:
+        langIndex = 0
+    if langIndex:
+      ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(partial(self._saveRetransLanguage, key, langs))
+    return ret
+
+  def _saveRetransLanguage(self, key, langs, index): # str, [str], int ->
+    lang = langs[index]
+    tm = trman.manager()
+    tm.setRetranslatorLanguage(key, lang)
+
+  def _saveRetransEngine(self, key, index): # str, int ->
+    host = dataman.Term.HOSTS[index]
+    tm = trman.manager()
+    tm.setRetranslatorEngine(key, host)
+
   @memoizedproperty
   def bingButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBingEnabled())
     ret.toggled.connect(settings.global_().setBingEnabled)
     return ret
@@ -2952,8 +3085,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isBingRubyEnabled())
     ret.toggled.connect(ss.setBingRubyEnabled)
-    ret.setEnabled(ss.isBingEnabled())
-    ss.bingEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isBingEnabled())
+    #ss.bingEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2963,13 +3096,14 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isBingScriptEnabled())
     ret.toggled.connect(ss.setBingScriptEnabled)
-    ret.setEnabled(ss.isBingEnabled())
-    ss.bingEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isBingEnabled())
+    #ss.bingEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
   def googleButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isGoogleEnabled())
     ret.toggled.connect(settings.global_().setGoogleEnabled)
     return ret
@@ -2980,8 +3114,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isGoogleRubyEnabled())
     ret.toggled.connect(ss.setGoogleRubyEnabled)
-    ret.setEnabled(ss.isGoogleEnabled())
-    ss.googleEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isGoogleEnabled())
+    #ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2991,8 +3125,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isGoogleScriptEnabled())
     ret.toggled.connect(ss.setGoogleScriptEnabled)
-    ret.setEnabled(ss.isGoogleEnabled())
-    ss.googleEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isGoogleEnabled())
+    #ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3006,6 +3140,7 @@ class _MachineTranslationTab(object):
             tr_("pl"),
             tr_("ru"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isInfoseekEnabled())
     ret.toggled.connect(settings.global_().setInfoseekEnabled)
     return ret
@@ -3016,8 +3151,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isInfoseekRubyEnabled())
     ret.toggled.connect(ss.setInfoseekRubyEnabled)
-    ret.setEnabled(ss.isInfoseekEnabled())
-    ss.infoseekEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isInfoseekEnabled())
+    #ss.infoseekEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3027,8 +3162,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isInfoseekScriptEnabled())
     ret.toggled.connect(ss.setInfoseekScriptEnabled)
-    ret.setEnabled(ss.isInfoseekEnabled())
-    ss.infoseekEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isInfoseekEnabled())
+    #ss.infoseekEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3043,7 +3178,8 @@ class _MachineTranslationTab(object):
             tr_("ar"),
             tr_("nl"),
             tr_("pl"),
-            )))))
+    )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isExciteEnabled())
     ret.toggled.connect(settings.global_().setExciteEnabled)
     return ret
@@ -3055,8 +3191,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isExciteScriptEnabled())
     ret.toggled.connect(ss.setExciteScriptEnabled)
-    ret.setEnabled(ss.isExciteEnabled())
-    ss.exciteEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isExciteEnabled())
+    #ss.exciteEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3069,6 +3205,7 @@ class _MachineTranslationTab(object):
             tr_("th"),
             tr_("vi"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isLecOnlineEnabled())
     ret.toggled.connect(settings.global_().setLecOnlineEnabled)
     return ret
@@ -3080,8 +3217,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isLecOnlineScriptEnabled())
     ret.toggled.connect(ss.setLecOnlineScriptEnabled)
-    ret.setEnabled(ss.isLecOnlineEnabled())
-    ss.lecOnlineEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isLecOnlineEnabled())
+    #ss.lecOnlineEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3089,6 +3226,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Baidu.com Chinese translation service"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBaiduEnabled())
     ret.toggled.connect(settings.global_().setBaiduEnabled)
     return ret
@@ -3099,8 +3237,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isBaiduRubyEnabled())
     ret.toggled.connect(ss.setBaiduRubyEnabled)
-    ret.setEnabled(ss.isBaiduEnabled())
-    ss.baiduEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isBaiduEnabled())
+    #ss.baiduEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3108,6 +3246,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Naver.com Korean translation service"),
         my.tr("recommended for Korean")))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isNaverEnabled())
     ret.toggled.connect(settings.global_().setNaverEnabled)
     return ret
@@ -3118,8 +3257,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isNaverRubyEnabled())
     ret.toggled.connect(ss.setNaverRubyEnabled)
-    ret.setEnabled(ss.isNaverEnabled())
-    ss.naverEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isNaverEnabled())
+    #ss.naverEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3137,6 +3276,7 @@ class _MachineTranslationTab(object):
             tr_("pt"),
             tr_("ru"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isTransruEnabled())
     ret.toggled.connect(settings.global_().setTransruEnabled)
     return ret
@@ -3148,28 +3288,14 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isTransruScriptEnabled())
     ret.toggled.connect(ss.setTransruScriptEnabled)
-    ret.setEnabled(ss.isTransruEnabled())
-    ss.transruEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isTransruEnabled())
+    #ss.transruEnabledChanged.connect(ret.setEnabled)
     return ret
-
-  #@memoizedproperty
-  #def youdaoButton(self):
-  #  ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
-  #  ret.setChecked(settings.global_().isYoudaoEnabled())
-  #  ret.toggled.connect(settings.global_().setYoudaoEnabled)
-  #  return ret
-
-  #@memoizedproperty
-  #def lougoButton(self):
-  #  ret = QtWidgets.QCheckBox(u"ルー語%s" % (
-  #      my.tr("Japanese-English hybrid language")))
-  #  ret.setChecked(settings.global_().isLougoEnabled())
-  #  ret.toggled.connect(settings.global_().setLougoEnabled)
-  #  return ret
 
   @memoizedproperty
   def dreyeButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isDreyeEnabled())
     ret.toggled.connect(settings.global_().setDreyeEnabled)
     return ret
@@ -3182,6 +3308,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("JBeijing Chinese translator"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isJBeijingEnabled())
     ret.toggled.connect(settings.global_().setJBeijingEnabled)
     return ret
@@ -3194,6 +3321,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("FastAIT Chinese-Japanese/English translator"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isFastaitEnabled())
     ret.toggled.connect(settings.global_().setFastaitEnabled)
     return ret
@@ -3206,6 +3334,7 @@ class _MachineTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("ezTrans XP Korean translator"),
         my.tr("recommended for Korean")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
     return ret
@@ -3216,6 +3345,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def hanVietButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isHanVietEnabled())
     ret.toggled.connect(settings.global_().setHanVietEnabled)
     return ret
@@ -3228,13 +3358,14 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isHanVietRubyEnabled())
     ret.toggled.connect(ss.setHanVietRubyEnabled)
-    ret.setEnabled(ss.isHanVietEnabled())
-    ss.hanVietEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isHanVietEnabled())
+    #ss.hanVietEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
   def atlasButton(self):
     ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isAtlasEnabled())
     ret.toggled.connect(settings.global_().setAtlasEnabled)
     return ret
@@ -3250,13 +3381,14 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isAtlasScriptEnabled())
     ret.toggled.connect(ss.setAtlasScriptEnabled)
-    ret.setEnabled(ss.isAtlasEnabled())
-    ss.atlasEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isAtlasEnabled())
+    #ss.atlasEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
   def lecButton(self):
     ret = QtWidgets.QCheckBox(my.tr("LEC English/Russian translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isLecEnabled())
     ret.toggled.connect(settings.global_().setLecEnabled)
     return ret
@@ -3272,8 +3404,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isLecScriptEnabled())
     ret.toggled.connect(ss.setLecScriptEnabled)
-    ret.setEnabled(ss.isLecEnabled())
-    ss.lecEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isLecEnabled())
+    #ss.lecEnabledChanged.connect(ret.setEnabled)
     return ret
 
   #def selectedTranslator(self):
@@ -3308,11 +3440,13 @@ class _MachineTranslationTab(object):
       t = ss.isAtlasEnabled() or bool(libman.atlas().location())
       self.atlasButton.setEnabled(t)
       self.atlasBrowseButton.setEnabled(t)
+      self.atlasScriptButton.setEnabled(t)
 
     if 'en' not in blans or 'ru' not in blans:
       t = ss.isLecEnabled() or bool(libman.lec().location())
       self.lecButton.setEnabled(t)
       self.lecBrowseButton.setEnabled(t)
+      self.lecScriptButton.setEnabled(t)
 
 class MachineTranslationTab(QtWidgets.QDialog):
 

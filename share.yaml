@@ -18,6 +18,7 @@ env:
 
   pythonpath:
   - $PWD/bin
+  - $PWD/py/apps
   - $PWD/py/libs
   - $PWD/../Qt
   - $PWD/../Qt/PySide   # for shiboken

@@ -171,8 +171,8 @@ var TRANSLATOR_HOST_KEYS = [
   , 'fastait'
   , 'dreye'
   , 'eztrans'
-  , 'atlas'
   , 'lec'
+  , 'atlas'
   , 'hanviet'
 ];
 

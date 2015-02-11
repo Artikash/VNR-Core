@@ -14,7 +14,7 @@ def lang2locale(lang):
   """
   return LANG_LOCALES.get(lang) or lang
 
-def mt_lang_test(to, fr): return True # str, str -> bool # all languages are supported
-def tts_lang_test(lang): return True # str -> bool # all languages are supported
+def mt_test_lang(to, fr, online=True): return True # str, str -> bool # all languages are supported
+def tts_test_lang(lang): return True # str -> bool # all languages are supported
 
 # EOF
