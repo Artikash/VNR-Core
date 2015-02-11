@@ -102,6 +102,25 @@ def term_type_name(type):
   import dataman
   return dataman.Term.typeName(type)
 
+TRANSLATOR_NAMES = { # [TranslatorTraits]
+  'bing': "Bing.com",
+  'google': "Google.com",
+  'lecol': mytr_("LEC Online"),
+  'infoseek': "Infoseek.co.jp",
+  'excite': "Excite.co.jp",
+  'transru': "Translate.Ru",
+  'naver': "Naver.com",
+  'baidu': mytr_("Baidu") + ".com",
+  'jbeijing': mytr_("JBeijing"),
+  'fastait': mytr_("FastAIT"),
+  'dreye': mytr_("Dr.eye"),
+  'eztrans': mytr_("ezTrans XP"),
+  'atlas': mytr_("ATLAS"),
+  'lec': mytr_("LEC"),
+  'hanviet': u"Hán Việt",
+}
+def translator_name(key): return TRANSLATOR_NAMES.get(key) or ''
+
 def font_family(lang):
   return config.FONTS.get(lang) or ''
 

@@ -17,8 +17,9 @@ import defs, config
 VK_SHIFT = 0x10
 
 def parse_json(v): # str -> object or None
-  try: return json.loads(v)
-  except: pass
+  if v:
+    try: return json.loads(v)
+    except: pass
 
 def unparse_json(v): # object -> str
   return json.dumps(v, ensure_ascii=False)
