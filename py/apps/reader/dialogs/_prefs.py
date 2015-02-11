@@ -3070,8 +3070,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isBingRubyEnabled())
     ret.toggled.connect(ss.setBingRubyEnabled)
-    ret.setEnabled(ss.isBingEnabled())
-    ss.bingEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isBingEnabled())
+    #ss.bingEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3081,8 +3081,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isBingScriptEnabled())
     ret.toggled.connect(ss.setBingScriptEnabled)
-    ret.setEnabled(ss.isBingEnabled())
-    ss.bingEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isBingEnabled())
+    #ss.bingEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3099,8 +3099,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isGoogleRubyEnabled())
     ret.toggled.connect(ss.setGoogleRubyEnabled)
-    ret.setEnabled(ss.isGoogleEnabled())
-    ss.googleEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isGoogleEnabled())
+    #ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3110,8 +3110,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isGoogleScriptEnabled())
     ret.toggled.connect(ss.setGoogleScriptEnabled)
-    ret.setEnabled(ss.isGoogleEnabled())
-    ss.googleEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isGoogleEnabled())
+    #ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3136,8 +3136,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isInfoseekRubyEnabled())
     ret.toggled.connect(ss.setInfoseekRubyEnabled)
-    ret.setEnabled(ss.isInfoseekEnabled())
-    ss.infoseekEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isInfoseekEnabled())
+    #ss.infoseekEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3147,8 +3147,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isInfoseekScriptEnabled())
     ret.toggled.connect(ss.setInfoseekScriptEnabled)
-    ret.setEnabled(ss.isInfoseekEnabled())
-    ss.infoseekEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isInfoseekEnabled())
+    #ss.infoseekEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3176,8 +3176,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isExciteScriptEnabled())
     ret.toggled.connect(ss.setExciteScriptEnabled)
-    ret.setEnabled(ss.isExciteEnabled())
-    ss.exciteEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isExciteEnabled())
+    #ss.exciteEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3202,8 +3202,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isLecOnlineScriptEnabled())
     ret.toggled.connect(ss.setLecOnlineScriptEnabled)
-    ret.setEnabled(ss.isLecOnlineEnabled())
-    ss.lecOnlineEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isLecOnlineEnabled())
+    #ss.lecOnlineEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3222,8 +3222,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isBaiduRubyEnabled())
     ret.toggled.connect(ss.setBaiduRubyEnabled)
-    ret.setEnabled(ss.isBaiduEnabled())
-    ss.baiduEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isBaiduEnabled())
+    #ss.baiduEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3242,8 +3242,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isNaverRubyEnabled())
     ret.toggled.connect(ss.setNaverRubyEnabled)
-    ret.setEnabled(ss.isNaverEnabled())
-    ss.naverEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isNaverEnabled())
+    #ss.naverEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3273,24 +3273,9 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isTransruScriptEnabled())
     ret.toggled.connect(ss.setTransruScriptEnabled)
-    ret.setEnabled(ss.isTransruEnabled())
-    ss.transruEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isTransruEnabled())
+    #ss.transruEnabledChanged.connect(ret.setEnabled)
     return ret
-
-  #@memoizedproperty
-  #def youdaoButton(self):
-  #  ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
-  #  ret.setChecked(settings.global_().isYoudaoEnabled())
-  #  ret.toggled.connect(settings.global_().setYoudaoEnabled)
-  #  return ret
-
-  #@memoizedproperty
-  #def lougoButton(self):
-  #  ret = QtWidgets.QCheckBox(u"ルー語%s" % (
-  #      my.tr("Japanese-English hybrid language")))
-  #  ret.setChecked(settings.global_().isLougoEnabled())
-  #  ret.toggled.connect(settings.global_().setLougoEnabled)
-  #  return ret
 
   @memoizedproperty
   def dreyeButton(self):
@@ -3358,8 +3343,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isHanVietRubyEnabled())
     ret.toggled.connect(ss.setHanVietRubyEnabled)
-    ret.setEnabled(ss.isHanVietEnabled())
-    ss.hanVietEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isHanVietEnabled())
+    #ss.hanVietEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3381,8 +3366,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isAtlasScriptEnabled())
     ret.toggled.connect(ss.setAtlasScriptEnabled)
-    ret.setEnabled(ss.isAtlasEnabled())
-    ss.atlasEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isAtlasEnabled())
+    #ss.atlasEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -3404,8 +3389,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isLecScriptEnabled())
     ret.toggled.connect(ss.setLecScriptEnabled)
-    ret.setEnabled(ss.isLecEnabled())
-    ss.lecEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isLecEnabled())
+    #ss.lecEnabledChanged.connect(ret.setEnabled)
     return ret
 
   #def selectedTranslator(self):
@@ -3440,11 +3425,13 @@ class _MachineTranslationTab(object):
       t = ss.isAtlasEnabled() or bool(libman.atlas().location())
       self.atlasButton.setEnabled(t)
       self.atlasBrowseButton.setEnabled(t)
+      self.atlasScriptButton.setEnabled(t)
 
     if 'en' not in blans or 'ru' not in blans:
       t = ss.isLecEnabled() or bool(libman.lec().location())
       self.lecButton.setEnabled(t)
       self.lecBrowseButton.setEnabled(t)
+      self.lecScriptButton.setEnabled(t)
 
 class MachineTranslationTab(QtWidgets.QDialog):
 

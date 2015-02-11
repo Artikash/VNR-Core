@@ -2637,7 +2637,7 @@ class _Term(object):
   TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'game', 'tts', 'ocr', 'macro'
   TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
-  HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'atlas', 'lec', 'hanviet'
+  HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'lec', 'atlas', 'hanviet'
   TR_HOSTS = tuple(map(i18n.translator_name, HOSTS))
 
   # Errors, the larger (warning) or smaller (error) the worse

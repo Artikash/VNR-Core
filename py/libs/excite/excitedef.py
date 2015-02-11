@@ -23,12 +23,12 @@ def mt_lang_test(to=None, fr=None, online=True):
   @param* online  bool  ignored
   @return  bool
   """
-  return (fr and to and all((
+  return (all((
       fr in ('ja', 'en') or to in ('ja', 'en'),
       fr[:2] in MT_LANGUAGES,
       to[:2] in MT_LANGUAGES,
-    ))
-    or fr and fr[:2] in MT_LANGUAGES
-    or to and to[:2] in MT_LANGUAGES)
+    )) if fr and to else
+    fr and fr[:2] in MT_LANGUAGES or
+    to and to[:2] in MT_LANGUAGES)
 
 # EOF

@@ -48,8 +48,8 @@ def mt_lang_test(to=None, fr=None, online=True):
   if online:
     return (not fr or fr[:2] in MT_LANGUAGES) and (not to or to[:2] in LEC_LANGUAGES)
   else: # Offline
-    return (fr and to and (fr, to) in POWERTRANS_LANGUAGES
-        or fr and fr in POWERTRANS_SOURCE_LANGUAGES
-        or to and to in POWERTRANS_TARGET_LANGUAGES)
+    return ((fr, to) in POWERTRANS_LANGUAGES if fr and to else
+        fr in POWERTRANS_SOURCE_LANGUAGES or
+        to in POWERTRANS_TARGET_LANGUAGES)
 
 # EOF

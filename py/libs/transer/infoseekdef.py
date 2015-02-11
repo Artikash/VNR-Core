@@ -161,8 +161,8 @@ def mt_lang_test(to=None, fr=None, online=True):
   @param* online  bool  ignored
   @return  bool
   """
-  return (fr and to and (fr + to) in INFOSEEK_ENGINES
-      or fr and fr in INFOSEEK_LANGUAGES
-      or to and to in INFOSEEK_LANGUAGES)
+  return ((fr + to) in INFOSEEK_ENGINES if fr and to else
+      fr in INFOSEEK_LANGUAGES or
+      to in INFOSEEK_LANGUAGES)
 
 # EOF

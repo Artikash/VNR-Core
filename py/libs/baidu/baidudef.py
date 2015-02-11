@@ -350,14 +350,13 @@ def mt_lang_test(to=None, fr=None, online=True):
   @param* online  bool  ignored
   return bool
   """
-  return (fr and to and all((
+  return (all((
       to in BD_LANGUAGES,
       fr in BD_LANGUAGES,
       to not in ('yue', 'wyw') or fr.startswith('zh'),
       fr not in ('yue', 'wyw') or to.startswith('zh'),
-    ))
-    or fr and fr in BD_LANGUAGES
-    or to and to in BD_LANGUAGES)
+    )) if fr and to else
+    fr in BD_LANGUAGES or to in BD_LANGUAGES)
 
 def tts_lang_test(lang):
   """

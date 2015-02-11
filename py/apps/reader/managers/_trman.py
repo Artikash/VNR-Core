@@ -91,6 +91,7 @@ class Translator(object):
   key = 'tr' # str
   asyncSupported = True # bool  whether threading is supported
   alignSupported = False # bool  whether support translation alignment
+  onlineRequired = False # bool  whether translation requires Internet access
 
   def clearCache(self): pass
 
@@ -195,12 +196,20 @@ class Retranslator(Translator):
     self.language = language # str
 
   @property
+  def onlineRequired(self):
+    """@reimp"""
+    for it in (self.first, self.second):
+      if it and it.onlineRequired:
+        return True
+    return False
+
+  @property
   def asyncSupported(self):
     """@reimp"""
     for it in (self.first, self.second):
-      if it and it.asyncSupported:
-        return True
-    return False
+      if it and not it.asyncSupported:
+        return False
+    return True
 
   @property
   def alignSupported(self):
@@ -215,18 +224,24 @@ class Retranslator(Translator):
         return self.second.translateTest(text, to=to, fr=self.language, **kwargs)
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, align=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled1=False, scriptEnabled2=False, **kwargs):
     """@reimp"""
     if not self.first:
       return None, None, None
     if not self.second:
       return self.first.translateTest(text, to=to, fr=fr,
-          mark=mark, align=align, emit=emit, **kwargs)
+          mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled1, **kwargs)
     text, lang, key = self.first.translate(text, to=self.language, fr=fr,
-        mark=False, align=None, emit=False, **kwargs)
+        mark=False, align=None, emit=False, scriptEnabled=scriptEnabled1, **kwargs)
     if text:
+      if 'fr' == 'ja':
+        if lang == 'zhs':
+          text = opencc.ja2zhs(text)
+        elif lang == 'zht':
+          text = opencc.ja2zhs(text)
+          lang = 'zhs'
       text2, lang2, key2 = self.second.translate(text, to=to, fr=lang,
-          mark=mark, align=align, emit=emit, **kwargs)
+          mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled2, **kwargs)
       if text2:
         text = text2
         lang = lang2
@@ -547,11 +562,13 @@ class MachineTranslator(Translator):
     return text
 
 class OfflineMachineTranslator(MachineTranslator):
+  onlineRequired = False # overrie
   persistentCaching = False # bool  disable sqlite
   def __init__(self, *args, **kwargs):
     super(OfflineMachineTranslator, self).__init__(*args, **kwargs)
 
 class OnlineMachineTranslator(MachineTranslator):
+  onlineRequired = True # override
   #persistentCaching = True # bool  enable sqlite
   persistentCaching = False # bool  temporarily disabled, or it will break the syntax translator
   def __init__(self, *args, **kwargs):
