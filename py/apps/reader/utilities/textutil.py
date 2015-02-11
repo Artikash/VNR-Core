@@ -165,9 +165,9 @@ def __capitalize_sentence_s(m): # with space
 def __capitalize_sentence_ns(m): # without space
   return m.group(1).upper()
 #__capitalize_suffix = r"(\s)*(\w)"
-__capitalize_period_re = re.compile(r"(?<=\w\.)(\s)*(\w)") # space
-__capitalize_punct_re = re.compile(r"(?<=[?!])(\s)*(\w)") # space
-__capitalize_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\w)") # no space
+__capitalize_period_re = re.compile(r"(?<=\w\.)(\s)*(\w)", re.UNICODE) # space
+__capitalize_punct_re = re.compile(r"(?<=[?!])(\s)*(\w)", re.UNICODE) # space
+__capitalize_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\w)", re.UNICODE) # no space
 def capitalize_sentence(text):
   """
   @param  text  unicode
@@ -188,9 +188,9 @@ def __capitalize_html_sentence_s(m): # with space
     return ' ' + m.group(2) + ch.upper()
 def __capitalize_html_sentence_ns(m): # without space
   return m.group(1) + m.group(2).upper()
-__capitalize_html_period_re = re.compile(r"(?<=\w\.)(\s)*(\<[^>]+?\>)(\w)") # space
-__capitalize_html_punct_re = re.compile(r"(?<=[?!])(\s)*(\<[^>]+?\>)(\w)") # space
-__capitalize_html_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\<[^>]+?\>)(\w)") # no space
+__capitalize_html_period_re = re.compile(r"(?<=\w\.)(\s)*(\<[^>]+?\>)(\w)", re.UNICODE) # space
+__capitalize_html_punct_re = re.compile(r"(?<=[?!])(\s)*(\<[^>]+?\>)(\w)", re.UNICODE) # space
+__capitalize_html_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\<[^>]+?\>)(\w)", re.UNICODE) # no space
 def capitalize_html_sentence(text):
   """
   @param  text  unicode  containing html tags
