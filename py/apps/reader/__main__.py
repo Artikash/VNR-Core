@@ -420,7 +420,7 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
-    if ss_version <= 1423633839: # reset retranslator
+    if ss_version <= 1423687966: # reset retranslator
       ss.setValue('Retranslator', '')
 
     if ss_version <= 1422396934:

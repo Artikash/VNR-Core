@@ -17,7 +17,7 @@ from sakurakit import skevents, skthreads
 from sakurakit.skclass import  memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from share.mt import mtinfo
-import features, settings, textutil
+import config, features, settings, textutil
 import _trman
 
 _RETRANS_DEFAULT_LANG = 'en'
@@ -90,7 +90,14 @@ class _TranslatorManager(object):
     @param  engine  str
     @return  kw
     """
-    return {'yes': False, 'lang': _RETRANS_DEFAULT_LANG, 'key': _RETRANS_DEFAULT_KEY}
+    lang = _RETRANS_DEFAULT_LANG
+    langs = mtinfo.get_t_langs(engine)
+    if langs:
+      for it in config.LANGUAGES:
+        if it in langs:
+          lang = it
+          break
+    return {'yes': False, 'lang': lang, 'key': _RETRANS_DEFAULT_KEY}
 
   def updateRetransSettings(self, engine, key, value):
     """
