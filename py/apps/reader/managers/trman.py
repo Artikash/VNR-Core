@@ -611,26 +611,26 @@ class TranslatorManager(QObject):
     """
     return features.MACHINE_TRANSLATION and self.hasTranslators()
 
-  def guessTranslationLanguage(self): # -> str
-    if not self.isEnabled():
-      return ''
-    d = self.__d
-    if d.hanVietEnabled:
-      return 'vi'
-    if d.jbeijingEnabled or d.baiduEnabled or d.fastaitEnabled or d.dreyeEnabled:
-      return 'zhs' if d.language == 'zhs' else 'zht'
-    if d.ezTransEnabled or d.naverEnabled:
-      return 'ko'
-    if (d.atlasEnabled or d.lecEnabled) and not any((
-        d.infoseekEnabled,
-        d.transruEnabled,
-        d.exciteEnabled,
-        d.bingEnabled,
-        d.googleEnabled,
-        d.lecOnlineEnabled,
-      )):
-      return 'en'
-    return d.language
+  #def guessTranslationLanguage(self): # -> str
+  #  if not self.isEnabled():
+  #    return ''
+  #  d = self.__d
+  #  if d.hanVietEnabled:
+  #    return 'vi'
+  #  if d.jbeijingEnabled or d.baiduEnabled or d.fastaitEnabled or d.dreyeEnabled:
+  #    return 'zhs' if d.language == 'zhs' else 'zht'
+  #  if d.ezTransEnabled or d.naverEnabled:
+  #    return 'ko'
+  #  if (d.atlasEnabled or d.lecEnabled) and not any((
+  #      d.infoseekEnabled,
+  #      d.transruEnabled,
+  #      d.exciteEnabled,
+  #      d.bingEnabled,
+  #      d.googleEnabled,
+  #      d.lecOnlineEnabled,
+  #    )):
+  #    return 'en'
+  #  return d.language
 
   def translate(self, *args, **kwargs):
     """
