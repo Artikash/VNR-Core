@@ -123,11 +123,11 @@ class _MTTester(object):
     c += 1
     cell = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.originTextButton)
-    row.addWidget(self.originTextLabel)
+    row.addWidget(self.gameTextButton)
+    row.addWidget(self.gameTextLabel)
     row.addStretch()
     cell.addLayout(row)
-    cell.addWidget(self.originTextEdit)
+    cell.addWidget(self.gameTextEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
@@ -240,7 +240,7 @@ class _MTTester(object):
     for it in (
         #self.textEdit,
         self.directTranslationEdit,
-        self.originTextEdit,
+        self.gameTextEdit,
         self.normalizedTextEdit,
         self.sourceTextEdit,
         self.escapedTextEdit,
@@ -262,7 +262,7 @@ class _MTTester(object):
   def _currentTranslator(self):
     return dataman.Term.HOSTS[self.translatorEdit.currentIndex()]
 
-  def _isOriginTermsEnabled(self): return self.originTextButton.isChecked()
+  def _isGameTermsEnabled(self): return self.gameTextButton.isChecked()
   def _isTranslationScriptEnabled(self): return self.normalizedTextButton.isChecked()
 
   def _isMarkEnabled(self): return self.markButton.isChecked()
@@ -295,17 +295,17 @@ class _MTTester(object):
       if raw:
         self.directTranslationEdit.setPlainText(raw)
 
-      if self._isOriginTermsEnabled():
+      if self._isGameTermsEnabled():
         #to = self._currentToLanguage()
         tt = textutil.normalize_punct(t)
-        tt = termman.manager().applyOriginTerms(tt, fr=fr) #, to=to)
+        tt = termman.manager().applyGameTerms(tt, fr=fr) #, to=to)
         if tt != t:
           t = tt
-          self.setOriginTextEditText(t or _EMPTY_TEXT)
+          self.setGameTextEditText(t or _EMPTY_TEXT)
         else:
-          self.setOriginTextEditText(_EMPTY_TEXT)
+          self.setGameTextEditText(_EMPTY_TEXT)
       else:
-        self.originTextEdit.setPlainText(_DISABLED_TEXT)
+        self.gameTextEdit.setPlainText(_DISABLED_TEXT)
       if t:
         mark = self._isMarkEnabled()
         t = trman.manager().translate(t, emit=True, mark=mark,
@@ -536,18 +536,18 @@ class _MTTester(object):
     return ret
 
   @memoizedproperty
-  def originTextButton(self):
+  def gameTextButton(self):
     ret = QtWidgets.QCheckBox()
     ret.setChecked(True)
     return ret
   @memoizedproperty
-  def originTextLabel(self):
-    return self._createTextLabel(self.originTextEdit, my.tr("Apply game terms") + _TERM_STAR)
+  def gameTextLabel(self):
+    return self._createTextLabel(self.gameTextEdit, my.tr("Apply game terms") + _TERM_STAR)
   @memoizedproperty
-  def originTextEdit(self):
+  def gameTextEdit(self):
     return self._createTextView(my.tr("Apply game terms in the Shared Dictionary to correct game text"))
-  def setOriginTextEditText(self, t):
-    e = self.originTextEdit
+  def setGameTextEditText(self, t):
+    e = self.gameTextEdit
     e.setPlainText(t)
     skqss.class_(e, 'text-muted' if t in (_EMPTY_TEXT, _DISABLED_TEXT) else '')
 

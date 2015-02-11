@@ -356,7 +356,10 @@ class _TextManager(object):
       #nochange = len(text) == size
     if fr or to:
       #with SkProfiler(): # 0.046 seconds
-      text = termman.manager().applyOriginTerms(text, to=to, fr=fr)
+      text = termman.manager().applyGameTerms(text, to=to, fr=fr,
+          ignoreIfNotReady=True)
+      if not text:
+        return ''
     if self.removesRepeat and text: # and nochange:
       t = textutil.remove_repeat_text(text)
       delta = len(text) - len(t)
@@ -831,7 +834,7 @@ class _TextManager(object):
 
     lang = self.gameLanguage or 'ja'
     #text = self._repairText(text, fr=self.gameLanguage, to=self.language)
-    text = termman.manager().applyOriginTerms(text, fr=lang)
+    text = termman.manager().applyGameTerms(text, fr=lang)
     if not text:
       return
     text = termman.manager().applyOcrTerms(text, lang)
