@@ -246,7 +246,7 @@ bool DetermineEngineByFile2()
     return true;
   }
   if (IthFindFile(L"*.vfs")) { // jichi 7/6/2014: Better to test AoiLib.dll? ja.wikipedia.org/wiki/ソフトハウスキャラ
-    InsertSoftHouseHook();
+    InsertSystemAoiHook();
     return true;
   }
   if (IthFindFile(L"*.mbl")) {

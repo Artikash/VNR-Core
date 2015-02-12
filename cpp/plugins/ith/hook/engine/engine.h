@@ -134,6 +134,7 @@ bool InsertSiglusHook();        // SiglusEngine: SiglusEngine.exe
 bool InsertSideBHook();         // SideB: Copyright side-B
 bool InsertSyuntadaHook();      // Syuntada: dSoh.dat
 bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
+bool InsertSystemAoiHook();     // SystemAoi: *.vfs
 bool InsertTanukiHook();        // Tanuki: *.tak
 bool InsertTaskforce2Hook();    // Taskforce2.exe
 bool InsertTencoHook();         // Tenco: Check.mdx
@@ -148,7 +149,6 @@ void InsertIronGameSystemHook();// IroneGameSystem: igs_sample.exe
 void InsertLucifenHook();       // Lucifen@Navel: *.lpk
 void InsertRyokuchaHook();      // Ryokucha: _checksum.exe
 void InsertRealliveHook();      // RealLive: RealLive*.exe
-void InsertSoftHouseHook();     // SoftHouse: *.vfs
 void InsertStuffScriptHook();   // Stuff: *.mpk
 void InsertTinkerBellHook();    // TinkerBell: arc00.dat
 void InsertWaffleHook();        // WAFFLE: cg.pak
