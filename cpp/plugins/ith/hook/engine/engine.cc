@@ -5681,16 +5681,95 @@ bool InsertDebonosuHook()
   return false;
 }
 
-static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+/* 7/8/2014: The engine name is supposed to be: AoiGameSystem Engine
+ * See: http://capita.tistory.com/m/post/205
+ *
+ *  BUNNYBLACK Trial2 (SystemAoi4)
+ *  baseaddr: 0x01d0000
+ *
+ *  1002472e   cc               int3
+ *  1002472f   cc               int3
+ *  10024730   55               push ebp    ; jichi: hook here
+ *  10024731   8bec             mov ebp,esp
+ *  10024733   51               push ecx
+ *  10024734   c745 fc 00000000 mov dword ptr ss:[ebp-0x4],0x0
+ *  1002473b   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+ *  1002473e   0fb708           movzx ecx,word ptr ds:[eax]
+ *  10024741   85c9             test ecx,ecx
+ *  10024743   74 34            je short _8.10024779
+ *  10024745   6a 00            push 0x0
+ *  10024747   6a 00            push 0x0
+ *  10024749   6a 01            push 0x1
+ *  1002474b   8b55 14          mov edx,dword ptr ss:[ebp+0x14]
+ *  1002474e   52               push edx
+ *  1002474f   0fb645 10        movzx eax,byte ptr ss:[ebp+0x10]
+ *  10024753   50               push eax
+ *  10024754   0fb74d 0c        movzx ecx,word ptr ss:[ebp+0xc]
+ *  10024758   51               push ecx
+ *  10024759   8b55 08          mov edx,dword ptr ss:[ebp+0x8]
+ *  1002475c   52               push edx
+ *  1002475d   e8 8eddffff      call _8.100224f0
+ *  10024762   83c4 1c          add esp,0x1c
+ *  10024765   8945 fc          mov dword ptr ss:[ebp-0x4],eax
+ *  10024768   8b45 1c          mov eax,dword ptr ss:[ebp+0x1c]
+ *  1002476b   50               push eax
+ *  1002476c   8b4d 18          mov ecx,dword ptr ss:[ebp+0x18]
+ *  1002476f   51               push ecx
+ *  10024770   8b55 fc          mov edx,dword ptr ss:[ebp-0x4]
+ *  10024773   52               push edx
+ *  10024774   e8 77c6ffff      call _8.10020df0
+ *  10024779   8b45 fc          mov eax,dword ptr ss:[ebp-0x4]
+ *  1002477c   8be5             mov esp,ebp
+ *  1002477e   5d               pop ebp
+ *  1002477f   c2 1800          retn 0x18
+ *  10024782   cc               int3
+ *  10024783   cc               int3
+ *  10024784   cc               int3
+ *
+ *  2/12/2015 jichi: SystemAoi5
+ *
+ *  Hooked to PgsvTd.dll for all SystemAoi engine, which contains GDI functions.
+ *  - Old: AoiLib.dll from DrawTextExA
+ *  - SystemAoi4: Aoi4.dll from DrawTextExW
+ *  - SystemAoi5: Aoi5.dll from GetGlyphOutlineW
+ *
+ *  Logic:
+ *  - Find GDI function (DrawTextExW, etc.) used to paint text in PgsvTd.dll
+ *  - Then search the function call stack, to find where the exe module invoke PgsvTd
+ *  - Finally insert to the call address, and text is on the top of the stack.
+ *
+ *  Sample hooked call in 悪魔娘の看板料理 Aoi5
+ *
+ *  00B6D085   56               PUSH ESI
+ *  00B6D086   52               PUSH EDX
+ *  00B6D087   51               PUSH ECX
+ *  00B6D088   68 9E630000      PUSH 0x639E
+ *  00B6D08D   50               PUSH EAX
+ *  00B6D08E   FF15 54D0BC00    CALL DWORD PTR DS:[0xBCD054]             ; _12.0039E890, jichi: hook here
+ *  00B6D094   8B57 20          MOV EDX,DWORD PTR DS:[EDI+0x20]
+ *  00B6D097   89049A           MOV DWORD PTR DS:[EDX+EBX*4],EAX
+ *  00B6D09A   8B4F 20          MOV ECX,DWORD PTR DS:[EDI+0x20]
+ *  00B6D09D   8B1499           MOV EDX,DWORD PTR DS:[ECX+EBX*4]
+ *  00B6D0A0   8D85 50FDFFFF    LEA EAX,DWORD PTR SS:[EBP-0x2B0]
+ *  00B6D0A6   50               PUSH EAX
+ *  00B6D0A7   52               PUSH EDX
+ *  00B6D0A8   FF15 18D0BC00    CALL DWORD PTR DS:[0xBCD018]             ; _12.003A14A0
+ *
+ *  Special hook is needed, since the utf16 text is like this:
+ *  [f9S30e0u]　が、それは人間相手の話だ。
+ */
+namespace { // unnamed
+void SpecialSystemAoiHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD i;
   union {
     LPWSTR string_u;
     PCHAR string_a;
   };
-  string_u = *(LPWSTR *)(esp_base + 4);
+  //string_u = *(LPWSTR *)(esp_base + 4);
+  string_u = (LPWSTR)argof(1, esp_base); // jichi: text on the top of the stack
   if (hp->type & USING_UNICODE) {
-    *len = wcslen(string_u);
+    *len = ::wcslen(string_u);
     for (i = 0; i < *len; i++)
       if (string_u[i] == L'>'||string_u[i] == L']') {
         *data = (DWORD)(string_u+i+1);
@@ -5700,7 +5779,7 @@ static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, BYTE, DWORD *dat
         return;
       }
   } else {
-    *len = strlen(string_a);
+    *len = ::strlen(string_a);
     for (i=0;i<*len;i++)
       if (string_a[i]=='>'||string_a[i]==']') {
         *data = (DWORD)(string_a+i+1);
@@ -5708,48 +5787,80 @@ static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, BYTE, DWORD *dat
         *len -= i+1;
         return;
       }
-
   }
 }
-// jichi 7/8/2014: The engine name is supposed to be: AoiGameSystem Engine
-// See: http://capita.tistory.com/m/post/205
-bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
+
+int GetSystemAoiVersion() // return result is cached
 {
-  if (addr != ::DrawTextExA && addr != ::DrawTextExW)
-    return false;
+  static int ret = 0;
+  if (!ret) {
+    if (IthCheckFile(L"Aoi5.dll"))
+      ret = 5;
+    else // Aoi4.dll or AoiLib.dll
+      ret = 4;
+  }
+  return ret;
+}
+
+bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
+{
+  const int version = GetSystemAoiVersion();
+  if (version <= 4) { // Aoi <= 4
+    if (addr != ::DrawTextExA && addr != ::DrawTextExW)
+      return false;
+  } else // Aoi >= 5
+    if (addr != ::GetGlyphOutlineW)
+      return false;
+
+  const bool utf16 = addr != DrawTextExA; // DrawTextExA only in < Aoi4
+
   DWORD high,low,i,j,k;
   Util::GetCodeRange(module_base_, &low, &high);
   i = stack;
   j = (i & 0xffff0000) + 0x10000;
   for (; i < j; i += 4) {
-    k = *(DWORD*)i;
+    // jichi 2/15/2015: This seems to dynamically find the ancestor call from the main module
+    k = *(DWORD *)i;
     if (k > low && k < high &&
         ((*(WORD *)(k - 6) == 0x15ff) || *(BYTE *)(k - 5) == 0xe8)) { // jichi 10/20/2014: call dword ptr ds
       HookParam hp = {};
       hp.off = 0x4;
-      hp.text_fun = SpecialHookSofthouse;
-      hp.type = addr == ::DrawTextExW ? USING_UNICODE : USING_STRING;
+      hp.text_fun = SpecialSystemAoiHook;
+      hp.type = utf16 ? USING_UNICODE : USING_STRING;
       i = *(DWORD *)(k - 4);
       if (*(DWORD *)(k - 5) == 0xe8)
         hp.addr = i + k;
       else
         hp.addr = *(DWORD *)i;
-      ConsoleOutput("vnreng: INSERT SofthouseChara");
       //NewHook(hp, L"SofthouseChara");
-      NewHook(hp, L"SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
+      //ITH_GROWL_DWORD(hp.addr); // BUNNYBLACK: 0x10024730, base 0x01d0000
+      if (hp.addr) {
+        ConsoleOutput("vnreng: INSERT SystemAoi");
+        if (version <= 4)
+          NewHook(hp, L"SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
+        else
+          NewHook(hp, L"SystemAoi5"); // jichi 2/12/2015
+        ConsoleOutput("vnreng:SystemAoi: disable GDI hooks");
+        DisableGDIHooks();
+      } else
+        ConsoleOutput("vnreng: failed to detect SystemAoi");
       //RegisterEngineType(ENGINE_SOFTHOUSE);
       return true;
     }
   }
-  ConsoleOutput("vnreng:SofthouseChara: failed");
+  ConsoleOutput("vnreng:SystemAoi: failed");
   return true; // jichi 12/25/2013: return true
 }
 
-void InsertSoftHouseHook()
+} // unnamed namespace
+
+bool InsertSystemAoiHook()
 {
+  ConsoleOutput("vnreng: DYNAMIC SystemAoi");
   //ConsoleOutput("Probably SoftHouseChara. Wait for text.");
-  trigger_fun_ = InsertSofthouseDynamicHook;
+  trigger_fun_ = InsertSystemAoiDynamicHook;
   SwitchTrigger(true);
+  return true;
 }
 
 static void SpecialHookCaramelBox(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)

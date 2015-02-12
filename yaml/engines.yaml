@@ -201,6 +201,7 @@ simple:
   - SystemC
   - System43
   - SystemAoi
+  - SystemAoi5
   - Syuntada
   - Taskforce2
   - TinkerBell0
@@ -464,7 +465,8 @@ wchar:
   - SiglusEngine2
   - SiglusEngine3
   - SofthouseChara # renamed
-  - SystemAoi
+  - SystemAoi # It could also be SHIFT-JIS for Aoi<4
+  - SystemAoi5
   - Unity # removed
 
 # UTF-8
@@ -511,5 +513,7 @@ focus:
   #- KiriKiri1
   #- KiriKiri2
   #- ScenarioPlayerW
+  #- SystemAoi
+  #- SystemAoi5
 
 # EOF
