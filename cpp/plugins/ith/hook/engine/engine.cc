@@ -5711,8 +5711,13 @@ static void SpecialHookSofthouse(DWORD esp_base, HookParam *hp, BYTE, DWORD *dat
 
   }
 }
-// jichi 7/8/2014: The engine name is supposed to be: AoiGameSystem Engine
+// 7/8/2014: The engine name is supposed to be: AoiGameSystem Engine
 // See: http://capita.tistory.com/m/post/205
+/** 2/12/2015 jichi: SystemAoi5
+ *
+ *  SystemAoi4: Aoi4.dll
+ *  SystemAoi5: Aoi5.dll
+ */
 bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 {
   if (addr != ::DrawTextExA && addr != ::DrawTextExW)
