@@ -10,6 +10,7 @@ rename:
   Silkys: Elf
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
+  SystemAoi5: SystemAoi2
   User-defined: H-code
 
 gc:
@@ -201,7 +202,7 @@ simple:
   - SystemC
   - System43
   - SystemAoi
-  - SystemAoi5
+  - SystemAoi2
   - Syuntada
   - Taskforce2
   - TinkerBell0
@@ -466,7 +467,7 @@ wchar:
   - SiglusEngine3
   - SofthouseChara # renamed
   - SystemAoi # It could also be SHIFT-JIS for Aoi<4
-  - SystemAoi5
+  - SystemAoi2
   - Unity # removed
 
 # UTF-8
@@ -514,6 +515,6 @@ focus:
   #- KiriKiri2
   #- ScenarioPlayerW
   #- SystemAoi
-  #- SystemAoi5
+  #- SystemAoi2
 
 # EOF
