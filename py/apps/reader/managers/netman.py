@@ -2110,6 +2110,31 @@ class NetworkManager(QObject):
   #  if self.isOnline():
   #    self.__d.upload('upload/audio', data, params)
 
+  # Shorthands
+
+  def likeComment(self, commentId, value, userName, password):
+    """
+    @param  commentId  long
+    @param  value  {True, None, False, -1, 0, 1}
+    @param  userName  unicode
+    @param  password  unicode
+    """
+    if not isinstance(value, (int, long)):
+      if value is None:
+        value = 0
+      elif value == True:
+        value = 1
+      elif value == False:
+        value = -1
+    return self.updateTicket(json.dumps({
+      login: userName,
+      password: password,
+      targetType: 'annot',
+      targetId: commentId,
+      type: 'like',
+      value: value,
+    })
+
 @memoized
 def manager(): return NetworkManager()
 

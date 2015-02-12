@@ -162,7 +162,7 @@ class RpcServer(QObject):
   #  @param  hash  long
   #  @param  role  int
   #  """
-  #  if isinstance(hash, int) or isinstance(hash, long):
+  #  if isinstance(hash, (int, long)):
   #    hash = _marshalInteger(hash)
   #  self.__d.callAgent('engine.text',
   #      text, hash, _marshalInteger(role))
