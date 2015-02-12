@@ -52,27 +52,32 @@ MouseArea { id: root_
     //width: text_.width + 25; height: text_.height + 15
     z: -1
     anchors.fill: parent
-    radius: 15
     smooth: true
+    //radius: 15
+    radius: 0 // flat
 
     border.width: hover ? 2 : 0
     //border.color: '#aa00bfff'
     border.color: '#99ffffaa' // yellow
 
-    gradient: Gradient {
-      GradientStop {
-        position: 0.0
-        color: root_.pressed ? Qt.darker(backgroundColor) :
-               root_.hover ? Qt.lighter(backgroundColor) :
-               Qt.lighter(backgroundColor)
-      }
-      GradientStop {
-        position: 1.0
-        color: root_.pressed ? Qt.darker(backgroundColor) :
-               root_.hover ? Qt.lighter(backgroundColor) :
-               backgroundColor
-      }
-    }
+    color: root_.pressed ? Qt.darker(backgroundColor) :
+           root_.hover ? Qt.lighter(backgroundColor) :
+           backgroundColor
+
+    //gradient: Gradient {
+    //  GradientStop {
+    //    position: 0.0
+    //    color: root_.pressed ? Qt.darker(backgroundColor) :
+    //           root_.hover ? Qt.lighter(backgroundColor) :
+    //           Qt.lighter(backgroundColor)
+    //  }
+    //  GradientStop {
+    //    position: 1.0
+    //    color: root_.pressed ? Qt.darker(backgroundColor) :
+    //           root_.hover ? Qt.lighter(backgroundColor) :
+    //           backgroundColor
+    //  }
+    //}
 
     //MouseArea { id: mouse_
     //  anchors.fill: parent

@@ -2,7 +2,7 @@
 # embedprefs.py
 # 11/5/2012 jichi
 
-__all__ = ['TextPrefsDialog']
+__all__ = 'TextPrefsDialog',
 
 if __name__ == '__main__':
   import sys
@@ -117,7 +117,7 @@ class _TextThreadView(object):
     #tt = defs.threadtype(self.name)
     #ttip = i18n.threadtip(tt)
 
-    #if self.name == defs.USER_DEFINED_THREAD_NAME:
+    #if self.name == defs.HCODE_THREAD_NAME:
     #  n = mytr_("H-code")
     #elif self.name in defs.CAONIMAGEBI_ENGINES:
     #  n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME
@@ -146,7 +146,7 @@ class _TextThreadView(object):
         skqss.toggleclass(b, 'btn-primary', value),
         b))
 
-    b = self.buttonRow.addButton(mytr_("chara"),
+    b = self.buttonRow.addButton(mytr_("name"),
         tip=my.tr("These are character names"))   # scenario
     skqss.class_(b, 'btn btn-default btn-sm')
     b.toggled.connect(partial(lambda b, value:
@@ -177,7 +177,7 @@ class _TextThreadView(object):
     self.textEdit.setMaximumHeight(TEXTEDIT_MAX_HEIGHT)
     self.textEdit.setMinimumWidth(TEXTEDIT_MIN_WIDTH)
     #self.textEdit.setStyleSheet(
-    #    SS_TEXTEDIT_HOOK_IGNORED if self.name == defs.USER_DEFINED_THREAD_NAME else
+    #    SS_TEXTEDIT_HOOK_IGNORED if self.name == defs.HCODE_THREAD_NAME else
     #    SS_TEXTEDIT_IGNORED)
 
     header = QtWidgets.QHBoxLayout()
@@ -194,7 +194,7 @@ class _TextThreadView(object):
 
   def updateStyleSheet(self):
     row = self.buttonRow.currentIndex()
-    #if self.name == defs.USER_DEFINED_THREAD_NAME:
+    #if self.name == defs.HCODE_THREAD_NAME:
     #  if row == _TextThreadView.IGNORE_BUTTON_ROW:
     #    ss = SS_TEXTEDIT_HOOK_IGNORED
     #  else:
@@ -304,11 +304,11 @@ class _TextTab(object):
     option = QtWidgets.QGroupBox(tr_("Options"))
     optionLayout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Text encoding") + ":"))
-    row.addWidget(self.encodingEdit)
-    row.addStretch()
     row.addWidget(QtWidgets.QLabel(mytr_("Game language")+ ":"))
     row.addWidget(self.languageEdit)
+    row.addStretch()
+    row.addWidget(QtWidgets.QLabel(tr_("Text encoding") + ":"))
+    row.addWidget(self.encodingEdit)
     optionLayout.addLayout(row)
     option.setLayout(optionLayout)
 
@@ -381,7 +381,7 @@ class _TextTab(object):
     ret.setEditable(False)
     ret.setToolTip(tr_("Text encoding"))
     ret.setStatusTip(tr_("Text encoding"))
-    ret.addItems(map(str.upper, config.ENCODINGS))
+    ret.addItems(map(i18n.encoding_desc, config.ENCODINGS))
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._onSelectedEncodingChanged)
     return ret
@@ -712,14 +712,16 @@ class _TextTab(object):
   #  ]
 
   def _encoding(self):
-    return self.encodingEdit.currentText().lower()
+    return config.ENCODINGS[self.encodingEdit.currentIndex()]
+    #return self.encodingEdit.currentText().lower()
 
   def _language(self):
     return config.LANGUAGES[self.languageEdit.currentIndex()]
 
-  def _setEncoding(self, value):
-    self.encodingEdit.setCurrentIndex(
-        self.encodingEdit.findText(value.upper()))
+  def _setEncoding(self, value): # str ->
+    try: index = config.ENCODINGS.index(value)
+    except ValueError: index = 0
+    self.encodingEdit.setCurrentIndex(index)
 
 ## Information tab ##
 
@@ -744,7 +746,7 @@ class _TextTab(object):
 # Use main window for status bar
 class TextPrefsDialog(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(TextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle("%s (%s)" % (

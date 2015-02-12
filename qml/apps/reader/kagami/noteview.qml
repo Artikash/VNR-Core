@@ -5,6 +5,8 @@ import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
+import '../../../js/reader.min.js' as My
+import '../../../js/eval.min.js' as Eval
 import '../../../js/util.min.js' as Util
 import '../../../imports/texscript' as TexScript
 import '../../../components' as Components
@@ -83,7 +85,8 @@ Item { id: root_
 
   Rectangle { // shadow
     anchors.fill: parent
-    radius: 10
+    //radius: 10
+    radius: 0 // flat
     color: root_.hover ? '#aa000000' : '#88000000'
   }
 
@@ -203,14 +206,14 @@ Item { id: root_
       font.family: 'DFGirl'
 
 
-      //font.bold: Util.isAsianLanguage(root_.language)
       //font.italic: Util.isLatinLanguage(root_.language)
       font.pixelSize: 16 * root_._zoomFactor
 
       // Not working, which cause textedit width to shrink
       //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
 
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: Eval.evalLink(link)
+
       //console.log("shiori.qml: link activated:", link)
 
       effect: Share.TextEffect {
@@ -327,11 +330,13 @@ Item { id: root_
 
   // - Context Menu -
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
-      onTriggered: if (comment) mainPlugin_.showSubtitleEditor(comment)
+      onTriggered:
+        if (comment)
+          mainPlugin_.showSubtitleEditor(comment)
     }
 
     Desktop.MenuItem {
@@ -345,7 +350,9 @@ Item { id: root_
 
     Desktop.MenuItem {
       text: Sk.tr("User information")
-      onTriggered: if (comment) userViewPlugin_.showUser(comment.userId)
+      onTriggered:
+        if (comment)
+          mainPlugin_.showUser(comment.userId)
     }
 
     //Desktop.MenuItem {
@@ -377,7 +384,7 @@ Item { id: root_
     onPressed: if (!root_.ignoresFocus) {
       //var gp = Util.itemGlobalPos(parent)
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      contextMenu_.showPopup(gp.x, gp.y)
+      menu_.showPopup(gp.x, gp.y)
     }
   }
 

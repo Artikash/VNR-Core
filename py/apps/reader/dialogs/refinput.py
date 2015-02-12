@@ -112,12 +112,16 @@ class _ReferenceInput(object):
     shortcut('alt+1', self.trailersButton.click, parent=q)
     shortcut('alt+2', self.scapeButton.click, parent=q)
     shortcut('alt+3', self.holysealButton.click, parent=q)
-    shortcut('alt+4', self.getchuButton.click, parent=q)
-    shortcut('alt+5', self.amazonButton.click, parent=q)
-    shortcut('alt+6', self.dmmButton.click, parent=q)
-    shortcut('alt+7', self.dlsiteButton.click, parent=q)
-    shortcut('alt+8', self.digiketButton.click, parent=q)
-    shortcut('alt+9', self.gyuttoButton.click, parent=q)
+    shortcut('alt+4', self.freemButton.click, parent=q)
+
+    shortcut('alt+5', self.getchuButton.click, parent=q)
+    shortcut('alt+6', self.gyuttoButton.click, parent=q)
+    shortcut('alt+7', self.digiketButton.click, parent=q)
+    shortcut('alt+8', self.dmmButton.click, parent=q)
+    shortcut('alt+9', self.dlsiteButton.click, parent=q)
+
+    shortcut('alt+0', self.amazonButton.click, parent=q)
+    #shortcut('alt+0', self.steamButton.click, parent=q)
 
   def _createUi(self, q, readonly):
 
@@ -133,15 +137,31 @@ class _ReferenceInput(object):
 
     # Site
     grid = QtWidgets.QGridLayout()
-    grid.addWidget(self.trailersButton, 0, 0)
-    grid.addWidget(self.scapeButton, 0, 1)
-    grid.addWidget(self.holysealButton, 0, 2)
-    grid.addWidget(self.getchuButton, 0, 3)
-    grid.addWidget(self.amazonButton, 0, 4)
-    grid.addWidget(self.dmmButton, 1, 0)
-    grid.addWidget(self.dlsiteButton, 1, 1)
-    grid.addWidget(self.digiketButton, 1, 2)
-    grid.addWidget(self.gyuttoButton, 1, 3)
+    r = c = 0
+    grid.addWidget(self.trailersButton, r, c)
+    c += 1
+    grid.addWidget(self.scapeButton, r, c)
+    c += 1
+    grid.addWidget(self.holysealButton, r, c)
+    c += 1
+    grid.addWidget(self.freemButton, r, c)
+
+    r += 1; c = 0
+    grid.addWidget(self.getchuButton, r, c)
+    c += 1
+    grid.addWidget(self.gyuttoButton, r, c)
+    c += 1
+    grid.addWidget(self.digiketButton, r, c)
+    c += 1
+    grid.addWidget(self.dmmButton, r, c)
+    c += 1
+    grid.addWidget(self.dlsiteButton, r, c)
+
+    r += 1; c = 0
+    grid.addWidget(self.amazonButton, r, c)
+    c += 1
+    grid.addWidget(self.steamButton, r, c)
+
     layout.addLayout(grid)
 
     # Body
@@ -161,7 +181,7 @@ class _ReferenceInput(object):
   @memoizedproperty
   def searchTimer(self):
     ret = QTimer(self.q)
-    ret.setInterval(1000)
+    ret.setInterval(3000)
     ret.timeout.connect(self._search)
     ret.setSingleShot(True)
     return ret
@@ -191,42 +211,56 @@ class _ReferenceInput(object):
   @memoizedproperty
   def getchuButton(self):
     ret = QtWidgets.QRadioButton("Getchu")
-    ret.setToolTip("getchu.com (Alt+4)")
+    ret.setToolTip("getchu.com (Alt+5)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def amazonButton(self):
     ret = QtWidgets.QRadioButton("Amazon")
-    ret.setToolTip("amazon.co.jp (Alt+5)")
+    ret.setToolTip("amazon.co.jp (Alt+0)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dmmButton(self):
     ret = QtWidgets.QRadioButton("DMM")
-    ret.setToolTip("dmm.co.jp (Alt+6)")
+    ret.setToolTip("dmm.co.jp (Alt+8)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dlsiteButton(self):
     ret = QtWidgets.QRadioButton("DLsite")
-    ret.setToolTip("dlsite.com (Alt+7)")
+    ret.setToolTip("dlsite.com (Alt+9)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def digiketButton(self):
     ret = QtWidgets.QRadioButton("DiGiket")
-    ret.setToolTip("digiket.com (Alt+8)")
+    ret.setToolTip("digiket.com (Alt+7)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def gyuttoButton(self):
     ret = QtWidgets.QRadioButton("Gyutto")
-    ret.setToolTip("gyutto.com (Alt+9)")
+    ret.setToolTip("gyutto.com (Alt+6)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
+  @memoizedproperty
+  def freemButton(self):
+    ret = QtWidgets.QRadioButton("FreeM")
+    ret.setToolTip("freem.ne.jp (Alt+4)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
+  @memoizedproperty
+  def steamButton(self):
+    ret = QtWidgets.QRadioButton("Steam")
+    ret.setToolTip("steampowered.com")
     ret.toggled.connect(self._searchLater)
     return ret
 
@@ -241,6 +275,8 @@ class _ReferenceInput(object):
         'amazon' if self.amazonButton.isChecked() else
         'dlsite' if self.dlsiteButton.isChecked() else
         'digiket' if self.digiketButton.isChecked() else
+        'freem' if self.freemButton.isChecked() else
+        'steam' if self.steamButton.isChecked() else
         None) # This should never happen
 
   @memoizedproperty
@@ -355,7 +391,7 @@ class _ReferenceInput(object):
     if item: #and item.get('type') == self._selectedType():
       dprint("key: %s, title: %s" % (item['key'], item['title']))
       type = item['type']
-      if type in ('digiket', 'holyseal'):
+      if type in ('digiket', 'gyutto', 'holyseal', 'stream'):
         skevents.runlater(partial(self._saveNew, item), 200) # runlater so that it won't block GUI
       else:
         self.q.itemSelected.emit(item)
@@ -439,7 +475,7 @@ class _ReferenceInput(object):
 class ReferenceInput(QtWidgets.QDialog):
 
   def __init__(self, parent=None, readonly=False):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(ReferenceInput, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.__d = _ReferenceInput(self, readonly=readonly)

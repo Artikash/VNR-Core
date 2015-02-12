@@ -28,7 +28,7 @@
 #   "gyutto":""
 #  }
 
-__all__ = ['RestApi']
+__all__ = 'RestApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -40,12 +40,15 @@ from sakurakit.skstr import unescapehtml
 _PATCHES = { # {long id:kw}
   2220:  {'brand': u"CORE-DUSK"},   # メサイア (MESSIAH)
   2309:  {'erogamescape': '6102'},  # カスタム隷奴III
-  4143:  {'title': u"Blaze of Destiny II The bginning of the fate"},
+  4143:  {'title': u"Blaze of Destiny II The beginning of the fate"},
   9952:  {'erogamescape': '17943'}, # 学☆王 -THE ROYAL SEVEN STARS- +METEOR(P
   9981:  {'brand' :u"美蕾"},        # 星の王女
   #10489: {'dmm2': '543ka0066'},     # プレスタ！ ～Precious☆Star'sフェスティバル～
   10839: {'brand':u"Mink"},         # 夜勤病棟 復刻版+
   11992: {'amazon': ''}, # 廻る娼館街のリィナ -- delete wrong amazon
+  12410: {'releaseDayNumber': 20141230},
+  12712: {'releaseDayNumber': 20141128},
+  13100: {'releaseDayNumber': 20150130},
 }
 
 # API is stateless
@@ -94,6 +97,7 @@ if __name__ == '__main__':
   t = u"diaborosu"
   t = "2309" # カスタム隷奴III
   t = '415' # ::inedited::
+  t = 8458
   q = api.query(t, type=api.EROGETRAILERS_TYPE)
   print q
 

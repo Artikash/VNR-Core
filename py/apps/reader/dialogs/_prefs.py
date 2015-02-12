@@ -4,6 +4,7 @@
 
 import os
 from functools import partial
+from collections import OrderedDict
 from PySide.QtCore import Qt, QTimer
 from PySide import QtCore, QtGui
 from Qt5 import QtWidgets
@@ -11,14 +12,34 @@ from sakurakit import skevents, skpaths, skqss, skstr, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_, notr_
+import voiceroid.online as vrapi
+import voicetext.online as vtapi
 from msime import msime
-from dataman import GUEST
+from share.mt import mtinfo
 from mytr import my, mytr_
-import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
+from dataman import GUEST
+import audioinfo, config, cacheman, dataman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, trman, ttsman
 
 def parent_window(): # replace self.q to make sure windows is always visible
   import windows
   return windows.top()
+
+def create_toggle_button(*args, **kwargs): # -> QPushButton
+  ret = QtWidgets.QPushButton(*args, **kwargs)
+  skqss.class_(ret, 'btn btn-default btn-toggle')
+  ret.setMaximumWidth(18)   # qss sometimes does not work, bug?
+  ret.setMaximumHeight(18)  # qss sometimes does not work, bug?
+  return ret
+
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight|Qt.AlignTop)
+  #ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+  return ret
+
+ALL_LANGUAGES = config.LANGUAGES2 # merge zhs
 
 DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
@@ -125,28 +146,34 @@ class _UserTab(object):
     grid = QtWidgets.QGridLayout()
 
     r = 0
-    grid.addWidget(QtWidgets.QLabel(tr_("Avatar") + ":"), r, 0)
+    grid.addWidget(create_label(notr_("UI")), r, 0)
+    grid.addWidget(self.uiLanguageEdit, r, 1)
+
+    r += 1 # add a vertical space
+    grid.addWidget(QtWidgets.QLabel(), r, 0)
+
+    r += 1
+    grid.addWidget(create_label(tr_("Avatar")), r, 0)
     grid.addWidget(self.userAvatarLabel, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Username") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Username")), r, 0)
     grid.addWidget(self.userNameEdit, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Password") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Password")), r, 0)
     grid.addWidget(self.userPasswordEdit, r, 1)
 
-    # Language name is not translated
     r += 1
-    grid.addWidget(QtWidgets.QLabel(notr_("Language") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Language")), r, 0)
     grid.addWidget(self.userLanguageEdit, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Gender") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Gender")), r, 0)
     grid.addWidget(self.userGenderEdit, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Color") + ":"), r, 0)
+    grid.addWidget(create_label(tr_("Color")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.userColorButton)
     row.addWidget(self.resetUserColorButton)
@@ -154,7 +181,7 @@ class _UserTab(object):
     grid.addLayout(row, r, 1)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(u"超能力:"), r, 0)
+    grid.addWidget(create_label(tr_("Privilege")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.userLevelLabel)
     self._refreshUserLevel()
@@ -234,9 +261,7 @@ class _UserTab(object):
 
   @memoizedproperty
   def resetUserColorButton(self):
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    ret.setMaximumWidth(20)
-    skqss.class_(ret, 'btn btn-default')
+    ret = create_toggle_button(u"×") # ばつ
     ret.setToolTip(tr_("Reset"))
     ret.clicked.connect(self._resetUserColor)
     return ret
@@ -288,18 +313,38 @@ class _UserTab(object):
     return ret
 
   @memoizedproperty
-  def userLanguageEdit(self):
+  def uiLanguageEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
     ret.addItems(map(config.language_name, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
+    try: langIndex = config.LANGUAGES.index(settings.global_().uiLanguage())
+    except ValueError: langIndex = 1 # 'en'
+    ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(self._saveUiLanguage)
+    return ret
+
+  @memoizedproperty
+  def userLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ss = settings.global_()
+
     def _load():
-      try: langIndex = config.LANGUAGES.index(settings.global_().userLanguage())
+      try: langIndex = config.LANGUAGES.index(ss.userLanguage())
       except ValueError: langIndex = 1 # 'en'
       ret.setCurrentIndex(langIndex)
+
+    def _save():
+      try: lang = config.LANGUAGES[ret.currentIndex()]
+      except ValueError: lang = 'en'
+      ss.setUserLanguage(lang)
+
     _load()
-    settings.global_().userLanguageChanged.connect(_load)
-    ret.currentIndexChanged.connect(self._saveLanguage)
+    ss.userLanguageChanged.connect(_load)
+    ret.currentIndexChanged.connect(_save)
     return ret
 
   @memoizedproperty
@@ -329,7 +374,6 @@ class _UserTab(object):
     """
     @return  bool
     """
-    import dataman
     if dataman.manager().user().isGuest():
       growl.warn(my.tr("Modification to guest account is not allowed"))
       return False
@@ -358,15 +402,16 @@ class _UserTab(object):
       except IndexError: genderIndex = 1 # male
       self.userGenderEdit.setCurrentIndex(genderIndex)
 
-  def _saveLanguage(self):
-    lang = config.LANGUAGES[self.userLanguageEdit.currentIndex()]
+  def _saveUiLanguage(self):
+    lang = config.LANGUAGES[self.uiLanguageEdit.currentIndex()]
     ss = settings.global_()
-    if lang != ss.userLanguage():
-      if lang in ('en', 'ja', 'zht', 'zhs'):
-        growl.notify("<br/>".join((
-          my.tr("GUI language changed."),
-          my.tr("VNR will use the new language next time."),
-        )))
+    if lang != ss.uiLanguage():
+      growl.notify("<br/>".join((
+        #my.tr("GUI language changed."),
+        #my.tr("VNR will use the new language next time."),
+        notr_("GUI language changed to {0}.").format(lang),
+        tr_("VNR will use the new language next time."),
+      )))
       #elif lang in ('vi', 'id', 'ms', 'th'):
       #  growl.notify("<br/>".join((
       #    my.tr("I am so sorry that"),
@@ -379,7 +424,7 @@ class _UserTab(object):
       #    my.tr("Currently, {0} is the only machine translator that supports {1}.")
       #      .format(mytr_("Bing"), i18n.language_name(lang)),
       #  )))
-      ss.setUserLanguage(lang)
+      ss.setUiLanguage(lang)
 
   def _saveLogin(self):
     """
@@ -580,7 +625,7 @@ class _GameTab(object):
     if not features.WINE:
       layout.addWidget(self.launcherGroup)
     layout.addWidget(self.snifferGroup)
-    layout.addWidget(self.springBoardGroup)
+    #layout.addWidget(self.springBoardGroup)
     layout.addWidget(self.timeZoneGroup)
     #layout.addWidget(self.hcodeGroup) # Always enabled
     layout.addStretch()
@@ -613,34 +658,34 @@ and then change the code to the correct one in Text Settings.""")))
 
   ## Spring board ##
 
-  @memoizedproperty
-  def springBoardGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.springBoardButton)
+#  @memoizedproperty
+#  def springBoardGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.springBoardButton)
+#
+#    label = QtWidgets.QLabel(my.tr(
+#"""When enabled, VNR will launch the game dropped onto the Spring Board.
+#When disabled, VNR will only add the new game without launching it.
+#Drag-drop does not work when VNR is launched with admin privileges."""))
+#    if features.ADMIN == True:
+#      skqss.class_(label, 'warning')
+#    layout.addWidget(label)
+#
+#    ret = QtWidgets.QGroupBox(mytr_("Spring Board"))
+#    ret.setLayout(layout)
+#    return ret
 
-    label = QtWidgets.QLabel(my.tr(
-"""When enabled, VNR will launch the game dropped onto the Spring Board.
-When disabled, VNR will only add the new game without launching it.
-Drag-drop does not work when VNR is launched with admin privileges."""))
-    if features.ADMIN == True:
-      skqss.class_(label, 'warning')
-    layout.addWidget(label)
-
-    ret = QtWidgets.QGroupBox(mytr_("Spring Board"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def springBoardButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Launch the game (*.exe/*.lnk) dropped onto the Spring Board"
-    ))
-    if features.ADMIN == True:
-      skqss.class_(ret, 'warning')
-    ss = settings.global_()
-    ret.setChecked(ss.springBoardLaunchesGame())
-    ret.toggled.connect(ss.setSpringBoardLaunchesGame)
-    return ret
+  #@memoizedproperty
+  #def springBoardButton(self):
+  #  ret = QtWidgets.QCheckBox(my.tr(
+  #    "Launch the game (*.exe/*.lnk) dropped onto the Spring Board"
+  #  ))
+  #  if features.ADMIN == True:
+  #    skqss.class_(ret, 'warning')
+  #  ss = settings.global_()
+  #  ret.setChecked(ss.springBoardLaunchesGame())
+  #  ret.toggled.connect(ss.setSpringBoardLaunchesGame)
+  #  return ret
 
   ## Time zone ##
 
@@ -698,6 +743,13 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.ntleaButton)
     layout.addWidget(self.localeSwitchButton)
     #layout.addWidget(self.launchInfoLabel)
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(tr_("Locale") + ":"))
+    row.addWidget(self.launchLanguageEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     self._loadLauncher()
@@ -710,6 +762,19 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
   #   ))
   #  ret.setWordWrap(True)
   #  return ret
+
+  @memoizedproperty
+  def launchLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    try: langIndex = config.LANGUAGES.index(settings.global_().gameLaunchLanguage())
+    except ValueError: langIndex = 0 # 'ja'
+    ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(lambda index:
+        settings.global_().setGameLaunchLanguage(config.LANGUAGES[index]))
+    return ret
 
   @memoizedproperty
   def disableButton(self):
@@ -757,9 +822,9 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
 
   @memoizedproperty
   def ntleasButton(self):
-    ret = QtWidgets.QRadioButton("%s (%s)" % (
+    ret = QtWidgets.QRadioButton("%s (%s, %s)" % (
         my.tr("Use {0} to change game locale").format(notr_("Ntleas")),
-        tr_("download")))
+        tr_("download"), tr_("recommended")))
     #if features.ADMIN == False:
     #  skqss.class_(ret, 'warning')
     ret.toggled.connect(self._saveLauncher)
@@ -776,6 +841,8 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     if not b.isChecked():
       b.setChecked(True)
 
+    self._refreshLanguageEdit()
+
   def _saveLauncher(self):
     ss = settings.global_()
     ss.setApplocEnabled(self.applocButton.isChecked())
@@ -783,6 +850,11 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ss.setNtleasEnabled(self.ntleasButton.isChecked())
     ss.setLocaleSwitchEnabled(self.localeSwitchButton.isChecked())
     ss.setLocaleEmulatorEnabled(self.localeEmulatorButton.isChecked())
+    self._refreshLanguageEdit()
+
+  def _refreshLanguageEdit(self):
+    f = self.disableButton.isChecked() or self.localeEmulatorButton.isChecked()
+    self.launchLanguageEdit.setEnabled(not f)
 
   def refresh(self):
     self.localeEmulatorButton.setEnabled(libman.localeEmulator().exists())
@@ -800,6 +872,85 @@ class GameTab(QtWidgets.QDialog):
   def save(self): pass
   def load(self): pass
   def refresh(self): self.__d.refresh()
+
+## Recordings ##
+
+@Q_Q
+class _RecordingsTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.locationGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  ## Screenshots ##
+
+  @memoizedproperty
+  def locationGroup(self):
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+    grid.addWidget(QtWidgets.QLabel(tr_("Screenshot")), r, 0)
+    grid.addWidget(self.grabLocationEdit, r, 1)
+    grid.addWidget(self.grabLocationButton, r, 2)
+    r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("Locations to save recorded files"))
+    ret.setLayout(grid)
+    return ret
+
+  @memoizedproperty
+  def grabLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    return ret
+
+  @memoizedproperty
+  def grabLocationButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
+    skqss.class_(ret, BROWSE_BTN_CLASS)
+    ret.setToolTip(my.tr("Select the location"))
+    ret.clicked.connect(self._getGrabLocation)
+    return ret
+
+  def _getGrabLocation(self):
+    path = settings.global_().grabLocation() or skpaths.DESKTOP
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder to save {0}").format(my.tr('game screenshot')),
+        path, 0)
+    if path:
+      path = QtCore.QDir.toNativeSeparators(path)
+      settings.global_().setGrabLocation(path)
+      self._refreshGrabLocation()
+
+  def _refreshGrabLocation(self):
+    path = settings.global_().grabLocation() or skpaths.DESKTOP
+    edit = self.grabLocationEdit
+    edit.setText(path)
+    exists = path and os.path.exists(path)
+    skqss.toggleclass(edit, 'text-error', not exists)
+    edit.setToolTip(
+        my.tr("Location to save {0}").format(my.tr('game screenshot'))
+        if exists else my.tr("Location does not exist"))
+
+  def load(self):
+    self._refreshGrabLocation()
+
+class RecordingsTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(RecordingsTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _RecordingsTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): self.__d.load()
+  def refresh(self): pass
 
 ## Shortcuts ##
 
@@ -837,6 +988,12 @@ class _ShortcutsTab(object):
     r += 1
     grid.addWidget(self.grabButton, r, 0)
     grid.addWidget(self.grabCheckBox, r, 1)
+    r += 1
+    grid.addWidget(self.ocrButton, r, 0)
+    grid.addWidget(self.ocrCheckBox, r, 1)
+    r += 1
+    grid.addWidget(self.srButton, r, 0)
+    grid.addWidget(self.srCheckBox, r, 1)
     r += 1
 
     layout = QtWidgets.QVBoxLayout()
@@ -877,6 +1034,7 @@ class _ShortcutsTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isGrabHotkeyEnabled())
     ret.toggled.connect(ss.setGrabHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   @memoizedproperty
@@ -918,6 +1076,7 @@ class _ShortcutsTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isTtsHotkeyEnabled())
     ret.toggled.connect(ss.setTtsHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   @memoizedproperty
@@ -928,6 +1087,90 @@ class _ShortcutsTab(object):
       ret.windowTitle(), mytr_("Text-to-speech")))
     ss = settings.global_()
     ret.valueChanged.connect(ss.setTtsHotkey)
+    return ret
+
+  # OCR
+
+  @memoizedproperty
+  def ocrButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.ocrHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.ocrHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.ocrDialog.setValue(ss.ocrHotkey()),
+        self.ocrDialog.show()))
+
+    ret.setEnabled(self.ocrCheckBox.isChecked())
+    self.ocrCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def ocrCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Toggle monitoring game window to OCR"))
+    ss = settings.global_()
+    ret.setChecked(ss.isOcrHotkeyEnabled())
+    ret.toggled.connect(ss.setOcrHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  @memoizedproperty
+  def ocrDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), mytr_("OCR")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setOcrHotkey)
+    return ret
+
+  # Speech recognition
+
+  @memoizedproperty
+  def srButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.srHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.srHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.srDialog.setValue(ss.srHotkey()),
+        self.srDialog.show()))
+
+    ret.setEnabled(self.srCheckBox.isChecked())
+    self.srCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def srCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Immediately recognize current speech"))
+    ss = settings.global_()
+    ret.setChecked(ss.isSrHotkeyEnabled())
+    ret.toggled.connect(ss.setSrHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  @memoizedproperty
+  def srDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), mytr_("Speech recognition")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setSrHotkey)
     return ret
 
   # Textbox visible toggler
@@ -958,6 +1201,7 @@ class _ShortcutsTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isTextHotkeyEnabled())
     ret.toggled.connect(ss.setTextHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   @memoizedproperty
@@ -988,12 +1232,14 @@ class ShortcutsTab(QtWidgets.QDialog):
 class _TtsTab(object):
 
   def __init__(self, q):
+    self.onlineWidgets = [] # [QWidget] any widget that involves online TTS
+    self.zunkoWidgets = [] # [QWidget] any widgets that involves Zunko
     self._createUi(q)
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.engineGroup)
     layout.addWidget(self.testGroup)
+    layout.addWidget(self.engineGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -1005,6 +1251,7 @@ class _TtsTab(object):
 
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.testButton)
+    row.addWidget(self.testLanguageButton)
     row.addWidget(self.testEdit)
     layout.addLayout(row)
 
@@ -1025,10 +1272,24 @@ class _TtsTab(object):
   def testButton(self):
     ret = QtWidgets.QPushButton()
     ret.setText(tr_("Test"))
+    #ret.setText(u"▶")
     ret.setToolTip(my.tr("Read using the selected TTS engine"))
     skqss.class_(ret, 'btn btn-success')
     ret.clicked.connect(self._test)
     return ret
+
+  @memoizedproperty
+  def testLanguageButton(self):
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(tr_("Language"))
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES2))
+    ret.setMaxVisibleItems(ret.count())
+    return ret
+
+  def _testLanguage(self): # -> str or None
+    index = self.testLanguageButton.currentIndex()
+    try: return config.LANGUAGES2[index]
+    except IndexError: pass
 
   def _test(self, engine=''):
     """
@@ -1036,17 +1297,21 @@ class _TtsTab(object):
     """
     t = self.testEdit.text().strip()
     if t:
-      ttsman.speak(t, engine=engine)
+      lang = self._testLanguage()
+      ttsman.speak(t, engine=engine, language=lang, verbose=True)
 
   def createTestButton(self, engine='', parent=None):
     """
     @param  engine  str
+    @return  QPushButton
     """
-    ret = QtWidgets.QPushButton(parent or self.q)
-    ret.setText(tr_("Test"))
+    ret = create_toggle_button(parent or self.q)
+    #ret = QtWidgets.QPushButton(parent or self.q)
+    #ret.setText(tr_("Test"))
+    ret.setText(u"▶")
     ret.setToolTip(my.tr("Read using this TTS"))
     #skqss.class_(ret, 'btn btn-success')
-    skqss.class_(ret, 'btn btn-default')
+    #skqss.class_(ret, 'btn btn-default')
     ret.clicked.connect(partial(self._test, engine))
     return ret
 
@@ -1058,99 +1323,307 @@ class _TtsTab(object):
     ret.setText(tr_("Launch"))
     ret.setToolTip(tr_("Launch"))
     #skqss.class_(ret, 'btn btn-success')
-    skqss.class_(ret, 'btn btn-default')
+    skqss.class_(ret, 'btn btn-default btn-xs')
     run = getattr(ttsman.manager(), 'run' + engine.capitalize())
     ret.clicked.connect(run)
     return ret
 
-  # TTS ##
+  ## TTS ##
 
   @memoizedproperty
   def engineGroup(self):
     grid = QtWidgets.QGridLayout()
 
     r = 0
-    grid.addWidget(self.disableButton, r, 0)
-
-    # Google
-    r += 1
-    grid.addWidget(self.googleButton, r, 0)
-    self.googleTestButton = self.createTestButton('google')
-    grid.addWidget(self.googleTestButton, r, 1)
-    grid.addWidget(self.googleLanguageEdit, r, 2)
-
-    # VOICEROID
-    for k,b in ((
-        ('yukari', self.yukariButton),
-        ('zunko', self.zunkoButton),
-      )):
-      r += 1
-      grid.addWidget(b, r, 0)
-      tb = self.createTestButton(k)
-      setattr(self, k + 'TestButton', tb)
-      grid.addWidget(tb, r, 1)
-      lb = self.createVoiceroidLaunchButton(k)
-      setattr(self, k + 'LaunchButton', lb)
-      grid.addWidget(lb, r, 2)
+    grid.addWidget(self.disableButton, r, 1)
 
     # SAPI
-    for k,b in self.sapiButtons:
+    if not self.sapiButtons:
       r += 1
-      grid.addWidget(b, r, 0)
-      tb = self.createTestButton(k)
-      grid.addWidget(tb, r, 1)
-      e = self.createSapiSpeedEdit(k)
-      grid.addWidget(e, r, 2)
+      grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0, 1, 2)
+    else:
+      r += 1
+      label = QtWidgets.QLabel("SAPI (%s):" % tr_("offline"))
+      if features.ADMIN:
+        skqss.class_(label, 'text-error')
+      grid.addWidget(label, r, 0, 1, 2)
+      for k,b in self.sapiButtons:
+        r += 1
+        c = 1
+        if features.ADMIN:
+          skqss.class_(b, 'text-error')
+        grid.addWidget(b, r, c)
+        w = self.createTestButton(k)
+
+        c += 1
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createVolumeEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createSpeedEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createPitchEdit(k)
+        grid.addWidget(w, r, c)
+
+    # VOICEROID
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0, 1, 2)
+
+    for k,b,bb in ((
+        ('zunkooffline', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k, max=500) # maximum volume is 5x
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+    for k,b,bb in ((
+        ('yukari', self.yukariButton, self.yukariBrowseButton),
+        #('zunko', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      koffline = k + 'offline'
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(koffline)
+      setattr(self, k + 'TestButton', w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVoiceroidLaunchButton(k)
+      setattr(self, k + 'LaunchButton', w)
+      grid.addWidget(w, r, c)
+
+    # Multilingual
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("%s (%s):" % (mytr_("Multilingual"), tr_("online"))), r, 0, 1, 2)
+
+    for k,b,url in ((
+        ('baidu', self.baiduButton, "http://fanyi.baidu.com"),
+        ('google', self.googleButton, "http://translate.google.com"),
+        ('bing', self.bingButton, "http://www.bing.com/translator"),
+        ('naver', self.naverButton, "http://translate.naver.com"),
+      )):
+      r += 1
+      c = 0
+      w = self._createBrowseButton(url)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      self.onlineWidgets.append(b)
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      if k == 'naver':
+        c += 1
+        w = self.createGenderEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createSpeedEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      if k == 'naver':
+        c += 1
+        w = self.createPitchEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+        # add a span at the end
+        c += 1
+        span = QtWidgets.QWidget()
+        span.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        grid.addWidget(span, r, c)
+
+    # Voiceroid
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("online")), r, 0, 1, 2)
+
+    for i,(k,b) in enumerate(self.voiceroidButtons):
+      v = vrapi.VOICES[k]
+      r += 1
+      c = 0
+      w = self._createBrowseButton(v.url)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      self.onlineWidgets.append(b)
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createSpeedEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createPitchEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+    # VoiceText
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("VoiceText (%s):" % tr_("online")), r, 0, 1, 2)
+
+    url = "http://voicetext.jp"
+    blans = settings.global_().blockedLanguages()
+    for k,b in self.voicetextButtons:
+      v = vtapi.VOICES[k]
+      if v.language not in blans:
+        r += 1
+        c = 0
+        w = self._createBrowseButton(url)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        self.onlineWidgets.append(b)
+        grid.addWidget(b, r, c)
+
+        c += 1
+        w = self.createTestButton(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createVolumeEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createSpeedEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createPitchEdit(k)
+        self.onlineWidgets.append(w)
+        grid.addWidget(w, r, c)
+
+    # Information
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
 
-    info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("VNR supports not only Japanese TTS, but all SAPI TTS in any languages. VNR will read translations instead of game texts if TTS's language is different from game's."))
-    info.setWordWrap(True)
-    layout.addWidget(info)
+    if self.sapiButtons:
+      info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("SAPI TTS won't work when VNR is launched as Administrator."))
+      info.setWordWrap(True)
+      if features.ADMIN:
+        skqss.class_(info, 'text-error')
+      layout.addWidget(info)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred text-to-speech voice"))
     ret.setLayout(layout)
     self._loadEngine()
     return ret
 
-  @memoizedproperty
-  def disableButton(self):
-    ret = QtWidgets.QRadioButton("%s (%s)" % (my.tr("Disable TTS"), tr_("default")))
-    ret.toggled.connect(self._saveEngine)
+  def _createBrowseButton(self, path): # unicode or function -> QPushButton
+    ret = create_toggle_button("+")
+    if isinstance(path, basestring):
+      ret.setToolTip("%s: %s" % (tr_("Browse"), path))
+      open = osutil.open_url if path.startswith('http') else osutil.open_location
+      slot = partial(open, path)
+    else:
+      ret.setToolTip(tr_("Browse"))
+      slot = partial(lambda path: osutil.open_location(path()), path)
+    ret.clicked.connect(slot)
     return ret
 
   @memoizedproperty
-  def googleButton(self):
-    ret = QtWidgets.QRadioButton(u"Google TTS (♀, %s)" % tr_("online"))
+  def disableButton(self):
+    ret = QtWidgets.QRadioButton(my.tr("Disable TTS"))
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def yukariButton(self):
-    ret = QtWidgets.QRadioButton(u"VOICEROID+ 結月ゆかり (♀)")
+    ret = QtWidgets.QRadioButton(u"結月ゆかり (♀, %s)" % tr_("ja"))
     ret.toggled.connect(self._saveEngine)
     return ret
+  @memoizedproperty
+  def yukariBrowseButton(self):
+    return self._createBrowseButton(ttsman.manager().yukariLocation)
 
   @memoizedproperty
   def zunkoButton(self):
-    ret = QtWidgets.QRadioButton(u"VOICEROID+ 東北ずん子 (♀)")
+    ret = QtWidgets.QRadioButton(u"東北ずん子 (♀, %s)" % tr_("ja"))
+    ret.toggled.connect(self._saveEngine)
+    self.zunkoWidgets.append(ret)
+    return ret
+  @memoizedproperty
+  def zunkoBrowseButton(self):
+    ret = self._createBrowseButton(settings.global_().zunkoLocation)
+    self.zunkoWidgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def googleButton(self):
+    ret = QtWidgets.QRadioButton(u"Google.com (♀)")
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
-  def engineButtons(self):
-    """
-    @return  {unicode key:QRadioButton}
-    """
-    ret = {
-      '': self.disableButton,
-      'google': self.googleButton,
-      'yukari': self.yukariButton,
-      'zunko': self.zunkoButton,
-    }
-    for k,b in self.sapiButtons:
-      ret[k] = b
+  def baiduButton(self):
+    ret = QtWidgets.QRadioButton(u"%s.com (♀, %s)" % (mytr_("Baidu"), tr_("default")))
+    ret.toggled.connect(self._saveEngine)
+    return ret
+
+  @memoizedproperty
+  def naverButton(self):
+    ret = QtWidgets.QRadioButton(u"Naver.com (♀|♂, %s)" % tr_("recommended"))
+    ret.toggled.connect(self._saveEngine)
+    return ret
+
+  @memoizedproperty
+  def bingButton(self):
+    ret = QtWidgets.QRadioButton(u"Bing.com (♀)")
+    ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
@@ -1170,33 +1643,132 @@ class _TtsTab(object):
       ret.append((it.key, b))
     return ret
 
-  def createSapiSpeedEdit(self, key, parent=None):
+  @memoizedproperty
+  def voiceroidButtons(self):
+    """
+    @return  [unicode key, QRadioButton]
+    """
+    ret = []
+    for it in vrapi.VOICES.itervalues():
+      text = "%s (%s, %s)" % (
+        it.name,
+        u"♂" if it.gender == 'm' else u"♀",
+        tr_("ja"),
+      )
+      b = QtWidgets.QRadioButton(text)
+      color = 'blue' if it.gender == 'm' else 'purple'
+      b.setStyleSheet("QRadioButton{color:%s}" % color)
+      b.toggled.connect(self._saveEngine)
+      ret.append((it.key, b))
+    return ret
+
+  @memoizedproperty
+  def voicetextButtons(self):
+    """
+    @return  [unicode key, QRadioButton]
+    """
+    ret = []
+    for it in vtapi.VOICES.itervalues():
+      text = "%s (%s, %s)" % (
+        it.name,
+        u"♂" if it.gender == 'm' else u"♀",
+        i18n.language_name2(it.language),
+      )
+      b = QtWidgets.QRadioButton(text)
+      color = 'blue' if it.gender == 'm' else 'purple'
+      b.setStyleSheet("QRadioButton{color:%s}" % color)
+      b.toggled.connect(self._saveEngine)
+      ret.append((it.key, b))
+    return ret
+
+  @memoizedproperty
+  def engineButtons(self):
+    """
+    @return  {unicode key:QRadioButton}
+    """
+    ret = {
+      '': self.disableButton,
+
+      'naver': self.naverButton,
+      'baidu': self.baiduButton,
+      'bing': self.bingButton,
+      'google': self.googleButton,
+
+      'yukarioffline': self.yukariButton,
+      'zunkooffline': self.zunkoButton,
+    }
+    for k,b in self.sapiButtons:
+      ret[k] = b
+    for k,b in self.voiceroidButtons:
+      ret[k] = b
+    for k,b in self.voicetextButtons:
+      ret[k] = b
+    return ret
+
+  def createSpeedEdit(self, key, parent=None):
     ret = QtWidgets.QSpinBox(parent or self.q)
     ret.setToolTip("%s [-10,10]" % tr_("Speed"))
     ret.setRange(-10, 10)
     ret.setSingleStep(1)
+    ret.setPrefix(tr_("Speed") + " ")
     tm = ttsman.manager()
-    ret.setValue(tm.getSapiSpeed(key))
-    ret.valueChanged[int].connect(partial(tm.setSapiSpeed, key))
+    ret.setValue(tm.getSpeed(key))
+    ret.valueChanged[int].connect(partial(tm.setSpeed, key))
     return ret
 
-  @memoizedproperty
-  def googleLanguageEdit(self):
-    ret = QtWidgets.QComboBox()
-    ret.setToolTip(tr_("Language"))
-    ret.addItems(map(i18n.language_name2, config.LANGUAGES2))
-    ret.setMaxVisibleItems(ret.count())
-    try: langIndex = config.LANGUAGES2.index(settings.global_().googleTtsLanguage())
-    except (ValueError, TypeError): langIndex = 1 # 'en'
-    ret.setCurrentIndex(langIndex)
-    ret.currentIndexChanged.connect(self._saveGoogleLanguage)
+  def createPitchEdit(self, key, parent=None):
+    ret = QtWidgets.QSpinBox(parent or self.q)
+    ret.setToolTip("%s [-10,10]" % tr_("Pitch"))
+    ret.setRange(-10, 10)
+    ret.setSingleStep(1)
+    ret.setPrefix(tr_("Pitch") + " ")
+    tm = ttsman.manager()
+    ret.setValue(tm.getPitch(key))
+    ret.valueChanged[int].connect(partial(tm.setPitch, key))
     return ret
 
-  def _saveGoogleLanguage(self):
-    index = self.googleLanguageEdit.currentIndex()
-    try: lang = config.LANGUAGES2[index]
-    except IndexError: lang = 'ja'
-    settings.global_().setGoogleTtsLanguage(lang)
+  def createVolumeEdit(self, key, max=100, parent=None):
+    ret = QtWidgets.QSpinBox(parent or self.q)
+    ret.setToolTip("%s [0,%s]" % (tr_("Volume"), max))
+    ret.setRange(0, max)
+    ret.setSingleStep(10)
+    ret.setPrefix(tr_("Volume") + " ")
+    ret.setSuffix("%")
+    tm = ttsman.manager()
+    ret.setValue(tm.getVolume(key))
+    ret.valueChanged[int].connect(partial(tm.setVolume, key))
+    return ret
+
+  def createGenderEdit(self, key, parent=None):
+    ret = QtWidgets.QComboBox(parent or self.q)
+    ret.setEditable(False)
+    ret.addItem(i18n.gender_name('f')) # index = 0
+    ret.addItem(i18n.gender_name('m')) # index = 1
+
+    tm = ttsman.manager()
+    ret.setCurrentIndex(1 if tm.getGender(key) == 'm' else 0)
+    ret.currentIndexChanged.connect(partial(
+        lambda key, index: ttsman.manager().setGender(key, 'f' if index == 0 else 'm'),
+        key))
+    return ret
+
+  #@memoizedproperty
+  #def googleLanguageEdit(self):
+  #  ret = QtWidgets.QComboBox()
+  #  ret.setToolTip(tr_("Language"))
+  #  ret.addItems(map(i18n.language_name2, config.LANGUAGES2))
+  #  ret.setMaxVisibleItems(ret.count())
+  #  try: langIndex = config.LANGUAGES2.index(settings.global_().googleTtsLanguage())
+  #  except (ValueError, TypeError): langIndex = 1 # 'en'
+  #  ret.setCurrentIndex(langIndex)
+  #  ret.currentIndexChanged.connect(self._saveGoogleLanguage)
+  #  return ret
+
+  #def _saveGoogleLanguage(self):
+  #  index = self.googleLanguageEdit.currentIndex()
+  #  try: lang = config.LANGUAGES2[index]
+  #  except IndexError: lang = 'ja'
+  #  settings.global_().setGoogleTtsLanguage(lang)
 
   def _loadEngine(self):
     v = settings.global_().ttsEngine()
@@ -1215,18 +1787,19 @@ class _TtsTab(object):
   def refresh(self):
     ss = settings.global_()
 
-    enabled = libman.quicktime().exists()
-    for w in self.googleButton, self.googleLanguageEdit, self.googleTestButton:
+    #enabled = libman.quicktime().exists()
+    enabled = libman.wmp().exists()
+    for w in self.onlineWidgets:
       w.setEnabled(enabled)
 
     path = settings.global_().yukariLocation() or ttsman.manager().yukariLocation()
     enabled = bool(path)
-    for w in self.yukariButton, self.yukariTestButton, self.yukariLaunchButton:
+    for w in self.yukariButton, self.yukariTestButton, self.yukariLaunchButton, self.yukariBrowseButton:
       w.setEnabled(enabled)
 
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
+    path = settings.global_().zunkoLocation() #or ttsman.manager().zunkoLocation()
     enabled = bool(path)
-    for w in self.zunkoButton, self.zunkoTestButton, self.zunkoLaunchButton:
+    for w in self.zunkoWidgets:
       w.setEnabled(enabled)
 
 class TtsTab(QtWidgets.QDialog):
@@ -1475,12 +2048,113 @@ class OcrTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): self.__d.refresh()
 
+## SR ##
+
+@Q_Q
+class _SrTab(object):
+
+  def __init__(self, q):
+    self.deviceButtons = {} # {int index:QRadioButton}
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.aboutGroup)
+    layout.addWidget(self.languageGroup)
+    if audioinfo.inputdevices():
+      layout.addWidget(self.deviceGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  # About
+
+  @memoizedproperty
+  def aboutGroup(self):
+    label = QtWidgets.QLabel(my.tr(
+"""VNR supports recognizing speech using Google free online service.
+You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
+
+    layout = skwidgets.SkWidgetLayout(label)
+    ret = QtWidgets.QGroupBox(tr_("About"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def deviceGroup(self):
+    import settings
+    ss = settings.global_()
+
+    layout = QtWidgets.QVBoxLayout()
+    for info in audioinfo.inputdevices():
+      name = info['name']
+      index = info['index']
+      text = name
+      if not index:
+        text += " (%s)" % tr_("default")
+      w = QtWidgets.QRadioButton(text)
+      self.deviceButtons[index] = w
+      if index == ss.audioDeviceIndex():
+        w.setChecked(True)
+      w.toggled.connect(self._saveDevice)
+      layout.addWidget(w)
+
+    ret = QtWidgets.QGroupBox(my.tr("Audio device to record"))
+    ret.setLayout(layout)
+    return ret
+
+  def _saveDevice(self):
+    for index,btn in self.deviceButtons.iteritems():
+      if btn.isChecked():
+        settings.global_().setAudioDeviceIndex(index)
+        break
+
+  @memoizedproperty
+  def languageGroup(self):
+    import settings
+    ss = settings.global_()
+    layout = QtWidgets.QHBoxLayout()
+    layout.addWidget(self.languageEdit)
+    layout.addStretch()
+    ret = QtWidgets.QGroupBox(my.tr("Language of the speech to recognize"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def languageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+
+    try: langIndex = config.LANGUAGES.index(settings.global_().speechRecognitionLanguage())
+    except ValueError: langIndex = 0 # 'ja'
+    ret.setCurrentIndex(langIndex)
+
+    ret.currentIndexChanged.connect(self._saveLanguage)
+    return ret
+
+  def _saveLanguage(self):
+    lang = config.LANGUAGES[self.languageEdit.currentIndex()]
+    settings.global_().setSpeechRecognitionLanguage(lang)
+
+class SrTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(SrTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _SrTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
+
 ## i18n ##
 
 #@Q_Q
 class _I18nTab(object):
 
-  LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'ar', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+  LANGUAGES = [it for it in ALL_LANGUAGES if it != 'ja']
 
   def __init__(self, q):
     self._createUi(q)
@@ -1551,6 +2225,107 @@ class I18nTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): pass
 
+## Term ##
+
+#@Q_Q
+class _TermTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.generalGroup)
+    #layout.addWidget(self.rbmtGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  @memoizedproperty
+  def generalGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.underlineButton)
+    layout.addWidget(self.hentaiButton)
+    ret = QtWidgets.QGroupBox(my.tr("Machine translation option"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def underlineButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Underline the text modified by the Shared Dictionary if possible"),
+        tr_("default")))
+    ss = settings.global_()
+    ret.setChecked(ss.isTermMarked())
+    ret.toggled.connect(ss.setTermMarked)
+    return ret
+
+  @memoizedproperty
+  def hentaiButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Enable hentai translation rules for H-scene"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHentaiEnabled())
+    ret.toggled.connect(ss.setHentaiEnabled)
+    ss.hentaiEnabledChanged.connect(ret.setChecked)
+    return ret
+
+  #@memoizedproperty
+  #def rbmtGroup(self):
+  #  layout = QtWidgets.QVBoxLayout()
+  #  layout.addWidget(self.syntaxButton)
+  #  layout.addWidget(self.syntaxInfo)
+  #  ret = QtWidgets.QGroupBox("%s (%s)" % (
+  #    my.tr("VNR's machine translation system"),
+  #    my.tr("require {0}").format(','.join((
+  #      'MeCab',
+  #      'CaboCha',
+  #      'UniDic',
+  #    ))),
+  #  ))
+  #  ret.setLayout(layout)
+  #  return ret
+
+  #@memoizedproperty
+  #def syntaxButton(self):
+  #  ret = QtWidgets.QCheckBox("%s (alpha)" % my.tr("Enable Japanese syntax terms to enhance machine translation quality"))
+  #  ss = settings.global_()
+  #  ret.setChecked(ss.isTranslationSyntaxEnabled())
+  #  ret.toggled.connect(ss.setTranslationSyntaxEnabled)
+  #  ret.toggled.connect(self._onTranslationSyntaxChanged)
+  #  return ret
+
+  #def _onTranslationSyntaxChanged(self):
+  #  ss = settings.global_()
+  #  if ss.isTranslationSyntaxEnabled():
+  #    ss.setCaboChaEnabled(True)
+  #    ss.setMeCabDictionary('unidic')
+
+  #@memoizedproperty
+  #def syntaxInfo(self):
+  #  ret = QtWidgets.QLabel("<br/><br/>".join((
+  #    '<span style="color:purple">%s</span>' % my.tr('This feature is under development. Please <span style="color:red">DO NOT</span> enable this option unless you are familiar with Japanese and the Shared Dictionary.'),
+  #    my.tr("VNR's machine translator is based on the syntax terms in the Shared Dictionary. Currently, the existing syntax terms are insufficient to translate most Japanese sentences. When there is no matched syntax for a sentence, the selected 3rd machine translators will be used as alternative."),
+  #  )))
+  #  ret.setWordWrap(True)
+  #  return ret
+
+  #def refresh(self):
+  #  ss = settings.global_()
+  #  self.syntaxButton.setEnabled(
+  #      ss.isTranslationSyntaxEnabled() or
+  #      dicts.mecab('unidic').exists() and dicts.cabocha('unidic').exists())
+  #  self.syntaxButton.setChecked(ss.isTranslationSyntaxEnabled()) # force reload settings
+
+class TermTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(TermTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _TermTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass #self.__d.refresh()
+
 ## Text ##
 
 @Q_Q
@@ -1570,10 +2345,7 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetFontButton(defval, sig=None):
-    #ret = QtWidgets.QPushButton(tr_("Reset"))
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    ret.setMaximumWidth(20)
-    skqss.class_(ret, 'btn btn-default')
+    ret = create_toggle_button(u"×") # ばつ
     ret.setToolTip(tr_("Reset") + ": " + defval)
     if sig:
       ret.clicked.connect(sig)
@@ -1661,9 +2433,7 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetColorButton(sig=None):
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    skqss.class_(ret, 'btn btn-default')
-    ret.setMaximumWidth(20)
+    ret = create_toggle_button(u"×") # ばつ
     ret.setToolTip(my.tr("Reset default color"))
     if sig:
       ret.clicked.connect(sig)
@@ -1759,34 +2529,37 @@ class _TextTab(object):
 
     # 8 Total
     blans = settings.global_().blockedLanguages()
-    conf = ( # Name, name, tr, lang
-      #('Lougo', None,  u"ルー語", None),
-      ('Bing', None,  mytr_("Bing"), None),
-      ('Google', None,  mytr_("Google"), None),
-      ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
-      ('Infoseek', None,  mytr_("Infoseek"), None),
-      ('Excite', None,  mytr_("Excite"), None),
-      ('Transru', None,  mytr_("Translate.Ru"), None),
-      ('Baidu', None,  mytr_("Baidu"), 'zh'),
-      #('Youdao', None,  mytr_("Youdao"), 'zh'),
-      ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
-      ('Fastait', None,  mytr_("FastAIT"), 'zh'),
-      ('Dreye', None,  mytr_("Dr.eye"), 'zh'),
-      ('EzTrans', 'ezTrans',  mytr_("ezTrans"), 'ko'),
-      ('HanViet', 'hanViet',  u"Hán Việt", 'vi'),
-      ('Atlas', None,  mytr_("ATLAS"), 'en'),
-      ('Lec', None,  mytr_("LEC"), 'en'),
+    conf = ( # key, Name, name, lang
+      ('bing',      None, None,  None),
+      ('google',    None, None,  None),
+      ('lec',       'LecOnline', 'lecOnline',  None),
+      ('infoseek',  None, None,  None),
+      ('excite',    None, None,  None),
+      ('transru',   None, None,  None),
+      ('naver',     None, None,  'ko'),
+      ('baidu',     None, None,  'zh'),
+      ('jbeijing',  'JBeijing', None, 'zh'),
+      ('fastait',   None, None, 'zh'),
+      ('dreye',     None, None,  'zh'),
+      ('eztrans',  'EzTrans',  'ezTrans', 'ko'),
+      ('hanviet',  'HanViet',  'hanViet', 'vi'),
+      ('lec',       None, None, 'en'),
+      ('atlas',     None, None, 'en'),
     )
     i = 0
-    for Name, name, tr, lang in conf:
+    for key, Name, name, lang in conf:
       if not lang in blans:
+        if not Name:
+          Name = key.capitalize()
         if not name:
           name = Name.lower()
         NAME = Name.upper()
+        tr = i18n.translator_name(key)
         t = u"<= " + tr
         if lang:
           t += " (%s)" % i18n.language_name(lang)
         label = QtWidgets.QLabel(t)
+        label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         resetButton = self._createResetColorButton(partial(
             getattr(ss, 'set{0}Color'.format(Name)),
             getattr(config, 'SETTINGS_{0}_COLOR'.format(NAME))))
@@ -1825,8 +2598,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 #'Lougo',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -1954,10 +2726,8 @@ class _MachineTranslationTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.honyakuGroup)
     #layout.addWidget(self.correctionGroup)
-    if 'zh' not in blans:
-      layout.addWidget(self.chineseGroup)
-    if 'en' not in blans:
-      layout.addWidget(self.tahGroup)
+    #if 'en' not in blans:
+    #  layout.addWidget(self.tahGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -1981,127 +2751,382 @@ class _MachineTranslationTab(object):
   #  ret.toggled.connect(settings.global_().setMsimeCorrectionEnabled)
   #  return ret
 
-  # TAH script group
-
-  @memoizedproperty
-  def tahGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.atlasTahButton)
-    layout.addWidget(self.lecTahButton)
-    layout.addWidget(self.tahInfoLabel)
-    #layout.addStretch()
-    ret = QtWidgets.QGroupBox(my.tr("TAH script for Japanese-English machine translators"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def atlasTahButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "ATLAS offline machine translation"))
-    ss = settings.global_()
-    ret.setChecked(ss.isAtlasScriptEnabled())
-    ret.toggled.connect(ss.setAtlasScriptEnabled)
-    ret.setEnabled(ss.isAtlasEnabled())
-    ss.atlasEnabledChanged.connect(ret.setEnabled)
-    return ret
-
-  @memoizedproperty
-  def lecTahButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "LEC online and offline machine translation"))
-    ss = settings.global_()
-    ret.setChecked(ss.isLecScriptEnabled())
-    ret.toggled.connect(ss.setLecScriptEnabled)
-    def load(): ret.setEnabled(ss.isLecEnabled() or ss.isLecOnlineEnabled())
-    load()
-    ss.lecEnabledChanged.connect(load)
-    ss.lecOnlineEnabledChanged.connect(load)
-    return ret
-
-  @memoizedproperty
-  def tahInfoLabel(self):
-    ret = QtWidgets.QLabel()
-    #ret.setTextFormat(Qt.RichText)
-    #ret.setWordWrap(True)
-    #ret.setOpenExternalLinks(True)
-    #skqss.class_(ret, 'texture')
-    #ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
-    #ret.setAlignment(Qt.AlignCenter)
-    #ret.setReadOnly(True)
-    ret.setWordWrap(True)
-    ret.setOpenExternalLinks(True)
-
-    email = 'TAHscript@outlook.com'
-    ret.setText(my.tr(
-"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
-You can report the bugs to <a href="mailto:{0}">{0}</a>."""
-).format(email))
-    return ret
-
-  # Chinese group
-
-  @memoizedproperty
-  def chineseGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.chineseButton)
-    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese characters"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def chineseButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Convert Simplified Chinese subtitles to Traditional Chinese"))
-    ret.setChecked(settings.global_().convertsChinese())
-    ret.toggled.connect(settings.global_().setConvertsChinese)
-    return ret
+#  # TAH script group
+#
+#  @memoizedproperty
+#  def tahGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.atlasTahButton)
+#    layout.addWidget(self.lecTahButton)
+#    layout.addWidget(self.tahInfoLabel)
+#    #layout.addStretch()
+#    ret = QtWidgets.QGroupBox(my.tr("TAH script for Japanese-English machine translators"))
+#    ret.setLayout(layout)
+#    return ret
+#
+#  @memoizedproperty
+#  def atlasTahButton(self):
+#    ret = QtWidgets.QCheckBox(my.tr(
+#      "ATLAS offline machine translation"))
+#    ss = settings.global_()
+#    ret.setChecked(ss.isAtlasScriptEnabled())
+#    ret.toggled.connect(ss.setAtlasScriptEnabled)
+#    ret.setEnabled(ss.isAtlasEnabled())
+#    ss.atlasEnabledChanged.connect(ret.setEnabled)
+#    return ret
+#
+#  @memoizedproperty
+#  def lecTahButton(self):
+#    ret = QtWidgets.QCheckBox(my.tr(
+#      "LEC online and offline machine translation"))
+#    ss = settings.global_()
+#    ret.setChecked(ss.isLecScriptEnabled())
+#    ret.toggled.connect(ss.setLecScriptEnabled)
+#    def load(): ret.setEnabled(ss.isLecEnabled() or ss.isLecOnlineEnabled())
+#    load()
+#    ss.lecEnabledChanged.connect(load)
+#    ss.lecOnlineEnabledChanged.connect(load)
+#    return ret
+#
+#  @memoizedproperty
+#  def tahInfoLabel(self):
+#    ret = QtWidgets.QLabel()
+#    #ret.setTextFormat(Qt.RichText)
+#    #ret.setWordWrap(True)
+#    #ret.setOpenExternalLinks(True)
+#    #skqss.class_(ret, 'texture')
+#    #ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+#    #ret.setAlignment(Qt.AlignCenter)
+#    #ret.setReadOnly(True)
+#    ret.setWordWrap(True)
+#    ret.setOpenExternalLinks(True)
+#
+#    email = 'TAHscript@outlook.com'
+#    ret.setText(my.tr(
+#"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
+#You can report the bugs to <a href="mailto:{0}">{0}</a>."""
+#).format(email))
+#    return ret
 
   # Machine translator
 
   @memoizedproperty
   def honyakuGroup(self):
     blans = settings.global_().blockedLanguages()
-    ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"))
+    grid = QtWidgets.QGridLayout()
+
+    def refresh_enable(w, b, t): # QWidget, QAbstractButton, bool
+      w.setEnabled(b.isEnabled() and b.isChecked())
+    def create_retrans_row(engine, btn): # str, QAbstractButton -> QLayout
+      row = QtWidgets.QHBoxLayout()
+      b = self._createRetransButton(engine)
+      row.addWidget(b)
+      b.setEnabled(btn.isChecked())
+      btn.toggled.connect(b.setEnabled)
+
+      w1 = self._createRetransLanguageEdit(engine)
+      row.addWidget(w1)
+
+      row.addWidget(QtWidgets.QLabel("=>"))
+
+      w2 = self._createRetransEdit(engine)
+      row.addWidget(w2)
+
+      for w in (w1, w2):
+        w.setEnabled(b.isEnabled() and b.isChecked())
+        f = partial(refresh_enable, w, b)
+        b.toggled.connect(f)
+        btn.toggled.connect(f)
+
+      row.addStretch()
+      return row
+
+    # Online
+    r = 0
+    grid.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"), r, 0, 1, 2)
+
     if 'zh' not in blans:
-      layout.addWidget(self.baiduButton)
-      #layout.addWidget(self.youdaoButton)
-    layout.addWidget(self.bingButton)
-    layout.addWidget(self.googleButton)
-    layout.addWidget(self.lecOnlineButton)
-    layout.addWidget(self.infoseekButton)
-    layout.addWidget(self.exciteButton)
-    if 'ru' not in blans:
-      layout.addWidget(self.transruButton)
-    layout.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"))
-    if 'zh' not in blans:
-      layout.addWidget(self.jbeijingButton)
-      layout.addWidget(self.fastaitButton)
-      layout.addWidget(self.dreyeButton)
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://fanyi.baidu.com"), r, 0)
+      grid.addWidget(self.baiduButton, r, 1)
+      r += 1
+      grid.addWidget(self.baiduRubyButton, r, 1)
+      r += 1
+      row = create_retrans_row('baidu', self.baiduButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
     if 'ko' not in blans:
-      layout.addWidget(self.ezTransButton)
-    if 'vi' not in blans: #and 'zh' not in blans:
-      layout.addWidget(self.hanVietButton)
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://translate.naver.com"), r, 0)
+      grid.addWidget(self.naverButton, r, 1)
+      r += 1
+      grid.addWidget(self.naverRubyButton, r, 1)
+      #r += 1
+      #row = create_retrans_row('naver', self.naverButton)
+      #grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://www.bing.com/translator"), r, 0)
+    grid.addWidget(self.bingButton, r, 1)
+    r += 1
+    grid.addWidget(self.bingRubyButton, r, 1)
     if 'en' not in blans:
-      layout.addWidget(self.atlasButton)
-      layout.addWidget(self.lecButton)
-    #layout.addWidget(self.lougoButton)
-    ret.setLayout(layout)
+      r += 1
+      grid.addWidget(self.bingScriptButton, r, 1)
+    #r += 1
+    #row = create_retrans_row('bing', self.bingButton)
+    #grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
+    grid.addWidget(self.googleButton, r, 1)
+    r += 1
+    grid.addWidget(self.googleRubyButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.googleScriptButton, r, 1)
+    #r += 1
+    #row = create_retrans_row('google', self.googleButton)
+    #grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://translation.infoseek.ne.jp"), r, 0)
+    grid.addWidget(self.infoseekButton, r, 1)
+    r += 1
+    grid.addWidget(self.infoseekRubyButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.infoseekScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('infoseek', self.infoseekButton)
+    grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://www.lec.com/translate-demos.asp"), r, 0)
+    grid.addWidget(self.lecOnlineButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.lecOnlineScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('lecol', self.lecOnlineButton)
+    grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://www.excite.co.jp/world"), r, 0)
+    grid.addWidget(self.exciteButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.exciteScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('excite', self.exciteButton)
+    grid.addLayout(row, r, 1, 1, 2)
+
+    if 'ru' not in blans:
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://www.translate.ru"), r, 0)
+      grid.addWidget(self.transruButton, r, 1)
+      r += 1
+      grid.addWidget(self.transruScriptButton, r, 1)
+      #r += 1
+      #row = create_retrans_row('transru', self.transruButton)
+      #grid.addLayout(row, r, 1, 1, 2)
+
+    # Offline
+    r += 1
+    grid.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"), r, 0, 1, 2)
+
+    if 'zh' not in blans:
+      r += 1
+      grid.addWidget(self.jbeijingBrowseButton, r, 0)
+      grid.addWidget(self.jbeijingButton, r, 1)
+      r += 1
+      row = create_retrans_row('jbeijing', self.jbeijingButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+      r += 1
+      grid.addWidget(self.fastaitBrowseButton, r, 0)
+      grid.addWidget(self.fastaitButton, r, 1)
+      r += 1
+      row = create_retrans_row('fastait', self.fastaitButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+      r += 1
+      grid.addWidget(self.dreyeBrowseButton, r, 0)
+      grid.addWidget(self.dreyeButton, r, 1)
+      r += 1
+      row = create_retrans_row('dreye', self.dreyeButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+    if 'ko' not in blans:
+      r += 1
+      grid.addWidget(self.ezTransBrowseButton, r, 0)
+      grid.addWidget(self.ezTransButton, r, 1)
+      #r += 1
+      #row = create_retrans_row('eztrans', self.ezTransButton)
+      #grid.addLayout(row, r, 1, 1, 2)
+
+    if 'en' not in blans or 'ru' not in blans:
+      r += 1
+      grid.addWidget(self.lecBrowseButton, r, 0)
+      grid.addWidget(self.lecButton, r, 1)
+      r += 1
+      grid.addWidget(self.lecScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('lec', self.lecButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.atlasBrowseButton, r, 0)
+      grid.addWidget(self.atlasButton, r, 1)
+      r += 1
+      grid.addWidget(self.atlasScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('atlas', self.atlasButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+    if 'vi' not in blans: #and 'zh' not in blans:
+      r += 1
+      grid.addWidget(self.hanVietBrowseButton, r, 0)
+      grid.addWidget(self.hanVietButton, r, 1)
+      r += 1
+      grid.addWidget(self.hanVietRubyButton, r, 1)
+      #r += 1
+      #row = create_retrans_row('hanviet', self.hanVietButton)
+      #grid.addLayout(row, r, 1, 1, 2)
+
+    ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
+    ret.setLayout(grid)
     return ret
+
+  def _createBrowseButton(self, path): # unicode or function -> QPushButton
+    ret = create_toggle_button("+")
+    if isinstance(path, basestring):
+      ret.setToolTip("%s: %s" % (tr_("Browse"), path))
+      open = osutil.open_url if path.startswith('http') else osutil.open_url
+      slot = partial(open, path)
+    else:
+      ret.setToolTip(tr_("Browse"))
+      slot = partial(lambda path: osutil.open_location(path()), path)
+    ret.clicked.connect(slot)
+    return ret
+
+  def _createRetransButton(self, key): # str ->
+    ret = QtWidgets.QCheckBox()
+    tm = trman.manager()
+    ret.setChecked(tm.isRetranslatorEnabled(key))
+    ret.setToolTip(my.tr("Secondary translator"))
+    ret.toggled.connect(partial(tm.setRetranslatorEnabled, key))
+    return ret
+
+  def _createRetransEdit(self, key): # str ->
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(my.tr("Secondary translator"))
+    ret.setEditable(False)
+    ret.addItems(dataman.Term.TR_HOSTS)
+    ret.setMaxVisibleItems(ret.count())
+    tm = trman.manager()
+    host = tm.retranslatorEngine(key)
+    if host:
+      try:
+        index = dataman.Term.HOSTS.index(host)
+        ret.setCurrentIndex(index)
+      except ValueError: pass
+    ret.currentIndexChanged.connect(partial(self._saveRetransEngine, key))
+    return ret
+
+  def _createRetransLanguageEdit(self, key): # str ->
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(my.tr("Intermediate language to connect two translators"))
+    ret.setEditable(False)
+
+    langs = mtinfo.get_t_langs(key)
+    if langs:
+      langs = [it for it in config.LANGUAGES if it in langs]
+    if not langs:
+      langs = config.LANGUAGES
+
+    ret.addItems(map(i18n.language_name, langs))
+    ret.setMaxVisibleItems(ret.count())
+    tm = trman.manager()
+    lang = tm.retranslatorLanguage(key)
+    try: langIndex = langs.index(lang)
+    except ValueError:
+      if langs[0] == 'ja' and len(langs) > 1:
+        langIndex = 1
+      else:
+        langIndex = 0
+    if langIndex:
+      ret.setCurrentIndex(langIndex)
+    ret.currentIndexChanged.connect(partial(self._saveRetransLanguage, key, langs))
+    return ret
+
+  def _saveRetransLanguage(self, key, langs, index): # str, [str], int ->
+    lang = langs[index]
+    tm = trman.manager()
+    tm.setRetranslatorLanguage(key, lang)
+
+  def _saveRetransEngine(self, key, index): # str, int ->
+    host = dataman.Term.HOSTS[index]
+    tm = trman.manager()
+    tm.setRetranslatorEngine(key, host)
 
   @memoizedproperty
   def bingButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBingEnabled())
     ret.toggled.connect(settings.global_().setBingEnabled)
     return ret
 
   @memoizedproperty
+  def bingRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBingRubyEnabled())
+    ret.toggled.connect(ss.setBingRubyEnabled)
+    #ret.setEnabled(ss.isBingEnabled())
+    #ss.bingEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def bingScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBingScriptEnabled())
+    ret.toggled.connect(ss.setBingScriptEnabled)
+    #ret.setEnabled(ss.isBingEnabled())
+    #ss.bingEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def googleButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isGoogleEnabled())
     ret.toggled.connect(settings.global_().setGoogleEnabled)
+    return ret
+
+  @memoizedproperty
+  def googleRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isGoogleRubyEnabled())
+    ret.toggled.connect(ss.setGoogleRubyEnabled)
+    #ret.setEnabled(ss.isGoogleEnabled())
+    #ss.googleEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def googleScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isGoogleScriptEnabled())
+    ret.toggled.connect(ss.setGoogleScriptEnabled)
+    #ret.setEnabled(ss.isGoogleEnabled())
+    #ss.googleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2115,8 +3140,30 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
             tr_("pl"),
             tr_("ru"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isInfoseekEnabled())
     ret.toggled.connect(settings.global_().setInfoseekEnabled)
+    return ret
+
+  @memoizedproperty
+  def infoseekRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isInfoseekRubyEnabled())
+    ret.toggled.connect(ss.setInfoseekRubyEnabled)
+    #ret.setEnabled(ss.isInfoseekEnabled())
+    #ss.infoseekEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def infoseekScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isInfoseekScriptEnabled())
+    ret.toggled.connect(ss.setInfoseekScriptEnabled)
+    #ret.setEnabled(ss.isInfoseekEnabled())
+    #ss.infoseekEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2131,9 +3178,21 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
             tr_("ar"),
             tr_("nl"),
             tr_("pl"),
-            )))))
+    )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isExciteEnabled())
     ret.toggled.connect(settings.global_().setExciteEnabled)
+    return ret
+
+  @memoizedproperty
+  def exciteScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isExciteScriptEnabled())
+    ret.toggled.connect(ss.setExciteScriptEnabled)
+    #ret.setEnabled(ss.isExciteEnabled())
+    #ss.exciteEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2146,8 +3205,20 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
             tr_("th"),
             tr_("vi"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isLecOnlineEnabled())
     ret.toggled.connect(settings.global_().setLecOnlineEnabled)
+    return ret
+
+  @memoizedproperty
+  def lecOnlineScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isLecOnlineScriptEnabled())
+    ret.toggled.connect(ss.setLecOnlineScriptEnabled)
+    #ret.setEnabled(ss.isLecOnlineEnabled())
+    #ss.lecOnlineEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2155,8 +3226,39 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Baidu.com Chinese translation service"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBaiduEnabled())
     ret.toggled.connect(settings.global_().setBaiduEnabled)
+    return ret
+
+  @memoizedproperty
+  def baiduRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBaiduRubyEnabled())
+    ret.toggled.connect(ss.setBaiduRubyEnabled)
+    #ret.setEnabled(ss.isBaiduEnabled())
+    #ss.baiduEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def naverButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Naver.com Korean translation service"),
+        my.tr("recommended for Korean")))
+    ret.setStyleSheet("QCheckBox{color:blue}")
+    ret.setChecked(settings.global_().isNaverEnabled())
+    ret.toggled.connect(settings.global_().setNaverEnabled)
+    return ret
+
+  @memoizedproperty
+  def naverRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isNaverRubyEnabled())
+    ret.toggled.connect(ss.setNaverRubyEnabled)
+    #ret.setEnabled(ss.isNaverEnabled())
+    #ss.naverEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -2174,76 +3276,136 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
             tr_("pt"),
             tr_("ru"),
     )))))
+    ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isTransruEnabled())
     ret.toggled.connect(settings.global_().setTransruEnabled)
     return ret
 
-  #@memoizedproperty
-  #def youdaoButton(self):
-  #  ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
-  #  ret.setChecked(settings.global_().isYoudaoEnabled())
-  #  ret.toggled.connect(settings.global_().setYoudaoEnabled)
-  #  return ret
-
-  #@memoizedproperty
-  #def lougoButton(self):
-  #  ret = QtWidgets.QCheckBox(u"ルー語%s" % (
-  #      my.tr("Japanese-English hybrid language")))
-  #  ret.setChecked(settings.global_().isLougoEnabled())
-  #  ret.toggled.connect(settings.global_().setLougoEnabled)
-  #  return ret
+  @memoizedproperty
+  def transruScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTransruScriptEnabled())
+    ret.toggled.connect(ss.setTransruScriptEnabled)
+    #ret.setEnabled(ss.isTransruEnabled())
+    #ss.transruEnabledChanged.connect(ret.setEnabled)
+    return ret
 
   @memoizedproperty
   def dreyeButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isDreyeEnabled())
     ret.toggled.connect(settings.global_().setDreyeEnabled)
     return ret
+  @memoizedproperty
+  def dreyeBrowseButton(self):
+    return self._createBrowseButton(libman.dreye().location)
 
   @memoizedproperty
   def jbeijingButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("JBeijing Chinese translator"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isJBeijingEnabled())
     ret.toggled.connect(settings.global_().setJBeijingEnabled)
     return ret
+  @memoizedproperty
+  def jbeijingBrowseButton(self):
+    return self._createBrowseButton(libman.jbeijing().location)
 
   @memoizedproperty
   def fastaitButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("FastAIT Chinese-Japanese/English translator"),
         my.tr("recommended for Chinese")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isFastaitEnabled())
     ret.toggled.connect(settings.global_().setFastaitEnabled)
     return ret
+  @memoizedproperty
+  def fastaitBrowseButton(self):
+    return self._createBrowseButton(libman.fastait().location)
 
   @memoizedproperty
   def ezTransButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("ezTrans XP Korean translator"),
+        my.tr("recommended for Korean")))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
     return ret
+  @memoizedproperty
+  def ezTransBrowseButton(self):
+    return self._createBrowseButton(libman.eztrans().location)
 
   @memoizedproperty
   def hanVietButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isHanVietEnabled())
     ret.toggled.connect(settings.global_().setHanVietEnabled)
+    return ret
+  @memoizedproperty
+  def hanVietBrowseButton(self):
+    return self._createBrowseButton(config.HANVIET_DIC_LOCATION)
+  @memoizedproperty
+  def hanVietRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display translation alignment"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHanVietRubyEnabled())
+    ret.toggled.connect(ss.setHanVietRubyEnabled)
+    #ret.setEnabled(ss.isHanVietEnabled())
+    #ss.hanVietEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
   def atlasButton(self):
     ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isAtlasEnabled())
     ret.toggled.connect(settings.global_().setAtlasEnabled)
+    return ret
+  @memoizedproperty
+  def atlasBrowseButton(self):
+    return self._createBrowseButton(libman.atlas().location)
+
+  @memoizedproperty
+  def atlasScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
+        my.tr("Enable Japanese-English translation script"),
+        tr_("recommended")))
+    ss = settings.global_()
+    ret.setChecked(ss.isAtlasScriptEnabled())
+    ret.toggled.connect(ss.setAtlasScriptEnabled)
+    #ret.setEnabled(ss.isAtlasEnabled())
+    #ss.atlasEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
   def lecButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("LEC English translator"))
+    ret = QtWidgets.QCheckBox(my.tr("LEC English/Russian translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isLecEnabled())
     ret.toggled.connect(settings.global_().setLecEnabled)
+    return ret
+  @memoizedproperty
+  def lecBrowseButton(self):
+    return self._createBrowseButton(libman.lec().location)
+
+  @memoizedproperty
+  def lecScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz, %s)" % (
+        my.tr("Enable Japanese-English translation script"),
+        tr_("recommended")))
+    ss = settings.global_()
+    ret.setChecked(ss.isLecScriptEnabled())
+    ret.toggled.connect(ss.setLecScriptEnabled)
+    #ret.setEnabled(ss.isLecEnabled())
+    #ss.lecEnabledChanged.connect(ret.setEnabled)
     return ret
 
   #def selectedTranslator(self):
@@ -2257,14 +3419,34 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
     # Translators
     if 'zh' not in blans:
-      self.jbeijingButton.setEnabled(ss.isJBeijingEnabled() or bool(libman.jbeijing().location()))
-      self.fastaitButton.setEnabled(ss.isFastaitEnabled() or bool(libman.fastait().location()))
-      self.dreyeButton.setEnabled(ss.isDreyeEnabled() or bool(libman.dreye().location()))
+      t = ss.isJBeijingEnabled() or bool(libman.jbeijing().location())
+      self.jbeijingButton.setEnabled(t)
+      self.jbeijingBrowseButton.setEnabled(t)
+
+      t = ss.isFastaitEnabled() or bool(libman.fastait().location())
+      self.fastaitButton.setEnabled(t)
+      self.fastaitBrowseButton.setEnabled(t)
+
+      t = ss.isDreyeEnabled() or bool(libman.dreye().location())
+      self.dreyeButton.setEnabled(t)
+      self.dreyeBrowseButton.setEnabled(t)
+
     if 'ko' not in blans:
-      self.ezTransButton.setEnabled(ss.isEzTransEnabled() or bool(libman.eztrans().location()))
+      t = ss.isEzTransEnabled() or bool(libman.eztrans().location())
+      self.ezTransButton.setEnabled(t)
+      self.ezTransBrowseButton.setEnabled(t)
+
     if 'en' not in blans:
-      self.atlasButton.setEnabled(ss.isAtlasEnabled() or bool(libman.atlas().location()))
-      self.lecButton.setEnabled(ss.isLecEnabled() or bool(libman.lec().location()))
+      t = ss.isAtlasEnabled() or bool(libman.atlas().location())
+      self.atlasButton.setEnabled(t)
+      self.atlasBrowseButton.setEnabled(t)
+      self.atlasScriptButton.setEnabled(t)
+
+    if 'en' not in blans or 'ru' not in blans:
+      t = ss.isLecEnabled() or bool(libman.lec().location())
+      self.lecButton.setEnabled(t)
+      self.lecBrowseButton.setEnabled(t)
+      self.lecScriptButton.setEnabled(t)
 
 class MachineTranslationTab(QtWidgets.QDialog):
 
@@ -2276,6 +3458,339 @@ class MachineTranslationTab(QtWidgets.QDialog):
   def save(self): pass
   def load(self): pass
   def refresh(self): self.__d.refresh()
+
+#@Q_Q
+class _ChineseTranslationTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    blans = settings.global_().blockedLanguages()
+    if 'zh' not in blans:
+      layout = QtWidgets.QVBoxLayout()
+      layout.addWidget(self.dialectGroup)
+      layout.addWidget(self.optionGroup)
+      layout.addStretch()
+      q.setLayout(layout)
+
+  # Dialect group
+
+  @memoizedproperty
+  def dialectGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.disableButton)
+    layout.addWidget(self.twButton)
+    layout.addWidget(self.hkButton)
+    layout.addWidget(self.jaButton)
+    layout.addWidget(self.koButton)
+    layout.addWidget(self.yueButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese variants for machine translation"))
+    ret.setLayout(layout)
+
+    self._loadVariant()
+    return ret
+
+  @memoizedproperty
+  def disableButton(self):
+    ret = QtWidgets.QRadioButton(my.tr("Do not convert Chinese"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def twButton(self):
+    ret = QtWidgets.QRadioButton("%s (%s)" % (mytr_("Taiwan Standard Chinese"), tr_("default")))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def hkButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Hong Kong Traditional Chinese"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def jaButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Japanese Kanji"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def koButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Korean Hanja"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def yueButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)"))
+    ret.setChecked(settings.global_().isYueEnabled())
+    ret.toggled.connect(settings.global_().setYueEnabled)
+    return ret
+
+  def _loadVariant(self):
+    t = settings.global_().chineseVariant()
+    b = (self.twButton if t == 'tw' else
+         self.hkButton if t == 'hk' else
+         self.jaButton if t == 'ja' else
+         self.koButton if t == 'ko' else
+         self.disableButton)
+    if not b.isChecked():
+      b.setChecked(True)
+
+  def _saveVariant(self):
+    t = ('tw' if self.twButton.isChecked() else
+         'hk' if self.hkButton.isChecked() else
+         'ja' if self.jaButton.isChecked() else
+         '')
+    settings.global_().setChineseVariant(t)
+
+  # Option group
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.chineseButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese variants for community subtitles"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def chineseButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Convert Simplified Chinese subtitles to Standard Chinese"))
+    ret.setChecked(settings.global_().convertsChinese())
+    ret.toggled.connect(settings.global_().setConvertsChinese)
+    return ret
+
+class ChineseTranslationTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(ChineseTranslationTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _ChineseTranslationTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
+
+#@Q_Q
+class _RomanTranslationTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+    ss = settings.global_()
+
+    self._refreshEnabled()
+
+    for sig in ss.rubyTextEnabledChanged, ss.rubyTranslationEnabledChanged:
+      sig.connect(self._refreshEnabled)
+
+    blans = settings.global_().blockedLanguages()
+    if 'ko' not in blans:
+      self._refreshKoreanEnabled()
+      for sig in ss.rubyTextEnabledChanged, ss.rubyTranslationEnabledChanged, ss.koreanRubyEnabledChanged:
+        sig.connect(self._refreshKoreanEnabled)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.infoLabel)
+    layout.addWidget(self.optionGroup)
+    blans = settings.global_().blockedLanguages()
+    layout.addWidget(self.languageGroup)
+    if 'zh' not in blans:
+      layout.addWidget(self.chineseGroup)
+    if 'ko' not in blans:
+      layout.addWidget(self.koreanGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  @memoizedproperty
+  def infoLabel(self):
+    ret = QtWidgets.QLabel(my.tr(
+"""This tab is for displaying ruby for non-Japanese non-English languages.
+Japanese romanization can be adjusted in the dictionary tab instead."""))
+    ret.setWordWrap(True)
+    skqss.class_(ret, 'text-info')
+    return ret
+
+  # Option group
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.rubyTextButton)
+    layout.addWidget(self.rubyTranslationButton)
+    layout.addWidget(self.invertRubyButton)
+    ret = QtWidgets.QGroupBox(my.tr("Display ruby for the selected text"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def invertRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display ruby below instead of above kanji"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRubyInverted())
+    ret.toggled.connect(ss.setRubyInverted)
+    return ret
+
+  @memoizedproperty
+  def rubyTextButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Display ruby for game text"))
+    ret.setChecked(settings.global_().isRubyTextEnabled())
+    ret.toggled.connect(settings.global_().setRubyTextEnabled)
+    return ret
+
+  @memoizedproperty
+  def rubyTranslationButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Display ruby for translation"))
+    ret.setChecked(settings.global_().isRubyTranslationEnabled())
+    ret.toggled.connect(settings.global_().setRubyTranslationEnabled)
+    return ret
+
+  # Language group
+
+  LANGUAGES = OrderedDict((
+    ('zh', 'Chinese'),
+    ('ko', 'Korean'),
+  ))
+
+  @memoizedproperty
+  def languageGroup(self):
+    blans = settings.global_().blockedLanguages()
+    layout = QtWidgets.QVBoxLayout()
+
+    for lang in self.LANGUAGES.iterkeys():
+      if lang not in blans:
+        layout.addWidget(self._createLanguageButton(lang))
+
+    ret = QtWidgets.QGroupBox(my.tr("Languages to display ruby"))
+    ret.setLayout(layout)
+    return ret
+
+  def _refreshEnabled(self):
+    ss = settings.global_()
+    t = ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled()
+    for w in self.languageGroup, self.invertRubyButton:
+      w.setEnabled(t)
+
+  def _refreshKoreanEnabled(self):
+    ss = settings.global_()
+    t = ss.isKoreanRubyEnabled() and (ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled())
+    self.koreanGroup.setEnabled(t)
+
+  def _createLanguageButton(self, lang): # str ->
+    ret = QtWidgets.QCheckBox(i18n.language_name(lang))
+    name = self.LANGUAGES[lang]
+    ss = settings.global_()
+    getter = getattr(ss, "is%sRubyEnabled" % name)
+    setter = getattr(ss, "set%sRubyEnabled" % name)
+    ret.setChecked(getter())
+    ret.clicked[bool].connect(setter)
+    return ret
+
+  # Korean group
+
+  @memoizedproperty
+  def koreanGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.romajaButton)
+    layout.addWidget(self.hanjaButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Korean text"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def romajaButton(self):
+    ret = QtWidgets.QCheckBox(
+      "%s, %s: %s" %
+      (tr_("Romaja"), my.tr("like this"), u"공주님(gongjunim)"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRomajaRubyEnabled())
+    ret.toggled.connect(ss.setRomajaRubyEnabled)
+    return ret
+
+  @memoizedproperty
+  def hanjaButton(self):
+    ret = QtWidgets.QCheckBox(
+      "%s, %s: %s" %
+      (tr_("Hanja"), my.tr("like this"), u"공주(公主)님"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHanjaRubyEnabled())
+    ret.toggled.connect(ss.setHanjaRubyEnabled)
+    return ret
+
+  # Chinese group
+
+  @memoizedproperty
+  def chineseGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.pinyinButton)
+    layout.addWidget(self.romajiButton)
+
+    blans = settings.global_().blockedLanguages()
+    if 'vi' not in blans:
+      layout.addWidget(self.viButton)
+
+    ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Chinese text"))
+    ret.setLayout(layout)
+    self._loadChineseGroup()
+    return ret
+
+  @memoizedproperty
+  def pinyinButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s (%s, %s), %s: %s" %
+      (tr_("Pinyin"), mytr_("with tone"), tr_("default"), my.tr("like this"), u"麻婆豆腐（má pó dòu fǔ）"))
+    ret.toggled.connect(self._saveChineseGroup)
+    return ret
+
+  @memoizedproperty
+  def romajiButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s (%s), %s: %s" %
+      (tr_("Pinyin"), mytr_("without tone"), my.tr("like this"), u"麻婆豆腐（ma po dou fu）"))
+    ret.toggled.connect(self._saveChineseGroup)
+    return ret
+
+  @memoizedproperty
+  def viButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (notr_("Phiên âm"), my.tr("like this"), u"麻婆豆腐（ma bà đậu hủ）"))
+    ret.toggled.connect(self._saveChineseGroup)
+    return ret
+
+  def _loadChineseGroup(self):
+    t = settings.global_().chineseRubyType()
+    b = (self.pinyinButton if t == defs.PINYIN_TONE else
+         self.romajiButton if t == defs.PINYIN_ROMAJI else
+         self.viButton if t == defs.PINYIN_VI else
+         self.pinyinButton)
+    if not b.isChecked():
+      b.setChecked(True)
+
+  def _saveChineseGroup(self):
+    t = (defs.PINYIN_TONE if self.pinyinButton.isChecked() else
+         defs.PINYIN_ROMAJI if self.romajiButton.isChecked() else
+         defs.PINYIN_VI if self.viButton.isChecked() else
+         defs.PINYIN_TONE)
+    settings.global_().setChineseRubyType(t)
+
+class RomanTranslationTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(RomanTranslationTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _RomanTranslationTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
 
 #@Q_Q
 class _DictionaryTranslationTab(object):
@@ -2357,12 +3872,13 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.ipadicButton)
 
     layout.addWidget(self.caboChaButton)
+    layout.addWidget(self.invertRubyButton)
 
     infoLabel = QtWidgets.QLabel(my.tr(
       "Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP)."
     ))
     infoLabel.setWordWrap(True)
-    skqss.class_(infoLabel, 'text-error')
+    #skqss.class_(infoLabel, 'text-error')
     layout.addWidget(infoLabel)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred MeCab dictionary for parsing Japanese"))
@@ -2374,6 +3890,7 @@ class _DictionaryTranslationTab(object):
   def disableMeCabButton(self):
     ret = QtWidgets.QRadioButton("%s (%s)" % (my.tr("Do not parse Japanese to furigana"), tr_("default")))
     ret.toggled.connect(self._saveMeCab)
+    #ret.toggled.connect(self._checkRBMT)
     return ret
 
   @memoizedproperty
@@ -2386,18 +3903,20 @@ class _DictionaryTranslationTab(object):
   def mljButton(self):
     ret = QtWidgets.QRadioButton(MECAB_DICT_NAMES['unidic-mlj'])
     ret.toggled.connect(self._saveMeCab)
+    #ret.toggled.connect(self._checkRBMT)
     return ret
 
   @memoizedproperty
   def ipadicButton(self):
     ret = QtWidgets.QRadioButton(MECAB_DICT_NAMES['ipadic'])
     ret.toggled.connect(self._saveMeCab)
+    #ret.toggled.connect(self._checkRBMT)
     return ret
 
   def _loadMeCab(self):
     t = settings.global_().meCabDictionary()
-    b = (self.ipadicButton if t == 'ipadic' else
-         self.unidicButton if t == 'unidic' else
+    b = (self.unidicButton if t == 'unidic' else
+         self.ipadicButton if t == 'ipadic' else
          #self.mljButton if t == 'unidic-mlj' else
          self.disableMeCabButton)
     if not b.isChecked():
@@ -2420,6 +3939,15 @@ class _DictionaryTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isCaboChaEnabled())
     ret.toggled.connect(ss.setCaboChaEnabled)
+    #ret.toggled.connect(self._checkRBMT)
+    return ret
+
+  @memoizedproperty
+  def invertRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display yomigana below instead of above kanji"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRubyJaInverted())
+    ret.toggled.connect(ss.setRubyJaInverted)
     return ret
 
   def refreshCaboCha(self):
@@ -2428,6 +3956,20 @@ class _DictionaryTranslationTab(object):
         ss.isCaboChaEnabled() or
         ss.meCabDictionary() == 'unidic' and dicts.cabocha('unidic').exists() or
         ss.meCabDictionary() == 'ipadic' and dicts.cabocha('ipadic').exists()))
+
+  #def _checkRBMT(self):
+  #  ss = settings.global_()
+  #  if ss.isTranslationSyntaxEnabled() and not (
+  #      ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'):
+  #    if prompt.confirmTranslationSyntaxDisabled():
+  #      ss.setTranslationSyntaxEnabled(False)
+  #    else:
+  #      if not ss.isCaboChaEnabled():
+  #        ss.setCaboChaEnabled(True)
+  #        self.caboChaButton.setChecked(True)
+  #      if ss.meCabDictionary() != 'unidic':
+  #        ss.setMeCabDictionary('unidic')
+  #        self._loadMeCab()
 
   # Furigana
 
@@ -2438,14 +3980,18 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.hiraganaButton)
     layout.addWidget(self.kataganaButton)
     layout.addWidget(self.romajiButton)
-    #if 'en' not in blans:
-    layout.addWidget(self.trButton)
+    if 'ru' not in blans:
+      layout.addWidget(self.romajiRuButton)
+    if 'en' not in blans:
+      layout.addWidget(self.trButton)
     if 'ko' not in blans:
       layout.addWidget(self.hangulButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.viButton)
     if 'th' not in blans:
       layout.addWidget(self.thaiButton)
-    if 'zh' not in blans:
-      layout.addWidget(self.kanjiButton)
+    #if 'zh' not in blans:
+    #  layout.addWidget(self.kanjiButton)
     ret = QtWidgets.QGroupBox("%s (%s)" % (
         my.tr("Preferred Japanese furigana characters"),
         my.tr("require MeCab dictionaries")))
@@ -2484,6 +4030,14 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def romajiRuButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (tr_("Russian"), my.tr("like this"), u"可愛い（каваий）"))
+    ret.toggled.connect(self._saveFurigana)
+    return ret
+
+  @memoizedproperty
   def hangulButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
@@ -2500,12 +4054,20 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
-  def kanjiButton(self):
+  def viButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
-      (tr_("Kanji"), my.tr("like this"), u"可愛い（卡哇伊）"))
+      (notr_("Phiên âm"), my.tr("like this"), u"可愛い（khả ái i）"))
     ret.toggled.connect(self._saveFurigana)
     return ret
+
+  #@memoizedproperty
+  #def kanjiButton(self):
+  #  ret = QtWidgets.QRadioButton(
+  #    "%s, %s: %s" %
+  #    (tr_("Kanji"), my.tr("like this"), u"可愛い（卡哇伊）"))
+  #  ret.toggled.connect(self._saveFurigana)
+  #  return ret
 
   @memoizedproperty
   def trButton(self):
@@ -2519,10 +4081,12 @@ class _DictionaryTranslationTab(object):
   def _loadFurigana(self):
     t = settings.global_().rubyType()
     b = (self.romajiButton if t == defs.FURI_ROMAJI else
+         self.romajiRuButton if t == defs.FURI_ROMAJI_RU else
          self.hangulButton if t == defs.FURI_HANGUL else
          self.thaiButton if t == defs.FURI_THAI else
+         self.viButton if t == defs.FURI_VI else
          self.trButton if t == defs.FURI_TR else
-         self.kanjiButton if t == defs.FURI_KANJI else
+         #self.kanjiButton if t == defs.FURI_KANJI else
          self.kataganaButton if t == defs.FURI_KATA else
          self.hiraganaButton)
     if not b.isChecked():
@@ -2530,10 +4094,12 @@ class _DictionaryTranslationTab(object):
 
   def _saveFurigana(self):
     t = (defs.FURI_ROMAJI if self.romajiButton.isChecked() else
+         defs.FURI_ROMAJI_RU if self.romajiRuButton.isChecked() else
          defs.FURI_HANGUL if self.hangulButton.isChecked() else
          defs.FURI_THAI if self.thaiButton.isChecked() else
+         defs.FURI_VI if self.viButton.isChecked() else
          defs.FURI_TR if self.trButton.isChecked() else
-         defs.FURI_KANJI if self.kanjiButton.isChecked() else
+         #defs.FURI_KANJI if self.kanjiButton.isChecked() else
          defs.FURI_KATA if self.kataganaButton.isChecked() else
          defs.FURI_HIRA)
     settings.global_().setRubyType(t)
@@ -2574,15 +4140,17 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.zhongriButton)
     ret.setLayout(layout)
 
-    ss = settings.global_()
-    ret.setEnabled(bool(ss.meCabDictionary()))
-    ss.meCabDictionaryChanged.connect(lambda v:
-        ret.setEnabled(bool(v)))
+    #ss = settings.global_()
+    #ret.setEnabled(bool(ss.meCabDictionary()))
+    #ss.meCabDictionaryChanged.connect(lambda v:
+    #    ret.setEnabled(bool(v)))
     return ret
 
   @memoizedproperty
   def edictButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("EDICT Japanese-English dictionary"))
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("EDICT Japanese-English dictionary"),
+        my.tr("recommended for English")))
     ret.setChecked(settings.global_().isEdictEnabled())
     ret.toggled.connect(settings.global_().setEdictEnabled)
     return ret
@@ -2670,9 +4238,7 @@ class _DictionaryTranslationTab(object):
 
   @memoizedproperty
   def lingoesJaEnButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        LINGOES_DICT_NAMES['ja-en'],
-        my.tr("recommended for English")))
+    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-en']) #my.tr("recommended for English")))
     ret.setChecked(settings.global_().isLingoesJaEnEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaEnEnabled)
     return ret
@@ -2744,6 +4310,10 @@ class _DictionaryTranslationTab(object):
 
     self.refreshCaboCha()
 
+    # Refresh
+    self.caboChaButton.setChecked(ss.isCaboChaEnabled()) # force reload cabocha
+    self._loadMeCab()
+
 class DictionaryTranslationTab(QtWidgets.QDialog):
 
   def __init__(self, parent=None):
@@ -2767,6 +4337,7 @@ class _InternetTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.connectionGroup)
     layout.addWidget(self.proxyGroup)
+    layout.addWidget(self.chinaGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -2775,22 +4346,55 @@ class _InternetTab(object):
   @memoizedproperty
   def proxyGroup(self):
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.scapeButton)
+    layout.addWidget(self.baiduButton)
+    layout.addWidget(QtWidgets.QLabel(my.tr(
+"""Certain websites might be blocked or slow to access in your area.
+Enabling proxy might make it better."""
+    )))
+    ret = QtWidgets.QGroupBox(my.tr("Website-specific proxies"))
+    ret.setLayout(layout)
+    self._updateChinaGroup()
+    return ret
+
+  @memoizedproperty
+  def scapeButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Proxy accesses to ErogameScape.com if you are blocked due to being outside of Japan"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.proxyScape())
+    ret.toggled.connect(ss.setProxyScape)
+    return ret
+
+  @memoizedproperty
+  def baiduButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Proxy accesses to Baidu.com if it is slow due to being outside of Mainland China"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.proxyBaidu())
+    ret.toggled.connect(ss.setProxyBaidu)
+    return ret
+
+  ## China group ##
+
+  @memoizedproperty
+  def chinaGroup(self):
+    layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.chinaButton)
     layout.addWidget(self.chinaLabel)
     ret = QtWidgets.QGroupBox(tr_("Mainland China"))
     ret.setLayout(layout)
-    self._updateProxyGroup()
+    self._updateChinaGroup()
     return ret
 
   @memoizedproperty
   def chinaLabel(self):
-    ret = QtWidgets.QLabel(my.tr(
+    return QtWidgets.QLabel(my.tr(
 """Mainland China has blocked many international services including Google.
 If you enable this option, VNR will try providing alternative services."""
     ))
-    #ret.setWordWrap(True)
-    #skqss.class_(ret, 'error')
-    return ret
 
   @memoizedproperty
   def chinaButton(self):
@@ -2800,10 +4404,10 @@ If you enable this option, VNR will try providing alternative services."""
     ss = settings.global_()
     ret.setChecked(ss.isMainlandChina())
     ret.toggled.connect(ss.setMainlandChina)
-    ret.toggled.connect(self._updateProxyGroup)
+    ret.toggled.connect(self._updateChinaGroup)
     return ret
 
-  def _updateProxyGroup(self):
+  def _updateChinaGroup(self):
     ok = self.chinaButton.isChecked()
     for it in self.chinaButton, self.chinaLabel:
       skqss.class_(it, 'normal' if ok else '')
@@ -2928,7 +4532,7 @@ class _FeatureTab(object):
     layout = QtWidgets.QVBoxLayout()
     #layout.addWidget(self.internetAccessButton)
 
-    for it in self.machineTranslationButton, self.userCommentButton, self.ttsButton:
+    for it in self.machineTranslationButton, self.userCommentButton:
       layout.addWidget(it)
       skqss.class_(it, 'warning' if it.isChecked() else '')
       it.toggled.connect(partial(lambda it, v:
@@ -2976,15 +4580,15 @@ class _FeatureTab(object):
     ret.toggled.connect(lambda v: ss.setAllowsUserComment(not v))
     return ret
 
-  @memoizedproperty
-  def ttsButton(self):
-    ss = settings.global_()
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Disable speaking Japanese through text-to-speech"
-    ))
-    ret.setChecked(not ss.allowsTextToSpeech())
-    ret.toggled.connect(lambda v: ss.setAllowsTextToSpeech(not v))
-    return ret
+  #@memoizedproperty
+  #def ttsButton(self):
+  #  ss = settings.global_()
+  #  ret = QtWidgets.QCheckBox(my.tr(
+  #    "Disable speaking Japanese through text-to-speech"
+  #  ))
+  #  ret.setChecked(not ss.allowsTextToSpeech())
+  #  ret.toggled.connect(lambda v: ss.setAllowsTextToSpeech(not v))
+  #  return ret
 
 class FeatureTab(QtWidgets.QDialog):
 
@@ -3126,6 +4730,7 @@ class _DictionaryDownloadsTab(object):
       else:
         t = "%s (%s)" % (MECAB_DICT_NAMES[name], MECAB_DICT_SIZES[name])
       ret = self.meCabIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getMeCab(self, name):
@@ -3185,8 +4790,9 @@ class _DictionaryDownloadsTab(object):
     for name in 'unidic', 'ipadic':
       grid.addWidget(self.getCaboChaButton(name), r, 0)
       grid.addWidget(self.getCaboChaStatusLabel(name), r, 1)
-      grid.addWidget(self.getCaboChaIntroLabel(name), r, 2)
-      grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
+      label = self.getCaboChaIntroLabel(name)
+      grid.addWidget(label, r, 2)
+      #grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
       r += 1
 
     ret = QtWidgets.QGroupBox(my.tr("CaboCha models for highlighting Japanese"))
@@ -3220,6 +4826,7 @@ class _DictionaryDownloadsTab(object):
     if not ret:
       t = "%s (%s)" % (CABOCHA_DICT_NAMES[name], CABOCHA_DICT_SIZES[name])
       ret = self.caboChaIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getCaboCha(self, name):
@@ -3421,7 +5028,9 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def edictIntroLabel(self):
-    return QtWidgets.QLabel(my.tr("EDICT Japanese-English dictionary") + " (30MB)")
+    return QtWidgets.QLabel("%s (30MB, %s" % (
+        my.tr("EDICT Japanese-English dictionary"),
+        my.tr("recommended for English")))
 
   def _getEdict(self):
     #if prompt.confirmDownloadDictionary('EDICT'):
@@ -3499,10 +5108,11 @@ class _DictionaryDownloadsTab(object):
       if name.startswith('ja-zh'):
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for Chinese"))
       elif name == 'ja-en':
-        t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for English"))
+        t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name]) #my.tr("recommended for English")
       else:
         t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name])
       ret = self.lingoesIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getLingoes(self, name):
@@ -3579,6 +5189,7 @@ class _DictionaryDownloadsTab(object):
     if not ret:
       ret = self.jmdictIntroLabels[name] = QtWidgets.QLabel(
           "%s (%s)" % (JMDICT_DICT_NAMES[name], JMDICT_DICT_SIZES[name]))
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getJMDict(self, name):
@@ -4149,6 +5760,7 @@ class _TranslatorLibraryTab(object):
       layout.addWidget(self.ezTransGroup)
     if 'en' not in blans:
       layout.addWidget(self.atlasGroup)
+    if 'en' not in blans or 'ru' not in blans:
       layout.addWidget(self.lecGroup)
     layout.addStretch()
     q.setLayout(layout)
@@ -4714,20 +6326,24 @@ You can get a free version of Atlas here from Fujitsu:
 
     url = libman.Lec.URL
     self.lecInfoEdit.setHtml(my.tr(
-"""LEC Power Translator v15 is used for <span style="color:purple">offline Japanese-English</span> translation.<br/>
+"""LEC Power Translator v15 is used for <span style="color:purple">offline Japanese-English/European</span> translation.<br/>
 Power Translator is detected on your system at the above location.""")
     if ok else my.tr(
-"""LEC Power Translator v15 is needed by <span style="color:purple">offline Japanese-English</span> translation.
+"""LEC Power Translator v15 is needed by <span style="color:purple">offline Japanese-English/European</span> translation.
 It is <span style="color:purple">not free</span>, and you can purchase one here from LEC:
 <center><a href="%s">%s</a></center>""") % (url, url))
 
   def refresh(self):
-    self._refreshJBeijing()
-    self._refreshFastait()
-    self._refreshDreye()
-    self._refreshEzTrans()
-    self._refreshAtlas()
-    self._refreshLec()
+    blans = settings.global_().blockedLanguages()
+    if 'zh' not in blans:
+      self._refreshJBeijing()
+      self._refreshFastait()
+      self._refreshDreye()
+    if 'ko' not in blans:
+      self._refreshEzTrans()
+    if 'en' not in blans:
+      self._refreshAtlas()
+      self._refreshLec()
 
 class TranslatorLibraryTab(QtWidgets.QDialog):
 
@@ -5181,10 +6797,15 @@ Zhongri is <span style="color:purple">not free</span>, and you can purchase one 
 )
 
   def refresh(self):
+    blans = settings.global_().blockedLanguages()
+
     self._refreshMsime()
     self._refreshDaijirin()
     self._refreshKojien()
-    self._refreshZhongri()
+
+    if 'zh' not in blans:
+      self._refreshZhongri()
+
     #self._refreshWadoku()
 
 class DictionaryLibraryTab(QtWidgets.QDialog):
@@ -5210,37 +6831,38 @@ class _TtsLibraryTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     # Google TTS
-    layout.addWidget(self.quickTimeGroup)
+    #layout.addWidget(self.quickTimeGroup)
+    layout.addWidget(self.wmpGroup)
     # Sapi
     layout.addWidget(self.showGroup)
     layout.addWidget(self.misakiGroup)
     # Voiceroid
-    layout.addWidget(self.yukariGroup)
     layout.addWidget(self.zunkoGroup)
+    layout.addWidget(self.yukariGroup)
     layout.addStretch()
     q.setLayout(layout)
 
-  ## QuickTime ##
+  ## Windows Media Player ##
 
   @memoizedproperty
-  def quickTimeGroup(self):
+  def wmpGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.quickTimeLocationEdit)
-    layout.addWidget(self.quickTimeInfoEdit)
+    layout.addWidget(self.wmpLocationEdit)
+    layout.addWidget(self.wmpInfoEdit)
     #layout.addWidget(self.quickTimeEnableButton)
-    ret = QtWidgets.QGroupBox(notr_("Apple QuickTime (74MB)"))
+    ret = QtWidgets.QGroupBox(notr_("Windows Media Player (7MB)"))
     ret.setLayout(layout)
     return ret
 
   @memoizedproperty
-  def quickTimeLocationEdit(self):
+  def wmpLocationEdit(self):
     ret = QtWidgets.QLineEdit()
     ret.setReadOnly(True)
     ret.setToolTip(tr_("Location"))
     return ret
 
   @memoizedproperty
-  def quickTimeInfoEdit(self):
+  def wmpInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
     ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
@@ -5249,44 +6871,93 @@ class _TtsLibraryTab(object):
     ret.setOpenExternalLinks(True)
     return ret
 
-  def _refreshQuickTime(self):
-    libman.quicktime().refresh()
-    ok = libman.quicktime().exists()
+  def _refreshWmp(self):
+    libman.wmp().refresh()
+    ok = libman.wmp().exists()
     if ok:
-      path = libman.quicktime().location()
+      path = libman.wmp().location()
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-    skqss.class_(self.quickTimeLocationEdit, 'normal' if ok else 'muted')
-    self.quickTimeLocationEdit.setText(path if ok else tr_("Not found"))
+    skqss.class_(self.wmpLocationEdit, 'normal' if ok else 'muted')
+    self.wmpLocationEdit.setText(path if ok else tr_("Not found"))
 
-    url = libman.QuickTime.URL
-    self.quickTimeInfoEdit.setHtml(my.tr(
-"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
-QuickTime is detected on your system at the above location.""")
+    url = libman.WindowsMediaPlayer.URL
+    self.wmpInfoEdit.setHtml(my.tr(
+"""Windows Media Player is needed by <span style="color:purple">Online TTS</span>.<br/>
+Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
+It is detected on your system at the above location.""")
     if ok else my.tr(
-"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
-You can get a free version of QuickTime here from Apple:
-<center><a href="%s">%s</a></center>""") % (url, url))
+"""Windows Media Player is needed by <span style="color:purple">Online TTS</span>.<br/>
+Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
+You can reinistall Windows Media Player here from Microsoft for free:
+<center><a href="{0}">{0}</a></center>""").format(url))
 
-    #enabled = settings.global_().isQuickTimeEnabled()
-    #self.quickTimeEnableButton.setChecked(enabled)
-    #self.quickTimeLocationEdit.setEnabled(enabled)
-    #self.quickTimeInfoEdit.setEnabled(enabled)
-
-    #self._quickTimeEnableButton.setToolTip(
-    #  self.q.tr("QuickTime and TTS are enabled") if enabled else
-    #  self.q.tr("QuickTime and TTS are disabled")
-    #)
-    #self._quickTimeEnableButton.setVisible(not enabled or not ok)
-
-    #skqss.class_(self.quickTimeGroup, 'default' if ok else 'muted')
-
-    #self.quickTimeGroup.setStyleSheet("" if ok else
-    #  "QGroupBox { color:red }"
-    #)
-
-  #def _saveQuickTime(self):
-  #  settings.global_().setQuickTimeEnabled(
-  #      self.quickTimeEnableButton.isChecked())
+#  ## QuickTime ##
+#
+#  @memoizedproperty
+#  def quickTimeGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.quickTimeLocationEdit)
+#    layout.addWidget(self.quickTimeInfoEdit)
+#    #layout.addWidget(self.quickTimeEnableButton)
+#    ret = QtWidgets.QGroupBox(notr_("Apple QuickTime (74MB)"))
+#    ret.setLayout(layout)
+#    return ret
+#
+#  @memoizedproperty
+#  def quickTimeLocationEdit(self):
+#    ret = QtWidgets.QLineEdit()
+#    ret.setReadOnly(True)
+#    ret.setToolTip(tr_("Location"))
+#    return ret
+#
+#  @memoizedproperty
+#  def quickTimeInfoEdit(self):
+#    ret = QtWidgets.QTextBrowser()
+#    skqss.class_(ret, 'texture')
+#    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+#    ret.setAlignment(Qt.AlignCenter)
+#    ret.setReadOnly(True)
+#    ret.setOpenExternalLinks(True)
+#    return ret
+#
+#  def _refreshQuickTime(self):
+#    libman.quicktime().refresh()
+#    ok = libman.quicktime().exists()
+#    if ok:
+#      path = libman.quicktime().location()
+#      path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+#    skqss.class_(self.quickTimeLocationEdit, 'normal' if ok else 'muted')
+#    self.quickTimeLocationEdit.setText(path if ok else tr_("Not found"))
+#
+#    url = libman.QuickTime.URL
+#    self.quickTimeInfoEdit.setHtml(my.tr(
+#"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
+#QuickTime is detected on your system at the above location.""")
+#    if ok else my.tr(
+#"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
+#You can get a free version of QuickTime here from Apple:
+#<center><a href="%s">%s</a></center>""") % (url, url))
+#
+#    #enabled = settings.global_().isQuickTimeEnabled()
+#    #self.quickTimeEnableButton.setChecked(enabled)
+#    #self.quickTimeLocationEdit.setEnabled(enabled)
+#    #self.quickTimeInfoEdit.setEnabled(enabled)
+#
+#    #self._quickTimeEnableButton.setToolTip(
+#    #  self.q.tr("QuickTime and TTS are enabled") if enabled else
+#    #  self.q.tr("QuickTime and TTS are disabled")
+#    #)
+#    #self._quickTimeEnableButton.setVisible(not enabled or not ok)
+#
+#    #skqss.class_(self.quickTimeGroup, 'default' if ok else 'muted')
+#
+#    #self.quickTimeGroup.setStyleSheet("" if ok else
+#    #  "QGroupBox { color:red }"
+#    #)
+#
+#  #def _saveQuickTime(self):
+#  #  settings.global_().setQuickTimeEnabled(
+#  #      self.quickTimeEnableButton.isChecked())
 
   ## Misaki ##
 
@@ -5324,7 +6995,7 @@ You can get a free version of QuickTime here from Apple:
     skqss.class_(self.misakiLocationEdit, 'normal' if ok else 'muted')
     self.misakiLocationEdit.setText(path if ok else tr_("Not found"))
 
-    url = "http://www.hoyasv.com/"
+    url = "http://voicetext.jp"
     self.misakiInfoEdit.setHtml(my.tr(
 """VoiceText Misaki is needed by <span style="color:purple">offline TTS</span>.<br/>
 Misaki is a Japanese female TTS SAPI library.<br/>
@@ -5522,21 +7193,21 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     self._refreshZunko()
 
   def _getZunkoLocation(self):
-    FILTERS = "%s (%s)" % (tr_("Executable"), "VOICEROID.exe")
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
-    path = path if path and os.path.exists(path) else skpaths.HOME
-    path, filter = QtWidgets.QFileDialog.getOpenFileName(self.q,
-        my.tr("Please select the location of {0}").format("VOICEROID.exe"), path, FILTERS)
+    path = settings.global_().zunkoLocation() or skpaths.HOME #or ttsman.manager().zunkoLocation()
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format("VOICEROID.exe"),
+        path, 0)
     if path:
-      if not os.path.exists(path):
-        growl.error(my.tr("Couldn't find {0} from the specified location").format('VOICEROID.exe'))
+      dll = "aitalked.dll"
+      if not os.path.exists(path) or not os.path.exists(os.path.join(path, dll)):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(dll))
       else:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
         settings.global_().setZunkoLocation(path)
         self._refreshZunko()
 
   def _refreshZunko(self):
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
+    path = settings.global_().zunkoLocation() #or ttsman.manager().zunkoLocation()
     if path:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
@@ -5548,16 +7219,19 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     url = "http://www.ah-soft.com/voiceroid/zunko"
     self.zunkoInfoEdit.setHtml(my.tr(
 """Voiceroid+ Zunko from AHS is used by <span style="color:purple">offline text-to-speech</span>.<br/>
-Yukari is a Japanese female TTS app.<br/>
+Zunko is a Japanese female TTS app.<br/>
+VNR does <span style="color:purple">NOT</span> need .NET to work with Zunko.<br/>
 Voiceroid is detected on your system at the above location.""")
     if ok else my.tr(
 """Voiceroid+ Zunko could be used for <span style="color:purple">offline text-to-speech</span>.<br/>
 Zunko is a Japanese female TTS app.<br/>
+VNR does <span style="color:purple">NOT</span> need .NET to work with Zunko.<br/>
 Zunko is <span style="color:purple">not free</span>, and you can purchase one here from AHS:
 <center><a href="%s">%s</a></center>""") % (url, url))
 
   def refresh(self):
-    self._refreshQuickTime()
+    self._refreshWmp()
+    #self._refreshQuickTime()
     self._refreshYukari()
     self._refreshZunko()
     self._refreshMisaki()
@@ -6390,7 +8064,7 @@ class EngineTab(QtWidgets.QDialog):
 #  def _createWindowsEngineEdit(engine, voices):
 #    """
 #    @param  engine  unicode
-#    @param  voices  [wintts.WinTtsVocie]
+#    @param  voices  [wintts.WinTtsVoice]
 #    @return  QComboBox
 #    """
 #    ret = QtWidgets.QComboBox()

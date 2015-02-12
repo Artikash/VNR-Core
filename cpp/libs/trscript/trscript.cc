@@ -2,67 +2,29 @@
 // 9/20/2014 jichi
 
 #include "trscript/trscript.h"
-#include <QtCore/QString>
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-#include <QtCore/QRegExp>
+#include "trscript/trrule.h"
+#include "cpputil/cpplocale.h"
+#include <fstream>
+//#include <QDebug>
 
-//#include <QtCore/QReadWriteLock> // thread-safety
-//#include <QtCore/QReadLocker>
-//#include <QtCore/QWriteLocker>
-
-#include <list> // instead of QList which is slow that stores pointers instead of elements
-#include <tuple>
-#include <boost/foreach.hpp>
-
+#define SK_NO_QT
 #define DEBUG "trscript.cc"
 #include "sakurakit/skdebug.h"
 
 //#define DEBUG_RULE // output the rule that is applied
 
-#define SCRIPT_CH_COMMENT   '#' // indicate the beginning of a line comment
-#define SCRIPT_CH_REGEX     'r'
-
-#define SCRIPT_RULE_DELIM   '\t' // deliminator of the rule pair
-enum { SCRIPT_RULE_DELIM_LEN = 1 };
-//enum { SCRIPT_RULE_DELIM_LEN = (sizeof(SCRIPT_RULE_DELIM)  - 1) }; // strlen
+#define SCRIPT_CH_COMMENT   L'#'    // indicate the beginning of a line comment
+#define SCRIPT_CH_DELIM     L'\t'   // deliminator of the rule pair
+#define SCRIPT_CH_REGEX     L'r'    // a regex rule
+#define SCRIPT_CH_ICASE     L'i'    // case insensitive
+#define SCRIPT_CH_NAME      L'n'    // a name without suffix
+#define SCRIPT_CH_SUFFIX    L's'    // a name with suffix
 
 /** Helpers */
 
 namespace { // unnamed
 
-struct TranslationScriptRule
-{
-  QString source;
-  QString target;
-  QRegExp *sourceRe; // cached compiled regex
-
-  TranslationScriptRule() : sourceRe(nullptr) {}
-  ~TranslationScriptRule() { if (sourceRe) delete sourceRe; }
-
-  bool init(const QString &s, const QString &t, bool regex)
-  {
-    if (regex) {
-      QRegExp *re = new QRegExp(s, Qt::CaseSensitive, QRegExp::RegExp2); // use Perl-compatible syntax, default in Qt5
-      if (re->isEmpty()) {
-        DOUT("invalid regexp:" << s);
-        delete re;
-        return false;
-      }
-      sourceRe = re;
-      target = t;
-      //target.replace('$', '\\'); // convert Javascript RegExp to Perl
-    } else {
-      source = s;
-      target = t;
-    }
-    return true;
-  }
-
-  bool init(const std::tuple<QString, QString, bool> &t)
-  { return init(std::get<0>(t), std::get<1>(t), std::get<2>(t)); }
-
-};
+const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 } // unnamed namespace
 
@@ -70,11 +32,12 @@ struct TranslationScriptRule
 
 class TranslationScriptManagerPrivate
 {
+
 public:
   //QReadWriteLock lock;
 
   TranslationScriptRule *rules; // use array for performance reason
-  int ruleCount;
+  size_t ruleCount;
 
   TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
   ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
@@ -83,19 +46,18 @@ public:
   {
     ruleCount = 0;
     if (rules) {
-      delete rules;
+      delete[] rules;
       rules = nullptr;
     }
   }
 
-  void reset(int size)
+  void reset(size_t size)
   {
-    DOUT(size);
-    Q_ASSERT(size > 0);
-    ruleCount = size;
+    clear(); // clear first for thread-safety
     if (rules)
       delete[] rules;
     rules = new TranslationScriptRule[size];
+    ruleCount = size;
   }
 };
 
@@ -109,92 +71,111 @@ TranslationScriptManager::~TranslationScriptManager() { delete d_; }
 int TranslationScriptManager::size() const { return d_->ruleCount; }
 bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 
-void TranslationScriptManager::clear()
-{
-  //QWriteLocker locker(&d_->lock);
-  d_->clear();
-}
+//bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
+//void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
+
+//std::wstring TranslationScriptManager::linkStyle() const { return d_->linkStyle; }
+//void TranslationScriptManager::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+
+void TranslationScriptManager::clear() { d_->clear(); }
 
 // Initialization
-bool TranslationScriptManager::loadFile(const QString &path)
+bool TranslationScriptManager::loadFile(const std::wstring &path)
 {
-  // File IO
-  // http://stackoverflow.com/questions/2612103/qt-reading-from-a-text-file
-  QFile file(path);
-  if (!file.open(QIODevice::ReadOnly)) {
-    DOUT("failed to open file at path:" << path);
+#ifdef _MSC_VER
+  std::wifstream fin(path);
+#else
+  std::string spath(path.begin(), path.end());
+  std::wifstream fin(spath.c_str());
+#endif // _MSC_VER
+  if(!fin.is_open()) {
+    DOUT("unable to open file");
     return false;
   }
+  fin.imbue(UTF8_LOCALE);
 
-  std::list<std::tuple<QString, QString, bool> > lines; // pattern, text, regex
-
-  QTextStream in(&file);
-  in.setCodec("UTF-8"); // enforce UTF-8
-  while (!in.atEnd()) {
-    QString line = in.readLine(); //.trimmed(); // trim the ending new line char
-    if (!line.isEmpty()) {
-      bool regex = false;
-      int textStartIndex = 1; // index of the text after flags, +1 to skip \t
-      switch (line[0].unicode()) {
-      case SCRIPT_CH_COMMENT: continue;
-      case SCRIPT_CH_REGEX: regex = true; textStartIndex++; break;
+  TranslationScriptRule::param_type param;
+  TranslationScriptRule::param_list params; // id, pattern, text, regex
+  size_t parentCount = 0;
+  for (std::wstring line; std::getline(fin, line);)
+    if (!line.empty() && line[0] != SCRIPT_CH_COMMENT) {
+      param.clear_flags();
+      size_t pos = 0;
+      for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
+        switch (line[pos]) {
+        case SCRIPT_CH_REGEX: param.f_regex = true; break;
+        case SCRIPT_CH_ICASE: param.f_icase = true; break;
+        case SCRIPT_CH_NAME: param.f_parent = true; break;
+        case SCRIPT_CH_SUFFIX: param.f_child = true; break;
+        }
+      if (pos == line.size())
+        continue;
+      //line.pop_back(); // remove trailing '\n'
+      const wchar_t *cur = line.c_str() + pos;
+      long id = ::wcstol(cur, const_cast<wchar_t **>(&cur), 10); // base 10
+      if (cur && *cur++) { // skip first delim
+        param.category = ::wcstol(cur, const_cast<wchar_t **>(&cur), 10); // base 10
+        if (cur && *cur++) {
+          param.id = id ? std::to_wstring((long long)id) : std::wstring();
+          if (const wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
+            param.source.assign(cur, delim - cur);
+            param.target.assign(delim + 1);
+          } else {
+            param.source.assign(cur);
+            param.target.clear();
+          }
+          if (!param.source.empty()) {
+            if (!param.f_child)
+              parentCount++;
+            params.push_back(param);
+            //qDebug() << QString::fromStdWString(param.id) << param.category << QString::fromStdWString(param.source) << QString::fromStdWString(param.target);
+          }
+        }
       }
-      int index = line.indexOf(SCRIPT_RULE_DELIM, textStartIndex);
-      QString left, right;
-      if (index == -1)
-        left = line.mid(textStartIndex);
-      else {
-        left = line.mid(textStartIndex, index - textStartIndex); //.trimmed()
-        right = line.mid(index + SCRIPT_RULE_DELIM_LEN);
-      }
-      lines.push_back(std::make_tuple(left, right, regex));
     }
-  }
-  file.close();
 
-  if (lines.empty())
+  fin.close();
+
+  if (params.empty()) {
+    d_->clear();
     return false;
+  }
 
   //QWriteLocker locker(&d_->lock);
-  d_->reset(lines.size());
+  d_->reset(parentCount);
 
-  int i = 0;
-  BOOST_FOREACH (const auto &it, lines)
-    d_->rules[i++].init(it);
+  size_t i = 0;
+  for (auto p = params.cbegin(), q = params.cend(); p != params.cend(); ++p)
+    if (p->f_child) {
+      if (q == params.cend())
+        q = p;
+    } else if (p->f_parent && q != params.cend()) {
+      d_->rules[i++].init_list(*p, q, p);
+      q = params.cend();
+    } else
+      d_->rules[i++].init(*p);
 
   return true;
 }
 
 // Translation
-QString TranslationScriptManager::translate(const QString &text) const
+std::wstring TranslationScriptManager::translate(const std::wstring &text, int category, bool mark) const
 {
   //QReadLocker locker(&d_->lock);
-  QString ret = text;
+  std::wstring ret = text;
 #ifdef DEBUG_RULE
-  QString previous;
+  std::wstring previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
-    for (int i = 0; i < d_->ruleCount; i++) {
+    for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
-      if (rule.sourceRe) {
-        if (rule.target.isEmpty())
-          ret.remove(*rule.sourceRe);
-        else
-          ret.replace(*rule.sourceRe, rule.target);
-      } else if (!rule.source.isEmpty()) {
-        if (rule.target.isEmpty())
-          ret.remove(rule.source);
-        else
-          ret.replace(rule.source, rule.target);
-      }
+      //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
+      if (rule.is_valid() && rule.match_category(category))
+        rule.replace(ret, mark);
 
 #ifdef DEBUG_RULE
-      if (previous != ret) {
-        if (rule.sourceRe)
-          DOUT(rule.sourceRe->pattern() << rule.target << ret);
-        else
-          DOUT(rule.source << rule.target << ret);
-      }
+      if (previous != ret)
+        DOUT(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
       previous = ret;
 #endif // DEBUG_RULE
     }

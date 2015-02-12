@@ -2,7 +2,7 @@
 # about.py
 # 12/28/2013 jichi
 
-__all__ = ['AboutDialog']
+__all__ = 'AboutDialog',
 
 if __name__ == '__main__':
   import sys
@@ -14,14 +14,13 @@ from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
 from sakurakit import skqss
-from sakurakit.skclass import Q_Q
 from sakurakit.sktr import tr_
 #from mytr import mytr_
 import info
 
 class AboutDialog(QtWidgets.QDialog):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(AboutDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.__d = _AboutDialog(self)
@@ -44,6 +43,14 @@ class _AboutDialog:
 
     self.versionLabel = QtWidgets.QLabel()
     #self.versionLabel.setWordWrap(True)
+
+    linkstyle = 'color:#428bca' # bootstrap btn-link
+    url = 'http://sakuradite.com/app/vnr/changes'
+    changesLabel = QtWidgets.QLabel(
+        '<a href="%s" style="%s">%s</a>' %
+        (url, linkstyle, tr_("Recent Changes")))
+    changesLabel.setOpenExternalLinks(True)
+    changesLabel.setToolTip(url)
 
     import rc
     url = rc.image_path('logo-reader')
@@ -79,11 +86,15 @@ class _AboutDialog:
     #labels.addWidget(imageLabel)
     #layout.addLayout(labels)
 
-    layout.addWidget(self.versionLabel)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.versionLabel)
+    row.addStretch()
+    row.addWidget(changesLabel)
+    layout.addLayout(row)
+
     row = QtWidgets.QHBoxLayout()
     #row.addLayout(labels)
     row.addWidget(imageLabel)
-    row.addWidget(self.versionLabel)
     row.addStretch()
     row.addWidget(updateButton)
     row.addWidget(creditButton)

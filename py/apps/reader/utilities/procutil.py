@@ -11,9 +11,13 @@ from sakurakit.skdebug import dprint
 from sakurakit.skunicode import u
 from apploc import applocale
 from mytr import my
-import config, features, growl, osutil, rc, winutil
+import config, features, hashutil, growl, osutil, rc, winutil
 
 PID = os.getpid() # cached
+
+windir = skpaths.WINDIR.lower()
+appdata = skpaths.APPDATA.lower()
+localappdata = skpaths.LOCALAPPDATA.lower()
 
 ## Filter ##
 
@@ -26,6 +30,23 @@ def is_blocked_process_name(name):
       name.startswith('360') or
       name.startswith('Baidu') or
       name.startswith('baidu'))
+
+def is_blocked_process_path(path):
+  """
+  @param  path
+  @return  bool
+  """
+  name = os.path.basename(path)
+  if is_blocked_process_name(name):
+    return True
+
+  lpath = path.lower()
+  if (lpath.startswith(windir) or
+      lpath.startswith(appdata) or
+      lpath.startswith(localappdata)):
+    return True
+
+  return False
 
 def is_my_window(hwnd): return skwin.get_window_process_id(hwnd) == PID
 
@@ -70,9 +91,6 @@ def iterprocess():
   See: http://www.blog.pythonlibrary.org/2010/10/03/how-to-find-and-list-all-running-processes-with-python/
   """
 
-  windir = skpaths.WINDIR.lower()
-  appdata = skpaths.APPDATA.lower()
-  localappdata = skpaths.LOCALAPPDATA.lower()
   for p in psutil.process_iter():
     if (p.pid and       # pid == 0 will raise access denied exception on Mac
         p.is_running() and
@@ -81,11 +99,7 @@ def iterprocess():
       try: path = u(p.exe)        # system processes raise access denied exception on Windows 7
       except: continue
       name = u(p.name)
-      lpath = path.lower()
-      if (name in config.PROCESS_BLACKLIST or
-          lpath.startswith(windir) or
-          lpath.startswith(appdata) or
-          lpath.startswith(localappdata)):
+      if is_blocked_process_name(name) or is_blocked_process_path(path):
         continue
       pid = p.pid
       if '?' in path: # Japanese characters
@@ -95,7 +109,7 @@ def iterprocess():
 
 def get_process_by_path(path):
   """
-  @param  path  unicode or None
+  @param  path  unicode
   @return  Process or None
   """
   np = osutil.normalize_path(path)
@@ -105,10 +119,20 @@ def get_process_by_path(path):
 
 def get_process_by_pid(pid):
   """
+  @param  pid  long
   @return  Process or None
   """
   for p in iterprocess():
     if p.pid == pid:
+      return p
+
+def get_process_by_md5(md5):
+  """
+  @param  md5  str
+  @return  Process or None
+  """
+  for p in iterprocess():
+    if md5 == hashutil.md5sum(osutil.normalize_path(p.path)):
       return p
 
 if not skos.WIN:
@@ -147,20 +171,43 @@ def may_be_game_window(wid):
   if not path:
     return False
 
-  exe = os.path.basename(path)
-  if exe in config.PROCESS_BLACKLIST:
+  if is_blocked_process_path(path):
     return False
 
-  if (path.startswith(skpaths.WINDIR) or
-      path.startswith(skpaths.APPDATA) or
-      path.startswith(skpaths.LOCALAPPDATA)):
-    return False
   return True
 
-def open_executable(path, lcid=0, params=None, vnrlocale=False):
+def open_executable(path, type=None, language='', lcid=0, codepage=0, params=None, vnrlocale=False):
   """
   @param  path  str  path to executable
-  @paramk lcid  int  Microsoft lcid
+  @param* language  str
+  @param* lcid  int  Microsoft lcid
+  @paramk codepage  int  Microsoft codepage
+  @param* params  [unicode param] or None
+  @param* vnrlocale  bool  whether inject vnrlocale on the startup
+  @return  long  pid  exe's pid or launcher's pid
+  """
+  if language:
+    if not lcid:
+      lcid = config.language2lcid(language)
+    if not codepage:
+      codepage = config.language2codepage(language)
+  if not type or type == 'apploc':
+    return open_executable_with_apploc(path, params=params, lcid=lcid, vnrlocale=vnrlocale)
+  if type == 'le':
+    return open_executable_with_leproc(path, params=params)
+  if type == 'ntlea':
+    return open_executable_with_ntlea(path, params=params, locale=lcid, codepage=codepage)
+  if type == 'ntleas':
+    return open_executable_with_ntleas(path, params=params, locale=lcid, codepage=codepage)
+  if type == 'lsc':
+    return open_executable_with_lsc(path, params=params, locale=lcid, codepage=codepage)
+  return 0
+
+def open_executable_with_apploc(path, lcid=0, params=None, vnrlocale=False):
+  """
+  @param  path  str  path to executable
+  @param* lcid  int  Microsoft lcid
+  @param* codepage  int  Microsoft lcid
   @param* params  [unicode param] or None
   @param* vnrlocale  bool  whether inject vnrlocale on the startup
   @return  long  pid
@@ -179,7 +226,7 @@ def open_executable(path, lcid=0, params=None, vnrlocale=False):
       inject.inject_vnrlocale(handle=proc.processHandle)
       return proc.processId
 
-def open_executable_with_ntlea(path, params=None):
+def open_executable_with_ntlea(path, params=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
@@ -190,7 +237,7 @@ def open_executable_with_ntlea(path, params=None):
   exe = config.NTLEA_LOCATION
 
   from ntlea import ntlea
-  params = ntlea.params(path=path, args=params)
+  params = ntlea.params(path=path, args=params, **kwargs)
   return skwin.create_process(exe, params=params)
 
 def open_executable_with_leproc(path, params=None):
@@ -214,7 +261,7 @@ def open_executable_with_leproc(path, params=None):
   params = leproc.params(path=path, args=params)
   return skwin.create_process(exe, params=params)
 
-def open_executable_with_ntleas(path, params=None):
+def open_executable_with_ntleas(path, params=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
@@ -232,10 +279,10 @@ def open_executable_with_ntleas(path, params=None):
     return 0
 
   from ntleas import ntleas
-  params = ntleas.params(path=path, args=params)
+  params = ntleas.params(path=path, args=params, **kwargs)
   return skwin.create_process(exe, params=params)
 
-def open_executable_with_lsc(path, params=None):
+def open_executable_with_lsc(path, params=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
@@ -245,7 +292,7 @@ def open_executable_with_lsc(path, params=None):
   exe = config.LSC_LOCATION
 
   from localeswitch import lsc
-  params = lsc.params(path=path, args=params)
+  params = lsc.params(path=path, args=params, **kwargs)
   return skwin.create_process(exe, params=params)
 
 def getyoutube(vids, path=''):

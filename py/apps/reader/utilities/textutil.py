@@ -4,18 +4,35 @@
 
 import re
 from sakurakit import skstr
-from sakurakit.skunicode import u
-from jptraits import jpchars
+from unitraits import unichars, jpchars
+from windefs import winlocale
+import defs
 
 ## Encoding ##
 
 # SHIFT-JIS VS CP932
 # http://d.hatena.ne.jp/r_ikeda/20111105/shift_jis
-def to_unicode(data, encoding): # str, str -> unicode
-  if encoding == 'shift-jis':
-    encoding = 'cp932'
-  return u(data, encoding)
-  #return qunicode(data, encoding)
+def to_unicode(s, enc, errors='ignore'):
+  """
+  @param  enc  str not None
+  @param  s  str or bytearray or None
+  @return  unicode or u""
+  """
+  if not s:
+    return u""
+  enc = winlocale.encoding2py(enc) or enc
+  return s.decode(enc, errors=errors)
+
+def from_unicode(s, enc, errors='ignore'):
+  """
+  @param  enc  str not None
+  @param  s  str or bytearray or None
+  @return  unicode or u""
+  """
+  if not s:
+    return u""
+  enc = winlocale.encoding2py(enc) or enc
+  return s.encode(enc, errors=errors)
 
 ## Helpers ##
 
@@ -54,7 +71,9 @@ def is_illegal_text(text):
   """
   return bool(__illegal_re.search(text))
 
-__name_re = re.compile(ur'【(.*?)】|(.*?)「')
+# At most 16 characters
+__name_re = re.compile(ur'【(.{0,%s}?)】|(.{0,%s}?)「'
+    % (defs.MAX_NAME_LENGTH, defs.MAX_NAME_LENGTH))
 def guess_text_name(text):
   """
   @param  text  unicode
@@ -62,8 +81,29 @@ def guess_text_name(text):
   """
   m = __name_re.match(text)
   if m:
-    return m.group(1) or m.group(2)
-  #return m.group(1) or m.group(2) or "" if m else ""
+    r = m.group(1) or m.group(2)
+    if r:
+      return r.strip()
+
+#__noname_re = re.compile(ur'^(?:【.{0,%s}?】|.{0,%s}?(?=「))(.*)$'
+#    % (defs.MAX_NAME_LENGTH, defs.MAX_NAME_LENGTH))
+def remove_text_name(text):
+  """
+  @param  text  unicode
+  @return  unicode not None
+  """
+  #return __noname_re.sub('\\1', text)
+  # Avoid using regex for better performance
+  if not text:
+    return ""
+  i = text.find(u'「')
+  if i > 0 and i < defs.MAX_NAME_LENGTH:
+    return text[i:]
+  if text[0] == u'【':
+    i = text.find(u'】')
+    if i > 0 and i < defs.MAX_NAME_LENGTH:
+      return text[i+1:].lstrip()
+  return text
 
 __beauty_text_re = re.compile(ur'([。？！」】])(?![。！？」]|$)')
 def beautify_text(text):
@@ -102,7 +142,7 @@ normalize_punct = skstr.multireplacer({
   #u"\n": u" ", # JBeijing cannot handle multiple lines
 })
 
-__match_kata_hira_punc_re = re.compile(r"[%s]+" % ''.join((jpchars.s_kata, jpchars.s_hira, jpchars.s_punc)))
+__match_kata_hira_punc_re = re.compile(r"[%s]+" % ''.join((jpchars.s_kata, jpchars.s_hira, jpchars.s_punct)))
 def match_kata_hira_punc(text):
   """
   @param  text  unicode
@@ -111,10 +151,118 @@ def match_kata_hira_punc(text):
   return bool(__match_kata_hira_punc_re.match(text))
 
 # http://www.sakuradite.com/wiki/zh/VNR/Voice_Settings
-import config
-repair_zunko_text = skstr.multireplacer(
-  config.load_yaml_file(config.ZUNKO_YAML_LOCATION)['escape']
-)
+#import config
+#repair_zunko_text = skstr.multireplacer(
+#  config.load_yaml_file(config.ZUNKO_YAML_LOCATION)['escape']
+#)
+
+def __capitalize_sentence_s(m): # with space
+  ch = m.group(2)
+  if ch.isdigit():
+    return (m.group(1) or '') + ch # do not change
+  else:
+    return ' ' + ch.upper()
+def __capitalize_sentence_ns(m): # without space
+  return m.group(1).upper()
+#__capitalize_suffix = r"(\s)*(\w)"
+__capitalize_period_re = re.compile(r"(?<=\w\.)(\s)*(\w)", re.UNICODE) # space
+__capitalize_punct_re = re.compile(r"(?<=[?!])(\s)*(\w)", re.UNICODE) # space
+__capitalize_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\w)", re.UNICODE) # no space
+def capitalize_sentence(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  text = __capitalize_paragraph_re.sub(__capitalize_sentence_ns, text)
+  text = __capitalize_punct_re.sub(__capitalize_sentence_s, text)
+  text = __capitalize_period_re.sub(__capitalize_sentence_s, text)
+  return text
+
+# Example sentence to test for LEC
+# ひとまずいつものように今月の雑誌に目を通そう
+def __capitalize_html_sentence_s(m): # with space
+  ch = m.group(3)
+  if ch.isdigit():
+    return (m.group(1) or '') + m.group(2) + ch # do not change
+  else:
+    return ' ' + m.group(2) + ch.upper()
+def __capitalize_html_sentence_ns(m): # without space
+  return m.group(1) + m.group(2).upper()
+__capitalize_html_period_re = re.compile(r"(?<=\w\.)(\s)*(\<[^>]+?\>)(\w)", re.UNICODE) # space
+__capitalize_html_punct_re = re.compile(r"(?<=[?!])(\s)*(\<[^>]+?\>)(\w)", re.UNICODE) # space
+__capitalize_html_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\<[^>]+?\>)(\w)", re.UNICODE) # no space
+def capitalize_html_sentence(text):
+  """
+  @param  text  unicode  containing html tags
+  @return  unicode
+  """
+  text = capitalize_sentence(text)
+  if '<' in text and '>' in text:
+    text = __capitalize_html_paragraph_re.sub(__capitalize_html_sentence_ns, text)
+    text = __capitalize_html_punct_re.sub(__capitalize_html_sentence_s, text)
+    text = __capitalize_html_period_re.sub(__capitalize_html_sentence_s, text)
+  return text
+
+__html_tag_re = re.compile(r'<[^>]*>')
+def remove_html_tags(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return __html_tag_re.sub('', text.replace('<br/>', '\n')) if '<' in text else text
+
+__re_chars = re.compile(r"[%s]" % re.escape(
+  skstr.REGEX_SPECIAL_CHARS + r"{}"
+))
+def mightbe_regex(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(__re_chars.search(text))
+
+def validate_regex(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  #text = text.replace('[^', '[\\')
+  return not text or skstr.checkpair(text)
+
+def validate_macro(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return not text or skstr.checkpair(text, pair=('{','}'))
+
+_s_punct = unichars.s_ascii_punct + jpchars.s_punct
+def ispunct(ch):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return ch in _s_punct
+
+_re_punct_space = re.compile(r' +(?=[%s])' % re.escape('-' + _s_punct) )
+def remove_punct_space(text):
+  """
+  @param  text  unicode
+  @return  text
+  """
+  return _re_punct_space.sub('', text) if ' ' in text else text
+
+_re_html_punct_space = re.compile(r' +(?=<[^>]+>[%s])' % re.escape('-' + _s_punct) )
+def remove_html_punct_space(text):
+  """
+  @param  text  unicode
+  @return  text
+  """
+  if ' ' in text:
+    text = _re_punct_space.sub('', text)
+    if '<' in text:
+      text = _re_html_punct_space.sub('', text)
+  return text
 
 if __name__ == '__main__':
   t = u"かたがな"

@@ -2,7 +2,7 @@
 # gameview.py
 # 7/10/2013 jichi
 
-__all__ = ['GameViewManager']
+__all__ = 'GameViewManager',
 
 import json, os
 from functools import partial
@@ -16,7 +16,7 @@ from sakurakit.skwebkit import SkWebView, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import cacheman, dataman, defs, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
+import cacheman, config, dataman, defs, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
 
 def _getimage(url, path):
   """
@@ -195,6 +195,7 @@ class _GameView(object):
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
   def clear(self):
+    self.gameInfo = None # gameInfo
     self.gameId = 0 # long
     self.itemId = 0 # long
 
@@ -276,7 +277,7 @@ class _GameView(object):
     """@reimp"""
     q = self.q
     dm = dataman.manager()
-    info = dm.queryGameInfo(itemId=self.itemId, id=self.gameId, cache=False)
+    info = self.gameInfo = dm.queryGameInfo(itemId=self.itemId, id=self.gameId, cache=False)
     self._gameBean.info = info
     if info:
       if not self.gameId:
@@ -301,9 +302,12 @@ class _GameView(object):
     icon = info.icon if info else None
     q.setWindowIcon(icon or rc.icon('window-gameview'))
 
+    online = netman.manager().isOnline()
     self.editButton.setEnabled(bool(self.gameId))
     self.launchButton.setEnabled(bool(info and info.local))
-    self.discussButton.setEnabled(bool(info and info.itemId))
+    self.browseButton.setEnabled(online and bool(info and info.itemId))
+    self.topicButton.setEnabled(online and bool(info and info.itemId))
+    self.nameButton.setEnabled(bool(info) and info.hasCharacters())
 
     # Fake base addr that twitter javascript can access document.cookie
     #baseUrl = ''
@@ -314,16 +318,16 @@ class _GameView(object):
     #baseUrl = 'file:///'    # would crash QByteArray when refresh
     #baseUrl = 'file:///any' # any place that is local
     needsPost = info and info.gameItem and (info.gameItem.overallScoreCount or info.gameItem.ecchiScoreCount)
-    online = netman.manager().isOnline()
     if online and needsPost:
-      baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy, but this would break getchu
+      baseUrl = config.API_HOST # must be the same as rest.coffee for the same origin policy, but this would break getchu
     else:
       baseUrl = 'qrc:///_'    # any place is fine
 
     user = dataman.manager().user()
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/reader/game').render({
+    w.setHtml(rc.haml_template('haml/reader/gameview').render({
+      'host': config.API_HOST,
       'userName': user.name,
       'userPassword': user.password,
       'title': title,
@@ -348,12 +352,14 @@ class _GameView(object):
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
     layout.addWidget(self.launchButton)
-    layout.addWidget(self.discussButton)
     layout.addWidget(self.subButton)
+    layout.addWidget(self.topicButton)
+    layout.addWidget(self.nameButton)
     layout.addStretch()
     layout.addWidget(self.helpButton)
-    #layout.addWidget(self.refreshButton) # disabled
+    layout.addWidget(self.browseButton)
     layout.addWidget(self.editButton)
+    layout.addWidget(self.refreshButton) # disabled
     ret.setLayout(layout)
     layout.setContentsMargins(4, 4, 4, 4)
     return ret
@@ -370,10 +376,10 @@ class _GameView(object):
     return ret
 
   @memoizedproperty
-  def discussButton(self):
-    ret = QtWidgets.QPushButton(mytr_("Discuss"))
+  def browseButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
     skqss.class_(ret, 'btn btn-default')
-    ret.setToolTip(mytr_("Game Discussion"))
+    ret.setToolTip(tr_("Browse"))
     #ret.setStatusTip(ret.toolTip())
     ret.setEnabled(False)
     ret.clicked.connect(lambda:
@@ -381,9 +387,19 @@ class _GameView(object):
     return ret
 
   @memoizedproperty
+  def topicButton(self):
+    ret = QtWidgets.QPushButton(tr_("Topic"))
+    skqss.class_(ret, 'btn btn-inverse')
+    ret.setToolTip(tr_("Topic"))
+    ret.setEnabled(False)
+    ret.clicked.connect(lambda:
+        self.itemId and main.manager().showGameTopics(itemId=self.itemId))
+    return ret
+
+  @memoizedproperty
   def subButton(self):
     ret = QtWidgets.QPushButton(tr_("Subtitle"))
-    skqss.class_(ret, 'btn btn-inverse')
+    skqss.class_(ret, 'btn btn-success')
     ret.setToolTip(tr_("Subtitles"))
     #ret.setStatusTip(ret.toolTip())
     #ret.setEnabled(False)
@@ -403,17 +419,32 @@ class _GameView(object):
 
   def _edit(self): main.manager().showReferenceView(gameId=self.gameId)
 
-  #@memoizedproperty
-  #def refreshButton(self):
-  #  ret = QtWidgets.QPushButton(tr_("Refresh"))
-  #  skqss.class_(ret, 'btn btn-info')
-  #  ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
-  #  #ret.setStatusTip(ret.toolTip())
-  #  ret.clicked.connect(self.updateAndRefresh)
-  #  nm = netman.manager()
-  #  ret.setEnabled(nm.isOnline())
-  #  nm.onlineChanged.connect(ret.setEnabled)
-  #  return ret
+  @memoizedproperty
+  def nameButton(self):
+    ret = QtWidgets.QPushButton(my.tr("Import Name"))
+    #skqss.class_(ret, 'btn btn-inverse')
+    skqss.class_(ret, 'btn btn-warning')
+    ret.setToolTip(my.tr("Import Japanese names to Shared Dictionary"))
+    ret.setEnabled(False)
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self._importName)
+    return ret
+
+  def _importName(self):
+    if self.gameInfo:
+      main.manager().showGameNames(tokenId=self.gameId, itemId=self.itemId, info=self.gameInfo)
+
+  @memoizedproperty
+  def refreshButton(self):
+    ret = QtWidgets.QPushButton(tr_("Refresh"))
+    skqss.class_(ret, 'btn btn-primary')
+    ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self.updateAndRefresh)
+    nm = netman.manager()
+    ret.setEnabled(nm.isOnline())
+    nm.onlineChanged.connect(ret.setEnabled)
+    return ret
 
   @memoizedproperty
   def helpButton(self):
@@ -426,7 +457,7 @@ class _GameView(object):
 
 class GameView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameView, self).__init__(parent, WINDOW_FLAGS)
     #self.setWindowIcon(rc.icon('window-game'))
     self.__d = _GameView(self)
@@ -454,7 +485,6 @@ class GameView(QtWidgets.QMainWindow):
         if g:
           t = g.refsUpdateTime
           now = skdatetime.current_unixtime()
-          import config
           if t + config.APP_UPDATE_REFS_INTERVAL < now:
             g.refsUpdateTime = now
             skevents.runlater(d.updateAndRefresh, 2000) # 2 seconds

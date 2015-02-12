@@ -8,19 +8,18 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-#from sakurakit.skprofiler import SkProfiler
+from sakurakit.skprof import SkProfiler
 
 from ctypes import c_longlong
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
-from sakurakit import skclip, skdatetime, skevents, skthreads
+from sakurakit import skclip, skdatetime, skevents
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
-from zhszht.zhja import zht2ja
-from zhszht.zhszht import zhs2zht
+from convutil import zhs2zht
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
@@ -198,7 +197,7 @@ class _TextManager(object):
 
   def _updateTtsSubtitle(self, text, language):
     ss = settings.global_()
-    if not ss.speaksGameText(): #or not ss.isVoiceCharacterEnabled() or not ss.isSubtitleVoiceEnabled():
+    if not ss.speaksGameText() or not ss.isSubtitleVoiceEnabled():
       return
     # Speak only the first subtitle, and the language must be matched
     if self.ttsSubtitle or language[:2] != self.language[:2]:
@@ -214,7 +213,7 @@ class _TextManager(object):
   def _updateTtsText(self, text):
     self.lastTtsText = self.ttsText = text
     ss = settings.global_()
-    if not ss.speaksGameText(): #or ss.isVoiceCharacterEnabled() and ss.isSubtitleVoiceEnabled():
+    if not ss.speaksGameText(): #or ss.isSubtitleVoiceEnabled(): subtitle still need tts text to guess character names
       return
     if text and self.ttsName:
       self._speakTextTimer.start(0)
@@ -235,10 +234,13 @@ class _TextManager(object):
     #else:
     if text and self.ttsText:
       self._speakTextTimer.start(0)
-      self._speakSubtitleTimer.start(0)
+      if ss.isSubtitleVoiceEnabled():
+        self._speakSubtitleTimer.start(0)
     else:
-      self._speakTextTimer.start(1000)
-      self._speakSubtitleTimer.start(1000)
+      timeout = 1000 # online machine translation latency is lone
+      self._speakTextTimer.start(timeout)
+      if ss.isSubtitleVoiceEnabled():
+        self._speakSubtitleTimer.start(timeout)
 
   @staticmethod
   def guessName(text):
@@ -254,11 +256,11 @@ class _TextManager(object):
     tm = ttsman.manager()
     lang = tm.defaultEngineLanguage()
     if lang:
-      if lang[:2] == self.gameLanguage[:2]:
+      if lang == '*' or lang[:2] == self.gameLanguage[:2]:
         t = self.lastTtsText
         if t:
           tm.stop()
-          tm.speak(t, termEnabled=True, language=lang)
+          tm.speak(t, termEnabled=True, language=self.gameLanguage)
           return
       elif lang[:2] == self.lastTtsSubtitleLanguage[:2]:
         t = self.lastTtsSubtitle
@@ -272,12 +274,15 @@ class _TextManager(object):
 
   def _speakText(self):
     text = self.ttsText
+    #text = textutil.remove_html_tags(text)
     tm = ttsman.manager()
+    ss = settings.global_()
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
-        lang = tm.defaultEngineLanguage()
-        if lang[:2] == self.gameLanguage[:2]:
-          tm.speak(text, termEnabled=True, language=lang)
+        if not ss.isSubtitleVoiceEnabled():
+          lang = tm.defaultEngineLanguage()
+          if lang == '*' or lang and lang[:2] == self.gameLanguage[:2]:
+            tm.speak(text, termEnabled=True, language=self.gameLanguage)
       else:
         dm = dataman.manager()
         name = self.ttsName
@@ -288,53 +293,59 @@ class _TextManager(object):
           if name:
             dm.addCharacter(name)
             self.ttsNameForSubtitle = name
-        c = dm.queryCharacter(name)
-        tm.stop() # this requires that ttsSubtitle always comes after ttsText
-        if c:
-          cd = c.d
-          if cd.ttsEnabled:
-            eng = cd.ttsEngine or tm.defaultEngine()
-            lang = tm.getEngineLanguage(eng)
-            if lang and lang[:2] == self.gameLanguage[:2] and (name or
-                not text.startswith(u"「") and not text.endswith(u"」")
-                or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
-              ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=True, language=lang, engine=eng)
+        if not ss.isSubtitleVoiceEnabled():
+          tm.stop() # this requires that ttsSubtitle always comes after ttsText
+          c = dm.queryCharacter(name)
+          if c:
+            cd = c.d
+            if cd.ttsEnabled:
+              #lang = tm.getEngineLanguage(eng) # always speak TTS subtitle
+              #if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
+              if (name
+                  or not text.startswith(u"「") and not text.endswith(u"」")
+                  or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+                ): # do not speak if no character name is detected
+                eng = cd.ttsEngine or tm.defaultEngine()
+                tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng, gender=cd.gender)
         #else:
         #  tm.stop()
     self.ttsText = self.ttsName = ""
 
   def _speakSubtitle(self):
-    text = self.ttsSubtitle
     tm = ttsman.manager()
+    text = textutil.remove_html_tags(self.ttsSubtitle)
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
         lang = tm.defaultEngineLanguage()
-        if lang[:2] == self.ttsSubtitleLanguage[:2]:
-          tm.speak(text, termEnabled=False, language=lang)
+        if lang == '*' or lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
+          tm.speak(text, termEnabled=True, language=lang)
       else:
+        tm.stop()
         dm = dataman.manager()
         name = self.ttsNameForSubtitle
         c = dm.queryCharacter(name)
-        #tm.stop()
         if c:
           cd = c.d
           if cd.ttsEnabled:
-            eng = cd.ttsEngine or tm.defaultEngine()
-            lang = tm.getEngineLanguage(eng)
-            if lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
-              tm.stop()
+            #lang = tm.getEngineLanguage(eng) # always speak
+            #if lang and (lang == '*' or lang[:2] == self.ttsSubtitleLanguage[:2]) and (name or
+            if (name
+                or not text.startswith(u"「") and not text.endswith(u"」")
+                or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+              ): # do not speak if no character name is detected
+              eng = cd.ttsEngine or tm.defaultEngine()
               #if (name
               #    #not text.startswith(u"「") and not text.endswith(u"」")
               #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
               #  ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=False, language=self.ttsSubtitleLanguage, engine=eng)
+              tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng, gender=cd.gender)
     self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
-  def _repairText(self, text, language=None):
+  def _repairText(self, text, to=None, fr=None):
     """
     @param  text  unicode
-    @param  lang  unicode
+    @param  to  unicode
+    @param  fr  unicode
     @return  unicode
     """
     # Remove illegal characters before repetition removal.
@@ -343,9 +354,12 @@ class _TextManager(object):
       text = textutil.remove_repeat_text(text)
       #size = len(text)
       #nochange = len(text) == size
-    if language:
+    if fr or to:
       #with SkProfiler(): # 0.046 seconds
-      text = termman.manager().applyOriginTerms(text, language)
+      text = termman.manager().applyGameTerms(text, to=to, fr=fr,
+          ignoreIfNotReady=True)
+      if not text:
+        return ''
     if self.removesRepeat and text: # and nochange:
       t = textutil.remove_repeat_text(text)
       delta = len(text) - len(t)
@@ -358,8 +372,9 @@ class _TextManager(object):
     return textutil.to_unicode(data, self.encoding)
 
   def _translateTextAndShow(self, text, time):
-    trman.manager().translateApply(partial(self._showTranslation, time),
-        text, self.gameLanguage)
+    trman.manager().translateApply(self._showTranslation,
+        text, self.gameLanguage,
+        time=time)
 
   def _showComment(self, c):
     """
@@ -368,17 +383,25 @@ class _TextManager(object):
     if not self.blockedLanguages or c.d.language[:2] not in self.blockedLanguages:
       self.q.commentReceived.emit(c)
 
-  def _showTranslation(self, time, sub, language, provider):
+  def _showSubtitle(self, s):
     """
-    @param  long  time
+    @param  s  Subtitle
+    """
+    if not self.blockedLanguages or s.subLang[:2] not in self.blockedLanguages:
+      self.q.subtitleReceived.emit(s.getObject())
+
+  def _showTranslation(self, sub, language, provider, align, time=0):
+    """
     @param  sub  unicode
     @param  language  unicode
     @param  provider  unicode
+    @param  align  list
+    @param* long  time
     """
     #sub = userplugin.revise_translation(sub, language)
     if sub:
       self._onGameSubtitle(sub, language)
-      self.q.translationReceived.emit(sub, language, provider, time)
+      self.q.translationReceived.emit(sub, language, provider, align, time)
       self._updateTtsSubtitle(sub, language)
 
   def _onGameSubtitle(self, sub, language=''):
@@ -387,7 +410,9 @@ class _TextManager(object):
     @param* language  str
     """
     if settings.global_().copiesGameSubtitle():
-      skclip.settext(sub)
+      sub = textutil.remove_html_tags(sub)
+      if sub:
+        skclip.settext(sub)
 
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
@@ -444,11 +469,11 @@ class _TextManager(object):
         self._flushAgentScenario()
       if role == NAME_THREAD_TYPE:
         #self.showNameText(text=text, agent=True)
-        if len(text) > defs.MAX_NAME_LENGTH:
+        if len(text) > defs.MAX_NAME_THREAD_LENGTH:
           self.agentNameBuffer = ''
         else:
           self.agentNameBuffer = text
-        #if len(self.agentNameBuffer) > defs.MAX_NAME_LENGTH:
+        #if len(self.agentNameBuffer) > defs.MAX_NAME_THREAD_LENGTH:
         #  self._cancelAgentName()
         #else:
         #  waitTime = 50 if not needsTranslation else settings.global_().embeddedTranslationWaitTime() * 3 # must be the same as the scenario
@@ -469,8 +494,19 @@ class _TextManager(object):
     lang2 = self.language[:2]
 
     if text:
+      if dm.hasSubtitles():
+        h = hashutil.hashtext(textutil.remove_text_name(text))
+        l = dm.querySubtitles(hash=h)
+        if l:
+          if len(l) > 1:
+            for it in l:
+              if it.subLang.startswith(lang2):
+                return it.text
+          return l[0].text
+
       # Calculate hash2
-      hashes2 = [hashutil.hashtext(text)]
+      h = hashutil.hashtext(text)
+      hashes2 = [h]
       for h in self.hashes2:
         if h:
           hashes2.append(hashutil.hashtext(text, h))
@@ -486,8 +522,8 @@ class _TextManager(object):
             return cd.text
 
     rawData = None
-    if text:
-      try: rawData = text.encode(self.encoding)
+    if text and self.encoding:
+      try: rawData = textutil.from_unicode(text, self.encoding, errors=None)
       except UnicodeEncodeError:
         dwarn("cannot extract raw data from text")
 
@@ -519,8 +555,8 @@ class _TextManager(object):
     @param* text  unicode
     @param* agent  bool
     """
-    if not rawData and text:
-      rawData = text.encode(self.encoding, errors='ignore')
+    if not rawData and text and self.encoding:
+      rawData = textutil.from_unicode(text, self.encoding)
     if not rawData:
       growl.warn("%s (%s):<br/>%s" % (
         my.tr("Failed to encode text"), self.encoding, text))
@@ -558,10 +594,14 @@ class _TextManager(object):
     #text = u"で、でも"
     #text = u"じゃあ、よろしくね～"
     #text = u"な～に、よろしくね～"
+    #text = u"「うん……それにしても、湊の向上心は思ったより高かったんだな。随分とデザインに対してアクティブじゃないか」"
+    #text = u"「るみちゃん、めでたい結婚を機にさ、名前変えたら」"
+    #text = u"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」"
+
     if not text:
       return
     if not agent: # only repair text for ITH
-      text = self._repairText(text, self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
     if not text:
       #dprint("ignore text")
       return
@@ -609,8 +649,23 @@ class _TextManager(object):
 
     q.contextChanged.emit()
 
+    matched_sub = None # dataman.Subtitle or None
+    matched_sub_texts = set() # [unicode]
+
+    #with SkProfiler("query subs"): # jichi 1/11/2015: 0.0007 sec for MuvLuv
+    if dm.hasSubtitles():
+      h = hashutil.hashtext(textutil.remove_text_name(text))
+      s = dm.queryBestSubtitle(hash=h)
+      if s:
+        matched_sub = s
+        matched_sub_texts.add(s.sub)
+        self._showSubtitle(s)
+        self._onGameSubtitle(s.text, s.subLang)
+        self._updateTtsSubtitle(s.text, s.subLang)
+
     # Profiler: 1e-4
 
+    #with SkProfiler("query comments"): # jichi 1/11/2015: 0.0003 sec for MuvLuv
     userId = dm.user().id
     if dm.hasComments():
       hitCommentIds = set() # comments that have been shown
@@ -630,8 +685,12 @@ class _TextManager(object):
               c.context = cur_ctx
           #if c.contextSize >= h_index +1: # saved context size is larger
           if not cd.deleted and not cd.disabled:
-            self._showComment(c)
             hitCommentIds.add(cd.id)
+            if cd.type == 'subtitle':
+              if cd.text in matched_sub_texts or matched_sub and matched_sub.equalSub(cd.text, exact=False):
+                continue
+              matched_sub_texts.add(cd.text)
+            self._showComment(c)
             if cd.type == 'subtitle':
               self._onGameSubtitle(cd.text, cd.language)
               self._updateTtsSubtitle(cd.text, cd.language)
@@ -642,8 +701,12 @@ class _TextManager(object):
         for c in dm.queryComments(hash2=h):
           cd = c.d
           if not cd.deleted and not cd.disabled and cd.id not in hitCommentIds:
-            self._showComment(c)
             hitCommentIds.add(cd.id)
+            if cd.type == 'subtitle':
+              if cd.text in matched_sub_texts or matched_sub and matched_sub.equalSub(cd.text, exact=False):
+                continue
+              matched_sub_texts.add(cd.text)
+            self._showComment(c)
             if cd.type == 'subtitle':
               self._onGameSubtitle(cd.text, cd.language)
               self._updateTtsSubtitle(cd.text, cd.language)
@@ -687,14 +750,14 @@ class _TextManager(object):
     """
     if not text and data:
       dataSize = len(data)
-      if dataSize > defs.MAX_NAME_LENGTH:
+      if dataSize > defs.MAX_NAME_THREAD_LENGTH:
         dwarn("ignore long name text, size = %i" % dataSize)
         return
       text = self._decodeText(data).strip()
     if not text:
       return
     if not agent:
-      text = self._repairText(text, self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
       if not text:
         return
     text = textutil.normalize_name(text)
@@ -724,7 +787,7 @@ class _TextManager(object):
 
     text = self._decodeText(data).strip()
     if text: #and not agent: # always repair text for other text
-      text = self._repairText(text, self.language)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
     if not text:
       #dprint("no text")
       return
@@ -741,6 +804,16 @@ class _TextManager(object):
     dm.updateContext(h, text)
     q.rawTextReceived.emit(text, self.gameLanguage, h, 1) # context size is 1
 
+    if dm.hasSubtitles():
+      subs = set()
+      h = hashutil.hashtext(textutil.remove_text_name(text))
+      l = dm.querySubtitles(hash=h)
+      if l:
+        for s in l:
+          if s.sub not in subs:
+            subs.add(s.sub)
+            self._showSubtitle(s)
+
     if dm.hasComments():
       for c in dm.queryComments(hash=h):
         self._showComment(c)
@@ -750,7 +823,7 @@ class _TextManager(object):
         skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
-  def showOcrText(self, text):
+  def showRecognizedText(self, text):
     """
     @param  text  unicode
     """
@@ -760,8 +833,8 @@ class _TextManager(object):
     q = self.q
 
     lang = self.gameLanguage or 'ja'
-    #text = self._repairText(text, self.language)
-    text = termman.manager().applyOriginTerms(text, lang)
+    #text = self._repairText(text, fr=self.gameLanguage, to=self.language)
+    text = termman.manager().applyGameTerms(text, fr=lang)
     if not text:
       return
     text = termman.manager().applyOcrTerms(text, lang)
@@ -852,9 +925,10 @@ class TextManager(QObject):
 
   textReceived = Signal(unicode, unicode, long)   # text, lang, timestamp
   rawTextReceived = Signal(unicode, unicode, c_longlong, int)   # text, lang, context hash, context size
-  translationReceived = Signal(unicode, unicode, unicode, long) # text, language, provider, timestamp
+  translationReceived = Signal(unicode, unicode, unicode, object, long) # text, language, provider, align, timestamp
 
   commentReceived = Signal(QObject)  # dataman.Comment
+  subtitleReceived = Signal(QObject)  # dataman.SubtitleObject
 
   nameTextReceived = Signal(unicode, unicode)  # text, lang
   nameTranslationReceived = Signal(unicode, unicode, unicode)  # text, lang, provider
@@ -943,14 +1017,14 @@ class TextManager(QObject):
     """
     return self.__d.currentContextSize()
 
-  def addOcrText(self, text):
-    """
+  def addRecognizedText(self, text):
+    """OCR or speech recognition
     @param  text  string
     """
     d = self.__d
     if not d.enabled:
       return
-    d.showOcrText(text)
+    d.showRecognizedText(text)
 
   def addIthText(self, rawData, renderedData, signature, name):
     """
@@ -1016,10 +1090,11 @@ class TextManager(QObject):
           if convertsKanji and d.language == 'zhs':
             sub = zhs2zht(sub)
           if convertsKanji:
+            from kanjiconv.zhja import zht2ja # this is the only place this library is used
             sub = zht2ja(sub)
         #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
-        sub = termman.manager().removeMarks(sub)
+        sub = textutil.remove_html_tags(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)
 
     d.addAgentText(text, role, needsTranslation=needsTranslation)

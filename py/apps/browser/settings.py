@@ -32,6 +32,12 @@ class Settings(QSettings):
   def setVersion(self, value): self.setValue('Version', value)
   def version(self): return to_int(self.value('Version'))
 
+  def setWindowWidth(self, value): self.setValue("WindowWidth", value)
+  def windowWidth(self): return to_int(self.value("WindowWidth"))
+
+  def setWindowHeight(self, value): self.setValue("WindowHeight", value)
+  def windowHeight(self): return to_int(self.value("WindowHeight"))
+
   def setLanguage(self, value): self.setValue('UserLanguage', value)
   def language(self): return to_unicode(self.value('UserLanguage'))
 
@@ -222,11 +228,17 @@ class ReaderSettings(QSettings):
   yukariLocationChanged = Signal(unicode)
   def yukariLocation(self): return to_unicode(self.value('YukariLocation'))
 
-  def sapiSpeeds(self):
+  def ttsSpeeds(self):
     """
     @return  {str ttskey:int speed}
     """
-    return to_dict(self.value('SAPISpeeds'))
+    return to_dict(self.value('TTSSpeeds'))
+
+  def ttsPitches(self):
+    """
+    @return  {str ttskey:int pitch}
+    """
+    return to_dict(self.value('TTSPitches'))
 
   ## Translators
 

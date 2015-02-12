@@ -2,7 +2,7 @@
 
 // mousehook.h
 // 11/26/2011
-#include <boost/function.hpp>
+#include <functional>
 
 // Global instance
 
@@ -12,7 +12,7 @@ void mousehook_restart();
 bool mousehook_active();
 
 ///  Return true if eat the event
-typedef boost::function<bool (int x, int y, void *hwnd)> mousehook_fun_t;
+typedef std::function<bool (int x, int y, void *hwnd)> mousehook_fun_t;
 extern const mousehook_fun_t mousehook_fun_null;
 
 void mousehook_onmove(mousehook_fun_t callback);

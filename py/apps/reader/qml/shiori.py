@@ -2,6 +2,7 @@
 # shiori.py
 # 10/10/2012 jichi
 
+import json
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QMutex
 from sakurakit import skthreads
@@ -10,12 +11,85 @@ from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
 from mytr import my
 from kagami import GrimoireBean
-import dictman, qmldialog, settings
+import dataman, dictman, i18n, qmldialog, rc, settings
 
 class _ShioriBean:
   def __init__(self):
     self.enabled = True
-    self.renderMutex = QMutex()
+    self._renderMutex = QMutex()
+
+  def renderKorean(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    ret = ""
+    if self._renderMutex.tryLock():
+      ret = dictman.manager().renderKorean(text)
+      self._renderMutex.unlock()
+    else:
+      dwarn("ignore thread contention")
+    return ret
+
+  def renderJapanese(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    ret = ""
+    args = GrimoireBean.instance.lookupFeature(text) or []
+    if self._renderMutex.tryLock():
+      ret = skthreads.runsync(partial(
+          dictman.manager().renderJapanese, text, *args))
+      self._renderMutex.unlock()
+    else:
+      dwarn("ignore thread contention")
+    return ret
+
+  def renderJson(self, data):
+    """
+    @param  data  unicode  json
+    @return  unicode
+    """
+    ret = ""
+    if self._renderMutex.tryLock():
+      try:
+        data = json.loads(data)
+        ret = self._renderJson(**data) or ''
+      except Exception, e:
+        dwarn(e)
+      self._renderMutex.unlock()
+    else:
+      dwarn("ignore thread contention")
+    return ret
+
+  @staticmethod
+  def _renderJson(type, id=0, source='', target='', **kwargs):
+    """
+    @param  type  str
+    @param* id  long
+    @param* source  unicode
+    @param* target  unicode
+    @return  unicode or None
+    """
+    if type == 'term' and id:
+      dm = dataman.manager()
+      td = dm.queryTermData(id)
+      if td:
+        userName = dm.queryUserName(td.userId)
+        updateUserName = dm.queryUserName(td.updateUserId) if td.updateUserId else None
+        return rc.jinja_template('html/term').render({
+          'td': td,
+          'userName': userName,
+          'updateUserName': updateUserName,
+          'source': source,
+          'target': target,
+          'i18n': i18n,
+          'tr': i18n.autotr_,
+        })
+    elif type == 'tip':
+      l = filter(bool, (source, target))
+      return ': '.join(l)
 
 #@QmlObject
 class ShioriBean(QObject):
@@ -40,28 +114,31 @@ class ShioriBean(QObject):
   enabledChanged = Signal(bool)
   enabled = Property(bool, isEnabled, setEnabled, notify=enabledChanged)
 
-  @Slot(unicode, result=unicode)
-  def render(self, text):
+  @Slot(unicode, unicode, result=unicode)
+  def renderLookup(self, text, language):
     """
     @param  text  Japanese phrase
+    @param  language
     @return  unicode not None  html
     """
-    args = GrimoireBean.instance.lookupFeature(text) or []
-    #return dictman.manager().render(text, *args)
-    mutex = self.__d.renderMutex
-    if mutex.tryLock():
-      ret = skthreads.runsync(partial(
-          dictman.manager().render, text, *args),
-          parent=self)
-      mutex.unlock()
-      return ret
-    else:
-      dwarn("ignore thread contention")
-      return ""
+    if language == 'ja':
+      return self.__d.renderJapanese(text)
+    if language == 'ko':
+      return self.__d.renderKorean(text)
+    return ''
 
-  popup = Signal(unicode, int, int)  # text, x, y
+  @Slot(unicode, result=unicode)
+  def renderJson(self, json):
+    """
+    @param  json  term
+    @return  unicode not None  html
+    """
+    return self.__d.renderJson(json)
 
-def popupshiori(text, x, y):
+  popupLookup = Signal(unicode, unicode, int, int)  # text, language, x, y
+  popupJson = Signal(unicode, int, int)  # json, x, y
+
+def lookupat(text, language, x, y):
   """
   @param  text  unicode
   @param  x  int
@@ -70,23 +147,55 @@ def popupshiori(text, x, y):
   #dprint("x = %s, y = %s" % (x,y))
   if ShioriBean.instance.isEnabled():
     qmldialog.Kagami.instance.raise_()
-    ShioriBean.instance.popup.emit(text, x, y)
+    ShioriBean.instance.popupLookup.emit(text, language, x, y)
+
+def showjsonat(data, x, y):
+  """
+  @param  data  str
+  @param  x  int
+  @param  y  int
+  """
+  #if ShioriBean.instance.isEnabled():
+  qmldialog.Kagami.instance.raise_()
+  ShioriBean.instance.popupJson.emit(data, x, y)
+
+def showjson(data):
+  """
+  @param  data  str
+  """
+  from sakurakit import skos, skwin
+  #if ShioriBean.instance.isEnabled():
+  if skos.WIN:
+    try: x, y = skwin.get_mouse_pos()
+    except Exception, e:
+      dwarn(e)
+      return
+    showjsonat(data, x, y)
+
+def showterm(id):
+  """
+  @param  id  long
+  """
+  showjson(json.dumps({
+    'type': 'term',
+    'id': id,
+  }))
 
 #@QmlObject
 class ShioriQmlProxy(QObject):
   def __init__(self, parent=None):
     super(ShioriQmlProxy, self).__init__(parent)
 
-  @Slot(unicode, int, int)
-  def popup(self, text, x, y):
-    popupshiori(text, x, y)
+  @Slot(unicode, unicode, int, int)
+  def popup(self, language, text, x, y):
+    lookupat(text, x, y)
 
 class ShioriCoffeeProxy(QObject):
   def __init__(self, parent=None):
     super(ShioriCoffeeProxy, self).__init__(parent)
 
-  @Slot(unicode, int, int)
-  def popup(self, text, x, y):
-    popupshiori(text, x, y)
+  @Slot(unicode, unicode, int, int)
+  def popup(self, text, language, x, y):
+    lookupat(text, language, x, y)
 
 # EOF

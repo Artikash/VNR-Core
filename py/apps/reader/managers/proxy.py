@@ -87,4 +87,7 @@ get_dlsite_url = manager().getDLsiteUrl
 get_image_url = manager().getImageUrl
 make_ytimg_url = manager().makeYouTubeImageUrl
 
+replace_getchu_html = get_getchu_url
+replace_dlsite_html = get_dlsite_url
+
 # EOF

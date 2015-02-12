@@ -7,7 +7,7 @@ from PySide.QtCore import Slot, QObject, QUrl
 from sakurakit import skmeta
 from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
-import bbcode
+import bbcode, convutil
 
 #@QmlObject
 class BBCodeParser(QObject):
@@ -43,5 +43,21 @@ class QmlUtil(QObject):
       skmeta.bind_properties(p)
     else:
       dwarn("null property", p)
+
+class JlpUtil(QObject):
+  def __init__(self, parent=None):
+    super(JlpUtil, self).__init__(parent)
+
+  #@Slot(unicode, unicode, result=unicode)
+  #def kana2yomi(self, text, lang):
+  #  return convutil.kana2yomi(text, lang)
+
+  @Slot(unicode, unicode, result=unicode)
+  def kana2name(self, text, lang):
+    return convutil.kana2name(text, lang)
+
+  @Slot(unicode, unicode, result=unicode)
+  def toroman(self, text, lang):
+    return convutil.toroman(text, lang)
 
 # EOF

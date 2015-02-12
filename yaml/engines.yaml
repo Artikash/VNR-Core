@@ -4,11 +4,13 @@
 rename:
   #AB2Try: YaneSDK # TODO
   AUEngine: Tenco
+  ApRicot: ApRicoT
   MAJIRO: Majiro
   Pencil: Pensil
   Silkys: Elf
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
+  User-defined: H-code
 
 gc:
   - Vanillaware GC
@@ -52,6 +54,7 @@ embed:
   - CIRCUS
   - Eushully
   - Majiro
+  - Majiro2
   - SideB
   - SiglusEngine2
 
@@ -82,6 +85,13 @@ gui:
   - sceFontGetShadowGlyphImage
   - sceFontGetShadowGlyphImage_Clip
 
+optgui:
+  - 5pb2 # 5pb1 is better
+  - KiriKiri2
+  #- KiriKiriZ # KAGParser is better
+  - SiglusEngine3 # SiglusEngine2 is better
+  - Malie2 # Malie3 is better
+
 nongui:
   # PC
   - lstrlenA
@@ -110,41 +120,61 @@ nongui:
 simple:
   - 2RM
   - 5pb PSP
+  - 5pb1
+  - 5pb2
+  - 5pb3
   - AB2Try
   - Adobe AIR
+  - Adobe Flash 10
   - Alchemist PSP
   - Alchemist2 PSP
   - AMUSE CRAFT
   - AOS
-  - ApRicot
+  - ApRicot # renamed
+  - ApRicoT
+  - Atelier KAGUYA
   - AUEngine # renamed
   - BANDAI Name PSP
   - BGI
   - BGI1
   - BGI2
   - Broccoli PSP
+  - CatSystem2
+  - CatSystem3
   - CIRCUS
   - CMVS
   - CMVS2
   - Cotopha
   - CYBERFRONT PSP
+  - Debonosu
   - EAGLS
   - Elf
   - Eushully
   - FELISTELLA PSP
+  #- FocasLens # I am not sure. 幻想人形演舞 cannot go full screen anyway
+  - HorkEye
   - Intense PSP
   - Imageepoch2 PSP
   - KID PSP
+  - KAGParser
+  - KAGParserEx
   - KiriKiri1
-  - KiriKiri2
+  #- KiriKiri2 http://sakuradite.com/game/4633
+  - KiriKiriZ
   #- KONAMI PSP # KONAMI could have both repeat and float text
+  - Leaf
   - Live
+  - LunaSoft
   - MAJIRO # renamed
   - Majiro
+  - Majiro2
   - Malie2
   - Malie3
   - Marvelous PS2
   - Marvelous2 PS2
+  - MBL
+  - MED
+  - Mink
   - Mono
   - NeXAS
   - Nippon1 PSP
@@ -154,32 +184,46 @@ simple:
   - Pensil
   - RealLive
   - Rejet
+  - RetouchSystem
+  - rUGP
+  - rUGP2
   - ShinaRio
   - SideB
   - SiglusEngine
   - SiglusEngine2
+  - SiglusEngine3
   - ScenarioPlayerA
   - ScenarioPlayerW
   - Silkys # renamed
   - SofthouseChara # renamed
   - SolfaSoft # renamed
   - StuffScriptEngine
+  - SystemC
   - System43
   - SystemAoi
+  - Syuntada
   - Taskforce2
+  - TinkerBell0
+  - TinkerBell1
+  - TinkerBell2
   - Tenco
   - TypeMoon PS2
   - YU-RIS
+  - YU-RIS2
   - Vanillaware GC
   - WAFFLE
+  - Waffle
   - WillPlus
   - Yeti PSP
   - Yeti2 PSP
   - YukaSystem2
 
 single: # single thread
+  # PC
   - AB2Try
   - Eushully
+  - FocasLens
+  - HorkEye
   - Rejet
   - SiglusEngine2
   # PSP
@@ -201,6 +245,7 @@ norepeat:
   - EXP # there could be different type of threads, but it is OK to merge them
   - Gesen18
   - GXP # I am not sure if it float or not
+  - KiriKiri2  # might float, http://sakuradite.com/game/4633
   - QLIE
   - QLIE2
   - NEXTON
@@ -218,6 +263,13 @@ nofloat:
   - Otomate PPSSPP # could have repetitions
   - Imageepoch PSP # could have repetitions
   - Vanillaware GC # could have repetitions
+  # Mono
+  - mono_string_from_utf16
+  - mono_string_to_utf16
+  - mono_string_to_utf8
+  - mono_unicode_from_external
+  - mono_unicode_to_external
+  - mono_utf8_from_external
 
 float:
   - Gesen18
@@ -260,6 +312,9 @@ char:
   # Engines
   - 2RM
   - 5pb PSP
+  - 5pb1
+  - 5pb2
+  - 5pb3
   - AB2Try
   - AbelSoftware
   - Alchemist PSP
@@ -279,6 +334,7 @@ char:
   - C4
   - CaramelBox
   - CatSystem2
+  - CatSystem3
   - CIRCUS
   - CMVS
   - CYBERFRONT PSP
@@ -288,14 +344,19 @@ char:
   - EmonEngine
   - Eushully
   - EXP
+  - FocasLens
   - Gesen18
+  - HorkEye
   - Intense PSP
   - KONAMI PSP
   - KID PSP
+  - Leaf
   - Live
   - Lucifen
+  - LunaSoft
   - MAJIRO # renamed
   - Majiro
+  - Majiro2
   - MarineHeart
   - Marvelous PS2
   - Marvelous2 PS2
@@ -304,6 +365,7 @@ char:
   - NeXAS
   - NEXTON
   - NEXTON1
+  - Mink
   - Nippon1 PSP
   - Nippon2 PSP
   - NitroPlus
@@ -312,10 +374,12 @@ char:
   - Pencil # renamed
   - Pensil
   - QLIE
+  - QLIE2
   - RealLive
   - Rejet
   - RetouchSystem
   - rUGP
+  - rUGP2
   - ScenarioPlayerA
   - ShinaRio
   - SideB
@@ -326,19 +390,24 @@ char:
   - System40
   - System43
   - SystemC
+  - Syuntada
   - TanukiSoft
   - Taskforce2
   - Tenco
-  - TinkerBell
+  - TinkerBell0
+  - TinkerBell1
+  - TinkerBell2
   - Triangle
   - TypeMoon PS2
   - Vanillaware GC
   - WAFFLE
+  - Waffle
   - WillPlus
   - WolfRPG
   - Yeti PSP
   - Yeti2 PSP
   - YU-RIS
+  - YU-RIS2
 
 # Wide character, UTF-16
 wchar:
@@ -352,6 +421,12 @@ wchar:
   - TextOutW
   - lstrlenW
   - WideCharToMultiByte
+  # Mono
+  - mono_string_from_utf16
+  - mono_string_to_utf16
+  - mono_string_to_utf8
+  - mono_unicode_from_external
+  - mono_unicode_to_external
   # PSP
   - sceCccStrlenUTF16
   - sceCccUTF16toSJIS
@@ -366,14 +441,19 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Engines
   - Adobe AIR
-  - ApRicot
+  - Adobe Flash 10
+  - ApRicot # renamed
+  - ApRicoT
   - BALDR # removed
   - Bruns
   - Cotopha
   - GXP
   - IronGameSystem
+  - KAGParser
+  - KAGParserEx
   - KiriKiri1
   - KiriKiri2
+  - KiriKiriZ
   - Malie
   - Malie2
   - Malie3
@@ -382,12 +462,15 @@ wchar:
   - ShinyDays
   - SiglusEngine
   - SiglusEngine2
+  - SiglusEngine3
   - SofthouseChara # renamed
   - SystemAoi
   - Unity # removed
 
 # UTF-8
 utf8:
+  # Mono
+  - mono_utf8_from_external
   # PSP
   - sceCccStrlenUTF8
   - sceCccUTF8toSJIS
@@ -397,5 +480,36 @@ utf8:
   - Imageepoch PSP
   - Imageepoch2 PSP
   - YukaSystem2
+
+# List of game engine that allows focus
+focus:
+  - 5pb1
+  - 5pb2
+  - 5pb3
+  - Adobe Flash 10
+  - CatSystem2
+  - CatSystem3
+  - EAGLS
+  - FocasLens
+  - HorkEye
+  - KAGParser
+  - KAGParserEx
+  - KiriKiriZ
+  - Leaf
+  - Majiro2
+  - SiglusEngine2
+  - SiglusEngine3
+  - Syuntada
+  - WillPlus
+  - YU-RIS2
+# No focus:
+  #- AOS
+  #- LunaSoft
+  #- Majiro
+  #- Mink
+  #- Mono
+  #- KiriKiri1
+  #- KiriKiri2
+  #- ScenarioPlayerW
 
 # EOF

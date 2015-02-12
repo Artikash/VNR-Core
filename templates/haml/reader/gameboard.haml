@@ -43,7 +43,9 @@
             会社
           %li: %a(href="#sort=visits",data-option-value="visitCount",title="#{tr('Visits')}")
             訪問
-          %li: %a(href="#sort=comments",data-option-value="commentCount",title="#{tr('Subtitles')}")
+          %li: %a(href="#sort=comments",data-option-value="commentCount",title="#{tr('Danmaku')}")
+            弾幕
+          %li: %a(href="#sort=subtitles",data-option-value="subtitleCount",title="#{tr('Subtitles')}")
             字幕
           %li: %a(href="#sort=scapeMedian",data-option-value="scapeMedian",title="批評空間の得点")
             得点
@@ -68,7 +70,7 @@
         %ul.option-set(data-option-key="filter",data-option-group="year")
           %li: %a.selected(href="#",title="#{tr('All')}")
             年
-          -for year in py.range(2014,1998,-1)
+          -for year in py.range(2015,1998,-1)
             %li: %a(href="#",data-option-value="#{year}",title="#{year}年")
               -if year >= 2013
                 #{year}

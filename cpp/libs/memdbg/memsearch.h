@@ -8,7 +8,7 @@
 
 MEMDBG_BEGIN_NAMESPACE
 
-/// Estimated maximum size of the caller function
+/// Estimated maximum size of the caller function, the same as ITH FindCallAndEntryAbs
 enum { MaximumFunctionSize = 0x800 };
 
 /**
@@ -31,6 +31,8 @@ dword_t findCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound
 dword_t findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
 dword_t findLastCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
 dword_t findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
+
+dword_t findMultiCallerAddress(dword_t funcAddr, const dword_t funcInsts[], dword_t funcInstCount, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
 
 /**
  *  Return the absolute address of the long jump (not short jump) instruction address.

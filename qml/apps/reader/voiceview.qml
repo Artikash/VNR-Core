@@ -36,6 +36,7 @@ Share.View { id: root_
   Component.onDestruction: console.log("voiceview.qml:destroy: pass")
 
   property bool enabled: settingsPlugin_.speaksGameText && settingsPlugin_.voiceCharacterEnabled
+  //property bool enabled: settingsPlugin_.voiceCharacterEnabled
 
   Plugin.VoiceModel { id: model_
     sortingColumn: table_.sortIndicatorColumn
@@ -121,13 +122,13 @@ Share.View { id: root_
   VoiceView.OptionBar { id: optionBar_
     anchors {
       left: parent.left; right: parent.right
-      bottom: footer_.top
-    }
-  }
-  VoiceView.Footer { id: footer_
-    anchors {
-      left: parent.left; right: parent.right
       bottom: parent.bottom
     }
   }
+  //VoiceView.Footer { id: footer_
+  //  anchors {
+  //    left: parent.left; right: parent.right
+  //    bottom: parent.bottom
+  //  }
+  //}
 }

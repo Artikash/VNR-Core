@@ -2,8 +2,7 @@
 # cabochadef.py
 # 6/13/2014 jichi
 
-from jptraits import jpchars
-from unitraits import unichars
+from unitraits import jpchars, unichars
 
 # ipadic encoding, either SHIFT-JIS or UTF-8
 DICT_ENCODING = 'utf8'
@@ -53,7 +52,7 @@ def surface_type(text):
   @param  text  unicode
   @return  int
   """
-  if len(text) == 1 and text in jpchars.set_punc:
+  if len(text) == 1 and text in jpchars.set_punct:
     return TYPE_PUNCT
   elif is_ruby_surface(text):
     return TYPE_RUBY

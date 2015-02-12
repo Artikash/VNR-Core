@@ -2,14 +2,19 @@
 # lingoesdb.py
 # 1/16/2013 jichi
 
-__all__ = ['LingoesDb']
+__all__ = 'LingoesDb',
 
 if __name__ == '__main__':
   import sys
   sys.path.append("..")
+#from sakurakit.skprof import SkProfiler
+
+# For better performance
+#try: from pysqlite2 import dbapi2 as sqlite3
+#except ImportError: import sqlite3
 import sqlite3
+
 from sakurakit.skdebug import dprint, dwarn
-#from sakurakit.skprofiler import SkProfiler
 from dictdb import dictdb
 
 class LingoesDb(object):
@@ -130,7 +135,7 @@ class LingoesDb(object):
 
 if __name__ == '__main__':
   import os
-  from sakurakit.skprofiler import SkProfiler
+  from sakurakit.skprof import SkProfiler
   location = '/Users/jichi/Dropbox/Developer/Dictionaries/LD2/'
   #dic = 'Naver Japanese-Korean Dictionary.ld2'
   #dic = 'OVDP Japanese-Vietnamese Dictionary.ld2'

@@ -4,26 +4,30 @@
 #
 # Always use long for unixtimestamp, as after year 2038 int32 will overflow.
 
-import itertools, operator, os, re #, shutil
-from collections import OrderedDict
+from sakurakit.skprof import SkProfiler
+
+import itertools, operator, os, re #, weakref #, shutil
+#from collections import OrderedDict
 from ctypes import c_longlong
 from datetime import datetime
 from functools import partial
 #import xml.etree.cElementTree as etree
+import yaml
 from lxml import etree
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QDir, QTimer, QCoreApplication, \
                           QAbstractListModel, QModelIndex
-from sakurakit import skcursor, skdatetime, skevents, skfileio, sknetio, skpaths, skstr, skthreads
+from sakurakit import skcursor, skdatetime, skevents, skfileio, sknetio, skpaths, skstr, skthreads, skyaml
 from sakurakit.skclass import Q_Q, staticproperty, memoized, memoizedproperty
 from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dprint, dwarn, derror
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
-from zhszht.zhszht import zhs2zht
-from cconv import cconv
+from convutil import wide2thin, zhs2zht
+from unitraits import jpchars, unichars
+from opencc import opencc
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, csvutil, defs, features, gameman, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -43,9 +47,27 @@ def _is_protected_data(d):
   """
   return d.userId == GUEST_USER_ID and d.timestamp < skdatetime.CURRENT_UNIXTIME - defs.PROTECTED_INTERVAL
 
+def create_game_link(path, launchPath=''): # unicode, unicode -> unicode
+  if not path:
+    return ''
+  return 'javascript://main.launchGameWithLaunchPath("%s", "%s")' % (
+      QDir.fromNativeSeparators(path) if path else '',
+      QDir.fromNativeSeparators(launchPath) if launchPath else '')
+
 ## Data types ##
 
-class UserDigest:
+class UserDigest(object):
+  __slots__ = (
+    'id',
+    'name',
+    'language',
+    'gender',
+    'homepage',
+    'avatar',
+    'color',
+    'termLevel',
+    'commentLevel',
+  )
   def __init__(self, id=0, name='', language='', avatar='', gender='', color='', homepage='',
       termLevel=0, commentLevel=0):
     self.id = id            # long
@@ -58,7 +80,19 @@ class UserDigest:
     self.termLevel = termLevel # int
     self.commentLevel = commentLevel # int
 
-class User:
+class User(object):
+  __slots__ = (
+    'id',
+    'name',
+    'password',
+    'language',
+    'gender',
+    'homepage',
+    'avatar',
+    'color',
+    'termLevel',
+    'commentLevel',
+  )
   def __init__(self, id=0, name='', password='', language='', gender='', color='', avatar='', homepage='',
       termLevel=0, commentLevel=0):
     self.id = id
@@ -93,6 +127,10 @@ class User:
   def isMale(self): return self.gender == 'm'
   def isFemale(self): return self.gender == 'f'
 
+  @property
+  def avatarUrl(self): # -> string
+    return manager().queryUserAvatarUrl(self.userId, cache=True)
+
 ADMIN_USER_ID = 2
 GUEST_USER_ID = 4
 GUEST = User(id=GUEST_USER_ID, name='guest', password='guest', language='en')
@@ -100,6 +138,13 @@ GUEST = User(id=GUEST_USER_ID, name='guest', password='guest', language='en')
 ## Game ##
 
 class GameInfo(object):
+  __slots__ = (
+    '_memoized', # @memoized
+
+    'gameId',
+    'itemId',
+    'async',
+  )
 
   def __init__(self, gameId=0, itemId=0, async=True):
     self.gameId = gameId # long
@@ -234,6 +279,28 @@ class GameInfo(object):
         kw = refman.manager().queryOne(key=it.key, type=it.type, async=self.async)
         if kw:
           return DmmReference(**kw)
+
+  @memoizedproperty
+  def freem(self):
+    """Online
+    @return  FreemReference or None
+    """
+    for it in self.referenceData:
+      if it.type == 'freem':
+        kw = refman.manager().queryOne(key=it.key, type=it.type, async=self.async)
+        if kw:
+          return FreemReference(**kw)
+
+  @memoizedproperty
+  def steam(self):
+    """Online
+    @return  SteamReference or None
+    """
+    for it in self.referenceData:
+      if it.type == 'steam':
+        kw = refman.manager().queryOne(key=it.key, type=it.type, async=self.async)
+        if kw:
+          return SteamReference(**kw)
 
   @memoizedproperty
   def trailers(self):
@@ -412,6 +479,20 @@ class GameInfo(object):
       if r and r.characters:
         yield r
 
+  def hasNames(self):
+    """Online
+    @return  bool
+    """
+    return bool(self.getchu and self.getchu.characters)
+
+  def iterNameYomi(self):
+    """Online
+    yield (unicode name, unicode yomi)
+    """
+    if self.getchu:
+      for name,yomi in self.getchu.iterNameYomi():
+        yield name, yomi
+
   def hasCharacters(self):
     """Online
     @return  bool
@@ -420,7 +501,8 @@ class GameInfo(object):
       return True
     return False
 
-  @memoizedproperty
+  #@memoizedproperty
+  @property
   def scapeCount0(self):
     """
     @return  int not None
@@ -428,7 +510,8 @@ class GameInfo(object):
     g = self.gameItem
     return g.scapeCount if g else 0
 
-  @memoizedproperty
+  #@memoizedproperty
+  @property
   def scapeMedian0(self):
     """
     @return  int not None
@@ -437,7 +520,7 @@ class GameInfo(object):
     return g.scapeMedian if g else 0
 
   def _iterReferences(self):
-    for it in self.trailers, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon:
+    for it in self.trailers, self.freem, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon, self.steam:
       if it:
         yield it
 
@@ -469,6 +552,11 @@ class GameInfo(object):
       return r.title
     return ''
 
+  @property
+  def englishTitle(self): # str not None
+    r = self.steam
+    return r.title if r else ''
+
   @memoizedproperty
   def romajiTitle(self): # str not None
     r = self.trailers
@@ -486,7 +574,7 @@ class GameInfo(object):
 
   @property
   def homepage(self): # str or None
-    for r in self.trailers, self.scape, self.dlsite:
+    for r in self.trailers, self.scape, self.dlsite, self.steam:
       if r and r.homepage:
         return r.homepage
 
@@ -583,7 +671,7 @@ class GameInfo(object):
     """
     @return  bool
     """
-    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape) #or self.tokutenUrl
+    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape or self.freem or self.steam) #or self.tokutenUrl
 
   def iterLinks(self):
     """
@@ -596,7 +684,7 @@ class GameInfo(object):
        url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
        yield url, 'gyutto'
 
-    for r in self.amazon, self.digiket, self.dlsite, self.dmm, self.trailers:
+    for r in self.amazon, self.digiket, self.dlsite, self.dmm, self.steam, self.freem, self.trailers:
       if r:
         yield r.url, r.type
 
@@ -607,14 +695,18 @@ class GameInfo(object):
       if r:
         yield r.url, r.type
 
-  @memoizedproperty
-  def fileSize(self): # long not None
-    try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite) if it)
-    except ValueError: return 0
+  @property
+  def fileSize0(self): # int
+    g = self.gameItem
+    return g.fileSize if g else 0
 
   @memoizedproperty
-  def fileSizeString(self): # -> str
-    size = self.fileSize
+  def fileSize(self): # long not None
+    try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite, self.freem) if it)
+    except ValueError: return 0
+
+  @staticmethod
+  def _unparseFileSize(size): # int -> str
     if not size:
       return '0 B'
     elif size < 1024:
@@ -625,6 +717,11 @@ class GameInfo(object):
       return "%s MB" % (size / (1024 * 1024))
     else: # size >= 1024 * 1024 * 1024:
       return "%.2f GB" % (float(size) / (1024 * 1024 * 1024))
+
+  @memoizedproperty
+  def fileSizeString(self): return self._unparseFileSize(self.fileSize)
+  @memoizedproperty
+  def fileSizeString0(self): return self._unparseFileSize(self.fileSize0)
 
   @memoizedproperty
   def date0(self): # long not None
@@ -660,7 +757,7 @@ class GameInfo(object):
     ret = self.brand0
     if ret:
       return ret
-    for r in self.trailers, self.digiket, self.dmm, self.amazon, self.getchu, self.gyutto, self.dlsite:
+    for r in self.trailers, self.freem, self.digiket, self.dmm, self.amazon, self.getchu, self.gyutto, self.dlsite, self.steam:
       if r:
         ret = r.brand
         if ret:
@@ -715,16 +812,20 @@ class GameInfo(object):
   def otome(self): # bool not None
     if self.otome0:
       return True
-    for r in self.trailersItem, self.getchu, self.gyutto, self.digiket, self.dlsite, self.dmm:
+    for r in self.trailersItem, self.freem, self.getchu, self.gyutto, self.digiket, self.dlsite, self.dmm, self.steam:
       if r and r.otome:
         return True
     return False
 
   @property
   def ecchi(self): # bool not None
-    for r in self.trailers, self.holyseal, self.dmm, self.amazon, self.dlsite:
+    if self.ecchi0:
+      return True
+    for r in self.trailers, self.freem, self.holyseal, self.dmm, self.amazon, self.dlsite:
       if r:
         return r.ecchi
+    if self.steam:
+      return False
     return True
 
   @memoizedproperty
@@ -767,7 +868,7 @@ class GameInfo(object):
     r = self.scape
     if r and r.okazu == True:
       return True
-    if self.dmm and not self.amazon:
+    if (self.dmm or self.dlsite) and not self.amazon:
       return True
     title = self.title
     for it in defs.OKAZU_TAGS:
@@ -860,7 +961,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.amazon, self.digiket, self.dlsite, self.dmm:
+    for r in self.getchu, self.amazon, self.digiket, self.dlsite, self.dmm, self.freem, self.steam:
       if r and r.hasDescriptions():
         yield r
 
@@ -876,7 +977,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.scape, self.getchu, self.amazon, self.gyutto, self.digiket, self.dlsite, self.dmm: #, self.amazon, self.scape
+    for r in self.scape, self.getchu, self.amazon, self.gyutto, self.digiket, self.dlsite, self.dmm, self.steam: #, self.amazon, self.scape
       if r and r.hasReview():
         yield r
 
@@ -892,7 +993,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.digiket:
+    for r in self.getchu, self.digiket, self.dlsite:
       if r and r.characterDescription:
         yield r
 
@@ -908,6 +1009,9 @@ class GameInfo(object):
     """
     @return  bool
     """
+    g = self.gameItem
+    if g and g.banner:
+      return True
     r = self.scape
     if r and r.bannerUrl:
       return True
@@ -924,6 +1028,9 @@ class GameInfo(object):
     return False
 
   def iterBannerImageUrls(self): # str or None
+    g = self.gameItem
+    if g and g.banner:
+      yield cacheman.cache_image_url(proxy.get_image_url(g.banner))
     # Trailers banner is usually larger
     trailersBanner = scapeBanner = None
     r = self.trailersItem
@@ -969,6 +1076,8 @@ class GameInfo(object):
         (self.getchu, 'getchu'),
         (self.dlsite, 'dlsite'),
         (self.digiket, 'digiket'),
+        (self.freem, 'freem'),
+        (self.steam, 'steam'),
 
         #(self.gyutto, 'gyutto'),   # crash Qt!
         #(self.tokuten, 'tokuten'),   # crash Qt!
@@ -1014,6 +1123,10 @@ class GameInfo(object):
       if r.videos:
         for vid,img in r.iterVideoIdsWithImage(cache=cache):
           yield img, 'youtube_%s' % vid
+    r = self.freem
+    if r and r.videos:
+      for vid,img in r.iterVideoIdsWithImage(cache=cache):
+        yield img, 'youtube_%s' % vid
 
     r = self.digiket
     if r:
@@ -1039,7 +1152,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    l = [self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket]
+    l = [self.getchu, self.freem, self.dlsite, self.amazon, self.dmm, self.digiket, self.steam]
     if features.MAINLAND_CHINA and self.dlsite: # disable dlsite in MAINLAND_CHINA
       l.remove(self.dlsite)
     for r in l:
@@ -1071,14 +1184,16 @@ class GameInfo(object):
       ret = rc.image_url('game-cover').toString()
     return ret
 
-  def hasGoodImage0(self):
+  def imageFitsBackground0(self):
     img = self.image0
     return bool(img) and (
         'getchu.com' in img or
         'gyutto.com' in img or
         'dlsite.jp' in img or
         'digiket.net' in img or
-        self.otome0 and 'images-amazon.com' in img)
+        'freem.ne.jp' in img or
+        'steamstatic.com' in img or
+        'images-amazon.com' in img and (self.otome0 or not self.ecchi0))
 
   @property
   def imageUrl(self): # str or None
@@ -1133,9 +1248,9 @@ class GameInfo(object):
 
   @memoizedproperty
   def slogan(self): # str or None
-    for r in self.scape, self.holyseal, self.getchu, self.digiket, self.gyutto:
+    for r in self.scape, self.freem, self.holyseal, self.getchu, self.digiket, self.gyutto:
       if r and r.slogan:
-        return cconv.wide2thin(r.slogan)
+        return wide2thin(r.slogan)
 
   @property
   def tags0(self): # unicode not None
@@ -1173,7 +1288,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket: #, self.tokuten:
+    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket, self.freem, self.steam: #, self.tokuten:
       if r and r.hasSampleImages():
         yield r
 
@@ -1218,7 +1333,7 @@ class GameInfo(object):
   #  if r and r.hasSampleImages():
   #    for it in r.iterSampleImageUrls():
   #      yield it
-  #  r = self.getchu # show gechu banner as sample images
+  #  r = self.getchu # show getchu banner as sample images
   #  if r and r.hasBannerImages():
   #    for it in r.iterBannerImageUrls():
   #      yield it
@@ -1232,6 +1347,17 @@ class GameInfo(object):
   def commentCount(self):
     try: return sum(it.commentCount for it in self.gameFiles)
     except TypeError: return 0
+
+  #@memoizedproperty
+  @property
+  def topicCount(self):
+    try: return self.gameItem.topicCount
+    except AttributeError: return 0
+
+  @memoizedproperty
+  def subtitleCount(self):
+    try: return self.gameItem.subtitleCount
+    except AttributeError: return 0
 
   @memoizedproperty
   def timestamp(self):
@@ -1252,9 +1378,9 @@ class GameInfo(object):
     """
     @return  bool
     """
-    r = self.getchu
-    if r and r.videos:
-      return True
+    for r in self.getchu, self.freem:
+      if r and r.videos:
+        return True
     r = self.trailers
     if r and r.videoCount:
       return True
@@ -1274,15 +1400,15 @@ class GameInfo(object):
           vids.add(vid)
           #it['img'] = proxy.make_ytimg_url(vid)
           yield it
-    r = self.getchu
-    if r and r.videos:
-      for index,vid in enumerate(it for it in r.videos if it not in vids):
-        yield {
-          'vid': vid,
-          'title': u"動画 #%s" % (index+1) if index else u"動画",
-          #'img': proxy.make_ytimg_url(vid),
-          #'date': '', # unknown
-        }
+    for r in self.getchu, self.freem:
+      if r and r.videos:
+        for index,vid in enumerate(it for it in r.videos if it not in vids):
+          yield {
+            'vid': vid,
+            'title': u"動画 #%s" % (index+1) if index else u"動画",
+            #'img': proxy.make_ytimg_url(vid),
+            #'date': '', # unknown
+          }
 
   def iterVideoIds(self):
     """
@@ -1297,18 +1423,53 @@ class GameInfo(object):
           vid = it['vid']
           vids.add(vid)
           yield vid
-    r = self.getchu
-    if r and r.videos:
-      for vid in r.videos:
-        if vid not in vids:
-          yield vid
+    for r in self.getchu, self.freem:
+      if r and r.videos:
+        for vid in r.videos:
+          if vid not in vids:
+            yield vid
 
-class GameItem:
+class GameItem(object):
+  __slots__ = (
+    'id',
+    'title',
+    'romajiTitle',
+    'brand',
+    'series',
+    'image',
+    'banner',
+    'wiki',
+    'fileSize',
+    'timestamp',
+    'date',
+    'otome',
+    'ecchi',
+    'okazu',
+    'scapeMedian',
+    'scapeCount',
+    'topicCount',
+    'annotCount',
+    'subtitleCount',
+    'tags',
+    'artists',
+    'sdartists',
+    'writers',
+    'musicians',
+
+    'overallScoreSum',
+    'overallScoreCount',
+    'ecchiScoreSum',
+    'ecchiScoreCount',
+    #'easyScoreSum',
+    #'easyScoreCount',
+  )
+
   def __init__(self, id=0,
-      title="", romajiTitle="", brand="", series="", image="", wiki="",
-      timestamp=0, date=None, artists='', sdartists='', writers='', musicians='',
-      otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
-      overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, easyScoreSum=0, easyScoreCount=0,
+      title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
+      timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
+      otome=False, ecchi=True, okazu=False, scapeMedian=0, scapeCount=0, tags='',
+      topicCount=0, annotCount=0, subtitleCount=0,
+      overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, #easyScoreSum=0, easyScoreCount=0,
     ):
     self.id = id # int
     self.title = title # unicode
@@ -1316,13 +1477,19 @@ class GameItem:
     self.brand = brand # unicode
     self.series = series # unicode
     self.image = image # str
+    self.banner = banner # str
     self.wiki = wiki # unicode
-    self.timestamp = timestamp # long
+    self.fileSize = fileSize # int
+    self.timestamp = timestamp # int
     self.date = date # datetime or None
     self.otome = otome # bool
+    self.ecchi = ecchi # bool
     self.okazu = okazu # int
     self.scapeMedian = scapeMedian # int
     self.scapeCount = scapeCount # int
+    self.topicCount = topicCount # int
+    self.annotCount = annotCount # int
+    self.subtitleCount = subtitleCount # int
     self.tags = tags # unicode not None
     self.artists = artists # unicode not None
     self.sdartists = sdartists # unicode not None
@@ -1333,12 +1500,55 @@ class GameItem:
     self.overallScoreCount = overallScoreCount
     self.ecchiScoreSum = ecchiScoreSum
     self.ecchiScoreCount = ecchiScoreCount
-    self.easyScoreSum = easyScoreSum
-    self.easyScoreCount = easyScoreCount
+    #self.easyScoreSum = easyScoreSum
+    #self.easyScoreCount = easyScoreCount
 
 class Game(object):
   NAME_TYPES = 'window', 'file', 'link', 'folder', 'brand'
   LOADERS = 'none', 'apploc', 'ntlea', 'lsc', 'le'
+
+  __slots__ = (
+    'id',
+    'md5',
+    'itemId',
+    'encoding',
+    'language',
+    'launchLanguage',
+    'hook',
+    'deletedHook',
+    'hookDisabled',
+    'threadKept',
+    'threadName',
+    'threadSignature',
+    'keepsSpace',
+    'removesRepeat',
+    'ignoresRepeat',
+    'timeZoneEnabled',
+    'nameThreadName',
+    'nameThreadSignature',
+    'nameThreadDisabled',
+    'otherThreads',
+    'userDefinedName',
+    'names',
+    'path',
+    'launchPath',
+    'visitTime',
+    'visitCount',
+    'commentCount',
+    'commentsUpdateTime',
+    'refsUpdateTime',
+    'voiceDefaultEnabled',
+    'loader',
+  )
+
+  @classmethod
+  def createEmptyGame(cls, path="", md5=""):
+    return cls(
+        threadSignature=defs.NULL_THREAD_SIGNATURE,
+        threadName=defs.NULL_THREAD_NAME,
+        encoding=defs.NULL_THREAD_ENCODING,
+        md5=md5,
+        fileNames=[os.path.basename(path)] if path else [])
 
   def __init__(self, id=0, md5="", itemId=0,
       encoding="", hook="", deletedHook="", threadName="", threadSignature=0,
@@ -1346,7 +1556,8 @@ class Game(object):
       nameThreadName="", nameThreadSignature=0, nameThreadDisabled=None,
       windowNames=[], fileNames=[], linkNames=[], folderNames=[], brandNames=[],
       path="", launchPath="", otherThreads=None,
-      loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None, language='',
+      loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None,
+      language='', launchLanguage='',
       userDefinedName="", visitTime=0, visitCount=0, commentCount=0,
       **ignored):
     # Static
@@ -1355,6 +1566,7 @@ class Game(object):
     self.itemId = itemId        # long
     self.encoding = encoding    # str
     self.language = language    # str
+    self.launchLanguage = launchLanguage # str
     self.hook = hook            # str
     self.deletedHook = deletedHook    # str
     self.hookDisabled = hookDisabled  # bool or None
@@ -1430,7 +1642,16 @@ class Game(object):
         return 'otome' if g.otome else 'nuki' if g.okazu else 'junai'
     return ''
 
-class GameFile:
+class GameFile(object):
+  __slots__ = (
+    'id',
+    'md5',
+    'name',
+    'itemId',
+    'visitCount',
+    'commentCount',
+  )
+
   def __init__(self, id=0, itemId=0, visitCount=0, commentCount=0, md5="", name=""):
     self.id = id        # long
     self.md5 = md5      # str
@@ -1440,6 +1661,16 @@ class GameFile:
     self.commentCount = commentCount # int
 
 class _GameObject(object):
+  __slots__ = [
+    '_memoized', # @memoized
+
+    'id',
+    'md5',
+    'name',
+    'path',
+    'launchPath',
+    'language',
+  ]
 
   @memoizedproperty
   def info(self):
@@ -1462,11 +1693,10 @@ class _GameObject(object):
       return 'otome' if info.otome0 else 'junai' if not info.okazu0 else 'nuki'
     return ''
 
-  # Need file size 0
-  #@memoizedproperty
-  #def fileSizeString(self): # str
-  #  info = self.info
-  #  return info.fileSizeString if info and info.fileSize else ''
+  @memoizedproperty
+  def fileSizeString(self): # str
+    info = self.info
+    return info.fileSizeString0 if info and info.fileSize0 else ''
 
   @memoizedproperty
   def tags(self): # unicode or None
@@ -1490,6 +1720,10 @@ class _GameObject(object):
       ##  l.append(u"同人")
       #if l:
       #  return ','.join(l)
+
+  def getGameItemProperty(self, key): # str ->
+    try: return getattr(self.info.gameItem, key)
+    except AttributeError: pass
 
 class GameObject(QObject):
   def __init__(self, parent=None, game=None):
@@ -1523,13 +1757,18 @@ class GameObject(QObject):
         d.launchPath = game.launchPath
       except AttributeError: pass
 
-  qml = Property(unicode,
-    lambda self:
-      rc.jinja_template('qml/opengame').render({
-        'path': QDir.fromNativeSeparators(self.path) if self.path else "",
-        'launchPath': QDir.fromNativeSeparators(self.launchPath) if self.launchPath else "",
-      }),
-    )
+  #qml = Property(unicode,
+  #  lambda self:
+  #    rc.jinja_template('qml/opengame').render({
+  #      'path': QDir.fromNativeSeparators(self.path) if self.path else "",
+  #      'launchPath': QDir.fromNativeSeparators(self.launchPath) if self.launchPath else "",
+  #    }),
+  #  )
+
+  linkChanged = Signal(unicode)
+  link = Property(unicode,
+    lambda self: create_game_link(self.__d.path, self.__d.launchPath),
+    notify=linkChanged)
 
   idChanged = Signal(int)
   id = Property(int,
@@ -1581,20 +1820,40 @@ class GameObject(QObject):
     lambda self: self.__d.tags,
     notify=tagsChanged)
 
-  #fileSizeStringChanged = Signal(unicode)
-  #fileSizeString = Property(unicode,
-  #  lambda self: self.__d.fileSizeString,
-  #  notify=fileSizeStringChanged)
+  fileSizeStringChanged = Signal(unicode)
+  fileSizeString = Property(unicode,
+    lambda self: self.__d.fileSizeString,
+    notify=fileSizeStringChanged)
 
   dateChanged = Signal(long)
   date = Property(long,
     lambda self: self.__d.date,
     notify=dateChanged)
 
-  #styleHintChanged = Signal(unicode)
-  #styleHint = Property(unicode,
-  #  lambda self: self.__d.gameType,
-  #  notify=styleHintChanged)
+  overallScoreSumChanged = Signal(int)
+  overallScoreSum = Property(int,
+    lambda self: self.__d.getGameItemProperty('overallScoreSum') or 0,
+    notify=overallScoreSumChanged)
+
+  overallScoreCountChanged = Signal(int)
+  overallScoreCount = Property(int,
+    lambda self: self.__d.getGameItemProperty('overallScoreCount') or 0,
+    notify=overallScoreCountChanged)
+
+  ecchiScoreSumChanged = Signal(int)
+  ecchiScoreSum = Property(int,
+    lambda self: self.__d.getGameItemProperty('ecchiScoreSum') or 0,
+    notify=ecchiScoreSumChanged)
+
+  ecchiScoreCountChanged = Signal(int)
+  ecchiScoreCount = Property(int,
+    lambda self: self.__d.getGameItemProperty('ecchiScoreCount') or 0,
+    notify=ecchiScoreCountChanged)
+
+  topicCountChanged = Signal(int)
+  topicCount = Property(int,
+    lambda self: self.__d.getGameItemProperty('topicCount') or 0,
+    notify=topicCountChanged)
 
   #@Slot(result=QIcon)
   def icon(self):
@@ -1609,9 +1868,17 @@ class GameObject(QObject):
   @Slot(result=str)
   def image(self):
     id = self.__d.id
-    return manager().queryGameImageUrl(id=id) if id else ''
+    return manager().queryGameBackgroundImageUrl(id=id) if id else ''
 
 class _Character:
+
+  __slots__ = (
+    'name',
+    'gender',
+    'ttsEngine',
+    'ttsEnabled',
+    'timestamp',
+  )
 
   @staticmethod
   def synthesize(name, type):
@@ -1654,10 +1921,213 @@ class Character(QObject):
   ttsEnabled, ttsEnabledChanged = __D.synthesize('ttsEnabled', bool)
   timestamp, timestampChanged = __D.synthesize('timestamp', int)
 
+class Subtitle(object):
+  __slots__ = (
+    #'__weakref__',
+
+    'textId',
+    'text',
+    'textName',
+    'textTime',
+    'textLang',
+    'sub',
+    'subName',
+    'subTime',
+    'subLang',
+    'userId',
+
+    '_userName',
+    '_q',
+  )
+  def __init__(self,
+      textId=0, text='', textName='',
+      textTime=0, subTime=0,
+      sub='', subName='',
+      userId=0, subLang='', textLang=''):
+    self.textId = textId # long
+    self.text = text # unicode
+    self.textName = textName # unicode
+    self.textLang = textLang # str
+    self.textTime = textTime
+    self.sub = sub # unicode
+    self.subName = subName # unicode
+    self.userId = userId # long
+    self.subLang = subLang # str
+    self.subTime = subTime
+
+    self._userName = None # str  cached
+    self._q = None # Qt
+
+  def equalText(self, text, exact=False):
+    """
+    @param  text  unicode
+    @param* exact  bool
+    @return  bool
+    """
+    if not exact or not self.textName:
+      diffcount = len(text) - len(self.text)
+      if not diffcount:
+        return text == self.text
+      elif diffcount == 2:
+        if text.startswith(u"「") and text.endswith(u"」"):
+          return text[1:-1] == self.text
+      elif not exact and diffcount == -2:
+        if self.text.startswith(u"「") and self.text.endswith(u"」"):
+          return self.text[1:-1] == text
+    if self.textName:
+      if not exact and text.startswith(u"「") and text.endswith(u"」"):
+        text = text[1:-1]
+      diffcount = len(text) - len(self.textName) - len(self.text)
+      if not diffcount:
+        return text.startswith(self.textName) and text.endswith(self.text)
+        #return self.textName + self.text == text
+      elif diffcount == 2:
+        if text.startswith(u"【"):
+          return text == (u"【%s】%s" % (self.textName, text))
+        if text.startswith(u"「"):
+          return text == (u"%s「%s」" % (self.textName, text))
+      elif diffcount == 4:
+        if text.startswith(u"【") and text.endswith(u"」"):
+          return text == (u"【%s】「%s」" % (self.textName, text))
+    return False
+
+  def equalSub(self, text, exact=False): # unicode, bool -> bool
+    """
+    @param  text  unicode
+    @param* exact  bool
+    @return  bool
+    """
+    if not exact or not self.subName:
+      diffcount = len(text) - len(self.sub)
+      if not diffcount:
+        return text == self.sub
+      elif diffcount == 2:
+        if text.startswith(u"「") and text.endswith(u"」"):
+          return text[1:-1] == self.sub
+      elif not exact and diffcount == -2:
+        if self.sub.startswith(u"「") and self.sub.endswith(u"」"):
+          return self.sub[1:-1] == text
+      elif not exact and diffcount < 0: # sub is longer
+        if self.sub.startswith(u"【") and self.sub.endswith(u"」"):
+          if text.startswith(u"「") and text.endswith(u"」"):
+            return self.sub.endswith(u"】" + text)
+          else:
+            return self.sub.endswith(u"】「%s」" % text)
+    if self.subName:
+      if not exact and text.startswith(u"「") and text.endswith(u"」"):
+        text = text[1:-1]
+      diffcount = len(text) - len(self.subName) - len(self.sub)
+      if not diffcount:
+        return text.startswith(self.subName) and text.endswith(self.sub)
+        #return self.subName + self.sub == text
+      elif diffcount == 2:
+        if text.startswith(u"【"):
+          return text == (u"【%s】%s" % (self.subName, sub))
+        if text.startswith(u"「"):
+          return text == (u"%s「%s」" % (self.subName, sub))
+      elif diffcount == 4:
+        if text.startswith(u"【") and text.endswith(u"」"):
+          return text == (u"【%s】「%s」" % (self.subName, sub))
+    return False
+
+  @property
+  def userName(self):
+    if self._userName is None:
+      self._userName = manager().queryUserName(self.userId) or ''
+    return self._userName
+
+  def getObject(self):
+    if not self._q:
+      self._q = SubtitleObject(self)
+    return SubtitleObject(self)
+
+  def releaseObject(self):
+    q = self._q
+    self._q = None
+    if q and q.parent():
+      q.setParent(None)
+
+  def releaseObjectLater(self, interval=30000): # release aftre 30min
+    q = self._q
+    self._q = None
+    if q and q.parent():
+      #q.setParent(None)
+      skevents.runlater(partial(q.setParent, None), interval)
+
+class SubtitleObject(QObject):
+  def __init__(self, d=None, parent=None):
+    super(SubtitleObject, self).__init__(parent or manager()) # force having parent or it might crash after copy in QML
+    self.d = d
+    #self.dref = weakref.ref(d)
+
+  #@property
+  #def d(self): return self.dref()
+
+  languageChanged = Signal(unicode)
+  language = Property(unicode,
+      lambda self: self.d.subLang,
+      notify=languageChanged)
+
+  textChanged = Signal(unicode)
+  text = Property(unicode,
+      lambda self: self.d.sub,
+      notify=textChanged)
+
+  userNameChanged = Signal(unicode)
+  userName = Property(unicode,
+      lambda self: self.d.userName,
+      notify=userNameChanged)
+
+  colorChanged = Signal(unicode)
+  color = Property(unicode,
+      lambda self: manager().queryUserColor(self.d.userId),
+      notify=colorChanged)
+
+  createTimeChanged = Signal(int)
+  createTime = Property(int,
+      lambda self: self.d.textTime,
+      notify=createTimeChanged)
+
+  updateTimeChanged = Signal(int)
+  updateTime = Property(int,
+      lambda self: self.d.subTime,
+      notify=updateTimeChanged)
+
 @Q_Q
 class _Comment(object):
+
+  __slots__ = (
+    'q', 'qref', # Q_Q
+
+    'init',
+    'id',
+    'gameId',
+    '_gameMd5',
+    'userId',
+    'userHash',
+    'type',
+    'language',
+    'timestamp',
+    'updateTimestamp',
+    'updateUserId',
+    'text',
+    'disabled',
+    'deleted',
+    'locked',
+    'hash',
+    'context',
+    'contextSize',
+    'comment',
+    'updateComment',
+
+    'selected',
+
+    'dirtyProperties',
+  )
+
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked):
+    self.init = False           # bool
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
@@ -1736,7 +2206,7 @@ class Comment(QObject):
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Comment.TYPES[i] : _Comment.TR_TYPES[i] for i in xrange(len(_Comment.TYPES))}
+  TYPE_NAMES = dict(zip(_Comment.TYPES, _Comment.TR_TYPES))
 
   @classmethod
   def typeName(cls, t):
@@ -1767,13 +2237,18 @@ class Comment(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
-    super(Comment, self).__init__(parent)
-    self.updateUserIdChanged.connect(lambda:
-        self.updateUserNameChanged.emit(self.updateUserName))
+    d = self.__d
+    if not d.init:
+      d.init = True
+      super(Comment, self).__init__(parent)
+      self.updateUserIdChanged.connect(lambda:
+          self.updateUserNameChanged.emit(self.updateUserName))
+
+  def isInitialized(self): return self.__d.init  # not used
 
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
-    return Comment(parent=self.parent(),
+    return Comment(parent=self.parent(), init=d.init,
       id=id if id else d.id,
       userId=userId if userId else d.userId,
       userHash=userHash if userHash is not None else userId,
@@ -1909,17 +2384,57 @@ class Comment(QObject):
 
 @Q_Q
 class _Term(object):
-  #def __del__(self):  dprint("_Term deleted")
+  __slots__ = (
+    'q', 'qref', # Q_Q
+
+    'init',
+    'id',
+    'gameId',
+    '_gameMd5',
+    'userId',
+    'userHash',
+    'type',
+    'host',
+    'language',
+    'sourceLanguage',
+    'timestamp',
+    'updateTimestamp',
+    'updateUserId',
+    'text',
+    'pattern',
+    'comment',
+    'updateComment',
+    'regex',
+    'disabled',
+    'deleted',
+    'special',
+    'private',
+    'hentai',
+    'icase',
+    #'syntax',
+
+    'selected',
+    '_errorType',
+    #'_errorString',
+
+    'dirtyProperties',
+
+    '_gameItemId',
+  )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, icase):
+    #self.priority = 0 # int  assigned after sorting
+    self.init = False           # bool
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
     self.userId = userId        # long
     self.userHash = userHash    # long
     self.type = type            # in TYPES
+    self.host = host            # str
     self.language = language    # str
+    self.sourceLanguage = sourceLanguage or 'ja' # str  default to Japanese
     self.timestamp = timestamp  # long
     self.updateTimestamp = updateTimestamp # long
     self.updateUserId = updateUserId   # long
@@ -1929,21 +2444,25 @@ class _Term(object):
     self.updateComment = updateComment  # unicode
     self.regex = regex          # bool
     #self.bbcode = bbcode        # bool
-    #self.ignoresCase = ignoresCase  # bool
     self.disabled = disabled    # bool
     self.deleted = deleted      # bool
     self.special = special      # bool
     self.private = private      # bool
     self.hentai = hentai        # bool
+    self.icase = icase          # bool
+    #self.syntax = syntax        # bool
 
     self.selected = False       # bool
 
-    self.patternRe = None # compiled re or None
+    self._errorType = None      # None or int
+    #self._errorString = None   # None or unicode
+
+    #self.patternRe = None # compiled re or None
     #self.bbcodeText = None # unicode or None  cached BBCode
 
-    self.replace = None # multi-replacer function or none
-    self.prepareReplace = None # multi-replacer function or none
-    self.applyReplace = None # multi-replacer function or none
+    #self.replace = None # multi-replacer function or none
+    #self.prepareReplace = None # multi-replacer function or none
+    #self.applyReplace = None # multi-replacer function or none
 
     self.dirtyProperties = set() # set([str])
 
@@ -1953,19 +2472,26 @@ class _Term(object):
     if self.id:
       self.dirtyProperties.add(name)
     self.setDirty(True)
-    if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
-      manager().invalidateSortedTerms()
+
+    if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
+      termman.manager().invalidateCache() # invalidate term cache when any term is changed
+
+    if self._errorType is not None and name in ('pattern', 'text', 'type', 'host', 'language', 'regex', 'special'):
+      self.recheckError()
+
+    #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
+    #  manager().invalidateSortedTerms()
     #else:
     #if d.type == 'term'
 
-    self.clearCachedProperties()
-    manager().clearTermTitles()
+    #self.clearCachedProperties()
+    #manager().clearTermTitles()
 
-    if self.type == 'macro': # bug: change type to macro will not have effect at once
-      manager().clearMacroCache() # might be slow, though
+    #if self.type == 'macro': # bug: change type to macro will not have effect at once
+    #  manager().clearMacroCache() # might be slow, though
 
-  def clearCachedProperties(self):
-    self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
+  #def clearCachedProperties(self):
+  #  self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
 
   def setDirty(self, dirty):
     if dirty:
@@ -1988,6 +2514,102 @@ class _Term(object):
     return self._gameItemId
   @gameItemId.setter
   def gameItemId(self, val): self._gameItemId = val
+
+  def recheckError(self):
+    v = self._getErrorType()
+    if v != self._errorType:
+      self._errorType = v
+      if self.init:
+        self.q.errorTypeChanged.emit(v)
+    #v = self._getErrorString()
+    #if v != self._errorString:
+    #  self._errorString = v
+    #  if self.init:
+    #    self.q.errorStringChanged.emit(v)
+
+  @property
+  def errorType(self):
+    if self._errorType is None:
+      self._errorType = self._getErrorType()
+    return self._errorType
+
+  def getGameSeries(self): return manager().queryItemSeries(self.gameItemId)
+  def getGameName(self): return manager().queryGameName(id=self.gameId)
+
+  #@property
+  #def errorString(self):
+  #  if self._errorString is None:
+  #    self._errorString = self._getErrorString()
+  #  return self._errorString
+
+  _RE_HIRAGANA = re.compile(u'[あ-ん]')
+  _RE_LATIN_WORD = re.compile('^[0-9a-zA-Z ]+$')
+  def _getErrorType(self): # -> int not None
+    # E_EMPTY_PATTERN
+    if not self.pattern:
+      return self.E_EMPTY_PATTERN
+
+    # E_NEWLINE
+    if '\n' in self.pattern or self.text and '\n' in self.text:
+      return self.E_NEWLINE
+
+    # E_BAD_HOST
+    if self.host and self.type not in self.HOST_TYPES:
+      return self.E_BAD_HOST
+
+    # E_USELESS
+    if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
+          or self.type not in ('trans', 'suffix', 'name', 'yomi'))
+        and self.pattern == self.text):
+      return self.E_USELESS
+
+    # E_USELESS
+    if self.regex and self.type != 'macro' and not textutil.mightbe_regex(self.pattern):
+      return self.E_USELESS_REGEX
+
+    # W_BAD_REGEX
+    if (self.regex and (
+        not textutil.validate_regex(self.pattern)
+        or not textutil.validate_macro(self.text))):
+      return self.W_BAD_REGEX
+
+    # W_NOT_INPUT
+    if self.language == 'en' and self.type == 'input' and self.text and self._RE_LATIN_WORD.match(self.text):
+      return self.W_NOT_INPUT
+
+    # W_NOT_GAME
+    if not self.regex and self.type == 'game' and self.text and unichars.isascii(self.text) and not unichars.isascii(self.pattern):
+      return self.W_NOT_GAME
+
+    # W_MISSING_TEXT
+    if not self.text and len(self.pattern) > 3 and self.type in ('trans', 'name', 'yomi'):
+      return self.W_MISSING_TEXT
+
+    # W_SHORT
+    if (self.type not in ('suffix', 'ocr', 'macro') and (
+        len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
+        not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1]))):
+      return self.W_SHORT
+
+    # W_LONG
+    if not self.regex and len(self.pattern) > 25:
+      return self.W_LONG
+
+    # W_CHINESE_KANJI
+    if self.language.startswith('zh') and self.text:
+
+      # W_CHINESE_SIMPLIFIED
+      if self.language == 'zhs' and not opencc.containszhs(self.text):
+        return self.W_CHINESE_SIMPLIFIED
+
+      # W_CHINESE_TRADITIONAL
+      if self.language == 'zht' and opencc.containszhs(self.text):
+        return self.W_CHINESE_TRADITIONAL
+
+      #if opencc.containsja(self.text): # not checked as it might have Japanese chars such as 桜
+      #  return self.W_CHINESE_KANJI
+
+    return self.OK
 
   @staticmethod
   def synthesize(name, type, sync=False):
@@ -2012,15 +2634,42 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin', 'ocr', 'macro'
-  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), notr_("OCR"), tr_("Macro")
+  TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'game', 'tts', 'ocr', 'macro'
+  TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
+
+  HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'lec', 'atlas', 'hanviet'
+  TR_HOSTS = tuple(map(i18n.translator_name, HOSTS))
+
+  # Errors, the larger (warning) or smaller (error) the worse
+  OK = 0
+  W_CHINESE_TRADITIONAL = 5 # should not use traditional chinese
+  W_CHINESE_SIMPLIFIED = 6  # should not use simplified chinese
+  #W_CHINESE_KANJI = 7       # having Japanese characters in kanji
+  W_LONG = 11               # being too long
+  W_SHORT = 12              # being too short
+  W_MISSING_TEXT = 20       # text is empty
+  W_NOT_GAME = 30           # should not use game type
+  W_NOT_INPUT = 31          # should not use input type
+  W_BAD_REGEX = 100         # mismatch regex
+  E_USELESS = -100          # translation has no effect
+  E_USELESS_REGEX = -101    # regex flag is redundant
+  E_BAD_HOST = -800         # having new line characters in pattern or repl
+  E_NEWLINE = -900          # having new line characters in pattern or repl
+  E_EMPTY_PATTERN = -1000   # pattern is empty
+
+  HOST_TYPES = 'input', 'output', 'trans', 'name', 'yomi' # types allow host
 
 class Term(QObject):
   __D = _Term
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Term.TYPES[i] : _Term.TR_TYPES[i] for i in xrange(len(_Term.TYPES))}
+  TYPE_NAMES = dict(zip(_Term.TYPES, _Term.TR_TYPES))
+
+  HOSTS = __D.HOSTS
+  TR_HOSTS = __D.TR_HOSTS
+  HOST_NAMES = dict(zip(_Term.HOSTS, _Term.TR_HOSTS))
+  HOST_TYPES = __D.HOST_TYPES
 
   @classmethod
   def typeName(cls, t):
@@ -2030,6 +2679,17 @@ class Term(QObject):
     """
     return cls.TYPE_NAMES.get(t) or ""
 
+  #@staticmethod
+  #def typeAllowsHost(t): return t in self.HOST_TYPES
+
+  #@classmethod
+  #def hostName(cls, t):
+  #  """
+  #  @param  t  unicode
+  #  @return  unicode not None
+  #  """
+  #  return cls.HOST_NAMES.get(t) or ""
+
   @property
   def d(self): return self.__d
 
@@ -2038,15 +2698,14 @@ class Term(QObject):
 
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
-      type="", language="", timestamp=0, text="",
+      type="", host="", language="", sourceLanguage="", timestamp=0, text="",
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False,
-      disabled=False, deleted=False, special=False, private=False, hentai=False,
+      disabled=False, deleted=False, special=False, private=False, hentai=False, icase=False, #syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai)
-    self.priority = 0 # int
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, icase)
     if init:
       self.init(parent)
 
@@ -2056,13 +2715,18 @@ class Term(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
-    super(Term, self).__init__(parent)
-    self.updateUserIdChanged.connect(lambda:
-        self.updateUserNameChanged.emit(self.updateUserName))
+    d = self.__d
+    if not d.init:
+      d.init = True
+      super(Term, self).__init__(parent)
+      self.updateUserIdChanged.connect(lambda:
+          self.updateUserNameChanged.emit(self.updateUserName))
+
+  def isInitialized(self): return self.__d.init # -> bool
 
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
-    return Term(parent=self.parent(),
+    return Term(parent=self.parent(), init=d.init,
       id=id if id else d.id,
       userId=userId if userId else d.userId,
       userHash=userHash if userHash is not None else userId,
@@ -2074,10 +2738,12 @@ class Term(QObject):
       special=d.special,
       private=d.private,
       hentai=d.hentai,
+      icase=d.icase,
+      #syntax=d.syntax,
       regex=d.regex,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
-      type=d.type, language=d.language, text=d.text, pattern=d.pattern)
+      type=d.type, host=d.host, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern)
 
   ## Dirty ##
 
@@ -2093,7 +2759,7 @@ class Term(QObject):
 
   # Cache
 
-  def clearCache(self): self.__d.clearCachedProperties()
+  #def clearCache(self): self.__d.clearCachedProperties()
 
   ## Properties ##
 
@@ -2107,7 +2773,9 @@ class Term(QObject):
   updateTimestamp, updateTimestampChanged = __D.synthesize('updateTimestamp', int)
 
   type, typeChanged = __D.synthesize('type', str, sync=True)
+  host, hostChanged = __D.synthesize('host', str, sync=True)
   language, languageChanged = __D.synthesize('language', str, sync=True)
+  sourceLanguage, sourceLanguageChanged = __D.synthesize('sourceLanguage', str, sync=True)
   pattern, patternChanged = __D.synthesize('pattern', unicode, sync=True)
   text, textChanged = __D.synthesize('text', unicode, sync=True)
   comment, commentChanged = __D.synthesize('comment', unicode, sync=True)
@@ -2118,6 +2786,8 @@ class Term(QObject):
   private, privateChanged = __D.synthesize('private', bool, sync=True)
   regex, regexChanged = __D.synthesize('regex', bool, sync=True)
   hentai, hentaiChanged = __D.synthesize('hentai', bool, sync=True)
+  icase, icaseChanged = __D.synthesize('icase', bool, sync=True)
+  #syntax, syntaxChanged = __D.synthesize('syntax', bool, sync=True)
 
   selected, selectedChanged = __D.synthesize('selected', bool) # whether the item is selected in term table
 
@@ -2150,6 +2820,11 @@ class Term(QObject):
       lambda self: _is_protected_data(self.__d),
       notify=proptectedChanged)
 
+  errorTypeChanged = Signal(int)
+  errorType = Property(int,
+      lambda self: self.__d.errorType,
+      notify=errorTypeChanged)
+
   @property
   def gameMd5(self): return self.__d.gameMd5
   @gameMd5.setter
@@ -2159,10 +2834,10 @@ class Term(QObject):
   def gameItemId(self): return self.__d.gameItemId
 
   @property
-  def gameSeries(self): return manager().queryItemSeries(self.__d.gameItemId)
+  def gameSeries(self): return self.__d.getGameSeries()
 
   @property
-  def gameName(self): return manager().queryGameName(id=self.__d.gameId)
+  def gameName(self): return self.__d.getGameName()
 
   def setGameId(self, value):
     d = self.__d
@@ -2178,6 +2853,13 @@ class Term(QObject):
       lambda self: self.__d.gameId,
       setGameId,
       notify=gameIdChanged)
+
+  @property
+  def modifiedTimestamp(self):
+    """
+    @return  long  used for sorting
+    """
+    return max(self.__d.timestamp, self.__d.updateTimestamp)
 
   #@property
   #def bbcodeText(self):
@@ -2229,112 +2911,112 @@ class Term(QObject):
   #    setIgnoresCase,
   #    notify=ignoresCaseChanged)
 
-  @property
-  def patternRe(self):
-    """
-    @throw  re exception
-    @return  re or None
-    """
-    d = self.__d
-    if not d.patternRe and d.pattern:
-      pattern = d.pattern
-      if defs.TERM_MACRO_BEGIN in pattern:
-        pattern = termman.manager().applyMacroTerms(pattern)
-      if pattern:
-        d.patternRe = (
-          re.compile(pattern, re.DOTALL) if d.regex else
-          re.compile(re.escape(pattern))
-        )
-    return d.patternRe
+  #@property
+  #def patternRe(self):
+  #  """
+  #  @throw  re exception
+  #  @return  re or None
+  #  """
+  #  d = self.__d
+  #  if not d.patternRe and d.pattern:
+  #    pattern = d.pattern
+  #    if defs.TERM_MACRO_BEGIN in pattern:
+  #      pattern = termman.manager().applyMacroTerms(pattern)
+  #    if pattern:
+  #      d.patternRe = (
+  #        re.compile(pattern, re.DOTALL) if d.regex else
+  #        re.compile(re.escape(pattern))
+  #      )
+  #  return d.patternRe
 
-  def patternNeedsRe(self):
-    """
-    @return  bool
-    """
-    return self.__d.regex #or self.__d.type == 'name'
+  #def patternNeedsRe(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return self.__d.regex #or self.__d.type == 'name'
 
-  def needsReplace(self):
-    """
-    @return  bool
-    """
-    return self.__d.type == 'name' #and bool(manager().termTitles())
+  #def needsReplace(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return self.__d.type == 'name' #and bool(manager().termTitles())
 
   #def needsEscape(self):
   #  """
   #  @return  bool
   #  """
-  #  return config.is_asian_language(self.__d.language)
+  #  return config.is_kanji_language(self.__d.language)
 
-  @property
-  def replace(self):
-    """
-    @return  multireplacer
-    """
-    d = self.__d
-    if not d.replace and d.pattern:
-      pattern = d.pattern
-      if d.regex and defs.TERM_MACRO_BEGIN in pattern:
-        pattern = termman.manager().applyMacroTerms(pattern)
-      if pattern:
-        titles = manager().termTitles()
-        table = {k : d.text + v + ' ' for k,v in titles.iteritems()} # append space
-        d.replace = skstr.multireplacer(table,
-            prefix=pattern,
-            escape=not d.regex)
-    return d.replace
+  #@property
+  #def replace(self):
+  #  """
+  #  @return  multireplacer
+  #  """
+  #  d = self.__d
+  #  if not d.replace and d.pattern:
+  #    pattern = d.pattern
+  #    if d.regex and defs.TERM_MACRO_BEGIN in pattern:
+  #      pattern = termman.manager().applyMacroTerms(pattern)
+  #    if pattern:
+  #      titles = manager().termTitles()
+  #      table = {k : d.text + v + ' ' for k,v in titles.iteritems()} # append space
+  #      d.replace = skstr.multireplacer(table,
+  #          prefix=pattern,
+  #          escape=not d.regex)
+  #  return d.replace
 
-  @replace.setter
-  def replace(self, v): self.__d.replace = v
+  #@replace.setter
+  #def replace(self, v): self.__d.replace = v
 
-  @property
-  def prepareReplace(self):
-    """
-    @return  multireplacer
-    """
-    d = self.__d
-    if not d.prepareReplace and d.pattern:
-      pattern = d.pattern
-      if d.regex and defs.TERM_MACRO_BEGIN in pattern:
-        pattern = termman.manager().applyMacroTerms(pattern)
-      if pattern:
-        titles = manager().termTitles()
-        #l = sorted(titles.iterkeys(), key=len) # already sorted
-        esc = defs.NAME_ESCAPE + ' '
-        h = self.priority or d.id or id(self)
-        table = {k : esc%(h,i) for i,k in enumerate(titles)}
-        d.prepareReplace = skstr.multireplacer(table,
-            prefix=pattern,
-            escape=not d.regex)
-    return d.prepareReplace
+  #@property
+  #def prepareReplace(self):
+  #  """
+  #  @return  multireplacer
+  #  """
+  #  d = self.__d
+  #  if not d.prepareReplace and d.pattern:
+  #    pattern = d.pattern
+  #    if d.regex and defs.TERM_MACRO_BEGIN in pattern:
+  #      pattern = termman.manager().applyMacroTerms(pattern)
+  #    if pattern:
+  #      titles = manager().termTitles()
+  #      #l = sorted(titles.iterkeys(), key=len) # already sorted
+  #      esc = defs.NAME_ESCAPE + ' '
+  #      h = self.priority or d.id or id(self)
+  #      table = {k : esc%(h,i) for i,k in enumerate(titles)}
+  #      d.prepareReplace = skstr.multireplacer(table,
+  #          prefix=pattern,
+  #          escape=not d.regex)
+  #  return d.prepareReplace
 
-  @prepareReplace.setter
-  def prepareReplace(self, v): self.__d.prepareReplace = v
+  #@prepareReplace.setter
+  #def prepareReplace(self, v): self.__d.prepareReplace = v
 
-  def convertsChinese(self):
-    return manager().user().language == 'zht' and self.__d.language == 'zhs'
+  #def convertsChinese(self):
+  #  return manager().user().language == 'zht' and self.__d.language == 'zhs'
 
-  @property
-  def applyReplace(self):
-    """
-    @return  multireplacer
-    """
-    d = self.__d
-    if not d.applyReplace and d.pattern:
-      mark = termman.manager().markEscapeText
-      titles = manager().termTitles()
-      #l = sorted(titles.iterkeys(), key=len) already sorted
-      esc = defs.NAME_ESCAPE
-      #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
-      h = self.priority or d.id or id(self)
-      if self.convertsChinese():
-        table = {esc%(h,i) : mark(zhs2zht(d.text) + titles[k]) for i,k in enumerate(titles)}
-      else:
-        table = {esc%(h,i) : mark(d.text + titles[k]) for i,k in enumerate(titles)}
-      d.applyReplace = skstr.multireplacer(table) #escape=False
-    return d.applyReplace
+  #@property
+  #def applyReplace(self):
+  #  """
+  #  @return  multireplacer
+  #  """
+  #  d = self.__d
+  #  if not d.applyReplace and d.pattern:
+  #    mark = termman.manager().markEscapeText
+  #    titles = manager().termTitles()
+  #    #l = sorted(titles.iterkeys(), key=len) already sorted
+  #    esc = defs.NAME_ESCAPE
+  #    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
+  #    h = self.priority or d.id or id(self)
+  #    if self.convertsChinese():
+  #      table = {esc%(h,i) : mark(zhs2zht(d.text) + titles[k]) for i,k in enumerate(titles)}
+  #    else:
+  #      table = {esc%(h,i) : mark(d.text + titles[k]) for i,k in enumerate(titles)}
+  #    d.applyReplace = skstr.multireplacer(table) #escape=False
+  #  return d.applyReplace
 
-  @applyReplace.setter
-  def applyReplace(self, v): self.__d.applyReplace = v
+  #@applyReplace.setter
+  #def applyReplace(self, v): self.__d.applyReplace = v
 
   #def setPattern(self, value):
   #  d = self.__d
@@ -2351,82 +3033,75 @@ class Term(QObject):
   #    setPattern,
   #    notify=patternChanged)
 
-  @property
-  def modifiedTimestamp(self):
-    """
-    @return  long  used for sorting
-    """
-    return max(self.__d.timestamp, self.__d.updateTimestamp)
-
 ## Name ##
 
-class NameItem(object):
-
-  def __init__(self, id=0, text="", yomi=""):
-    self.id = id # long
-    self.text = text # unicode
-    self.yomi = yomi # unicode
-
-  #@staticmethod
-  #def needsEscape():
-  #  return not config.is_asian_language(manager().user().language)
-
-  #@staticmethod
-  #def needsRomaji():
-  #  return not config.is_kanji_language(manager().user().language)
-
-  @memoizedproperty
-  def translation(self):
-    """
-    @return  unicode
-    """
-    lang = manager().user().language
-    if config.is_kanji_language(lang):
-      return self.text
-    if lang == 'ja':
-      return ''
-    yomi = self.yomi or self.text
-    if not textutil.match_kata_hira_punc(yomi):
-      return ''
-    if lang == 'ko': return cconv.yomi2hangul(yomi)
-    if lang == 'th': return cconv.yomi2thai(yomi)
-    return cconv.yomi2romaji(yomi).title()
-
-  @memoizedproperty
-  def replace(self):
-    """
-    @return  multireplacer
-    """
-    titles = manager().termTitles()
-    # Append a space at the end
-    table = {k : self.translation + v + ' ' for k,v in titles.iteritems()}
-    return skstr.multireplacer(table, prefix=self.text, escape=True)
-
-  @memoizedproperty
-  def prepareReplace(self):
-    """
-    @return  multireplacer
-    """
-    titles = manager().termTitles()
-    #l = sorted(titles.iterkeys(), key=len) # already sorted
-    esc = defs.CHARA_ESCAPE + ' '
-    h = self.id or id(d)
-    table = {k : esc%(h,i) for i,k in enumerate(titles)}
-    return skstr.multireplacer(table, prefix=self.text, escape=True)
-
-  @memoizedproperty
-  def applyReplace(self):
-    """
-    @return  multireplacer
-    """
-    mark = termman.manager().markEscapeText
-    titles = manager().termTitles()
-    #l = sorted(titles.iterkeys(), key=len) # already sorted
-    esc = defs.CHARA_ESCAPE
-    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
-    h = self.id or id(d)
-    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
-    return skstr.multireplacer(table) #escape=False
+#class NameItem(object):
+#
+#  def __init__(self, id=0, text="", yomi=""):
+#    self.id = id # long
+#    self.text = text # unicode
+#    self.yomi = yomi # unicode
+#
+#  #@staticmethod
+#  #def needsEscape():
+#  #  return not config.is_kanji_language(manager().user().language)
+#
+#  #@staticmethod
+#  #def needsRomaji():
+#  #  return not config.is_kanji_language(manager().user().language)
+#
+#  @memoizedproperty
+#  def translation(self):
+#    """
+#    @return  unicode
+#    """
+#    lang = manager().user().language
+#    if config.is_kanji_language(lang):
+#      return self.text
+#    if lang == 'ja':
+#      return ''
+#    yomi = self.yomi or self.text
+#    if not textutil.match_kata_hira_punc(yomi):
+#      return ''
+#    if lang == 'ko': return cconv.kana2ko(yomi)
+#    if lang == 'th': return cconv.kana2th(yomi)
+#    return cconv.kana2romaji(yomi).title()
+#
+#  @memoizedproperty
+#  def replace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    titles = manager().termTitles()
+#    # Append a space at the end
+#    table = {k : self.translation + v + ' ' for k,v in titles.iteritems()}
+#    return skstr.multireplacer(table, prefix=self.text, escape=True)
+#
+#  @memoizedproperty
+#  def prepareReplace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    titles = manager().termTitles()
+#    #l = sorted(titles.iterkeys(), key=len) # already sorted
+#    esc = defs.CHARA_ESCAPE + ' '
+#    h = self.id or id(d)
+#    table = {k : esc%(h,i) for i,k in enumerate(titles)}
+#    return skstr.multireplacer(table, prefix=self.text, escape=True)
+#
+#  @memoizedproperty
+#  def applyReplace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    mark = termman.manager().markEscapeText
+#    titles = manager().termTitles()
+#    #l = sorted(titles.iterkeys(), key=len) # already sorted
+#    esc = defs.CHARA_ESCAPE
+#    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
+#    h = self.id or id(d)
+#    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
+#    return skstr.multireplacer(table) #escape=False
 
 ## References ##
 
@@ -2464,8 +3139,37 @@ class NameItem(object):
 
 @Q_Q
 class _Reference(object):
+  __slots__ = (
+    'q', 'qref',  # Q_Q
+
+    'init',
+    'id',
+    'itemId',
+    'gameId',
+    '_gameMd5',
+    'userId',
+    'userHash',
+    'type',
+    'timestamp',
+    'updateTimestamp',
+    'updateUserId',
+    'updateUserHash',
+    'key',
+    'title',
+    'brand',
+    'url',
+    'date',
+    'comment',
+    'updateComment',
+    'disabled',
+    'deleted',
+
+    'dirtyProperties',
+  )
+
   def __init__(self, q,
       id, itemId, gameId, gameMd5, userId, userHash, type, timestamp, updateTimestamp, updateUserId, key, title, brand, url, date, comment, updateComment, disabled, deleted):
+    self.init = False           # bool
     self.id = id                # long
     self.itemId = itemId        # long
     self.gameId = gameId        # long
@@ -2534,15 +3238,15 @@ class _Reference(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite'
-  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite'
+  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite', 'freem', 'steam'
+  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite', 'FreeM', 'Steam'
 
 class Reference(QObject):
   __D = _Reference
 
   TYPES = __D.TYPES
   TR_TYPES = __D.TR_TYPES
-  TYPE_NAMES = {_Reference.TYPES[i] : _Reference.TR_TYPES[i] for i in xrange(len(_Reference.TYPES))}
+  TYPE_NAMES = dict(zip(_Reference.TYPES, _Reference.TR_TYPES))
 
   @classmethod
   def typeName(cls, t):
@@ -2596,6 +3300,10 @@ class Reference(QObject):
       cls = DmmReference
     elif type == 'dlsite':
       cls = DLsiteReference
+    elif type == 'freem':
+      cls = FreemReference
+    elif type == 'steam':
+      cls = SteamReference
     else:
       dwarn("unknown type: %s" % type)
       cls = Reference
@@ -2605,13 +3313,18 @@ class Reference(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
-    super(Reference, self).__init__(parent)
-    self.updateUserIdChanged.connect(lambda:
-        self.updateUserNameChanged.emit(self.updateUserName))
+    d = self.__d
+    if not d.init:
+      super(Reference, self).__init__(parent)
+      d.init = True
+      self.updateUserIdChanged.connect(lambda:
+          self.updateUserNameChanged.emit(self.updateUserName))
+
+  def isInitialized(self): return self.__d.init  # not used
 
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
-    return Reference(parent=self.parent(),
+    return Reference(parent=self.parent(), init=d.init,
       id=id if id else d.id,
       userId=userId if userId else d.userId,
       userHash=userHash if userHash is not None else userId,
@@ -2727,7 +3440,17 @@ class Reference(QObject):
     for it in self.sampleImages:
       yield cacheman.cache_image_url(it) if cache else it
 
-class TrailersItem: #(object):
+class TrailersItem(object):
+  __slots__ = (
+    'series',
+    'banner',
+    'otome',
+    'brands',
+    'videos',
+
+    'artists', 'sdartists', 'writers', 'musicians',
+  )
+
   def __init__(self,
       series="", banner="",
       otome=False,
@@ -2743,6 +3466,8 @@ class TrailersItem: #(object):
       v = kwargs.get(k)
       v = [it['name'] for it in v] if v else []
       setattr(self, k, v)
+    if self.musicians:
+      self.musicians = uniquelist(self.musicians)
 
   def iterVideoIdsWithImage(self, cache=True):
     """
@@ -2837,7 +3562,7 @@ class DLsiteReference(Reference): #(object):
       type='dlsite',
       image='', price=0, ecchi=True, otome=False, homepage='',
       artist='', writer='', musician='',
-      description='', review='', filesize=0,
+      description='', characterDescription='', review='', filesize=0,
       sampleImages=[], tags=[], rpg=False,
       **kwargs):
     super(DLsiteReference, self).__init__(parent=parent,
@@ -2848,6 +3573,7 @@ class DLsiteReference(Reference): #(object):
     self.otome = otome # bool
     self.homepage = homepage # str
     self.description = description # unicode
+    self.characterDescription = characterDescription # unicode
     self.review = review # unicode
     self.sampleImages = sampleImages # [str url]
     self.rpg = rpg # bool
@@ -2893,10 +3619,108 @@ class DLsiteReference(Reference): #(object):
       it = proxy.get_dlsite_url(it)
       yield cacheman.cache_image_url(it) if cache else it
 
+  _rx_desc_size = re.compile(r'width="[0-9]+" height="[0-9]+"')  # remove image size, use large image
   def hasDescriptions(self): return bool(self.description)
   def iterDescriptions(self):
-    if self.description:
-      yield cacheman.cache_html(self.description)
+    t = self.description
+    if t:
+      t = proxy.replace_dlsite_html(t)
+      t = t.replace("<h2>", "<b>").replace("</h2>", "</b>") # reduce font size
+      t = self._rx_desc_size.sub('', t)
+      yield cacheman.cache_html(t)
+
+  # Example: <a href="//img.dlsite.jp/modpub/images2/parts/RJ080000/RJ079473/RJ079473_PTS0000000168_3.jpg"
+  def renderCharacterDescription(self): # -> unicode
+    t = self.characterDescription
+    if not t:
+      return ''
+    t = proxy.replace_dlsite_html(t)
+    return cacheman.cache_html(t)
+
+class FreemReference(Reference): #(object):
+  def __init__(self, parent=None,
+      type='freem',
+      image="", slogan="",
+      otome=False, ecchi=True,
+      description='',
+      videos=[],
+      sampleImages=[],
+      filesize=0,
+      **kwargs):
+    super(FreemReference, self).__init__(parent=parent,
+        type=type, **kwargs)
+    self.largeImage = image # str
+    self.otome = otome # bool
+    self.ecchi = ecchi # bool
+    self.slogan = slogan or '' # str
+    self.description = description # unicode
+    self.sampleImages = sampleImages # [str url]
+    self.videos = videos    # [str]
+    self.fileSize = filesize # int
+
+  def iterVideoIdsWithImage(self, cache=True):
+    """
+    @param  cache  bool
+    @yield  (str vid, str url)
+    """
+    if self.videos:
+      host = proxy.manager().ytimg_i
+      for vid in self.videos:
+        img = host + '/vi/' + vid + '/0.jpg'
+        yield vid, cacheman.cache_image_url(img) if cache else img
+
+  def hasDescriptions(self): return bool(self.description)
+  def iterDescriptions(self):
+    t = self.description
+    if t:
+      yield t
+
+  def hasSampleImages(self): return bool(self.sampleImages)
+
+  def iterSampleImageUrls(self, cache=True):
+    """
+    @yield  str  url
+    """
+    #if self.hasSampleImages():
+    for it in self.sampleImages:
+      yield cacheman.cache_image_url(it) if cache else it
+
+class SteamReference(Reference): #(object):
+  def __init__(self, parent=None,
+      type='steam',
+      image="",
+      otome=False,
+      homepage='',
+      description='', review='',
+      sampleImages=[],
+      **kwargs):
+    super(SteamReference, self).__init__(parent=parent,
+        type=type, **kwargs)
+    self.largeImage = image # str
+    self.otome = otome # bool
+    self.homepage = homepage # str
+    self.description = description # unicode
+    self.review = review # unicode
+    self.sampleImages = sampleImages # [str url]
+
+  def hasSampleImages(self): return bool(self.sampleImages)
+
+  def iterSampleImageUrls(self, cache=True):
+    """
+    @yield  str  url
+    """
+    #if self.hasSampleImages():
+    for it in self.sampleImages:
+      yield cacheman.cache_image_url(it) if cache else it
+
+  def hasDescriptions(self): return bool(self.description)
+  def iterDescriptions(self):
+    t = self.description
+    if t:
+      yield t
+
+  def hasReview(self): return bool(self.review)
+  def renderReview(self): return self.review
 
 class GetchuReference(Reference): #(object):
   def __init__(self, parent=None,
@@ -3015,18 +3839,29 @@ class GetchuReference(Reference): #(object):
     t = cls._rx_desc_title.sub(ur'<div class="tabletitle">【\1】</div>', t)
     t = cls._rx_desc_size.sub('', t)
     t = t.replace('_s.jpg', '.jpg')
+    t = proxy.replace_getchu_html(t)
     return cacheman.cache_html(t)
 
   def renderCharacterDescription(self): # -> unicode
     t = self.characterDescription
-    if t:
-      t = self._rx_desc_title.sub('', t)
-      t = self._rx_desc_size.sub('', t)
-      t = t.replace('_s.jpg', '.jpg')
-      t = t.replace('width="1%"', 'width="25%"') # <TD valign="middle" width="1%"> for img
-      t = t.replace('valign="middle"', 'valign="top"')
-      t = t.replace('vertical-align:middle', 'vertical-align:top')
+    if not t:
+      return ''
+    t = self._rx_desc_title.sub('', t)
+    t = self._rx_desc_size.sub('', t)
+    t = t.replace('_s.jpg', '.jpg')
+    t = t.replace('width="1%"', 'width="25%"') # <TD valign="middle" width="1%"> for img
+    t = t.replace('valign="middle"', 'valign="top"')
+    t = t.replace('vertical-align:middle', 'vertical-align:top')
+    t = proxy.replace_getchu_html(t)
     return cacheman.cache_html(t)
+
+  def iterNameYomi(self):
+    """
+    yield (unicode name, unicode yomi)
+    """
+    if self.characters:
+      for it in self.characters:
+        yield it['name'], it['yomi']
 
 class DiGiketReference(Reference): #(object):
   def __init__(self, parent=None,
@@ -3188,7 +4023,7 @@ class AmazonReference(Reference):
 class GyuttoReference(Reference): #(object), images will crash Python2
   def __init__(self, parent=None,
       type='gyutto',
-      series="", brand="",
+      series="",
       image="", # not used
       #price=0, # not exist price though
       #writers[], artists=[], musicians=[],
@@ -3202,7 +4037,6 @@ class GyuttoReference(Reference): #(object), images will crash Python2
     super(GyuttoReference, self).__init__(parent=parent,
         type=type, **kwargs)
     self.largeImage = image # str
-    self.brand = brand
     self.series = series
     self.slogan = theme
     self.fileSize = filesize
@@ -3259,7 +4093,14 @@ class HolysealReference(Reference): #(object):
     self.artists = artists # [unicode name]
     self.writers = writers # [unicode name]
 
-class TokutenItem: # erogame-tokuten webpage, images will crash Python2
+class TokutenItem(object): # erogame-tokuten webpage, images will crash Python2
+  __slots__ = (
+    'key',
+    'url',
+    'images',
+    'image',
+  )
+
   type = 'tokuten'
   def __init__(self, key="", url="", images=[], **kwargs):
     self.key = key # str
@@ -3276,7 +4117,11 @@ class TokutenItem: # erogame-tokuten webpage, images will crash Python2
     for it in self.images:
       return cacheman.cache_image_url(it) if cache else it
 
-class DmmPage: # DMM webpage
+class DmmPage(object): # DMM webpage
+  __slots__ = (
+    'description',
+    'review',
+  )
   def __init__(self, url="",
       description="", review="",
       **kwargs):
@@ -3422,7 +4267,7 @@ GAME_ICON_ROLE = Qt.DecorationRole
 GAME_NAME_ROLE = Qt.DisplayRole
 GAME_TOOLTIP_ROLE = Qt.ToolTipRole
 GAME_MD5_ROLE = Qt.UserRole
-GAME_QML_ROLE = Qt.UserRole +1
+GAME_LINK_ROLE = Qt.UserRole +1
 GAME_SEARCHTEXT_ROLE = Qt.UserRole +2
 GAME_STYLEHINT_ROLE = Qt.UserRole +3
 GAME_ROLES = {
@@ -3430,7 +4275,7 @@ GAME_ROLES = {
   GAME_NAME_ROLE: 'name',
   GAME_TOOLTIP_ROLE: 'toolTip',
   GAME_MD5_ROLE: 'md5',
-  GAME_QML_ROLE: 'qml',
+  GAME_LINK_ROLE: 'link',
   GAME_SEARCHTEXT_ROLE: 'searchText',
   GAME_STYLEHINT_ROLE: 'styleHint',
 }
@@ -3503,7 +4348,7 @@ class _GameModel(object):
       #col = self.COLUMNS[self.sortingColumn]
       #self._sortedData = sorted(data,
       #    key=operator.attrgetter(col),
-      #    reverse=self.sortingReverse,)
+      #    reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -3613,11 +4458,8 @@ class GameModel(QAbstractListModel):
     if role == GAME_STYLEHINT_ROLE:
       return game['gameType']
 
-    if role == GAME_QML_ROLE:
-      return rc.jinja_template('qml/opengame').render({
-        'path': game['path'],
-        'launchPath': game['launchPath'],
-      })
+    if role == GAME_LINK_ROLE:
+      return create_game_link(game['path'], game['launchPath'])
 
     if role == GAME_SEARCHTEXT_ROLE:
       return "\n".join(game[key] or ''
@@ -3817,7 +4659,7 @@ class VoiceModel(QAbstractListModel):
       row = index.row()
       if row >= 0 and row < self.rowCount():
         if role == VOICE_NUM_ROLE:
-          return row +1
+          return row + 1
         elif role == VOICE_OBJECT_ROLE:
           return self.get(row)
 
@@ -3884,20 +4726,28 @@ class VoiceModel(QAbstractListModel):
 ## Term model ##
 
 TERM_OBJECT_ROLE = Qt.UserRole
-TERM_NUM_ROLE = Qt.UserRole +1
+TERM_NUM_ROLE = Qt.UserRole + 1
+TERM_ID_ROLE = Qt.UserRole + 2
 TERM_ROLES = {
   TERM_OBJECT_ROLE: 'object', # Term, object
   TERM_NUM_ROLE: 'number', # int, 番号
+  TERM_ID_ROLE: 'id', # object id
 }
 class _TermModel(object):
   COLUMNS = [ # MUST BE CONSISTENT WITH termtable.qml
     'selected',
     'modifiedTimestamp', # row, default
+    'id',
+    'errorType',
     'disabled',
     'private',
-    'type',
+    'sourceLanguage',
     'language',
+    'type',
+    'host',
+    #'syntax',
     'regex',
+    'icase',
     'hentai',
     'special',
     'gameId',
@@ -3913,11 +4763,16 @@ class _TermModel(object):
   DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
-    self._filterText = "" # unicode
-    self._filterRe = None # compiled re
-    self._filterData = None # [Term]
-    self._sortedData = None # [Term]
-    self._duplicateData = None # [Term]
+    self.filterSourceLanguage = "" # str
+    self.filterLanguage = ""    # str
+    self.filterHost = ""        # str
+    self.filterTypes = ""       # str
+    self.filterColumn = ""      # str
+    self._filterText = ""       # unicode
+    self._filterRe = None       # compiled re
+    self._filterData = None     # [Term]
+    self._sortedData = None     # [Term]
+    self._duplicateData = None  # [Term]
 
     self.sortingColumn = self.DEFAULT_SORTING_COLUMN
     self.sortingReverse = False
@@ -3937,12 +4792,19 @@ class _TermModel(object):
 
   def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
 
+  def get(self, row): # int -> QObject
+    try: return self.data[- # Revert the list
+        (self.pageIndex() + row +1)]
+    except IndexError: pass
+
   @property
   def data(self):
     """
     @return  [Term]
     """
-    return self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN else self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+    return (self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN
+        else self.filterData if any((self.filterText, self.filterTypes, self.filterLanguage, self.filterSourceLanguage, self.filterHost))
+        else self.duplicateData if self.duplicate else self.sourceData)
 
   @staticproperty
   def sourceData(): return manager().terms() # -> list not None
@@ -3994,18 +4856,34 @@ class _TermModel(object):
     xd = x.d
     yd = y.d
     return (
-        xd.type == yd.type and
-        xd.regex == yd.regex and
-        xd.special == yd.special and
-        xd.language[:2] == yd.language[:2] and
-        xd.pattern == yd.pattern and
-        xd.text == yd.text and
-        (not xd.special or xd.gameItemId == yd.gameItemId or x.gameSeries and x.gameSeries == y.gameSeries))
+      xd.regex == yd.regex
+      #and xd.special == yd.special
+      and (
+        xd.language == 'ja'
+        or yd.language == 'ja'
+        or xd.language[:2] == yd.language[:2]
+      )
+      and (
+        xd.type == yd.type
+        or xd.type in ('name', 'yomi', 'trans', 'input') and yd.type in ('name', 'yomi', 'trans', 'input')
+      )
+      and not (xd.type == 'yomi' and yd.type == 'name' and yd.language.startswith('zh'))
+      and not (yd.type == 'yomi' and xd.type == 'name' and xd.language.startswith('zh'))
+      and xd.pattern == yd.pattern
+      #and xd.text == yd.text
+      and (
+        not xd.special
+        or xd.gameItemId == yd.gameItemId
+        or x.gameSeries and x.gameSeries == y.gameSeries
+      )
+   )
 
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+      data = (self.filterData if any((self.filterText, self.filterTypes, self.filterLanguage, self.filterSourceLanguage, self.filterHost))
+          else self.duplicateData if self.duplicate
+          else self.sourceData)
       if not data:
         self._sortedData = []
       elif self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
@@ -4017,7 +4895,7 @@ class _TermModel(object):
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
             key=operator.attrgetter(col),
-            reverse=self.sortingReverse,)
+            reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -4054,31 +4932,104 @@ class _TermModel(object):
     @param  term  Term
     @return  bool
     """
+    td = term.d
+    filters = [self.filterText, self.filterHost, self.filterSourceLanguage, self.filterLanguage, self.filterTypes]
+
+    filters.pop()
+    if self.filterTypes:
+      if td.type not in self.filterTypes:
+        return False
+      if not any(filters):
+        return True
+
+    filters.pop()
+    if self.filterLanguage:
+      if not td.language.startswith(self.filterLanguage):
+        return False
+      if not any(filters):
+        return True
+
+    filters.pop()
+    if self.filterSourceLanguage:
+      if not td.sourceLanguage.startswith(self.filterSourceLanguage):
+        return False
+      if not any(filters):
+        return True
+
+    filters.pop()
+    if self.filterHost:
+      if td.host != self.filterHost:
+        return False
+      if not any(filters):
+        return True
+
     t = self.filterText
     if not t:
       return False
     dm = manager()
-    td = term.d
     try:
-      if len(t) > 1:
-        if t[0] == '@':
-          t = t[1:]
-          rx = re.compile(t, re.IGNORECASE)
-          for it in term.userName, term.updateUserName:
-            if it and rx.match(it):
+      q = None # [str] or None
+      if self.filterColumn:
+        col = self.filterColumn
+        if col == 'id':
+          try: return int(t) == td.id
+          except ValueError: return False
+        elif col == 'user':
+          q = term.userName,
+        elif col == 'game':
+          try:
+            tid = int(t)
+            if tid == td.gameId or tid == term.gameItemId:
               return True
-          return False
-        if t[0] == '#':
-          t = t[1:]
-          if t == str(td.gameId):
+            if len(t) >= 4:
+              return False
+          except ValueError: pass
+          q = term.gameSeries, term.gameName
+        #elif col == 'language':
+        #  q = td.language, i18n.language_name(td.language)
+        #elif col == 'type':
+        #  q = td.type, Term.typeName(td.type)
+        elif col == 'pattern':
+          q = td.pattern,
+        elif col == 'text':
+          q = td.text,
+        elif col == 'comment':
+          q = td.comment, td.updateComment
+      else: # search all columns
+        if len(t) > 2:
+          try:
+            tid = int(t)
+            if tid and tid == td.id:
+              return True
+          except ValueError:
+            pass
+        if len(t) > 1:
+          if t[0] == '@':
+            t = t[1:]
+            rx = re.compile(t, re.IGNORECASE)
+            for it in term.userName, term.updateUserName:
+              if it and rx.match(it):
+                return True
+            return False
+          if t[0] == '#':
+            t = t[1:]
+            try:
+              tid = int(t)
+              if tid == td.gameId or tid == term.gameItemId:
+                return True
+              if len(t) >= 4:
+                return False
+            except ValueError: pass
+
+            rx = re.compile(t, re.IGNORECASE)
+            it = term.gameSeries or term.gameName
+            return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
+        q = td.pattern, td.text, td.language, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName
+      if q:
+        rx = self.filterRe
+        for it in q:
+          if it and (t in it or rx.search(it)): # check t in it in case of escape
             return True
-          rx = re.compile(t, re.IGNORECASE)
-          it = term.gameSeries or term.gameName
-          return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
-      rx = self.filterRe
-      for it in td.pattern, td.text, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName:
-        if it and (t in it or rx.search(it)): # check t in it in case of escape
-          return True
     except Exception, e:
       dwarn(e)
       #message = e.message or "%s" % e
@@ -4094,7 +5045,12 @@ class TermModel(QAbstractListModel):
     self.setRoleNames(TERM_ROLES)
     d = self.__d = _TermModel()
 
-    for sig in self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged, self.pageSizeChanged, self.pageNumberChanged, self.duplicateChanged:
+    for sig in (
+        self.filterTypesChanged, #self.filterLanguageChanged, self.filterHostChanged, self.filterTextChanged,
+        self.sortingColumnChanged, self.sortingReverseChanged,
+        self.pageSizeChanged, self.pageNumberChanged,
+        self.duplicateChanged
+      ):
       sig.connect(self.reset)
 
     manager().termsChanged.connect(lambda:
@@ -4102,7 +5058,9 @@ class TermModel(QAbstractListModel):
     manager().termsEditableChanged.connect(lambda t:
         t and self.reset())
 
-  #@Slot()
+  @Slot()
+  def refresh(self): self.reset()
+
   def reset(self):
     d = self.__d
     d.filterData = None
@@ -4127,13 +5085,14 @@ class TermModel(QAbstractListModel):
         if role == TERM_NUM_ROLE:
           return self.__d.pageIndex() + row +1
         elif role == TERM_OBJECT_ROLE:
-          return self.get(row)
+          return self.__d.get(row)
+        elif role == TERM_ID_ROLE:
+          obj = self.__d.get(row)
+          if obj:
+            return obj.d.id
 
   @Slot(int, result=QObject)
-  def get(self, row):
-    try: return self.__d.data[- # Revert the list
-        (self.__d.pageIndex() + row +1)]
-    except IndexError: pass
+  def get(self, row): return self.__d.get(row)
 
   countChanged = Signal(int)
   count = Property(int,
@@ -4144,6 +5103,60 @@ class TermModel(QAbstractListModel):
   currentCount = Property(int,
       lambda self: len(self.__d.data),
       notify=currentCountChanged)
+
+  def setFilterTypes(self, value):
+    if value != self.__d.filterTypes:
+      self.__d.filterTypes = value
+      d = self.__d
+      self.filterTypesChanged.emit(value)
+  filterTypesChanged = Signal(str)
+  filterTypes = Property(str,
+      lambda self: self.__d.filterTypes,
+      setFilterTypes,
+      notify=filterTypesChanged)
+
+  def setFilterHost(self, value):
+    if value != self.__d.filterHost:
+      self.__d.filterHost = value
+      d = self.__d
+      self.filterHostChanged.emit(value)
+  filterHostChanged = Signal(str)
+  filterHost = Property(str,
+      lambda self: self.__d.filterHost,
+      setFilterHost,
+      notify=filterHostChanged)
+
+  def setFilterLanguage(self, value):
+    if value != self.__d.filterLanguage:
+      self.__d.filterLanguage = value
+      d = self.__d
+      self.filterLanguageChanged.emit(value)
+  filterLanguageChanged = Signal(str)
+  filterLanguage = Property(str,
+      lambda self: self.__d.filterLanguage,
+      setFilterLanguage,
+      notify=filterLanguageChanged)
+
+  def setFilterSourceLanguage(self, value):
+    if value != self.__d.filterSourceLanguage:
+      self.__d.filterSourceLanguage = value
+      d = self.__d
+      self.filterSourceLanguageChanged.emit(value)
+  filterSourceLanguageChanged = Signal(str)
+  filterSourceLanguage = Property(str,
+      lambda self: self.__d.filterSourceLanguage,
+      setFilterSourceLanguage,
+      notify=filterSourceLanguageChanged)
+
+  def setFilterColumn(self, value):
+    if value != self.__d.filterColumn:
+      self.__d.filterColumn = value
+      self.filterColumnChanged.emit(value)
+  filterColumnChanged = Signal(str)
+  filterColumn = Property(str,
+      lambda self: self.__d.filterColumn,
+      setFilterColumn,
+      notify=filterColumnChanged)
 
   def setFilterText(self, value):
     if value != self.__d.filterText:
@@ -4272,7 +5285,7 @@ class TermModel(QAbstractListModel):
 ## Comment model ##
 
 COMMENT_OBJECT_ROLE = Qt.UserRole
-COMMENT_NUM_ROLE = Qt.UserRole +1
+COMMENT_NUM_ROLE = Qt.UserRole + 1
 COMMENT_ROLES = {
   COMMENT_OBJECT_ROLE: 'object', # Comment, object
   COMMENT_NUM_ROLE: 'number', # int, 番号
@@ -4340,6 +5353,12 @@ class _CommentModel(object):
     return commentinput.CommentInputDialog(parent)
 
   def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
+
+  # @Slot(int, result=QObject)
+  def get(self, row):
+    try: return self.data[- # Revert the list
+        (self.pageIndex() + row +1)]
+    except IndexError: pass
 
   def _addComment(self, c):
     try:
@@ -4444,7 +5463,7 @@ class _CommentModel(object):
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
             key=operator.attrgetter(col),
-            reverse=self.sortingReverse,)
+            reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -4781,13 +5800,10 @@ class CommentModel(QAbstractListModel):
         if role == COMMENT_NUM_ROLE:
           return self.__d.pageIndex() + row +1
         elif role == COMMENT_OBJECT_ROLE:
-          return self.get(row)
+          return self.__d.get(row)
 
   @Slot(int, result=QObject)
-  def get(self, row):
-    try: return self.__d.data[- # Revert the list
-        (self.__d.pageIndex() + row +1)]
-    except IndexError: pass
+  def get(self, row): return self.__d.get(row)
 
   @Slot()
   def update(self):
@@ -5052,6 +6068,8 @@ class _ReferenceModel(object):
     q.dmmItemChanged.emit(q.dmmItem)
     q.amazonItemChanged.emit(q.amazonItem)
     q.dlsiteItemChanged.emit(q.dlsiteItem)
+    q.freemItemChanged.emit(q.freemItem)
+    q.steamItemChanged.emit(q.steamItem)
 
     self.invalidateActiveItem()
 
@@ -5079,7 +6097,7 @@ class _ReferenceModel(object):
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
             key=operator.attrgetter(col),
-            reverse=self.sortingReverse,)
+            reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
@@ -5237,7 +6255,7 @@ class ReferenceModel(QAbstractListModel):
       row = index.row()
       if row >= 0 and row < self.rowCount():
         if role == REF_NUM_ROLE:
-          return row +1
+          return row + 1
         elif role == REF_OBJECT_ROLE:
           return self.get(row)
 
@@ -5266,6 +6284,16 @@ class ReferenceModel(QAbstractListModel):
   #def showChart(self):
   #  d = self.__d
   #  main.manager().showReferenceChart(d.sourceData, d.md5)
+
+  steamItemChanged = Signal(QObject)
+  steamItem = Property(QObject,
+      lambda self: self.__d.findItem(type='steam'),
+      notify=steamItemChanged)
+
+  freemItemChanged = Signal(QObject)
+  freemItem = Property(QObject,
+      lambda self: self.__d.findItem(type='freem'),
+      notify=freemItemChanged)
 
   getchuItemChanged = Signal(QObject)
   getchuItem = Property(QObject,
@@ -5471,17 +6499,19 @@ class _DataManager(object):
     self.dirtyCommentsLocked = False  # bool
     #self.dirtyCommentsMutex = QMutex()
 
+    # Terms
     self.terms = []                 # [Term], not None
-    self._sortedTerms = None
+    #self._sortedTerms = None
     self._termsDirty = False
     self.dirtyTerms = set()         # set(Term)
     self.dirtyTermsLocked = False   # bool
+    self.updateTermsLocked = False  # bool
 
     self.termsEditable = False # disable editable by default
     self.termsInitialized = False # if the terms has initialized
 
-    self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
-    self._termMacros = None  # {unicode pattern:unicode repl} or None   indexed macros
+    #self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
+    #self._termMacros = None  # {unicode pattern:unicode repl} or None   indexed macros
 
     # References to modify
     #self._referencesDirty = False    # bool
@@ -5494,7 +6524,7 @@ class _DataManager(object):
 
     # Current game
     self.currentGame = None # class Game
-    self.currentGameids = [] # [long gameId] not None
+    self.currentGameIds = [] # [long gameId] not None
     self._currentGameObject = None # QObject
 
     # Game library, which is a list of games indexed by their md5, not null
@@ -5512,12 +6542,35 @@ class _DataManager(object):
 
     self._gameInfo = [] # [GameInfo]
 
-    self.nameItems = [] # [NameItem]
+    #self.nameItems = [] # [NameItem]
 
+    # Subtitles for the current game
+    #self.resetSubtitles()
+    self.subtitles = [] # [Subtitle]
+    self.subtitleIndex = {} # {long hash:[Subtitle]}
+    self.subtitleItemId = 0 # long
+    self.subtitleTimestamp = 0 # long
+
+
+    # Users
     self.users = {} # {long id:UserDigest}
 
     # Load user profile
     self._loadUser()
+
+  def resetSubtitles(self):
+    self.subtitleIndex = {} # {long hash:[Subtitle]}
+    self.subtitleItemId = 0 # long
+    self.subtitleTimestamp = 0 # long
+    self._clearSubtitles()
+
+  def _clearSubtitles(self):
+    if self.subtitles:
+      l = self.subtitles
+      self.subtitles = [] # [Subtitle]
+      if l:
+        for it in l:
+          it.releaseObject()
 
   def resetCharacters(self):
     self.characters = {'':Character(parent=self.q, ttsEnabled=True)}
@@ -5549,113 +6602,117 @@ class _DataManager(object):
 
   def clearTerms(self):
     if self.terms:
-      if self.termsInitialized:
-        for t in self.terms:
-          if t.parent():
-            t.setParent(None)
+      #if self.termsInitialized:
+      #  for t in self.terms:
+      #    if t.isInitialized():
+      #      try:
+      #        if t.parent():
+      #          t.setParent(None) # might raise if QObject has been deleted
+      #      except Exception, e:
+      #        dwarn(e)
       self.terms = []                 # [Term], not None
-      self.sortedTerms = None
+      #self.sortedTerms = None
 
-  def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
+  #def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
 
-  @property
-  def sortedTerms(self):
-    if self._sortedTerms is None:
-      if not self.terms:
-        self._sortedTerms = []
-      else:
-        l = (it for it in self.terms if not it.d.disabled and not it.d.deleted) # filtered
-        l = sorted(l, reverse=True, key=lambda it:
-              (len(it.d.pattern), it.d.private, it.d.special, it.d.id)) # it.regex  true is applied first
-        count = len(l)
-        for index, it in enumerate(l):
-          it.priority = count - index
-        self._sortedTerms = l
-    return self._sortedTerms
+  #@property
+  #def sortedTerms(self):
+  #  if self._sortedTerms is None:
+  #    if not self.terms:
+  #      self._sortedTerms = []
+  #    else:
+  #      l = (it for it in self.terms if not it.d.disabled and not it.d.deleted) # filtered
+  #      l = sorted(l, reverse=True, key=lambda it:
+  #            (len(it.d.pattern), it.d.private, it.d.special, it.d.id)) # it.regex  true is applied first
+  #      count = len(l)
+  #      for index, it in enumerate(l):
+  #        it.priority = count - index
+  #      self._sortedTerms = l
+  #  return self._sortedTerms
 
-  @sortedTerms.setter
-  def sortedTerms(self, v):
-    self._sortedTerms = v
-    self.clearTermTitles()
-    self.clearTermMacros()
+  #@sortedTerms.setter
+  #def sortedTerms(self, v):
+  #  self._sortedTerms = v
+  #  self.clearTermTitles()
+  #  self.clearTermMacros()
 
-  @property
-  def termTitles(self):
-    if self._termTitles is None:
-      self._termTitles = self._queryTermTitles()
-    return self._termTitles
+  #@property
+  #def termTitles(self):
+  #  if self._termTitles is None:
+  #    self._termTitles = self._queryTermTitles()
+  #  return self._termTitles
 
   #@termTitles.setter
   #def termTitles(self, v): self._termTitles = v
 
-  def clearTermTitles(self): self._termTitles = None
+  #def clearTermTitles(self): self._termTitles = None
 
-  def _queryTermTitles(self):
-    """Terms sorted by length and id
-    @return  OrderedDict{unicode from:unicode to} not None not empty
-    """
-    lang = self.user.language
-    zht = lang == 'zht'
-    q = termman.manager().filterTerms(self.q.iterTitleTerms(), lang)
-    l = [] # [long id, unicode pattern, unicode replacement]
-    ret = OrderedDict({'':''})
-    for t in q:
-      td = t.d
-      pat = td.pattern
-      repl = td.text
-      if zht and td.language == 'zhs':
-        pat = zhs2zht(pat)
-        if repl: # and self.convertsChinese:
-          repl = zhs2zht(repl)
-      l.append((td.id, pat, repl))
-    l.sort(key=lambda it:
-        (len(it[1]), it[0]))
-    for id,pat,repl in l:
-      ret[pat] = repl
-    return ret
+  #def _queryTermTitles(self):
+  #  """Terms sorted by length and id
+  #  @return  OrderedDict{unicode from:unicode to} not None not empty
+  #  """
+  #  lang = self.user.language
+  #  zht = lang == 'zht'
+  #  q = termman.manager().filterTerms(self.q.iterTitleTerms(), lang)
+  #  l = [] # [long id, unicode pattern, unicode replacement]
+  #  ret = OrderedDict({'':''})
+  #  for t in q:
+  #    td = t.d
+  #    pat = td.pattern
+  #    repl = td.text
+  #    if zht and td.language == 'zhs':
+  #      pat = zhs2zht(pat)
+  #      if repl: # and self.convertsChinese:
+  #        repl = zhs2zht(repl)
+  #    l.append((td.id, pat, repl))
+  #  l.sort(key=lambda it:
+  #      (len(it[1]), it[0]))
+  #  for id,pat,repl in l:
+  #    ret[pat] = repl
+  #  return ret
 
   # Macros
 
-  @property
-  def termMacros(self):
-    if self._termMacros is None:
-      self._termMacros = self._queryTermMacros()
-    return self._termMacros
+  #@property
+  #def termMacros(self):
+  #  if self._termMacros is None:
+  #    self._termMacros = self._queryTermMacros()
+  #  return self._termMacros
 
-  def _queryTermMacros(self):
-    """
-    @return  {unicode pattern:unicode repl} not None
-    """
-    ret = {t.d.pattern:t.d.text for t in
-      termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
-    MAX_COUNT = 1000
-    for count in xrange(1, MAX_COUNT):
-      dirty = False
-      for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
-        if text and defs.TERM_MACRO_BEGIN in text:
-          dirty = True
-          ok = False
-          for m in termman.RE_MACRO.finditer(text):
-            macro = m.group(1)
-            repl = ret.get(macro)
-            if repl:
-              text = text.replace("{{%s}}" % macro, repl)
-              ok = True
-            else:
-              dwarn("missing macro", macro, text)
-              ok = False
-              break
-          if ok:
-            ret[pattern] = text
-          else:
-            ret[pattern] = None # delete this pattern
-      if not dirty:
-        break
-    if count == MAX_COUNT - 1:
-      dwarn("recursive macro definition")
-    return {k:v for k,v in ret.iteritems() if v is not None}
+  #def _queryTermMacros(self):
+  #  """
+  #  @return  {unicode pattern:unicode repl} not None
+  #  """
+  #  ret = {t.d.pattern:t.d.text for t in
+  #    termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
+  #  MAX_COUNT = 1000
+  #  for count in xrange(1, MAX_COUNT):
+  #    dirty = False
+  #    for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
+  #      if text and defs.TERM_MACRO_BEGIN in text:
+  #        dirty = True
+  #        ok = False
+  #        for m in termman.RE_MACRO.finditer(text):
+  #          macro = m.group(1)
+  #          repl = ret.get(macro)
+  #          if repl:
+  #            text = text.replace("{{%s}}" % macro, repl)
+  #            ok = True
+  #          else:
+  #            dwarn("missing macro", macro, text)
+  #            ok = False
+  #            break
+  #        if ok:
+  #          ret[pattern] = text
+  #        else:
+  #          ret[pattern] = None # delete this pattern
+  #    if not dirty:
+  #      break
+  #  if count == MAX_COUNT - 1:
+  #    dwarn("recursive macro definition")
+  #  return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def clearTermMacros(self): self._termMacros = None
+  #def clearTermMacros(self): self._termMacros = None
 
   ## User ##
 
@@ -5814,12 +6871,15 @@ class _DataManager(object):
       g.visitCount += 1
       g.md5 = game.md5 # enforce md5
 
-      if game.id: g.id = game.id
-      if game.encoding: g.encoding = game.encoding
-      if game.language: g.language = game.language
+      for pty in 'id', 'itemId', 'encoding', 'language', 'launchLanguage', 'commentCount', 'visitTime', 'path', 'launchPath':
+        v = getattr(game, pty)
+        if v:
+          setattr(g, pty, v)
 
-      if game.visitTime: g.visitTime = game.visitTime
-      if game.commentCount: g.commentCount = game.commentCount
+      for pty in 'nameThreadDisabled', 'hookDisabled', 'threadKept', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'timeZoneEnabled':
+        v = getattr(game, pty)
+        if v is not None:
+          setattr(g, pty, v)
 
       if game.threadSignature:
         g.threadSignature = game.threadSignature
@@ -5829,46 +6889,15 @@ class _DataManager(object):
         g.nameThreadSignature = game.nameThreadSignature
         g.nameThreadName = game.nameThreadName
 
-      if game.nameThreadDisabled is not None:
-        g.nameThreadDisabled = game.nameThreadDisabled
-
-      if game.hookDisabled is not None:
-        g.hookDisabled = game.hookDisabled
-
       if game.deletedHook:
         g.deletedHook = game.deletedHook
       elif deleteHook and not g.deletedHook:
         g.deletedHook = g.hook
 
-      if game.threadKept is not None:
-        g.threadKept = game.threadKept
-
-      if game.removesRepeat is not None:
-        g.removesRepeat = game.removesRepeat
-
-      if game.ignoresRepeat is not None:
-        g.ignoresRepeat = game.ignoresRepeat
-
-      if game.keepsSpace is not None:
-        g.keepsSpace = game.keepsSpace
-
-      if game.timeZoneEnabled is not None:
-        g.timeZoneEnabled = game.timeZoneEnabled
-
       if deleteHook:
         g.hook = None
       elif game.hook:
         g.hook = game.hook
-
-      if game.path:
-        g.path = game.path
-
-      if game.launchPath:
-        g.launchPath = game.launchPath
-
-      # TODO: Broadcast the changes of itemId
-      if game.itemId:
-        g.itemId = game.itemId
 
       #g.otherThreads = game.otherThreads if game.otherThreads is not None else {}
       #elif game.otherThreads: # merge thread
@@ -5892,7 +6921,7 @@ class _DataManager(object):
 
     self.q.gamesChanged.emit()
 
-  def _touchGameFiles(self):
+  def touchGameFiles(self):
     self._gameFilesDirty = True
     self._saveGameFilesLater()
 
@@ -5977,7 +7006,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
       items = {} # {long itemId:GameItem}
       path = 0
       for event, elem in context:
@@ -5990,13 +7019,13 @@ class _DataManager(object):
           if path == 3: # grimoire/references/reference
             tag = elem.tag
             text = elem.text
-            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'banner', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
               setattr(e, tag, text)
             elif tag == 'keywords': # backward compatibility since 1386059148
               e.tags = text
-            elif tag in ('otome', 'okazu'):
+            elif tag in ('otome', 'ecchi', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount', 'easyScoreSum', 'easyScoreCount'):
+            elif tag in ('timestamp', 'fileSize', 'topicCount', 'annotCount', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')
@@ -6026,7 +7055,7 @@ class _DataManager(object):
   #    return
 
   #  try:
-  #    context = etree.iterparse(xmlfile, events=('start','end'))
+  #    context = etree.iterparse(xmlfile, events=('start', 'end'))
   #    digests = {} # {long itemId:ReferenceDigest}
   #    path = 0
   #    for event, elem in context:
@@ -6073,7 +7102,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
       files = {}
       path = 0
       for event, elem in context:
@@ -6204,7 +7233,7 @@ class _DataManager(object):
 
         for e in game:
           tag = e.tag
-          if tag in ('md5', 'path', 'launchPath', 'language', 'loader', 'encoding', 'userDefinedName', 'deletedHook'):
+          if tag in ('md5', 'path', 'launchPath', 'language', 'launchLanguage', 'loader', 'encoding', 'userDefinedName', 'deletedHook'):
             setattr(g, tag, e.text or '')
           #elif tag in ('itemId', 'commentsUpdateTime', 'refsUpdateTime', 'visitTime', 'visitCount', 'commentCount'):
           elif tag.endswith('Id') or tag.endswith('Count') or tag.endswith('Time'):
@@ -6271,7 +7300,7 @@ class _DataManager(object):
           if v:
             g.nameThreadName = v
 
-        if g.hook and g.threadName != defs.USER_DEFINED_THREAD_NAME:
+        if g.hook and g.threadName != defs.HCODE_THREAD_NAME:
           dwarn("ignore bad hook: id=%s, code=%s" % (g.id, g.hook))
           growl.notify('<br/>'.join((
             my.tr("Remove bad user-defined hcode"),
@@ -6282,14 +7311,14 @@ class _DataManager(object):
           g.hookDisabled = None
           #g.hookKept = None
 
-        if g.threadName in config.SINGLE_GAME_ENGINES and g.threadSignature != defs.SINGLE_ENGINE_SIGNATURE:
-          g.threadSignature = defs.SINGLE_ENGINE_SIGNATURE
-          dwarn("correct signature for single game engine: %s" % g.threadName)
-          growl.notify('<br/>'.join((
-            my.tr("Automatically correct text settings"),
-            "%s: %s" % (tr_("Engine"), g.threadName),
-            "%s: %s" % (tr_("Game"), g.name),
-          )))
+        #if g.threadName in config.SINGLE_GAME_ENGINES and g.threadSignature != defs.SINGLE_ENGINE_SIGNATURE:
+        #  g.threadSignature = defs.SINGLE_ENGINE_SIGNATURE
+        #  dwarn("correct signature for single game engine: %s" % g.threadName)
+        #  growl.notify('<br/>'.join((
+        #    my.tr("Automatically correct text settings"),
+        #    "%s: %s" % (tr_("Engine"), g.threadName),
+        #    "%s: %s" % (tr_("Game"), g.name),
+        #  )))
 
         if (g.removesRepeat or g.ignoresRepeat) and g.threadName in config.NOREPEAT_GAME_ENGINES:
           g.removesRepeat = g.ignoresRepeat = None
@@ -6355,7 +7384,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       users = {}
       path = 0
@@ -6458,75 +7487,73 @@ class _DataManager(object):
     for it in self.terms:
       yield it.d
 
-  def iterTermsWithType(self, type):
-    """
-    @param  type  str
-    @yield  Term
-    """
-    try: ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
-    except AttributeError: ids = []
-    for t in self.sortedTerms:
-      td = t.d # To improve performance
-      if not td.disabled and not td.deleted and td.type == type and (not td.special or
-          ids and td.gameId and td.gameId in ids):
-        yield t
+  #def iterTermsWithType(self, type):
+  #  """
+  #  @param  type  str
+  #  @yield  Term
+  #  """
+  #  ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
+  #  for t in self.sortedTerms:
+  #    td = t.d # To improve performance
+  #    if not td.disabled and not td.deleted and td.type == type and (not td.special or
+  #        ids and td.gameId and td.gameId in ids):
+  #      yield t
 
-  def iterTermsWithTypes(self, types):
-    """
-    @param  types  [str]
-    @yield  Term
-    """
-    try: ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
-    except AttributeError: ids = []
-    for t in self.sortedTerms:
-      td = t.d # To improve performance
-      if not td.disabled and not td.deleted and td.type in types and (not td.special or
-          ids and td.gameId and td.gameId in ids):
-        yield t
+  #def iterTermsWithTypes(self, types):
+  #  """
+  #  @param  types  [str]
+  #  @yield  Term
+  #  """
+  #  ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
+  #  for t in self.sortedTerms:
+  #    td = t.d # To improve performance
+  #    if not td.disabled and not td.deleted and td.type in types and (not td.special or
+  #        ids and td.gameId and td.gameId in ids):
+  #      yield t
 
   ## Character name ##
 
-  def updateNameItems(self):
-    #if not gid or gameId and gameId != gid:
-    #  dwarn("game changed")
-    #  return
-    if self.nameItems:
-      dwarn("name items already exist")
-      return
-    mm = mecabman.manager()
-    if not mm.isEnabled():
-      dwarn("mecab is not enabled")
-      return
-    dprint("enter")
-    growl.msg(my.tr("Searching for game character names") + " ...")
-    game = self.currentGame
-    if game and game.itemId:
-      info = self.q.currentGameInfo()
-      if info and info.itemId == game.itemId:
-        l = info.characters # may surrender event cycles
-        if l:
-          if self.nameItems:
-            dwarn("leave: name items already exist")
-            return
-          growl.msg(my.tr("Found {0} game characters").format(len(l)))
-          #names = ((kw['name'],kw['yomi']) for kw in l)
-          names = [(kw['name'],kw['yomi']) for kw in l]
-          nm = nameman.manager()
-          self.nameItems = nm.parseNameItems(names)
-
-          itemId = game.itemId
-          dicpath = nm.cachedMeCabDic(itemId)
-          if not dicpath:
-            dicpath = skthreads.runsync(partial(
-                nm.compileMeCabDic,
-                names,
-                itemId))
-          if dicpath and not mm.userDictionary():
-            mm.setUserDictionary(dicpath)
-          dprint("leave: item count = %i" % len(self.nameItems))
-          return
-    growl.msg(my.tr("Game character names not found"))
-    dprint("leave: no items")
+  #def updateNameItems(self):
+  #  #if not gid or gameId and gameId != gid:
+  #  #  dwarn("game changed")
+  #  #  return
+  #  if self.nameItems:
+  #    dwarn("name items already exist")
+  #    return
+  #  mm = mecabman.manager()
+  #  if not mm.isEnabled():
+  #    dwarn("mecab is not enabled")
+  #    return
+  #  dprint("enter")
+  #  growl.msg(my.tr("Searching for game character names") + " ...")
+  #  game = self.currentGame
+  #  if game and game.itemId:
+  #    info = self.q.currentGameInfo()
+  #    if info and info.itemId == game.itemId:
+  #      l = info.characters # may surrender event cycles
+  #      if l:
+  #        if self.nameItems:
+  #          dwarn("leave: name items already exist")
+  #          return
+  #        growl.msg(my.tr("Found {0} game characters").format(len(l)))
+  #        #names = ((kw['name'],kw['yomi']) for kw in l)
+  #        names = [(kw['name'],kw['yomi']) for kw in l]
+  #        nm = nameman.manager()
+  #        self.nameItems = nm.parseNameItems(names)
+  #
+  #        itemId = game.itemId
+  #        dicpath = nm.cachedMeCabDic(itemId)
+  #        if not dicpath:
+  #          dicpath = skthreads.runsync(partial(
+  #              nm.compileMeCabDic,
+  #              names,
+  #              itemId))
+  #        if dicpath and not mm.userDictionary():
+  #          mm.setUserDictionary(dicpath)
+  #        dprint("leave: item count = %i" % len(self.nameItems))
+  #        return
+  #  growl.msg(my.tr("Game character names not found"))
+  #  dprint("leave: no items")
 
   def _updateContexts(self):
     self.contexts = {h:c[0].context for h,c in self.comments.iteritems()} if self.comments else {}
@@ -6546,6 +7573,352 @@ class _DataManager(object):
             d[h] = [c]
     self.comments2 = d
     dprint("leave: len = %i" % len(d))
+
+  # Subtitles
+
+  def updateSubtitles(self, itemId, reset=False):
+    """
+    @param  itemId  long
+    @param* reset  bool
+    """
+    #self.resetSubtitles()
+    if self.subtitles:
+      subTimestamp = self.subtitleTimestamp
+    else:
+      subTimestamp = 0
+    now = self.subtitleTimestamp = skdatetime.current_unixtime()
+    self.subtitleItemId = itemId
+    skthreads.runasynclater(
+        partial(self._updateSubtitles, itemId, now, self.subtitles, subTimestamp, reset),
+        100) # reload subtitles after 100 ms
+
+  def _updateSubtitles(self, itemId, timestamp, subs, subTimestamp, reset):
+    """This function runs in parallel
+    @param  itemId  long
+    @param  timestamp  long  now
+    @param  subs  [Subtitle]
+    @param  subTimestamp  long
+    @param  reset bool
+    @return  {long:Subtitle}
+    """
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    lang = self.user.language
+
+    langs = ['zht', 'zhs'] if lang.startswith('zh') else [lang]
+    if langs[0] != 'en' and 'en' not in settings.global_().blockedLanguages():
+      langs.append('en')
+
+    gameLang = 'ja' # TODO: allow change gamelang
+
+    changed = False
+    if reset or not subTimestamp:
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      subs = netman.manager().querySubtitles(itemId=itemId, langs=langs, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      changed = True
+      subTimestamp = timestamp
+    else:
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      newsubs = netman.manager().querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      if newsubs:
+        changed = True
+        subTimestamp = timestamp
+        self._mergeSubtitles(subs, newsubs)
+
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    if subs:
+      self._clearSubtitles()
+      self.subtitles = subs
+      self.subtitleIndex = self._createSubtitleIndex(subs)
+      growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
+    else:
+      growl.msg(my.tr("Subtitles not found"), async=True)
+    if changed:
+      self._saveXmlSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+      self._saveYamlSubtitles(subs, timestamp, itemId, lang, gameLang)
+
+  def reloadSubtitles(self, itemId):
+    """
+    @param  itemId  long
+    """
+    self.resetSubtitles()
+    if itemId:
+      item = manager().queryGameItem(id=itemId)
+      if item and item.subtitleCount:
+        now = self.subtitleTimestamp = skdatetime.current_unixtime()
+        self.subtitleItemId = itemId
+        skthreads.runasync(partial(self._reloadSubtitles, itemId, now))
+
+  def _reloadSubtitles(self, itemId, timestamp):
+    """This function runs in parallel
+    @param  itemId  long
+    @param  timestamp  long
+    @return  {long:Subtitle}
+    """
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    lang = self.user.language
+
+    langs = ['zht', 'zhs'] if lang.startswith('zh') else [lang]
+    if langs[0] != 'en' and 'en' not in settings.global_().blockedLanguages():
+      langs.append('en')
+
+    gameLang = 'ja' # TODO: allow change gamelang
+
+    subs, subTimestamp = self._loadXmlSubtitles(itemId, lang, gameLang)
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    changed = False
+    if not subs or not subTimestamp:
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      subs = netman.manager().querySubtitles(itemId=itemId, langs=langs, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      changed = True
+      subTimestamp = timestamp
+    elif timestamp > config.APP_UPDATE_SUBS_INTERVAL + subTimestamp:
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      newsubs = netman.manager().querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      if newsubs:
+        changed = True
+        subTimestamp = timestamp
+        self._mergeSubtitles(subs, newsubs)
+
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    subIndex = self._createSubtitleIndex(subs)
+
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    self._clearSubtitles()
+    self.subtitles = subs or []
+    self.subtitleIndex = subIndex
+    self.subtitleTimestamp = subTimestamp
+
+    if subs:
+      growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
+    else:
+      growl.msg(my.tr("Subtitles not found"), async=True)
+    if changed and subs:
+      self._saveXmlSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+      self._saveYamlSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+
+  @staticmethod
+  def _createSubtitleIndex(subs):
+    """
+    @param  subs  [Subtitle]
+    @return  {long hash:[Subtitle]}
+    """
+    ret = {}
+    if subs:
+      for s in subs:
+        h = hashutil.hashtext(s.text)
+        l = ret.get(h)
+        if l:
+          l.append(s)
+        else:
+          ret[h] = [s]
+    return ret
+
+  @staticmethod
+  def _saveXmlSubtitles(subs, timestamp, itemId, subLang, gameLang):
+    """
+    @param  subs  [Subtitle]
+    @param  itemId  long
+    @param  subLang  str
+    @param* gameLang  str
+    @return  [Subtitle], timestamp
+    """
+    xmlfile = rc.subs_yaml_path(itemId, subLang, gameLang, fmt='xml')
+    dprint("save modified subtitles to %s" % xmlfile)
+
+    data = rc.jinja_template('xml/subs').render({
+      'subs': subs,
+      'timestamp': timestamp,
+      'now': skdatetime.timestamp2datetime(timestamp),
+    })
+    ok = skfileio.writefile(xmlfile, data)
+    if ok:
+      dprint("pass: xml = %s" % xmlfile)
+    else:
+      dwarn("failed: xml = %s" % xmlfile)
+
+  @staticmethod
+  def _saveYamlSubtitles(subs, timestamp, itemId, subLang, gameLang):
+    """
+    @param  subs  [Subtitle]
+    @param  itemId  long
+    @param  subLang  str
+    @param* gameLang  str
+    @return  [Subtitle], timestamp
+    """
+    from jinjay.escape import ystr
+    yamlfile = rc.subs_yaml_path(itemId, subLang, gameLang)
+    dprint("save modified subtitles to %s" % yamlfile)
+
+    data = rc.jinja_template('yaml/subs').render({
+      'ys': ystr,
+      'subs': subs,
+      'subCount': len(subs),
+      'timestamp': timestamp,
+      'now': skdatetime.timestamp2datetime(timestamp),
+      'gameId': itemId,
+      'options': {
+        'subLang': subLang,
+        'textLang': gameLang,
+      }
+    })
+    ok = skfileio.writefile(yamlfile, data)
+    if ok:
+      dprint("pass: yaml = %s" % yamlfile)
+    else:
+      dwarn("failed: yaml = %s" % yamlfile)
+
+    # Python yaml is using too many memory +100MB
+
+    #lines = [{
+    #  'gameId': itemId,
+    #  'textLang': gameLang,
+    #  'subLang': subLang,
+    #  'timestamp': timestamp,
+    #}]
+    #for s in subs:
+    #  l = {} # enforce order
+    #  l['id'] = s.textId
+    #  for k in (
+    #      'text', 'textName', 'textLang', 'textTime',
+    #      'sub', 'subName', 'subLang', 'subTime',
+    #      'userId', 'userName',
+    #    ):
+    #    v = getattr(s, k)
+    #    if v:
+    #      l[k] = v
+    #  lines.append(l)
+    #skyaml.writefile(lines, path)
+
+  @staticmethod
+  def _mergeSubtitles(subs, newsubs):
+    """
+    @param  subs  [Subtitle]
+    @param  newsubs  [Subtitle]
+    """
+    index = {it.textId:i for i,it in enumerate(subs)}
+    for s in newsubs:
+      i = index.get(s.textId)
+      if i:
+        t = subs[i]
+        subs[i] = s
+        t.releaseObjectLater()
+      else:
+        subs.append(s)
+
+  @staticmethod
+  def _loadXmlSubtitles(itemId, subLang, gameLang):
+    """
+    @param  itemId  long
+    @param  subLang  str
+    @param* gameLang  str
+    @return  [Subtitle], timestamp
+    """
+    xmlfile = rc.subs_yaml_path(itemId, subLang, gameLang, fmt='xml')
+    if not os.path.exists(xmlfile):
+      #dprint("pass: xml not found, %s" % xmlfile)
+      dprint("pass: xml not found")
+      return (), 0
+
+    try:
+      timestamp = 0
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
+      ret = []
+      path = 0
+      for event, elem in context:
+        if event == 'start':
+          path += 1
+          if path == 2: # grimoire/trs
+            timestamp = elem.get('timestamp')
+            if not timestamp:
+              raise ValueError("missing xml timestamp")
+            timestamp = int(timestamp)
+          elif path == 3: # grimoire/trs/tr
+            kw = {}
+        else:
+          path -= 1
+          if path == 3: # grimoire/trs/tr
+            tag = elem.tag
+            text = elem.text
+            if tag in ('text', 'textName', 'textLang', 'sub', 'subName', 'subLang'):
+              kw[tag] = text or ''
+            elif tag in ('userId', 'textId', 'textTime', 'subTime'):
+              kw[tag] = int(text)
+            #else:
+            #  kw[tag] = text or ''
+
+          elif path == 2: # grimoire/trs
+            s = Subtitle(**kw)
+            ret.append(s)
+
+      #self.comments, self.context = comments, contexts
+      dprint("pass: load %i characters from %s" % (len(ret), xmlfile))
+      return ret, timestamp
+
+    except etree.ParseError, e:
+      dwarn("xml parse error", e.args)
+    except (TypeError, ValueError, AttributeError), e:
+      dwarn("xml malformat", e.args)
+    except Exception, e:
+      derror(e)
+
+    dwarn("warning: failed to load xml from %s" % xmlfile)
+    return (), 0
+
+  #@staticmethod
+  #def _loadYamlSubtitles(itemId, subLang, gameLang): # too slow to use
+  #  """
+  #  @param  itemId  long
+  #  @param  subLang  str
+  #  @param* gameLang  str
+  #  @return  [Subtitle], timestamp
+  #  """
+  #  path = rc.subs_yaml_path(itemId, subLang, gameLang)
+  #  if os.path.exists(path):
+  #    try:
+  #      l = yaml.load(file(path, 'r'))
+  #      options = l.pop(0)
+  #      subs = []
+  #      for it in l:
+  #        s = Subtitle(
+  #          userId=it.get('userId') or 0,
+  #          textId=it.get('id') or 0,
+  #          text=it.get('text') or '',
+  #          textName=it.get('textName') or '',
+  #          textLang=it.get('textLang') or '',
+  #          textTime=it.get('textTime') or 0,
+  #          sub=it.get('sub') or '',
+  #          subName=it.get('subName') or '',
+  #          subLang=it.get('subLang') or '',
+  #          subTime=it.get('subTime') or 0,
+  #        )
+  #        if s.text and s.sub:
+  #          subs.append(s)
+  #
+  #      dprint("pass: load %i subs from %s" % (len(subs), path))
+  #      return subs, options.get('timestamp') or 0
+  #    except Exception, e:
+  #      dwarn(e)
+  #  return (), 0
 
   def reloadComments(self, online=True):
     self.contexts = {}
@@ -6660,7 +8033,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       ret = {} #if hash else []
       path = 0
@@ -6711,7 +8084,6 @@ class _DataManager(object):
   def saveGameItems(self):
     if not self.gameItems: #or not self._gameItemsDirty:
       return
-
     xmlfile = rc.xml_path('gameitems')
     data = rc.jinja_template('xml/gameitems').render({
       'now': datetime.now(),
@@ -6756,7 +8128,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       ret = [] #if hash else []
       path = 0
@@ -6860,7 +8232,7 @@ class _DataManager(object):
     @return ({long hash:Comment} if hash else [Comment]) or None
     """
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       ret = {} if hash else []
       path = 0
@@ -6943,18 +8315,19 @@ class _DataManager(object):
       self.dirtyCommentsLocked = True
       nm = netman.manager()
       for c in tuple(self.dirtyComments): # copy dirty comments into a new list
+        cd = c.d
         async = not main.EXITED
         ok = True
-        if c.id:
+        if cd.id:
           ok = nm.updateComment(c, self.user.name, self.user.password, async=async)
-        elif not c.deleted:
+        elif not cd.deleted:
           ok = nm.submitComment(c, self.user.name, self.user.password, md5=c.gameMd5, async=async)
         if ok:
           c.clearDirtyProperties()
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
-            c.text,
+            cd.text,
           )))
       #self.dirtyCommentsMutex.unlock()
       self.dirtyCommentsLocked = False
@@ -7004,7 +8377,7 @@ class _DataManager(object):
     try:
       g = self.gameFiles[id]
       g.itemId = itemId
-      self._touchGameFiles()
+      self.touchGameFiles()
     except KeyError: pass
 
     if g:
@@ -7044,7 +8417,7 @@ class _DataManager(object):
           ok = nm.updateReference(t, self.user.name, self.user.password, async=async)
         elif not t.deleted:
           ok = nm.submitReference(t, self.user.name, self.user.password, async=async)
-        if ok:
+        if ok and isinstance(ok, tuple):
           t.clearDirtyProperties()
           gameId, itemId = ok
           if gameId:
@@ -7093,7 +8466,7 @@ class _DataManager(object):
     try: self._saveTermsTimer.start()
     except AttributeError:
       t = self._saveTermsTimer = QTimer(self.q)
-      t.setInterval(60 * 1000) # in 1 minute
+      t.setInterval(30 * 1000) # in 30 seconds
       t.setSingleShot(True)
       t.timeout.connect(self.saveTerms)
       t.start()
@@ -7122,30 +8495,31 @@ class _DataManager(object):
       self.dirtyTermsLocked = True
       nm = netman.manager()
       for t in tuple(self.dirtyTerms): # copy dirty terms into a new list
+        td = t.d
         async = not main.EXITED
         ok = True
-        if t.id:
+        if td.id:
           ok = nm.updateTerm(t, self.user.name, self.user.password, async=async)
-        elif not t.deleted:
+        elif not td.deleted:
           ok = nm.submitTerm(t, self.user.name, self.user.password, async=async)
         if ok:
           t.clearDirtyProperties()
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
-            t.text,
+            td.text,
           )))
       #self.dirtyTermsMutex.unlock()
       self.dirtyTermsLocked = False
     dprint("leave")
 
-  def saveTerms(self):
+  def saveTerms(self): # -> bool
     if not self._termsDirty or not self.terms:
-      return
+      return False
     if self.dirtyTermsLocked:
       dprint("warning: dirty terms are locked, save later")
       self._saveTermsLater()
-      return
+      return False
     xmlfile = rc.xml_path('terms')
     data = rc.jinja_template('xml/terms').render({
       'now': datetime.now(),
@@ -7153,10 +8527,10 @@ class _DataManager(object):
     })
     ok = skfileio.writefile(xmlfile, data)
     if ok:
-      settings.global_().setTermsTime(skdatetime.current_unixtime())
       dprint("pass: xml = %s" % xmlfile)
     else:
       dwarn("failed: xml = %s" % xmlfile)
+    return ok
 
   def reloadTerms(self):
     xmlfile = rc.xml_path('terms')
@@ -7168,12 +8542,25 @@ class _DataManager(object):
       #self.q.gamesChanged.emit()
       return
 
+    OLD_TYPES = {
+      'escape': 'trans',
+      'source': 'input',
+      'target': 'output',
+      #'name': 'name',
+      #'yomi': 'yomi',
+      'title': 'suffix',
+      'origin': 'game',
+      'speech': 'tts',
+      'ocr': 'ocr',
+      #'macro': 'macro',
+    }
+
     try:
       #tree = etree.parse(xmlfile)
       #root = tree.getroot()
       init = self.termsEditable # bool
 
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       terms = []
       path = 0
@@ -7181,13 +8568,16 @@ class _DataManager(object):
         if event == 'start':
           path += 1
           if path == 3: # grimoire/terms/term
+            type_ = elem.get('type')
+            if type_:
+              type_ = OLD_TYPES.get(type_) or type_
             kw = {
               #'gameId': 0,
               #'text': "",
               #'pattern': "",
               #'special': False,
               #'regex': False,
-              ##'ignoresCase': False,
+              #'icase': False,
               ##'bbcode': False,
               #'comment': "",
               #'updateComment': "",
@@ -7195,7 +8585,7 @@ class _DataManager(object):
               #'updateUserId': 0,
 
               'id': int(elem.get('id')),
-              'type': elem.get('type'),
+              'type': type_,
               'disabled': elem.get('disabled') == 'true',
             }
         else:
@@ -7203,12 +8593,12 @@ class _DataManager(object):
           if path == 3: # grimoire/terms/term
             tag = elem.tag
             text = elem.text
-            if tag in ('language', 'pattern', 'text', 'comment', 'updateComment'):
+            if tag in ('language', 'sourceLanguage', 'host', 'pattern', 'text', 'comment', 'updateComment'):
               kw[tag] = text or ''
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):
               kw[tag] = int(text)
-            elif tag in ('special', 'private', 'hentai', 'regex'):
+            elif tag in ('special', 'private', 'hentai', 'regex', 'icase'):
               kw[tag] = text == 'true'
 
           elif path == 2 and kw['type'] in Term.TYPES:
@@ -7323,8 +8713,8 @@ class DataManager(QObject):
     ss.userGenderChanged.connect(d.saveUserGender)
     ss.userColorChanged.connect(d.saveUserColor)
 
-    ss.userLanguageChanged.connect(d.clearTermTitles)
-    ss.userLanguageChanged.connect(d.clearNameItems)
+    #ss.userLanguageChanged.connect(d.clearTermTitles)
+    #ss.userLanguageChanged.connect(d.clearNameItems)
 
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(d.submitDirtyComments)
@@ -7474,6 +8864,45 @@ class DataManager(QObject):
   #    #  it.imageUrl
   #  dprint("leave")
 
+  # Subtitles
+
+  def clearSubtitles(self):
+    self.__d.resetSubtitles()
+
+  def querySubtitles(self, hash):
+    """
+    @param  hash  long
+    @return  [Subtitle] or None
+    """
+    return self.__d.subtitleIndex.get(hash)
+
+  def queryBestSubtitle(self, hash, text=""):
+    """
+    @param  hash  long
+    @param* text  unicode
+    @return  Subtitle or None
+    """
+    l = self.__d.subtitleIndex.get(hash)
+    if l:
+      for sub in l:
+        if sub.equalText(text, exact=True):
+          return sub
+      return l[0]
+
+  def hasSubtitles(self): # -> bool
+    return bool(self.__d.subtitleIndex)
+
+  def updateSubtitles(self, reset=False):
+    itemId = self.currentGameItemId()
+    if itemId:
+      item = self.queryGameItem(id=itemId)
+      if item and item.subtitleCount:
+        self.__d.updateSubtitles(itemId, reset=reset)
+        return
+    growl.notify(my.tr("Subtitles not found"))
+
+  # Users
+
   def queryUser(self, id=0, name=''):
     """
     @param* id  int
@@ -7481,16 +8910,31 @@ class DataManager(QObject):
     @return  User or None
     """
     d = self.__d
-    if id and id == d.user.id or name and name == d.user.name:
-      return d.user
-    elif id == GUEST_USER_ID:
+    if id == GUEST_USER_ID:
       return GUEST
+    elif id and id == d.user.id or name and name == d.user.name:
+      return d.user
     elif id:
       return d.users.get(id)
     elif name:
       for it in d.users.itervalues():
         if it.name == name:
           return it
+
+  def queryUserName(self, id):
+    """
+    @param* id  int
+    @return  name  str or None
+    """
+    d = self.__d
+    if id == GUEST_USER_ID:
+      return GUEST.name
+    elif id and id == d.user.id:
+      return d.user.name
+    else:
+      u = d.users.get(id)
+      if u:
+        return u.name
 
   def queryUserColor(self, *args, **kwargs):
     """
@@ -7663,7 +9107,14 @@ class DataManager(QObject):
     @return  str not None
     """
     g = self.queryGameInfo(**kwargs)
-    return g.imageUrl0 if g and g.hasGoodImage0() else ''
+    return g.imageUrl0 if g else ''
+
+  def queryGameBackgroundImageUrl(self, **kwargs):
+    """
+    @return  str not None
+    """
+    g = self.queryGameInfo(**kwargs)
+    return g.imageUrl0 if g and g.imageFitsBackground0() else ''
 
   def queryGameFileName(self, id=None, md5=None):
     """
@@ -7826,15 +9277,34 @@ class DataManager(QObject):
           it.init(self)
       self.termsEditableChanged.emit(t)
 
-  def updateTerms(self):
-    if netman.manager().isOnline():
+  def updateTerms(self, reset=False):
+    """
+    @param* reset  whether do incremental update
+    """
+    d = self.__d
+    if d.updateTermsLocked:
+      growl.notify(my.tr("Waiting for dictionary update") + " ...")
+    elif netman.manager().isOnline():
+      d.updateTermsLocked = True
       dprint("enter")
-      growl.msg(my.tr("Updating dictionary terms online") + " ...")
-      d = self.__d
+      if reset:
+        growl.msg(my.tr("Redownload the entire dictionary terms") + " ...")
+      else:
+        growl.msg(my.tr("Update dictionary terms incrementally") + " ...")
 
       editable = d.termsEditable
-      l = netman.manager().getTerms(d.user.name, d.user.password,
-          init=editable, parent=self)
+      ss = settings.global_()
+      updateTime = ss.termsTime()
+      now = skdatetime.current_unixtime()
+
+      l = d.terms
+      nm = netman.manager()
+      incremental = not reset and updateTime and l # bool
+      if incremental:
+        l = nm.mergeTerms(l, updateTime,
+            d.user.name, d.user.password, init=editable) #, parent=self)
+      else:
+        l = nm.getTerms(d.user.name, d.user.password, init=editable) #, parent=self)
       if l:
         if not editable and editable != d.termsEditable:
           for it in l:
@@ -7848,12 +9318,19 @@ class DataManager(QObject):
         dprint("term count = %i" % len(d.terms))
         d.touchTerms()
         d.invalidateTerms()
+        #with SkProfiler(): # 12/8/2014: 0.7240298 seconds
+        if d.saveTerms():
+          ss.setTermsTime(now)
         growl.msg(my.tr("Found {0} terms").format(len(d.terms)))
+      elif incremental and l == []:
+        growl.msg(my.tr("No changes found for Shared Dictionary"))
+        ss.setTermsTime(now)
       else:
         growl.warn('<br/>'.join((
           my.tr("Failed to download terms online"),
           my.tr("Something might be wrong with the Internet connection"),
         )))
+      d.updateTermsLocked = False
       dprint("leave")
 
   #def updateTranslationScripts(self):
@@ -7941,17 +9418,17 @@ class DataManager(QObject):
     """
     return self.__d.gameInfo
 
-  def hasNameItems(self):
-    """
-    @return  bool
-    """
-    return bool(self.__d.nameItems)
+  #def hasNameItems(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return bool(self.__d.nameItems)
 
-  def iterNameItems(self):
-    """
-    @return  [NameItems] not None
-    """
-    return self.__d.nameItems
+  #def iterNameItems(self):
+  #  """
+  #  @return  [NameItems] not None
+  #  """
+  #  return self.__d.nameItems
 
   def queryGameInfo(self, id=None, md5=None, itemId=None, cache=True):
     """
@@ -8081,28 +9558,47 @@ class DataManager(QObject):
     @param  md5  str
     """
     nm = netman.manager()
-    if not nm.isOnline():
-      dwarn("cannot add new game when offline");
-      return
+    #if not nm.isOnline():
+    #  dwarn("cannot add new game when offline");
+    #  return
     if not path:
       dwarn("missing path");
       return
+
+    import procutil
+    if procutil.is_blocked_process_path(path):
+      dwarn("blocked file name")
+      growl.warn(my.tr("Please do not add non-game program to VNR!"))
+      return
+
     if not md5:
       np = osutil.normalize_path(path)
       md5 = hashutil.md5sum(np)
       if not md5:
         dwarn("failed to hash game executable")
+        growl.warn(my.tr("Failed to read game executable"))
         return
     d = self.__d
     if md5 in d.games:
       dwarn("game md5 already exists")
+      growl.notify(my.tr("The game already exists"))
       return
-    growl.msg(my.tr("Searching game information online") + " ...")
 
-    g = netman.manager().queryGame(md5=md5)
+    g = None
+    if nm.isOnline():
+      growl.msg(my.tr("Searching game information online") + " ...")
+      g = nm.queryGame(md5=md5)
     if not g:
-      growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
-      return
+      growl.notify("<br/>".join((
+          my.tr("It seems to be an unknown game."),
+          my.tr("Please manually adjust Text Settings after launching the game."))))
+      g = Game.createEmptyGame()
+
+    g.md5 = md5
+
+    fileName = os.path.basename(path)
+    if not g.names['file']:
+      g.names['file'].append(fileName)
 
     g.visitTime = skdatetime.current_unixtime()
     g.visitCount = 1
@@ -8112,14 +9608,39 @@ class DataManager(QObject):
     d.games[md5] = g
     d.touchGames()
 
+  def increaseGameTopicCount(self, itemId):
+    """
+    @param  itemId  long
+    """
+    item = self.queryGameItem(id=itemId)
+    if item:
+      item.topicCount += 1
+      self.__d.touchGameFiles()
+
+  def addGameScore(self, itemId, ecchiScore=None, overallScore=None):
+    """
+    @param  itemId  long
+    @param* ecchiScore  int or None
+    @param* overallScore  int or None
+    """
+    item = self.queryGameItem(id=itemId)
+    if item:
+      if ecchiScore is not None:
+        item.ecchiScoreCount += 1
+        item.ecchiScoreSum += ecchiScore
+      if overallScore is not None:
+        item.overallScoreCount += 1
+        item.overallScoreSum += overallScore
+      self.__d.touchGameFiles()
+
   def loadGame(self, game):
-    d  = self.__d
+    d = self.__d
     d.saveComments()
     d.currentGame = None
     d.currentGameObject = None
     d.currentGameIds = []
-    d.clearTermTitles()
-    d.clearNameItems()
+    #d.clearTermTitles()
+    #d.clearNameItems()
     #mecabman.manager().clearDictionary()
     if not game:
       return
@@ -8165,13 +9686,14 @@ class DataManager(QObject):
     dprint("load comment online = %s" % online)
     d.reloadCharacters()
     d.reloadComments(online=online)
+    d.reloadSubtitles(g.itemId)
     self.currentGameChanged.emit()
 
     #gid = self.currentGameId()
     #if gid:
-    if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
-      dprint("update game-specicfic translation")
-      skevents.runlater(d.updateNameItems, 3000) # delay a little
+    #if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
+    #  dprint("update game-specicfic translation")
+    #  skevents.runlater(d.updateNameItems, 3000) # delay a little
 
   def reloadComments(self):
     d = self.__d
@@ -8196,7 +9718,7 @@ class DataManager(QObject):
       return
 
     if (game.id and game.id == self.currentGameId() or
-        gamd.md5 and game.md5 == self.currentGameMd5()):
+        game.md5 and game.md5 == self.currentGameMd5()):
       g = d.currentGame = d.games[game.md5]
       d.currentGameObject = None
       d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id]
@@ -8238,9 +9760,43 @@ class DataManager(QObject):
     self.__d.touchGames()
     #self.__d.backupGamesXmlLater()
 
+  def setGameLanguage(self, language, md5):
+    """Either id or md5 should be given
+    @param  language  str not None
+    @param  md5  str
+    """
+    g = self.__d.games.get(md5)
+    if not g:
+      growl.warn('<br/>'.join((
+        my.tr("The game does not exist. Did you delete it?"),
+        path,
+      )))
+      return
+    if g.language == language:
+      return
+    g.language = language
+    self.__d.touchGames()
+
+  def setGameLaunchLanguage(self, language, md5):
+    """Either id or md5 should be given
+    @param  language  str not None
+    @param  md5  str
+    """
+    g = self.__d.games.get(md5)
+    if not g:
+      growl.warn('<br/>'.join((
+        my.tr("The game does not exist. Did you delete it?"),
+        path,
+      )))
+      return
+    if g.launchLanguage == language:
+      return
+    g.launchLanguage = language
+    self.__d.touchGames()
+
   def setGameLaunchPath(self, path, md5):
     """Either id or md5 should be given
-    @param  path unicode not None
+    @param  path  unicode not None
     @param  md5  str
     """
     g = self.__d.games.get(md5)
@@ -8653,53 +10209,28 @@ class DataManager(QObject):
   def hasTerms(self): return bool(self.__d.terms)
 
   def terms(self):
-    """
+    """Used by TermModel
     @return  [Term]
     """
     return self.__d.terms
-  #def termData(self): return list(self.__d.iterTermData())
 
-  def termTitles(self):
-    """NOT escaped
-    @return  {unicode source:unicode translation} not None
+  def queryTerm(self, id):
     """
-    return self.__d.termTitles
+    @param  id  long
+    @return  Term
+    """
+    for it in self.__d.terms:
+      if it.d.id == id:
+        return it
 
-  def hasTermTitles(self):
-    return len(self.__d.termTitles) > 1
-
-  def iterTargetTerms(self):
-    return self.__d.iterTermsWithType('target')
-  def iterOriginTerms(self):
-    return self.__d.iterTermsWithType('origin')
-  def iterSpeechTerms(self):
-    return self.__d.iterTermsWithType('speech')
-  def iterOcrTerms(self):
-    return self.__d.iterTermsWithType('ocr')
-  def iterTitleTerms(self):
-    return self.__d.iterTermsWithType('title')
-  def iterMacroTerms(self):
-    return self.__d.iterTermsWithType('macro')
-  #def iterSourceTerms(self):
-  #  return self.__d.iterTermsWithType('source')
-  def iterWordTerms(self):
-    return self.__d.iterTermsWithTypes(('name', 'speech'))
-  def iterFuriTerms(self):
-    return self.__d.iterTermsWithType('speech')
-  def iterLatinSourceTerms(self):
-    return self.__d.iterTermsWithTypes(('source', 'name'))
-  def iterSourceTerms(self):
-    d = self.__d
-    lang = d.user.language
-    return  (d.iterTermsWithType('source')
-        if config.is_asian_language(lang) else
-        d.iterTermsWithTypes(('source', 'name')))
-  def iterEscapeTerms(self):
-    d = self.__d
-    lang = d.user.language
-    return  (d.iterTermsWithType('escape')
-        if config.is_latin_language(lang) else
-        d.iterTermsWithTypes(('escape', 'name')))
+  def queryTermData(self, *args, **kwargs):
+    """
+    @param  id  long
+    @return  _Term
+    """
+    t = self.queryTerm(*args, **kwargs)
+    if t:
+      return t.d
 
   def removeTerm(self, term):
     """
@@ -8712,10 +10243,15 @@ class DataManager(QObject):
       return
 
     #term.deleted = True
-    try: d._sortedTerms.remove(term)
-    except: pass
-    if term.parent():
-      skevents.runlater(partial(term.setParent, None), 90000) # after 1.5 min
+    #try: d._sortedTerms.remove(term)
+    #except: pass
+
+    #if term.isInitialized():
+    #  try:
+    #    if term.parent():
+    #      skevents.runlater(partial(term.setParent, None), 90000) # after 1.5 min
+    #  except Exception, e:
+    #    dwarn(e)
 
     d.invalidateTerms()
     d.touchTerms()
@@ -8757,13 +10293,17 @@ class DataManager(QObject):
             td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')
           ) else updateComment
         t.deleted = True
-        if t.parent():
-          skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
+        #if t.isInitialized():
+        #  try:
+        #    if t.parent():
+        #      skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
+        #  except Exception, e:
+        #    dwarn(e)
 
     if count:
       d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
-      if d._sortedTerms:
-        d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
+      #if d._sortedTerms:
+      #  d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
 
       d.invalidateTerms()
       d.touchTerms()
@@ -8946,7 +10486,7 @@ class DataManager(QObject):
       return False
 
     d.terms.append(term)
-    self.invalidateSortedTerms()
+    #self.invalidateSortedTerms()
 
     if commit:
       d.dirtyTerms.add(term)
@@ -8969,23 +10509,23 @@ class DataManager(QObject):
     d.submitDirtyTermsLater()
     d.touchTerms()
 
-  def queryTermMacro(self, pattern):
-    """
-    @param  unicode
-    @return  unicode or None
-    """
-    return self.__d.termMacros.get(pattern)
+  #def queryTermMacro(self, pattern):
+  #  """
+  #  @param  unicode
+  #  @return  unicode or None
+  #  """
+  #  return self.__d.termMacros.get(pattern)
 
-  def clearMacroCache(self):
-    d = self.__d
-    d.clearTermMacros()
-    for t in d.terms:
-      td = t.d
-      if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
-        t.clearCache()
+  #def clearMacroCache(self):
+  #  d = self.__d
+  #  d.clearTermMacros()
+  #  for t in d.terms:
+  #    td = t.d
+  #    if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
+  #      t.clearCache()
 
-  def invalidateSortedTerms(self): self.__d.sortedTerms = None
-  def clearTermTitles(self): self.__d.clearTermTitles()
+  #def invalidateSortedTerms(self): self.__d.sortedTerms = None
+  #def clearTermTitles(self): self.__d.clearTermTitles()
 
   def removeDirtyTerm(self, term):
     try: self.__d.dirtyTerms.remove(term)
@@ -9083,6 +10623,16 @@ class DataManagerProxy(QObject):
     #    self.gameIdChanged.emit(self.gameId))
     dm.currentGameChanged.connect(lambda:
         self.gameItemIdChanged.emit(self.gameItemId))
+
+    gm = gameman.manager()
+    gm.focusEnabledChanged.connect(self.currentGameFocusEnabledChanged)
+
+  # Game thread
+
+  currentGameFocusEnabledChanged = Signal(bool)
+  currentGameFocusEnabled = Property(bool,
+      lambda _: gameman.manager().isFocusEnabled(),
+      notify=currentGameFocusEnabledChanged)
 
   ## Translation scripts ##
 
@@ -9227,6 +10777,14 @@ class DataManagerProxy(QObject):
     dm.submitComment(ret, commit=False)
     return ret
 
+  ## Subtitles ##
+
+  @Slot()
+  def updateSubtitles(self):
+    sel = prompt.confirmUpdateSubs()
+    if sel:
+      manager().updateSubtitles(**sel)
+
   ## Terms ##
 
   @Slot(unicode, unicode, unicode)
@@ -9254,9 +10812,10 @@ class DataManagerProxy(QObject):
 
   @Slot()
   def updateTerms(self):
-    if prompt.confirmUpdateTerms():
+    sel = prompt.confirmUpdateTerms()
+    if sel:
       manager().submitDirtyTerms()
-      manager().updateTerms()
+      manager().updateTerms(**sel)
 
   @Slot(QObject)
   def duplicateTerm(self, term):
@@ -9321,6 +10880,10 @@ class DataManagerProxy(QObject):
   def queryItemSeries(self, id):
     return manager().queryItemSeries(id=id)
 
+  @Slot(long, result=long)
+  def queryGameItemId(self, id):
+    return manager().queryGameItemId(id=id)
+
   @Slot(long, result=unicode)
   def queryGameName(self, id):
     return manager().queryGameName(id=id)
@@ -9333,9 +10896,9 @@ class DataManagerProxy(QObject):
   def queryGameFileName(self, id):
     return manager().queryGameFileName(id=id)
 
-  #@Slot(long, result=str)
-  #def queryGameImage(self, id):
-  #  return manager().queryGameImageUrl(id=id)
+  @Slot(long, long, result=unicode)
+  def queryGameImage(self, tokenId, itemId): # uncached
+    return manager().queryGameImageUrl(id=tokenId, itemId=itemId)
 
   @Slot(long, result=unicode)
   def queryUserAvatarUrl(self, id):

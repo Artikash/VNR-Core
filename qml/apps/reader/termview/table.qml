@@ -7,6 +7,7 @@ import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
+import '.' as TermView
 
 Item { id: root_
 
@@ -19,6 +20,11 @@ Item { id: root_
   property int userId
   property int userLevel
   property alias filterText: model_.filterText
+  property alias filterTypes: model_.filterTypes
+  property alias filterColumn: model_.filterColumn
+  property alias filterLanguage: model_.filterLanguage
+  property alias filterSourceLanguage: model_.filterSourceLanguage
+  property alias filterHost: model_.filterHost
   property alias currentCount: model_.currentCount
   property alias count: model_.count
 
@@ -37,6 +43,8 @@ Item { id: root_
     root_.maximumPageNumber = Math.ceil(model_.currentCount / model_.pageSize) // assume pageSize != 0
   }
 
+  function refresh() { model_.refresh() }
+
   property int _GUEST_USER_ID: 4
   property int _SUPER_USER_ID: 2
 
@@ -47,42 +55,65 @@ Item { id: root_
 
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
 
-  function canEdit(term) {
+  property string _UNSAVED_RICH_TEXT: // cached
+       '<span style="background-color:red">' + Sk.tr("Unsaved") + '</span>'
+
+  function canEdit(term) { // object -> bool
     return !!term && !!userId && (userId === _SUPER_USER_ID
         || term.userId === userId && !term.protected
         || term.userId === _GUEST_USER_ID && userLevel > 0)
   }
 
-  function canImprove(term) {
+  function canImprove(term) { // object -> bool
     return !!term && !!userId && (term.userId === userId && !term.protected
         || !!userId && userId !== _GUEST_USER_ID)
   }
 
-  function canSelect(term) {
+  function canSelect(term) { // object -> bool
     return canImprove(term)
   }
 
-  function shouldHighlight(term) {
-    return term.private_ || term.language === 'ja' || term.type === 'origin' || term.type === 'macro'
+  function shouldHighlight(term) { // object -> bool
+    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'game' || term.type === 'macro'
   }
 
-  function itemColor(term) {
+  function itemColor(term) { // object -> string
     return shouldHighlight(term) ? _HIGHLIGHT_COLOR :
       datamanPlugin_.queryUserColor(term.userId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
   }
 
-  function commentColor(term) {
+  function commentColor(term) { // object -> string
     return datamanPlugin_.queryUserColor(term.userId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
   }
 
-  function updateCommentColor(term) {
+  function updateCommentColor(term) { // object -> string
     return datamanPlugin_.queryUserColor(term.updateUserId) || (
         canEdit(term) ? _EDITABLE_COLOR : 'black')
   }
 
-  function gameSummary(id) {
+  function hostName(host) { // string -> string
+    if (~host.indexOf(',')) {
+      var names = []
+      var hosts = host.split(',')
+      for (var i in hosts)
+        names.push(Util.translatorName(hosts[i]) || '(' + hosts[i] + ')')
+      return '+' + names.join('+')
+    } else
+      return Util.translatorName(host)
+  }
+
+  function typeAllowsHost(type) { // string -> bool
+    switch (type) {
+    case 'input': case 'output': case 'trans':
+    case 'name': case 'yomi':
+      return true
+    default: return false
+    }
+  }
+
+  function gameSummary(id) { // int -> string
     if (id <= 0)
       return ""
     var n = datamanPlugin_.queryGameName(id)
@@ -92,6 +123,49 @@ Item { id: root_
     if (!s)
       return n + " (" + id + ")"
     return '[' + s + '] ' + n + " (" + id + ")"
+  }
+
+  function getErrorColor(v) { // int -> string
+    return v > 10 ? 'orange'
+         : v < 0 ? 'red'
+         : 'green'
+  }
+
+  function getErrorText(v) { // int -> string
+    switch (v) {
+    case 0: return 'OK' // OK
+    case 5: return Sk.tr("zht")    // W_CHINESE_TRADITIONAL
+    case 6: return Sk.tr("zhs")    // W_CHINESE_SIMPLIFIED
+    //case 7:  return Sk.tr("Kanji")  // W_CHINESE_KANJI
+    case 11: return qsTr("Long")    // W_LONG
+    case 12: return qsTr("Short")   // W_SHORT
+    case 20: return qsTr("Missing") // W_MISSING_TEXT
+    case 30: return Sk.tr("Game")   // W_NOT_GAME
+    case 31: return My.tr("Input")  // W_NOT_INPUT
+    case 100: return qsTr("Brackets") // W_BAD_REGEX
+    case -100: return qsTr("Useless") // E_USELESS
+    case -101: return qsTr("Regex") // E_USELESS_REGEX
+    case -800: return My.tr("Translator") // E_BAD_HOST
+    case -900: return "\\n" // E_NEWLINE
+    //case -1000: // E_EMPTY_PATTERN
+    default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
+    }
+  }
+
+  property variant _TYPE_NAMES: {
+    trans: Sk.tr("Translation")
+    , input: My.tr("Input")
+    , output: My.tr("Output")
+    , name: My.tr("Name")
+    , yomi: My.tr("Yomi")
+    , suffix: My.tr("Suffix")
+    , game: Sk.tr("Game")
+    , tts: My.tr("TTS")
+    , ocr: My.tr("OCR")
+    , macro: Sk.tr("Macro")
+  }
+  function typeName(type) {
+    return _TYPE_NAMES[type] // string -> string
   }
 
   property int _MIN_TEXT_LENGTH: 1
@@ -163,6 +237,43 @@ Item { id: root_
       //}
     }
 
+    // Column: ID
+    Desktop.TableColumn {
+      role: 'object'; title: "ID" // Sk.tr("ID")
+      // role: 'id'; title: "ID" // Sk.tr("ID")
+      width: 47
+      delegate: Text {
+        //anchors { fill: parent; leftMargin: table_.cellSpacing }
+        height: table_.cellHeight
+        textFormat: itemValue.id == 0 ? Text.RichText : Text.PlainText
+        clip: true
+        verticalAlignment: Text.AlignVCenter
+        color: (itemSelected || itemValue.id == 0) ? 'white' : itemColor(itemValue)
+        font.strikeout: !itemSelected && itemValue.disabled
+        font.bold: itemValue.regex //|| itemValue.syntax
+        text: itemValue.id == 0 ? root_._UNSAVED_RICH_TEXT : String(itemValue.id)
+      }
+    }
+
+    // Column: error
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Check") // Sk.tr("ID")
+      // role: 'id'; title: "ID" // Sk.tr("ID")
+      width: 40
+      delegate: Text {
+        //anchors { fill: parent; leftMargin: table_.cellSpacing }
+        height: table_.cellHeight
+        //textFormat: itemValue.id == 0 ? Text.PlainText : Text.RichText
+        textFormat: Text.PlainText
+        clip: true
+        verticalAlignment: Text.AlignVCenter
+        color: itemSelected ? 'white' : root_.getErrorColor(itemValue.errorType)
+        font.strikeout: !itemSelected && itemValue.disabled
+        font.bold: itemValue.regex //|| itemValue.syntax
+        text: root_.getErrorText(itemValue.errorType)
+      }
+    }
+
     // Column: Disabled
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Enable")
@@ -203,10 +314,10 @@ Item { id: root_
       }
     }
 
-    // Column: Type
+    // Column: Source language
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Type")
-      width: 60
+      role: 'object'; title: "From" // k.tr("From")
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -215,70 +326,44 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          text: {
-            switch (itemValue.type) {
-            case 'escape': return Sk.tr("Escape")
-            case 'source': return Sk.tr("Japanese")
-            case 'target': return Sk.tr("Translation")
-            case 'macro': return Sk.tr("Macro")
-            case 'name': return My.tr("Chara")
-            case 'title': return qsTr("Title")
-            case 'speech': return My.tr("Voice")
-            case 'origin': return My.tr("Original text")
-            case 'ocr': return My.tr("OCR")
-            default: return Sk.tr("Translation")
-            }
-          }
+
+          text: Sk.tr(itemValue.sourceLanguage)
+
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          model: ListModel { //id: typeModel_
+          model: ListModel { //id: languageModel_
             Component.onCompleted: {
-              append({value:'target', text:Sk.tr("Translation")})
-              append({value:'source', text:Sk.tr("Japanese")})
-              append({value:'escape', text:Sk.tr("Escape")})
-              append({value:'name', text:My.tr("Chara")})
-              append({value:'title', text:My.tr("Title")})
-              append({value:'speech', text:My.tr("Voice")})
-              append({value:'origin', text:My.tr("Original text")})
-              append({value:'ocr', text:My.tr("OCR")})
-              append({value:'macro', text:Sk.tr("Macro")})
+              for (var i in Util.LANGUAGES) {
+                var lang = Util.LANGUAGES[i]
+                append({value: lang, text: Sk.tr(lang)})
+              }
             }
           }
 
-          tooltip: Sk.tr("Type")
+          tooltip: Sk.tr("Language")
           visible: itemSelected && editable
 
           onSelectedIndexChanged:
             if (editable) {
               var t = model.get(selectedIndex).value
-              if (t !== itemValue.type) {
-                itemValue.type = t
-                if (t === 'macro' && !itemValue.regex)
-                  itemValue.regex = true
+              if (t !== itemValue.sourceLanguage) {
+                itemValue.sourceLanguage = t
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
               }
             }
 
           selectedText: model.get(selectedIndex).text
+
           Component.onCompleted: {
-            switch (itemValue.type) { // Must be consistent with the model
-            case 'target': selectedIndex = 0; break
-            case 'source': selectedIndex = 1; break
-            case 'escape': selectedIndex = 2; break
-            case 'name': selectedIndex = 3; break
-            case 'title': selectedIndex = 4; break
-            case 'speech': selectedIndex = 5; break
-            case 'origin': selectedIndex = 6; break
-            case 'ocr': selectedIndex = 7; break
-            case 'macro': selectedIndex = 8; break
-            default: selectedIndex = 0
-            }
+            for (var i = 0; i < model.count; ++i)
+              if (model.get(i).value === itemValue.sourceLanguage)
+                selectedIndex = i
           }
         }
       }
@@ -286,7 +371,7 @@ Item { id: root_
 
     // Column: Language
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Language")
+      role: 'object'; title: "To" // k.tr("To")
       width: 40
       delegate: Item {
         height: table_.cellHeight
@@ -302,11 +387,11 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          model: ListModel { id: languageModel_
+          model: ListModel { //id: languageModel_
             Component.onCompleted: {
               for (var i in Util.LANGUAGES) {
                 var lang = Util.LANGUAGES[i]
@@ -318,7 +403,7 @@ Item { id: root_
             }
           }
 
-          tooltip: My.tr("Language")
+          tooltip: Sk.tr("Language")
           visible: itemSelected && editable
 
           onSelectedIndexChanged:
@@ -342,16 +427,122 @@ Item { id: root_
       }
     }
 
+    // Column: Type
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Type")
+      width: 60
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          text: root_.typeName(itemValue.type) || Sk.tr("Unknown")
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : itemColor(itemValue)
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        Desktop.ComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          model: ListModel { //id: typeModel_
+            Component.onCompleted: {
+              for (var i in Util.TERM_TYPES) {
+                var type = Util.TERM_TYPES[i]
+                append({value:type, text:root_.typeName(type)})
+              }
+            }
+          }
+
+          tooltip: Sk.tr("Type")
+          visible: itemSelected && editable
+
+          onSelectedIndexChanged:
+            if (editable) {
+              var t = model.get(selectedIndex).value
+              if (t !== itemValue.type) {
+                itemValue.type = t
+                if (t === 'macro' && !itemValue.regex)
+                  itemValue.regex = true
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+
+          selectedText: model.get(selectedIndex).text
+          Component.onCompleted:
+            selectedIndex = Util.TERM_TYPES.indexOf(itemValue.type) || 0
+
+        }
+      }
+    }
+
+    // Column: Host
+    Desktop.TableColumn {
+      role: 'object'; title: My.tr("Translator")
+      width: 50
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+                             && (!!itemValue.host || root_.typeAllowsHost(itemValue.type))
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          text: itemValue.host ? root_.hostName(itemValue.host) : root_.typeAllowsHost(itemValue.type) ? '*' : '-'
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : root_.typeAllowsHost(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        TermView.HostComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+
+          visible: itemSelected && editable
+
+          selectedValue: itemValue.host
+
+          onSelectedValueChanged:
+            if (editable && itemValue.host !== selectedValue) {
+              itemValue.host = selectedValue
+              itemValue.updateUserId = root_.userId
+              itemValue.updateTimestamp = Util.currentUnixTime()
+            }
+        }
+      }
+    }
+
+    // Column: Syntax
+    //Desktop.TableColumn {
+    //  role: 'object'; title: Sk.tr("Syntax")
+    //  width: 40
+    //  delegate: Item {
+    //    height: table_.cellHeight
+    //    Desktop.CheckBox {
+    //      anchors { fill: parent; leftMargin: table_.cellSpacing }
+    //      //enabled: canEdit(itemValue) && itemValue.type === 'trans' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
+    //      enabled: itemValue.syntax && canEdit(itemValue) && root_.userId !== _GUEST_USER_ID
+    //      checked: itemValue.syntax //&& itemValue.type === 'trans' // force syntax for translatoin
+    //      onCheckedChanged:
+    //        if (enabled && checked !== itemValue.syntax)
+    //          itemValue.syntax = checked
+    //    }
+    //  }
+    //}
+
     // Column: Regex
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Regular expression")
-      //width: 40
-      width: 55
+      role: 'object'; title: qsTr("Regex")
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue) && itemValue.type !== 'title' && itemValue.type !== 'macro' // prevent title terms from using regex
+          //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
           checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
@@ -360,24 +551,24 @@ Item { id: root_
       }
     }
 
-/*
-    // Column: IgnoreCase
+    // Column: Icase
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Ignore case")
+      role: 'object'; title: qsTr("Case-insensitive")
       width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue)
-          checked: itemValue.ignoresCase
+          //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          checked: itemValue.icase // force regex for macros
           onCheckedChanged:
-            if (enabled && checked !== itemValue.ignoresCase)
-              itemValue.ignoresCase = checked
+            if (enabled && checked !== itemValue.icase)
+              itemValue.icase = checked
         }
       }
     }
-*/
+
 /*
     // Column: BBCode
     Desktop.TableColumn {
@@ -400,8 +591,7 @@ Item { id: root_
     // Column: Game specific
     Desktop.TableColumn {
       role: 'object'; title: "Hentai" // My.tr("Hentai")
-      //width: 40
-      width: 45
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -417,9 +607,8 @@ Item { id: root_
 
     // Column: Game specific
     Desktop.TableColumn {
-      role: 'object'; title: My.tr("Series-specific")
-      //width: 40
-      width: 55
+      role: 'object'; title: qsTr("Series")
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -449,7 +638,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -509,11 +698,10 @@ Item { id: root_
       }
     }
 
-
     // Column: Pattern
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Pattern")
-      width: 130
+      width: 80
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -526,7 +714,7 @@ Item { id: root_
           text: itemValue.pattern
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
@@ -562,7 +750,7 @@ Item { id: root_
     // Column: Text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Translation")
-      width: 100
+      width: 80
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -575,7 +763,7 @@ Item { id: root_
           text: itemValue.text
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex //|| itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
@@ -587,7 +775,7 @@ Item { id: root_
           readOnly: !editable
           maximumLength: _MAX_TEXT_LENGTH
           //property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
-          //font.bold: itemValue.regex
+          //font.bold: itemValue.regex || itemValue.syntax
 
           Component.onCompleted: text = itemValue.text
 
@@ -610,7 +798,7 @@ Item { id: root_
     // Column: Comment
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Comment")
-      width: 160
+      width: 70
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -623,7 +811,7 @@ Item { id: root_
           text: itemValue.comment
           color: itemSelected ? 'white' : commentColor(itemValue)
           //font.strikeout: !itemSelected && itemValue.disabled
-          //font.bold: itemValue.regex
+          //font.bold: itemValue.regex || itemValue.syntax
 
           //function setText(v) { text = v }
           //Component.onCompleted: itemValue.commentChanged.connect(setText)
@@ -737,7 +925,7 @@ Item { id: root_
 
     Desktop.TableColumn {
       role: 'object'; title: My.tr("Update reason")
-      width: 160
+      width: 200
       delegate: Item {
         height: table_.cellHeight
         property bool editable: itemValue.updateUserId === root_.userId
@@ -750,7 +938,7 @@ Item { id: root_
           text: itemValue.updateComment
           color: itemSelected ? 'white' : updateCommentColor(itemValue)
           //font.strikeout: itemValue.disabled
-          //font.bold: itemValue.regex
+          //font.bold: itemValue.regex || itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }

@@ -45,12 +45,12 @@ mac:    CONFIG -= ppc ppc64 # disable compiling fat architectures
 # Enable C++11
 win32:  QMAKE_CXXFLAGS += -Zc:auto
 unix:   QMAKE_CXXFLAGS += -std=c++11
-#mac {
-#  # Enable TR1 such as tuple
-#  # Clang is required to take place of llvm gcc, which uses /usr/lib/libstdc++.dylib
-#  QMAKE_CXXFLAGS += -stdlib=libc++
-#  QMAKE_LFLAGS += -stdlib=libc++
-#}
+mac {
+  # Enable TR1 such as tuple
+  # Clang is required to take place of llvm gcc, which uses /usr/lib/libstdc++.dylib
+  QMAKE_CXXFLAGS += -stdlib=libc++
+  QMAKE_LFLAGS += -stdlib=libc++
+}
 
 # MSVC warnings
 win32 {
@@ -76,7 +76,7 @@ win32 {
   DETOURS_HOME  = "$$PROGRAMFILES/Microsoft Research/Detours Express 3.0"
   #DEV_HOME      = c:/dev
   DEV_HOME      = z:/local/windows/developer
-  BOOST_HOME    = $$DEV_HOME/boost
+  BOOST_HOME    = $$DEV_HOME/boost/build
   #ITH_HOME      = $$DEV_HOME/ith
   MSIME_HOME    = $$DEV_HOME/msime
   #PYTHON_HOME  = $$ROOTDIR/../Python
@@ -86,23 +86,32 @@ win32 {
   QT_HOME       = c:/qt/4
   QT_SRC        = c:/qt
   SAPI_HOME     = "$$PROGRAMFILES/Microsoft Speech SDK 5.1"
-
-  WDK_HOME      = c:/winddk/7600.16385.1
+  #WMSDK_HOME    = c:/wmsdk/wmpsdk9
+  WDK7_HOME     = c:/winddk/7600.16385.1
+  WDK8_HOME     = "$$PROGRAMFILES/Windows Kits/8.1"
+  UTF8_HOME     = z:/users/jichi/opt/utf8
 }
 mac {
   MACPORTS_HOME = /opt/local
   BOOST_HOME    = $$MACPORTS_HOME
+  DEV_HOME      = ${HOME}/opt
   #ITH_HOME      = ${HOME}/opt/ith
-  MSIME_HOME    = ${HOME}/opt/msime
+  MSIME_HOME    = $$DEV_HOME/msime
   PYSIDE_HOME   = $$MACPORTS_HOME
   PYTHON_HOME   = $$MACPORTS_HOME/Library/Frameworks/Python.framework/Versions/Current
   #QT_HOME      = ${HOME}/opt/qt
   QT_HOME       = $$MACPORTS_HOME
   QT_SRC        = ${HOME}/src
+  UTF8_HOME     = $$DEV_HOME/utf8
 }
 
 INCLUDEPATH     += $$BOOST_HOME $$BOOST_HOME/include
 LIBS            += -L$$BOOST_HOME/lib
+
+# Disable automatically linking with boost silently
+# See: http://www.boost.org/doc/libs/1_56_0/boost/config/user.hpp
+DEFINES += BOOST_ALL_NO_LIB
+mac: BOOST_VARIANT = -mt
 
 ## Config
 
@@ -195,25 +204,34 @@ CONFIG(qmlplugin) {
 
 CONFIG(pysideplugin) {
   message(CONFIG pysideplugin)
-  CONFIG += pyplugin
+  CONFIG += pyplugin shiboken
   QT += core
 
-  LIBS += -L$$PYSIDE_HOME -lshiboken-python2.7 -lpyside-python2.7
+  LIBS += -L$$PYSIDE_HOME -lpyside-python2.7
   INCLUDEPATH += \
     $$PYSIDE_HOME/include/PySide \
     $$PYSIDE_HOME/include/PySide-2.7 \
-    $$PYSIDE_HOME/include/shiboken \
-    $$PYSIDE_HOME/include/shiboken-2.7 \
-    $$PYSIDE_HOME/include
+    $$PYSIDE_HOME/include \
+    $$PYSIDE_HOME/include/PySide/QtCore \
+    $$PYSIDE_HOME/include/PySide/QtGui \
+    $$QT_HOME/include/QtGui # needed by pyside qtcore
+}
 
-  INCLUDEPATH += $$QT_HOME/include/QtGui # needed by pyside qtcore
+CONFIG(shiboken) {
+  message(CONFIG shiboken)
+
+  LIBS += -L$$PYSIDE_HOME -lshiboken-python2.7
+  INCLUDEPATH += \
+    $$PYSIDE_HOME/include/shiboken \
+    $$PYSIDE_HOME/include/shiboken-2.7
 
   # Ignore warnings from Shiboken and PySide
   mac {
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-header-guard
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-mismatched-tags  # struct SbkObject was previously declared as a class
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-missing-field-initializers
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
+    QMAKE_CXXFLAGS_WARN_ON += \
+        -Wno-header-guard \
+        -Wno-mismatched-tags   \
+        -Wno-missing-field-initializers \
+        -Wno-unused-parameter
   }
   win32 {
     # QMAKE_CXXFLAGS_WARN_ON does not work on windows

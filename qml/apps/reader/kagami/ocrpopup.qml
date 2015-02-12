@@ -7,6 +7,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+//import '../../../js/eval.min.js' as Eval
 import '../../../js/util.min.js' as Util
 import '../../../components' as Components
 import '../../../js/local.js' as Local // Local.comet
@@ -243,7 +244,9 @@ Item { id: root_
       Component.onCompleted: console.log("ocrpopup.qml:onCompleted: pass")
       Component.onDestruction: console.log("ocrpopup.qml:onDestruction: pass")
 
-      radius: 9
+      //radius: 9
+      radius: 0 // flat
+
       color: '#99000000' // black
 
       property int _CONTENT_MARGIN: 10
@@ -407,6 +410,8 @@ Item { id: root_
 
           //selectByMouse: true // conflicts with flickable
 
+          // Not enabled since RichText is not used
+          //onLinkActivated: Eval.evalLink(link)
           textFormat: TextEdit.PlainText
           wrapMode: TextEdit.Wrap
           focus: true
@@ -418,7 +423,6 @@ Item { id: root_
           // Not working, which cause textedit width to shrink
           //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
 
-          onLinkActivated: Qt.openUrlExternally(link)
           //console.log("shiori.qml: link activated:", link)
 
           effect: Share.TextEffect {}
@@ -455,7 +459,7 @@ Item { id: root_
         pageSize: scrollArea_.visibleArea.heightRatio
       }
 
-      Desktop.ContextMenu { id: contextMenu_
+      Desktop.Menu { id: menu_
         //property int popupX
         //property int popupY
 
@@ -498,7 +502,7 @@ Item { id: root_
         onPressed: if (!root_.ignoresFocus) {
           //var gp = Util.itemGlobalPos(parent)
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-          contextMenu_.showPopup(gp.x, gp.y)
+          menu_.showPopup(gp.x, gp.y)
         }
       }
 
@@ -508,7 +512,8 @@ Item { id: root_
           bottom: parent.top
           //bottomMargin: -_HEADER_MARGIN*2
         }
-        radius: 7
+        //radius: 7
+        radius: 0 // flat
 
         width: headerRow_.width + _HEADER_MARGIN * 2 + _HEADER_MARGIN * 8
         height: headerRow_.height + _HEADER_MARGIN * 2

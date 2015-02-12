@@ -7,6 +7,7 @@ SUBDIRS = \
     components/bootstrap2 \
     components/bootstrap3 \
     components/buttongroup \
+    components/qt5 \
     js
 
 .PHONY: all clean $(SUBDIRS)

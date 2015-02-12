@@ -18,6 +18,6 @@
 //#include <PySide/globalreceiver.h>
 #include <pyside_global.h>  // Essential
 //#include <QtCore>
-#include "msime_ja.h"
+#include "pymsime.h"
 
 // EOF

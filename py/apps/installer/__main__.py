@@ -6,8 +6,6 @@
 # - app.Application
 # - main.MainObject: Root of all non-widget qobject
 
-__all__ = []
-
 import os, sys
 
 def print_help():

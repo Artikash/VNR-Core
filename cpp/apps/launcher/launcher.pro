@@ -10,7 +10,6 @@ SUBDIRS = \
   #updater
 
 OTHER_FILES += \
-  include/cc/ccmacro.h \
   include/main.tcc
 
 # EOF

@@ -4,20 +4,15 @@
 TEMPLATE = subdirs
 
 # The order is important!
-# Dependence:
-# - cli <= sys
-# - srv <= sys
-# - eng <= cli + sys
 SUBDIRS += \
   sys \
-  cli clixp \
-  eng engxp \
-  srv
+  hook hookxp \
+  host
 
 OTHER_FILES += dllconfig.pri
 
 include(common/common.pri)  # not used
-#include(cli/cli.pri)       # not used
-#include(srv/srv.pri)       # not used
+include(import/mono/mono.pri)  # not used
+include(import/ppsspp/ppsspp.pri)  # not used
 
 # EOF

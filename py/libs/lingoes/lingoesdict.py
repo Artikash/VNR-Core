@@ -18,7 +18,7 @@
 #
 # - 0x5c: int offset - 0x60
 
-__all__ = ['LingoesDict']
+__all__ = 'LingoesDict',
 
 if __name__ == '__main__':
   import sys
@@ -74,7 +74,7 @@ class LingoesDict(object):
 
 if __name__ == '__main__':
   import os
-  from sakurakit.skprofiler import SkProfiler
+  from sakurakit.skprof import SkProfiler
   location = '/Users/jichi/Dropbox/Developer/Dictionaries/LD2/'
   if os.name == 'nt':
     location = 'C:' + location

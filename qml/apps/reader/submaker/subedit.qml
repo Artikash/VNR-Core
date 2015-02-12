@@ -4,11 +4,12 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+//import '../../../imports/qmlhelper' as Helper
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
-import '../../../imports/qmlhelper' as Helper
 import '../../../components' as Components
+import '../../../components/qt5' as Qt5
 
 Item { id: root_
 
@@ -103,7 +104,7 @@ Item { id: root_
       NumberAnimation { property: 'opacity'; duration: 400 }
     }
 
-    TextEdit { id: textEdit_
+    Qt5.TextEdit5 { id: textEdit_
       //anchors.centerIn: parent
       width: parent.width
       wrapMode: TextEdit.Wrap
@@ -113,7 +114,7 @@ Item { id: root_
       onCursorRectangleChanged: scrollArea_.ensureVisible(cursorRectangle)
 
       Plugin.SpellChecker { id: spell_
-        document: helper_.textedit_document(textEdit_)
+        document: textEdit_.getTextDocument()
         language: Util.spellSupportsLanguage(status_.userLanguage) ? status_.userLanguage : 'en'
         enabled: true
       }
@@ -195,7 +196,7 @@ Item { id: root_
   //  pageSize: scrollArea_.visibleArea.widthRatio
   //}
 
-  Helper.QmlHelper { id: helper_ }
+  //Helper.QmlHelper { id: qmlhelper_ }
 
   Plugin.TextManagerProxy { id: textManager_ }
 
@@ -266,7 +267,7 @@ Item { id: root_
       return false
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     Desktop.MenuItem {
       text: Sk.tr("Copy")
       shortcut: "Ctrl+C"
@@ -309,7 +310,7 @@ Item { id: root_
     onPressed: {
       //var gp = Util.itemGlobalPos(parent)
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      contextMenu_.showPopup(gp.x, gp.y)
+      menu_.showPopup(gp.x, gp.y)
     }
   }
 }

@@ -22,9 +22,9 @@ WINITER_END_NAMESPACE
 // EOF
 
 
-//inline void iterProcessThreadIds(DWORD processId, boost::function<void (DWORD)> closure)
+//inline void iterProcessThreadIds(DWORD processId, std::function<void (DWORD)> closure)
 //{
-//  iterProcessThreadIds(processId, boost::function<void (DWORD)>(
+//  iterProcessThreadIds(processId, std::function<void (DWORD)>(
 //    [=](DWORD arg1) -> bool {
 //      closure(arg1);
 //      return true;

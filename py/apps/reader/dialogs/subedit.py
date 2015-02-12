@@ -2,7 +2,7 @@
 # subeditor.py
 # 1/23/2013 jichi
 
-__all__ = ['SubtitleEditorManager', 'SubtitleEditorManagerProxy']
+__all__ = 'SubtitleEditorManager', 'SubtitleEditorManagerProxy'
 
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
@@ -14,6 +14,13 @@ from mytr import mytr_, my
 import config, defs, dataman, i18n, netman, rc
 
 TEXTEDIT_MINIMUM_HEIGHT = 50
+
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  #ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter) # disable alignment
+  return ret
 
 @Q_Q
 class _SubtitleEditor(object):
@@ -27,32 +34,32 @@ class _SubtitleEditor(object):
     # User
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Type") + ":"))
+    row.addWidget(create_label(tr_("Type")))
     row.addWidget(self.typeEdit)
 
-    row.addWidget(QtWidgets.QLabel(tr_("Language") + ":"))
+    row.addWidget(create_label(tr_("Language")))
     row.addWidget(self.languageEdit)
 
     row.addStretch()
 
-    #row.addWidget(QtWidgets.QLabel(tr_("User") + ":"))
+    #row.addWidget(create_label(tr_("User")))
     row.addWidget(self.userNameLabel)
     layout.addLayout(row)
 
     # Status
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Status") + ":"))
+    row.addWidget(create_label(tr_("Status")))
     row.addWidget(self.enabledButton)
     row.addWidget(self.lockedButton)
     row.addStretch()
 
-    #row.addWidget(QtWidgets.QLabel(tr_("Date") + ":"))
+    #row.addWidget(create_label(tr_("Date")))
     row.addWidget(self.timestampLabel)
     layout.addLayout(row)
 
     # Context size
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(mytr_("Context count") + ":"))
+    row.addWidget(create_label(mytr_("Context count")))
     row.addWidget(self.contextSizeLabel)
     row.addStretch()
     layout.addLayout(row)
@@ -70,16 +77,14 @@ class _SubtitleEditor(object):
     ))
     layout.addWidget(self.previousContextEdit)
 
-    layout.addWidget(QtWidgets.QLabel(
-      tr_("Comment") + ":"
-    ))
+    layout.addWidget(create_label(tr_("Comment") ))
     layout.addWidget(self.commentEdit)
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Permission") + ":"))
+    row.addWidget(create_label(tr_("Permission")))
     row.addWidget(self.textPermissionLabel)
 
-    row.addWidget(QtWidgets.QLabel(tr_("Internet status") + ":"))
+    row.addWidget(create_label(tr_("Internet status")))
     row.addWidget(self.onlineLabel)
 
     row.addStretch()
@@ -310,16 +315,13 @@ class _SubtitleEditor(object):
 
 class SubtitleEditor(QtWidgets.QDialog):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(SubtitleEditor, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("Subtitle Editor"))
     self.setWindowIcon(rc.icon('window-textedit'))
     self.__d = _SubtitleEditor(self)
     #self.statusBar() # show status bar
-
-    dataman.manager().loginChanged.connect(self.__d.refreshIfVisible)
-    netman.manager().onlineChanged.connect(self.__d.refreshIfVisible)
 
   def setComment(self, c):
     self.__d.comment = c
@@ -355,6 +357,16 @@ class _SubtitleEditorManager:
 class SubtitleEditorManager:
   def __init__(self):
     self.__d = _SubtitleEditorManager()
+
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    qApp.aboutToQuit.connect(self.hide)
+
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   #def clear(self): self.hide()
 

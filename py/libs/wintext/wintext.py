@@ -14,9 +14,12 @@ from sakurakit.skdebug import derror, dwarn
 SUPPORTED = False # bool
 if skos.WIN:
   try:
+    # http://sakuradite.com/topic/639
+    # This might not work on Windows 10
     from comtypes.gen.Accessibility import IAccessible
     SUPPORTED = True
-  except ImportError, e:
+  #except ImportError, e:
+  except Exception, e:
     derror(e)
 
 if not SUPPORTED:

@@ -2,12 +2,15 @@
 # dictman.py
 # 10/10/2012 jichi
 
+#from sakurakit.skprof import SkProfiler
+
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import my
 #from kagami import GrimoireBean
-import config, dicts, ebdict, growl, mecabman, rc, settings
+import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
+import _dictman
 
 @memoized
 def manager(): return DictionaryManager()
@@ -18,17 +21,29 @@ MIN_HTML_LEN = 290 # empty html length
 #@Q_Q
 class _DictionaryManager:
 
-  @staticmethod
-  def lookupEdict(text, limit=5):
+  def __init__(self):
+    self.enabled = True # bool
+
+  def lookupEdict(self, text, limit=5):
     """
     @param  text  unicode
     @param  limit  int
-    @yield  cjklib.dictionary.EntryTuple
+    @yield  (unicode word, unicode reading, unicode translation)
     """
-    return dicts.edict().lookup(text, limit=limit) if settings.global_().isEdictEnabled() else []
+    #if settings.global_().isEdictEnabled():
+    for it in dicts.edict().lookup(text, limit=limit):
+      trans = _dictman.render_edict(it.Translation)
+      surface = it.Headword
+      reading = it.Reading
+      if reading == surface:
+        reading = None
+      if reading:
+        roman = convutil.kana2romaji(reading)
+        if roman and roman != reading:
+          reading = "%s, %s" % (reading, roman)
+      yield surface, reading, trans
 
-  @staticmethod
-  def _iterEB():
+  def _iterEB(self):
     """
     @yield  EB
     """
@@ -79,15 +94,14 @@ class _DictionaryManager:
           my.tr("Cannot load {0}").format(u"KOJIEN6 (広辞苑)"),
           my.tr("Please double check its location in Preferences."))))
 
-  @classmethod
-  def lookupEB(cls, text, limit=3, complete=True): # Use less count to save memory
+  def lookupEB(self, text, limit=3, complete=True): # Use less count to save memory
     """
     @param  text  unicode
     @param* limit  int
     @param* complete  bool  whether complete word
     @yield  unicode
     """
-    for eb in cls._iterEB():
+    for eb in self._iterEB():
       count = 0
       for v in eb.render(text):
         yield v
@@ -95,7 +109,7 @@ class _DictionaryManager:
         if count >= limit:
           break
       if complete and not count:
-        t = cls._completeEB(text)
+        t = self._completeEB(text)
         if t and t != text:
           for i,v in enumerate(eb.render(t)):
             if i < limit:
@@ -104,86 +118,89 @@ class _DictionaryManager:
               break
 
   _COMPLETE_TRIM_CHARS = u'ぁ', u'ぇ', u'ぃ', u'ぉ', u'ぅ', u'っ', u'ッ'
-  @classmethod
-  def _completeEB(cls, t):
+  def _completeEB(self, t):
     """Trim half katagana/hiragana.
     @param  t  unicode
     @return  unicode
     """
     if t:
       while len(t) > 1:
-        if t[-1] in cls._COMPLETE_TRIM_CHARS:
+        if t[-1] in self._COMPLETE_TRIM_CHARS:
           t = t[:-1]
         else:
           break
       while len(t) > 1:
-        if t[0] in cls._COMPLETE_TRIM_CHARS:
+        if t[0] in self._COMPLETE_TRIM_CHARS:
           t = t[1:]
         else:
           break
     return t
 
-  @staticmethod
-  def _iterLD():
+  def _iterLD(self):
     """
-    @yield  LingoesDic
+    @yield  LingoesDic, str language, str category
     """
     ss = settings.global_()
     if ss.isLingoesJaZhGbkEnabled():
-      yield dicts.lingoes('ja-zh-gbk'), 'zh'
+      yield dicts.lingoes('ja-zh-gbk'), 'ja-zh', None
     if ss.isLingoesJaZhEnabled():
-      yield dicts.lingoes('ja-zh'), 'zh'
+      yield dicts.lingoes('ja-zh'), 'ja-zh', None
     if ss.isLingoesJaKoEnabled():
-      yield dicts.lingoes('ja-ko'), 'ko'
+      yield dicts.lingoes('ja-ko'), 'ja-ko', 'naver'
     if ss.isLingoesJaViEnabled():
-      yield dicts.lingoes('ja-vi'), 'vi'
+      yield dicts.lingoes('ja-vi'), 'ja-vi', 'ovdp'
     if ss.isLingoesJaEnEnabled():
-      yield dicts.lingoes('ja-en'), 'en'
+      yield dicts.lingoes('ja-en'), 'ja-en', 'vicon'
 
-  @classmethod
-  def lookupLD(cls, text, limit=3): # LD seems contains lots of wrong word, use smaller size
+  def lookupLD(self, text, limit=3): # LD seems contains lots of wrong word, use smaller size
     """
     @param  text  unicode
     @param  limit  int
     @yield  unicode source, [unicode xml]
     """
-    for db, lang in cls._iterLD():
+    for db, lang, cat in self._iterLD():
       for word, xml in db.lookup(text, limit=limit):
-        if lang == 'vi':
-          yield word, cls._simplifyLingoesXml(xml)
-        else:
-          yield word, xml
+        xml = _dictman.render_lingoes(xml, cat)
+        yield word, xml
 
-  # Example Vietnamese dictionary:
-  # ちょっと一杯
-  # <C><F><H /><K><![CDATA[<ul><li><font color='#cc0000'><b> {ちょっといっぱい}</b></font></li></ul><ul><li><font color='#cc0000'><b> {let's have quick drink}</b></font></li></ul>]] > </K></F></C>
-  @staticmethod
-  def _simplifyLingoesXml(text): # unicode -> unicode
-    return (text
-        .replace('<![CDATA[', '').replace(']] >', '').replace(']]>', '')
-        .replace("<font color='#cc0000'>", '').replace('</font>', '')
-        .replace('<ul>', '').replace('</ul>', '')
-        .replace('<li>', '<br/>').replace('</li>', '<br/>')
-        .replace('{', '').replace('}', ''))
-
-class DictionaryManager(object):
+class DictionaryManager:
 
   def __init__(self):
-    self.enabled = True # bool
+    self.__d = _DictionaryManager()
 
     #ss = settings.global_()
     #self.enabled = ss.isDictionaryEnabled()
     #ss.dictionaryEnabledChanged.connect(self.setEnabled)
 
-  def isEnabled(self): return self.enabled
-  def setEnabled(self, v): self.enabled = v
+  def isEnabled(self): return self.__d.enabled
+  def setEnabled(self, v): self.__d.enabled = v
 
-  def render(self, text, feature='', fmt=None): # unicode => unicode
+  def renderKorean(self, text):
+    """
+    @param  text  Korean phrase
+    @return  unicode not None  html
+    """
+    l = [text]
+    romaja = convutil.toroman(text, 'ko')
+    if romaja:
+      l.append(romaja)
+    hanja = convutil.hangul2hanja(text)
+    if hanja and hanja != text:
+      l.append(hanja)
+    feature = ', '.join(l)
+    return rc.jinja_template('html/shiori').render({
+      'language': 'ko',
+      'text': text,
+      'feature': feature,
+    })
+
+  def renderJapanese(self, text, feature='', fmt=None): # unicode => unicode
     """
     @param  text  Japanese phrase
     @return  unicode not None  html
     """
-    if not self.enabled:
+    d = self.__d
+    if not d.enabled:
       return EMPTY_HTML
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
@@ -194,14 +211,16 @@ class DictionaryManager(object):
           text = surf
         feature = mecabman.renderfeature(feature, fmt)
     try:
+      #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
+        'language': 'ja',
         'text': text,
         'feature': feature,
-        'edict_tuples': _DictionaryManager.lookupEdict(text),
-        'ld_tuples': _DictionaryManager.lookupLD(text),
-        'eb_strings': _DictionaryManager.lookupEB(text),
+        'edict_tuples': d.lookupEdict(text) if settings.global_().isEdictEnabled() else None,
+        'ld_tuples': d.lookupLD(text),
+        'eb_strings': d.lookupEB(text),
         #'google': google,
-        #'locale': _DictionaryManager.locale,
+        #'locale': d.locale,
       })
     except UnicodeDecodeError, e:
       dwarn(e)
@@ -209,7 +228,7 @@ class DictionaryManager(object):
         'text': text,
         'feature': feature,
         #'google': google,
-        #'locale': _DictionaryManager.locale,
+        #'locale': d.locale,
       })
     except Exception, e: # eb.EBError
       dwarn(e)

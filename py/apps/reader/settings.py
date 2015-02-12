@@ -2,6 +2,9 @@
 # settings.py
 # 10/28/2012 jichi
 
+__all__ = 'SettingsProxy',
+
+import json
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QSettings, QTimer, QSize
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dwarn
@@ -9,11 +12,17 @@ from sakurakit.skdebug import dwarn
 from sakurakit.sktypes import to_int, to_unicode #to_long
 import defs, config
 
-__all__ = ['SettingsProxy']
-
 # http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 # win32con
 VK_SHIFT = 0x10
+
+def parse_json(v): # str -> object or None
+  if v:
+    try: return json.loads(v)
+    except: pass
+
+def unparse_json(v): # object -> str
+  return json.dumps(v, ensure_ascii=False)
 
 def to_bool(value):
   return value == True or value  == 'true'
@@ -24,7 +33,7 @@ def to_bool(value):
 
 def to_float(value, default=0.0):
   try: return float(value)
-  except Exception: return default
+  except: return default
 
 def to_size(value):
   """
@@ -32,7 +41,7 @@ def to_size(value):
   @return  (int w, int h)
   """
   try: return value.width(), value.height()
-  except Exception: return 0,0
+  except: return 0,0
 
 def to_list(value):
   """
@@ -40,7 +49,7 @@ def to_list(value):
   @return  set
   """
   try: return value if isinstance(value, list) else list(value) if value is not None else list()
-  except Exception: return list()
+  except: return list()
 
 def to_set(value):
   """
@@ -48,7 +57,7 @@ def to_set(value):
   @return  set
   """
   try: return value if isinstance(value, set) else set(value) if value is not None else set()
-  except Exception: return set()
+  except: return set()
 
 def to_dict(value):
   """
@@ -104,9 +113,8 @@ class Settings(QSettings):
   def springBoardSize(self): return to_size(self.value('SpringBoardSize'))
 
   ## Spring board ##
-
-  def setSpringBoardLaunchesGame(self, value): self.setValue('SpringBoardLaunch', value)
-  def springBoardLaunchesGame(self): return to_bool(self.value('SpringBoardLaunch', False))
+  #def setSpringBoardLaunchesGame(self, value): self.setValue('SpringBoardLaunch', value)
+  #def springBoardLaunchesGame(self): return to_bool(self.value('SpringBoardLaunch', False))
 
   ## Kagami ##
 
@@ -126,8 +134,7 @@ class Settings(QSettings):
       self.setValue('UserId', value)
       self.userIdChanged.emit(value)
 
-  def setUserName(self, value):
-    self.setValue('UserName', value)
+  def setUserName(self, value): self.setValue('UserName', value)
   def userName(self): return self.value('UserName')
 
   # TODO: encrypt password
@@ -137,6 +144,9 @@ class Settings(QSettings):
   loginChanged = Signal(unicode, unicode) # username, password
   def invalidateLogin(self):
     self.loginChanged.emit(self.userName(), self.userPassword())
+
+  def uiLanguage(self): return self.value('Language')
+  def setUiLanguage(self, value): self.setValue('Language', value)
 
   userLanguageChanged = Signal(str)
   def userLanguage(self):
@@ -194,6 +204,22 @@ class Settings(QSettings):
       self.setValue('MainlandChina', value)
       self.mainlandChinaChanged.emit(value)
 
+  ## Proxies ##
+
+  proxyScapeChanged = Signal(bool)
+  def proxyScape(self): return to_bool(self.value('ProxyScape'))
+  def setProxyScape(self, value):
+    if value != self.proxyScape():
+      self.setValue('ProxyScape', value)
+      self.proxyScapeChanged.emit(value)
+
+  proxyBaiduChanged = Signal(bool)
+  def proxyBaidu(self): return to_bool(self.value('ProxyBaidu'))
+  def setProxyBaidu(self, value):
+    if value != self.proxyBaidu():
+      self.setValue('ProxyBaidu', value)
+      self.proxyBaiduChanged.emit(value)
+
   ## i18n ##
 
   blockedLanguagesChanged = Signal(set)
@@ -208,6 +234,82 @@ class Settings(QSettings):
     if value != self.blockedLanguages():
       self.setValue('BlockedLanguages', value)
       self.blockedLanguagesChanged.emit(value)
+
+  ## Romanize ##
+
+  rubyTypeChanged = Signal(str)
+  def rubyType(self):
+    return self.value('FuriganaType', 'hiragana')
+  def setRubyType(self, value):
+    if value != self.rubyType():
+      self.setValue('FuriganaType', value)
+      self.rubyTypeChanged.emit(value)
+
+  rubyJaInvertedChanged = Signal(bool)
+  def isRubyJaInverted(self):
+    return to_bool(self.value('InvertRubyJa'))
+  def setRubyJaInverted(self, t):
+    if t != self.isRubyJaInverted():
+      self.setValue('InvertRubyJa', t)
+      self.rubyJaInvertedChanged.emit(t)
+
+  rubyLanguagesChanged = Signal(str)
+  rubyTextEnabledChanged = Signal(bool)
+  def isRubyTextEnabled(self): return to_bool(self.value('RubyText', True))
+  def setRubyTextEnabled(self, value):
+    if value != self.isRubyTextEnabled():
+      self.setValue('RubyText', value)
+      self.rubyTextEnabledChanged.emit(value)
+
+  rubyTranslationEnabledChanged = Signal(bool)
+  def isRubyTranslationEnabled(self): return to_bool(self.value('RubyTranslation'))
+  def setRubyTranslationEnabled(self, value):
+    if value != self.isRubyTranslationEnabled():
+      self.setValue('RubyTranslation', value)
+      self.rubyTranslationEnabledChanged.emit(value)
+
+  rubyInvertedChanged = Signal(bool)
+  def isRubyInverted(self):
+    return to_bool(self.value('InvertRuby'))
+  def setRubyInverted(self, t):
+    if t != self.isRubyInverted():
+      self.setValue('InvertRuby', t)
+      self.rubyInvertedChanged.emit(t)
+
+  chineseRubyTypeChanged = Signal(unicode)
+  def chineseRubyType(self): return self.value('ChineseRubyType', 'pinyin')
+  def setChineseRubyType(self, value):
+    if value != self.chineseRubyType():
+      self.setValue('ChineseRubyType', value)
+      self.chineseRubyTypeChanged.emit(value)
+
+  chineseRubyEnabledChanged = Signal(bool)
+  def isChineseRubyEnabled(self): return to_bool(self.value('ChineseRuby', True))
+  def setChineseRubyEnabled(self, value):
+    if value != self.isChineseRubyEnabled():
+      self.setValue('ChineseRuby', value)
+      self.chineseRubyEnabledChanged.emit(value)
+
+  koreanRubyEnabledChanged = Signal(bool)
+  def isKoreanRubyEnabled(self): return to_bool(self.value('KoreanRuby', True))
+  def setKoreanRubyEnabled(self, value):
+    if value != self.isKoreanRubyEnabled():
+      self.setValue('KoreanRuby', value)
+      self.koreanRubyEnabledChanged.emit(value)
+
+  hanjaRubyEnabledChanged = Signal(bool)
+  def isHanjaRubyEnabled(self): return to_bool(self.value('HanjaRuby', True))
+  def setHanjaRubyEnabled(self, value):
+    if value != self.isHanjaRubyEnabled():
+      self.setValue('HanjaRuby', value)
+      self.hanjaRubyEnabledChanged.emit(value)
+
+  romajaRubyEnabledChanged = Signal(bool)
+  def isRomajaRubyEnabled(self): return to_bool(self.value('RomajaRuby', True))
+  def setRomajaRubyEnabled(self, value):
+    if value != self.isRomajaRubyEnabled():
+      self.setValue('RomajaRuby', value)
+      self.romajaRubyEnabledChanged.emit(value)
 
   ## OCR ##
 
@@ -246,7 +348,12 @@ class Settings(QSettings):
       self.setValue('OCRRefreshInterval', value)
       self.ocrRefreshIntervalChanged.emit(value)
 
-  ## AppLocale ##
+  ## Locale ##
+
+  def gameLaunchLanguage(self):
+    return self.value('GameLaunchLanguage', 'ja')
+  def setGameLaunchLanguage(self, value):
+    self.setValue('GameLaunchLanguage', value)
 
   #applocEnabledChanged = Signal(bool)
   #def isApplocEnabled(self):
@@ -450,6 +557,15 @@ class Settings(QSettings):
       self.setValue('BingColor', value)
       self.bingColorChanged.emit(value)
 
+  naverColorChanged = Signal(str)
+  def naverColor(self):
+    return self.value('NaverColor', config.SETTINGS_NAVER_COLOR)
+  def setNaverColor(self, value):
+    value = value or config.SETTINGS_NAVER_COLOR
+    if value != self.naverColor():
+      self.setValue('NaverColor', value)
+      self.naverColorChanged.emit(value)
+
   baiduColorChanged = Signal(str)
   def baiduColor(self):
     return self.value('BaiduColor', config.SETTINGS_BAIDU_COLOR)
@@ -467,15 +583,6 @@ class Settings(QSettings):
     if value != self.lecOnlineColor():
       self.setValue('LecOnlineColor', value)
       self.lecOnlineColorChanged.emit(value)
-
-  lougoColorChanged = Signal(str)
-  def lougoColor(self):
-    return self.value('LougoColor', config.SETTINGS_LOUGO_COLOR)
-  def setLougoColor(self, value):
-    value = value or config.SETTINGS_LOUGO_COLOR
-    if value != self.lougoColor():
-      self.setValue('LougoColor', value)
-      self.lougoColorChanged.emit(value)
 
   transruColorChanged = Signal(str)
   def transruColor(self):
@@ -587,12 +694,12 @@ class Settings(QSettings):
       self.setValue('UserCommentEnabled', value)
       self.allowsUserCommentChanged.emit(value)
 
-  allowsTextToSpeechChanged = Signal(bool)
-  def allowsTextToSpeech(self): return to_bool(self.value('TextToSpeechEnabled', True))
-  def setAllowsTextToSpeech(self, value):
-    if value != self.allowsTextToSpeech():
-      self.setValue('TextToSpeechEnabled', value)
-      self.allowsTextToSpeechChanged.emit(value)
+  #allowsTextToSpeechChanged = Signal(bool)
+  #def allowsTextToSpeech(self): return to_bool(self.value('TextToSpeechEnabled', True))
+  #def setAllowsTextToSpeech(self, value):
+  #  if value != self.allowsTextToSpeech():
+  #    self.setValue('TextToSpeechEnabled', value)
+  #    self.allowsTextToSpeechChanged.emit(value)
 
   ## Shortcuts ##
 
@@ -646,11 +753,63 @@ class Settings(QSettings):
       self.setValue('GrabHotkey', value)
       self.grabHotkeyChanged.emit(value)
 
+  # OCR
+  ocrHotkeyEnabledChanged = Signal(bool)
+  def isOcrHotkeyEnabled(self):
+    return to_bool(self.value('OCRHotkeyEnabled')) # disable hotkey by default
+  def setOcrHotkeyEnabled(self, value):
+    if value != self.isOcrHotkeyEnabled():
+      self.setValue('OCRHotkeyEnabled', value)
+      self.ocrHotkeyEnabledChanged.emit(value)
+
+  ocrHotkeyChanged = Signal(str)
+  def ocrHotkey(self):
+    return self.value('OCRHotkey', 'Alt\nO') # alt + o, \n = hkman.HOTKEY_DELIM
+  def setOcrHotkey(self, value):
+    if value != self.ocrHotkey():
+      self.setValue('OCRHotkey', value)
+      self.ocrHotkeyChanged.emit(value)
+
+  # Speech recognition
+  srHotkeyEnabledChanged = Signal(bool)
+  def isSrHotkeyEnabled(self):
+    return to_bool(self.value('SpeechRecognitionHotkeyEnabled')) # disable hotkey by default
+  def setSrHotkeyEnabled(self, value):
+    if value != self.isSrHotkeyEnabled():
+      self.setValue('SpeechRecognitionHotkeyEnabled', value)
+      self.srHotkeyEnabledChanged.emit(value)
+
+  srHotkeyChanged = Signal(str)
+  def srHotkey(self):
+    return self.value('SpeechRecognitionHotkey', 'Alt\nR') # alt + r, \n = hkman.HOTKEY_DELIM
+  def setSrHotkey(self, value):
+    if value != self.srHotkey():
+      self.setValue('SpeechRecognitionHotkey', value)
+      self.srHotkeyChanged.emit(value)
+
+  ## Speech recognition ##
+
+  audioDeviceIndexChanged = Signal(int)
+  def audioDeviceIndex(self):
+    return to_int(self.value('AudioDeviceIndex', 0))
+  def setAudioDeviceIndex(self, value):
+    if value != self.audioDeviceIndex():
+      self.setValue('AudioDeviceIndex', value)
+      self.audioDeviceIndexChanged.emit(value)
+
+  speechRecognitionLanguageChanged = Signal(str)
+  def speechRecognitionLanguage(self):
+    return self.value('SpeechRecognitionLanguage', 'ja')
+  def setSpeechRecognitionLanguage(self, value):
+    if value != self.speechRecognitionLanguage():
+      self.setValue('SpeechRecognitionLanguage', value)
+      self.speechRecognitionLanguageChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)
   def speaksGameText(self):
-    return to_bool(self.value('SpeakGameText'))
+    return to_bool(self.value('SpeakGameText', True))
   def setSpeaksGameText(self, value):
     if value != self.speaksGameText():
       self.setValue('SpeakGameText', value)
@@ -664,7 +823,7 @@ class Settings(QSettings):
       self.setValue('VoiceCharacter', value)
       self.voiceCharacterEnabledChanged.emit(value)
 
-  #def isSubtitleVoiceEnabled(self): return to_bool(self.value('SubtitleVoice'))
+  def isSubtitleVoiceEnabled(self): return to_bool(self.value('SubtitleVoice'))
 
   #googleTtsEnabledChanged = Signal(bool)
   #def isGoogleTtsEnabled(self):
@@ -732,19 +891,19 @@ class Settings(QSettings):
 
   ttsEngineChanged = Signal(unicode)
   def ttsEngine(self):
-    return to_unicode(self.value('TTSEngine'))
+    return to_unicode(self.value('TTSEngine', 'baidu')) # Baidu by default
   def setTtsEngine(self, value):
     if value != self.ttsEngine():
       self.setValue('TTSEngine', value)
       self.ttsEngineChanged.emit(value)
 
-  googleTtsLanguageChanged = Signal(str)
-  def googleTtsLanguage(self):
-    return self.value('GoogleTTSLanguage', 'ja')
-  def setGoogleTtsLanguage(self, value):
-    if value != self.googleTtsLanguage():
-      self.setValue('GoogleTTSLanguage', value)
-      self.googleTtsLanguageChanged.emit(value)
+  #googleTtsLanguageChanged = Signal(str)
+  #def googleTtsLanguage(self):
+  #  return self.value('GoogleTTSLanguage', 'ja')
+  #def setGoogleTtsLanguage(self, value):
+  #  if value != self.googleTtsLanguage():
+  #    self.setValue('GoogleTTSLanguage', value)
+  #    self.googleTtsLanguageChanged.emit(value)
 
   zunkoLocationChanged = Signal(unicode)
   def zunkoLocation(self):
@@ -762,12 +921,33 @@ class Settings(QSettings):
       self.setValue('YukariLocation', value)
       self.yukariLocationChanged.emit(value)
 
-  def sapiSpeeds(self):
+  def ttsGenders(self):
+    """
+    @return  {str ttskey:str 'f' or 'm'}
+    """
+    return to_dict(self.value('TTSGenders'))
+  def setTtsGenders(self, value): self.setValue('TTSGenders', value)
+
+  def ttsSpeeds(self):
     """
     @return  {str ttskey:int speed}
     """
-    return to_dict(self.value('SAPISpeeds'))
-  def setSapiSpeeds(self, value): self.setValue('SAPISpeeds', value)
+    return to_dict(self.value('TTSSpeeds'))
+  def setTtsSpeeds(self, value): self.setValue('TTSSpeeds', value)
+
+  def ttsVolumes(self):
+    """
+    @return  {str ttskey:int volume}
+    """
+    return to_dict(self.value('TTSVolumes'))
+  def setTtsVolumes(self, value): self.setValue('TTSVolumes', value)
+
+  def ttsPitches(self):
+    """
+    @return  {str ttskey:int pitch}
+    """
+    return to_dict(self.value('TTSPitches'))
+  def setTtsPitches(self, value): self.setValue('TTSPitches', value)
 
   ## Game launcher ##
 
@@ -939,6 +1119,16 @@ class Settings(QSettings):
     elif name == 'ja-en':
       self.setLingoesJaEnEnabled(v)
 
+  # Locations
+
+  grabLocationChanged = Signal(unicode)
+  def grabLocation(self):
+    return to_unicode(self.value('GrabLocation'))
+  def setGrabLocation(self, value):
+    if value != self.grabLocation():
+      self.setValue('GrabLocation', value)
+      self.grabLocationChanged.emit(value)
+
   # JMDict
 
   def isJMDictFrEnabled(self): return to_bool(self.value('JMDictFr'))
@@ -997,13 +1187,8 @@ class Settings(QSettings):
   #    self.setValue('MsimeParserEnabled', value)
   #    self.msimeParserEnabledChanged.emit(value)
 
-  rubyTypeChanged = Signal(str)
-  def rubyType(self):
-    return self.value('FuriganaType', 'hiragana')
-  def setRubyType(self, value):
-    if value != self.rubyType():
-      self.setValue('FuriganaType', value)
-      self.rubyTypeChanged.emit(value)
+  def retranslatorSettings(self): return parse_json(self.value('Retranslator'))
+  def setRetranslatorSettings(self, v): return self.setValue('Retranslator', unparse_json(v))
 
   def jbeijingLocation(self):
     return to_unicode(self.value('JBeijingLocation'))
@@ -1043,6 +1228,14 @@ class Settings(QSettings):
       self.setValue('InfoseekEnabled', value)
       self.infoseekEnabledChanged.emit(value)
 
+  infoseekRubyEnabledChanged = Signal(bool)
+  def isInfoseekRubyEnabled(self):
+    return to_bool(self.value('InfoseekRubyEnabled'))
+  def setInfoseekRubyEnabled(self, value):
+    if value != self.isInfoseekRubyEnabled():
+      self.setValue('InfoseekRubyEnabled', value)
+      self.infoseekRubyEnabledChanged.emit(value)
+
   exciteEnabledChanged = Signal(bool)
   def isExciteEnabled(self):
     return to_bool(self.value('ExciteEnabled'))
@@ -1059,6 +1252,14 @@ class Settings(QSettings):
       self.setValue('GoogleEnabled', value)
       self.googleEnabledChanged.emit(value)
 
+  googleRubyEnabledChanged = Signal(bool)
+  def isGoogleRubyEnabled(self):
+    return to_bool(self.value('GoogleRubyEnabled'))
+  def setGoogleRubyEnabled(self, value):
+    if value != self.isGoogleRubyEnabled():
+      self.setValue('GoogleRubyEnabled', value)
+      self.googleRubyEnabledChanged.emit(value)
+
   bingEnabledChanged = Signal(bool)
   def isBingEnabled(self):
     return to_bool(self.value('BingEnabled', True)) # the only one enabled
@@ -1067,6 +1268,30 @@ class Settings(QSettings):
       self.setValue('BingEnabled', value)
       self.bingEnabledChanged.emit(value)
 
+  bingRubyEnabledChanged = Signal(bool)
+  def isBingRubyEnabled(self):
+    return to_bool(self.value('BingRubyEnabled'))
+  def setBingRubyEnabled(self, value):
+    if value != self.isBingRubyEnabled():
+      self.setValue('BingRubyEnabled', value)
+      self.bingRubyEnabledChanged.emit(value)
+
+  naverEnabledChanged = Signal(bool)
+  def isNaverEnabled(self):
+    return to_bool(self.value('NaverEnabled'))
+  def setNaverEnabled(self, value):
+    if value != self.isNaverEnabled():
+      self.setValue('NaverEnabled', value)
+      self.naverEnabledChanged.emit(value)
+
+  naverRubyEnabledChanged = Signal(bool)
+  def isNaverRubyEnabled(self):
+    return to_bool(self.value('NaverRubyEnabled'))
+  def setNaverRubyEnabled(self, value):
+    if value != self.isNaverRubyEnabled():
+      self.setValue('NaverRubyEnabled', value)
+      self.naverRubyEnabledChanged.emit(value)
+
   baiduEnabledChanged = Signal(bool)
   def isBaiduEnabled(self):
     return to_bool(self.value('BaiduEnabled'))
@@ -1074,6 +1299,14 @@ class Settings(QSettings):
     if value != self.isBaiduEnabled():
       self.setValue('BaiduEnabled', value)
       self.baiduEnabledChanged.emit(value)
+
+  baiduRubyEnabledChanged = Signal(bool)
+  def isBaiduRubyEnabled(self):
+    return to_bool(self.value('BaiduRubyEnabled'))
+  def setBaiduRubyEnabled(self, value):
+    if value != self.isBaiduRubyEnabled():
+      self.setValue('BaiduRubyEnabled', value)
+      self.baiduRubyEnabledChanged.emit(value)
 
   lecOnlineEnabledChanged = Signal(bool)
   def isLecOnlineEnabled(self):
@@ -1091,15 +1324,6 @@ class Settings(QSettings):
       self.setValue('TransruEnabled', value)
       self.transruEnabledChanged.emit(value)
 
-  lougoEnabledChanged = Signal(bool)
-  def isLougoEnabled(self):
-    #return to_bool(self.value('LougoEnabled'))
-    return False # always disable
-  def setLougoEnabled(self, value):
-    if value != self.isLougoEnabled():
-      self.setValue('LougoEnabled', value)
-      self.lougoEnabledChanged.emit(value)
-
   machineTranslatorChanged = Signal()
 
   hanVietEnabledChanged = Signal(bool)
@@ -1110,6 +1334,14 @@ class Settings(QSettings):
       self.setValue('HanVietEnabled', value)
       self.hanVietEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
+
+  hanVietRubyEnabledChanged = Signal(bool)
+  def isHanVietRubyEnabled(self):
+    return to_bool(self.value('HanVietRubyEnabled'))
+  def setHanVietRubyEnabled(self, value):
+    if value != self.isHanVietRubyEnabled():
+      self.setValue('HanVietRubyEnabled', value)
+      self.hanVietRubyEnabledChanged.emit(value)
 
   atlasEnabledChanged = Signal(bool)
   def isAtlasEnabled(self):
@@ -1181,6 +1413,48 @@ class Settings(QSettings):
       self.setValue('LecScriptEnabled', value)
       self.lecScriptEnabledChanged.emit(value)
 
+  lecOnlineScriptEnabledChanged = Signal(bool)
+  def isLecOnlineScriptEnabled(self): return to_bool(self.value('LecOnlineScriptEnabled', True))
+  def setLecOnlineScriptEnabled(self, value):
+    if value != self.isLecOnlineScriptEnabled():
+      self.setValue('LecOnlineScriptEnabled', value)
+      self.lecOnlineScriptEnabledChanged.emit(value)
+
+  googleScriptEnabledChanged = Signal(bool)
+  def isGoogleScriptEnabled(self): return to_bool(self.value('GoogleScriptEnabled', True))
+  def setGoogleScriptEnabled(self, value):
+    if value != self.isGoogleScriptEnabled():
+      self.setValue('GoogleScriptEnabled', value)
+      self.googleScriptEnabledChanged.emit(value)
+
+  bingScriptEnabledChanged = Signal(bool)
+  def isBingScriptEnabled(self): return to_bool(self.value('BingScriptEnabled', True))
+  def setBingScriptEnabled(self, value):
+    if value != self.isBingScriptEnabled():
+      self.setValue('BingScriptEnabled', value)
+      self.bingScriptEnabledChanged.emit(value)
+
+  infoseekScriptEnabledChanged = Signal(bool)
+  def isInfoseekScriptEnabled(self): return to_bool(self.value('InfoseekScriptEnabled', True))
+  def setInfoseekScriptEnabled(self, value):
+    if value != self.isInfoseekScriptEnabled():
+      self.setValue('InfoseekScriptEnabled', value)
+      self.infoseekScriptEnabledChanged.emit(value)
+
+  exciteScriptEnabledChanged = Signal(bool)
+  def isExciteScriptEnabled(self): return to_bool(self.value('ExciteScriptEnabled', True))
+  def setExciteScriptEnabled(self, value):
+    if value != self.isExciteScriptEnabled():
+      self.setValue('ExciteScriptEnabled', value)
+      self.exciteScriptEnabledChanged.emit(value)
+
+  transruScriptEnabledChanged = Signal(bool)
+  def isTransruScriptEnabled(self): return to_bool(self.value('TransruScriptEnabled', True))
+  def setTransruScriptEnabled(self, value):
+    if value != self.isTransruScriptEnabled():
+      self.setValue('TransruScriptEnabled', value)
+      self.transruScriptEnabledChanged.emit(value)
+
   #translationScriptJaEnabledChanged = Signal(bool)
   #def isTranslationScriptJaEnabled(self): return to_bool(self.value('TranslationScriptJaEnabled', True))
   #def setTranslationScriptJaEnabled(self, value):
@@ -1212,16 +1486,47 @@ class Settings(QSettings):
       self.setValue('ConvertsChinese', value)
       self.convertsChineseChanged.emit(value)
 
+  chineseVariantChanged = Signal(str)
+  def chineseVariant(self):
+    return to_unicode(self.value('ChineseVariant', 'tw')) # Taiwan by default
+  def setChineseVariant(self, value):
+    if value != self.chineseVariant():
+      self.setValue('ChineseVariant', value)
+      self.chineseVariantChanged.emit(value)
+
+  yueEnabledChanged = Signal(bool)
+  def isYueEnabled(self):
+    return to_bool(self.value('YueEnabled'))
+  def setYueEnabled(self, value):
+    if value != self.isYueEnabled():
+      self.setValue('YueEnabled', value)
+      self.yueEnabledChanged.emit(value)
+
   ## Shared Dictionary ##
 
   termEnabledChanged = Signal(bool)
   def isTermEnabled(self): return to_bool(self.value('TermEnabled', True))
 
   termMarkedChanged = Signal(bool)
-  def isTermMarked(self): return to_bool(self.value('TermMarked'))
+  def isTermMarked(self): return to_bool(self.value('TermMarked', True))
+  def setTermMarked(self, t):
+    if t != self.isTermMarked():
+      self.setValue('TermMarked', t)
+      self.termMarkedChanged.emit(t)
 
   hentaiEnabledChanged = Signal(bool)
   def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
+  def setHentaiEnabled(self, t):
+    if t != self.isHentaiEnabled():
+      self.setValue('Hentai', t)
+      self.hentaiEnabledChanged.emit(t)
+
+  #translationSyntaxEnabledChanged = Signal(bool)
+  #def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))
+  #def setTranslationSyntaxEnabled(self, t):
+  #  if t != self.isTranslationSyntaxEnabled():
+  #    self.setValue('RBMT', t)
+  #    self.translationSyntaxEnabledChanged.emit(t)
 
   ## Fonts ##
 
@@ -1612,10 +1917,10 @@ class SettingsProxy(QObject):
     g.exciteColorChanged.connect(self.exciteColorChanged)
     g.bingColorChanged.connect(self.bingColorChanged)
     g.googleColorChanged.connect(self.googleColorChanged)
+    g.naverColorChanged.connect(self.naverColorChanged)
     g.baiduColorChanged.connect(self.baiduColorChanged)
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.transruColorChanged.connect(self.transruColorChanged)
-    g.lougoColorChanged.connect(self.lougoColorChanged)
     g.hanVietColorChanged.connect(self.hanVietColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
     g.fastaitColorChanged.connect(self.fastaitColorChanged)
@@ -1625,7 +1930,11 @@ class SettingsProxy(QObject):
     g.lecColorChanged.connect(self.lecColorChanged)
 
     g.rubyTypeChanged.connect(self.rubyTypeChanged)
+    g.rubyJaInvertedChanged.connect(self.rubyJaInvertedChanged)
     g.convertsChineseChanged.connect(self.convertsChineseChanged)
+
+    #g.baiduRubyEnabledChanged.connect(self.baiduRubyEnabledChanged)
+    #g.naverRubyEnabledChanged.connect(self.naverRubyEnabledChanged)
 
     #g.msimeParserEnabledChanged.connect(self.msimeParserEnabledChanged)
     #g.meCabEnabledChanged.connect(self.meCabEnabledChanged)
@@ -1634,9 +1943,10 @@ class SettingsProxy(QObject):
 
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
-    self.hentaiChanged.connect(g.hentaiEnabledChanged)
+    g.hentaiEnabledChanged.connect(self.hentaiChanged)
+
     self.termEnabledChanged.connect(g.termEnabledChanged)
-    self.termMarkedChanged.connect(g.termMarkedChanged)
+    #self.termMarkedChanged.connect(g.termMarkedChanged)
 
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
     self.copiesGameSubtitleChanged.connect(g.copiesGameSubtitleChanged)
@@ -1673,14 +1983,21 @@ class SettingsProxy(QObject):
     g.voiceCharacterEnabledChanged.connect(self.voiceCharacterEnabledChanged)
     g.speaksGameTextChanged.connect(self.speaksGameTextChanged)
 
-  def setHentai(self, value):
-    if value != self.hentai:
-      global_().setValue('Hentai', value)
-      self.hentaiChanged.emit(value)
+    g.rubyInvertedChanged.connect(self.rubyInvertedChanged)
+    g.rubyTextEnabledChanged.connect(self.rubyTextEnabledChanged)
+    g.rubyTranslationEnabledChanged.connect(self.rubyTranslationEnabledChanged)
+
+    g.chineseRubyEnabledChanged.connect(self.chineseRubyEnabledChanged)
+    g.chineseRubyTypeChanged.connect(self.chineseRubyTypeChanged)
+
+    g.koreanRubyEnabledChanged.connect(self.koreanRubyEnabledChanged)
+    g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
+    g.hanjaRubyEnabledChanged.connect(self.hanjaRubyEnabledChanged)
+
   hentaiChanged = Signal(bool)
   hentai = Property(bool,
       lambda _: global_().isHentaiEnabled(),
-      setHentai,
+      lambda _, t: global_().setHentaiEnabled(t),
       notify=hentaiChanged)
 
   def setGameTextCapacity(self, value):
@@ -1703,15 +2020,15 @@ class SettingsProxy(QObject):
       setTermEnabled,
       notify=termEnabledChanged)
 
-  def setTermMarked(self, value):
-    if value != self.termMarked:
-      global_().setValue('TermMarked', value)
-      self.termMarkedChanged.emit(value)
-  termMarkedChanged = Signal(bool)
-  termMarked = Property(bool,
-      lambda _: global_().isTermMarked(),
-      setTermMarked,
-      notify=termMarkedChanged)
+  #def setTermMarked(self, value):
+  #  if value != self.termMarked:
+  #    global_().setValue('TermMarked', value)
+  #    self.termMarkedChanged.emit(value)
+  #termMarkedChanged = Signal(bool)
+  #termMarked = Property(bool,
+  #    lambda _: global_().isTermMarked(),
+  #    setTermMarked,
+  #    notify=termMarkedChanged)
 
   #def setWindowHookEnabled(self, value):
   #  if value != self.windowHookEnabled:
@@ -1745,7 +2062,8 @@ class SettingsProxy(QObject):
       lambda _, v: global_().setVoiceCharacterEnabled(v),
       notify=voiceCharacterEnabledChanged)
 
-  #subtitleVoiceEnabled = bool_property('SubtitleVoice', False)
+  subtitleVoiceEnabledChanged = Signal(bool)
+  subtitleVoiceEnabled = bool_property('SubtitleVoice', False, notify=subtitleVoiceEnabledChanged)
 
   japaneseFontChanged = Signal(unicode)
   japaneseFont = unicode_property('JapaneseFont', config.FONT_JA, notify=japaneseFontChanged)
@@ -1808,6 +2126,15 @@ class SettingsProxy(QObject):
   rubyTypeChanged = Signal(unicode)
   rubyType = unicode_property('FuriganaType', 'hiragana', notify=rubyTypeChanged)
 
+  rubyJaInvertedChanged = Signal(bool)
+  rubyJaInverted = bool_property('InvertRubyJa', False, notify=rubyJaInvertedChanged)
+
+  #baiduRubyEnabledChanged = Signal(bool)
+  #baiduRubyEnabled = bool_property('BaiduRubyEnabled', True, notify=baiduRubyEnabledChanged)
+
+  #naverRubyEnabledChanged = Signal(bool)
+  #naverRubyEnabled = bool_property('NaverRubyEnabled', True, notify=naverRubyEnabledChanged)
+
   springBoardWallpaperUrlChanged = Signal(unicode)
   springBoardWallpaperUrl = unicode_property('SpringBoardWallpaperUrl', notify=springBoardWallpaperUrlChanged)
 
@@ -1819,6 +2146,29 @@ class SettingsProxy(QObject):
 
   #timeZoneEnabledChanged = Signal(bool)
   #timeZoneEnabled = bool_property('TimeZoneEnabled', True, notify=timeZoneEnabledChanged)
+
+  rubyTextEnabledChanged = Signal(bool)
+  rubyTextEnabled = bool_property('RubyText', True, notify=rubyTextEnabledChanged)
+  rubyTranslationEnabledChanged = Signal(bool)
+  rubyTranslationEnabled = bool_property('RubyTranslation', False, notify=rubyTranslationEnabledChanged)
+
+  rubyInvertedChanged = Signal(bool)
+  rubyInverted = bool_property('InvertRuby', False, notify=rubyInvertedChanged)
+
+  romajaRubyEnabledChanged = Signal(bool)
+  romajaRubyEnabled = bool_property('RomajaRuby', True, notify=romajaRubyEnabledChanged)
+
+  hanjaRubyEnabledChanged = Signal(bool)
+  hanjaRubyEnabled = bool_property('HanjaRuby', True, notify=hanjaRubyEnabledChanged)
+
+  koreanRubyEnabledChanged = Signal(bool)
+  koreanRubyEnabled = bool_property('KoreanRuby', True, notify=koreanRubyEnabledChanged)
+
+  chineseRubyEnabledChanged = Signal(bool)
+  chineseRubyEnabled = bool_property('ChineseRuby', True, notify=chineseRubyEnabledChanged)
+
+  chineseRubyTypeChanged = Signal(unicode)
+  chineseRubyType = unicode_property('ChineseRubyType', 'pinyin', notify=chineseRubyTypeChanged)
 
   grimoireNormalizedXChanged = Signal(float)
   grimoireNormalizedX = float_property('GrimoireNormalizedX', 0.0, notify=grimoireNormalizedXChanged)
@@ -1864,12 +2214,12 @@ class SettingsProxy(QObject):
   bingColor = unicode_property('BingColor', config.SETTINGS_BING_COLOR, notify=bingColorChanged)
   baiduColorChanged = Signal(unicode)
   baiduColor = unicode_property('BaiduColor', config.SETTINGS_BAIDU_COLOR, notify=baiduColorChanged)
+  naverColorChanged = Signal(unicode)
+  naverColor = unicode_property('NaverColor', config.SETTINGS_NAVER_COLOR, notify=naverColorChanged)
   lecOnlineColorChanged = Signal(unicode)
   lecOnlineColor = unicode_property('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR, notify=lecOnlineColorChanged)
   transruColorChanged = Signal(unicode)
   transruColor = unicode_property('TransruColor', config.SETTINGS_TRANSRU_COLOR, notify=transruColorChanged)
-  lougoColorChanged = Signal(unicode)
-  lougoColor = unicode_property('LougoColor', config.SETTINGS_LOUGO_COLOR, notify=lougoColorChanged)
   hanVietColorChanged = Signal(unicode)
   hanVietColor = unicode_property('HanVietColor', config.SETTINGS_HANVIET_COLOR, notify=hanVietColorChanged)
   jbeijingColorChanged = Signal(unicode)
@@ -1915,6 +2265,8 @@ class SettingsProxy(QObject):
   grimoireZoomFactor = float_property('GrimoireZoomFactor', config.SETTINGS_ZOOM_FACTOR)
   grimoireWidthFactor = float_property('GrimoireWidthFactor', config.SETTINGS_WIDTH_FACTOR)
   grimoireShadowOpacity = float_property('GrimoireShadowOpacity', config.SETTINGS_SHADOW_OPACITY)
+
+  grimoireAutoHideDock = bool_property('GrimoireAutoHideDock', True)
 
   shioriWidth = int_property('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
 

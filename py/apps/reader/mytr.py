@@ -2,7 +2,7 @@
 # mytr.py
 # 10/8/2012 jichi
 
-__all__ = ['my', 'mytr_']
+__all__ = 'my', 'mytr_'
 
 from PySide.QtCore import QObject
 from sakurakit.skclass import memoized
@@ -24,8 +24,10 @@ class reader(QObject):
       self.tr("Game Board"),
       self.tr("Subtitle Maker"), self.tr("Subtitle maker"),
       self.tr("Subtitle Editor"), self.tr("Subtitle editor"),
-      self.tr("Post Editor"), #self.tr("Post editor"),
+      self.tr("Post Editor"),
+      self.tr("Topic Editor"),
       self.tr("New Post"),
+      self.tr("New Topic"),
       self.tr("Game Settings"),
       self.tr("Game Finder"),
       self.tr("Game References"),
@@ -37,16 +39,21 @@ class reader(QObject):
       self.tr("Japanese Dictionary"),
       self.tr("Text Reader"),
 
+      self.tr("Translator"),
+
       self.tr("YouTube Downloader"),
       self.tr("Download YouTube Videos"), self.tr("Download YouTube videos"),
 
       self.tr("Test Regular Expression"), self.tr("Test regular expression"),
       self.tr("Test BBCode"), #self.tr("Test BBCode"),
       self.tr("Test Machine Translation"), self.tr("Test machine translation"),
-
-      self.tr("Title"),
+      self.tr("Test Speech Recognition"), self.tr("Test speech recognition"),
+      self.tr("Test Japanese Syntax Tree"), self.tr("Test Japanese syntax tree"),
+      self.tr("Test Japanese Syntax"),
+      self.tr("Japanese Syntax Tree"),
 
       self.tr("Note"),
+      self.tr("Replay"),
 
       # Messages
 
@@ -61,6 +68,11 @@ class reader(QObject):
 
       self.tr("Game engine"),
 
+      self.tr("with tone"),
+      self.tr("without tone"),
+
+      self.tr("Recordings"),
+
       self.tr("Matched text"),
       self.tr("Replaced text"),
 
@@ -73,12 +85,19 @@ class reader(QObject):
 
       self.tr("New"),
 
-      self.tr("Original text"), self.tr("original text"),
+      self.tr("C/K Ruby"),
+
+      self.tr("Taiwan Standard Chinese"),
+      self.tr("Hong Kong Traditional Chinese"),
+      self.tr("Japanese Kanji"),
+      self.tr("Korean Hanja"),
+
+      #self.tr("Original text"), self.tr("original text"),
       self.tr("Voice"),
       self.tr("Speech"),
       self.tr("Embedded"),
       self.tr("Speak"),
-      self.tr("Text-to-speech"),
+      self.tr("Text-to-speech"), self.tr("Text-To-Speech"),
 
       self.tr("Context count"),
       self.tr("Previous context"),
@@ -87,7 +106,7 @@ class reader(QObject):
       self.tr("Character"), self.tr("character"),
 
       self.tr("Dialog"), self.tr("dialog"),
-      self.tr("Chara"), self.tr("chara"),
+      #self.tr("Chara"), self.tr("chara"),
 
       self.tr('Moderate anonymous subs'),
       self.tr('Moderate anonymous terms'),
@@ -98,7 +117,7 @@ class reader(QObject):
       self.tr('Discussion'),
       self.tr('Game Discussion'),
 
-      self.tr('Serious'),
+      self.tr('Overall'),
       self.tr('Ecchi'),
       self.tr('Easy'),
 
@@ -130,14 +149,18 @@ class reader(QObject):
       self.tr("Built-in"),
       self.tr("built-in"),
 
+      self.tr("Romanize"),
+
       self.tr("Shortcuts"),
+
+      self.tr("Multilingual"), self.tr("multilingual"),
 
       self.tr("Need to install"),
       self.tr("need to install"),
 
       self.tr("Installing"),
       self.tr("Installed"),
-      self.tr("Not installed"),
+      self.tr("Not installed"), self.tr("not installed"),
 
       self.tr("Launcher"),
 
@@ -147,6 +170,7 @@ class reader(QObject):
       self.tr("Hook code"),
 
       self.tr("Update reason"),
+      self.tr("Update comment"),
 
       self.tr("Fill color"),
       self.tr("Background shadow"),
@@ -157,6 +181,20 @@ class reader(QObject):
       self.tr("Info"),
 
       self.tr("Transp"),
+
+      # Terms
+      self.tr("Name"), self.tr("name"), # used in Text Settings
+      self.tr("Names"), self.tr("names"),
+      self.tr("Yomigana"),
+      self.tr("Yomi"),
+      self.tr("Suffix"),
+
+      self.tr("TTS"),
+      self.tr("OCR"),
+      self.tr("ASR"),
+
+      self.tr("Input"),
+      self.tr("Output"),
 
       #self.tr("Background shadow color"),
       #self.tr("Game text color"),
@@ -183,8 +221,12 @@ class reader(QObject):
 
       self.tr("Capture"),
 
-      self.tr("Recognition"),
+      #self.tr("Recognition"),
       self.tr("Optical character recognition"),
+
+      self.tr("Automatic speech recognition"),
+      self.tr("Speech recognition"),
+      self.tr("Speech Recognition"),
 
       self.tr("Open in external browser"),
       self.tr("Open in external window"),
@@ -203,7 +245,8 @@ class reader(QObject):
 
       self.tr("Sync with Running Game"),
       self.tr("Update Shared Dictionary"),
-      self.tr("Update Shared Subtitles"),
+      self.tr("Update Subtitles"),
+      self.tr("Update Danmaku"),
       self.tr("Update Game Database"),
       self.tr("Update Translation Scripts"),
       self.tr("Reload Translation Scripts"),

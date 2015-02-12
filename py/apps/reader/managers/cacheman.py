@@ -2,7 +2,7 @@
 # cacheman.py
 # 7/4/2012 jichi
 
-__all__ = ['CacheJinjaUtil', 'CacheCoffeeBean']
+__all__ = 'CacheJinjaUtil', 'CacheCoffeeBean'
 
 import os, re
 from functools import partial
@@ -87,13 +87,13 @@ def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs)
 
 #@Q_Q
 class _CacheManager:
-  def __init__(self, q):
+  def __init__(self):
     self.enabled = False # bool
     self._tasks = [] # [function] not None
 
     #@memoizedproperty
     #def taskTimer
-    t = self.taskTimer = QTimer(q)
+    t = self.taskTimer = QTimer()
     t.setSingleShot(True)
     t.timeout.connect(self._doTasks)
     t.setInterval(500)
@@ -122,10 +122,9 @@ class _CacheManager:
     self._tasks.append(func)
     self.taskTimer.start()
 
-class CacheManager(QObject):
-  def __init__(self, parent=None):
-    super(CacheManager, self).__init__(parent)
-    self.__d = _CacheManager(self)
+class CacheManager:
+  def __init__(self):
+    self.__d = _CacheManager()
 
   @staticmethod
   def clearTemporaryFiles():
@@ -158,8 +157,7 @@ class CacheManager(QObject):
       return False
     skfileio.touchfile(path_tmp)
     ok = skthreads.runsync(partial(
-        _saveavatar, token, path_tmp),
-        parent=self)
+        _saveavatar, token, path_tmp))
     if ok and skfileio.rename(path_tmp, path):
       return True
     else:

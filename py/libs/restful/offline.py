@@ -2,12 +2,12 @@
 # offline.py
 # 11/16/2013 jichi
 
-__all__ = [
+__all__ = (
   'CacherPrototype',
   'CacherBase',
   'DataCacher',
   'FileCacher',
-]
+)
 
 if __name__ == '__main__': # DEBUG
   import sys

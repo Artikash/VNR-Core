@@ -70,12 +70,12 @@ exit
 
 # 6/25/2014
 Line numbers for different languages
-Total:  478897
-Python:   93184
-C/C++:   71457
-QML:   18468
-HTML/CSS/Javascript:   13475
-Ruby/HAML/SASS/Coffee:    5796
-XML/YAML:    2032
-CMD/Shell/Makefile:    1473
-TS:   46276
+Total:   49241
+Python:  110296
+C/C++:   99531
+QML:   22752
+HTML/CSS/Javascript:   29733
+Ruby/HAML/SASS/Coffee:    9821
+XML/YAML:   14371
+CMD/Shell/Makefile:    2138
+TS:   52438

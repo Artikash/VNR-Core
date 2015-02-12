@@ -199,6 +199,8 @@ finish:
 }
 
 // Modified from ITH findCallOrJmpAbs
+// Example call:
+// 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
 enum : WORD {
   word_jmp = 0x25ff
   , word_call = 0x15ff // far call
@@ -326,10 +328,12 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   enum { PatternSize = 4 };
   const DWORD size = upperBound - lowerBound - PatternSize;
   const DWORD fun = (DWORD)funcAddr;
+  // Example function call:
+  // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
   //WCHAR str[0x40];
   const DWORD mask = sigMask(sig);
   for (DWORD i = Start; i < size; i++)
-    if (*(WORD *)(lowerBound + i) == 0x15ff) {
+    if (*(WORD *)(lowerBound + i) == word_call) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
       if (t >= lowerBound && t <= upperBound - PatternSize) {
         if (*(DWORD *)t == fun)
@@ -348,6 +352,45 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   return 0;
 }
 
+DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
+{
+  enum { Start = 0x1000 };
+  enum { PatternSize = 4 };
+  const DWORD size = upperBound - lowerBound - PatternSize;
+  const DWORD fun = (DWORD)funcAddr;
+  // Example function call:
+  // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
+  //WCHAR str[0x40];
+
+  enum { MaxSigCount = 0x10 }; // mast be larger than maximum sigCount
+  DWORD masks[MaxSigCount];
+  for (DWORD k = 0; k < sigCount; k++)
+    masks[k] = sigMask(sigs[k]);
+
+  for (DWORD i = Start; i < size; i++)
+    if (*(WORD *)(lowerBound + i) == word_call) {
+      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      if (t >= lowerBound && t <= upperBound - PatternSize) {
+        if (*(DWORD *)t == fun)
+          //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
+          //OutputConsole(str);
+          for (DWORD j = i ; j > i - reverseLength; j--) {
+            DWORD ret = lowerBound + j,
+                  inst = *(DWORD *)ret;
+            for (DWORD k = 0; k < sigCount; k++)
+              if ((inst & masks[k]) == sigs[k]) // Fun entry 1.
+                //swprintf(str,L"Entry: 0x%.8X",lowerBound + j);
+                //OutputConsole(str);
+                return ret;
+          }
+
+      } else
+        i += 6;
+    }
+  //OutputConsole(L"Find call and entry failed.");
+  return 0;
+}
+
 DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
 {
   enum { Start = 0x1000 };
@@ -358,7 +401,7 @@ DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD u
   DWORD ret = 0;
   const DWORD mask = sigMask(sig);
   for (DWORD i = Start; i < size; i++)
-    if (*(WORD *)(lowerBound + i) == 0x15ff) {
+    if (*(WORD *)(lowerBound + i) == word_call) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
       if (t >= lowerBound && t <= upperBound - PatternSize) {
         if (*(DWORD *)t == fun)

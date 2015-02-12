@@ -1,10 +1,6 @@
 
 // default includes
 #include <shiboken.h>
-#include <pysidesignal.h>
-#include <pysideproperty.h>
-#include <pyside.h>
-#include <destroylistener.h>
 #include <typeresolver.h>
 #include <typeinfo>
 #include "pytrscript_python.h"
@@ -116,9 +112,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: loadFile(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // loadFile(QString)
+    // 0: loadFile(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // loadFile(std::wstring)
     }
 
     // Function signature not found.
@@ -126,11 +122,11 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // loadFile(QString)
+            // loadFile(std::wstring)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             bool cppResult = cppSelf->loadFile(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -145,7 +141,7 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
     return pyResult;
 
     Sbk_TranslationScriptManagerFunc_loadFile_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.loadFile", overloads);
         return 0;
 }
@@ -178,7 +174,7 @@ static PyObject* Sbk_TranslationScriptManagerFunc_size(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyObject* args, PyObject* kwds)
 {
     ::TranslationScriptManager* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -187,13 +183,37 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
     cppSelf = ((::TranslationScriptManager*)Shiboken::Conversions::cppPointer(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTMANAGER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
+    PythonToCppFunc pythonToCpp[] = { 0, 0, 0 };
     SBK_UNUSED(pythonToCpp)
+    int numNamedArgs = (kwds ? PyDict_Size(kwds) : 0);
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0, 0};
+
+    // invalid argument lengths
+    if (numArgs + numNamedArgs > 3) {
+        PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptManager.translate(): too many arguments");
+        return 0;
+    } else if (numArgs < 1) {
+        PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptManager.translate(): not enough arguments");
+        return 0;
+    }
+
+    if (!PyArg_ParseTuple(args, "|OOO:translate", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2])))
+        return 0;
+
 
     // Overloaded function decisor
-    // 0: translate(QString)const
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // translate(QString)const
+    // 0: translate(std::wstring,int,bool)const
+    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], (pyArgs[0])))) {
+        if (numArgs == 1) {
+            overloadId = 0; // translate(std::wstring,int,bool)const
+        } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1])))) {
+            if (numArgs == 2) {
+                overloadId = 0; // translate(std::wstring,int,bool)const
+            } else if ((pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2])))) {
+                overloadId = 0; // translate(std::wstring,int,bool)const
+            }
+        }
     }
 
     // Function signature not found.
@@ -201,15 +221,39 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
-        pythonToCpp(pyArg, &cppArg0);
+        if (kwds) {
+            PyObject* value = PyDict_GetItemString(kwds, "category");
+            if (value && pyArgs[1]) {
+                PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptManager.translate(): got multiple values for keyword argument 'category'.");
+                return 0;
+            } else if (value) {
+                pyArgs[1] = value;
+                if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1]))))
+                    goto Sbk_TranslationScriptManagerFunc_translate_TypeError;
+            }
+            value = PyDict_GetItemString(kwds, "mark");
+            if (value && pyArgs[2]) {
+                PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptManager.translate(): got multiple values for keyword argument 'mark'.");
+                return 0;
+            } else if (value) {
+                pyArgs[2] = value;
+                if (!(pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2]))))
+                    goto Sbk_TranslationScriptManagerFunc_translate_TypeError;
+            }
+        }
+        ::std::wstring cppArg0 = ::std::wstring();
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        int cppArg1 = 0;
+        if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
+        bool cppArg2 = false;
+        if (pythonToCpp[2]) pythonToCpp[2](pyArgs[2], &cppArg2);
 
         if (!PyErr_Occurred()) {
-            // translate(QString)const
+            // translate(std::wstring,int,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->translate(cppArg0);
+            std::wstring cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->translate(cppArg0, cppArg1, cppArg2);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 
@@ -220,8 +264,8 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
     return pyResult;
 
     Sbk_TranslationScriptManagerFunc_translate_TypeError:
-        const char* overloads[] = {"unicode", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.translate", overloads);
+        const char* overloads[] = {"std::wstring, int = 0, bool = false", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pytrscript.TranslationScriptManager.translate", overloads);
         return 0;
 }
 
@@ -230,7 +274,7 @@ static PyMethodDef Sbk_TranslationScriptManager_methods[] = {
     {"isEmpty", (PyCFunction)Sbk_TranslationScriptManagerFunc_isEmpty, METH_NOARGS},
     {"loadFile", (PyCFunction)Sbk_TranslationScriptManagerFunc_loadFile, METH_O},
     {"size", (PyCFunction)Sbk_TranslationScriptManagerFunc_size, METH_NOARGS},
-    {"translate", (PyCFunction)Sbk_TranslationScriptManagerFunc_translate, METH_O},
+    {"translate", (PyCFunction)Sbk_TranslationScriptManagerFunc_translate, METH_VARARGS|METH_KEYWORDS},
 
     {0} // Sentinel
 };

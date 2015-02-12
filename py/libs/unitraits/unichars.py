@@ -16,8 +16,13 @@ DIST_THIN_WIDE = 65248
 ORD_WIDE_FIRST = ORD_THIN_FIRST + DIST_THIN_WIDE
 ORD_WIDE_LAST = ORD_THIN_LAST + DIST_THIN_WIDE
 
+ORD_KANJI_FIRST = 19968
+ORD_KANJI_LAST = 40869
+
 #ORD_NUM_FIRST = ord('0') # 48
 #ORD_NUM_LAST = ord('9') # 57
+
+s_ascii_punct = ',.\'"?!~'
 
 def ordany(text, start, stop):
   """
@@ -44,5 +49,22 @@ def ordall(text, start, stop):
     if u8 < start or u8 > stop:
       return False
   return True
+
+def isascii(s):
+  """
+  @param  s  unicode
+  @return  bool
+  """
+  if len(s) == 1:
+    return ord(s) < 128
+  else:
+    return all(ord(c) < 128 for c in s)
+
+def isspace(ch):
+  """
+  @param  s  unicode
+  @return  bool
+  """
+  return ch in u" \u3000\t\n"
 
 # EOF

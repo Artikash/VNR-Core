@@ -32,8 +32,8 @@ from sakurakit import skstr
 #from sakurakit.skqml import QmlObject
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
-from cconv import cconv
 from mecabjlp import mecabdef, mecabfmt, mecabrender
+from convutil import capitalizeromaji #, wide2thin
 import defs, rc
 import _mecabman
 
@@ -51,7 +51,7 @@ _MP = _mecabman.MeCabParser()
 #warmup = _MP.warmup
 parse = _MP.parse
 
-tolou = _MP.tolou
+#tolou = _MP.tolou
 #def tolou(text, **kwargs):
 #  """
 #  @param  text  unicode
@@ -59,24 +59,6 @@ tolou = _MP.tolou
 #  @return  unicode  plan text
 #  """
 #  return _MP.tolou(text, **kwargs)
-
-_repl_capitalize = skstr.multireplacer({
-  #' Da ': ' da ',
-  ' De ': ' de ',
-  ' Ha ': ' ha ',
-  ' Na ': ' na ',
-  ' No ': ' no ',
-  ' Ni ': ' ni ',
-  ' To ': ' to ',
-  #' O ': ' o ',
-  ' Wo ': ' wo ',
-})
-def capitalizeromaji(text):
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return _repl_capitalize(text.title())
 
 #toyomi = _MP.toyomi
 def toyomi(text, space=True, capital=False, **kwargs):
@@ -100,26 +82,33 @@ def toromaji(text, **kwargs):
   """
   return toyomi(text, furiType=defs.FURI_ROMAJI, **kwargs)
 
-def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, furiType=defs.FURI_HIRA, **kwargs):
+def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize=False, center=True, invertRuby=False, furiType=defs.FURI_HIRA, **kwargs):
   """
   @param  text  unicode
   @param* charPerLine  int  maximum number of characters per line
-  @param* rubySize  str
+  @param* rubySize  float
   @param* colorsize  bool
   @param* center  bool
+  @param* invertRuby  bool
   @param* features  {unicode surface:(unicode feature, fmt)} or None
   @yield  unicode  HTML table
   """
+  render = rc.jinja_template('html/furigana').render
+
   i = j = 0
   line = []
   lineCount = 0 # int  estimated line width, assume ruby has half width
   hasfeature = features is not None
   color = None
 
+  PADDING_FACTOR = 0.3
   LATIN_YOMI_WIDTH = 0.33 # = 2/6
   KANJI_YOMI_WIDTH = 0.55 # = 1/2
   # yomi size / surface size
-  yomiWidth = LATIN_YOMI_WIDTH if furiType in (defs.FURI_ROMAJI, defs.FURI_THAI, defs.FURI_TR) else KANJI_YOMI_WIDTH
+  yomiWidth = LATIN_YOMI_WIDTH if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_THAI, defs.FURI_TR) else KANJI_YOMI_WIDTH
+
+  roundRubySize = int(round(rubySize)) or 1
+  paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
 
   for it in parse(text, type=True, feature=hasfeature, reading=True, furiType=furiType, **kwargs):
     if hasfeature:
@@ -129,7 +118,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     if colorize:
       if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
         i += 1
-        color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)'   # red or yellow
+        color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)' # red or yellow
       elif ch == mecabdef.TYPE_MODIFIER: # adj or adv
         j += 1
         #color = "rgba(0,255,0,40)" if j % 2 else "rgba(255,0,255,40)" # green or magenta
@@ -143,19 +132,30 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     if width + lineCount <= charPerLine:
       pass
     elif line:
-      yield rc.jinja_template('html/furigana').render({
+      yield render({
         'tuples': line,
-        'rubySize': rubySize,
+        'rubySize': roundRubySize,
+        'paddingSize': paddingSize,
         'center': center,
       })
       line = []
       lineCount = 0
-    line.append((surface, yomi, color, None)) # group is none
+    group = None # group is none
+    if invertRuby and yomi:
+      #if surface:
+      #  surface = wide2thin(surface)
+      if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU) and len(yomi) > 2:
+        yomi = yomi.title()
+      t = yomi, surface, color, group
+    else:
+      t = surface, yomi, color, group
+    line.append(t)
     lineCount += width
   if line:
-    yield rc.jinja_template('html/furigana').render({
+    yield render({
       'tuples': line,
-      'rubySize': rubySize,
+      'rubySize': roundRubySize,
+      'paddingSize': paddingSize,
       'center': center,
     })
 
@@ -284,9 +284,9 @@ class MeCabManager:
   def meCabTagger(self): return _MP.tagger() # MeCab.Tagger
   def meCabFormat(self): return _MP.fmt # mecabfmt
 
-  def supportsUserDic(self): # -> bool
-    import nameman
-    return self.dicName in nameman.SUPPORTED_DICS
+  #def supportsUserDic(self): # -> bool
+  #  import nameman
+  #  return self.dicName in nameman.SUPPORTED_DICS
 
   def setEnabled(self, t): # bool
     _MP.setenabled(t)
@@ -491,6 +491,6 @@ if __name__ == '__main__':
   t = u"ユーザ設定が必要です。"
   t = u"遊星が必要です。"
   t = u"桜小路ルナが必要です。"
-  print 'tolou:', tolou(t)
+  #print 'tolou:', tolou(t)
 
 # EOF

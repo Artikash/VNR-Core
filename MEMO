@@ -18,6 +18,7 @@ client:
 - kagami.qml: indonesianFont
 - grimoire.qml: ..
 - mirage.qml: ..
+- hostcombobox.qml: .., plus the menuItems
 - windefs.py
 - tsupdate.py: 'id'
 - sktr.py: "id" "Indonesian"
@@ -39,7 +40,7 @@ util.js: jbeijing: & make
 kagami.qml: jbeijingColor
 grimoire.qml: ..
 mirage.qml: ..
-share.yaml: ..
+share.yaml: baidu
 reader.yaml: ..
 reader:
   settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
@@ -47,6 +48,7 @@ reader:
   libman.py: ..
   mytr.py: ..
   trtraits.py: ..
+  mtinfo.py: ..
   main.py: jbeijingEnabled
   __main__.py: jbeijing
   _prefs.py: jbeijing
@@ -65,5 +67,11 @@ browser:
 wiki Machine Translators and Additional Software
 
 debug translating special characters
+
+# TTS related files
+qml/apps/reader/voiceview/table.qml
+ttsman.py
+_ttsman.py
+_prefs.py
 
 # EOF

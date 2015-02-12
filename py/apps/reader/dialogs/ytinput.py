@@ -2,7 +2,7 @@
 # ytinput.py
 # 11/29/2013 jichi
 
-__all__ = ['YouTubeInput']
+__all__ = 'YouTubeInput',
 
 if __name__ == '__main__':
   import sys
@@ -34,7 +34,7 @@ def _itervids(text):
 
 class YouTubeInput(QtWidgets.QDialog):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(YouTubeInput, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowTitle(mytr_("Download YouTube Videos"))
     self.setWindowIcon(rc.icon('logo-youtube'))
@@ -59,15 +59,15 @@ class _YouTubeInput(object):
 
   @memoizedproperty
   def textEdit(self):
-    placeholder = "lmOZEAAEMK0" # http://youtube.com/watch?v=lmOZEAAEMK0
+    placeholder = "http://youtube.com/watch?v=lmOZEAAEMK0"
     #ret = QtWidgets.QPlainTextEdit(placeholder)
     ret = QtWidgets.QTextEdit(placeholder) # QTextEdit is needed for syntax highlighter
     ret.setToolTip(my.tr("Text contains YouTube video IDs"))
     ret.setAcceptRichText(False)
     # Not enabled for performance reason
     #ret.textChanged.connect(self._refreshSaveButton)
-    from sakurakit.skhls import SkYouTubeHighlighter
-    SkYouTubeHighlighter(ret)
+    from qthls.youtube import YouTubeHighlighter
+    YouTubeHighlighter(ret)
     return ret
 
   @memoizedproperty

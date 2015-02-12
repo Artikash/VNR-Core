@@ -6,6 +6,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/eval.min.js' as Eval
 import '../../../js/util.min.js' as Util
 import '../../../imports/texscript' as TexScript
 import '../../../components' as Components
@@ -132,7 +133,8 @@ Item { id: root_
         height: listView_.childrenRect.height
         color: '#55000000'
         z: -1
-        radius: 15
+        //radius: 15
+        radius: 0 // flat
 
       }
       Share.CloseButton {
@@ -290,7 +292,7 @@ Item { id: root_
         textFormat: TextEdit.RichText
         //readOnly: true
 
-        onLinkActivated: Qt.openUrlExternally(link)
+        onLinkActivated: Eval.evalLink(link)
 
         wrapMode: TextEdit.Wrap
         verticalAlignment: TextEdit.AlignVCenter
@@ -310,7 +312,6 @@ Item { id: root_
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.pixelSize: 18 * root_.zoomFactor
-        //font.bold: Util.isAsianLanguage(model.comment.language)
         font.bold: true
         color: 'snow'
         //style: Text.Raised
@@ -344,7 +345,7 @@ Item { id: root_
       //    danmaku_.pause()
       //    if (mouse.button === Qt.RightButton) {
       //      var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      //      contextMenu_.popup(model, gp.x, gp.y)
+      //      menu_.popup(model, gp.x, gp.y)
       //    }
       //  }
       //}
@@ -409,7 +410,7 @@ Item { id: root_
 
   function hide() { hideAct_.triggered() }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
@@ -435,7 +436,7 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.comment)
-          userViewPlugin_.showUser(item.comment.userId)
+          mainPlugin_.showUser(item.comment.userId)
       }
     }
 
@@ -466,8 +467,8 @@ Item { id: root_
     enabled: !root_.ignoresFocus
     onPressed: if (!root_.ignoresFocus) {
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      //contextMenu_.showPopup(gp.x, gp.y)
-      contextMenu_.popup(gp.x, gp.y)
+      //menu_.showPopup(gp.x, gp.y)
+      menu_.popup(gp.x, gp.y)
     }
   }
 

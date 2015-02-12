@@ -2,7 +2,7 @@
 # userview.py
 # 6/29/2013 jichi
 
-__all__ = ['UserViewManager', 'UserViewManagerProxy']
+__all__ = 'UserViewManager' #, 'UserViewManagerProxy'
 
 from PySide.QtCore import Qt, Slot
 from PySide import QtCore
@@ -16,7 +16,7 @@ import dataman, growl, i18n, osutil, rc
 class WebDialog(SkWebView):
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(WebDialog, self).__init__(parent, WINDOW_FLAGS)
     self.titleChanged.connect(self.setWindowTitle)
 
@@ -53,7 +53,7 @@ class UserView(WebDialog):
     self.userId = user.id
     self.userName = user.name
     av = dm.queryUserAvatarUrl(self.userId, hash=self.userHash, cache=True)
-    self.setHtml(rc.haml_template('haml/reader/user').render({
+    self.setHtml(rc.haml_template('haml/reader/userview').render({
       'user': user,
       'avatar': av,
       'i18n': i18n,
@@ -128,16 +128,16 @@ def manager():
   return UserViewManager()
 
 #@QmlObject
-class UserViewManagerProxy(QtCore.QObject):
-  def __init__(self, parent=None):
-    super(UserViewManagerProxy, self).__init__(parent)
-
-  @Slot(int)
-  def showUser(self, id):
-    manager().showUser(id)
-
-  @Slot(int, int)
-  def showUserWithHash(self, id, hash):
-    manager().showUser(id, hash)
+#class UserViewManagerProxy(QtCore.QObject):
+#  def __init__(self, parent=None):
+#    super(UserViewManagerProxy, self).__init__(parent)
+#
+#  @Slot(int)
+#  def showUser(self, id):
+#    manager().showUser(id)
+#
+#  @Slot(int, int)
+#  def showUserWithHash(self, id, hash):
+#    manager().showUser(id, hash)
 
 # EOF

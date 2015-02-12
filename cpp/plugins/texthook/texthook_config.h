@@ -15,4 +15,6 @@
 # endif
 #endif // TEXTHOOK_EXPORT
 
+#define TEXTHOOK_DEFAULT_NAME   "H-code"
+
 // EOF

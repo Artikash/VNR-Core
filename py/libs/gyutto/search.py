@@ -2,7 +2,7 @@
 # search.py
 # 8/4/2013 jichi
 
-__all__ = ['SearchApi']
+__all__ = 'SearchApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -104,7 +104,6 @@ class SearchApi(object):
   , re.IGNORECASE|re.DOTALL)
   _rx_id_title = re.compile(r'http://gyutto.com/i/item(\d+)">([^<]+)</a>')
   _rx_img = re.compile(r'<img src="(/data/item_img/\d+/\d+/\d+)_p_s2.jpg"')
-  _rx_brand = re.compile(r'>([^<]+?)</a>&nbsp;\]</dd>')
   _rx_price = re.compile(ur'([0-9,]+)?円')
   _rx_date = re.compile(u'(\d{4})年(\d{2})月(\d{2})日 発売')
   def _iterparse(self, h):
@@ -139,10 +138,6 @@ class SearchApi(object):
         'title': unescapehtml(m.group(2)),
       }
 
-
-      try: item['brand'] = self._rx_brand.search(hh).group(1)
-      except: pass
-
       m = self._rx_date.search(h)
       if m:
         try: item['date'] = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
@@ -157,7 +152,21 @@ class SearchApi(object):
       try: item['price'] = int(m.group(1).replace(',', ''))
       except: pass
 
+      item.update(self._iterparsefields(hh))
       yield item
+
+  _rx_fields = (
+     ('brand', re.compile(r'>([^<]+?)</a>&nbsp;\]</dd>')),
+  )
+  def _iterparsefields(self, h):
+    """
+    @param  h  unicode
+    @yield  (str key, unicode or None)
+    """
+    for k,rx in self._rx_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1)).strip()
 
 if __name__ == '__main__':
   api = SearchApi()

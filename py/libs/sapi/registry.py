@@ -10,17 +10,20 @@ from sakurakit import skstr
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skunicode import u
-from windefs import windefs
+from windefs import winlocale
 
-TTS_HKCU_PATH = r"SOFTWARE\Microsoft\Speech\Voices\TokenEnums"
-TTS_HKLM_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
+SAPI_HKCU_PATH = r"SOFTWARE\Microsoft\Speech\Voices\TokenEnums"
+SAPI_HKLM_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
 
 def _parselang(lcid):
   """
   @param  lcid  int
   @return  str
   """
-  return windefs.lcid2locale(lcid)[:2] # only keep the first 2 characters
+  try: return winlocale.lcid2locale(lcid)[:2] # only keep the first 2 characters
+  except Exception, e:
+    dwarn(e)
+    return ''
 
 _GENDERS = {
  'Female': 'f',
@@ -56,8 +59,8 @@ def get():
   ret = []
   import _winreg
   for (hk,path) in (
-      (_winreg.HKEY_LOCAL_MACHINE, TTS_HKLM_PATH),
-      (_winreg.HKEY_CURRENT_USER, TTS_HKCU_PATH),
+      (_winreg.HKEY_LOCAL_MACHINE, SAPI_HKLM_PATH),
+      (_winreg.HKEY_CURRENT_USER, SAPI_HKCU_PATH),
     ):
     try:
       with _winreg.ConnectRegistry(None, hk) as reg: # None = computer_name
@@ -66,7 +69,7 @@ def get():
           for i in xrange(nsubkeys):
             try:
               voicekeyname = _winreg.EnumKey(rootkey, i)
-              dprint("tts key: %s" % voicekeyname)
+              dprint("sapi key: %s" % voicekeyname)
               with _winreg.OpenKey(rootkey, voicekeyname) as voicekey:
                 clsid = _winreg.QueryValueEx(voicekey, 'CLSID')[0]
                 try: location = _winreg.QueryValueEx(voicekey, 'VoiceData')[0]

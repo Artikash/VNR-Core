@@ -11,7 +11,7 @@
 #include "winiter/winitertl.h"
 #include "winsinglemutex/winsinglemutex.h"
 #include "loader.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 namespace { // unnamed
 

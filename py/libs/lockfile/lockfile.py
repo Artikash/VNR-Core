@@ -2,7 +2,7 @@
 # lockfile.py
 # 2/13/2014 jichi
 
-__all__ = ['LockFile', 'SingleProcessMutex']
+__all__ = 'LockFile', 'SingleProcessMutex'
 
 if __name__ == '__main__':
   import sys

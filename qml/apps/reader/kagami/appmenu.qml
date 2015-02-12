@@ -15,13 +15,12 @@ import '../../../js/reader.min.js' as My
 Item {
 
   property alias growlChecked: growlAct_.checked
+  property alias autoHideChecked: autoHideAct_.checked
 
   function showPopup(x, y) {
-    //updateDictionaryAct_.enabled = updateCommentAct_.enabled = updateDatabaseAct_.enabled = statusPlugin_.online
-    //updateDictionaryAct_.enabled =
-    updateCommentAct_.enabled = statusPlugin_.online
+    updateSubtitleAct_.enabled = updateCommentAct_.enabled = statusPlugin_.online
     visible = true
-    contextMenu_.showPopup(x, y)
+    menu_.showPopup(x, y)
     visible = false
   }
 
@@ -37,7 +36,7 @@ Item {
   //Plugin.TextManagerProxy { id: textmanPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     Desktop.MenuItem {
       text: My.tr("Text Settings")
@@ -58,7 +57,7 @@ Item {
 
     Desktop.MenuItem {
       text: My.tr("Shared Dictionary")
-      onTriggered: mainPlugin_.showTermView()
+      onTriggered: mainPlugin_.showDictionary()
     }
 
     Desktop.MenuItem {
@@ -70,6 +69,17 @@ Item {
       text: My.tr("Test Machine Translation")
       onTriggered: mainPlugin_.showMachineTranslationTester()
     }
+
+    // Temporarily disabled
+    //Desktop.MenuItem {
+    //  text: My.tr("Test Japanese Syntax")
+    //  onTriggered: mainPlugin_.showJapaneseSyntaxTester()
+    //}
+
+    //Desktop.MenuItem {
+    //  text: My.tr("Speech Recognition")
+    //  onTriggered: mainPlugin_.showSpeechRecognitionTester()
+    //}
 
     Desktop.Separator {}
 
@@ -119,8 +129,13 @@ Item {
     //}
 
     Desktop.MenuItem { id: updateCommentAct_
-      text: My.tr("Update Shared Subtitles")
+      text: My.tr("Update Danmaku")
       onTriggered: textmanPlugin_.reload()
+    }
+
+    Desktop.MenuItem { id: updateSubtitleAct_
+      text: My.tr("Update Subtitles")
+      onTriggered: datamanPlugin_.updateSubtitles()
     }
 
     //Desktop.MenuItem { id: updateDatabaseAct_
@@ -142,6 +157,12 @@ Item {
       onTriggered:
         if (checked)
           growl_.show()
+    }
+
+    Desktop.MenuItem { id: autoHideAct_
+      text: My.tr("Auto Hide")
+      checkable: true
+      checked: true
     }
 
     //Desktop.MenuItem {

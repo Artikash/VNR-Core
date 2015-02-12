@@ -22,11 +22,11 @@ DEFINES -= ITH_HAS_HEAP
 ## Libraries
 
 #INCLUDEPATH += $$ITH_HOME/include
-#INCLUDEPATH += $$WDK_HOME/inc/ddk
+#INCLUDEPATH += $$WDK7_HOME/inc/ddk
 
 #LIBS        += -lgdi32 -luser32 -lkernel32
-#LIBS        += -L$$WDK_HOME/lib/wxp/i386 -lntdll
-#LIBS        += $$WDK_HOME/lib/crt/i386/msvcrt.lib   # Override msvcrt10
+#LIBS        += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
+#LIBS        += $$WDK7_HOME/lib/crt/i386/msvcrt.lib   # Override msvcrt10
 
 #DEFINES += ITH_HAS_CXX
 

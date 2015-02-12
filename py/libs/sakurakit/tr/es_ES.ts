@@ -36,7 +36,7 @@
     <message>
         <location filename="sktr.py" line="33"/>
         <source>Korean</source>
-        <translation>Corea</translation>
+        <translation>Coreano</translation>
     </message>
     <message>
         <location filename="sktr.py" line="36"/>
@@ -66,1052 +66,1047 @@
     <message>
         <location filename="sktr.py" line="41"/>
         <source>Russian</source>
-        <translation>Rusia</translation>
+        <translation>Ruso</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="51"/>
+        <location filename="sktr.py" line="55"/>
         <source>Simplified Chinese</source>
-        <translation>Chino simplificado</translation>
+        <translation>Chino Simplificado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="93"/>
+        <location filename="sktr.py" line="96"/>
         <source>About</source>
         <translation>Acerca de</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="98"/>
+        <location filename="sktr.py" line="102"/>
         <source>Browse</source>
         <translation>Explorar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="100"/>
+        <location filename="sktr.py" line="104"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="103"/>
+        <location filename="sktr.py" line="108"/>
         <source>Clear</source>
         <translation>Claro</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="106"/>
+        <location filename="sktr.py" line="111"/>
         <source>Confirm</source>
         <translation>Confirmar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="275"/>
+        <location filename="sktr.py" line="293"/>
         <source>Default</source>
-        <translation>Por defecto</translation>
+        <translation>Defecto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="275"/>
+        <location filename="sktr.py" line="293"/>
         <source>default</source>
-        <translation>por defecto</translation>
+        <translation>defecto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="111"/>
+        <location filename="sktr.py" line="116"/>
         <source>Delete</source>
-        <translation>Eliminar</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="113"/>
+        <location filename="sktr.py" line="118"/>
         <source>Disable</source>
-        <translation>Desactivar</translation>
+        <translation>Inhabilitar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="113"/>
+        <location filename="sktr.py" line="118"/>
         <source>disable</source>
-        <translation>desactivar</translation>
+        <translation>inhabilitar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="120"/>
+        <location filename="sktr.py" line="125"/>
         <source>Empty</source>
         <translation>Vacío</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="120"/>
+        <location filename="sktr.py" line="125"/>
         <source>empty</source>
         <translation>vacío</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="122"/>
+        <location filename="sktr.py" line="127"/>
         <source>Enable</source>
-        <translation>Habilitar</translation>
+        <translation>Permitir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="122"/>
+        <location filename="sktr.py" line="127"/>
         <source>enable</source>
         <translation>permitir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="130"/>
+        <location filename="sktr.py" line="136"/>
         <source>Finish</source>
-        <translation>Finalizar</translation>
+        <translation>Acabado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="131"/>
+        <location filename="sktr.py" line="137"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="133"/>
+        <location filename="sktr.py" line="139"/>
         <source>Ignore</source>
-        <translation>Ignorar</translation>
+        <translation>Pasar por alto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="139"/>
+        <location filename="sktr.py" line="145"/>
         <source>Load</source>
         <translation>Carga</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="147"/>
+        <location filename="sktr.py" line="153"/>
         <source>OK</source>
-        <translation>Okay</translation>
+        <translation>OKAY</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="148"/>
+        <location filename="sktr.py" line="154"/>
         <source>Open</source>
-        <translation>Abierta</translation>
+        <translation>Abierto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="163"/>
+        <location filename="sktr.py" line="169"/>
         <source>Refresh</source>
-        <translation>Actualizar</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="164"/>
-        <source>Register</source>
-        <translation>Registro</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="166"/>
-        <source>Reset</source>
-        <translation>Restablecer</translation>
+        <translation>Refrescar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="171"/>
+        <source>Register</source>
+        <translation>Registrarse</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="173"/>
+        <source>Reset</source>
+        <translation>Reajustar</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="178"/>
         <source>Save</source>
         <translation>Guardar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="178"/>
+        <location filename="sktr.py" line="185"/>
         <source>Show</source>
-        <translation>Mostrar</translation>
+        <translation>Show</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="176"/>
+        <location filename="sktr.py" line="183"/>
         <source>Search</source>
         <translation>Búsqueda</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="185"/>
+        <location filename="sktr.py" line="194"/>
         <source>Translate</source>
         <translation>Traducir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="361"/>
+        <location filename="sktr.py" line="388"/>
         <source>Translator</source>
         <translation>Traductor</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="189"/>
+        <location filename="sktr.py" line="198"/>
         <source>Quit</source>
-        <translation>Salir</translation>
+        <translation>Dejar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="190"/>
+        <location filename="sktr.py" line="199"/>
         <source>Update</source>
         <translation>Actualización</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="378"/>
+        <location filename="sktr.py" line="407"/>
         <source>Version</source>
-        <translation>Version</translation>
+        <translation>Versión</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="200"/>
+        <location filename="sktr.py" line="210"/>
         <source>All files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="201"/>
+        <location filename="sktr.py" line="211"/>
         <source>Executables</source>
         <translation>Los ejecutables</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="201"/>
+        <location filename="sktr.py" line="211"/>
         <source>Executable</source>
         <translation>Ejecutable</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="203"/>
+        <location filename="sktr.py" line="213"/>
         <source>Shortcuts</source>
         <translation>Accesos directos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="234"/>
+        <location filename="sktr.py" line="247"/>
         <source>Male</source>
-        <translation>Hombre</translation>
+        <translation>Masculino</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="235"/>
+        <location filename="sktr.py" line="248"/>
         <source>Female</source>
-        <translation>Mujer</translation>
+        <translation>Femenino</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="237"/>
+        <location filename="sktr.py" line="250"/>
         <source>Hiragana</source>
         <translation>Hiragana</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="238"/>
+        <location filename="sktr.py" line="251"/>
         <source>Katagana</source>
         <translation>Katagana</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="239"/>
+        <location filename="sktr.py" line="252"/>
         <source>Romaji</source>
         <translation>Romaji</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="240"/>
+        <location filename="sktr.py" line="253"/>
         <source>Kanji</source>
         <translation>Kanji</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="254"/>
+        <location filename="sktr.py" line="271"/>
         <source>Account</source>
         <translation>Cuenta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="278"/>
+        <location filename="sktr.py" line="296"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="280"/>
+        <location filename="sktr.py" line="298"/>
         <source>Feature</source>
         <translation>Característica</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="281"/>
+        <location filename="sktr.py" line="299"/>
         <source>Features</source>
         <translation>Características</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="289"/>
+        <location filename="sktr.py" line="307"/>
         <source>Gender</source>
         <translation>Género</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="291"/>
+        <location filename="sktr.py" line="309"/>
         <source>Guest</source>
         <translation>Invitado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="292"/>
+        <location filename="sktr.py" line="310"/>
         <source>Help</source>
         <translation>Ayuda</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="294"/>
+        <location filename="sktr.py" line="312"/>
         <source>Icon</source>
         <translation>Icono</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="305"/>
+        <location filename="sktr.py" line="324"/>
         <source>Language</source>
         <translation>Idioma</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="306"/>
+        <location filename="sktr.py" line="325"/>
         <source>Languages</source>
         <translation>Idiomas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="308"/>
+        <location filename="sktr.py" line="328"/>
         <source>Location</source>
         <translation>Ubicación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="309"/>
+        <location filename="sktr.py" line="329"/>
         <source>Locations</source>
         <translation>Ubicaciones</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="314"/>
+        <location filename="sktr.py" line="335"/>
         <source>Mouse</source>
         <translation>Ratón</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="322"/>
+        <location filename="sktr.py" line="343"/>
         <source>Password</source>
         <translation>Contraseña</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="323"/>
+        <location filename="sktr.py" line="345"/>
         <source>Preferences</source>
         <translation>Preferencias</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="328"/>
+        <location filename="sktr.py" line="352"/>
         <source>Plug-in</source>
         <translation>Plug-in</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="329"/>
+        <location filename="sktr.py" line="353"/>
         <source>Plug-ins</source>
         <translation>Plug-ins</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="330"/>
+        <location filename="sktr.py" line="354"/>
         <source>Question</source>
         <translation>Pregunta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="343"/>
+        <location filename="sktr.py" line="370"/>
         <source>Script</source>
         <translation>Guión</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="344"/>
+        <location filename="sktr.py" line="371"/>
         <source>Scripts</source>
         <translation>Scripts</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="345"/>
+        <location filename="sktr.py" line="372"/>
         <source>Settings</source>
         <translation>Ajustes</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="348"/>
+        <location filename="sktr.py" line="375"/>
         <source>Status</source>
         <translation>Estado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="351"/>
+        <location filename="sktr.py" line="377"/>
         <source>Tab</source>
-        <translation>Tab</translation>
+        <translation>Lengüeta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="437"/>
+        <location filename="sktr.py" line="471"/>
         <source>Text</source>
         <translation>Texto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="355"/>
+        <location filename="sktr.py" line="381"/>
         <source>Theme</source>
         <translation>Tema</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="356"/>
+        <location filename="sktr.py" line="382"/>
         <source>Themes</source>
         <translation>Temas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="358"/>
+        <location filename="sktr.py" line="384"/>
         <source>Timestamp</source>
         <translation>Marca de tiempo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="436"/>
+        <location filename="sktr.py" line="470"/>
         <source>Translation</source>
         <translation>Traducción</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="367"/>
+        <location filename="sktr.py" line="394"/>
         <source>User</source>
         <translation>Usuario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="370"/>
+        <location filename="sktr.py" line="397"/>
         <source>Username</source>
         <translation>Nombre de usuario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="371"/>
+        <location filename="sktr.py" line="399"/>
         <source>Wallpaper</source>
-        <translation>Wallpaper</translation>
+        <translation>Papel pintado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="372"/>
+        <location filename="sktr.py" line="401"/>
         <source>Warning</source>
         <translation>Advertencia</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="374"/>
+        <location filename="sktr.py" line="403"/>
         <source>Window</source>
         <translation>Ventana</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="413"/>
         <source>Yes</source>
         <translation>Sí</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="413"/>
         <source>yes</source>
         <translation>sí</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="386"/>
+        <location filename="sktr.py" line="414"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="387"/>
+        <location filename="sktr.py" line="414"/>
         <source>no</source>
         <translation>no</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="388"/>
+        <location filename="sktr.py" line="415"/>
         <source>Online</source>
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="389"/>
+        <location filename="sktr.py" line="416"/>
         <source>Offline</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="390"/>
+        <location filename="sktr.py" line="417"/>
         <source>Read-only</source>
         <translation>Sólo lectura</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="390"/>
+        <location filename="sktr.py" line="417"/>
         <source>read-only</source>
         <translation>de sólo lectura</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="391"/>
+        <location filename="sktr.py" line="418"/>
         <source>Editable</source>
         <translation>Editable</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="391"/>
+        <location filename="sktr.py" line="418"/>
         <source>editable</source>
         <translation>editable</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="442"/>
         <source>Found</source>
-        <translation>Encontrado</translation>
+        <translation>Fundar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="412"/>
+        <location filename="sktr.py" line="443"/>
         <source>Not found</source>
         <translation>Extraviado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="95"/>
+        <location filename="sktr.py" line="99"/>
         <source>Advanced</source>
-        <translation>Avanzada</translation>
+        <translation>Avanzado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="326"/>
+        <location filename="sktr.py" line="349"/>
         <source>Property</source>
         <translation>Propiedad</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="327"/>
+        <location filename="sktr.py" line="350"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="94"/>
+        <location filename="sktr.py" line="98"/>
         <source>Add</source>
         <translation>Añadir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="107"/>
+        <location filename="sktr.py" line="112"/>
         <source>Copy</source>
         <translation>Copia</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="110"/>
+        <location filename="sktr.py" line="115"/>
         <source>Cut</source>
-        <translation>Cut</translation>
+        <translation>Cortada</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="111"/>
+        <location filename="sktr.py" line="116"/>
         <source>delete</source>
-        <translation>eliminar</translation>
+        <translation>borrar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="118"/>
+        <location filename="sktr.py" line="123"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="119"/>
+        <location filename="sktr.py" line="124"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="121"/>
+        <location filename="sktr.py" line="126"/>
         <source>Enter</source>
-        <translation>Ingrese</translation>
+        <translation>Entrar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="131"/>
+        <location filename="sktr.py" line="137"/>
         <source>hide</source>
         <translation>ocultar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="132"/>
+        <location filename="sktr.py" line="138"/>
         <source>Improve</source>
         <translation>Mejorar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="132"/>
+        <location filename="sktr.py" line="138"/>
         <source>improve</source>
         <translation>mejorar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="136"/>
+        <location filename="sktr.py" line="142"/>
         <source>Launch</source>
         <translation>Lanzamiento</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="139"/>
+        <location filename="sktr.py" line="145"/>
         <source>load</source>
         <translation>carga</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="140"/>
+        <location filename="sktr.py" line="146"/>
         <source>Lock</source>
         <translation>Bloquear</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="140"/>
+        <location filename="sktr.py" line="146"/>
         <source>lock</source>
         <translation>bloquear</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="141"/>
+        <location filename="sktr.py" line="147"/>
         <source>Locked</source>
         <translation>Bloqueado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="141"/>
+        <location filename="sktr.py" line="147"/>
         <source>locked</source>
         <translation>bloqueado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="152"/>
+        <location filename="sktr.py" line="158"/>
         <source>Paste</source>
-        <translation>Pega</translation>
+        <translation>Pasta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="153"/>
+        <location filename="sktr.py" line="159"/>
         <source>Pattern</source>
         <translation>Patrón</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="165"/>
+        <location filename="sktr.py" line="172"/>
         <source>Remove</source>
-        <translation>Retire</translation>
+        <translation>Quitar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="166"/>
+        <location filename="sktr.py" line="173"/>
         <source>reset</source>
-        <translation>restablecer</translation>
+        <translation>reajustar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="171"/>
+        <location filename="sktr.py" line="178"/>
         <source>save</source>
         <translation>guardar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="178"/>
+        <location filename="sktr.py" line="185"/>
         <source>show</source>
-        <translation>espectáculo</translation>
+        <translation>show</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="175"/>
+        <location filename="sktr.py" line="182"/>
         <source>Select All</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="180"/>
+        <location filename="sktr.py" line="187"/>
         <source>Source</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="184"/>
+        <location filename="sktr.py" line="193"/>
         <source>Submit</source>
-        <translation>Enviar</translation>
+        <translation>Presentar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="352"/>
+        <location filename="sktr.py" line="378"/>
         <source>Target</source>
-        <translation>Target</translation>
+        <translation>Objetivo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="258"/>
+        <location filename="sktr.py" line="275"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="313"/>
+        <location filename="sktr.py" line="334"/>
         <source>Name</source>
         <translation>Nombre</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="316"/>
+        <location filename="sktr.py" line="337"/>
         <source>Opacity</source>
         <translation>Opacidad</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="318"/>
+        <location filename="sktr.py" line="339"/>
         <source>Options</source>
         <translation>Opciones</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="342"/>
+        <location filename="sktr.py" line="369"/>
         <source>Screenshot</source>
         <translation>Captura de pantalla</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="364"/>
+        <location filename="sktr.py" line="391"/>
         <source>Unlock</source>
-        <translation>Desbloquear</translation>
+        <translation>Descubrir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="364"/>
+        <location filename="sktr.py" line="391"/>
         <source>unlock</source>
-        <translation>desbloquear</translation>
+        <translation>descubrir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="365"/>
+        <location filename="sktr.py" line="392"/>
         <source>Unlocked</source>
         <translation>Desbloqueado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="365"/>
+        <location filename="sktr.py" line="392"/>
         <source>unlocked</source>
         <translation>desbloqueado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="373"/>
+        <location filename="sktr.py" line="402"/>
         <source>Width</source>
         <translation>Ancho</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="379"/>
+        <location filename="sktr.py" line="408"/>
         <source>Zoom</source>
         <translation>Ampliar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="430"/>
+        <location filename="sktr.py" line="464"/>
         <source>Subtitle</source>
         <translation>Subtítulo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="433"/>
+        <location filename="sktr.py" line="467"/>
         <source>Comment</source>
         <translation>Comentario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="317"/>
+        <location filename="sktr.py" line="338"/>
         <source>Option</source>
         <translation>Opción</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="315"/>
+        <location filename="sktr.py" line="336"/>
         <source>Notification</source>
         <translation>Notificación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="347"/>
+        <location filename="sktr.py" line="374"/>
         <source>Statistics</source>
-        <translation>Estadísticas</translation>
+        <translation>Estadística</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="134"/>
+        <location filename="sktr.py" line="140"/>
         <source>Ignored</source>
         <translation>Ignorado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="134"/>
+        <location filename="sktr.py" line="140"/>
         <source>ignored</source>
         <translation>ignorado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="149"/>
+        <location filename="sktr.py" line="155"/>
         <source>Opening</source>
         <translation>Apertura</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="325"/>
+        <location filename="sktr.py" line="347"/>
         <source>Primary</source>
-        <translation>Primaria</translation>
+        <translation>Primario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="325"/>
+        <location filename="sktr.py" line="347"/>
         <source>primary</source>
-        <translation>primaria</translation>
+        <translation>primario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="172"/>
+        <location filename="sktr.py" line="179"/>
         <source>Secondary</source>
-        <translation>Secundaria</translation>
+        <translation>Secundario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="172"/>
+        <location filename="sktr.py" line="179"/>
         <source>secondary</source>
-        <translation>secundaria</translation>
+        <translation>secundario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="177"/>
+        <location filename="sktr.py" line="184"/>
         <source>Searching</source>
         <translation>Búsqueda</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="182"/>
+        <location filename="sktr.py" line="189"/>
         <source>Spell Check</source>
         <translation>Corrector ortográfico</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="182"/>
+        <location filename="sktr.py" line="189"/>
         <source>Spell check</source>
         <translation>El corrector ortográfico</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="191"/>
         <source>Start</source>
-        <translation>Inicio</translation>
+        <translation>Comienzo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="191"/>
         <source>start</source>
-        <translation>inicio</translation>
+        <translation>comienzo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="191"/>
         <source>START</source>
         <translation>INICIO</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="350"/>
+        <location filename="sktr.py" line="192"/>
         <source>Stop</source>
         <translation>Deténgase</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="350"/>
+        <location filename="sktr.py" line="192"/>
         <source>stop</source>
-        <translation>Deténgase</translation>
+        <translation>deténgase</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="350"/>
+        <location filename="sktr.py" line="192"/>
         <source>STOP</source>
-        <translation>Deténgase</translation>
+        <translation>DETÉNGASE</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="354"/>
+        <location filename="sktr.py" line="380"/>
         <source>Text encoding</source>
         <translation>Codificación de texto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="375"/>
+        <location filename="sktr.py" line="404"/>
         <source>Window title</source>
         <translation>Título de la ventana</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="444"/>
         <source>Not specified</source>
         <translation>No especificado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="419"/>
+        <location filename="sktr.py" line="453"/>
         <source>Administrator</source>
         <translation>Administrador</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="420"/>
+        <location filename="sktr.py" line="454"/>
         <source>Not administrator</source>
         <translation>Administrador no</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="284"/>
+        <location filename="sktr.py" line="302"/>
         <source>Folder</source>
         <translation>Carpeta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="179"/>
+        <location filename="sktr.py" line="186"/>
         <source>Software Update</source>
         <translation>Actualización de software</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="333"/>
+        <location filename="sktr.py" line="357"/>
         <source>Regular Expression</source>
         <translation>Expresión Regular</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="333"/>
+        <location filename="sktr.py" line="357"/>
         <source>Regular expression</source>
         <translation>Expresión regular</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="333"/>
+        <location filename="sktr.py" line="357"/>
         <source>regular expression</source>
         <translation>expresión regular</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="405"/>
+        <location filename="sktr.py" line="436"/>
         <source>Ignore Case</source>
-        <translation>No haga caso de la caja</translation>
+        <translation>No haga caso de Caso</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="405"/>
+        <location filename="sktr.py" line="436"/>
         <source>Ignore case</source>
         <translation>Ignorar mayúsculas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="404"/>
+        <location filename="sktr.py" line="435"/>
         <source>Case-insensitive</source>
         <translation>-Caso insensible</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="404"/>
+        <location filename="sktr.py" line="435"/>
         <source>case-insensitive</source>
-        <translation>mayúsculas y minúsculas</translation>
+        <translation>entre mayúsculas y minúsculas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="403"/>
+        <location filename="sktr.py" line="434"/>
         <source>Case-sensitive</source>
-        <translation>Mayúsculas y minúsculas</translation>
+        <translation>Distingue mayúsculas y minúsculas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="403"/>
+        <location filename="sktr.py" line="434"/>
         <source>case-sensitive</source>
-        <translation>mayúsculas y minúsculas</translation>
+        <translation>distingue mayúsculas y minúsculas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="264"/>
+        <location filename="sktr.py" line="282"/>
         <source>Creation Time</source>
-        <translation>Momento de la creación</translation>
+        <translation>Hora de creación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="264"/>
+        <location filename="sktr.py" line="282"/>
         <source>Creation time</source>
         <translation>Hora de creación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="366"/>
+        <location filename="sktr.py" line="393"/>
         <source>Update Time</source>
         <translation>Tiempo de actualización</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="366"/>
+        <location filename="sktr.py" line="393"/>
         <source>Update time</source>
         <translation>Tiempo de actualización</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="276"/>
+        <location filename="sktr.py" line="294"/>
         <source>Draft</source>
-        <translation>Proyecto</translation>
+        <translation>Borrador</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="278"/>
-        <source>Scratch</source>
-        <translation type="obsolete">下書き</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="104"/>
+        <location filename="sktr.py" line="109"/>
         <source>Close</source>
-        <translation>Cerrar</translation>
+        <translation>Cerca</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="168"/>
+        <location filename="sktr.py" line="175"/>
         <source>Restart</source>
         <translation>Reanudar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="422"/>
+        <location filename="sktr.py" line="456"/>
         <source>For example</source>
         <translation>Por ejemplo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="422"/>
+        <location filename="sktr.py" line="456"/>
         <source>for example</source>
         <translation>por ejemplo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="157"/>
+        <location filename="sktr.py" line="163"/>
         <source>Pop-up</source>
-        <translation>Pop-up</translation>
+        <translation>Surgir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="161"/>
+        <location filename="sktr.py" line="167"/>
         <source>Recommend</source>
-        <translation>Recomienda</translation>
+        <translation>Recomendar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="161"/>
+        <location filename="sktr.py" line="167"/>
         <source>recommend</source>
-        <translation>recomiendan</translation>
+        <translation>recomendar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="162"/>
+        <location filename="sktr.py" line="168"/>
         <source>Recommended</source>
         <translation>Recomendado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="162"/>
+        <location filename="sktr.py" line="168"/>
         <source>recommended</source>
-        <translation>recomendada</translation>
+        <translation>recomendado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="266"/>
+        <location filename="sktr.py" line="284"/>
         <source>Color</source>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="273"/>
+        <location filename="sktr.py" line="291"/>
         <source>Dictionary</source>
         <translation>Diccionario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="274"/>
+        <location filename="sktr.py" line="292"/>
         <source>Dictionaries</source>
         <translation>Diccionarios</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="362"/>
+        <location filename="sktr.py" line="389"/>
         <source>Translators</source>
         <translation>Traductores</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="81"/>
+        <location filename="sktr.py" line="85"/>
         <source>Double Click</source>
-        <translation>Double Click</translation>
+        <translation>Doble Click</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="81"/>
+        <location filename="sktr.py" line="85"/>
         <source>Double click</source>
-        <translation>Haga doble clic</translation>
+        <translation>Doble click</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="81"/>
+        <location filename="sktr.py" line="85"/>
         <source>double click</source>
         <translation>haga doble clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="82"/>
+        <location filename="sktr.py" line="86"/>
         <source>Double-click</source>
-        <translation>Haga doble clic en</translation>
+        <translation>Haga doble clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="82"/>
+        <location filename="sktr.py" line="86"/>
         <source>double-click</source>
-        <translation>haga doble clic en</translation>
+        <translation>haga doble clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="108"/>
+        <location filename="sktr.py" line="113"/>
         <source>Copy All</source>
         <translation>Copiar todo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="174"/>
+        <location filename="sktr.py" line="181"/>
         <source>Select Word</source>
         <translation>Seleccione Palabra</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="124"/>
+        <location filename="sktr.py" line="130"/>
         <source>Escape</source>
-        <translation>Escapar</translation>
+        <translation>Escape</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="187"/>
+        <location filename="sktr.py" line="196"/>
         <source>Test</source>
         <translation>Prueba</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="181"/>
+        <location filename="sktr.py" line="188"/>
         <source>Speed</source>
         <translation>Velocidad</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="298"/>
+        <location filename="sktr.py" line="316"/>
         <source>International</source>
         <translation>Internacional</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="301"/>
+        <location filename="sktr.py" line="319"/>
         <source>i18n</source>
         <translation>i18n</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="424"/>
+        <location filename="sktr.py" line="458"/>
         <source>Check for updates</source>
         <translation>Buscar actualizaciones</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="80"/>
+        <location filename="sktr.py" line="84"/>
         <source>Click</source>
         <translation>Haga clic en</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="80"/>
+        <location filename="sktr.py" line="84"/>
         <source>click</source>
         <translation>clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="155"/>
+        <location filename="sktr.py" line="161"/>
         <source>Pause</source>
         <translation>Pausa</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="169"/>
+        <location filename="sktr.py" line="176"/>
         <source>Resume</source>
         <translation>Currículum</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="435"/>
+        <location filename="sktr.py" line="469"/>
         <source>Danmaku</source>
         <translation>Danmaku</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="188"/>
+        <location filename="sktr.py" line="197"/>
         <source>Type</source>
         <translation>Tipo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="277"/>
+        <location filename="sktr.py" line="295"/>
         <source>Encoding</source>
         <translation>Codificación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="334"/>
+        <location filename="sktr.py" line="358"/>
         <source>regex</source>
         <translation>regex</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="334"/>
+        <location filename="sktr.py" line="359"/>
         <source>regexp</source>
         <translation>regexp</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="92"/>
+        <location filename="sktr.py" line="97"/>
         <source>About {0}</source>
         <translation>Acerca de {0}</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="287"/>
+        <location filename="sktr.py" line="305"/>
         <source>Game</source>
         <translation>Juego</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="202"/>
+        <location filename="sktr.py" line="212"/>
         <source>Picture</source>
         <translation>Imagen</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="202"/>
+        <location filename="sktr.py" line="212"/>
         <source>Pictures</source>
-        <translation>Fotos</translation>
+        <translation>Imágenes</translation>
     </message>
     <message>
         <location filename="sktr.py" line="46"/>
@@ -1121,495 +1116,490 @@
     <message>
         <location filename="sktr.py" line="45"/>
         <source>Thai</source>
-        <translation>Tailandesa</translation>
+        <translation>Tailandés</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="269"/>
+        <location filename="sktr.py" line="287"/>
         <source>Context</source>
         <translation>Contexto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="144"/>
+        <location filename="sktr.py" line="150"/>
         <source>Next</source>
         <translation>Siguiente</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="159"/>
+        <location filename="sktr.py" line="165"/>
         <source>Previous</source>
         <translation>Anterior</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="109"/>
+        <location filename="sktr.py" line="114"/>
         <source>Create</source>
         <translation>Crear</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="109"/>
+        <location filename="sktr.py" line="114"/>
         <source>Creation</source>
         <translation>Creación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="320"/>
+        <location filename="sktr.py" line="341"/>
         <source>Owner</source>
         <translation>Propietario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="114"/>
+        <location filename="sktr.py" line="119"/>
         <source>Disabled</source>
-        <translation>Disabled</translation>
+        <translation>Discapacitado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="114"/>
+        <location filename="sktr.py" line="119"/>
         <source>disabled</source>
-        <translation>discapacitados</translation>
+        <translation>discapacitado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="123"/>
+        <location filename="sktr.py" line="128"/>
         <source>Enabled</source>
         <translation>Activado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="123"/>
+        <location filename="sktr.py" line="128"/>
         <source>enabled</source>
         <translation>habilitado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="156"/>
+        <location filename="sktr.py" line="162"/>
         <source>Permission</source>
         <translation>Permiso</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="156"/>
+        <location filename="sktr.py" line="162"/>
         <source>Permissions</source>
         <translation>Permisos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="300"/>
+        <location filename="sktr.py" line="318"/>
         <source>Internet status</source>
         <translation>Estado de Internet</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="431"/>
+        <location filename="sktr.py" line="465"/>
         <source>Subtitles</source>
         <translation>Subtítulos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="434"/>
+        <location filename="sktr.py" line="468"/>
         <source>Comments</source>
         <translation>Comentarios</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="263"/>
+        <location filename="sktr.py" line="281"/>
         <source>Creator</source>
         <translation>Creador</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="125"/>
+        <location filename="sktr.py" line="131"/>
         <source>Export</source>
         <translation>Exportación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="267"/>
+        <location filename="sktr.py" line="285"/>
         <source>Content</source>
         <translation>Contenido</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="268"/>
+        <location filename="sktr.py" line="286"/>
         <source>Contents</source>
         <translation>Contenido</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="220"/>
+        <location filename="sktr.py" line="233"/>
         <source>Keyboard shortcuts</source>
         <translation>Atajos de teclado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="119"/>
+        <location filename="sktr.py" line="124"/>
         <source>edit</source>
-        <translation>edición</translation>
+        <translation>editar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="112"/>
+        <location filename="sktr.py" line="117"/>
         <source>Del</source>
         <translation>Del</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="112"/>
+        <location filename="sktr.py" line="117"/>
         <source>del</source>
         <translation>del</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="430"/>
+        <location filename="sktr.py" line="464"/>
         <source>subtitle</source>
-        <translation>subtítulos</translation>
+        <translation>subtítulo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="431"/>
+        <location filename="sktr.py" line="465"/>
         <source>subtitles</source>
         <translation>subtítulos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="433"/>
+        <location filename="sktr.py" line="467"/>
         <source>comment</source>
         <translation>comentario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="434"/>
+        <location filename="sktr.py" line="468"/>
         <source>comments</source>
         <translation>comentarios</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="435"/>
+        <location filename="sktr.py" line="469"/>
         <source>danmaku</source>
         <translation>danmaku</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="436"/>
+        <location filename="sktr.py" line="470"/>
         <source>translation</source>
         <translation>traducción</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="437"/>
+        <location filename="sktr.py" line="471"/>
         <source>text</source>
         <translation>texto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="157"/>
+        <location filename="sktr.py" line="163"/>
         <source>pop-up</source>
-        <translation>pop-up</translation>
+        <translation>surgir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="359"/>
+        <location filename="sktr.py" line="385"/>
         <source>Time zone</source>
-        <translation>Zona horaria</translation>
+        <translation>Huso horario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="305"/>
+        <location filename="sktr.py" line="324"/>
         <source>language</source>
         <translation>idioma</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="306"/>
+        <location filename="sktr.py" line="325"/>
         <source>languages</source>
         <translation>idiomas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="367"/>
+        <location filename="sktr.py" line="394"/>
         <source>user</source>
         <translation>usuario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="369"/>
+        <location filename="sktr.py" line="396"/>
         <source>Users</source>
         <translation>Usuarios</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="369"/>
+        <location filename="sktr.py" line="396"/>
         <source>users</source>
         <translation>usuarios</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="160"/>
+        <location filename="sktr.py" line="166"/>
         <source>Read</source>
         <translation>Leer</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="285"/>
+        <location filename="sktr.py" line="303"/>
         <source>Font</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="286"/>
+        <location filename="sktr.py" line="304"/>
         <source>Font family</source>
         <translation>Familia de fuentes</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="126"/>
+        <location filename="sktr.py" line="132"/>
         <source>Extra</source>
         <translation>Extra</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="126"/>
+        <location filename="sktr.py" line="132"/>
         <source>extra</source>
-        <translation>adicional</translation>
+        <translation>extra</translation>
     </message>
     <message>
         <location filename="sktr.py" line="48"/>
         <source>Indonesian</source>
-        <translation>Indonesia</translation>
+        <translation>Indonesio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="257"/>
+        <location filename="sktr.py" line="274"/>
         <source>Aside</source>
         <translation>Aparte</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="368"/>
+        <location filename="sktr.py" line="395"/>
         <source>User information</source>
         <translation>Información del usuario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="293"/>
+        <location filename="sktr.py" line="311"/>
         <source>Homepage</source>
-        <translation>Página de inicio</translation>
+        <translation>Página principal</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="260"/>
+        <location filename="sktr.py" line="277"/>
         <source>Avatar</source>
         <translation>Avatar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="150"/>
+        <location filename="sktr.py" line="156"/>
         <source>Other</source>
-        <translation>Otros</translation>
+        <translation>Otro</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="150"/>
+        <location filename="sktr.py" line="156"/>
         <source>other</source>
-        <translation>otros</translation>
+        <translation>otro</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="133"/>
+        <location filename="sktr.py" line="139"/>
         <source>ignore</source>
-        <translation>ignorar</translation>
+        <translation>pasar por alto</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="270"/>
+        <location filename="sktr.py" line="288"/>
         <source>Context menu</source>
         <translation>Menú contextual</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="270"/>
+        <location filename="sktr.py" line="288"/>
         <source>context menu</source>
         <translation>menú contextual</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="311"/>
+        <location filename="sktr.py" line="331"/>
         <source>Menu</source>
         <translation>Menú</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="317"/>
+        <location filename="sktr.py" line="338"/>
         <source>option</source>
         <translation>opción</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="318"/>
+        <location filename="sktr.py" line="339"/>
         <source>options</source>
         <translation>Opciones</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="331"/>
+        <location filename="sktr.py" line="355"/>
         <source>Reference</source>
         <translation>Referencia</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="332"/>
+        <location filename="sktr.py" line="356"/>
         <source>References</source>
         <translation>Referencias</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="338"/>
+        <location filename="sktr.py" line="363"/>
         <source>Release Date</source>
-        <translation>Fecha de lanzamiento</translation>
+        <translation>Fecha De Lanzamiento</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="338"/>
+        <location filename="sktr.py" line="363"/>
         <source>Release date</source>
         <translation>Fecha de lanzamiento</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="357"/>
+        <location filename="sktr.py" line="383"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="444"/>
         <source>not specified</source>
-        <translation>No especificado</translation>
+        <translation>no especificado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="127"/>
+        <location filename="sktr.py" line="133"/>
         <source>Filter</source>
         <translation>Filtro</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="417"/>
+        <location filename="sktr.py" line="448"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="417"/>
+        <location filename="sktr.py" line="448"/>
         <source>unknown</source>
         <translation>desconocido</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="262"/>
+        <location filename="sktr.py" line="280"/>
         <source>Cover</source>
         <translation>Cubierta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="243"/>
+        <location filename="sktr.py" line="260"/>
         <source>Brand</source>
         <translation>Marca</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="244"/>
+        <location filename="sktr.py" line="261"/>
         <source>Label</source>
         <translation>Etiqueta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="256"/>
+        <location filename="sktr.py" line="273"/>
         <source>Age</source>
         <translation>Edad</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="324"/>
+        <location filename="sktr.py" line="346"/>
         <source>Price</source>
         <translation>Precio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="247"/>
+        <location filename="sktr.py" line="264"/>
         <source>Visit</source>
         <translation>Visita</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="161"/>
-        <source>Visit count</source>
-        <translation type="obsolete">訪問数</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="137"/>
+        <location filename="sktr.py" line="143"/>
         <source>Link</source>
         <translation>Enlace</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="138"/>
+        <location filename="sktr.py" line="144"/>
         <source>Links</source>
         <translation>Enlaces</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="363"/>
+        <location filename="sktr.py" line="390"/>
         <source>UI</source>
         <translation>UI</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="129"/>
+        <location filename="sktr.py" line="135"/>
         <source>Full screen</source>
         <translation>Pantalla completa</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="341"/>
+        <location filename="sktr.py" line="368"/>
         <source>Screen</source>
         <translation>Pantalla</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="245"/>
+        <location filename="sktr.py" line="262"/>
         <source>Series</source>
-        <translation>Series</translation>
+        <translation>Serie</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="145"/>
+        <location filename="sktr.py" line="151"/>
         <source>None</source>
         <translation>Ninguno</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="145"/>
+        <location filename="sktr.py" line="151"/>
         <source>none</source>
         <translation>ninguno</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="259"/>
+        <location filename="sktr.py" line="276"/>
         <source>Authors</source>
         <translation>Autores</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="303"/>
+        <location filename="sktr.py" line="321"/>
         <source>Keyword</source>
         <translation>Palabra clave</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="304"/>
+        <location filename="sktr.py" line="322"/>
         <source>Keywords</source>
         <translation>Palabras clave</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="242"/>
+        <location filename="sktr.py" line="259"/>
         <source>CG</source>
         <translation>CG</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="290"/>
+        <location filename="sktr.py" line="308"/>
         <source>Genre</source>
         <translation>Género</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="101"/>
+        <location filename="sktr.py" line="105"/>
         <source>Category</source>
         <translation>Categoría</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="248"/>
+        <location filename="sktr.py" line="265"/>
         <source>Visits</source>
         <translation>Visitas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="287"/>
+        <location filename="sktr.py" line="305"/>
         <source>game</source>
         <translation>juego</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="265"/>
+        <location filename="sktr.py" line="283"/>
         <source>Credits</source>
         <translation>Créditos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="271"/>
+        <location filename="sktr.py" line="289"/>
         <source>Date</source>
         <translation>Fecha</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="319"/>
+        <location filename="sktr.py" line="340"/>
         <source>Order</source>
         <translation>Orden</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="432"/>
+        <location filename="sktr.py" line="466"/>
         <source>Subs</source>
         <translation>Subs</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="432"/>
+        <location filename="sktr.py" line="466"/>
         <source>subs</source>
         <translation>subs</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="224"/>
+        <location filename="sktr.py" line="237"/>
         <source>Asc</source>
         <translation>Asc</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="224"/>
+        <location filename="sktr.py" line="237"/>
         <source>asc</source>
         <translation>asc</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="226"/>
+        <location filename="sktr.py" line="239"/>
         <source>Desc</source>
         <translation>Desc</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="226"/>
+        <location filename="sktr.py" line="239"/>
         <source>desc</source>
         <translation>desc</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="337"/>
+        <location filename="sktr.py" line="362"/>
         <source>Release</source>
-        <translation>Lanzamiento</translation>
+        <translation>Liberación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="99"/>
+        <location filename="sktr.py" line="103"/>
         <source>Buy</source>
         <translation>Comprar</translation>
     </message>
@@ -1619,362 +1609,362 @@
         <translation>China continental</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="255"/>
+        <location filename="sktr.py" line="272"/>
         <source>All</source>
         <translation>Todos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="307"/>
+        <location filename="sktr.py" line="326"/>
         <source>Local</source>
         <translation>Local</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="415"/>
+        <location filename="sktr.py" line="446"/>
         <source>Press Enter to submit</source>
-        <translation>Presione Enter para buscar</translation>
+        <translation>Pulse Intro para presentar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="74"/>
+        <location filename="sktr.py" line="78"/>
         <source>Show {0}</source>
         <translation>Mostrar {0}</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="288"/>
+        <location filename="sktr.py" line="306"/>
         <source>Game information</source>
         <translation>Información del juego</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="288"/>
+        <location filename="sktr.py" line="306"/>
         <source>game information</source>
         <translation>información del juego</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="368"/>
+        <location filename="sktr.py" line="395"/>
         <source>user information</source>
-        <translation>información del usuario</translation>
+        <translation>la información de usuario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="75"/>
+        <location filename="sktr.py" line="79"/>
         <source>Hide {0}</source>
         <translation>Ocultar {0}</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="243"/>
+        <location filename="sktr.py" line="260"/>
         <source>brand</source>
         <translation>marca</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="244"/>
+        <location filename="sktr.py" line="261"/>
         <source>label</source>
         <translation>etiqueta</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="245"/>
+        <location filename="sktr.py" line="262"/>
         <source>series</source>
         <translation>serie</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="357"/>
+        <location filename="sktr.py" line="383"/>
         <source>title</source>
         <translation>título</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="271"/>
+        <location filename="sktr.py" line="289"/>
         <source>date</source>
         <translation>fecha</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="288"/>
+        <location filename="sktr.py" line="306"/>
         <source>Game Information</source>
-        <translation>Información del Partido</translation>
+        <translation>Información del juego</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="368"/>
+        <location filename="sktr.py" line="395"/>
         <source>User Information</source>
         <translation>Información del usuario</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="225"/>
+        <location filename="sktr.py" line="238"/>
         <source>Ascending</source>
         <translation>Ascendente</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="227"/>
+        <location filename="sktr.py" line="240"/>
         <source>Descending</source>
         <translation>Descendente</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="250"/>
+        <location filename="sktr.py" line="267"/>
         <source>Year</source>
         <translation>Año</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="251"/>
+        <location filename="sktr.py" line="268"/>
         <source>Month</source>
         <translation>Mes</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="252"/>
+        <location filename="sktr.py" line="269"/>
         <source>Day</source>
         <translation>Día</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="115"/>
+        <location filename="sktr.py" line="120"/>
         <source>Download</source>
         <translation>Descargar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="115"/>
+        <location filename="sktr.py" line="120"/>
         <source>download</source>
-        <translation>descarga</translation>
+        <translation>descargar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="83"/>
+        <location filename="sktr.py" line="87"/>
         <source>Left Click</source>
         <translation>Clic izquierdo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="83"/>
+        <location filename="sktr.py" line="87"/>
         <source>Left click</source>
         <translation>Pulse el botón izquierdo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="84"/>
+        <location filename="sktr.py" line="88"/>
         <source>Left-Click</source>
         <translation>Left-Click</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="84"/>
+        <location filename="sktr.py" line="88"/>
         <source>Left-click</source>
         <translation>Izquierda-clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="85"/>
+        <location filename="sktr.py" line="89"/>
         <source>Middle Click</source>
         <translation>Medio Click</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="85"/>
+        <location filename="sktr.py" line="89"/>
         <source>Middle click</source>
-        <translation>Clic Medio</translation>
+        <translation>Clic medio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="86"/>
+        <location filename="sktr.py" line="90"/>
         <source>Middle-Click</source>
         <translation>Medio-Click</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="86"/>
+        <location filename="sktr.py" line="90"/>
         <source>Middle-click</source>
         <translation>Medio-clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="87"/>
+        <location filename="sktr.py" line="91"/>
         <source>Right Click</source>
-        <translation>Right Click</translation>
+        <translation>Clic derecho</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="87"/>
+        <location filename="sktr.py" line="91"/>
         <source>Right click</source>
         <translation>Haz clic derecho</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="88"/>
+        <location filename="sktr.py" line="92"/>
         <source>Right-Click</source>
-        <translation>Haga Click</translation>
+        <translation>Haga clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="88"/>
+        <location filename="sktr.py" line="92"/>
         <source>Right-click</source>
         <translation>Haga clic</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="105"/>
+        <location filename="sktr.py" line="110"/>
         <source>Cluster</source>
-        <translation>Cluster</translation>
+        <translation>Racimo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="222"/>
+        <location filename="sktr.py" line="235"/>
         <source>Otome</source>
         <translation>Otome</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="207"/>
+        <location filename="sktr.py" line="217"/>
         <source>Blue</source>
         <translation>Azul</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="208"/>
+        <location filename="sktr.py" line="218"/>
         <source>Purple</source>
-        <translation>Purple</translation>
+        <translation>Púrpura</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="210"/>
+        <location filename="sktr.py" line="220"/>
         <source>Score</source>
         <translation>Puntuación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="211"/>
+        <location filename="sktr.py" line="221"/>
         <source>Slogan</source>
-        <translation>Slogan</translation>
+        <translation>Eslogan</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="183"/>
+        <location filename="sktr.py" line="190"/>
         <source>Site</source>
         <translation>Sitio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="77"/>
+        <location filename="sktr.py" line="81"/>
         <source>Scroll to Top</source>
-        <translation>Volver arriba</translation>
+        <translation>Ir al Inicio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="77"/>
+        <location filename="sktr.py" line="81"/>
         <source>Scroll to top</source>
-        <translation>Desplácese hacia arriba</translation>
+        <translation>Ir al Inicio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="78"/>
+        <location filename="sktr.py" line="82"/>
         <source>Scroll to Bottom</source>
-        <translation>Desplácese hasta la parte inferior</translation>
+        <translation>Desplázate hasta la parte inferior</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="78"/>
+        <location filename="sktr.py" line="82"/>
         <source>Scroll to bottom</source>
         <translation>Desplácese hacia abajo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="53"/>
+        <location filename="sktr.py" line="57"/>
         <source>ja</source>
         <translation>ja</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="54"/>
+        <location filename="sktr.py" line="58"/>
         <source>en</source>
         <translation>en</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="56"/>
+        <location filename="sktr.py" line="60"/>
         <source>zht</source>
         <translation>zht</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="57"/>
+        <location filename="sktr.py" line="61"/>
         <source>zhs</source>
         <translation>zhs</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="58"/>
+        <location filename="sktr.py" line="62"/>
         <source>ko</source>
         <translation>ko</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="59"/>
+        <location filename="sktr.py" line="63"/>
         <source>th</source>
         <translation>th</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="60"/>
+        <location filename="sktr.py" line="64"/>
         <source>vi</source>
         <translation>vi</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="62"/>
+        <location filename="sktr.py" line="66"/>
         <source>id</source>
         <translation>id</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="64"/>
+        <location filename="sktr.py" line="68"/>
         <source>de</source>
         <translation>de</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="65"/>
+        <location filename="sktr.py" line="69"/>
         <source>fr</source>
         <translation>fr</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="66"/>
+        <location filename="sktr.py" line="70"/>
         <source>it</source>
         <translation>it</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="67"/>
+        <location filename="sktr.py" line="71"/>
         <source>es</source>
         <translation>es</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="70"/>
+        <location filename="sktr.py" line="74"/>
         <source>pt</source>
         <translation>pt</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="71"/>
+        <location filename="sktr.py" line="75"/>
         <source>ru</source>
         <translation>ru</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="117"/>
+        <location filename="sktr.py" line="122"/>
         <source>Downloading</source>
-        <translation>Descarga</translation>
+        <translation>Descarga de</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="282"/>
+        <location filename="sktr.py" line="300"/>
         <source>File</source>
-        <translation>Archivo</translation>
+        <translation>Expediente</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="154"/>
+        <location filename="sktr.py" line="160"/>
         <source>Play</source>
-        <translation>Juega</translation>
+        <translation>Jugar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="388"/>
+        <location filename="sktr.py" line="415"/>
         <source>online</source>
         <translation>en línea</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="389"/>
+        <location filename="sktr.py" line="416"/>
         <source>offline</source>
-        <translation>offline</translation>
+        <translation>desconectado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="55"/>
+        <location filename="sktr.py" line="59"/>
         <source>zh</source>
         <translation>zh</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="218"/>
+        <location filename="sktr.py" line="231"/>
         <source>Machine Translation</source>
-        <translation>Traducción Automática</translation>
+        <translation>Traducción automática</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="401"/>
+        <location filename="sktr.py" line="432"/>
         <source>Not changed</source>
         <translation>No ha cambiado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="146"/>
+        <location filename="sktr.py" line="152"/>
         <source>Note</source>
         <translation>Nota</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="279"/>
+        <location filename="sktr.py" line="297"/>
         <source>Engine</source>
         <translation>Motor</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="261"/>
+        <location filename="sktr.py" line="278"/>
         <source>Background</source>
-        <translation>Antecedentes</translation>
+        <translation>Fondo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="321"/>
+        <location filename="sktr.py" line="342"/>
         <source>Padding</source>
-        <translation>Relleno</translation>
+        <translation>Acolchado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="376"/>
+        <location filename="sktr.py" line="405"/>
         <source>Wiki</source>
         <translation>Wiki</translation>
     </message>
@@ -1984,7 +1974,7 @@
         <translation>Polaco</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="69"/>
+        <location filename="sktr.py" line="73"/>
         <source>pl</source>
         <translation>pl</translation>
     </message>
@@ -1994,27 +1984,27 @@
         <translation>Hangul</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="398"/>
+        <location filename="sktr.py" line="429"/>
         <source>Public</source>
-        <translation>Pública</translation>
+        <translation>Público</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="399"/>
+        <location filename="sktr.py" line="430"/>
         <source>Private</source>
         <translation>Privado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="116"/>
+        <location filename="sktr.py" line="121"/>
         <source>Downloads</source>
         <translation>Descargas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="135"/>
+        <location filename="sktr.py" line="141"/>
         <source>Install</source>
-        <translation>Instale</translation>
+        <translation>Instalar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="68"/>
+        <location filename="sktr.py" line="72"/>
         <source>nl</source>
         <translation>nl</translation>
     </message>
@@ -2024,202 +2014,202 @@
         <translation>Holandés</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="158"/>
+        <location filename="sktr.py" line="164"/>
         <source>Popup</source>
-        <translation>Emergente</translation>
+        <translation>Surgir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="142"/>
+        <location filename="sktr.py" line="148"/>
         <source>Lookup</source>
-        <translation>Búsqueda</translation>
+        <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="102"/>
+        <location filename="sktr.py" line="106"/>
         <source>Chat</source>
-        <translation>Chatear</translation>
+        <translation>Charlar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="47"/>
         <source>Malaysian</source>
-        <translation>Malasia</translation>
+        <translation>Malasio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="61"/>
+        <location filename="sktr.py" line="65"/>
         <source>ms</source>
         <translation>ms</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="90"/>
+        <location filename="sktr.py" line="94"/>
         <source>Space</source>
         <translation>Espacio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="302"/>
+        <location filename="sktr.py" line="320"/>
         <source>Keyboard</source>
         <translation>Teclado</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="229"/>
+        <location filename="sktr.py" line="242"/>
         <source>Up</source>
-        <translation>Up</translation>
+        <translation>Arriba</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="230"/>
+        <location filename="sktr.py" line="243"/>
         <source>Down</source>
         <translation>Abajo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="231"/>
+        <location filename="sktr.py" line="244"/>
         <source>Left</source>
         <translation>Izquierda</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="232"/>
+        <location filename="sktr.py" line="245"/>
         <source>Right</source>
-        <translation>Derecha</translation>
+        <translation>Derecho</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="408"/>
+        <location filename="sktr.py" line="439"/>
         <source>Network Error</source>
         <translation>Error de red</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="97"/>
+        <location filename="sktr.py" line="101"/>
         <source>Back</source>
-        <translation>Volver</translation>
+        <translation>Espalda</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="128"/>
+        <location filename="sktr.py" line="134"/>
         <source>Forward</source>
         <translation>Adelante</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="395"/>
+        <location filename="sktr.py" line="427"/>
         <source>Slow</source>
         <translation>Lento</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="186"/>
+        <location filename="sktr.py" line="195"/>
         <source>Transcode</source>
-        <translation>Transcode</translation>
+        <translation>Transcodificación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="396"/>
+        <location filename="sktr.py" line="427"/>
         <source>slow</source>
-        <translation>lenta</translation>
+        <translation>lento</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="297"/>
+        <location filename="sktr.py" line="315"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="173"/>
+        <location filename="sktr.py" line="180"/>
         <source>Select</source>
-        <translation>Seleccione</translation>
+        <translation>Seleccionar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="96"/>
+        <location filename="sktr.py" line="100"/>
         <source>Append</source>
         <translation>Anexar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="151"/>
+        <location filename="sktr.py" line="157"/>
         <source>Overwrite</source>
         <translation>Sobrescribir</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="312"/>
+        <location filename="sktr.py" line="333"/>
         <source>Method</source>
         <translation>Método</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="205"/>
+        <location filename="sktr.py" line="215"/>
         <source>All languages</source>
         <translation>Todos los idiomas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="255"/>
+        <location filename="sktr.py" line="272"/>
         <source>all</source>
-        <translation>todo</translation>
+        <translation>todos</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="283"/>
+        <location filename="sktr.py" line="301"/>
         <source>File size</source>
         <translation>Tamaño del archivo</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="213"/>
+        <location filename="sktr.py" line="223"/>
         <source>Comiket</source>
         <translation>Comiket</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="377"/>
+        <location filename="sktr.py" line="406"/>
         <source>Wikipedia</source>
         <translation>Wikipedia</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="295"/>
+        <location filename="sktr.py" line="313"/>
         <source>Image</source>
         <translation>Imagen</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="296"/>
+        <location filename="sktr.py" line="314"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="215"/>
+        <location filename="sktr.py" line="228"/>
         <source>Scenario</source>
-        <translation>Escenario</translation>
+        <translation>Guión</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="216"/>
+        <location filename="sktr.py" line="229"/>
         <source>Music</source>
         <translation>Música</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="393"/>
+        <location filename="sktr.py" line="420"/>
         <source>Draggable</source>
         <translation>Arrastrable</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="346"/>
+        <location filename="sktr.py" line="373"/>
         <source>Size</source>
         <translation>Tamaño</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="339"/>
+        <location filename="sktr.py" line="364"/>
         <source>Review</source>
         <translation>Revisión</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="335"/>
+        <location filename="sktr.py" line="360"/>
         <source>Rate</source>
-        <translation>Cambio</translation>
+        <translation>Tarifa</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="336"/>
+        <location filename="sktr.py" line="361"/>
         <source>Rating</source>
-        <translation>Puntuación</translation>
+        <translation>Clasificación</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="193"/>
+        <location filename="sktr.py" line="203"/>
         <source>More</source>
         <translation>Más</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="194"/>
+        <location filename="sktr.py" line="204"/>
         <source>No more</source>
         <translation>No más</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="278"/>
+        <location filename="sktr.py" line="296"/>
         <source>error</source>
         <translation>error</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="192"/>
+        <location filename="sktr.py" line="202"/>
         <source>Less</source>
         <translation>Menos</translation>
     </message>
@@ -2229,69 +2219,289 @@
         <translation>Árabe</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="63"/>
+        <location filename="sktr.py" line="67"/>
         <source>ar</source>
         <translation>ar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="143"/>
+        <location filename="sktr.py" line="149"/>
         <source>Move</source>
-        <translation>Move</translation>
+        <translation>Movimiento</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="167"/>
+        <location filename="sktr.py" line="174"/>
         <source>Resize</source>
         <translation>Cambiar el tamaño</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="380"/>
+        <location filename="sktr.py" line="409"/>
         <source>Zoom In</source>
         <translation>Acercar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="380"/>
+        <location filename="sktr.py" line="409"/>
         <source>Zoom in</source>
-        <translation>Zoom in</translation>
+        <translation>Acercar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="381"/>
+        <location filename="sktr.py" line="410"/>
         <source>Zoom Out</source>
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="381"/>
+        <location filename="sktr.py" line="410"/>
         <source>Zoom out</source>
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="170"/>
+        <location filename="sktr.py" line="177"/>
         <source>Reply</source>
         <translation>Responder</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="299"/>
+        <location filename="sktr.py" line="317"/>
         <source>Internet error</source>
         <translation>Error de Internet</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="196"/>
+        <location filename="sktr.py" line="206"/>
         <source>Replies</source>
         <translation>Respuestas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="197"/>
+        <location filename="sktr.py" line="207"/>
         <source>No replies</source>
         <translation>Sin respuestas</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="272"/>
+        <location filename="sktr.py" line="290"/>
         <source>Desktop</source>
         <translation>Escritorio</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="310"/>
+        <location filename="sktr.py" line="330"/>
         <source>Macro</source>
         <translation>Macro</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="376"/>
+        <source>Syntax</source>
+        <translation>Sintaxis</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="344"/>
+        <source>Pitch</source>
+        <translation>Brea</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="398"/>
+        <source>Volume</source>
+        <translation>Volumen</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="279"/>
+        <source>Column</source>
+        <translation>Columna</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="365"/>
+        <source>Row</source>
+        <translation>Fila</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="200"/>
+        <source>Update {0}</source>
+        <translation>Actualización {0}</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="170"/>
+        <source>Recent Changes</source>
+        <translation>Cambios recientes</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="170"/>
+        <source>Recent changes</source>
+        <translation>Cambios recientes</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="252"/>
+        <source>romaji</source>
+        <translation>romaji</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="386"/>
+        <source>Topic</source>
+        <translation>Tema</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="225"/>
+        <source>Article</source>
+        <translation>Artículo</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="226"/>
+        <source>Solved</source>
+        <translation>Resuelto</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="106"/>
+        <source>chat</source>
+        <translation>charlar</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="225"/>
+        <source>article</source>
+        <translation>artículo</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="226"/>
+        <source>solved</source>
+        <translation>resuelto</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="332"/>
+        <source>News</source>
+        <translation>Noticias</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="332"/>
+        <source>news</source>
+        <translation>noticias</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="354"/>
+        <source>question</source>
+        <translation>pregunta</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="386"/>
+        <source>topic</source>
+        <translation>tema</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>review</source>
+        <translation>revisión</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="424"/>
+        <source>Recent</source>
+        <translation>Reciente</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="425"/>
+        <source>Like</source>
+        <translation>Como</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="351"/>
+        <source>Proxy</source>
+        <translation>Apoderado</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="129"/>
+        <source>Equal</source>
+        <translation>Igual</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="432"/>
+        <source>not changed</source>
+        <translation>no ha cambiado</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="129"/>
+        <source>equal</source>
+        <translation>igual</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="256"/>
+        <source>Hanja</source>
+        <translation>Hanja</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="257"/>
+        <source>Romaja</source>
+        <translation>Romaja</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="358"/>
+        <source>Regex</source>
+        <translation>Regex</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="359"/>
+        <source>Regexp</source>
+        <translation>Regexp</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="422"/>
+        <source>Unsaved</source>
+        <translation>Unsaved</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="422"/>
+        <source>unsaved</source>
+        <translation>no guardado</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="348"/>
+        <source>Privilege</source>
+        <translation>Privilegio</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="323"/>
+        <source>Lang</source>
+        <translation>Lang</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="323"/>
+        <source>lang</source>
+        <translation>lang</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="107"/>
+        <source>Check</source>
+        <translation>Comprobar</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="400"/>
+        <source>Warn</source>
+        <translation>Advertir</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="450"/>
+        <source>Unknown error</source>
+        <translation>Error desconocido</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="451"/>
+        <source>Unknown warning</source>
+        <translation>Desconocido advertencia</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="327"/>
+        <source>Locale</source>
+        <translation>Lugar</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="254"/>
+        <source>Pinyin</source>
+        <translation>Pinyin</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="51"/>
+        <source>Latin</source>
+        <translation>Latín</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="52"/>
+        <source>Cyrillic</source>
+        <translation>Cirílico</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="54"/>
+        <source>Traditional Chinese</source>
+        <translation>Chino tradicional</translation>
     </message>
 </context>
 </TS>

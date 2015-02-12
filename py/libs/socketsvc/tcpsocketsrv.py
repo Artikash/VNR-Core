@@ -2,11 +2,11 @@
 # tcpsocketsrv.py
 # jichi 4/28/2014
 
+__all__ = 'TcpSocketServer',
+
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
-
-__all__ = ['TcpSocketServer']
 
 import weakref
 from functools import partial

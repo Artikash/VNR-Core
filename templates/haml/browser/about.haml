@@ -13,12 +13,14 @@
       body {
         /*background-color: #ececec;*/
         background-repeat: repeat;
-        background-image: url("#{rc.image_url('background')}");
+        background-image: url("#{rc.image_url('background-black')}");
+        color: snow;
         font: 120% arial,helvetica,clean,sans-serif;
       }
       .portal {
         border-radius: 4px;
-        background-color: rgba(255,255,255,0.9);
+        border: 1px solid snow;
+        /*background-color: rgba(0,0,0,0.1);*/
         margin: 50px auto;
         max-width: 300px;
         padding: 9px;
@@ -28,20 +30,18 @@
         height: 80px;
         margin-left: 20px;
       }
-      hr {
-        margin: 10px 0;
-      }
-      label {
-        text-align: right;
-      }
-      .links a.first {
-        margin-right: 10px;
-      }
+      hr { margin: 10px 0 }
+      label { text-align: right }
+      .head a { margin-left: 20px }
+      .links a.first { margin-right: 10px }
   %body
     .portal
       .row.head
         %img.logo(src="#{rc.image_url('logo-browser')}")
         #{tr('About')}
+        -set url = "http://sakuradite.com/app/vnr/changes"
+        %a(target="_blank",href="#{url}",title="#{url}")
+          #{tr('Recent Changes')}
       %hr
       .body.form-horizontal
         .form-group

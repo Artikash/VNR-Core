@@ -3,7 +3,7 @@
 # 11/29/2013 jichi
 # See: http://static.clipconverter.cc/inc/min/b=js&f=converter.js
 
-__all__ = ['YouTubeSolver']
+__all__ = 'YouTubeSolver',
 
 if __name__ == '__main__': # DEBUG
   import debug

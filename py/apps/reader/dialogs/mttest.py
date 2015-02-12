@@ -3,7 +3,7 @@
 # 11/20/2013 jichi
 # Machine translation tester.
 
-__all__ = ['MTTester']
+__all__ = 'MTTester',
 
 if __name__ == '__main__':
   import sys
@@ -14,12 +14,27 @@ if __name__ == '__main__':
 from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
-from sakurakit import skqss
+from sakurakit import skqss, skwidgets
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, i18n, rc, settings, textutil, termman, trman, trtraits
+from share.mt import mtinfo
+import config, dataman, evalutil, i18n, rc, settings, textutil, termman, trman
+
+class MTTester(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
+    super(MTTester, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.setWindowFlags(WINDOW_FLAGS)
+    self.setWindowTitle(mytr_("Test Machine Translation"))
+    self.setWindowIcon(rc.icon('window-mttest'))
+    self.__d = _MTTester(self)
+    #self.setContentsMargins(9, 9, 9, 9)
+    self.resize(800, 300)
+    dprint("pass")
 
 # http://www.alanwood.net/unicode/arrows.html
 _LEFTARROW = u'<span style="color:blue">←</span>'
@@ -54,17 +69,19 @@ class _MTTester(object):
         self.sourceTextEdit.setPlainText(t or _EMPTY_TEXT))
     tm.escapedTextReceived.connect(lambda t:
         self.escapedTextEdit.setPlainText(t or _EMPTY_TEXT))
+
+    tm.splitTextsReceived.connect(lambda l:
+        self.splitTextEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
+
     tm.jointTranslationReceived.connect(lambda t:
-        self.jointTranslationEdit.setPlainText(t or _EMPTY_TEXT))
+        self.jointTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.escapedTranslationReceived.connect(lambda t:
         self.escapedTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.targetTranslationReceived.connect(lambda t:
         self.targetTranslationEdit.setHtml(t or _EMPTY_TEXT))
 
-    tm.splitTextsReceived.connect(lambda l:
-        self.splitTextEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
     tm.splitTranslationsReceived.connect(lambda l:
-        self.splitTranslationEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
+        self.splitTranslationEdit.setHtml('<br/>--------<br/>'.join(l) if l else _EMPTY_TEXT))
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -89,6 +106,7 @@ class _MTTester(object):
     #row.addWidget(QtWidgets.QLabel("#"))
     row.addWidget(self.gameLabel)
     row.addStretch()
+    row.addWidget(self.markButton)
     layout.addLayout(row)
 
     # First row
@@ -105,11 +123,11 @@ class _MTTester(object):
     c += 1
     cell = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.originTextButton)
-    row.addWidget(self.originTextLabel)
+    row.addWidget(self.gameTextButton)
+    row.addWidget(self.gameTextLabel)
     row.addStretch()
     cell.addLayout(row)
-    cell.addWidget(self.originTextEdit)
+    cell.addWidget(self.gameTextEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
@@ -222,7 +240,7 @@ class _MTTester(object):
     for it in (
         #self.textEdit,
         self.directTranslationEdit,
-        self.originTextEdit,
+        self.gameTextEdit,
         self.normalizedTextEdit,
         self.sourceTextEdit,
         self.escapedTextEdit,
@@ -239,13 +257,15 @@ class _MTTester(object):
     return self.textEdit.toPlainText().strip()
   def _currentFromLanguage(self):
     return config.LANGUAGES[self.fromLanguageEdit.currentIndex()]
-  def _currentToLanguage(self):
-    return config.LANGUAGES[self.toLanguageEdit.currentIndex()]
+  #def _currentToLanguage(self):
+  #  return config.LANGUAGES[self.toLanguageEdit.currentIndex()]
   def _currentTranslator(self):
-    return trtraits.TRAITS[self.translatorEdit.currentIndex()]['key']
+    return dataman.Term.HOSTS[self.translatorEdit.currentIndex()]
 
-  def _isOriginTermsEnabled(self): return self.originTextButton.isChecked()
+  def _isGameTermsEnabled(self): return self.gameTextButton.isChecked()
   def _isTranslationScriptEnabled(self): return self.normalizedTextButton.isChecked()
+
+  def _isMarkEnabled(self): return self.markButton.isChecked()
 
   def _speak(self):
     t = self._currentText()
@@ -266,32 +286,41 @@ class _MTTester(object):
       dprint("enter")
       self._clearTranslations()
       self.translatorLabel.setText(self.translatorEdit.currentText())
-      lang = self._currentFromLanguage()
+      fr = self._currentFromLanguage()
       params = {
-        'fr': lang,
+        'fr': fr,
         'engine': self._currentTranslator(),
       }
-      raw = trman.manager().translateDirect(t, **params)
+      raw = trman.manager().translateTest(t, **params)
       if raw:
         self.directTranslationEdit.setPlainText(raw)
 
-      if self._isOriginTermsEnabled():
+      if self._isGameTermsEnabled():
+        #to = self._currentToLanguage()
         tt = textutil.normalize_punct(t)
-        tt = termman.manager().applyOriginTerms(tt, lang)
+        tt = termman.manager().applyGameTerms(tt, fr=fr) #, to=to)
         if tt != t:
           t = tt
-          self.setOriginTextEditText(t or _EMPTY_TEXT)
+          self.setGameTextEditText(t or _EMPTY_TEXT)
         else:
-          self.setOriginTextEditText(_EMPTY_TEXT)
+          self.setGameTextEditText(_EMPTY_TEXT)
       else:
-        self.originTextEdit.setPlainText(_DISABLED_TEXT)
+        self.gameTextEdit.setPlainText(_DISABLED_TEXT)
       if t:
-        t = trman.manager().translate(t, emit=True,
+        mark = self._isMarkEnabled()
+        t = trman.manager().translate(t, emit=True, mark=mark,
             scriptEnabled=self._isTranslationScriptEnabled(),
             **params)
         if t:
           self.finalTranslationEdit.setHtml(t)
       dprint("leave")
+
+  @memoizedproperty
+  def markButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Underline modified translation"))
+    ret.setToolTip(my.tr("Underline modified translation when possible."))
+    ret.setChecked(True)
+    return ret
 
   @memoizedproperty
   def equalLabel(self):
@@ -345,13 +374,14 @@ class _MTTester(object):
   def translatorEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
-    ret.addItems([it['name'] for it in trtraits.TRAITS])
+    ret.addItems(dataman.Term.TR_HOSTS)
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._onTranslatorChanged)
     return ret
 
   def _onTranslatorChanged(self):
-    tah = self._currentTranslator() in ('atlas', 'lec', 'lecol')
+    key = self._currentTranslator()
+    tah = mtinfo.test_script(key)
     self.normalizedTextButton.setEnabled(tah)
     self.normalizedTextLabel.setEnabled(tah)
     self.normalizedTextEdit.setEnabled(tah)
@@ -462,7 +492,9 @@ class _MTTester(object):
     @return  QTextEdit
     """
     if rich:
-      ret = QtWidgets.QTextEdit(_EMPTY_TEXT)
+      #ret = QtWidgets.QTextEdit(_EMPTY_TEXT)
+      ret = skwidgets.SkTextEditWithAnchor(_EMPTY_TEXT)
+      ret.anchorClicked.connect(evalutil.evalurl)
     else:
       ret = QtWidgets.QPlainTextEdit(_EMPTY_TEXT)
     ret.setMinimumWidth(_TEXTEDIT_MINWIDTH)
@@ -477,7 +509,7 @@ class _MTTester(object):
 
   @memoizedproperty
   def textLabel(self):
-    text = mytr_("Original text")
+    text = my.tr("Original text")
     ret = QtWidgets.QLabel()
     ret.setText('<span style="color:blue">%s</span>' % text)
     ret.setToolTip(my.tr("Original text to translate"))
@@ -497,24 +529,25 @@ class _MTTester(object):
     #ret.setAcceptRichText(False)
     skqss.class_(ret, 'normal')
     ret.setPlainText(
-      u"「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」【綾波レイ】"
+      u"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」"
+      #u"「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」【綾波レイ】"
     )
     #ret.resize(300, 200)
     return ret
 
   @memoizedproperty
-  def originTextButton(self):
+  def gameTextButton(self):
     ret = QtWidgets.QCheckBox()
     ret.setChecked(True)
     return ret
   @memoizedproperty
-  def originTextLabel(self):
-    return self._createTextLabel(self.originTextEdit, my.tr("Apply terms for original text") + _TERM_STAR)
+  def gameTextLabel(self):
+    return self._createTextLabel(self.gameTextEdit, my.tr("Apply game terms") + _TERM_STAR)
   @memoizedproperty
-  def originTextEdit(self):
-    return self._createTextView(my.tr("Apply terms in the Shared Dictionary to correct original text"))
-  def setOriginTextEditText(self, t):
-    e = self.originTextEdit
+  def gameTextEdit(self):
+    return self._createTextView(my.tr("Apply game terms in the Shared Dictionary to correct game text"))
+  def setGameTextEditText(self, t):
+    e = self.gameTextEdit
     e.setPlainText(t)
     skqss.class_(e, 'text-muted' if t in (_EMPTY_TEXT, _DISABLED_TEXT) else '')
 
@@ -532,7 +565,7 @@ class _MTTester(object):
     return self._createTextLabel(self.jointTranslationEdit, my.tr("Concatenated translation"))
   @memoizedproperty
   def jointTranslationEdit(self):
-    return self._createTextView(my.tr("Join split translations"))
+    return self._createTextView(my.tr("Join split translations"), rich=True)
 
   @memoizedproperty
   def finalTranslationLabel(self):
@@ -547,22 +580,17 @@ class _MTTester(object):
   def normalizedTextButton(self):
     ret = QtWidgets.QCheckBox();
     ret.setChecked(True)
-    ret.setEnabled(False)
     return ret
   @memoizedproperty
   def normalizedTextLabel(self):
-    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply TAH script"))
-    ret.setEnabled(False)
-    return ret
+    return self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation script"))
   @memoizedproperty
   def normalizedTextEdit(self):
-    ret = self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
-    ret.setEnabled(False)
-    return ret
+    return self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
 
   @memoizedproperty
   def sourceTextLabel(self):
-    return self._createTextLabel(self.sourceTextEdit, my.tr("Apply Japaneses terms and names") + _TERM_STAR + _LANGUAGE_STAR)
+    return self._createTextLabel(self.sourceTextEdit, my.tr("Apply input terms and names") + _TERM_STAR + _LANGUAGE_STAR)
   @memoizedproperty
   def sourceTextEdit(self):
     return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages"))
@@ -585,10 +613,10 @@ class _MTTester(object):
 
   @memoizedproperty
   def targetTranslationLabel(self):
-    return self._createTextLabel(self.targetTranslationEdit, my.tr("Apply translation terms") + _TERM_STAR)
+    return self._createTextLabel(self.targetTranslationEdit, my.tr("Apply output terms") + _TERM_STAR)
   @memoizedproperty
   def targetTranslationEdit(self):
-    return self._createTextView(my.tr("Apply translation terms in the Shared Dictionary to correct translations from the machine translator"),
+    return self._createTextView(my.tr("Apply output terms in the Shared Dictionary to correct translations from the machine translator"),
         rich=True)
 
   @memoizedproperty
@@ -603,21 +631,7 @@ class _MTTester(object):
     return self._createTextLabel(self.splitTranslationEdit, my.tr("Separated translations"))
   @memoizedproperty
   def splitTranslationEdit(self):
-    return self._createTextView(my.tr("Translations for split texts"))
-
-class MTTester(QtWidgets.QDialog):
-
-  def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(MTTester, self).__init__(parent)
-    skqss.class_(self, 'texture')
-    self.setWindowFlags(WINDOW_FLAGS)
-    self.setWindowTitle(mytr_("Test Machine Translation"))
-    self.setWindowIcon(rc.icon('window-mttest'))
-    self.__d = _MTTester(self)
-    #self.setContentsMargins(9, 9, 9, 9)
-    self.resize(800, 300)
-    dprint("pass")
+    return self._createTextView(my.tr("Translations for split texts"), rich=True)
 
 if __name__ == '__main__':
   a = debug.app()

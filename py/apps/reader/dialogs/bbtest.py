@@ -2,7 +2,7 @@
 # bbtest.py
 # 12/16/2012 jichi
 
-__all__ = ['BBCodeTester']
+__all__ = 'BBCodeTester',
 
 if __name__ == '__main__':
   import sys
@@ -65,7 +65,7 @@ that you could use to format [color=red]subtitles[/color]."""
 class BBCodeTester(QtWidgets.QMainWindow):
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(BBCodeTester, self).__init__(parent)
     skqss.class_(self, 'texture')
     self.setWindowFlags(WINDOW_FLAGS)

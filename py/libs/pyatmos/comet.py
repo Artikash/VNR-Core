@@ -6,7 +6,7 @@
 # atmosphere.js 2.1.2
 # https://gist.github.com/aparrish/1672967
 
-__all__ = ['CometConnection']
+__all__ = 'CometConnection',
 
 import requests, time
 

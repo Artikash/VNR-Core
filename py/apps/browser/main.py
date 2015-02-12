@@ -2,14 +2,14 @@
 # main.py
 # 12/13/2012 jichi
 
-__all__ = ['MainObject']
+__all__ = 'MainObject',
 
 from PySide.QtCore import QCoreApplication, QObject
 from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
 from sakurakit.skclass import Q_Q, memoizedproperty
 from i18n import i18n
-import config
+import config, settings
 
 #def global_(): return MainObject.instance
 
@@ -37,11 +37,12 @@ class MainObject(QObject):
     d.beanManager
     d.jlpManager
     d.cacheManager
+    d.siteManager
 
     dprint("show root window")
     w = d.mainWindow
 
-    d.ttsManager.setParentWidget(w)
+    #d.ttsManager.setParentWidget(w)
 
     urls = [it for it in args if not it.startswith('-')]
     args_offset = 2 if skos.WIN else 1
@@ -51,8 +52,14 @@ class MainObject(QObject):
     elif not w.loadTabs():
       w.openDefaultPage()
 
-    # TODO: Remember the last close size
-    w.resize(800, 600)
+    ss = settings.global_()
+    width = ss.windowWidth()
+    height = ss.windowHeight()
+    desktop = QCoreApplication.instance().desktop()
+    if width < 200 or width > desktop.width() or height < 200 or height > desktop.height():
+      width, height = 1000, 600
+    w.resize(width, height)
+
     w.show()
 
     dprint("leave")
@@ -134,7 +141,7 @@ class _MainObject(object):
   @memoizedproperty
   def jlpManager(self):
     dprint("create jlp manager")
-    import jlpman, settings
+    import jlpman
     ret = jlpman.manager()
 
     reader = settings.reader()
@@ -147,7 +154,7 @@ class _MainObject(object):
     dprint("create cache manager")
     import cacheman
     ret = cacheman.manager()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
 
     #ret.setEnabled(self.networkManager.isOnline())
     #self.networkManager.onlineChanged.connect(ret.setEnabled)
@@ -156,9 +163,15 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def siteManager(self):
+    dprint("create site manager")
+    import siteman
+    return siteman.manager()
+
+  @memoizedproperty
   def translatorManager(self):
     dprint("create translator manager")
-    import trman, settings
+    import trman
     ret = trman.manager()
     ret.setParent(self.q)
 
@@ -235,7 +248,7 @@ class _MainObject(object):
   @memoizedproperty
   def ttsManager(self):
     dprint("create tts manager")
-    import ttsman, settings
+    import ttsman
     ret = ttsman.manager()
     ret.setParent(self.q)
     #ret.setParentWidget(self.mainWindow)

@@ -25,6 +25,9 @@
 %	if it.language
 			<language>{{it.language}}</language>
 %	endif
+%	if it.launchLanguage
+			<launchLanguage>{{it.launchLanguage}}</launchLanguage>
+%	endif
 %	if it.encoding
 			<encoding>{{it.encoding}}</encoding>
 %	endif

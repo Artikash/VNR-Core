@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1411523486
+  timestamp: 1423702759
 
 app:
   #debug: true
@@ -18,12 +18,13 @@ app:
   saveSettingsInterval:     300         # every 5 minutes
   updateTermsInterval:      3600 * 8    # every 8 hours
   greetingInterval:         3600 * 10   # every 10 hours
-  updateGamesInterval:      3600 * 18   # every 18 hours
   #updateTAHInterval:        3688 * 18   # every 18 hours, translation script
   updateInterval:           3600 * 24   # every 1 day
   updateCommentsInterval:   86400 * 1   # every 1 day
   updateRefsInterval:       86400 * 1   # every 1 day
+  updateSubsInterval:       86400 * 5   # every 5 day
   nameExpireTime:           86400 * 5   # every 5 days, mecab name
+  updateGamesInterval:      86400 * 6   # every 6 days, game database
   refExpireTime:            86400 * 7   # every 7 days, reference
 
   #socketType:   tcp         # Use QTcpSocket
@@ -78,12 +79,13 @@ settings:
   commentColor: '#2d5f5f' # dark green
   danmakuColor: '#2d5f5f' # dark green
   # Translator colors:
-  bingColor: '#14ff14' # green
-  googleColor: '#0055ff' # blue
+  bingColor: '#800080' # purple+green
+  googleColor: '#32807c' # cyan
   #infoseekColor: '#ee5500' # orange
   infoseekColor: '#55aa00' # deep green
   exciteColor: '#555500' # yellow
   transruColor: '#0055ff' # blue
+  naverColor: '#800080' # purple
   baiduColor: '#800080' # purple
   #youdaoColor: '#555500' # yellow
   jbeijingColor: '#0055ff' # blue
@@ -94,7 +96,6 @@ settings:
   lecColor: '#0055ff'   # blue
   lecOnlineColor: '#000000' # black
   hanVietColor: '#0055ff' # blue
-  lougoColor: '#000000' # black
 
 # User profile
 user:

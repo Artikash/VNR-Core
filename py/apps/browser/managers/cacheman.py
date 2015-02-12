@@ -4,7 +4,7 @@
 
 import os
 from functools import partial
-from PySide.QtCore import QObject, QTimer
+from PySide.QtCore import QTimer
 from sakurakit import skfileio, sknetio, skthreads
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
@@ -19,6 +19,14 @@ def manager(): return CacheManager()
 def cache_url(url): return manager().cacheUrl(url) # cache url
 #url = cache_url
 
+cache_image = cache_url # temporarily not distinguished
+
+class CacheApi:
+  @staticmethod
+  def url(url): return cache_url(url)
+  @staticmethod
+  def image(url): return cache_image(url)
+
 def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs):
   """
   @param  token  unicode
@@ -31,10 +39,10 @@ def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs)
   if not tmppath:
     tmppath = path + TMP_SUFFIX
   data = sknetio.getdata(url, mimefilter=mimefilter, **kwargs)
-  if not data:
-    url = _fixtwimg(url)
-    if url:
-      return _getdata(url, path, tmppath=tmppath, mimefilter=mimefilter, **kwargs)
+  #if not data:
+  #  url = _fixtwimg(url)
+  #  if url:
+  #    return _getdata(url, path, tmppath=tmppath, mimefilter=mimefilter, **kwargs)
   ok = bool(data) and skfileio.writedata(tmppath, data)
   if ok and skfileio.rename(tmppath, path):
     return True
@@ -47,13 +55,13 @@ def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs)
 
 #@Q_Q
 class _CacheManager:
-  def __init__(self, q):
+  def __init__(self):
     self.enabled = True
     self._tasks = [] # [function] not None
 
     #@memoizedproperty
     #def taskTimer
-    t = self.taskTimer = QTimer(q)
+    t = self.taskTimer = QTimer()
     t.setSingleShot(True)
     t.timeout.connect(self._doTasks)
     t.setInterval(500)
@@ -82,10 +90,9 @@ class _CacheManager:
     self._tasks.append(func)
     self.taskTimer.start()
 
-class CacheManager(QObject):
-  def __init__(self, parent=None):
-    super(CacheManager, self).__init__(parent)
-    self.__d = _CacheManager(self)
+class CacheManager:
+  def __init__(self):
+    self.__d = _CacheManager()
 
   @staticmethod
   def clearTemporaryFiles():

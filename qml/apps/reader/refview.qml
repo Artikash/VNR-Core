@@ -5,6 +5,7 @@ import QtQuick 1.1
 //import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../js/sakurakit.min.js' as Sk
+import '../../js/eval.min.js' as Eval
 import '../../js/util.min.js' as Util
 import 'share' as Share
 import 'refview' as RefView
@@ -40,9 +41,21 @@ Share.View { id: root_
 
   property int gameId
 
-  Component.onCompleted: console.log("refview.qml: pass")
+  Component.onCompleted: {
+    initEvalContext()
+    console.log("refview.qml: pass")
+  }
+
   Component.onDestruction: console.log("refview.qml:destroy: pass")
 
+  function initEvalContext() {
+    var ctx = Eval.scriptContext
+    ctx.main = mainPlugin_
+    ctx.growl = growlPlugin_
+    //ctx.clipboard = clipboardPlugin_
+  }
+
+  Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.DataManagerProxy { id: datamanPlugin_ }
 
   Plugin.ReferenceModel { id: model_
@@ -56,6 +69,7 @@ Share.View { id: root_
   //Plugin.Settings { id: settings_ }
 
   Plugin.SystemStatus { id: status_ }
+  Plugin.Growl { id: growlPlugin_ }
   property int userId: status_.online ? status_.userId : 0
 
   //function loadSettings() {
@@ -114,11 +128,12 @@ Share.View { id: root_
     totalCount: model_.count
     currentCount: model_.currentCount
     toolTip: qsTr("Type part of the title, user, etc.")
+           + " (" + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
     //onAccepted: model_.filterText = Util.trim(text)
 
-    placeholderText: Sk.tr("Search") + " ... (" + holder() + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
+    placeholderText: Sk.tr("Search") + " ... (" + holder() + ")"
     function holder() {
-      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " + '#' + Sk.tr("game") + "ID, "
+      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " + '#' + Sk.tr("game")
     }
   }
 

@@ -33,9 +33,8 @@ APP_YAML_LOCATION = os.path.join(ROOT_LOCATION, "browser.yaml")
 ROOT_LOCATION_U = u(ROOT_LOCATION)
 
 def load_yaml_file(path):
-  with open(path, 'r') as f:
-    import yaml
-    return yaml.load(f.read().decode('utf8'))
+  import yaml
+  return yaml.load(file(path, 'r'))
 
 SHARE_YAML = load_yaml_file(SHARE_YAML_LOCATION)
 APP_YAML = load_yaml_file(APP_YAML_LOCATION)
@@ -90,6 +89,10 @@ ADDRESS_HISTORY_SIZE = APP_YAML['app']['addressHistorySize'] # int
 # Paths are in str, but will be converted to unicode in rc.py as DIR_USER.
 USER_PROFILES = APP_YAML['user']['profiles']
 
+## WebKit ##
+
+USER_AGENT = SHARE_YAML['webkit']['useragent']
+
 ## Translations ##
 
 TR_LOCALES = APP_YAML['tr']['locales'] # [str locale_name]
@@ -125,6 +128,9 @@ def language2locale(lang):
   return LANGUAGE_LOCALES.get(lang) or ""
 
 ## Locations ##
+
+OPENCC_DICS = {k: parse_path(v)  # {str name:unicode path}
+    for k,v in SHARE_YAML['opencc'].iteritems()}
 
 APP_LOCATIONS = {k: parse_path(v)   # {str name:unicode path}
     for k,v in SHARE_YAML['apps'].iteritems()}
@@ -164,7 +170,18 @@ PROXY_DOMAINS = SHARE_YAML['proxies']['domains'] # {string host:string ip}
 GETCHU_HOST = SHARE_YAML['proxies']['getchu'].replace('http://', '')
 
 PROXY_GETCHU_URL = SHARE_YAML['proxies']['getchu']
-PROXY_DMM_URL = SHARE_YAML['proxies']['dmm']
+PROXY_KANCOLLE_URL = SHARE_YAML['proxies']['kancolle']
+
+PROXY_DMM_JP_URL = SHARE_YAML['proxies']['dmm_jp']
+PROXY_DMM_COM_URL = SHARE_YAML['proxies']['dmm_com']
+#PROXY_DMM_COM_P_URL = SHARE_YAML['proxies']['dmm_com_p']
+
+
+PROXY_DLSITE_URL = SHARE_YAML['proxies']['dlsite']
+PROXY_DLSITE_IMG_URL = SHARE_YAML['proxies']['dlsite_img']
+
+PROXY_TORANOANA_URL = SHARE_YAML['proxies']['toranoana']
+PROXY_TORANOANA_IMG_URL = SHARE_YAML['proxies']['toranoana_img']
 
 #PROXY_GOOGLE_SEARCH = _PROXY['googlesearch']
 PROXY_GOOGLE_TRANS = SHARE_YAML['proxies']['googletrans']

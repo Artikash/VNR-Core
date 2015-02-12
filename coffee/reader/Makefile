@@ -2,7 +2,13 @@
 # 8/8/2013 jichi
 include ../coffee.mk
 
-all: Makefile compress
+SUBDIRS = forum
+.PHONY: all compile compress clean $(SUBDIRS)
+
+all: Makefile $(SUBDIRS) compress
+
+$(SUBDIRS):
+	$(MAKE) -C $@
 
 #SOURCE = $(shell find . -name '*.coffee')
 SOURCE = $(wildcard *.coffee)

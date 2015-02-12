@@ -23,10 +23,12 @@ DEFINES += _CRT_NON_CONFORMING_SWPRINTFS
 ## Libraries
 
 #LIBS        += -lkernel32 -luser32 -lgdi32
-LIBS        += -L$$WDK_HOME/lib/wxp/i386 -lntdll
-LIBS        += $$WDK_HOME/lib/crt/i386/msvcrt.lib   # Override msvcrt10
-#LIBS        += -L$$WDK_HOME/lib/crt/i386 -lmsvcrt
-#QMAKE_LFLAGS += $$WDK_HOME/lib/crt/i386/msvcrt.lib # This will leave runtime flags in the dll
+LIBS        += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
+LIBS        += $$WDK7_HOME/lib/crt/i386/msvcrt.lib   # Override msvcrt10
+#LIBS        += -L$$WDK7_HOME/lib/crt/i386 -lmsvcrt
+#QMAKE_LFLAGS += $$WDK7_HOME/lib/crt/i386/msvcrt.lib # This will leave runtime flags in the dll
+
+#LIBS        += -L$$WDK8_HOME/lib/winv6.3/um/x86 -lntdll
 
 HEADERS += $$PWD/dllconfig.h
 

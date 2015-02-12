@@ -10,7 +10,7 @@ version:
   name: browser
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1411115366
+  timestamp: 1419279152
 
 app:
   debug: false
@@ -34,8 +34,7 @@ qt:
   #quitTimeout: 3000     # time taken for closing the app
   css: # QSS
     - share
-    - reader
-
+    - browser
 py:
   socketTimeout: 5000 # socket.defaulttimeout, default is None
   recursionLimit: 1000 # sys.recursionlimit, default is 1000. See: http://stackoverflow.com/questions/4378786/python-exception-in-exception

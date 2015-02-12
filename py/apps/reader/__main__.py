@@ -17,7 +17,23 @@ See (zh): http://sakuradite.com/wiki/zh/VNR/Command_Line
 options:
   --debug       Print debug output
   --help        Print help
+  --minimize    Minimize to tray after launch
+  --nosplash    Do not display splash screen
   --pid PID     Attach to the process with PID"""
+
+def guess_language():
+  """
+  @return  str  language
+  """
+  import locale
+  lc = locale.getdefaultlocale()[0]
+  if lc:
+    if lc.startswith('zh'):
+      return 'zht' # force using Taiwan as Chinese variant
+    import config
+    if lc in config.LANGUAGE_LOCALES.values():
+      return lc[:2]
+  return 'en'
 
 def main():
   """
@@ -57,7 +73,9 @@ def main():
   # - Through file
   #   See: http://stackoverflow.com/questions/380870/python-single-instance-of-program
   dprint("check single instance")
+
   from lockfile import lockfile
+
   app_mutex = lockfile.SingleProcessMutex()
   single_app = app_mutex.tryLock()
   if not single_app:
@@ -67,9 +85,9 @@ def main():
   #dprint("rootdir = %s" % rootdir)
   #dprint("mecabrc = %s" % mecabrc_path)
 
+  from sakurakit import skos
   # Must be set before any GUI is showing up
   # http://stackoverflow.com/questions/1551605/how-to-set-applications-taskbar-icon-in-windows-7
-  from sakurakit import skos
   if skos.WIN:
     dprint("set app id")
     from sakurakit import skwin
@@ -77,17 +95,17 @@ def main():
 
   # Detect user language
   import settings
+
   ss = settings.global_()
+
+  uilang = ss.uiLanguage()
+  if not uilang:
+    uilang = guess_language()
+    ss.setValue('Language', uilang)
+
   lang = ss.userLanguage()
   if not lang:
-    import locale
-    lc = locale.getdefaultlocale()[0]
-    if lc and lc.startswith('zh'):
-      lang = 'zht'
-    elif lc and lc in config.LANGUAGE_LOCALES.values():
-      lang = lc[:2]
-    else:
-      lang = 'en'
+    lang = guess_language()
     ss.setValue('UserLanguage', lang)
 
   dprint("user language = %s" % lang)
@@ -107,6 +125,19 @@ def main():
   #if skos.WIN:
   #  from sakurakit import skwin
   #  skwin.enable_drop_event()
+
+  dprint("init dic locations")
+  from opencc import opencc
+  opencc.setdicpaths(config.OPENCC_DICS)
+
+  from hanviet import hanviet
+  hanviet.setdicpaths(config.HANVIET_DICS)
+
+  from hangulconv import hangulconv
+  hangulconv.setdicpath(config.HANGUL_DIC_PATH)
+
+  from pinyinconv import pinyinconv
+  pinyinconv.setdicpath(config.PINYIN_DIC_PATH)
 
   dprint("create app")
   import app
@@ -153,14 +184,15 @@ def main():
   dprint("autosync settings")
   ss.autoSync() # Load before qapplication is created
 
-  dprint("show splash screen")
-  from PySide.QtGui import QPixmap
-  from Qt5.QtWidgets import QSplashScreen
-  import rc
-  splashImage = QPixmap(rc.image_path('splash-wait'))
-  splash = QSplashScreen(splashImage)
-  splash.show()
-  a.processEvents()
+  opt_splash = '--nosplash' not in sys.argv
+
+  if opt_splash:
+    dprint("show splash")
+    from splashscreen import StartupSplashScreen
+    splash = StartupSplashScreen()
+    splash.show()
+
+  a.processEvents() # process event to make it show
 
   #dprint("cache fonts")
   #import fonts
@@ -186,6 +218,7 @@ def main():
   #dprint('init directories')
   #from PySide.QtCore import QDir
 
+  import rc
   from sakurakit import skfileio
   dprint("remove broken caches")
   for it in rc.DIR_APP_TMP,:
@@ -193,6 +226,7 @@ def main():
       skfileio.removetree(it)
 
   map(skfileio.makedirs, (
+    rc.DIR_YAML_SUB,
     rc.DIR_XML_COMMENT,
     rc.DIR_XML_VOICE,
     rc.DIR_XML_REF,
@@ -203,6 +237,8 @@ def main():
     rc.DIR_CACHE_IMAGE,
     rc.DIR_CACHE_DMM,
     rc.DIR_CACHE_TOKUTEN,
+    rc.DIR_CACHE_FREEM,
+    rc.DIR_CACHE_STEAM,
     rc.DIR_CACHE_GETCHU,
     rc.DIR_CACHE_GYUTTO,
     rc.DIR_CACHE_DIGIKET,
@@ -212,6 +248,8 @@ def main():
     rc.DIR_CACHE_TRAILERS,
     rc.DIR_CACHE_WEB,
     rc.DIR_TMP_OCR,
+    rc.DIR_TMP_TERM, # not needed, though
+    rc.DIR_TMP_TTS,
   ))
 
   if skos.WIN:
@@ -230,11 +268,18 @@ def main():
     ss.jbeijingLocation(),
     ss.ezTransLocation(),
     ss.atlasLocation(),
+    ss.zunkoLocation(),
     ss.localeEmulatorLocation(),
     ss.ntleasLocation(),
-    os.path.join(ss.lecLocation(), r"Nova\JaEn") if ss.lecLocation() else "",
     os.path.join(ss.dreyeLocation(), r"DreyeMT\SDK\bin") if ss.dreyeLocation() else "",
   ))
+
+  path = ss.lecLocation()
+  if path:
+    skpaths.append_paths((
+      os.path.join(path, r"Nova\JaEn"),
+      os.path.join(path, r"PARS\EnRU"),
+    ))
 
   path = ss.fastaitLocation()
   if path:
@@ -303,6 +348,11 @@ def main():
     import curtheme
     curtheme.load()
 
+  # Disable RBMT if CaboCha or UniDic is disabled
+  #if ss.isTranslationSyntaxEnabled() and not (
+  #    ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'):
+  #  ss.setTranslationSyntaxEnabled(False)
+
   #dprint("set max thread count")
   from PySide.QtCore import QThreadPool
   currentThreadCount = QThreadPool.globalInstance().maxThreadCount()
@@ -320,22 +370,24 @@ def main():
 
   import main
   m = main.MainObject(a)
-  m.run(a.arguments())
+  m.init()
+
+  if opt_splash:
+    dprint("schedule to finish splash")
+    splash.finishLater(1500) # hide after 1.5 seconds
+
+  from functools import partial
+  from sakurakit import skevents
+  skevents.runlater(partial(
+      m.run, a.arguments()),
+      50)
+  #m.run(a.arguments())
 
   #import netman
   #netman.manager().queryComments(gameId=183)
 
   #import hashutil
   #print hashutil.md5sum('/Users/jichi/tmp/t.cpp')
-
-  dprint("schedule to hide splash")
-  # Disabled which is too slow
-  #splashImage = QPixmap(rc.image_path('splash-ready'))
-  #splash.setPixmap(splashImage)
-  from functools import partial
-  from sakurakit import skevents
-  skevents.runlater(partial(
-      splash.finish, m.topWindow()))
 
   dprint("exec")
   returnCode = a.exec_()
@@ -357,6 +409,7 @@ def main():
 
 def migrate(ss_version): # long ->
   import os
+  from glob import glob
   from sakurakit import skfileio
   from sakurakit.skdebug import dprint, dwarn
   import config, rc, settings
@@ -366,6 +419,68 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+
+    if ss_version <= 1423687966: # reset retranslator
+      ss.setValue('Retranslator', '')
+
+    if ss_version <= 1422396934:
+      ss.setValue('RubyText', True)
+
+    if ss_version <= 1421736204: # This is not really needed though
+      for it in ( # delete all existing references
+          rc.DIR_CACHE_AWS,
+          rc.DIR_CACHE_DMM,
+          rc.DIR_CACHE_GETCHU,
+          rc.DIR_CACHE_GYUTTO,
+          rc.DIR_CACHE_DIGIKET,
+          rc.DIR_CACHE_DLSITE,
+          rc.DIR_CACHE_HOLYSEAL,
+          rc.DIR_CACHE_TRAILERS,
+          rc.DIR_CACHE_SCAPE,
+        ):
+        if os.path.exists(it):
+          skfileio.removetree(it)
+          skfileio.makedirs(it)
+
+    if ss_version <= 1419101101:
+      xmlfile = rc.xml_path('terms')
+      skfileio.removefile(xmlfile)
+
+    if ss_version <= 1418719123:
+      path = rc.DIR_XML_COMMENT
+      try:
+        for it in glob(os.path.join(rc.DIR_CACHE_SUB, '*.xml')):
+          os.rename(it,
+              os.path.join(rc.DIR_XML_COMMENT, os.path.basename(it)))
+      except Exception, e:
+        dwarn(e)
+
+    if ss_version <= 1418496188:
+      xmlfile = rc.xml_path('gameitems')
+      skfileio.removefile(xmlfile)
+
+    if ss_version <= 1413611470:
+      if ss.value('FuriganaType') == 'kanji':
+        ss.remove('FuriganaType')
+
+    if ss_version <= 1413181339:
+      path = ss.zunkoLocation()
+      if path and os.path.exists(path):
+        path = os.path.dirname(path)
+        ss.setValue('ZunkoLocation', path)
+        from sakurakit import skpaths
+        skpaths.append_path(path)
+
+    if ss_version <= 1412817938:
+      self.setValue('TermMarked', True) # enable underline by default
+
+    if ss_version <= 1412718122:
+      ss.setValue('SubtitleVoice', False) # disable subtitle by default
+      ss.setValue('SpeakGameText', True) # enable auto TTS by default
+      ss.setValue('VoiceCharacter', True) # enable voice character by default
+
+    if ss_version <= 1412717706:
+      ss.setValue('TTSEngine', 'baidu')
 
     if ss_version <= 1410806479:
       path = rc.DIR_CACHE_AVATAR
@@ -401,19 +516,19 @@ def migrate(ss_version): # long ->
         skfileio.removetree(path)
         skfileio.makedirs(path)
 
-      for it in ( # delete all existing references
-          rc.DIR_CACHE_DMM,
-          rc.DIR_CACHE_GETCHU,
-          rc.DIR_CACHE_GYUTTO,
-          rc.DIR_CACHE_DIGIKET,
-          rc.DIR_CACHE_DLSITE,
-          rc.DIR_CACHE_HOLYSEAL,
-          rc.DIR_CACHE_TRAILERS,
-          #rc.DIR_CACHE_SCAPE,
-        ):
-        if os.path.exists(it):
-          skfileio.removetree(it)
-          skfileio.makedirs(it)
+      #for it in ( # delete all existing references
+      #    rc.DIR_CACHE_DMM,
+      #    rc.DIR_CACHE_GETCHU,
+      #    rc.DIR_CACHE_GYUTTO,
+      #    rc.DIR_CACHE_DIGIKET,
+      #    rc.DIR_CACHE_DLSITE,
+      #    rc.DIR_CACHE_HOLYSEAL,
+      #    rc.DIR_CACHE_TRAILERS,
+      #    #rc.DIR_CACHE_SCAPE,
+      #  ):
+      #  if os.path.exists(it):
+      #    skfileio.removetree(it)
+      #    skfileio.makedirs(it)
 
       path = rc.DIR_CACHE_IMAGE
       if os.path.exists(path):
@@ -444,9 +559,6 @@ def migrate(ss_version): # long ->
       if os.path.exists(path):
         skfileio.removetree(path)
         skfileio.makedirs(path)
-
-    if ss_version <= 1392183792: # disable lougo
-      ss.setValue('LougoEnabled', False)
 
     if ss_version <= 1391988443: # disable lingoes dictionary
       for k in 'EdictEnabled', 'LingoesJaZh', 'LingoesJaKo', 'LingoesJaVi':
@@ -558,3 +670,19 @@ if __name__ == '__main__':
   #assert False, "unreachable"
 
 # EOF
+
+#def test_lec():
+#  import os
+#  lecpath = r"C:\Program Files\Power Translator 15"
+#  #lecpath = r"Z:\Local\Windows\Applications\Power Translator 15"
+#  enginepath = lecpath + r"\PARS\EnRu"
+#  os.environ['PATH'] += os.pathsep + enginepath
+#  from lec.pars import Loader
+#  l = Loader()
+#  l.init()
+#  t = "hello world"
+#  ret = l.translate(t)
+#  l.destroy()
+#  print type(ret)
+#  print ret
+#

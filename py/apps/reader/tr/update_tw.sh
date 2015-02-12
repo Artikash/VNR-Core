@@ -6,8 +6,11 @@ set +x
 s=zh_CN.ts
 t=zh_TW.ts
 
-echo "zhs2zht '$s' > '$t'"
-zhs2zht "$s" | sed 's/zh_CN/zh_TW/g' >"$t"
+ZHSZHT="opencc -c s2twp.json -i"
+
+echo "$ZHSZHT '$s' > '$t'"
+$ZHSZHT "$s" | sed 's/zh_CN/zh_TW/g' >"$t"
+
 #s/戀と選挙/恋と選挙/g;
 #s/広辭苑/広辞苑/g;
 

@@ -29,15 +29,37 @@ enum HookFunType {
   , HookFunCount // 14
 };
 
+// jichi 10/14/2014
+#define HOOK_GDI_FUNCTION_LIST \
+  GetTextExtentPoint32A \
+  , GetGlyphOutlineA \
+  , ExtTextOutA \
+  , TextOutA \
+  , GetCharABCWidthsA \
+  , GetTextExtentPoint32W \
+  , GetGlyphOutlineW \
+  , ExtTextOutW \
+  , TextOutW \
+  , GetCharABCWidthsW \
+  , DrawTextA \
+  , DrawTextExA \
+  , DrawTextW \
+  , DrawTextExW
+
 enum { HOOK_FUN_COUNT = HookFunCount };
+// jichi 1/16/2015: Though called max hook, it means max number of text threads
 enum { MAX_HOOK = 32 }; // must be larger than HookFunCount
+//enum { HOOK_SECTION_SIZE = 0x2000 }; // default ITH value
+// jichi 1/16/2015: Change to a very large number to prevent crash
+//enum { MAX_HOOK = 0x100 }; // must be larger than HookFunCount
+enum { HOOK_SECTION_SIZE = MAX_HOOK * 0x100 }; // default ITH value is 0x2000 for 32 hook (0x100 per hook)
 
 // jichi 375/2014: Add offset of pusha/pushad
 // http://faydoc.tripod.com/cpu/pushad.htm
 // http://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial
 //
 // Warning: The offset in ITH has -4 offset comparing to pusha and AGTH
-enum pusha_off{
+enum pusha_off {
   pusha_eax_off = -0x4
   , pusha_ecx_off = -0x8
   , pusha_edx_off = -0xc
@@ -63,9 +85,13 @@ enum IhfNotificationType {
   , IHF_NOTIFICATION_NEWHOOK = 1
 };
 
-// jichi 9/8/2013: The meaning are gussed
+// jichi 9/8/2013: The meaning are guessed
+// Values must be within DWORD
+// Unused values are as follows:
+// - 0x100
 enum HookParamType : unsigned long {
   USING_STRING      = 0x1     // type(data) is char* or wchar_t* and has length
+  , USING_UTF8 = USING_STRING // jichi 10/21/2014: temporarily handled the same way as USING_STRING
   , USING_UNICODE     = 0x2     // type(data) is wchar_t or wchar_t*
   , BIG_ENDIAN        = 0x4     // type(data) is char
   , DATA_INDIRECT     = 0x8
@@ -73,14 +99,16 @@ enum HookParamType : unsigned long {
   , SPLIT_INDIRECT    = 0x20
   , MODULE_OFFSET     = 0x40    // do hash module, and the address is relative to module
   , FUNCTION_OFFSET   = 0x80    // do hash function, and the address is relative to funccion
-  , PRINT_DWORD       = 0x100
+  //, PRINT_DWORD       = 0x100 // jichi 12/7/2014: Removed
   , STRING_LAST_CHAR  = 0x200
   , NO_CONTEXT        = 0x400
-  , EXTERN_HOOK       = 0x800   // use external hook function
+  //, EXTERN_HOOK       = 0x800   // jichi 10/24/2014: Removed
   //, HOOK_AUXILIARY    = 0x2000  // jichi 12/13/2013: None of known hooks are auxiliary
   , HOOK_ENGINE       = 0x4000
   , HOOK_ADDITIONAL   = 0x8000
 
+  // jichi 10/24/2014: Only trigger the dynamic function, do not return any data
+  , HOOK_EMPTY        = 0x800
   // jichi 6/1/2014: fix the split value to 0x10001
   , FIXING_SPLIT      = 0x1000
   , RELATIVE_SPLIT    = 0x2000 // relative split return address
@@ -190,10 +218,8 @@ enum { FIXED_SPLIT_VALUE = 0x10001 };
   , L"msvcp110.dll" /* VC rutime 11 */ \
   \
   /* VNR */ \
-  , L"vnrcli.dll" \
-  , L"vnrclixp.dll" \
-  , L"vnreng.dll" \
-  , L"vnrengxp.dll" \
+  , L"vnrhook.dll" \
+  , L"vnrhookxp.dll" \
   \
   /* Sogou IME */ \
   , L"sogoupy.ime" \

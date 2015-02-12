@@ -2,7 +2,7 @@
 # webkit.py
 # 12/13/2012 jichi
 
-__all__ = ['WbWebView', 'WbWebPage']
+__all__ = 'WbWebView', 'WbWebPage'
 
 import re
 from PySide.QtCore import Qt, Signal, QEvent, QUrl
@@ -12,7 +12,73 @@ from sakurakit import skwebkit
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
-import beans, rc
+import beans, config, rc
+
+## WebFrame injectors ##
+
+class AnnotInjector:
+  def __init__(self, frame):
+    self.frame = frame # QWebFrame
+    self.enabled = False # bool
+    self.injected = False # bool  whether beans have been injected
+
+  def isEnabled(self): return self.enabled
+
+  def injectJavaScript(self):
+    self.injectBeans()
+    self.frame.evaluateJavaScript(rc.cdn_data('inject-annot'))
+
+  def injectBeans(self):
+    if self.enabled and not self.injected: # and not self.q.parent().url().isEmpty():
+      self.injected = True
+      for name,obj in self.iterBeans():
+        self.frame.addToJavaScriptWindowObject(name, obj)
+
+  @staticmethod
+  def iterBeans():
+    """
+    return  [(unicode name, QObject bean)]
+    """
+    import beans
+    m = beans.manager()
+    return (
+      ('cdnBean', m.cdnBean),
+      ('clipBean', m.clipBean),
+      ('jlpBean', m.jlpBean),
+      ('settingsBean', m.settingsBean),
+      ('trBean', m.trBean),
+      ('ttsBean', m.ttsBean),
+    )
+
+class SiteInjector:
+  def __init__(self, frame):
+    self.frame = frame # QWebFrame
+    self.enabled = False # bool
+    self.injected = False # bool  whether beans have been injected
+
+  def isEnabled(self): return self.enabled
+
+  def injectJavaScript(self):
+    self.injectBeans()
+    self.frame.evaluateJavaScript(rc.cdn_data('inject-site'))
+
+  def injectBeans(self):
+    if self.enabled and not self.injected: # and not self.q.parent().url().isEmpty():
+      self.injected = True
+      for name,obj in self.iterBeans():
+        self.frame.addToJavaScriptWindowObject(name, obj)
+
+  @staticmethod
+  def iterBeans():
+    """
+    return  [(unicode name, QObject bean)]
+    """
+    import beans
+    m = beans.manager()
+    return (
+      ('cdnBean', m.cdnBean),
+      ('trBean', m.trBean),
+    )
 
 ## WbWebView ##
 
@@ -26,6 +92,12 @@ class WbWebView(skwebkit.SkWebView):
 
     self.titleChanged.connect(self.setWindowTitle)
     self.onCreateWindow = None # -> QWebView
+
+    #l = self.findChildren(QtWidgets.QScrollBar) # does not exist
+    #background-color: transparent
+    #&::sub-page,
+    #&::add-page
+    #  background-color: transparent
 
   def __del__(self):
     dprint("pass") # For debug usage
@@ -54,18 +126,6 @@ class WbWebView(skwebkit.SkWebView):
 
   # Injection
 
-  def inject(self):
-    #url = self.url()
-    #if url.isEmpty():
-    self.page().inject()
-
-  def isInjectEnabled(self): return self.page().injectEnabled
-  def setInjectEnabled(self, t): self.page().setInjectEnabled(t)
-    #page = self.page()
-    #if page.isInjectEnabled() != t:
-    #  page.setInjectEnabled(t)
-    #  self.inject()
-
   def load(self, url): # QUrl ->
     t = url.toString() if isinstance(url, QUrl) else url
     if t.startswith('about:'):
@@ -77,6 +137,14 @@ class WbWebView(skwebkit.SkWebView):
           self.page().mainFrame().addToJavaScriptWindowObject('settingsBean', beans.manager().settingsBean)
         return
     super(WbWebView, self).load(url)
+
+  def injectAnnot(self): self.page().injectAnnot()
+  def isAnnotEnabled(self): return self.page().isAnnotEnabled()
+  def setAnnotEnabled(self, t): self.page().setAnnotEnabled(t)
+
+  def injectSite(self): self.page().injectSite()
+  def isSiteEnabled(self): return self.page().isSiteEnabled()
+  def setSiteEnabled(self, t): self.page().setSiteEnabled(t)
 
 @Q_Q
 class _WbWebView(object):
@@ -125,17 +193,6 @@ class WbWebPage(skwebkit.SkWebPage):
   def isLoading(self): return self.__d.progress < 100
   def isFinished(self): return self.__d.progress == 100
 
-  def inject(self):
-    if self.__d.canInject():
-      self.__d.injectJavaScript() # Force inject
-
-  def isInjectEnabled(self): return self.__d.injectEnabled
-  def setInjectEnabled(self, t): self.__d.injectEnabled = t
-    #d = self.__d
-    #if d.injectEnabled != t:
-    #  d.injectEnabled = t
-    #  d.injectJavaScript()
-
   def event(self, ev): # override
     if (ev.type() == QEvent.MouseButtonRelease and
         ev.button() == Qt.LeftButton and ev.modifiers() == Qt.ControlModifier and
@@ -147,6 +204,18 @@ class WbWebPage(skwebkit.SkWebPage):
 
   def openUrl(self, url): # QUrl
     self.mainFrame().load(url)
+
+  # Inject
+
+  def injectAnnot(self):
+    if self.__d.canInject(): self.__d.annot.injectJavaScript()
+  def isAnnotEnabled(self): return self.__d.annot.enabled
+  def setAnnotEnabled(self, t): self.__d.annot.enabled = t
+
+  def injectSite(self):
+    if self.__d.canInject(): self.__d.site.injectJavaScript()
+  def isSiteEnabled(self): return self.__d.site.enabled
+  def setSiteEnabled(self, t): self.__d.site.enabled = t
 
   ## Extensions
 
@@ -189,10 +258,12 @@ class WbWebPage(skwebkit.SkWebPage):
   # See: WebKit/qt/Api/qwebpage.cpp
   # Example: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/534.34 (KHTML, like Gecko) MYAPP/MYVERSION Safari/534.34
   # QString userAgentForUrl(const QUrl &url) const
-  #def userAgentForUrl(self, url): # override
-  #  # Get rid of app name from user agent
-  #  ret = super(WbWebPage, self).userAgentForUrl(url)
-  #  return re.sub(r" \\S+ Safari/", " Safari/", ret)
+  def userAgentForUrl(self, url):
+    """@override"""
+    return config.USER_AGENT
+    # Get rid of app name from user agent
+    #ret = super(WbWebPage, self).userAgentForUrl(url)
+    #return re.sub(r" \\S+ Safari/", " Safari/", ret)
 
 @Q_Q
 class _WbWebPage(object):
@@ -202,15 +273,19 @@ class _WbWebPage(object):
 
     self.progress = 100 # int [0,100]
 
-    self.injectEnabled = False # bool
-    self._beansInjected = False # bool
+    frame = q.mainFrame()
+    self.annot = AnnotInjector(frame)
+    self.site = SiteInjector(frame)
+
+    frame.javaScriptWindowObjectCleared.connect(self._onJavaScriptCleared)
 
     q.loadProgress.connect(self._onLoadProgress)
     q.loadStarted.connect(self._onLoadStarted)
     q.loadFinished.connect(self._onLoadFinished)
 
-    f = q.mainFrame()
-    f.javaScriptWindowObjectCleared.connect(self._onJavaScriptCleared)
+  def _iterInjectors(self):
+    yield self.site
+    yield self.annot
 
   ## Progress
 
@@ -220,8 +295,10 @@ class _WbWebPage(object):
     self.progress = 0
   def _onLoadFinished(self, success): # bool ->
     self.progress = 100
-    if success and self.injectEnabled and self.canInject():
-      self.injectJavaScript()
+    if success and self.canInject():
+      for it in self._iterInjectors():
+        if it.isEnabled():
+          it.injectJavaScript()
 
   ## JavaScript
 
@@ -230,39 +307,9 @@ class _WbWebPage(object):
     return not (url.isEmpty() or url.toString().startswith('about:'))
 
   def _onJavaScriptCleared(self):
-    self._beansInjected = False
-    if self.injectEnabled:
-      self.injectBeans()
-
-  def injectJavaScript(self):
-    #if not self.q.parent().url().isEmpty():
-    self.injectBeans()
-    f = self.q.mainFrame()
-    f.evaluateJavaScript(rc.cdn_data('browser/inject'))
-
-  def injectBeans(self):
-    if not self._beansInjected: # and not self.q.parent().url().isEmpty():
-      self._beansInjected = True
-
-      f = self.q.mainFrame()
-      #f.addToJavaScriptWindowObject('bean', self._webBean)
-      for name,obj in self._iterbeans():
-        f.addToJavaScriptWindowObject(name, obj)
-
-  @staticmethod
-  def _iterbeans():
-    """
-    return  [(unicode name, QObject bean)]
-    """
-    import beans
-    m = beans.manager()
-    return (
-      ('cdnBean', m.cdnBean),
-      ('clipBean', m.clipBean),
-      ('jlpBean', m.jlpBean),
-      ('settingsBean', m.settingsBean),
-      ('trBean', m.trBean),
-      ('ttsBean', m.ttsBean),
-    )
+    for it in self._iterInjectors():
+      it.injected = False
+      if it.isEnabled():
+        it.injectBeans()
 
 # EOF

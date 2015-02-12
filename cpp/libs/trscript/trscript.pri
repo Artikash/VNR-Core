@@ -5,9 +5,17 @@ DEFINES += WITH_LIB_TRSCRIPT
 
 DEPENDPATH += $$PWD
 
-QT += core
+LIBS += -lboost_regex$$BOOST_VARIANT
 
-HEADERS += $$PWD/trscript.h
-SOURCES += $$PWD/trscript.cc
+#QT += core
+
+HEADERS += \
+  $$PWD/trescape.h \
+  $$PWD/trrule.h \
+  $$PWD/trscript.h
+
+SOURCES += \
+  $$PWD/trrule.cc \
+  $$PWD/trscript.cc
 
 # EOF

@@ -65,11 +65,15 @@ def main():
       rc.DIR_CACHE_HISTORY,
       rc.DIR_CACHE_NETMAN,
       rc.DIR_CACHE_WEBKIT,
-      ):
+    ):
     if not os.path.exists(it):
       try: os.makedirs(it)
       except OSError:
         dwarn("warning: failed to create directory: %s" % it)
+
+  dprint("init opencc")
+  from opencc import opencc
+  opencc.setdicpaths(config.OPENCC_DICS)
 
   dprint("create app")
   import app
@@ -97,6 +101,19 @@ def main():
 
     if ss_version:
       from sakurakit import skfileio
+
+      if ss_version <= 1417339268:
+        for it in (
+            #rc.DIR_CACHE_DATA,
+            rc.DIR_CACHE_HISTORY,
+            rc.DIR_CACHE_NETMAN,
+            rc.DIR_CACHE_WEBKIT,
+          ):
+          if os.path.exists(it):
+            skfileio.removetree(it)
+            try: os.makedirs(it)
+            except OSError:
+              dwarn("warning: failed to create directory: %s" % it)
 
       if ss_version <= 1396371158:
         skfileio.removefile(rc.COOKIES_LOCATION)
@@ -139,9 +156,10 @@ def main():
 
   if reader.isMainlandChina():
     dprint("set up proxy")
-    from google import googletts, googletrans
-    googletts.seturl(config.PROXY_GOOGLE_TTS)
-    googletrans.seturl(config.PROXY_GOOGLE_TRANS)
+    from google import googletts
+    googletts.setapi(config.PROXY_GOOGLE_TTS)
+    import googleman
+    googleman.setapi(config.PROXY_GOOGLE_TRANS)
 
   dprint("create main object")
   import main

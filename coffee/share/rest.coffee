@@ -14,6 +14,7 @@ AGENT = 'vnr'
 postJSON = (data:data, url:url, success:success, error:error) ->
   data.version = VERSION
   data.agent = AGENT
+  console.log url
   $.ajax
     type: 'POST'
     contentType: 'application/json;charset=utf-8'
@@ -27,6 +28,12 @@ growl =
   showInternetError: ->
   showSignInError: ->
   showDupError: ->
+
+defs =
+  STATUS_OK: 0
+  STATUS_ERR: 1      # unknown error
+  STATUS_USER_ERR: 2 # user does not exist
+  STATUS_DUP_ERR: 3  # duplicate entry
 
 # HOST is defined in defs.coffee
 #HOST = 'http://sakuradite.com'
@@ -118,7 +125,7 @@ growl =
     #else
     #  LOCKED = true # prevent massive ticket
     postJSON
-      url: "/json/#{ID}/update"
+      url: "#{HOST}/api/json/#{ID}/update"
       data: data
       success: (res) ->
         #LOCKED = false
@@ -140,7 +147,7 @@ growl =
   list: (data:data, success:success, error:error) ->
     ID = 'ticket'
     postJSON
-      url: "/json/#{ID}/list"
+      url: "#{HOST}/api/json/#{ID}/list"
       data: data
       success: (res) ->
         if res.status is 0 and res.data

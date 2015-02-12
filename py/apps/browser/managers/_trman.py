@@ -13,16 +13,16 @@ import requests
 from functools import partial
 from itertools import ifilter, imap
 from time import time
-from cconv.cconv import wide2thin, wide2thin_digit
-from zhszht.zhszht import zhs2zht, zht2zhs
+from PySide.QtCore import QMutex
+from opencc.opencc import zhs2zht, zht2zhs
 from sakurakit import skthreads
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from i18n import i18n
-import config, growl, textutil
-import trman
+import config, growl, textutil, trman
+from unitraits.uniconv import wide2thin, wide2thin_digit
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprof import SkProfiler
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -30,7 +30,7 @@ _NO_RE = re.compile('')
 
 __PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
 _PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
-_PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
+_PARAGRAPH_RE = re.compile(r"([%s])" % ''.join(_PARAGRAPH_SET))
 
 #__SENTENCE_DELIM = u"\n【】「」。♪" #…！？# machine translation of sentence deliminator
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)
@@ -119,11 +119,10 @@ class MachineTranslator(Translator):
   #_DELIM_SET = _PARAGRAPH_SET # set of deliminators
   #_DELIM_RE = _PARAGRAPH_RE   # rx of deliminators
 
-  def __init__(self, parent=None, abortSignal=None):
+  def __init__(self, abortSignal=None):
     super(MachineTranslator, self).__init__()
     self.cache = TranslationCache()  # public overall translation cache
     self._cache = TranslationCache() # private translation cache for internal translation
-    self.parent = parent  # QObject
     self.abortSignal = abortSignal # QtCore.Signal abort translation
 
   def clearCache(self):
@@ -147,8 +146,7 @@ class MachineTranslator(Translator):
         skthreads.runsync(partial(
           tr, text, **kwargs),
           abortSignal=self.abortSignal,
-          parent=self.parent) if async else
-        tr(text, **kwargs)))
+        ) if async else tr(text, **kwargs)))
 
   def __tr(self, text, *args, **kwargs):
     """
@@ -491,6 +489,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   def __init__(self, **kwargs):
     super(FastAITTranslator, self).__init__(**kwargs)
     self._warned = False # bool
+    self._mutex = QMutex()
 
   @memoizedproperty
   def jazhsEngine(self):
@@ -606,7 +605,8 @@ class FastAITTranslator(OfflineMachineTranslator):
       repl = self._escapeText(text, to=to)
       if repl:
         try:
-          repl = self._translate(repl, engine.translate, async=async, to=to, fr=fr)
+          repl = self._translate(repl, partial(self._synchronizedTranslate, engine.translate),
+              async=async, to=to, fr=fr)
           if repl:
             #sub = self._applySentenceTransformation(sub)
             #sub = self.__fastait_repl_after(sub)
@@ -623,6 +623,12 @@ class FastAITTranslator(OfflineMachineTranslator):
               growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(i18n.tr("FastAIT")),
                   async=async)
     return None, None, None
+
+  def _synchronizedTranslate(self, tr, *args, **kwargs):
+    self._mutex.lock()
+    ret = tr(*args, **kwargs)
+    self._mutex.unlock()
+    return ret
 
 class DreyeTranslator(OfflineMachineTranslator):
   key = 'dreye' # override
@@ -817,10 +823,10 @@ class GoogleTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
 
-    from google import googletrans
-    # Session is not used, or it could get blocked by Google
-    #googletrans.session = requests.Session()
-    self.engine = googletrans
+    import googleman
+    # Not sure if using session could get blocked by Google
+    googleman.setsession(requests.Session())
+    self.engine = googleman.manager()
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
   #  '...': u'…',
@@ -850,7 +856,9 @@ class BingTranslator(OnlineMachineTranslator):
     # It is dangerous to create engine here, which is async
     from microsoft import bingtrans
     bingtrans.session = requests.Session()
-    self.engine = bingtrans.create_engine() # time-limited
+
+    import bingman
+    self.engine = bingman.manager() # time-limited
 
   #@memoizedproperty
   #def engine(self):

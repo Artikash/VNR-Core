@@ -19,10 +19,11 @@ Item { id: root_
   // - Private -
 
   Plugin.PostEditorManager { id: editor_
+    imageEnabled: false
     Component.onCompleted: postChanged.connect(root_.submit)
   }
 
-  function submit(postString) {
+  function submit(postString, imageString) { // image is temporarily ignored
     var post = JSON.parse(postString)
     var user = statusPlugin_.userName
     var pass = statusPlugin_.userPassword

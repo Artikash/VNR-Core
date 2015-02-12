@@ -11,7 +11,7 @@
 # Query directions:
 # - textman => dataman => netman
 
-__all__ = ['MainObject', 'MainObjectProxy']
+__all__ = 'MainObject', 'MainObjectProxy'
 
 import os
 from functools import partial
@@ -26,7 +26,7 @@ import config, defs, features, growl, libman, prompt, qmldialog, rc, settings, w
 
 EXITED = False # whether the application is existing
 
-def _parserargs(args):
+def _parseargs(args):
   """Parse command line arguments
   @param  args  [str]
   @return  kw not None
@@ -36,6 +36,10 @@ def _parserargs(args):
     for i, it in enumerate(args):
       if it == '--pid':
         ret['pid'] = long(args[i+1])
+      elif it == '--minimize':
+        ret['minimize'] = True
+      elif it == '--nosplash':
+        ret['nosplash'] = True
   except Exception, e:
     dwarn("failed to parse command line option", e)
   return ret
@@ -116,18 +120,18 @@ class _MainObject(object):
     ret.setSuggestedDataCapacity(ss.gameTextCapacity())
     return ret
 
-  @memoizedproperty
-  def nameManager(self):
-    dprint("create name manager") # Move this upward before kagami
-    import nameman
-    ret = nameman.manager()
+  #@memoizedproperty
+  #def nameManager(self):
+  #  dprint("create name manager") # Move this upward before kagami
+  #  import nameman
+  #  ret = nameman.manager()
 
-    import settings
-    ss = settings.global_()
+  #  import settings
+  #  ss = settings.global_()
 
-    ret.setMeCabDictionary(ss.meCabDictionary())
-    ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
-    return ret
+  #  ret.setMeCabDictionary(ss.meCabDictionary())
+  #  ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
+  #  return ret
 
   @memoizedproperty
   def jlpManager(self):
@@ -249,7 +253,7 @@ class _MainObject(object):
     dprint("create cache manager")
     import cacheman
     ret = cacheman.manager()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
 
     ret.setEnabled(self.networkManager.isOnline())
     self.networkManager.onlineChanged.connect(ret.setEnabled)
@@ -269,7 +273,7 @@ class _MainObject(object):
     self.gameManager.windowChanged.connect(ret.setSelectedWindow)
     self.gameManager.processDetached.connect(ret.clearRegionItems)
 
-    ret.textRecognized.connect(self.textManager.addOcrText)
+    ret.textRecognized.connect(self.textManager.addRecognizedText)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
@@ -311,7 +315,6 @@ class _MainObject(object):
     tm = self.textManager
     ret.processDetached.connect(tm.clear)
 
-
     ret.languageChanged.connect(tm.setGameLanguage)
     ret.encodingChanged.connect(tm.setEncoding)
     ret.threadChanged.connect(tm.setScenarioThread)
@@ -331,7 +334,7 @@ class _MainObject(object):
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
 
     dm = self.dataManager
-    ret.processChanged.connect(dm.clearMacroCache)
+    ret.processDetached.connect(dm.clearSubtitles)
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)
@@ -421,6 +424,7 @@ class _MainObject(object):
     ret.textReceived.connect(grimoire.showText)
     ret.translationReceived.connect(grimoire.showTranslation)
     ret.commentReceived.connect(grimoire.showComment)
+    ret.subtitleReceived.connect(grimoire.showSubtitle)
 
     ret.nameTextReceived.connect(grimoire.showNameText)
     ret.nameTranslationReceived.connect(grimoire.showNameTranslation)
@@ -451,6 +455,7 @@ class _MainObject(object):
     for sig in (
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
+        ss.termMarkedChanged,
         ss.userLanguageChanged,
         dm.termsChanged,
         #dm.gameFilesChanged, # duplicate with gameItemsChanged
@@ -461,15 +466,15 @@ class _MainObject(object):
 
     # These should be moved to dataManager. Put here to avoid recursion, moved to gameman
 
-    for sig in (
-        ss.termEnabledChanged,
-        ss.userLanguageChanged,
-        dm.termsChanged,
-        #dm.gameFilesChanged, # duplicate with gameItemsChanged
-        dm.gameItemsChanged,
-        #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
-        ):
-      sig.connect(dm.clearMacroCache)
+    #for sig in (
+    #    ss.termEnabledChanged,
+    #    ss.userLanguageChanged,
+    #    dm.termsChanged,
+    #    #dm.gameFilesChanged, # duplicate with gameItemsChanged
+    #    dm.gameItemsChanged,
+    #    #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
+    #    ):
+    #  sig.connect(dm.clearMacroCache)
 
     #ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret
@@ -486,7 +491,7 @@ class _MainObject(object):
     dprint("create reference manager")
     import refman
     ret = refman.manager()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -497,7 +502,7 @@ class _MainObject(object):
     dprint("create trailers manager")
     import refman
     ret = refman.trailers()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -519,7 +524,7 @@ class _MainObject(object):
     dprint("create gyutto manager")
     import refman
     ret = refman.gyutto()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -530,7 +535,7 @@ class _MainObject(object):
     dprint("create getchu manager")
     import refman
     ret = refman.getchu()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -541,7 +546,7 @@ class _MainObject(object):
     dprint("create amazon manager")
     import refman
     ret = refman.amazon()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -552,7 +557,7 @@ class _MainObject(object):
     dprint("create scape manager")
     import refman
     ret = refman.scape()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -563,7 +568,7 @@ class _MainObject(object):
     import refman
     dprint("create dmm manager")
     ret = refman.dmm()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -574,10 +579,21 @@ class _MainObject(object):
     import refman
     dprint("create tokuten manager")
     ret = refman.tokuten()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
+    return ret
+
+  @memoizedproperty
+  def chineseManager(self):
+    dprint("create chinese manager")
+    import ccman
+    ret = ccman.manager()
+
+    ss = settings.global_()
+    ret.setVariant(ss.chineseVariant())
+    ss.chineseVariantChanged.connect(ret.setVariant)
     return ret
 
   @memoizedproperty
@@ -585,12 +601,12 @@ class _MainObject(object):
     dprint("create term manager")
     import termman
     ret = termman.manager()
-    #ret.setParent(self.q)
+    ret.setParent(self.q)
 
     ss = settings.global_()
 
-    ret.setLanguage(ss.userLanguage())
-    ss.userLanguageChanged.connect(ret.setLanguage)
+    ret.setTargetLanguage(ss.userLanguage())
+    ss.userLanguageChanged.connect(ret.setTargetLanguage)
 
     ret.setEnabled(ss.isTermEnabled())
     ss.termEnabledChanged.connect(ret.setEnabled)
@@ -598,16 +614,24 @@ class _MainObject(object):
     ret.setHentaiEnabled(ss.isHentaiEnabled())
     ss.hentaiEnabledChanged.connect(ret.setHentaiEnabled)
 
+    #ret.setSyntaxEnabled(ss.isTranslationSyntaxEnabled())
+    #ss.translationSyntaxEnabledChanged.connect(ret.setSyntaxEnabled)
+
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
-    ss.termMarkedChanged.connect(ret.clearMarkCache)
+    for sig in (
+        ss.userIdChanged, ss.userLanguageChanged,
+        ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        #ss.translationSyntaxEnabledChanged,
+        self.gameManager.processChanged,
+        self.dataManager.termsChanged,
+      ):
+      sig.connect(ret.invalidateCache)
 
-    for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
-      sig.connect(self.translatorManager.clearCache)
-
-    #ret.setConvertsChinese(ss.convertsChinese())
-    #ss.convertsChineseChanged.connect(ret.setConvertsChinese)
+    #for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
+    #  sig.connect(self.translatorManager.clearCache)
+    #ret.cacheChanged.connect(self.translatorManager.clearCache)
     return ret
 
   #@memoizedproperty
@@ -656,35 +680,77 @@ class _MainObject(object):
     ret.setLanguage(ss.userLanguage())
     ss.userLanguageChanged.connect(ret.setLanguage)
 
-    ret.setLougoEnabled(ss.isLougoEnabled())
-    ss.lougoEnabledChanged.connect(ret.setLougoEnabled)
+    ret.setMarked(ss.isTermMarked())
+    ss.termMarkedChanged.connect(ret.setMarked)
+
+    ret.setYueEnabled(ss.isYueEnabled())
+    ss.yueEnabledChanged.connect(ret.setYueEnabled)
 
     ret.setInfoseekEnabled(ss.isInfoseekEnabled())
     ss.infoseekEnabledChanged.connect(ret.setInfoseekEnabled)
 
+    ret.setInfoseekAlignEnabled(ss.isInfoseekRubyEnabled())
+    ss.infoseekRubyEnabledChanged.connect(ret.setInfoseekAlignEnabled)
+
+    ret.setInfoseekScriptEnabled(ss.isInfoseekScriptEnabled())
+    ss.infoseekScriptEnabledChanged.connect(ret.setInfoseekScriptEnabled)
+
     ret.setExciteEnabled(ss.isExciteEnabled())
     ss.exciteEnabledChanged.connect(ret.setExciteEnabled)
+
+    ret.setExciteScriptEnabled(ss.isExciteScriptEnabled())
+    ss.exciteScriptEnabledChanged.connect(ret.setExciteScriptEnabled)
 
     ret.setBingEnabled(ss.isBingEnabled())
     ss.bingEnabledChanged.connect(ret.setBingEnabled)
 
+    ret.setBingAlignEnabled(ss.isBingRubyEnabled())
+    ss.bingRubyEnabledChanged.connect(ret.setBingAlignEnabled)
+
+    ret.setBingScriptEnabled(ss.isBingScriptEnabled())
+    ss.bingScriptEnabledChanged.connect(ret.setBingScriptEnabled)
+
     ret.setGoogleEnabled(ss.isGoogleEnabled())
     ss.googleEnabledChanged.connect(ret.setGoogleEnabled)
+
+    ret.setGoogleAlignEnabled(ss.isGoogleRubyEnabled())
+    ss.googleRubyEnabledChanged.connect(ret.setGoogleAlignEnabled)
+
+    ret.setGoogleScriptEnabled(ss.isGoogleScriptEnabled())
+    ss.googleScriptEnabledChanged.connect(ret.setGoogleScriptEnabled)
 
     ret.setTransruEnabled(ss.isTransruEnabled())
     ss.transruEnabledChanged.connect(ret.setTransruEnabled)
 
+    ret.setTransruScriptEnabled(ss.isTransruScriptEnabled())
+    ss.transruScriptEnabledChanged.connect(ret.setTransruScriptEnabled)
+
+    ret.setNaverEnabled(ss.isNaverEnabled())
+    ss.naverEnabledChanged.connect(ret.setNaverEnabled)
+
+    ret.setNaverAlignEnabled(ss.isNaverRubyEnabled())
+    ss.naverRubyEnabledChanged.connect(ret.setNaverAlignEnabled)
+
     ret.setBaiduEnabled(ss.isBaiduEnabled())
     ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
 
+    ret.setBaiduAlignEnabled(ss.isBaiduRubyEnabled())
+    ss.baiduRubyEnabledChanged.connect(ret.setBaiduAlignEnabled)
+
     ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
     ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)
+
+    ret.setLecOnlineScriptEnabled(ss.isLecOnlineScriptEnabled())
+    ss.lecOnlineScriptEnabledChanged.connect(ret.setLecOnlineScriptEnabled)
 
     #ret.setYoudaoEnabled(ss.isYoudaoEnabled())
     #ss.youdaoEnabledChanged.connect(ret.setYoudaoEnabled)
 
     ret.setHanVietEnabled(ss.isHanVietEnabled())
     ss.hanVietEnabledChanged.connect(ret.setHanVietEnabled)
+
+    ret.setHanVietAlignEnabled(ss.isHanVietRubyEnabled())
+    ss.hanVietRubyEnabledChanged.connect(ret.setHanVietAlignEnabled)
 
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
@@ -701,16 +767,22 @@ class _MainObject(object):
     ret.setAtlasEnabled(ss.isAtlasEnabled())
     ss.atlasEnabledChanged.connect(ret.setAtlasEnabled)
 
+    ret.setAtlasScriptEnabled(ss.isAtlasScriptEnabled())
+    ss.atlasScriptEnabledChanged.connect(ret.setAtlasScriptEnabled)
+
     ret.setLecEnabled(ss.isLecEnabled())
     ss.lecEnabledChanged.connect(ret.setLecEnabled)
 
+    ret.setLecScriptEnabled(ss.isLecScriptEnabled())
+    ss.lecScriptEnabledChanged.connect(ret.setLecScriptEnabled)
+
     for sig in (
+        self.termManager.cacheChanged,
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
-        #ss.userLanguageChanged,
-        self.gameManager.processChanged,
-        self.dataManager.termsChanged,
-        ):
+        ss.yueEnabledChanged,
+        ss.chineseVariantChanged,
+      ):
       sig.connect(ret.clearCache)
 
     qApp = QCoreApplication.instance()
@@ -751,11 +823,17 @@ class _MainObject(object):
     self.gameManager.processChanged.connect(ret.hide)
     return ret
 
+  @memoizedproperty
+  def nameInputManager(self):
+    dprint("create name input manager")
+    import nameinput
+    return nameinput.manager()
+
   #@memoizedproperty
   #def postInputManager(self):
   #  dprint("create post Input manager")
-  #  import postedit
-  #  ret = postedit.manager()
+  #  import postinput
+  #  ret = postinput.manager()
   #  ret.setParent(self.q)
   #  return ret
 
@@ -783,14 +861,26 @@ class _MainObject(object):
     return gameview.manager()
 
   @property
-  def chatViewManager(self):
-    import chatview
-    return chatview.manager()
+  def topicViewManager(self):
+    import topicview
+    return topicview.manager()
+
+  @property
+  def topicsViewManager(self):
+    import topicsview
+    return topicsview.manager()
 
   @memoizedproperty
   def aboutDialog(self):
     import about
     ret = about.AboutDialog(self.topWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def updateDialog(self):
+    import update
+    ret = update.UpdateDialog(self.topWindow)
     self.widgets.append(ret)
     return ret
 
@@ -809,6 +899,32 @@ class _MainObject(object):
     import hkman
     ret = hkman.manager()
     ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
+  def speechRecognitionManager(self):
+    dprint("create speech recognition manager")
+    import srman
+    ret = srman.manager()
+    ret.setParent(self.q)
+
+    ret.setOnline(self.networkManager.isOnline())
+    self.networkManager.onlineChanged.connect(ret.setOnline)
+
+    self.gameManager.processDetached.connect(ret.abort)
+
+    ret.textRecognized.connect(self.textManager.addRecognizedText)
+
+    import audioinfo, settings
+    ss = settings.global_()
+    dev = ss.audioDeviceIndex()
+    if dev >= audioinfo.HOST_DEVICE_COUNT:
+      ss.setAudioDeviceIndex(dev)
+    ret.setDeviceIndex(dev)
+    ss.audioDeviceIndexChanged.connect(ret.setDeviceIndex)
+
+    ret.setLanguage(ss.speechRecognitionLanguage())
+    ss.speechRecognitionLanguageChanged.connect(ret.setLanguage)
     return ret
 
   @memoizedproperty
@@ -1011,7 +1127,7 @@ class _MainObject(object):
   @memoizedproperty
   def termInputDialog(self):
     import terminput
-    ret = terminput.TermInput(self.normalWindow)
+    ret = terminput.TermInput(self.topWindow)
     self.widgets.append(ret)
     return ret
 
@@ -1031,6 +1147,20 @@ class _MainObject(object):
   def machineTranslationTesterDialog(self):
     import mttest
     ret = mttest.MTTester(self.normalWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def speechRecognitionTesterDialog(self):
+    import srtest
+    ret = srtest.SpeechRecognitionTester(self.normalWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def syntaxTesterDialog(self):
+    import syntaxtest
+    ret = syntaxtest.SyntaxTester(self.normalWindow)
     self.widgets.append(ret)
     return ret
 
@@ -1159,6 +1289,13 @@ class _MainObject(object):
   # This function could take lots of time depending on how many games you have
   @memoizedproperty
   def springBoardDialog(self):
+    try:
+      if self.springBoardDialogLocked:
+        dwarn("springboard locked")
+        return
+    except AttributeError:
+      self.springBoardDialogLocked = True
+
     dprint("enter")
     import spring
     ret = spring.SpringBoard(self.normalWindow)
@@ -1171,6 +1308,8 @@ class _MainObject(object):
     gm.openingGame.connect(ret.hide)
     gm.openGameFailed.connect(ret.show)
     dprint("leave")
+
+    self.springBoardDialogLocked = False
     return ret
 
   #@memoizedproperty
@@ -1293,29 +1432,31 @@ class _MainObject(object):
     """
     @param  w  QWidget
     """
-    if w.isMaximized() and w.isMinimized():
-      w.showMaximized()
-    elif w.isMinimized():
-      w.showNormal()
-    else:
-      w.show()
-    if not features.WINE:
-      w.raise_()
-      winutil.set_foreground_widget(w)
+    if w:
+      if w.isMaximized() and w.isMinimized():
+        w.showMaximized()
+      elif w.isMinimized():
+        w.showNormal()
+      else:
+        w.show()
+      if not features.WINE:
+        w.raise_()
+        winutil.set_foreground_widget(w)
 
   @staticmethod
   def showQmlWindow(w):
     """
     @param  w  QDeclarativeView
     """
-    w.show()
-    if w.isMaximized() and w.isMinimized():
-      w.showMaximized()
-    elif w.isMinimized():
-      w.showNormal()
-    if not features.WINE:
-      w.raise_()
-      winutil.set_foreground_widget(w)
+    if w:
+      w.show()
+      if w.isMaximized() and w.isMinimized():
+        w.showMaximized()
+      elif w.isMinimized():
+        w.showNormal()
+      if not features.WINE:
+        w.raise_()
+        winutil.set_foreground_widget(w)
 
   #def updateDialogParent(self, w):
   #  """
@@ -1388,13 +1529,14 @@ class MainObject(QObject):
       if path:
         dprint("find running new game")
         growl.msg(my.tr("Found new game") + ":" "<br/>" + path)
-        if self.isOnline():
-          skevents.runlater(partial(
-              gm.openNewGame, path=path),
-              200)
-        else:
-          growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
-          self.showGameWizard(path=path)
+        #if self.isOnline():
+        skevents.runlater(partial(
+            gm.openNewGame, path=path),
+            200)
+        #else:
+        #  #growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
+        #  #self.showGameWizard(path=path)
+        #  self.addGame(path)
       else:
         if verbose:
           t = my.tr(
@@ -1439,16 +1581,15 @@ class MainObject(QObject):
       d.gameManager.openGame(game=game, path=path,
           linkName=linkName)
     else:
-      if d.gameManager.containsGameMd5(md5):
-        if self.isOnline():
-          d.gameManager.openNewGame(path=path, md5=md5,
-              linkName=linkName)
-          return
-        else:
-          growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
-      else:
-        growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
-      self.showGameWizard(path=path)
+      #if d.gameManager.containsGameMd5(md5) and self.isOnline():
+      d.gameManager.openNewGame(path=path, md5=md5,
+          linkName=linkName)
+      #  else:
+      #    growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
+      #else:
+      #  growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
+      #self.showGameWizard(path=path)
+      #self.addGame(path)
 
   def addGame(self, path):
     if not path:
@@ -1464,28 +1605,30 @@ class MainObject(QObject):
       return
     import osutil
     np = osutil.normalize_path(path)
-    import hashutil
-    md5 = hashutil.md5sum(np)
+    #import hashutil
+    #md5 = hashutil.md5sum(np)
 
-    d = self.__d
-    if d.dataManager.containsGameMd5(md5, online=False):
-      growl.notify(my.tr("The game already exists"))
-    elif not d.dataManager.containsGameMd5(md5):
-      growl.notify(my.tr("It seems to be an unknown game. Please add it using Game Wizard"))
-      self.showGameWizard(path=path)
-    elif not d.networkManager.isOnline():
-      growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
-      self.showGameWizard(path=path)
-    else:
-      d.dataManager.addGame(path=path, md5=md5)
+    self.__d.dataManager.addGame(path=path)
+
+    #d = self.__d
+    #if d.dataManager.containsGameMd5(md5, online=False):
+    #  growl.notify(my.tr("The game already exists"))
+    #  #if not d.dataManager.containsGamePath(path, online=False):
+    #  return
+
+      #if not d.dataManager.containsGameMd5(md5):
+      #  growl.notify("<br/>".join((
+      #      my.tr("It seems to be an unknown game."),
+      #      my.tr("Please manually adjust Text Settings after launching the game."))))
+      #elif not d.networkManager.isOnline():
+      #  growl.notify("<br/>".join((
+      #      my.tr("It seems you are offline.")
+      #      my.tr("Please manually adjust Text Settings after launching the game."))))
 
   #def isDebug(self): return self.__d.debug
 
-  def run(self, args):
-    """Starting point for the entire app
-    @param  args  [unicode]  QCoreApplication.arguments()
-    """
-    dprint("enter: args =", args)
+  def init(self):
+    dprint("enter")
     d = self.__d
 
     dprint("show top window")
@@ -1513,6 +1656,7 @@ class MainObject(QObject):
     gm = d.gameManager
     d.gameAgent
 
+    d.chineseManager
     d.termManager
     #d.translationScriptManager
     #d.tahScriptManager
@@ -1522,7 +1666,7 @@ class MainObject(QObject):
     d.meCabManager
     d.caboChaManager
     d.jlpManager
-    d.nameManager
+    #d.nameManager
     d.referenceManager
     d.trailersManager
     d.dmmManager
@@ -1539,12 +1683,13 @@ class MainObject(QObject):
     #d.postEditorManager
     d.hotkeyManager
     d.ttsManager
+    d.speechRecognitionManager
 
     #d.ocrManager
     skevents.runlater(d.initializeOCR, 3000) # delay start OCR
 
-    dprint("warm up tts")
-    d.ttsManager.warmup() # It might take a lot of time to warmup google
+    #dprint("warm up tts")
+    #d.ttsManager.warmup() # warm up zunko on the startup
 
     if settings.global_().isEdictEnabled():
       dprint("warm up edict")
@@ -1583,7 +1728,21 @@ class MainObject(QObject):
     #  dprint("warm up dictionary terms")
     #  d.termManager.warmup()
 
-    dprint("login later")
+    dprint("enter")
+
+  def run(self, args):
+    """Starting point for the entire app
+    @param  args  [unicode]  QCoreApplication.arguments()
+    """
+    dprint("enter: args =", args)
+
+    d = self.__d
+    dm = d.dataManager
+    gm = d.gameManager
+
+    online = self.isOnline()
+
+    dprint("schedule to login later")
     skevents.runlater(dm.reloadUser)
 
     if online:
@@ -1611,10 +1770,16 @@ class MainObject(QObject):
       #  dprint("update translate scripts later")
       #  skevents.runlater(dm.updateTranslationScripts)
 
+    #self.showReferenceView()
+    #return
+
     #dprint("warm up translators")
     #d.translatorManager.warmup()
     dprint("schedule to warm up translators")
-    skevents.runlater(d.translatorManager.warmup)
+    lang =  settings.global_().userLanguage()
+    skevents.runlater(partial(
+        d.translatorManager.warmup, to=lang)
+        , 1000) # warm up after 1 seconds to avoid blocking on the startup
 
     dprint("start rpc server")
     d.rpcServer.start()
@@ -1622,39 +1787,46 @@ class MainObject(QObject):
     #self.showTermChart()
 
     dprint("parse command line arguments")
-    kwargs = _parserargs(args)
+    kwargs = _parseargs(args)
     dprint("args =", kwargs)
-    argumentPid = kwargs.get('pid') or 0
+
+    opt_pid = kwargs.get('pid') or 0
+    opt_minimize = bool(kwargs.get('minimize'))
+    opt_nosplash = bool(kwargs.get('nosplash'))
+    delayDisplayKagami = False
 
     dprint("search for running game")
-    g = gm.findRunningGame(pid=argumentPid)
+    g = gm.findRunningGame(pid=opt_pid)
     if g:
       foundGame = True
       dprint("find running game")
       growl.msg(my.tr("Found running game") + ":" "<br/>" + g.name)
       skevents.runlater(partial(
-          gm.openGame, game=g, pid=argumentPid),
+          gm.openGame, game=g, pid=opt_pid),
           500)
     else:
       path = None
       if dm.hasGameFiles() and settings.global_().isGameDetectionEnabled():
-        path = gm.findRunningGamePathByMd5(pid=argumentPid)
+        path = gm.findRunningGamePathByMd5(pid=opt_pid)
       if path:
         dprint("find running new game")
         growl.msg(my.tr("Found new game") + ":" "<br/>" + path)
         if online:
           skevents.runlater(partial(
-              gm.openNewGame, path=path, pid=argumentPid),
+              gm.openNewGame, path=path, pid=opt_pid),
               500)
         else:
           d.springBoardDialog
           skevents.runlater(self.showSpringBoard, 300)
-          skevents.runlater(self.showGameWizard, 400)
-          growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
+          #skevents.runlater(self.showGameWizard, 400)
+          #growl.warn(my.tr("Because you are offline, please manually add game using Game Wizard"))
       else:
         #self.showSpringBoard()
-        d.springBoardDialog
-        skevents.runlater(self.showSpringBoard, 300)
+        if not opt_minimize:
+          d.springBoardDialog
+          skevents.runlater(self.showSpringBoard, 300)
+        elif opt_nosplash:
+          delayDisplayKagami = True
 
         #if not dm.hasGames():
         #  #self.showGameWizard()
@@ -1673,12 +1845,16 @@ class MainObject(QObject):
     skevents.runlater(self.checkDigests, 90000) # 1.5min
     skevents.runlater(self.checkTerms, 120000) # 2min
 
-    if dm.hasTerms():
-      dprint("warm up dictionary terms")
-      d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
+    #if dm.hasTerms():
+    #  dprint("warm up dictionary terms")
+    #  d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
 
-    dprint("show windows")
-    skevents.runlater(self.showKagami)
+    t = 10000 if delayDisplayKagami else 0
+    if t:
+      dprint("delay displaying kagami")
+    else:
+      dprint("show kagami at once")
+    skevents.runlater(self.showKagami, t)
 
     dprint("start game detection")
     d.gameDetectionTimer.start()
@@ -1690,7 +1866,6 @@ class MainObject(QObject):
     dprint("leave")
 
     #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
-    #self.showReferenceView()
     #  import jsonapi
     #  jsonapi.gameinfo()
     #  d.dump()
@@ -1712,13 +1887,29 @@ class MainObject(QObject):
     d.kagamiWindow.setMirageVisible(True)
     d.mirage.show()
 
-  def showTermView(self):
+  def showTermView(self, search=None):
+    """
+    @param  seach  dict
+    """
     d = self.__d
-    if d.termManager.isLocked():
-      growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
-    else:
-      d.dataManager.setTermsEditable(True)
-      skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
+    #if d.termManager.isLocked():
+    #  growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
+    #else:
+    d.dataManager.setTermsEditable(True)
+    if search:
+      import termview
+      termview.search(**search)
+    skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
+
+  def searchTermView(self, **kwargs):
+    if kwargs:
+      import termview
+      termview.search(**kwargs)
+    self.showTermView()
+
+  def showTerm(self, id): # long ->
+    import termview
+    termview.showterm(id=id)
 
   def showSpringBoard(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.springBoardDialog))
@@ -1769,20 +1960,34 @@ class MainObject(QObject):
       import osutil
       osutil.open_url("http://sakuradite.com/game/%s" % itemId)
 
-  def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
-  def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
+  def showChatView(self, topicId):
+    self.__d.topicsViewManager.show(topicId=topicId)
+  def isChatViewVisible(self, topicId):
+    return self.__d.topicsViewManager.isViewVisible(topicId=topicId)
+
+  def showGameTopics(self, itemId):
+    self.__d.topicsViewManager.show(subjectId=itemId)
+
+  def showGameNames(self, itemId=0, tokenId=0, info=None): # long, long, GameInfo ->
+    self.__d.nameInputManager.showGame(itemId=itemId, tokenId=tokenId, info=info)
+
+  def showTopic(self, topicId):
+    self.__d.topicViewManager.show(topicId)
 
   def showSubtitleEditor(self, comment): # dataman.Comment
     self.__d.subtitleEditorManager.showComment(comment)
 
-  def showGameView(self, gameId=None): # long ->
+  def showGameView(self, gameId=None, itemId=None): # long, long ->
     d = self.__d
-    if not gameId:
-      gameId = d.dataManager.currentGameId()
-    if not gameId:
-      growl.notify(my.tr("Unknown game. Please try updating the database."))
+    if itemId:
+      d.gameViewManager.showItem(itemId)
     else:
-      d.gameViewManager.showGame(gameId)
+      if not gameId:
+        gameId = d.dataManager.currentGameId()
+      if not gameId:
+        growl.notify(my.tr("Unknown game. Please try updating the database."))
+      else:
+        d.gameViewManager.showGame(gameId)
 
   def showUserView(self, *args, **kwargs):
     """
@@ -1792,11 +1997,24 @@ class MainObject(QObject):
     """
     self.__d.userViewManager.showUser(*args, **kwargs)
 
-  def showTermInput(self, text=''):
+  def showTermInput(self, pattern='', text='', comment='', type='', language='', tokenId=0):
     w = self.__d.termInputDialog
+    if not pattern:
+      pattern = text
+    if not text:
+      text = pattern
+    if pattern:
+      w.setPattern(pattern)
     if text:
-      w.setPattern(text)
       w.setText(text)
+    if comment:
+      w.setComment(comment)
+    if type:
+      w.setType(type)
+    if language:
+      w.setLanguage(language)
+
+    w.setTokenId(tokenId)
     _MainObject.showWindow(w)
 
   def showTextSettings(self):
@@ -1819,6 +2037,8 @@ class MainObject(QObject):
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
+  def showSpeechRecognitionTester(self): _MainObject.showWindow(self.__d.speechRecognitionTesterDialog)
+  def showJapaneseSyntaxTester(self): _MainObject.showWindow(self.__d.syntaxTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
   def showGameFinder(self): _MainObject.showWindow(self.__d.gameFinderDialog)
@@ -1831,6 +2051,11 @@ class MainObject(QObject):
   def showCommentHelp(self): _MainObject.showWindow(self.__d.commentHelpDialog)
   def showReferenceHelp(self): _MainObject.showWindow(self.__d.referenceHelpDialog)
   def showVoiceHelp(self): _MainObject.showWindow(self.__d.voiceHelpDialog)
+
+  def showTermCache(self):
+    growl.msg(my.tr("Browse current enabled terms"))
+    import osutil
+    osutil.open_location(rc.DIR_TMP_TERM)
 
   def showGameWizard(self, path=None):
     w = self.__d.gameWizardDialog
@@ -1901,21 +2126,21 @@ class MainObject(QObject):
     growl.notify(my.tr("Update released"))
 
     # TTS
-    f = [
-      u"ソフトを更新しますか？姉さま？",
-      u"ソフトを更新しますか？姉うえ？",
-    ]
-    m = [
-      u"ソフトを更新しますか？ニー様？",
-      u"ソフトを更新しますか？お兄ちゃん？",
-    ]
-    if d.dataManager.user().isFemale():
-      t = f[now % len(f)]
-    elif d.dataManager.user().gender:
-      t = m[now % len(m)]
-    else:
-      t = (f+m)[now % (len(f)+len(m))]
-    d.ttsManager.speak(t, verbose=False)
+    #f = [
+    #  u"ソフトを更新しますか？姉さま？",
+    #  u"ソフトを更新しますか？姉うえ？",
+    #]
+    #m = [
+    #  u"ソフトを更新しますか？ニー様？",
+    #  u"ソフトを更新しますか？お兄ちゃん？",
+    #]
+    #if d.dataManager.user().isFemale():
+    #  t = f[now % len(f)]
+    #elif d.dataManager.user().gender:
+    #  t = m[now % len(m)]
+    #else:
+    #  t = (f+m)[now % (len(f)+len(m))]
+    #d.ttsManager.speak(t, verbose=False)
 
     if msg:
       ss.setUpdateTime(0)
@@ -1928,12 +2153,7 @@ class MainObject(QObject):
     self.showUpdate()
 
   def showUpdate(self):
-    d = self.__d
-    if d.springBoardDialog.isVisible():
-      d.springBoardDialog.showMinimized()
-
-    import osutil
-    osutil.open_location(rc.app_path('updater'))
+    _MainObject.showWindow(self.__d.updateDialog)
 
   def confirmUpdateGameDatabase(self):
     if prompt.confirmUpdateGameFiles():
@@ -2090,10 +2310,12 @@ class MainObject(QObject):
 
     for p in (
         'subtitleEditorManager',
+        'nameInputManager',
         'gameEditorManager',
-        'userViewManager',
         'gameViewManager',
-        'chatViewManager',
+        'userViewManager',
+        'topicViewManager',
+        'topicsViewManager',
       ):
       if hasmemoizedproperty(self, p):
         getattr(self, p).hide()
@@ -2116,6 +2338,9 @@ class MainObject(QObject):
 
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")
+
+  def openExistingGame(self, path, launchPath=''): # unicode, unicode ->
+    self.__d.gameManager.openExecutable(path, launchPath=launchPath)
 
 #@QmlObject
 class MainObjectProxy(QObject):
@@ -2152,6 +2377,10 @@ class MainObjectProxy(QObject):
   @Slot()
   def showMachineTranslationTester(self): manager().showMachineTranslationTester()
   @Slot()
+  def showSpeechRecognitionTester(self): manager().showSpeechRecognitionTester()
+  @Slot()
+  def showJapaneseSyntaxTester(self): manager().showJapaneseSyntaxTester()
+  @Slot()
   def showBBCodeTester(self): manager().showBBCodeTester()
   @Slot()
   def showRegExpTester(self): manager().showRegExpTester()
@@ -2179,8 +2408,12 @@ class MainObjectProxy(QObject):
   def checkUpdate(self): manager().checkUpdate()
   @Slot()
   def openRunningGame(self): manager().openRunningGame()
+  #@Slot()
+  #def showTermView(self): manager().showTermView()
   @Slot()
-  def showTermView(self): manager().showTermView()
+  def showDictionary(self): manager().showTermView() # alias
+  @Slot(unicode, unicode)
+  def searchDictionary(self, text, col): manager().searchTermView(text=text, col=col)
   @Slot()
   def showGameFinder(self): manager().showGameFinder()
   @Slot()
@@ -2189,6 +2422,8 @@ class MainObjectProxy(QObject):
   def showVoiceSettings(self): manager().showVoiceSettings()
   @Slot()
   def showTermHelp(self): manager().showTermHelp()
+  @Slot()
+  def showTermCache(self): manager().showTermCache()
   @Slot()
   def showCommentHelp(self): manager().showCommentHelp()
   @Slot()
@@ -2209,22 +2444,49 @@ class MainObjectProxy(QObject):
   def showCurrentGameView(self): manager().showGameView()
   @Slot(int)
   def showGameView(self, gameId): manager().showGameView(gameId)
+  @Slot(int)
+  def showGameNames(self, itemId): manager().showGameNames(itemId=itemId)
   @Slot(QObject) # dataman.Comment
   def showSubtitleEditor(self, comment): manager().showSubtitleEditor(comment)
 
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
   @Slot(result=bool)
-  def isGlobalChatViewVisible(self): manager().isChatViewVisible() # global id not used
+  def isGlobalChatViewVisible(self): return manager().isChatViewVisible(config.GLOBAL_TOPIC_ID)
+
+  @Slot(long)
+  def showTopic(self, topicId): manager().showTopic(topicId)
+  @Slot(long)
+  def showGameTopics(self, gameId): manager().showGameTopics(gameId)
+
+  #@Slot(long, long, unicode)
+  #def showUserView(self, id, hash, name): manager().showUserView(id, hash, name)
+  @Slot(unicode)
+  def showUser(self, name): manager().showUserView(name=name) # use name by default
+  @Slot(unicode)
+  def showUserWithName(self, name): manager().showUserView(name=name)
+  @Slot(long)
+  def showUserWithId(self, id): manager().showUserView(id=id)
+  @Slot(long, long)
+  def showUserWithHash(self, id, hash): manager().showUserView(id=id, hash=hash)
+
+  @Slot(long)
+  def showTermWithId(self, id): manager().showTerm(id=id)
 
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)
 
-  @Slot(unicode)
-  def showNewTerm(self, pattern): manager().showTermInput(pattern)
+  @Slot(unicode, unicode, unicode)
+  def showNewTerm(self, pattern, type, language):
+    manager().showTermInput(pattern, type=type, language=language)
 
   @Slot(unicode)
   def openWiki(self, text): manager().openWiki(text)
+
+  @Slot(unicode)
+  def launchGameWithPath(self, path): manager().openExistingGame(path)
+  @Slot(unicode, unicode)
+  def launchGameWithLaunchPath(self, path, launchPath): manager().openExistingGame(path, launchPath=launchPath)
 
   #@Slot(int)
   #def showGameSubtitles(self, gameId): manager().showSubtitleView(gameId=gameId)

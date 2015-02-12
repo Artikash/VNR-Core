@@ -12,19 +12,22 @@
 
 ulong MajiroEngine::search(ulong startAddress, ulong stopAddress)
 {
-  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
-  return MemDbg::findCallerAddress((ulong)::TextOutA, sub_esp, startAddress, stopAddress);
+  const DWORD funcs[] = { // caller patterns
+    0xec81,     // sub esp = 0x81,0xec byte old majiro
+    0x83ec8b55  // mov ebp,esp, sub esp,*  new majiro
+  };
+  enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
+  return MemDbg::findMultiCallerAddress((ulong)::TextOutA, funcs, FuncCount, startAddress, stopAddress);
   //addr = 0x41af90; // レミニセンス function address
   //return addr && hookAddress(addr);
 }
 
-/**
- *  Compute ITH's split value from the first parameter of the hooked function.
- *  Let eax be arg1, the original logic in MajiroSpecialHook is:
- *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
- */
-inline static DWORD splitOf(DWORD *arg1)
-{ return (arg1[10] & 0xff) | ((arg1[18] >> 1) & 0xffffff00); }
+static inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to be a string, though
+{ return (arg[10] & 0xff) | ((arg[18] >> 1) & 0xffffff00); }
+
+static inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
+{ return (arg[12] & 0xff) | (arg[16] & 0xffffff00); }
+
 
 /**
  *  TODO: The current split cannot distinguish name and choices
@@ -57,16 +60,22 @@ void MajiroEngine::hook(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
+  DWORD split,
+        returnAddress = stack->retaddr;
   LPDWORD arg1 = (LPDWORD)stack->args[0];
-  LPCSTR text3 = (LPCSTR)stack->args[2];
-
-  // Compute ITH signature
-  DWORD returnAddress = stack->retaddr,
-        split = splitOf(arg1);
-  // The following logic is consistent with VNR's old texthook
-  //auto sig = Engine::hashThreadSignature(returnAddress, split, Engine::UnknownRole);
+  if (arg1 && !::IsBadReadPtr(arg1, 1)) // old majiro game
+    split = MajiroOldFontSplit(arg1);
+  else { // new majiro game
+    returnAddress = 0;
+    LPDWORD arg4 = (LPDWORD)stack->args[3];
+    if (arg4 && !::IsBadReadPtr(arg4, 1))
+      split = MajiroNewFontSplit(arg4);
+    else
+      split = stack->args[22]; // last return address
+  }
   auto sig = Engine::hashThreadSignature(returnAddress, split);
 
+  LPCSTR text3 = (LPCSTR)stack->args[2]; // arg3
   data_ = EngineController::instance()->dispatchTextA(text3, sig);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[2] = (DWORD)data_.constData(); // reset arg3

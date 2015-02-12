@@ -102,6 +102,7 @@ class CwdChanger:
     """
     self.cwd = os.getcwd()
     os.chdir(self.path)
+    return self
 
   def __exit__(self, *err):
     os.chdir(self.cwd)

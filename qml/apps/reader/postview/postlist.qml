@@ -140,8 +140,10 @@ Item { id: root_
 
       Share.AvatarImage { id: avatar_
         anchors { left: parent.left; top: parent.top }
-        width: 40; height: 40
+        width: 40
+        height: 40
         url: model.userAvatar ? 'http://media.getchute.com/media/' + model.userAvatar + '/64x64' : ''
+        sourceSize: Qt.size(64, 64)
         //url: model.userAvatar ? 'http://avatars.io/' + model.userAvatar + '?size=large' : ''
       }
 
@@ -165,7 +167,10 @@ Item { id: root_
           text: '<a style="color:#2a6496;text-decoration:none" href="http://sakuradite.com/user/' + model.userName + '">@' + model.userName + '</a>'
           textFormat: Text.RichText
 
-          onLinkActivated: Qt.openUrlExternally(link)
+          onLinkActivated: {
+            growlPlugin_.msg(My.tr("Open in external browser"))
+            Qt.openUrlExternally(link)
+          }
         }
 
         Text { //id: editButton_

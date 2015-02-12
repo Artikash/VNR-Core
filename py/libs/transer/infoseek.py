@@ -10,10 +10,13 @@ if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
+import json
 import requests
-from sakurakit import skstr
+from collections import OrderedDict
+#from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
+import infoseekdef
 
 session = requests # global session
 
@@ -54,182 +57,48 @@ session = requests # global session
 #        d.setRequestHeader "Cross-Licence", "infoseek/main e3f33620ae053e48cdba30a16b1084b5d69a3a6c"
 #
 # In my API, equiv is not enabled, as I don't need that information
+#
+# The license key could also be found from the request header.
+# - X-Requested-With:	XMLHttpRequest
+# - User-Agent:	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:35.0) Gecko/20100101 Firefox/35.0
+# - Referer:	http://translation.infoseek.ne.jp/
+# - Pragma:	no-cache
+# - Host:	translation.infoseek.ne.jp
+# - DNT:	1
+# - Cross-Licence:	infoseek/main e3f33620ae053e48cdba30a16b1084b5d69a3a6c
+# - Content-Type:	application/x-www-form-urlencoded; charset=UTF-8
 INFOSEEK_API = ("http://translation.infoseek.ne.jp/clsoap/translate?"
                 "&key=infoseek/main+e3f33620ae053e48cdba30a16b1084b5d69a3a6c")
 
-INFOSEEK_QUERY_LANG = "e"
-INFOSEEK_QUERY_TEXT = "t"
+INFOSEEK_QUERY_LANG = "e" # translation engine for language pair
+INFOSEEK_QUERY_TEXT = "t" # source text to translate
 
-# According to userinfo.js:
-# ja-zhs => JC
-# zhs-ja => CJ
-# ja-zht => JCT
-# zht-ja => CJT, not CTJ!
-#INFOSEEK_LCODE = {
-#  'en' : 'E',
-#  'ja' : 'J',
-#  'zht': 'CT',
-#  'zhs': 'C',
-#  'ko' : 'K',
-#  'fr' : 'F',
-#  'de' : 'G',
-#  'it' : 'I',
-#  'es' : 'S',
-#  'pt' : 'P',
-#  'th' : 'ATHMS',   # thai
-#  'vi' : 'AVIMS',   # vietnam
-#  'id' : 'AIDMS',   # indonesia
-#
-#  'ru' : 'E', # Russia is not supported, use English instead
-#}
-#
-#def _lang(to, fr):
-#  """
-#  @param  to  unicode
-#  @param  fr  unicode
-#  @return  unicode
-#  """
-#  return (
-#      INFOSEEK_LCODE[fr] + INFOSEEK_LCODE[to] if fr != 'zht' else
-#      'C%sT' % INFOSEEK_LCODE[to])
-
-INFOSEEK_LCODE = {
-  'jade': 'JG',
-  'jaen': 'JE',
-  'jaes': 'JS',
-  'jafr': 'JF',
-  'jait': 'JI',
-  'jako': 'JK',
-  'japt': 'JP',
-  'jazhs': 'JC',
-  'jazht': 'JCT',
-
-  'jath': 'JATHMS',
-  'javi': 'JAVIMS',
-  'jaid': 'JAIDMS',
-  'thja': 'THJAMS',
-  'vija': 'VIJAMS',
-  'idja': 'IDJAMS',
-
-  'deen': 'GE',
-  'dees': 'GS',
-  'defr': 'GF',
-  'deit': 'GI',
-  'deja': 'GJ',
-  'deko': 'GK',
-  'dept': 'GP',
-  'dezhs': 'GC',
-  'dezht': 'GCT',
-
-  'ende': 'EG',
-  'enes': 'ES',
-  'enfr': 'EF',
-  'enit': 'EI',
-  'enja': 'EJ',
-  'enko': 'EK',
-  'enpt': 'EP',
-  'enzhs': 'EC',
-  'enzht': 'ECT',
-
-  'esde': 'SG',
-  'esen': 'SE',
-  'esfr': 'SF',
-  'esit': 'SI',
-  'esja': 'SJ',
-  'esko': 'SK',
-  'espt': 'SP',
-  'eszhs': 'SC',
-  'eszht': 'SCT',
-
-  'frde': 'FG',
-  'fren': 'FE',
-  'fres': 'FS',
-  'frit': 'FI',
-  'frja': 'FJ',
-  'frko': 'FK',
-  'frpt': 'FP',
-  'frzhs': 'FC',
-  'frzht': 'FCT',
-
-  'itde': 'IG',
-  'iten': 'IE',
-  'ites': 'IS',
-  'itfr': 'IF',
-  'itja': 'IJ',
-  'itko': 'IK',
-  'itpt': 'IP',
-  'itzhs': 'IC',
-  'itzht': 'ICT',
-
-  'kode': 'KG',
-  'koen': 'KE',
-  'koes': 'KS',
-  'kofr': 'KF',
-  'koit': 'KI',
-  'koja': 'KJ',
-  'kopt': 'KP',
-  'kozhs': 'KC',
-  'kozht': 'KCT',
-
-  'ptde': 'PG',
-  'pten': 'PE',
-  'ptes': 'PS',
-  'ptfr': 'PF',
-  'ptit': 'PI',
-  'ptja': 'PJ',
-  'ptko': 'PK',
-  'ptzhs': 'PC',
-  'ptzht': 'PCT',
-
-  'zhsde': 'CG',
-  'zhsen': 'CE',
-  'zhses': 'CS',
-  'zhsfr': 'CF',
-  'zhsit': 'CI',
-  'zhsja': 'CJ',
-  'zhsko': 'CK',
-  'zhspt': 'CP',
-
-  'zhtde': 'CGT',
-  'zhten': 'CET',
-  'zhtes': 'CST',
-  'zhtfr': 'CFT',
-  'zhtit': 'CIT',
-  'zhtja': 'CJT',
-  'zhtko': 'CKT',
-  'zhtpt': 'CPT',
-}
-def _lang(to, fr):
-  """
-  @param  to  unicode
-  @param  fr  unicode
-  @return  unicode
-  """
-  return INFOSEEK_LCODE.get(fr + to) or 'JE' # from 'ja' to 'en'
-
-__repl = skstr.multireplacer({
-  r'\u0022': '"',
-  r'\u0026': '&',
-  r'\u0027': "'",
-  r'\u003C': '<',
-  r'\u003E': '>',
-  r'\n':     '\n',
-})
-def translate(text, to='en', fr='ja'):
+#__repl_unescape = skstr.multireplacer({ # unescape html special chars
+#  r'\u0022': '"',
+#  r'\u0026': '&',
+#  r'\u0027': "'",
+#  r'\u003C': '<',
+#  r'\u003E': '>',
+#  r'\n':     '\n',
+#})
+def translate(text, to='en', fr='ja', align=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
-  @param  fr  unicode not None, must be valid language code
-  @param  to  unicode not None, must be valid language code
+  @param* fr  unicode not None, must be valid language code
+  @param* to  unicode not None, must be valid language code
+  @param* align  None or list  insert [unicode surf, unicode trans] if not None
   @return  unicode or None
 
   Returned text is not decoded, as its encoding can be guessed.
   """
   try:
-    r = session.get(INFOSEEK_API,
+    r = session.post(INFOSEEK_API, # both post and get work
       headers=GZIP_HEADERS,
-      params={
-        INFOSEEK_QUERY_LANG: _lang(to, fr),
+      data={
+        INFOSEEK_QUERY_LANG: infoseekdef.lang2engine(to, fr),
         INFOSEEK_QUERY_TEXT: text,
+        #'equiv': align is not None,
+        'equiv': 'true' if align is not None else '',
       }
     )
 
@@ -239,9 +108,20 @@ def translate(text, to='en', fr='ja'):
     # return error message if not r.ok
     # example response: {"t":[{"text":"hello"}]}
     if r.ok and len(ret) > 15 + 4:
-      # Unicode char, see: http://schneide.wordpress.com/2009/05/18/the-perils-of-u0027/
-      ret = __repl(ret[15:-4])
+      data = json.loads(ret)
+      #print json.dumps(data, indent=2, ensure_ascii=False)
+      l = data['t']
+      if len(l) == 1:
+        ret = l[0]['text']
+      else: # this should never happen, though
+        ret = '\n'.join(it['text'] for it in l)
+      if align is not None:
+        align.extend(_iteralign(l[0], text)) # only do to the first list
       return ret
+      #if align is None:
+      #  text = ret[15:-4]
+      #  text = __repl_unescape(text)
+      #  text = text.decode('utf8', errors='ignore')
 
   #except socket.error, e:
   #  dwarn("socket error", e.args)
@@ -259,6 +139,67 @@ def translate(text, to='en', fr='ja'):
   try: dwarn(r.url)
   except: pass
 
+def _iteralign(data, source, reverse=True):
+  """
+  @param  data  dict  json
+  @param  source  unicode  the original input text
+  @param* reverse  bool  sort align based on source if false
+  @yield  (unicode surface, unicode translation)
+  """
+  # Reverse is not enabled since there are cases one word mapping to two translation.
+  # ex. 悠真くんを攻略すれば２１０円か。
+  # ば => 如果...的话
+  equiv = data.get('equiv')
+  if equiv:
+    try:
+      slist = equiv['org']
+      tlist = equiv['txn']
+      trans = data['text']
+
+      m = OrderedDict() # {int index, [unicode s, unicode t])  mapping from s to t
+
+      if not reverse: # order in source by default
+        for i, start, size in slist:
+          s = source[start:start + size]
+          l = m.get(i)
+          if l:
+            l[0] = s
+          else:
+            m[i] = [s, ''] # use list instead of tuple so that it is modifiable
+
+        for i, start, size in tlist:
+          t = trans[start:start + size]
+          l = m.get(i)
+          if l:
+            l[1] = t
+          else:
+            m[i] = ['', t]
+
+      else: # order in translation instead
+        tlist.sort(key=lambda it:it[1])
+
+        for i, start, size in tlist:
+          t = trans[start:start + size]
+          l = m.get(i)
+          if l:
+            l[1] = t
+          else:
+            m[i] = ['', t]
+
+        for i, start, size in slist:
+          s = source[start:start + size]
+          l = m.get(i)
+          if l:
+            l[0] = s
+          else:
+            m[i] = [s, ''] # use list instead of tuple so that it is modifiable
+
+      #for k in sorted(m.iterkeys()):
+      for s,t in m.itervalues():
+        yield s, t
+    except Exception, e:
+      derror(e)
+
 if __name__ == '__main__':
   #t = translate(u"あのね  すもももももももものうち", 'en')
   #print type(t), t
@@ -272,30 +213,38 @@ if __name__ == '__main__':
   def test():
     global session
 
-    s = u"""
-オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。
-"""
+    #s = u"オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"
+    #s = "test"
+    #s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    s = u"悠真くんを攻略すれば２１０円か。"
+    #s = u"なるほどなぁ…"
     fr = "ja"
     to = "zhs"
 
     #s = u"What are you doing?"
     #fr = "en"
 
-    from sakurakit.skprofiler import SkProfiler
+    from sakurakit.skprof import SkProfiler
 
-    from qtrequests import qtrequests
-    from PySide.QtNetwork import QNetworkAccessManager
-    session = qtrequests.Session(QNetworkAccessManager())
-    with SkProfiler():
-      for i in range(10):
-        t = translate(s, to=to, fr=fr)
-    print t
+    #from qtrequests import qtrequests
+    #from PySide.QtNetwork import QNetworkAccessManager
+    #session = qtrequests.Session(QNetworkAccessManager())
+    #with SkProfiler():
+    #  for i in range(10):
+    #    t = translate(s, to=to, fr=fr)
+    #print t
+
+    m = []
+    #m = None
 
     session = requests.Session()
     with SkProfiler():
-      for i in range(10):
-        t = translate(s, to=to, fr=fr)
+      for i in range(1):
+        t = translate(s, to=to, fr=fr, align=m)
     print t
+    print type(t)
+
+    #print json.dumps(m, indent=2, ensure_ascii=False)
 
     #session = requests
     #with SkProfiler():

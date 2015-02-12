@@ -10,6 +10,9 @@ QT_FORWARD_DECLARE_CLASS(QGraphicsItemPrivate)
 
 namespace QtPrivate {
 
+inline bool q_className(const QObject *q, const char *name)
+{ return q && q->metaObject() && 0 == qstrcmp(name, q->metaObject()->className()); }
+
 class DQGraphicsItem : public QGraphicsItem
 {
   DQGraphicsItem() {}

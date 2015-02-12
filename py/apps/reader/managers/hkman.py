@@ -9,7 +9,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 from functools import partial
-from PySide.QtCore import Signal, Property, QObject
+from PySide.QtCore import Signal, Property, QObject, QTimer
 from sakurakit import skos
 from sakurakit.skdebug import dprint
 from sakurakit.skclass import memoized #, memoizedproperty
@@ -38,7 +38,7 @@ class HotkeyManager(QObject):
 
   def __init__(self, parent=None):
     super(HotkeyManager, self).__init__(parent)
-    self.__d = _HotkeyManager()
+    self.__d = _HotkeyManager(self)
 
   enabledChanged = Signal(bool)
   def isEnabled(self): return self.__d.enabled
@@ -62,7 +62,7 @@ class HotkeyManager(QObject):
   #  settings.global_().setTtsHotkey(k)
 
 class _HotkeyManager(object):
-  def __init__(self):
+  def __init__(self, q):
     self.enabled = False # bool
     self._pyhk = None # pyhk instance
 
@@ -74,6 +74,16 @@ class _HotkeyManager(object):
         'do': self._onTts, # function
         'on': ss.isTtsHotkeyEnabled(), # bool
         'key': ss.ttsHotkey(), # string
+      },
+      'ocr': { # string task name
+        'do': self._onOcr, # function
+        'on': ss.isOcrHotkeyEnabled(), # bool
+        'key': ss.ocrHotkey(), # string
+      },
+      'sr': { # string task name
+        'do': self._onSr, # function
+        'on': ss.isSrHotkeyEnabled(), # bool
+        'key': ss.srHotkey(), # string
       },
       'text': { # string task name
         'do': self._onText, # function
@@ -90,6 +100,12 @@ class _HotkeyManager(object):
     ss.ttsHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'tts'))
     ss.ttsHotkeyChanged.connect(partial(self.setMappingKey, 'tts'))
 
+    ss.ocrHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'ocr'))
+    ss.ocrHotkeyChanged.connect(partial(self.setMappingKey, 'ocr'))
+
+    ss.srHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'sr'))
+    ss.srHotkeyChanged.connect(partial(self.setMappingKey, 'sr'))
+
     ss.textHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'text'))
     ss.textHotkeyChanged.connect(partial(self.setMappingKey, 'text'))
 
@@ -100,13 +116,30 @@ class _HotkeyManager(object):
     #qApp = QtCore.QCoreApplication.instance()
     #qApp.aboutToQuit.connect(self.stop)
 
+    import defs
+    t = self.rehookTimer = QTimer(q)
+    t.setInterval(defs.HK_REHOOK_INTERVAL)
+    t.setSingleShot(False)
+    t.timeout.connect(self._rehook)
+
+  def _rehook(self):
+    if self.enabled and self._pyhk:
+      self._pyhk.hm.HookKeyboard()
+      self._pyhk.hm.HookMouse()
+
   def start(self):
+    self.rehookTimer.start()
+    self.pyhk.hm.HookKeyboard()
+    self.pyhk.hm.HookMouse()
     for hk in self._mapping.itervalues():
       if hk['on'] and hk['key']:
         self._addHotkey(hk['key'])
 
   def stop(self):
+    self.rehookTimer.stop()
     if self._pyhk:
+      self._pyhk.hm.UnhookKeyboard()
+      self._pyhk.hm.UnhookMouse()
       for hk in self._mapping.itervalues():
         if hk['on'] and hk['key']:
           self._removeHotkey(hk['key'])
@@ -167,6 +200,12 @@ class _HotkeyManager(object):
     dprint("pass")
 
   @staticmethod
+  def _onOcr():
+    import kagami
+    kagami.KagamiController.toggleOcr()
+    dprint("pass")
+
+  @staticmethod
   def _onText():
     import textman
     tm = textman.manager()
@@ -177,6 +216,18 @@ class _HotkeyManager(object):
   def _onGrab():
     import gameman
     gameman.manager().captureWindow()
+    dprint("pass")
+
+  @staticmethod
+  def _onSr():
+    import srman
+    sr = srman.manager()
+    if sr.isActive():
+      if not sr.isSingleShot():
+        sr.stop()
+    else:
+      sr.setSingleShot(True)
+      sr.start()
     dprint("pass")
 
 #@QmlObject

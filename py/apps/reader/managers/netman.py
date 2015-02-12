@@ -11,6 +11,8 @@
 # Some of the expensive requests that will parse large data are using session
 # Some cheap requests are using Qt session
 
+#from sakurakit.skprof import SkProfiler
+
 import json, operator
 import requests
 from datetime import datetime
@@ -18,7 +20,7 @@ from functools import partial
 from cStringIO import StringIO
 #import xml.etree.cElementTree as etree
 from lxml import etree
-from PySide.QtCore import Signal, QObject
+from PySide.QtCore import Signal, QObject, QCoreApplication
 from PySide.QtNetwork import QNetworkAccessManager, QNetworkConfigurationManager
 from sakurakit import skthreads, skstr
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty, memoizedmethod_filter
@@ -61,7 +63,10 @@ class _NetworkManager(object):
     self.cachedGamesByMd5 = {} # {str id:dataman.Game}
     self.blockedLanguages = set() # set(str) not None
 
-    self.qtSession = qtrequests.Session(QNetworkAccessManager(q))
+    if features.WINE:
+      self.qtSession = qtrequests.AsyncSession(session) # qtSession is very slow on wine
+    else:
+      self.qtSession = qtrequests.Session(QNetworkAccessManager(q))
 
     # Track online status when network is down
     #self._onlineTimer = QTimer(self.q)
@@ -204,35 +209,50 @@ class _NetworkManager(object):
 
   ## AJAX #
 
-  def ajax(self, path, data):
+  def ajax(self, path, data, params=None, returndict=False):
     """
     @param  path  unicode
     @param  data  kw or str
-    @return  bool
+    @param* returndict  bool
+    @return  bool or kw
     """
     #data['ver'] = self.version
     try:
-      if not isinstance(data, str) and not isinstance(data, unicode):
+      if not isinstance(data, basestring):
         data = json.dumps(data)
+      #r = session.post(JSON_API + path,
       r = self.qtSession.post(JSON_API + path,
           data=data,
+          params=params,
           headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
       if r.ok:
         res = json.loads(r.content)
+        if returndict:
+          return res
         return res['status'] == 0
     except Exception, e:
       derror(e)
 
     dwarn("failed data follow")
-    try: dwarn(path, data)
+    try: dwarn(path, params or data)
     except: pass
     return False
+
+  def upload(self, path, data, params):
+    """
+    @param  path  unicode
+    @param  data  kw or str
+    @param  params  kw
+    @return  long or None
+    """
+    r = self.ajax(path, data, params, returndict=True)
+    return r and r.get('id')
 
   ## User #
 
   def queryUser(self, userName, password):
     assert userName and password, "missing user name or password "
-    params = {'ver':self.version, 'login':userName, 'password':password}
+    params = {'ver':self.version, 'login':userName, 'password':password, 'app':'reader'}
     try:
       r = self.qtSession.get(XML_API + '/user/query', params=params, headers=GZIP_HEADERS)
       if r.ok: #and _response_is_xml(r):
@@ -368,12 +388,12 @@ class _NetworkManager(object):
             for el in item:
               tag = el.tag
               text = el.text
-              if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+              if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'banner', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
                 setattr(e, tag, text)
-              elif tag in ('otome', 'okazu'):
+              elif tag in ('otome', 'ecchi', 'okazu'):
                 setattr(e, tag, text == 'true')
-              elif tag == 'timestamp':
-                setattr(e, tag, long(text))
+              elif tag in ('timestamp', 'fileSize', 'topicCount', 'annotCount', 'subtitleCount'):
+                setattr(e, tag, int(text))
               elif tag == 'date':
                 e.date = datetime.strptime(text, '%Y%m%d')
               elif tag == 'scape':
@@ -384,7 +404,7 @@ class _NetworkManager(object):
                 for it in el:
                   if it.tag == 'score':
                     t = it.get('type')
-                    if t:
+                    if t in defs.GAME_SCORE_TYPES:
                       setattr(e, t + 'ScoreCount', int(it.get('count')))
                       setattr(e, t + 'ScoreSum', int(it.get('sum')))
             ret[e.id] = e
@@ -517,7 +537,7 @@ class _NetworkManager(object):
     try:
       r = session.get(XML_API + '/user/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
         ret = {}
         path = 0
@@ -671,6 +691,8 @@ class _NetworkManager(object):
         e_game = root.find('./games/game')
         game.id = int(e_game.get('id'))
         game.md5 = e_game.find('./md5').text
+        try: game.itemId = long(e_game.find('./itemId').text)
+        except: pass
 
         dprint("game id = %i" % game.id)
         return game.id != 0
@@ -716,7 +738,7 @@ class _NetworkManager(object):
         #root = etree.fromstring(r.content)
         GUEST_ID = dataman.GUEST.id
 
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
         ret = []
         path = 0
@@ -755,6 +777,10 @@ class _NetworkManager(object):
               #  kw['userHash'] = kw['userId']
               ret.append(dataman.Reference(init=init, **kw))
 
+        if init:
+          mainThread = QCoreApplication.instance().thread()
+          for it in ret:
+            it.moveToThread(mainThread)
         dprint("reference count = %i" % len(ret))
         return ret
 
@@ -781,47 +807,48 @@ class _NetworkManager(object):
     """Update reference if succeeded
     @return  (gameId, itemId) or None
     """
-    assert userName and password, "missing user name or password"
-    assert ref and (ref.gameId or md5), "missing game id and digest"
+    rd = ref.d
+    #assert userName and password, "missing user name or password"
+    #assert ref and (ref.gameId or md5), "missing game id and digest"
 
     params = {
       'ver': self.version,
       'login': userName,
       'password': password,
-      'type': ref.type,
-      'key': ref.key,
-      'url': ref.url,
-      'title': ref.title
-          if len(ref.title) <= defs.MAX_TEXT_LENGTH
-          else ref.title[:defs.MAX_TEXT_LENGTH],
+      'type': rd.type,
+      'key': rd.key,
+      'url': rd.url,
+      'title': rd.title
+          if len(rd.title) <= defs.MAX_TEXT_LENGTH
+          else rd.title[:defs.MAX_TEXT_LENGTH],
     }
-    if ref.brand:
-      params['brand'] = ref.brand
-    if ref.date:
-      params['date'] = ref.date
+    if rd.brand:
+      params['brand'] = rd.brand
+    if rd.date:
+      params['date'] = rd.date
     if ref.image:
-      params['image'] = ref.image
-    #if ref.itemId:
-    #  params['itemId'] = ref.itemId
-    if ref.gameId:
-      params['gameid'] = ref.gameId
+      params['image'] = ref.image # _References don't have image
+    #if rd.itemId:
+    #  params['itemId'] = rd.itemId
+    if rd.gameId:
+      params['gameid'] = rd.gameId
     else:
-      params['md5'] = md5 or ref.gameMd5
+      params['md5'] = md5 or rd.gameMd5
 
-    if ref.comment:
-      params['comment'] = (ref.comment
-          if len(ref.comment) <= defs.MAX_TEXT_LENGTH
-          else ref.comment[:defs.MAX_TEXT_LENGTH])
+    if rd.comment:
+      params['comment'] = (rd.comment
+          if len(rd.comment) <= defs.MAX_TEXT_LENGTH
+          else rd.comment[:defs.MAX_TEXT_LENGTH])
 
-    if ref.updateComment:
-      params['updatecomment'] = (ref.updateComment
-          if len(ref.updateComment) <= defs.MAX_TEXT_LENGTH
-          else ref.updateComment[:defs.MAX_TEXT_LENGTH])
+    if rd.updateComment:
+      params['updatecomment'] = (rd.updateComment
+          if len(rd.updateComment) <= defs.MAX_TEXT_LENGTH
+          else rd.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if ref.deleted:
+    if rd.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
       params['del'] = True
-    if ref.disabled:
+    if rd.disabled:
       params['disable'] = True
 
     try:
@@ -830,16 +857,21 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/ref/submit', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/ref/submit', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         el = root.find('./references/reference')
 
         # Be careful about async here
-        ref.id = int(el.get('id'))
-        ref.itemId = int(el.find('itemId').text)
+        # Might raise after ref QObject is deleted
+        try:
+          ref.id = int(el.get('id'))
+          ref.itemId = int(el.find('itemId').text)
+        except Exception, e:
+          dwarn(e)
+          rd.id = int(el.get('id'))
+          rd.itemId = int(el.find('itemId').text)
 
         gameId = itemId = 0
         el = root.find('./games/game')
@@ -847,7 +879,7 @@ class _NetworkManager(object):
           gameId = int(el.get('id'))
           itemId = int(el.find('itemId').text)
 
-        dprint("ref id = %i" % ref.id)
+        dprint("ref id = %i" % rd.id)
         return gameId, itemId
 
     #except socket.error, e:
@@ -873,36 +905,36 @@ class _NetworkManager(object):
     """
     @return  (int gameId, int itemId) or None
     """
-    assert userName and password, "missing user name or password"
-    assert ref and ref.id, "missing reference id"
-
+    #assert userName and password, "missing user name or password"
+    #assert ref and ref.id, "missing reference id"
+    rd = ref.d
     params = {}
     pty = ref.dirtyProperties()
     if not pty:
       dwarn("warning: reference to update is not dirty")
-      return ref.itemId
+      return rd.itemId
 
-    if 'deleted' in pty:        params['del'] = ref.deleted
-    if not ref.deleted:
-      if 'disabled' in pty:     params['disable'] = ref.disabled
+    if 'deleted' in pty:        params['del'] = rd.deleted
+    #if not rd.deleted:
+    if 'disabled' in pty:     params['disable'] = rd.disabled
 
-      for k in 'comment', 'updateComment':
-        if k in pty:
-          v = getattr(ref, k)
-          if v:
-            params[k.lower()] = (v
-                if len(v) <= defs.MAX_TEXT_LENGTH
-                else v[:defs.MAX_TEXT_LENGTH])
-          else:
-            params['del' + k.lower()] = True
+    for k in 'comment', 'updateComment':
+      if k in pty:
+        v = getattr(rd, k)
+        if v:
+          params[k.lower()] = (v
+              if len(v) <= defs.MAX_TEXT_LENGTH
+              else v[:defs.MAX_TEXT_LENGTH])
+        else:
+          params['del' + k.lower()] = True
 
     if not params:
       dwarn("warning: nothing change")
-      return ref.itemId
+      return rd.itemId
 
     params['login'] = userName
     params['password'] = password
-    params['id'] = ref.id
+    params['id'] = rd.id
     params['ver'] = self.version
 
     try:
@@ -911,8 +943,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/ref/update', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/ref/update', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -929,6 +960,94 @@ class _NetworkManager(object):
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
+    except requests.ConnectionError, e:
+      dwarn("connection error", e.args)
+    except requests.HTTPError, e:
+      dwarn("http error", e.args)
+    except etree.ParseError, e:
+      dwarn("xml parse error", e.args)
+    except KeyError, e:
+      dwarn("invalid response header", e.args)
+    except (TypeError, ValueError, AttributeError), e:
+      dwarn("xml malformat", e.args)
+    except Exception, e:
+      derror(e)
+
+    dwarn("failed URL follows")
+    try: dwarn(r.url, params)
+    except: pass
+
+  # Subtitles
+
+  def querySubtitles(self, itemId, gameLang, langs, difftime):
+    """
+    @param  itemId  long
+    @param* gameLang  str
+    @param* langs  [str]
+    @param* difftime  long
+    @return  [dataman.Subtitle] or None
+    """
+    params = {
+      'ver': self.version,
+      'gameid': itemId,
+    }
+    if gameLang:
+      params['textlang'] = gameLang
+    if langs:
+      params['sublang'] = ','.join(langs)
+    if difftime:
+      params['mintime'] = difftime
+
+    try:
+      r = session.get(XML_API + '/sub/query', params=params, headers=GZIP_HEADERS)
+      if r.ok and _response_is_xml(r):
+        #root = etree.fromstring(r.content)
+
+        ret = []
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
+        path = 0
+        for event, elem in context:
+          if event == 'start':
+            path += 1
+            if path == 3: # grimoire/texts/text
+              kw = {
+                'textId': int(elem.get('id')),
+              }
+              v = elem.get('time')
+              if v:
+                kw['textTime'] = int(v)
+            elif path == 4: # grimoire/texts/text/subs
+              kw['subLang'] = elem.get('lang') or ''
+            elif path == 5: # grimoire/texts/text/subs/sub
+              v = elem.get('time')
+              if v:
+                kw['subTime'] = int(v)
+              v = elem.get('userId')
+              if v:
+                kw['userId'] = int(v)
+          else:
+            path -= 1
+            if path == 3: # grimoire/texts/text
+              tag = elem.tag
+              text = elem.text
+              if tag == 'content':
+                kw['text'] = text
+              elif tag == 'name':
+                kw['textName'] = text
+            if path == 5: # grimoire/texts/text/subs/sub
+              tag = elem.tag
+              text = elem.text
+              if tag == 'content':
+                kw['sub'] = text
+              elif tag == 'name':
+                kw['subName'] = text
+            elif path == 2: # grimoire/texts
+              s = dataman.Subtitle(**kw)
+              ret.append(s)
+
+        dprint("subtitle count = %i" % len(ret))
+        return ret
+
     except requests.ConnectionError, e:
       dwarn("connection error", e.args)
     except requests.HTTPError, e:
@@ -968,9 +1087,11 @@ class _NetworkManager(object):
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
 
+        mainThread = QCoreApplication.instance().thread()
+
         ret = {} if hash else []
 
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
         path = 0
         TYPES = dataman.Comment.TYPES
         for event, elem in context:
@@ -978,12 +1099,6 @@ class _NetworkManager(object):
             path += 1
             if path == 3: # grimoire/comments/comment
               kw = {
-                #'comment': "",
-                #'updateComment': "",
-                #'updateTimestamp':  0,
-                #'updateUserId': 0,
-                #'disabled': False,
-                #'locked': False,
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
               }
@@ -1004,15 +1119,10 @@ class _NetworkManager(object):
                 kw['contextSize'] = int(elem.get('size'))
 
             elif path == 2 and kw['type'] in TYPES: # grimoire/comments
-              #c = dataman.Comment(init=init,
-              #  id=p['id'], type=p['type'], gameId=p['gameId'], userId=p['userId'],
-              #  language=p['language'], timestamp=p['timestamp'], disabled=p['disabled'], locked=p['locked'],
-              #  updateTimestamp=p['updateTimestamp'], updateUserId=p['updateUserId'],
-              #  text=p['text'], context=p['context'], hash=p['hash'], contextSize=p['contextSize'],
-              #  comment=p['comment'], updateComment=p['updateComment'])
-              #if not kw.get('userHash'):
-              #  kw['userHash'] = kw['userId']
               c = dataman.Comment(init=init, **kw)
+              if init:
+                c.moveToThread(mainThread)
+
               if not hash:
                 ret.append(c)
               else:
@@ -1106,48 +1216,49 @@ class _NetworkManager(object):
 
   def submitComment(self, comment, userName, password, md5=None, async=False):
     """Return comment and update comment if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert comment and (comment.gameId or md5), "missing game id and digest"
+    #assert userName and password, "missing user name or password"
+    #assert comment and (comment.gameId or md5), "missing game id and digest"
+    cd = comment.d
 
     params = {
       'ver': self.version,
       'login': userName,
       'password': password,
-      'lang': comment.language,
-      'type': comment.type,
-      'ctxhash': comment.hash,
-      'ctxsize': comment.contextSize,
-      'text': comment.text
-          if len(comment.text) <= defs.MAX_TEXT_LENGTH
-          else comment.text[:defs.MAX_TEXT_LENGTH],
+      'lang': cd.language,
+      'type': cd.type,
+      'ctxhash': cd.hash,
+      'ctxsize': cd.contextSize,
+      'text': cd.text
+          if len(cd.text) <= defs.MAX_TEXT_LENGTH
+          else cd.text[:defs.MAX_TEXT_LENGTH],
     }
-    if comment.gameId:
-      params['gameid'] = comment.gameId
+    if cd.gameId:
+      params['gameid'] = cd.gameId
     else:
-      params['md5'] = md5 or comment.gameMd5
+      params['md5'] = md5 or cd.gameMd5
 
-    if comment.comment:
-      params['comment'] = (comment.comment
-          if len(comment.comment) <= defs.MAX_TEXT_LENGTH
-          else comment.comment[:defs.MAX_TEXT_LENGTH])
+    if cd.comment:
+      params['comment'] = (cd.comment
+          if len(cd.comment) <= defs.MAX_TEXT_LENGTH
+          else cd.comment[:defs.MAX_TEXT_LENGTH])
 
-    if comment.updateComment:
-      params['updatecomment'] = (comment.updateComment
-          if len(comment.updateComment) <= defs.MAX_TEXT_LENGTH
-          else comment.updateComment[:defs.MAX_TEXT_LENGTH])
+    if cd.updateComment:
+      params['updatecomment'] = (cd.updateComment
+          if len(cd.updateComment) <= defs.MAX_TEXT_LENGTH
+          else cd.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if comment.context:
-      params['ctx'] = (comment.context
-          if len(comment.context) <= defs.MAX_TEXT_LENGTH
-          else comment.context[:defs.MAX_TEXT_LENGTH])
-    if comment.deleted:
+    if cd.context:
+      params['ctx'] = (cd.context
+          if len(cd.context) <= defs.MAX_TEXT_LENGTH
+          else cd.context[:defs.MAX_TEXT_LENGTH])
+    if cd.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
       params['del'] = True
-    if comment.disabled:
+    if cd.disabled:
       params['disable'] = True
-    if comment.locked:
+    if cd.locked:
       params['lock'] = True
-    #if comment.popup:
+    #if cd.popup:
     #  params['popup'] = True
 
     try:
@@ -1156,18 +1267,22 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/comment/submit', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/comment/submit', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         el = root.find('./comments/comment')
 
         # Be careful about async here
-        comment.id = int(el.get('id'))
+        # Might crash after QObject is deleted
+        cid = int(el.get('id'))
+        try: comment.id = cid
+        except Exception, e:
+          dwarn(e)
+          cd.id = cid
 
-        dprint("comment id = %i" % comment.id)
-        return comment.id
+        dprint("comment id = %i" % cd.id)
+        return cd.id
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -1191,8 +1306,9 @@ class _NetworkManager(object):
 
   def updateComment(self, comment, userName, password, async=False):
     """Return if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert comment and comment.id, "missing comment id"
+    #assert userName and password, "missing user name or password"
+    #assert comment and comment.id, "missing comment id"
+    cd = comment.d
 
     params = {}
     pty = comment.dirtyProperties()
@@ -1200,37 +1316,37 @@ class _NetworkManager(object):
       dwarn("warning: comment to update is not dirty")
       return True
 
-    if 'deleted' in pty:        params['del'] = comment.deleted
-    if not comment.deleted:
-      for k,v in (
-          ('type', 'type'),
-          ('language', 'lang'),
-          ('hash', 'ctxhash'),
-          ('contextSize', 'ctxsize'),
-          ('disabled', 'disable'),
-          ('locked', 'lock'),
-        ):
-        if k in pty:
-          params[v] = getattr(comment, k)
+    if 'deleted' in pty:        params['del'] = cd.deleted
+    #if not cd.deleted:
+    for k,v in (
+        ('type', 'type'),
+        ('language', 'lang'),
+        ('hash', 'ctxhash'),
+        ('contextSize', 'ctxsize'),
+        ('disabled', 'disable'),
+        ('locked', 'lock'),
+      ):
+      if k in pty:
+        params[v] = getattr(cd, k)
 
-      if 'text' in pty:
-        params['text'] = (comment.text
-            if len(comment.text) <= defs.MAX_TEXT_LENGTH
-            else comment.text[:defs.MAX_TEXT_LENGTH])
-      if 'context' in pty and comment.context:
-        params['ctx'] = (comment.context
-            if len(comment.context) <= defs.MAX_TEXT_LENGTH
-            else comment.context[:defs.MAX_TEXT_LENGTH])
+    if 'text' in pty:
+      params['text'] = (cd.text
+          if len(cd.text) <= defs.MAX_TEXT_LENGTH
+          else cd.text[:defs.MAX_TEXT_LENGTH])
+    if 'context' in pty and cd.context:
+      params['ctx'] = (cd.context
+          if len(cd.context) <= defs.MAX_TEXT_LENGTH
+          else cd.context[:defs.MAX_TEXT_LENGTH])
 
-      for k in 'comment', 'updateComment':
-        if k in pty:
-          v = getattr(comment, k)
-          if v:
-            params[k.lower()] = (v
-                if len(v) <= defs.MAX_TEXT_LENGTH
-                else v[:defs.MAX_TEXT_LENGTH])
-          else:
-            params['del' + k.lower()] = True
+    for k in 'comment', 'updateComment':
+      if k in pty:
+        v = getattr(comment, k)
+        if v:
+          params[k.lower()] = (v
+              if len(v) <= defs.MAX_TEXT_LENGTH
+              else v[:defs.MAX_TEXT_LENGTH])
+        else:
+          params['del' + k.lower()] = True
 
     if not params:
       dwarn("warning: nothing change")
@@ -1238,7 +1354,7 @@ class _NetworkManager(object):
 
     params['login'] = userName
     params['password'] = password
-    params['id'] = comment.id
+    params['id'] = cd.id
     params['ver'] = self.version
 
     try:
@@ -1247,8 +1363,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/comment/update', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/comment/update', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1282,11 +1397,57 @@ class _NetworkManager(object):
 
   ## Terminology ##
 
-  def getTerms(self, userName, password, init=True):
+  def mergeTerms(self, userId, terms, init, **kwargs):
+    """Return [] if no changes, None if error, or list of terms if succeed
+    @param  userId  long
+    @param  terms  [dataman.Term]
+    @param* init  bool
+    @param* kwargs  passed to getTerms
+    @return  [dataman.Term] or [] or None
+    """
+    l = self.getTerms(sort=False, init=init, **kwargs)
+    if l == []: # not modified
+      return l
+    if l:
+      dprint("number of modified terms: %s" % len(l))
+      if init:
+        mainThread = QCoreApplication.instance().thread()
+        for it in terms:
+          if not it.isInitialized():
+            it.init()
+            it.moveToThread(mainThread)
+
+      index = {} # {long id:dataman.Term}
+      for it in l:
+        index[it.d.id] = it
+
+      TYPES = dataman.Term.TYPES
+      def _good_term_data(td): # dataman._Term -> bool
+        return not td.deleted and td.type in TYPES and (userId == td.userId or not td.private)
+
+      ret = []
+      for it in terms:
+        t = index.get(it.d.id)
+        if not t:
+          ret.append(it)
+        else:
+          del index[it.d.id]
+          if _good_term_data(t.d):
+            ret.append(t)
+      if index:
+        for t in index.itervalues():
+          if _good_term_data(t.d):
+            ret.append(t)
+      ret.sort(key=operator.attrgetter('modifiedTimestamp'))
+      return ret
+
+  def getTerms(self, userName, password, sort=True, init=True, difftime=0):
     """
     @param  userName  str
     @param  password  str
     @param* init  bool  whether init term object
+    @param* sort  bool  whether sort the result list
+    @param* difftime  long  timestamp
     """
     params = {
       'ver': self.version,
@@ -1295,9 +1456,14 @@ class _NetworkManager(object):
     }
     self._addBlockedLanguages(params)
     try:
-      r = session.get(XML_API + '/term/list', params=params, headers=GZIP_HEADERS)
+      if difftime:
+        path = '/term/diff'
+        params['mintime'] = difftime
+      else:
+        path = '/term/list'
+      r = session.get(XML_API + path, params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
         ret = []
         path = 0
@@ -1307,20 +1473,10 @@ class _NetworkManager(object):
             path += 1
             if path == 3: # grimoire/terms/term
               kw = {
-                #'gameId': 0,
-                #'text': "",
-                #'pattern': "",
-                #'disabled': False,
-                #'special': False,
-                #'regex': False,
-                ##'ignoresCase': False,
-                ##'bbcode': False,
-                #'comment': "",
-                #'updateComment': "",
-                #'updateTimestamp':  0,
-                #'updateUserId': 0,
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
+                'host': elem.get('host') or '',
+                'deleted': elem.get('deleted') == 'true',
               }
           else:
             path -= 1
@@ -1329,16 +1485,23 @@ class _NetworkManager(object):
               text = elem.text
               if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp'):
                 kw[tag] = int(text)
-              elif tag in ('special', 'private', 'hentai', 'regex', 'disabled'):
+              elif tag in ('special', 'private', 'hentai', 'regex', 'icase', 'disabled'):
                 kw[tag] = text == 'true'
               else:
                 kw[tag] = text or ''
 
-            elif path == 2 and kw['type'] in TYPES:
+            elif path == 2 and (difftime or kw['type'] in TYPES):
               #if not kw.get('userHash'):
               #  kw['userHash'] = kw['userId']
               ret.append(dataman.Term(init=init, **kw))
-
+        if ret:
+          if sort:
+            ret.sort(key=operator.attrgetter('modifiedTimestamp'))
+          if init:
+            mainThread = QCoreApplication.instance().thread()
+            #with SkProfiler(): # 12/8/2014: 0.213 seconds
+            for it in ret:
+              it.moveToThread(mainThread)
         dprint("term count = %i" % len(ret))
         return ret
 
@@ -1363,52 +1526,53 @@ class _NetworkManager(object):
 
   def submitTerm(self, term, userName, password, async=False):
     """Return term and update term if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert term, "term"
+    #assert userName and password, "missing user name or password"
+    #assert term, "term"
+    td = term.d
 
     params = {
       'ver': self.version,
       'login': userName,
       'password': password,
-      'lang': term.language,
-      'type': term.type,
+      'lang': td.language,
+      'sourcelang': td.sourceLanguage,
+      'type': td.type,
     }
-    if term.gameId:
-      params['gameid'] = term.gameId
-    elif term.gameMd5:
-      params['md5'] = term.gameMd5
+    if td.host:
+      params['host'] = td.host
+    if td.gameId:
+      params['gameid'] = td.gameId
+    elif td.gameMd5:
+      params['md5'] = td.gameMd5
 
-    if term.pattern:
-      params['pattern'] = (term.pattern
-          if len(term.pattern) <= defs.MAX_TEXT_LENGTH
-          else term.pattern[:defs.MAX_TEXT_LENGTH])
+    if td.pattern:
+      params['pattern'] = (td.pattern
+          if len(td.pattern) <= defs.MAX_TEXT_LENGTH
+          else td.pattern[:defs.MAX_TEXT_LENGTH])
 
-    if term.text:
-      params['text'] = (term.text
-          if len(term.text) <= defs.MAX_TEXT_LENGTH
-          else term.text[:defs.MAX_TEXT_LENGTH])
+    if td.text:
+      params['text'] = (td.text
+          if len(td.text) <= defs.MAX_TEXT_LENGTH
+          else td.text[:defs.MAX_TEXT_LENGTH])
 
-    if term.comment:
-      params['comment'] = (term.comment
-          if len(term.comment) <= defs.MAX_TEXT_LENGTH
-          else term.comment[:defs.MAX_TEXT_LENGTH])
+    if td.comment:
+      params['comment'] = (td.comment
+          if len(td.comment) <= defs.MAX_TEXT_LENGTH
+          else td.comment[:defs.MAX_TEXT_LENGTH])
 
-    if term.updateComment:
-      params['updatecomment'] = (term.updateComment
-          if len(term.updateComment) <= defs.MAX_TEXT_LENGTH
-          else term.updateComment[:defs.MAX_TEXT_LENGTH])
+    if td.updateComment:
+      params['updatecomment'] = (td.updateComment
+          if len(td.updateComment) <= defs.MAX_TEXT_LENGTH
+          else td.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if term.special: params['special'] = True
-    if term.private: params['private'] = True
-    if term.hentai: params['hentai'] = True
-    if term.regex: params['regex'] = True
-    #if term.bbcode: params['bbcode'] = True
-    #if term.ignoresCase: params['ignoreCase'] = True
+    for pty in 'special', 'private', 'hentai', 'regex', 'icase':
+      if getattr(td, pty):
+        params[pty] = True
 
-    if term.deleted:
+    if td.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
       params['del'] = True
-    if term.disabled:
+    if td.disabled:
       params['disable'] = True
 
     try:
@@ -1417,18 +1581,22 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/term/submit', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/term/submit', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         el = root.find('./terms/term')
 
         # Be careful about async here
-        term.id = int(el.get('id'))
+        # Might raise after ref QObject is deleted
+        tid = int(el.get('id'))
+        try: term.id = tid
+        except Exception, e:
+          dwarn(e)
+          td.id = tid
 
-        dprint("term id = %i" % term.id)
-        return term.id
+        dprint("term id = %i" % td.id)
+        return td.id
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -1452,8 +1620,9 @@ class _NetworkManager(object):
 
   def updateTerm(self, term, userName, password, async=False):
     """Return if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert term and term.id, "missing term id"
+    #assert userName and password, "missing user name or password"
+    #assert term and term.id, "missing term id"
+    td = term.d
 
     params = {}
     pty = term.dirtyProperties()
@@ -1461,25 +1630,26 @@ class _NetworkManager(object):
       dwarn("warning: term to update is not dirty")
       return True
 
-    if 'deleted' in pty:        params['del'] = term.deleted
-    if not term.deleted:
-      if 'language' in pty:     params['lang'] = term.language
-      if 'disabled' in pty:     params['disable'] = term.disabled
+    if 'deleted' in pty:            params['del'] = td.deleted
+    #if not td.deleted:
+    if 'language' in pty:         params['lang'] = td.language
+    if 'sourceLanguage' in pty:   params['sourcelang'] = td.sourceLanguage
+    if 'disabled' in pty:         params['disable'] = td.disabled
 
-      for k in 'gameId', 'type', 'special', 'private', 'hentai', 'regex':
-        if k in pty:
-          params[k.lower()] = getattr(term, k)
+    for k in 'gameId', 'type', 'host', 'special', 'private', 'hentai', 'icase', 'regex':
+      if k in pty:
+        params[k.lower()] = getattr(term, k)
 
-      # Note: actually, there is no 'delpattern'
-      for k in 'pattern', 'text', 'comment', 'updateComment':
-        if k in pty:
-          v = getattr(term, k)
-          if v:
-            params[k.lower()] = (v
-                if len(v) <= defs.MAX_TEXT_LENGTH
-                else v[:defs.MAX_TEXT_LENGTH])
-          else:
-            params['del' + k.lower()] = True
+    # Note: actually, there is no 'delpattern'
+    for k in 'pattern', 'text', 'comment', 'updateComment':
+      if k in pty:
+        v = getattr(td, k)
+        if v:
+          params[k.lower()] = (v
+              if len(v) <= defs.MAX_TEXT_LENGTH
+              else v[:defs.MAX_TEXT_LENGTH])
+        else:
+          params['del' + k.lower()] = True
 
     if not params:
       dwarn("warning: nothing change")
@@ -1487,7 +1657,7 @@ class _NetworkManager(object):
 
     params['login'] = userName
     params['password'] = password
-    params['id'] = term.id
+    params['id'] = td.id
     params['ver'] = self.version
 
     try:
@@ -1496,8 +1666,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/term/update', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/term/update', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1618,8 +1787,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline() and lang:
       return skthreads.runsync(partial(
-          self.__d.getUpdateMessage, lang),
-          parent=self)
+          self.__d.getUpdateMessage, lang))
 
   ## User ##
 
@@ -1632,8 +1800,7 @@ class NetworkManager(QObject):
     if self.isOnline() and userName and password:
       return self.__d.queryUser(userName, password)
       #return skthreads.runsync(partial(
-      #    self.__d.queryUser, userName, password),
-      #    parent=self)
+      #    self.__d.queryUser, userName, password))
 
   def updateUser(self, userName, password, language=None, gender=None, avatar=None, color=None, homepage=None):
     """
@@ -1646,8 +1813,7 @@ class NetworkManager(QObject):
           language=language, gender=gender, avatar=avatar, color=color, homepage=homepage)
       #return skthreads.runsync(partial(
       #    self.__d.updateUser, userName, password,
-      #    language=language, gender=gender, avatar=avatar, color=color, homepage=homepage),
-      #    parent=self)
+      #    language=language, gender=gender, avatar=avatar, color=color, homepage=homepage))
     return False
 
   def getUsers(self):
@@ -1655,7 +1821,7 @@ class NetworkManager(QObject):
     @return {long id:dataman.UserDigest} or None
     """
     if self.isOnline():
-      return skthreads.runsync(self.__d.getUsers, parent=self)
+      return skthreads.runsync(self.__d.getUsers)
 
   ## Games ##
 
@@ -1664,7 +1830,7 @@ class NetworkManager(QObject):
     @return {long id:dataman.GameFile} or None
     """
     if self.isOnline():
-      return skthreads.runsync(self.__d.getGameFiles, parent=self)
+      return skthreads.runsync(self.__d.getGameFiles)
 
   def queryGame(self, id=0, md5=None, cached=True):
     """Either id or digest should be specified
@@ -1686,8 +1852,7 @@ class NetworkManager(QObject):
 
     if self.isOnline():
       ret = skthreads.runsync(partial(
-          d.queryGame, id, md5),
-          parent=self)
+          d.queryGame, id, md5))
       if ret:
         d.cachedGamesById[ret.id] = ret
         d.cachedGamesById[ret.md5] = ret
@@ -1703,8 +1868,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline() and (game.id or game.md5) and userName and password:
       return skthreads.runsync(partial(
-          self.__d.updateGame, game, userName, password, deleteHook=deleteHook),
-          parent=self)
+          self.__d.updateGame, game, userName, password, deleteHook=deleteHook))
     return False
 
   ## Items ##
@@ -1714,7 +1878,7 @@ class NetworkManager(QObject):
     @return {long itemId:dataman.GameItem} or None
     """
     if self.isOnline():
-      return skthreads.runsync(self.__d.getGameItems, parent=self)
+      return skthreads.runsync(self.__d.getGameItems)
 
   ## References ##
 
@@ -1723,7 +1887,7 @@ class NetworkManager(QObject):
   #  @return {long itemId:[dataman.ReferenceDigest]} or None
   #  """
   #  if self.isOnline():
-  #    return skthreads.runsync(self.__d.getReferenceDigests, parent=self)
+  #    return skthreads.runsync(self.__d.getReferenceDigests)
 
   def queryReferences(self, gameId=0, md5=None, init=True):
     """Either gameid or digest should be specified
@@ -1733,13 +1897,8 @@ class NetworkManager(QObject):
     @return  [dataman.Reference] or None
     """
     if self.isOnline() and (gameId or md5):
-      ret = skthreads.runsync(partial(
-          self.__d.queryReferences, gameId, md5, init=False),
-          parent=self)
-      if ret and init:
-        #map(dataman.Reference.init, ret)   # for loop is faster
-        for it in ret: it.init()
-      return ret
+      return skthreads.runsync(partial(
+          self.__d.queryReferences, gameId, md5, init=init))
 
   def submitReference(self, ref, userName, password, md5=None, async=False):
     """Either id or digest should be specified.
@@ -1748,7 +1907,7 @@ class NetworkManager(QObject):
 
     Thread-safe.
     """
-    if self.isOnline() and (ref.gameId or md5) and userName and password:
+    if self.isOnline() and (ref.d.gameId or md5) and userName and password:
       return self.__d.submitReference(ref, userName, password, md5, async=async)
 
   def updateReference(self, ref, userName, password, async=False):
@@ -1758,12 +1917,12 @@ class NetworkManager(QObject):
 
     Thread-safe.
     """
-    if self.isOnline() and ref.id and userName and password:
+    if self.isOnline() and ref.d.id and userName and password:
       return self.__d.updateReference(ref, userName, password, async=async)
 
   ## Comments ##
 
-  def queryComments(self, gameId=0, md5=None, hash=True):
+  def queryComments(self, gameId=0, md5=None, hash=True, init=True):
     """Either gameid or digest should be specified
     @param  gameId  long or 0
     @param  md5  str or None
@@ -1771,18 +1930,17 @@ class NetworkManager(QObject):
     @return  ({long:[dataman.Comment] if hash else [dataman.Comment]) or None
     """
     if self.isOnline() and (gameId or md5):
-      ret = skthreads.runsync(partial(
-          self.__d.queryComments, gameId, md5, init=False, hash=hash),
-          parent=self)
-      if ret:
-        if hash:
-          for l in ret.itervalues():
-            #map(dataman.Comment.init, l) # for loop is faster
-            for it in l: it.init()
-        else:
-          #map(dataman.Comment.init, ret) # for loop is faster
-          for it in ret: it.init()
-      return ret
+      return skthreads.runsync(partial(
+          self.__d.queryComments, gameId, md5, init=init, hash=hash))
+      #if ret:
+      #  if hash:
+      #    for l in ret.itervalues():
+      #      #map(dataman.Comment.init, l) # for loop is faster
+      #      for it in l: it.init()
+      #  else:
+      #    #map(dataman.Comment.init, ret) # for loop is faster
+      #    for it in ret: it.init()
+      #return ret
 
   def submitComment(self, comment, userName, password, md5=None, async=False):
     """Either id or digest should be specified.
@@ -1792,11 +1950,10 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     #return (skthreads.runsync(partial(
-    #    self.__d.submitComment, comment, userName, password, md5),
-    #    parent=self)
+    #    self.__d.submitComment, comment, userName, password, md5))
     #    if self.isOnline() and (comment.gameId or md5) and userName and password
     #    else 0)
-    if self.isOnline() and (comment.gameId or md5) and userName and password:
+    if self.isOnline() and (comment.d.gameId or md5) and userName and password:
       return self.__d.submitComment(comment, userName, password, md5, async=async)
     return 0
 
@@ -1808,13 +1965,27 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     #return (skthreads.runsync(partial(
-    #    self.__d.updateComment, comment, userName, password),
-    #    parent=self)
+    #    self.__d.updateComment, comment, userName, password))
     #    if self.isOnline() and comment.id and userName and password
     #    else False)
-    if self.isOnline() and comment.id and userName and password:
+    if self.isOnline() and comment.d.id and userName and password:
       return self.__d.updateComment(comment, userName, password, async=async)
     return False
+
+  def querySubtitles(self, itemId, langs=(), gameLang='ja', time=0, async=True):
+    """
+    @param  itemId  long
+    @param* langs  [str]
+    @param* gameLang  str
+    @param* time  long
+    @return  [dataman.Subtitle] or None
+    """
+    if self.isOnline() and itemId:
+      if async:
+        return skthreads.runsync(partial(
+          self.__d.querySubtitles, itemId, langs=langs, gameLang=gameLang, difftime=time))
+      else:
+        return self.__d.querySubtitles(itemId, langs=langs, gameLang=gameLang, difftime=time)
 
   ## Wiki ##
 
@@ -1823,7 +1994,7 @@ class NetworkManager(QObject):
   #  @return  {str key:unicode contents} or None
   #  """
   #  if self.isOnline():
-  #    return skthreads.runsync(self.__d.getTranslationScripts, parent=self)
+  #    return skthreads.runsync(self.__d.getTranslationScripts)
 
   ## Terms ##
 
@@ -1833,19 +2004,27 @@ class NetworkManager(QObject):
     @param* password  str
     @param* init  bool  whether initialize QObject
     @param* parent  QObject  to init
-    @return  [dataman.Term] or None
+    @return  [dataman.Term] or [] or None
     """
     if self.isOnline():
-      ret = skthreads.runsync(partial(
-          self.__d.getTerms, userName, password, init=False),
-          parent=self)
-      if ret:
-        if init:
-          #map(dataman.Term.init, ret) # for is faster
-          for it in ret:
-            it.init(parent)
-        ret.sort(key=operator.attrgetter('modifiedTimestamp'))
-      return ret
+      return skthreads.runsync(partial(
+          self.__d.getTerms, userName, password, init=init))
+
+  def mergeTerms(self, terms, time, userName='', password='', init=True, parent=None):
+    """
+    @param  terms  [dataman.Term]  current term
+    @param  time  long  timestamp
+    @param* userName  str
+    @param* password  str
+    @param* init  bool  whether initialize QObject
+    @param* parent  QObject  to init
+    @return  [dataman.Term] or [] or None
+    """
+    if self.isOnline():
+      userId = dataman.manager().user().id # bad pattern
+      return skthreads.runsync(partial(
+          self.__d.mergeTerms, userId, terms,
+            userName=userName, password=password, init=init, difftime=time))
 
   def submitTerm(self, term, userName, password, async=False):
     """Either id or digest should be specified.
@@ -1865,7 +2044,7 @@ class NetworkManager(QObject):
 
     Thread-safe.
     """
-    if self.isOnline() and term.id and userName and password:
+    if self.isOnline() and term.d.id and userName and password:
       return self.__d.updateTerm(term, userName, password, async=async)
     return False
 
@@ -1886,6 +2065,50 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     return self.isOnline() and self.__d.ajax('post/update', data)
+
+  def submitTopic(self, data):
+    """
+    @param  data  kw or str
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('topic/create', data)
+
+  def updateTopic(self, data):
+    """
+    @param  data  kw or str
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('topic/update', data)
+
+  def updateTicket(self, data):
+    """
+    @param  data  kw or str
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('ticket/update', data)
+
+  def submitImage(self, data, params):
+    """
+    @param  data  str  image data
+    @param  params  kw
+    @return  long or None
+    Thread-safe.
+    """
+    if self.isOnline():
+      return self.__d.upload('upload/image', data, params)
+
+  #def submitAudio(self, data, params):
+  #  """
+  #  @param  data  image data
+  #  @param  params  kw
+  #  @return  bool
+  #  Thread-safe.
+  #  """
+  #  if self.isOnline():
+  #    self.__d.upload('upload/audio', data, params)
 
 @memoized
 def manager(): return NetworkManager()

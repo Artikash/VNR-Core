@@ -3,20 +3,22 @@
  */
 import QtQuick 1.1
 
-Image { id: avatar_
+Image { //id: root_
 
-  width: 50; height: 50
+  //width: 50; height: 50
 
   property string url // use string instead of alias, since source is QUrl
 
   // - Private -
 
-  fillMode: Image.PreserveAspectCrop
+  //fillMode: Image.PreserveAspectCrop
+  fillMode: Image.PreserveAspectFit
+
   //clip: true
   //fillMode: Image.Stretch
   //visible: status == Image.Ready
 
-  sourceSize: Qt.size(50, 50) // small: 50x50
+  //sourceSize: Qt.size(width, height)
 
   visible: !!source && status === Image.Ready
 

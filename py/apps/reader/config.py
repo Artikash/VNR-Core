@@ -30,15 +30,13 @@ APP_YAML_LOCATION = os.path.join(ROOT_LOCATION, "reader.yaml")
 BLACKLIST_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/blacklist.yaml")
 BRANDS_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/brands.yaml")
 ENGINES_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/engines.yaml")
-ZUNKO_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/zunko.yaml")
+#ZUNKO_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/zunko.yaml")
 
 ROOT_LOCATION_U = u(ROOT_LOCATION)
 
 def load_yaml_file(path):
-  with open(path, 'r') as f:
-    import yaml
-    return yaml.load(f)
-    #return yaml.load(f.read().decode('utf8'))
+  import yaml
+  return yaml.load(file(path, 'r'))
 
 SHARE_YAML = load_yaml_file(SHARE_YAML_LOCATION)
 APP_YAML = load_yaml_file(APP_YAML_LOCATION)
@@ -108,6 +106,7 @@ PSP_098_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['0.9.8']) # [str name]
 PSP_099_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['0.9.9']) # [str name]
 
 GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui']) # [str name]
+OPT_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['optgui']) # [str name]
 NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui']) # [str name]
 
 SLOW_GAME_ENGINES = frozenset(ENGINES_YAML['slow']) # [str name]
@@ -116,7 +115,7 @@ DELAY_GAME_ENGINES = frozenset(ENGINES_YAML['delay']) # [str name]
 
 REPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['repeat']) # [str name]
 
-SINGLE_GAME_ENGINES = frozenset(ENGINES_YAML['single']) # [str name]
+FOCUS_GAME_ENGINES = frozenset(ENGINES_YAML['focus']) # [str name]
 
 NOREPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['simple'] + ENGINES_YAML['norepeat']) # [str name]
 NOFLOAT_GAME_ENGINES = frozenset(
@@ -156,6 +155,7 @@ APP_GREETING_INTERVAL = parse_int(_APP['greetingInterval'])
 APP_SAVE_SETTINGS_INTERVAL = parse_int(_APP['saveSettingsInterval'])
 APP_UPDATE_COMMENTS_INTERVAL = parse_int(_APP['updateCommentsInterval'])
 APP_UPDATE_REFS_INTERVAL = parse_int(_APP['updateRefsInterval'])
+APP_UPDATE_SUBS_INTERVAL = parse_int(_APP['updateSubsInterval'])
 APP_UPDATE_TERMS_INTERVAL = parse_int(_APP['updateTermsInterval'])
 APP_UPDATE_GAMES_INTERVAL = parse_int(_APP['updateGamesInterval'])
 #APP_UPDATE_TAH_INTERVAL = parse_int(_APP['updateTAHInterval'])
@@ -190,8 +190,8 @@ SETTINGS_INFOSEEK_COLOR = _SETTINGS['infoseekColor']
 SETTINGS_EXCITE_COLOR = _SETTINGS['exciteColor']
 SETTINGS_BING_COLOR = _SETTINGS['bingColor']
 SETTINGS_GOOGLE_COLOR = _SETTINGS['googleColor']
+SETTINGS_NAVER_COLOR = _SETTINGS['naverColor']
 SETTINGS_BAIDU_COLOR = _SETTINGS['baiduColor']
-SETTINGS_LOUGO_COLOR = _SETTINGS['lougoColor']
 SETTINGS_HANVIET_COLOR = _SETTINGS['hanVietColor']
 SETTINGS_TRANSRU_COLOR = _SETTINGS['transruColor']
 SETTINGS_JBEIJING_COLOR = _SETTINGS['jbeijingColor']
@@ -216,6 +216,7 @@ ENV_INTEGRITYPATH = map(parse_path, SHARE_YAML['env']['integritypath']) # [unico
 APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
 
 ## URLs ##
+API_HOST = SHARE_YAML['apis']['host']
 API_REST = SHARE_YAML['apis']['rest']
 API_PUSH = SHARE_YAML['apis']['push']
 API_AJAX = SHARE_YAML['apis']['ajax']
@@ -228,17 +229,26 @@ _PROXY = SHARE_YAML['proxies']
 
 PROXY_HOST = _PROXY['host']
 
+#PROXY_WEBSERVER = _PROXY['webserver']
+PROXY_WEBPROXY = _PROXY['webproxy']
+
+PROXY_BAIDU_FANYI = _PROXY['baidufanyi']
+PROXY_BAIDU_TTS = _PROXY['baidutts']
+PROXY_ICIBA = _PROXY['iciba']
+
 PROXY_TWITTER_SEARCH = _PROXY['twittersearch']
 PROXY_GOOGLE_SEARCH = _PROXY['googlesearch']
 PROXY_GOOGLE_TRANS = _PROXY['googletrans']
 PROXY_GOOGLE_TTS = _PROXY['googletts']
+PROXY_GOOGLE_SR = _PROXY['googlesr']
 PROXY_YTIMG_I = _PROXY['ytimg']['i']
 PROXY_YTIMG_S = _PROXY['ytimg']['s']
 PROXY_TWIMG_A = _PROXY['twimg']['a']
 PROXY_TWIMG_PBS = _PROXY['twimg']['pbs']
 
 PROXY_EROGAMESCAPE = _PROXY['erogamescape']
-PROXY_DMM = _PROXY['dmm']
+PROXY_DMM_JP = _PROXY['dmm_jp']
+#PROXY_DMM_COM = _PROXY['dmm_com']
 PROXY_GETCHU = _PROXY['getchu']
 #PROXY_GETCHU_IP = _PROXY['getchu_ip']
 
@@ -357,6 +367,7 @@ LATIN_LANGUAGES = SHARE_YAML['languages']['latin']  # [str lang]
 LATIN_LANGUAGE_SET = frozenset(LATIN_LANGUAGES)
 def is_latin_language(lang): return lang in LATIN_LANGUAGE_SET
 
+# Never used
 ASIAN_LANGUAGES = SHARE_YAML['languages']['asian']  # [str lang]
 ASIAN_LANGUAGE_SET = frozenset(ASIAN_LANGUAGES)
 def is_asian_language(lang): return lang in ASIAN_LANGUAGE_SET
@@ -397,19 +408,22 @@ def htmllocale2language(lang): # str -> str
 
 def language2lcid(lang): # str -> long
   loc = language2locale(lang)
-  from windefs import windefs
-  return windefs.locale2lcid(loc)
+  from windefs import winlocale
+  return winlocale.locale2lcid(loc)
+
+def language2codepage(lang): # str -> long
+  loc = language2locale(lang)
+  from windefs import winlocale
+  return winlocale.locale2codepage(loc)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
 
 # Forum
 
+GLOBAL_SUBJECT_ID = SHARE_YAML['forum']['subjects']['global']
 GLOBAL_TOPIC_ID = SHARE_YAML['forum']['topics']['global']
 TERM_TOPIC_ID = SHARE_YAML['forum']['topics']['term']
-
-POST_CONTENT_MAX_LENGTH = 1024 * 32 - 1 # the same as server side
-POST_CONTENT_MIN_LENGTH = 2 # the same as server side
 
 ## Locations ##
 
@@ -418,6 +432,10 @@ AVATARS_COUNT = parse_int(SHARE_YAML['avatars']['count'])
 #AVATARS_FORMAT = SHARE_YAML['avatars']['format']
 
 FONT_LOCATION = parse_path(SHARE_YAML['font']['location']) # unicode abspath
+
+HANGUL_DIC_PATH = parse_path(SHARE_YAML['hangul']['path']) # unicode abspath
+
+PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
 
 #IPADIC_LOCATION = parse_path(SHARE_YAML['dictionaries']['ipadic']) # unicode abspath
 #EDICT_LOCATION = parse_path(SHARE_YAML['dictionaries']['edict']) # unicode abspath
@@ -439,6 +457,13 @@ JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspat
 
 TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['tahscript'].iteritems()}
+
+OPENCC_DICS = {k: parse_path(v) # {str key:unicode relpath}
+    for k,v in SHARE_YAML['opencc'].iteritems()}
+
+HANVIET_DICS = {k: parse_path(v) # {str key:unicode relpath}
+    for k,v in SHARE_YAML['hanviet'].iteritems()}
+HANVIET_DIC_LOCATION = os.path.dirname(HANVIET_DICS.itervalues().next())
 
 MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
     for k,v in SHARE_YAML['mecab']['dicdir'].iteritems()}

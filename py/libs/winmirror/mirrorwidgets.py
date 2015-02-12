@@ -5,11 +5,11 @@
 #
 # This file is unfinished
 
+__all__ = 'MirroredWindow',
+
 if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
-
-__all__ = ['MirroredWindow']
 
 import win32api, win32con, win32gui, ctypes
 from functools import partial

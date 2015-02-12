@@ -1,12 +1,35 @@
 # coding: utf8
 # skthreads.py
 # 10/29/2012 jichi
-__all__ = ['runsync', 'runasync', 'runasynclater']
+__all__ = 'SkMutexLocker', 'runsync', 'runasync', 'runasynclater'
 
 from functools import partial
-from PySide.QtCore import Signal, Qt, QObject, QRunnable,QThreadPool
+from PySide.QtCore import Signal, Qt, QObject, QRunnable, QThreadPool
 from skdebug import derror
 import skevents
+
+## Locker ##
+
+class SkMutexLocker:
+  def __init__(self, mutex):
+    self.mutex = mutex # QMutex
+  def __enter__(self):
+    self.mutex.lock()
+    return self
+  def __exit__(self, *err):
+    self.mutex.unlock()
+
+class SkMutexTryLocker:
+  def __init__(self, mutex):
+    self.mutex = mutex # QMutex
+    self.locked = False # bool
+  def __enter__(self):
+    self.locked = self.mutex.tryLock()
+    if self.locked:
+      return self
+  def __exit__(self, *err):
+    if self.locked():
+      self.mutex.unlock()
 
 ## Run async in parallel ##
 
@@ -51,7 +74,7 @@ class _SkRunnableFunctionWithReturn(QObject, QRunnable):
     self.trigger = trigger
     self.value = None # return value
 
-  finished = Signal()
+  finished = Signal() # QObject is needed to support Signal
 
   def run(self):
     """@reimp @public"""
@@ -59,11 +82,10 @@ class _SkRunnableFunctionWithReturn(QObject, QRunnable):
     except Exception, e: derror(e)
     self.finished.emit()
 
-def runsync(func, parent=None, abortSignal=None):
+def runsync(func, abortSignal=None):
   """Run in another thread, and then block and wait for return result
   @param  func  function with return value
-  @param  parent  QObject or None  parent of the blocking event loop
-  @param  abortSignal  Signal  control whether to abort the blocked event loop
+  @param* abortSignal  Signal  control whether to abort the blocked event loop
   @return  the value returned from function
   """
   r = _SkRunnableFunctionWithReturn(func) # no parent
@@ -71,7 +93,7 @@ def runsync(func, parent=None, abortSignal=None):
       QThreadPool.globalInstance().start, r))
   skevents.waitsignal(r.finished,
       abortSignal=abortSignal,
-      type=Qt.QueuedConnection, parent=parent)
+      type=Qt.QueuedConnection)
   return r.value
 
 # EOF

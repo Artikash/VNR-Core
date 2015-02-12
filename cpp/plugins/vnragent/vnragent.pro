@@ -79,7 +79,6 @@ HEADERS += \
   util/codepage.h \
   util/location.h \
   util/msghandler.h \
-  util/pathutil.h \
   util/textutil.h \
   config.h \
   debug.h \
@@ -108,7 +107,6 @@ SOURCES += \
   util/codepage.cc \
   util/location.cc \
   util/msghandler.cc \
-  util/pathutil.cc \
   util/textutil.cc \
   growl.cc \
   loader.cc \

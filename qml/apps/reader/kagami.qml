@@ -5,7 +5,9 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../imports/qmlhelper' as Helper
 import '../../js/sakurakit.min.js' as Sk
+import '../../js/eval.min.js' as Eval
 //import '../../js/reader.min.js' as My
 import 'comet' as Comet
 import 'kagami' as Kagami
@@ -29,20 +31,33 @@ Item { id: root_
       gameWindowTracker_.fullScreen
       && !gameWindowTracker_.stretched
       && !currentGameIsEmulator
+      && !currentGameFocusEnabled
       && !settings_.kagamiFocusEnabled
 
   // 8/3/2014 TODO: Remove focus restriction for CIRCUS game as well
   property int currentGameId: datamanPlugin_.gameItemId // cached
   property bool currentGameIsEmulator: currentGameId > 50 && currentGameId < 60
+  property bool currentGameFocusEnabled: datamanPlugin_.currentGameFocusEnabled // cached
 
   property bool mirageVisible: false
 
   property bool wine: statusPlugin_.wine // cached
   property int admin: statusPlugin_.admin // cached  xp: -1; otherwise 1 or 0
+  property string userLanguage: statusPlugin_.userLanguage // cached
+
+  function createPostComet() {
+    return postCometComp_.createObject(root_)
+  }
 
   // - Private -
 
   clip: true // maybe, this could save some CPU cycles when grimoire goes out of screen
+
+  Helper.QmlHelper { id: qmlhelper_ }
+
+  Component { id: postCometComp_
+    Comet.PostDataComet {}
+  }
 
   // cached
 
@@ -80,14 +95,22 @@ Item { id: root_
 
   Component.onCompleted: {
     //console.log("kagami.qml: taskbar height =", taskBar_.height)
+    initEvalContext()
     loadSettings()
     qApp.aboutToQuit.connect(saveSettings)
-    console.log("kagami.qml: pass")
 
+    console.log("kagami.qml: pass")
   }
 
   Component.onDestruction: {
     console.log("kagami.qml:destroy: pass")
+  }
+
+  function initEvalContext() {
+    var ctx = Eval.scriptContext
+    ctx.main = mainPlugin_
+    ctx.growl = growl_
+    //ctx.clipboard = clipboardPlugin_
   }
 
   function loadSettings() {
@@ -100,7 +123,11 @@ Item { id: root_
 
     //dock_.windowHookChecked = settings_.windowHookEnabled
     //dock_.windowTextChecked = settings_.windowTextVisible
-    dock_.speaksTextChecked = settings_.speaksGameText
+
+    dock_.autoHide = settings_.grimoireAutoHideDock
+    dock_.speaksTextChecked = settings_.speaksGameText && !settings_.subtitleVoiceEnabled
+    dock_.speaksTranslationChecked = settings_.speaksGameText && settings_.subtitleVoiceEnabled
+
     dock_.copiesTextChecked = settings_.copiesGameText
     dock_.copiesSubtitleChecked = settings_.copiesGameSubtitle
     //dock_.voiceChecked = settings_.voiceCharacterEnabled
@@ -162,6 +189,7 @@ Item { id: root_
     settings_.glowIntensity = dock_.glowIntensity
     settings_.glowRadius = dock_.glowRadius
 
+    settings_.grimoireAutoHideDock = dock_.autoHide
     //settings_.gameTextCapacity = dock_.gameTextCapacity
 
     settings_.hotkeyEnabled = dock_.hotkeyChecked
@@ -210,19 +238,33 @@ Item { id: root_
     //onVoiceCharacterEnabledChanged:
     //  if (dock_.voiceChecked !== voiceCharacterEnabled)
     //    dock_.voiceChecked = voiceCharacterEnabled
-    onSpeaksGameTextChanged: if (dock_.speaksTextChecked != speaksGameText) dock_.speaksTextChecked = speaksGameText
     onHentaiChanged: if (dock_.hentaiChecked != hentai) dock_.hentaiChecked = hentai
+
+    onSpeaksGameTextChanged: {
+      var t = speaksGameText && !subtitleVoiceEnabled
+      if (t != dock_.speaksTextChecked)
+        dock_.speaksTextChecked = t
+      t = settings_.speaksGameText && settings_.subtitleVoiceEnabled
+      if (t != dock_.speaksTranslationChecked)
+        dock_.speaksTranslationChecked = t
+    }
   }
 
   //Plugin.SystemStatus { id: statusPlugin_
   //  //onOnlineChanged: gossip_.avatarVisible = online
   //}
 
+  Plugin.KagamiBean { //id: kagami_
+    onOcrToggled: dock_.toggleOcrRegionEnabled()
+  }
+
   Plugin.MainObjectProxy { id: mainPlugin_
-    windowRefreshInterval: root_.ignoresFocus ? 1000 : 20000 // 1 sec, 20 sec
+    windowRefreshInterval: ignoresFocus ? 1000 : 10000 // 1 sec, 10 sec
   }
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
+
+  //Plugin.GameManagerProxy { id: gamemanPlugin_ }
 
   Plugin.TranslatorBean { id: trPlugin_ }
 
@@ -249,10 +291,11 @@ Item { id: root_
   Plugin.BBCodeParser { id: bbcodePlugin_ }
 
   //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
-  Plugin.UserViewManagerProxy { id: userViewPlugin_ }
+  //Plugin.UserViewManagerProxy { id: userViewPlugin_ }
 
   Plugin.ClipboardProxy { id: clipboardPlugin_ }
   Plugin.Tts { id: ttsPlugin_ }
+  Plugin.SpeechRecognition { id: srPlugin_ }
 
   Plugin.GameProxy { id: gamePlugin_ }
 
@@ -469,6 +512,8 @@ Item { id: root_
 
         toolTipEnabled: !gameWindowTracker_.fullScreenOrStretched
 
+        userLanguage: root_.userLanguage
+
         japaneseFont: settings_.japaneseFont
         englishFont: settings_.englishFont
         chineseFont: settings_.chineseFont
@@ -487,6 +532,9 @@ Item { id: root_
         russianFont: settings_.russianFont
         polishFont: settings_.polishFont
         dutchFont: settings_.dutchFont
+
+        rubyTextEnabled: settings_.rubyTextEnabled
+        rubyTranslationEnabled: settings_.rubyTranslationEnabled
 
         function ensureVisible() {
           if (x < gameWindowTracker_.x || x+width/2 > gameWindowTracker_.x+gameWindowTracker_.width) {
@@ -567,6 +615,17 @@ Item { id: root_
         //outlineEnabled: !shadowEnabled
         //outlineEnabled: false
 
+        rubyJaInverted: settings_.rubyJaInverted
+        rubyInverted: settings_.rubyInverted
+
+        chineseRubyEnabled: settings_.chineseRubyEnabled
+        koreanRubyEnabled: settings_.koreanRubyEnabled
+
+        hanjaRubyEnabled: settings_.hanjaRubyEnabled
+        romajaRubyEnabled: settings_.romajaRubyEnabled
+
+        chineseRubyType: settings_.chineseRubyType
+
         rubyType: settings_.rubyType
         rubyDic: settings_.meCabDictionary
         caboChaEnabled: settings_.caboChaEnabled
@@ -590,8 +649,8 @@ Item { id: root_
         exciteColor: settings_.exciteColor
         bingColor: settings_.bingColor
         googleColor: settings_.googleColor
+        naverColor: settings_.naverColor
         baiduColor: settings_.baiduColor
-        lougoColor: settings_.lougoColor
         hanVietColor: settings_.hanVietColor
         jbeijingColor: settings_.jbeijingColor
         fastaitColor: settings_.fastaitColor
@@ -761,7 +820,6 @@ Item { id: root_
 
       Kagami.OcrRegion { //id: ocrRegion_
         anchors.fill: gameWindowTracker_
-
         anchors.topMargin: gameWindowTracker_.fullScreen ? 0 : gameWindowTracker_.titleBarHeight // skip header of the window
 
         enabled: dock_.ocrRegionEnabledChecked && gamePanel_.visible && dock_.visibleChecked
@@ -815,7 +873,7 @@ Item { id: root_
             if (dock_.hover) // || dockSensorArea_.containsMouse)
               //start()
               ;
-            else
+            else if (dock_.autoHide)
               dock_.hide()
         }
 
@@ -829,6 +887,11 @@ Item { id: root_
         //furiganaEnabled: root_.rubyEnabled
 
         ocrEnabled: settings_.ocrEnabled && !!root_.admin
+
+        function toggleOcrRegionEnabled() {
+          if (ocrEnabled)
+            ocrRegionEnabledChecked = !ocrRegionEnabledChecked
+        }
 
         onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
         onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked
@@ -848,7 +911,26 @@ Item { id: root_
 
         //onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
         //onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked
-        onSpeaksTextCheckedChanged: settings_.speaksGameText = speaksTextChecked
+
+        onSpeaksTextCheckedChanged: updateTtsSettings()
+        onSpeaksTranslationCheckedChanged: updateTtsSettings()
+
+        function updateTtsSettings() {
+          if (!speaksTextChecked && !speaksTranslationChecked) {
+            if (settings_.speaksGameText)
+              settings_.speaksGameText = false
+          } else if (speaksTextChecked && !speaksTranslationChecked) {
+            if (!settings_.speaksGameText)
+              settings_.speaksGameText = true
+            if (settings_.subtitleVoiceEnabled)
+              settings_.subtitleVoiceEnabled = false
+          } else if (!speaksTextChecked && speaksTranslationChecked) {
+            if (!settings_.speaksGameText)
+              settings_.speaksGameText = true
+            if (!settings_.subtitleVoiceEnabled)
+              settings_.subtitleVoiceEnabled = true
+          } // else: both of them are checked, which does not make sense
+        }
 
         onClockCheckedChanged:
           if (clockChecked !== clock_.visible)
@@ -955,6 +1037,8 @@ Item { id: root_
         //  //    (graffiti_.alignment & Qt.AlignTop ? 0 : root_.taskBarHeight)
         //}
 
+        fullScreen: gameWindowTracker_.fullScreenOrStretched
+
         property int relativeY: gameWindowTracker_.fullScreen ? (-8 - height) : 4
         y: Math.min(
             parent.height - height - 5 - (gameWindowTracker_.stretched ? 0 : taskBarHeight),
@@ -983,9 +1067,9 @@ Item { id: root_
           rightMargin: 12
         }
 
-        visible: !root_.ignoresFocus && dock_.slimChecked
+        visible: dock_.slimChecked && !root_.ignoresFocus
 
-        fadingEnabled: !checked && (gameWindowTracker_.stretched || gamePanel_.paddingVisible)
+        fadingEnabled: !checked && (gameWindowTracker_.stretched || gamePanel_.paddingVisible || gameWindowTracker_.fullScreen)
 
         //hoverEnabled: dock_.slimChecked
         //hoverEnabled: true
@@ -1043,9 +1127,8 @@ Item { id: root_
       globalZoomFactor: root_.globalZoomFactor
 
       Component.onCompleted: {
-        shiori_.yakuAt.connect(popup)
-        grimoire_.yakuAt.connect(popup)
-        //graffiti_.yakuAt.connect(popup)
+        grimoire_.lookupRequested.connect(popupLookup)
+        grimoire_.jsonPopupRequested.connect(popupJson)
       }
     }
 
@@ -1127,7 +1210,7 @@ Item { id: root_
         , height: 480
       });
       if (mirage) {
-        mirage.yakuAt.connect(shiori_.popup)
+        mirage.lookupRequested.connect(shiori_.popupLookup)
         console.log("kagami.qml: mirage created")
       } else
         console.log("kagami.qml: ERROR: failed to create mirage object")

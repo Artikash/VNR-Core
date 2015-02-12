@@ -2,7 +2,7 @@
 # work.py
 # 11/26/2013 jichi
 
-__all__ = ['WorkApi']
+__all__ = 'WorkApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -54,16 +54,15 @@ class WorkApi(object):
     url  = self._parseurl(h)
     if url:
       reviewcount = self._parsereviewcount(h)
-      return {
+      ret = {
         'url': url, # str or None
         'otome': '/girls/' in url, # bool not None
         'rpg': self._parserpg(h), # bool not None
         'ecchi': self._parseecchi(h), # bool not None
-        'homepage': self._parsehp(h),   # str or None
         'description': self._parsesec(self._rx_sec_desc, h), # unicode or None
+        'characterDescription': self._parsecharasec(h), # unicode
         'title': self._parsetitle(h), # unicode or None
         'brand': self._parsebrand(h), # unicode or None
-        'series': self._parseseries(h), # unicode or None
         'image': self._parseimage(h), # unicode or None
         'price': self._parseprice(h) or 0, # int not None
         'date': self._parsedate(h), # datetime or None
@@ -79,6 +78,28 @@ class WorkApi(object):
         'reviewcount': reviewcount or 0, # int
         'review': self._parsesec(self._rx_sec_review, h) if reviewcount else None,
       }
+      ret.update(self._iterparsefields(h))
+      return ret
+
+  _re_fields = (
+    # Example:
+    # http://www.dlsite.com/maniax/work/=/product_id/RJ107332.html
+    # <tr><th>シリーズ名&nbsp;:&nbsp;</th><td><a href="http://www.dlsite.com/maniax/fsr/=/keyword/%E3%82%B3%E3%82%B9%E3%83%97%E3%83%ACRPG%20SRI0000006000/from/work.series">コスプレRPG</a></td></tr>
+    ('series', re.compile(r'work\.series">([^<]+?)</a>')),
+    # Example:
+    # <tr><th>ホームページ&nbsp;:&nbsp;</th>
+    # <td><a rel="nofollow" href="http://www.anos.jp/" target="_blank">http://www.anos.jp/</a></td>
+    ('homepage', re.compile(ur'ホームページ.*?href="([^"]+?)"', re.DOTALL)),
+  )
+  def _iterparsefields(self, h):
+    """
+    @param  h  unicode
+    @yield  (str key, unicode or None)
+    """
+    for k,rx in self._re_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1))
 
   def _parseecchi(self, h):
     """
@@ -222,36 +243,6 @@ class WorkApi(object):
       except: pass
     return 0
 
-  # Example:
-  # <tr><th>ホームページ&nbsp;:&nbsp;</th>
-  # <td><a rel="nofollow" href="http://www.anos.jp/" target="_blank">http://www.anos.jp/</a></td>
-  _rx_hp = re.compile(ur'ホームページ.*?href="([^"]+?)"', re.DOTALL)
-  def _parsehp(self, h):
-    """
-    @param  h  unicode  html
-    @return  str or None
-    """
-    m = self._rx_hp.search(h)
-    if m:
-      t = m.group(1)
-      if t:
-        return unescapehtml(t)
-
-  # Exmaple:
-  # http://www.dlsite.com/maniax/work/=/product_id/RJ107332.html
-  # <tr><th>シリーズ名&nbsp;:&nbsp;</th><td><a href="http://www.dlsite.com/maniax/fsr/=/keyword/%E3%82%B3%E3%82%B9%E3%83%97%E3%83%ACRPG%20SRI0000006000/from/work.series">コスプレRPG</a></td></tr>
-  _rx_series = re.compile(r'work\.series">([^<]+?)</a>')
-  def _parseseries(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    m = self._rx_series.search(h)
-    if m:
-      t = m.group(1)
-      if t:
-        return unescapehtml(t)
-
   def __makesectionrx(name):
     """
     @param  name  str
@@ -269,15 +260,31 @@ class WorkApi(object):
     """
     m = rx.search(h)
     if m:
-      return m.group()
+      return m.group().replace('="//', '="http://')
 
   _rx_sec_review = __makesectionrx('work_review_list')
 
   #_rx_sec_desc = __makesectionrx('work_story')
-  _rx_sec_desc = re.compile(r'.*?'.join((
+  _rx_sec_desc = re.compile(r'.*'.join(( # use .* instead of .*? to keep text as much as possible
     re.escape(r'<div itemprop="description"'),
-    re.escape(r'<!-- /work_story -->'),
+    r'(?:<!-- spec -->|<!-- /work_story -->)', # sample game: http://www.dlsite.com/maniax/work/=/product_id/RJ143025
   )), re.DOTALL)
+
+  # Example: www.dlsite.com/maniax/work/=/product_id/RJ079473.html
+  _rx_sec_chara = re.compile(r'(.*?)'.join((
+    ur'<div class="[^"]*?"><h.>キャラクター紹介</h.></div>',
+    r"(?:<!--|<script)", # stop before next section or script
+  )), re.DOTALL)
+  def _parsecharasec(self, h):
+    """
+    @param  h  unicode  html
+    @return  str or None
+    """
+    m = self._rx_sec_chara.search(h)
+    if m:
+      ret = m.group(1).rstrip()
+      ret = ret.replace('="//', '="http://')
+      return ret
 
   # Example
   # <p class="float_l review_count">レビュー数&nbsp;:&nbsp;<span class="review_work_count">9件</span></p>
@@ -315,19 +322,6 @@ class WorkApi(object):
       if t:
         return unescapehtml(t)
 
-  # Tags, example:
-  # <div class="main_genre"><a href="http://www.dlsite.com/soft/fsr/=/genre/281/from/work.genre">同級生/同僚</a>&nbsp;<a href="http://www.dlsite.com/soft/fsr/=/genre/016/from/work.genre">ファンタジー</a></div></td></tr>
-
-  _rx_main_genre = re.compile(r'<div class="main_genre">(.+?)</div>')
-  def _parsemaingenre(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    m = self._rx_main_genre.search(h)
-    if m:
-      return m.group(1)
-
   _rx_tag = re.compile(r'>([^<]+?)</a>')
   def _iterparsetags(self, h):
     """
@@ -339,6 +333,18 @@ class WorkApi(object):
       for m in self._rx_tag.finditer(g):
         for it in unescapehtml(m.group(1)).split('/'):
           yield it
+
+  # Tags, example:
+  # <div class="main_genre"><a href="http://www.dlsite.com/soft/fsr/=/genre/281/from/work.genre">同級生/同僚</a>&nbsp;<a href="http://www.dlsite.com/soft/fsr/=/genre/016/from/work.genre">ファンタジー</a></div></td></tr>
+  _rx_main_genre = re.compile(r'<div class="main_genre">(.+?)</div>')
+  def _parsemaingenre(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._rx_main_genre.search(h)
+    if m:
+      return m.group(1)
 
   # Emaple: http://www.dlsite.com/soft/work/=/product_id/VJ007727.html
   # href="//img.dlsite.jp/modpub/images2/work/professional/VJ008000/VJ007727_img_smpa1.jpg"
@@ -359,6 +365,8 @@ if __name__ == '__main__':
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ004288.html'
   url = 'http://www.dlsite.com/girls/work/=/product_id/RJ091967.html'
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ006763.html'
+  url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ079473.html' # for testing chara
+  url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ143025' # Rondo DUO
   q = api.query(url)
   #print q['description']
   #print q['review'].encode('utf8')
@@ -376,5 +384,8 @@ if __name__ == '__main__':
   print q['date']
   for it in q['tags']:
     print it
+  print '-' * 10
+  print q['characterDescription']
+  print q['description']
 
 # EOF

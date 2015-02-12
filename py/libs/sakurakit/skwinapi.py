@@ -10,6 +10,7 @@ import win32con
 kernel32 = windll.kernel32
 shell32 = windll.shell32
 user32 = windll.user32
+#ole32 = windll.kernel32
 #gdi32 = windll.gdi32
 try: dwmapi = windll.dwmapi
 except WindowsError: dwmapi = None
@@ -107,6 +108,25 @@ HCURSOR = HICON
 #AddFontResourceA.restype = int
 #AddFontResourceA.argtype = LPCSTR
 
+## Ole32 ##
+
+COINIT_APARTMENTTHREADED = 0x2
+COINIT_MULTITHREADED     = 0x0
+COINIT_DISABLE_OLE1DDE   = 0x4
+COINIT_SPEED_OVER_MEMORY = 0x8
+
+#CoUninitialize = ole32.CoUninitialize
+#CoUninitialize.restype = None
+#CoUninitialize.argtypes = None
+
+#CoInitialize = ole32.CoInitialize
+#CoInitialize.restype = HRESULT
+#CoInitialize.argtype = LPVOID
+
+#CoInitializeEx = ole32.CoInitializeEx
+#CoInitializeEx.restype = HRESULT
+#CoInitializeEx.argtypes = LPVOID, DWORD
+
 ## DwmApi ##
 
 DWM_BB_ENABLE                = 0x00000001 # fEnable has been specified
@@ -187,6 +207,13 @@ try:
   SetCurrentProcessExplicitAppUserModelID.argtype = LPCWSTR
 except AttributeError:
   def SetCurrentProcessExplicitAppUserModelID(appId): return 0
+
+try:
+  GetCurrentProcessExplicitAppUserModelID = shell32.GetCurrentProcessExplicitAppUserModelID
+  GetCurrentProcessExplicitAppUserModelID.restype = HRESULT
+  GetCurrentProcessExplicitAppUserModelID.argtype = POINTER(LPWSTR)
+except AttributeError:
+  def GetCurrentProcessExplicitAppUserModelID(appId): return 0
 
 # Windows 7+
 MSGFLT_ALLOW = 1

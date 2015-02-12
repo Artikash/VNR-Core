@@ -44,11 +44,23 @@ def app_exec(timeout=1000):
   QTimer.singleShot(timeout, app.quit)
   return app.exec_()
 
+SHOW_WIDGETS = {}
+def show(text, key=None):
+  w = SHOW_WIDGETS.get(key)
+  if not w:
+    from Qt5 import QtWidgets
+    SHOW_WIDGETS[key] = w = QtWidgets.QTextEdit()
+    w.setAcceptRichText(False)
+  if not isinstance(text, basestring):
+    import json
+    text = json.dumps(text, indent=2, ensure_ascii=False)
+  w.setWindowTitle("key: %s" % key)
+  w.setPlainText(text)
+  w.show()
+
 if __name__ == '__main__':
   print "debug: enter"
   initenv()
-
-  from PySide import QtCore, QtGui
 
   #import settings
   #ss = settings.global_()
@@ -89,13 +101,36 @@ if __name__ == '__main__':
       skwinsec.injectdll(dll, pid=pid)
     print "debug: leave"
 
-  def test_ocr():
+  def test_wmp():
     import os
-    from modiocr import modiocr
+    from sakurakit import skthreads
+    from sakurakit.skwincom import SkCoInitializer
+    from wmp.wmp import WindowsMediaPlayer
+
+    #url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
+    url = "http://tts.baidu.com/text2audio?lan=jp&ie=UTF-8&text=hello"
+    #url = "Z:/Users/jichi/tmp/test.mp3"
+    #url = r"Z:\Users\jichi\tmp\test.mp3"
+    #url = "Z:\Users\jichi\tmp\test.mp3"
+    #url = "Z:\\Users\\jichi\\tmp\\test.mp3"
+    print os.path.exists(url)
+    p = WindowsMediaPlayer()
+    def run():
+      with SkCoInitializer(threading=True):
+        print p.isValid()
+        print p.play(url)
+        os.system("pause")
+
+    a = app()
+    skthreads.runasync(run)
+    a.exec_()
+
+  def test_ocr():
+    from modi import modi
     path = "wiki.tiff"
     #path = r"Z:\Users\jichi\opt\stream\Library\Frameworks\Sakura\py\apps\reader\wiki.tiff"
-    lang = modiocr.LANG_JA
-    ok = modiocr.readfile(path, lang)
+    lang = modi.LANG_JA
+    ok = modi.readfile(path, lang)
 
   def test_chat():
     a = app()
@@ -103,6 +138,63 @@ if __name__ == '__main__':
     chatview.manager().showTopic('global')
     a.exec_()
 
-  test_chat()
+  def test_zunko():
+    from sakurakit import skpaths
+    path = r'Z:\Local\Windows\Applications\AHS\VOICEROID+\zunko'
+    #skpaths.append_path(path) # crash
+    skpaths.prepend_path(path)
+
+    from voiceroid.zunko import ZunkoTalk
+    ai = ZunkoTalk()
+    print ai.load()
+    #ai.setVolume(1)
+    t = "hello world"
+    print ai.speak(t)
+
+    #from PySide.QtCore import QCoreApplication
+    #a = QCoreApplication(sys.argv)
+    a = app()
+    a.exec_()
+
+  def test_cc():
+    from opencc import opencc
+    import config
+    opencc.setdicdir(config.OPENCC_DIC_LOCATION)
+
+    #t = u"里面"
+    t = u"我方"
+    t = u"轻轻地"
+    #t = opencc.zhs2zht(t)
+    t = opencc.containszhs(t)
+    #t = opencc.zht2tw(t)
+    print t
+    return
+
+    a = app()
+    from Qt5.QtWidgets import QLabel
+    w = QLabel("%s" % t)
+    w.show()
+    a.exec_()
+
+  def test_phonon():
+    from PySide.phonon import Phonon
+    a = app()
+
+    # http://qt-project.org/doc/qt-4.8/phonon-overview.html#audio
+    url = "z:/Users/jichi/tmp/test.mp3"
+    print os.path.exists(url)
+    mo = Phonon.MediaObject()
+    audioOutput = Phonon.AudioOutput(Phonon.MusicCategory)
+    path = Phonon.createPath(mo, audioOutput)
+
+    #mo.setCurrentSource(Phonon.MediaSource(url))
+    mo.setCurrentSource(url)
+    print mo.play()
+
+    a.exec_()
+
+  #test_phonon()
+
+  test_cc()
 
 # EOF

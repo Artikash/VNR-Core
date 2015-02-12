@@ -29,44 +29,44 @@ Rectangle { id: root_
   height: topRegion_.height + bottomRegion_.height
   color: '#ddced0d6' // opacity: 0xdd/0xff = 87%
 
-  property bool containsMouse:
-    toolTip_.containsMouse ||
-    openButton_.hover || editButton_.hover || subButton_.hover ||
-    infoButton_.hover || browseButton_.hover || removeButton_.hover ||
-    allButton_.hover || junaiButton_.hover || nukiButton_.hover || otomeButton_.hover
+  //property bool containsMouse:
+  //  toolTip_.containsMouse ||
+  //  openButton_.hover || editButton_.hover || subButton_.hover ||
+  //  infoButton_.hover || browseButton_.hover || removeButton_.hover ||
+  //  allButton_.hover || junaiButton_.hover || nukiButton_.hover || otomeButton_.hover
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.GameManagerProxy { id: gameman_ }
   Plugin.GameEditorManagerProxy { id: gameedit_ }
   //Plugin.GameViewManagerProxy { id: gameview_ }
 
-  Desktop.TooltipArea { id: toolTip_
-    anchors.fill: parent
-    //text: game ? (game.launchPath ? game.launchPath : game.path) : ""
-    //text: qsTr("Click to copy the game information to the clipboard and read the text using TTS")
-    text: qsTr("Click to copy the game information to the clipboard")
-  }
+  //Desktop.TooltipArea { id: toolTip_
+  //  anchors.fill: parent
+  //  //text: game ? (game.launchPath ? game.launchPath : game.path) : ""
+  //  //text: qsTr("Click to copy the game information to the clipboard and read the text using TTS")
+  //  text: qsTr("Click to copy the game information to the clipboard")
+  //}
 
   // - Label -
 
-  MouseArea {
-    anchors.fill: parent
-    acceptedButtons: Qt.LeftButton
-    onPressed:
-      if (game) {
-        var t = game.name
-        if (t) {
-          var l = [t]
-          t = game.brand
-          if (t) l.push(t)
-          //t = game.tags
-          //if (t) l.push(t)
-          t = l.join("、")
-          clipboardPlugin_.text = t
-          //ttsPlugin_.speak(t, 'ja')
-        }
-      }
-  }
+  //MouseArea {
+  //  anchors.fill: parent
+  //  acceptedButtons: Qt.LeftButton
+  //  onPressed:
+  //    if (game) {
+  //      var t = game.name
+  //      if (t) {
+  //        var l = [t]
+  //        t = game.brand
+  //        if (t) l.push(t)
+  //        //t = game.tags
+  //        //if (t) l.push(t)
+  //        t = l.join("、")
+  //        clipboardPlugin_.text = t
+  //        //ttsPlugin_.speak(t, 'ja')
+  //      }
+  //    }
+  //}
 
   // Top region
   Item { id: topRegion_
@@ -91,7 +91,7 @@ Rectangle { id: root_
       source: game ? 'image://file/' + game.path : '' //'image://rc/game'
     }
 
-    Text { id: nameLabel_
+    TextEdit { id: nameLabel_
       anchors {
         verticalCenter: parent.verticalCenter
         left: gameIcon_.right
@@ -104,15 +104,21 @@ Rectangle { id: root_
       //font.bold: root_.containsMouse
       //color: root_.containsMouse ? 'snow' : 'black'
       effect: Share.TextEffect {} // highlight: root_.containsMouse }
+      wrapMode: TextEdit.WordWrap
+      textFormat: TextEdit.RichText
       text: !game ? '' : renderGame(game)
 
-      wrapMode: Text.WordWrap
-      textFormat: Text.RichText
-      function renderGame(g) { // param game, return string
+      selectByMouse: true
+      //readOnly: true
+
+      function renderGame(g) { // game -> string
         var ret = g.name
         if (!g.known)
           ret += " <span style='color:red'>(" + Sk.tr('Unknown') + ")</span>"
         else {
+          var sz = g.fileSizeString
+          if (sz)
+            ret += " <span style='color:darkgreen'>" + sz.replace(' ', '') + "</span>"
           var brand = g.brand
           if (g.language && g.language !== 'ja')
             ret += " <span style='color:crimson'>(" + Sk.tr(g.language) + ")</span>"
@@ -127,9 +133,6 @@ Rectangle { id: root_
             ts = Util.datestampToString(ts)
             ret += " <span style='color:brown'>" + ts + "</span>"
           }
-          //var sz = g.fileSizeString
-          //if (sz)
-          //  ret += ' ' + sz
         }
         return ret
       }
@@ -232,7 +235,70 @@ Rectangle { id: root_
     }
     height: 27
 
-    ButtonGroup.ButtonRow { //id: typeSelector_
+    Item { //id: scoreRow_
+      anchors {
+        top: parent.top; bottom: parent.bottom
+        right: typeRow_.left
+        rightMargin: 90 // large enough to skip
+      }
+
+      //visible: false // temporarily disabled
+
+      width: scoreText_.width
+
+      Desktop.TooltipArea { id: scoreTip_
+        anchors.fill: parent
+        text: Sk.tr("Review")
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        onPressed:
+          if (statusPlugin_.online && root_.game && root_.game.itemId)
+            mainPlugin_.showGameTopics(root_.game.itemId)
+      }
+
+      Text { id: scoreText_
+        //anchors.fill: parent
+        anchors {
+          top: parent.top; bottom: parent.bottom
+          right: parent.right
+        }
+        visible: !!root_.game && root_.game.itemId > 0
+        wrapMode: Text.NoWrap
+        textFormat: Text.RichText
+
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+
+        font.pixelSize: 12
+        effect: Share.TextEffect {
+          highlight: scoreTip_.containsMouse && statusPlugin_.online
+          highlightColor: 'yellow'
+        }
+        text: !visible ? "" : renderGame(game)
+
+        function renderGame(g) { // game -> string
+          var ret = "<span style='color:darkblue'>%1 %3&times;%2</span>"
+            .replace('%1', Sk.tr("Score"))
+            .replace('%2', g.overallScoreCount)
+            .replace('%3', g.overallScoreCount == 0 ? 0 : (g.overallScoreSum/g.overallScoreCount).toFixed(1))
+          if (g.ecchiScoreCount)
+            ret += " <span style='color:purple'>%1 %3&times;%2</span>"
+              .replace('%1', My.tr("Ecchi"))
+              .replace('%2', g.ecchiScoreCount)
+              .replace('%3', (g.ecchiScoreSum/g.ecchiScoreCount).toFixed(1))
+          if (g.topicCount)
+            ret += " <span style='color:green'>%1 %2</span>"
+              .replace('%1', Sk.tr("Topic"))
+              .replace('%2', g.topicCount)
+          return ret
+        }
+      }
+    }
+
+    ButtonGroup.ButtonRow { id: typeRow_
       //spacing: 5
       anchors {
         verticalCenter: parent.verticalCenter

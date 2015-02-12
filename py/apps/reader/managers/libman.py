@@ -200,7 +200,8 @@ class LocaleEmulator(Library):
   #URL = "http://www.hongfire.com/forum/showthread.php/418962-Locale-Emulator-another-tool-for-japanese-locale-emulation"
   #URL = "https://github.com/xupefei/Locale-Emulator"
   #URL = "http://bbs.sumisora.org/read.php?tid=11045407"
-  URL = "https://app.box.com/LocaleEmulator"
+  #URL = "https://app.box.com/LocaleEmulator"
+  URL = "https://github.com/xupefei/Locale-Emulator/releases"
 
   def location(self):
     """@reimp"""
@@ -238,8 +239,15 @@ class ModiOcr(Library):
   DOWNLOAD_URL = "https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q"
 
   def location(self):
-    from modiocr import modiocr
-    return modiocr.MODI_PATH
+    from modi import modi
+    return modi.MODI_PATH
+
+class WindowsMediaPlayer(Library):
+  URL = "http://windows.microsoft.com/en-us/windows/download-windows-media-player"
+
+  def location(self):
+    from wmp import wmp
+    return wmp.WMP_DLL_PATH
 
 class QuickTime(Library):
   URL = "http://www.apple.com/quicktime/download/"
@@ -283,6 +291,8 @@ def eztrans(): return EzTrans()
 def quicktime(): return QuickTime()
 @memoized
 def modiocr(): return ModiOcr()
+@memoized
+def wmp(): return WindowsMediaPlayer()
 
 # EOF
 

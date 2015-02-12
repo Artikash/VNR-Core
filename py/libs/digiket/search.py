@@ -2,7 +2,7 @@
 # search.py
 # 6/18/2014 jichi
 
-__all__ = ['SearchApi']
+__all__ = 'SearchApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -51,7 +51,7 @@ class SearchApi(object):
   def _fetch(self, url):
     """
     @param  url  str
-    @return  str not int
+    @return  str
     """
     return sknetio.getdata(url, gzip=True, session=self.session) #, cookies=self.COOKIES)
 
@@ -61,7 +61,8 @@ class SearchApi(object):
     @param  path  str  such as 'game', 'b' (BL)
     @yield  {kw}
     """
-    text = text.encode(self.ENCODING, errors='ignore')
+    #text = text.encode(self.ENCODING, errors='ignore')
+    text = sknetio.topercentencoding(text, encoding=self.ENCODING)
     if text and path:
       url = self._makeurl(text=text, path=path, limit=limit, sort=sort)
       h = self._fetch(url)

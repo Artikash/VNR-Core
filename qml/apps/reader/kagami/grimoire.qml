@@ -13,16 +13,20 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/eval.min.js' as Eval
 import '../../../js/util.min.js' as Util
 import '../../../imports/qmleffects' as Effects
 //import '../../../imports/qmltext' as QmlText
 import '../../../imports/texscript' as TexScript
 import '../../../components' as Components
+import '../../../components/qt5' as Qt5
 import '../share' as Share
 
 Item { id: root_
 
-  signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  signal lookupRequested(string text, string language, int x, int y) // popup honyaku of text at (x, y)
+  signal jsonPopupRequested(string json, int x, int y) // popup honyaku of text at (x, y)
+
   signal loadPosRequested
   signal savePosRequested
   //signal resetPosRequested
@@ -41,7 +45,9 @@ Item { id: root_
   //property bool copiesText: false
   property alias locked: lockAct_.checked
 
-  property color fontColor //: 'snow'
+  //property color fontColor //: 'snow'
+  property string fontColor //: 'snow'
+
   property alias shadowColor: shadow_.color
   property color textColor //: '#aa007f' // dark magenta
   property color commentColor //: '#2d5f5f' // dark green
@@ -50,12 +56,14 @@ Item { id: root_
 
   property bool toolTipEnabled: true
 
+  property string userLanguage
+
   property color bingColor
   property color googleColor
   property color infoseekColor
   property color exciteColor
+  property color naverColor
   property color baiduColor
-  property color lougoColor
   property color hanVietColor
   property color jbeijingColor
   property color fastaitColor
@@ -136,10 +144,23 @@ Item { id: root_
   property alias shadowOpacity: shadow_.opacity
 
   property string rubyType: 'hiragana'
+  property bool rubyInverted
+  property bool rubyJaInverted // only for Japanese language
   property string rubyDic
   property bool caboChaEnabled
 
   property bool convertsChinese // convert Simplified Chinese to Chinese
+
+  property bool rubyTextEnabled
+  property bool rubyTranslationEnabled
+
+  property string chineseRubyType
+
+  property bool chineseRubyEnabled
+  property bool koreanRubyEnabled
+
+  property bool hanjaRubyEnabled
+  property bool romajaRubyEnabled
 
   //property bool msimeParserEnabled: false // whether use msime or mecab
   property bool furiganaEnabled: true
@@ -165,7 +186,110 @@ Item { id: root_
 
   // - Private -
 
+  property bool mouseLocked: false // click locked
+
+  function sameLanguageAsUser(lang) { // string -> bool
+    return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
+  }
+
+  function normalizeTtsText(text) { // string ->  string  remove HTML tags
+    return Util.removeHtmlTags(text).replace(/^【[^】]+】/, '') // remove character name for tts
+  }
+
+  function isRubyLanguage(lang) { // string -> bool
+    switch (lang) {
+    case 'ko': return root_.koreanRubyEnabled
+    case 'zh': case 'zhs': case 'zht': return root_.chineseRubyEnabled
+    default: return false
+    }
+    //if (lang.length === 3)
+    //  lang = lang.substr(0, 2)
+    //return !!~root_.rubyLanguages.indexOf(lang)
+  }
+
+  function renderJapanese(text, colorize) { // string, bool -> string
+    return bean_.renderJapanese(text
+      , root_.caboChaEnabled
+      //,root_.msimeParserEnabled
+      , root_.rubyType
+      , root_.rubyDic
+      , Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyJaInverted ? 0.85 : 1)) // char per line
+      , 10 * root_._zoomFactor // ruby size of furigana
+      , root_.rubyJaInverted
+      , colorize // colorize
+      , root_.alignCenter
+    )
+  }
+
+  function renderRuby(text, lang, colorize) { // string, string, bool -> string
+    var chwidth = lang == 'ko' ? 13 : 18 // Korean : Chinese
+                //: lang === 'ja' ? 22
+                //: lang.indexOf('zh') === 0 ? 18
+    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
+    if (lang == 'ko')
+      return bean_.renderKoreanRuby(text
+        , chperline
+        , 10 * root_._zoomFactor // ruby size of furigana
+        , root_.rubyInverted // ruby inverted
+        , colorize // colorize
+        , root_.alignCenter
+        , root_.romajaRubyEnabled
+        , root_.hanjaRubyEnabled
+      )
+    else
+      return bean_.renderChineseRuby(text, lang == 'zhs' // lang needed to determine if it is simplified
+        , root_.chineseRubyType
+        , chperline
+        , 10 * root_._zoomFactor // ruby size of furigana
+        , root_.rubyInverted // ruby inverted
+        , colorize // colorize
+        , root_.alignCenter
+      )
+  }
+
+  function renderAlignment(text, lang, alignObject, colorize) { // string, string, QObject -> string
+    var chwidth = Util.isCJKLanguage(lang) ? 18 : 10 // wider font for CJK
+    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor)) // char per line
+    return bean_.renderAlignment(text, lang, alignObject
+      , chperline
+      , 10 * root_._zoomFactor // ruby size of furigana
+      , colorize // colorize
+      , root_.alignCenter
+    )
+  }
+
+  function translatorColor(host) { // string -> color
+    switch(host) {
+    case 'hanviet': return root_.hanVietColor
+    case 'jbeijing': return root_.jbeijingColor
+    case 'fastait': return root_.fastaitColor
+    case 'dreye': return root_.dreyeColor
+    case 'eztrans': return root_.ezTransColor
+    case 'atlas': return root_.atlasColor
+    case 'lec': return root_.lecColor
+    case 'lecol': return root_.lecOnlineColor
+    case 'transru': return root_.transruColor
+    case 'infoseek': return root_.infoseekColor
+    case 'excite': return root_.exciteColor
+    case 'bing': return root_.bingColor
+    case 'google': return root_.googleColor
+    case 'naver': return root_.naverColor
+    case 'baidu': return root_.baiduColor
+    default:
+      if (host) {
+        var i = host.indexOf(',')
+        if (i !== -1)
+          return translatorColor(host.substr(0, i))
+      }
+      return root_.translationColor
+    }
+  }
+
   //property int _FADE_DURATION: 400
+
+  // 10/15/2014: whether listmodel is locked. otherwise, VNR might crash when RBMT is turned on
+  // Lock the insert/append/clear methods.
+  property bool modelLocked: false
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
@@ -198,7 +322,7 @@ Item { id: root_
       largeSize: Math.round(root_._zoomFactor * 28) + 'px'
       hugeSize: Math.round(root_._zoomFactor * 40) + 'px'
 
-      hrefStyle: "color:snow"
+      hrefStyle: "color:" + root_.fontColor
       urlStyle: hrefStyle
     }
   }
@@ -218,6 +342,16 @@ Item { id: root_
       return ~t.indexOf("\\") ? tex_.toHtml(t) : t
   }
 
+  function renderSub(s) {
+    var t = s.text
+    if (convertsChinese && s.language === 'zhs')
+      t = bean_.convertChinese(t)
+
+    return ~t.indexOf('[') ? bbcodePlugin_.parse(t) :
+           ~t.indexOf("\n") ? t.replace(/\n/g, '<br/>') :
+           t
+  }
+
   Plugin.GrimoireBean { id: bean_
     //width: root_.width; height: root_.heigh
     Component.onCompleted: {
@@ -226,6 +360,7 @@ Item { id: root_
       bean_.showText.connect(root_.showText)
       bean_.showTranslation.connect(root_.showTranslation)
       bean_.showComment.connect(root_.showComment)
+      bean_.showSubtitle.connect(root_.showSubtitle)
 
       bean_.showNameText.connect(root_.showNameText)
       bean_.showNameTranslation.connect(root_.showNameTranslation)
@@ -264,12 +399,20 @@ Item { id: root_
   }
 
   // string t, string lang, return string
-  function splitTranslation(t, lang) {
+  //function splitTranslation(t, lang) { // string, string -> string  insert \n
+  //  if (Util.isKanjiLanguage(lang))
+  //    return t.replace(/([。？！」\n])(?![。！？）」]|$)/g, "$1\n")
+  //  else
+  //    return t.replace(/([.?!」])(?![.!?)」]|$)/g, "$1\n").replace(/\.\.\n/g, '.. ') // do not split ".."
+  //}
+
+  function splitTranslation(t, lang) { // string, string -> string  insert <br/>
     if (Util.isKanjiLanguage(lang))
       return t.replace(/([。？！」\n])(?![。！？）」\n]|$)/g, '$1<br/>')
     else
       return t.replace(/([.?!」\n])(?![.!?)」\n]|$)/g, '$1<br/>').replace(/\.\.<br\/>/g, '.. ') // do not split ".."
   }
+
 
   //Rectangle {
   //  anchors.fill: parent
@@ -310,7 +453,8 @@ Item { id: root_
       left: listView_.left; leftMargin: -9
       bottom: listView_.top; bottomMargin: 4
     }
-    radius: 9
+    //radius: 9
+    radius: 0 // flat
     height: 20
     //width: 50
     width: buttonRow_.width + 30
@@ -318,7 +462,7 @@ Item { id: root_
     //visible: !root_.locked
     visible: root_.containsVisibleText
 
-    property bool active: toolTip_.containsMouse ||
+    property bool active: headerToolTip_.containsMouse ||
                           listTopMouseTip_.containsMouse ||
                           listBottomMouseTip_.containsMouse ||
                           buttonRow_.hover ||
@@ -362,7 +506,7 @@ Item { id: root_
         anchors.margins: -9
         color: '#01000000'
 
-        Desktop.TooltipArea { id: toolTip_
+        Desktop.TooltipArea { id: headerToolTip_
           anchors.fill: parent
           text: qsTr("You can drag me to move the text box.")
         }
@@ -374,6 +518,7 @@ Item { id: root_
         verticalCenter: parent.verticalCenter
         left: parent.left
         //leftMargin: header_.radius
+        leftMargin: 1
       }
 
       spacing: 2
@@ -461,7 +606,7 @@ Item { id: root_
     //  //styleColor: 'black'
     //}
 
-    //Desktop.ContextMenu { id: headerMenu_
+    //Desktop.Menu { id: headerMenu_
 
     //  //Desktop.MenuItem {
     //  //  text: qsTr("Scroll to the beginning")
@@ -542,7 +687,8 @@ Item { id: root_
     z: -1
     //radius: 18
     //radius: 8 * root_.zoomFactor
-    radius: 8
+    //radius: 8
+    radius: 0 // flat
 
     //Share.CloseButton {
     //  anchors { left: parent.left; top: parent.top; margins: 2 }
@@ -624,7 +770,8 @@ Item { id: root_
 
     highlight: Rectangle { //id: highlight_
       width: listView_.width
-      radius: 5
+      //radius: 5
+      radius: 0 // flat
       color: root_.shadowEnabled ? '#33000000' : 'transparent'
       visible: root_.highlightVisible && root_.containsVisibleText
 
@@ -641,9 +788,9 @@ Item { id: root_
           //maximumX: root_.maximumX; maximumY: root_.maximumY
         }
 
-        property alias hover: toolTip_.containsMouse
+        property alias hover: highlightToolTip_.containsMouse
 
-        Desktop.TooltipArea { id: toolTip_
+        Desktop.TooltipArea { id: highlightToolTip_
           anchors.fill: parent
           text: qsTr("You can drag this black bar to move the text box.")
         }
@@ -884,6 +1031,12 @@ Item { id: root_
 
       property bool hover: toolTip_.containsMouse || textCursor_.containsMouse
 
+      property bool canPopup:
+        model.language === 'ja' && root_.furiganaEnabled ||
+        model.language === 'ko' && (
+          (model.type === 'text' || model.type === 'name') ?
+            root_.rubyTextEnabled : root_.rubyTranslationEnabled)
+
       visible: {
         if (model.comment && (model.comment.disabled || model.comment.deleted))
           return false
@@ -893,6 +1046,7 @@ Item { id: root_
           case 'tr': return root_.translationVisible
           case 'name.tr': return root_.nameVisible && root_.translationVisible
           case 'comment': return root_.commentVisible
+          case 'sub': return root_.commentVisible
           default: return true
         }
       }
@@ -908,33 +1062,15 @@ Item { id: root_
         switch (model.type) {
         case 'text':
         case 'name': return root_.textColor
-        case 'comment': return model.comment.color || root_.commentColor
-        case 'tr':
-        case 'name.tr':
-          switch(model.provider) {
-          case 'hanviet': return root_.hanVietColor
-          case 'jbeijing': return root_.jbeijingColor
-          case 'fastait': return root_.fastaitColor
-          case 'dreye': return root_.dreyeColor
-          case 'eztrans': return root_.ezTransColor
-          case 'atlas': return root_.atlasColor
-          case 'lec': return root_.lecColor
-          case 'lecol': return root_.lecOnlineColor
-          case 'transru': return root_.transruColor
-          case 'infoseek': return root_.infoseekColor
-          case 'excite': return root_.exciteColor
-          case 'bing': return root_.bingColor
-          case 'google': return root_.googleColor
-          case 'baidu': return root_.baiduColor
-          case 'lou': return root_.lougoColor
-          default: return root_.translationColor
-          }
+        case 'comment': return (model.comment && model.comment.color) || root_.commentColor
+        case 'sub': return (model.sub && model.sub.color) || root_.commentColor
+        case 'tr': case 'name.tr': return root_.translatorColor(model.provider)
         default: return  'transparent'
         }
       }
 
       //QmlText.ContouredTextEdit { id: textEdit_
-      TextEdit { id: textEdit_
+      Qt5.TextEdit5 { id: textEdit_
         Component.onCompleted:
           listModel_.setProperty(model.index, 'textEdit', textEdit_) // Needed for contextMenu event
 
@@ -951,53 +1087,82 @@ Item { id: root_
         //  z: -1
         //  radius: 15
         //}
-        onLinkActivated: Qt.openUrlExternally(link)
+
+        //selectByMouse: true // conflicts with Flickable
+        //onLinkActivated: Qt.openUrlExternally(link)
 
         MouseArea { id: textCursor_
           anchors.fill: parent
           //acceptedButtons: enabled ? Qt.LeftButton : Qt.NoButton
           acceptedButtons: Qt.LeftButton
+          //acceptedButtons: Qt.NoButton
           enabled: !!model.text
           hoverEnabled: enabled //&& root_.hoverEnabled && model.language === 'ja'
 
-          property string lastSelectedText
-          onPositionChanged: {
-            if (!root_.hoverEnabled || model.language !== 'ja' || !root_.furiganaEnabled)
-              return
+          //preventStealing: true // no effect
 
-            textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
-            textEdit_.selectWord()
-            var t = textEdit_.selectedText
-            if (t && t !== lastSelectedText) {
-              lastSelectedText = t
-              //var gp = Util.itemGlobalPos(parent)
-              var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-              root_.yakuAt(t, gp.x, gp.y)
+          property string lastSelectedText
+          onPositionChanged:
+            if (root_.hoverEnabled && textItem_.canPopup) {
+              textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
+              textEdit_.selectWord()
+              var t = textEdit_.selectedText
+              if (t && t !== lastSelectedText) {
+                lastSelectedText = t
+                //var gp = Util.itemGlobalPos(parent)
+                var gp = mapToItem(null, x + mouse.x, y + mouse.y)
+                root_.lookupRequested(t, model.language, gp.x, gp.y)
+              }
             }
-          }
 
           onClicked: {
+            var link = textEdit_.linkAt(mouse.x, mouse.y)
+            if (link) {
+              if (link.indexOf('json://') === 0)
+                link = link.replace('json://', '')
+              else {
+                Eval.evalLink(link)
+                return
+              }
+            }
+            //mouse.accepted = false // no effect due to Qt Bug
+            if (root_.mouseLocked)
+              return
+            root_.mouseLocked = true
             if (model.language) {
               textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
               textEdit_.selectWord()
               var t = textEdit_.selectedText
-              if (t) {
-                lastSelectedText = t
-                //if (root_.copyEnabled)
-                textEdit_.copy()
-                if (!root_.hoverEnabled && root_.popupEnabled && model.language === 'ja' && root_.furiganaEnabled) {
+              if (t || link) {
+                if (t) {
+                  lastSelectedText = t
+                  //if (root_.copyEnabled)
+                  textEdit_.copy()
+                }
+                if (link || (!root_.hoverEnabled && root_.popupEnabled && textItem_.canPopup)) {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                  root_.yakuAt(t, gp.x, gp.y)
+                  if (link)
+                    root_.jsonPopupRequested(link, gp.x, gp.y)
+                  else
+                    root_.lookupRequested(t, model.language, gp.x, gp.y)
                 }
                 //if (root_.readEnabled && model.language === 'ja')
-                if (model.type === 'text' || model.type !== 'name')
-                  ttsPlugin_.speak(t, model.language)
+                if ((model.type === 'text' || model.type !== 'name')
+                    && !root_.sameLanguageAsUser(model.language)) {
+                  t = Util.removeHtmlTags(t)
+                  if (t)
+                    ttsPlugin_.speak(t, model.language)
+                }
               }
             }
+            root_.mouseLocked = false
           }
 
-          onDoubleClicked:
+          onDoubleClicked: {
+            if (root_.mouseLocked)
+              return
+            root_.mouseLocked = true
             if (model.language) {
               var t = model.text
               if (t) {
@@ -1006,9 +1171,14 @@ Item { id: root_
                 textEdit_.deselect()
                 //if (root_.readEnabled)
                 //if (model.type === 'text' || model.type !== 'name')
-                ttsPlugin_.speak(t, model.language)
+                if (!root_.sameLanguageAsUser(model.language)) {
+                  t = root_.normalizeTtsText(t) || t
+                  ttsPlugin_.speak(t, model.language)
+                }
               }
             }
+            root_.mouseLocked = false
+          }
         }
 
         Desktop.TooltipArea { id: toolTip_
@@ -1018,6 +1188,7 @@ Item { id: root_
 
           text: !textItem_.visible ? '' :
                 model.comment ? commentSummary(model.comment) :
+                model.sub ? subSummary(model.sub) :
                 model.provider ? translationSummary() :
                 model.type === 'name' ? My.tr("Character name") :
                 My.tr("Game text")
@@ -1043,6 +1214,16 @@ Item { id: root_
             //var lang = Sk.tr(c.language) // too long orz
             lang = "(" + lang + ")"
             var sec = c.updateTimestamp > 0 ? c.updateTimestamp : c.timestamp
+            var ts = Util.timestampToString(sec)
+            return us + lang + ' ' + ts
+          }
+
+          function subSummary(s) {
+            var us = '@' + s.userName
+            var lang = s.language
+            //var lang = Sk.tr(c.language) // too long orz
+            lang = "(" + lang + ")"
+            var sec = s.updateTime > 0 ? s.updateTime : s.createTime
             var ts = Util.timestampToString(sec)
             return us + lang + ' ' + ts
           }
@@ -1082,47 +1263,57 @@ Item { id: root_
         verticalAlignment: TextEdit.AlignVCenter
         //horizontalAlignment: TextEdit.AlignHCenter
         horizontalAlignment: root_.alignCenter ? TextEdit.AlignHCenter : TextEdit.AlignLeft
-        //selectByMouse: true
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
-        font.family: root_.fontFamily(model.language)
-        font.bold: fontPixelSize < 23  && model.language === 'ja' // i.e. MS Gothic
-
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.italic: Util.isLatinLanguage(model.language)
 
         //color: root_.revertsColor ? '#050500' : 'snow'
         color: root_.fontColor
 
-        property int fontPixelSize: 18 * root_._zoomFactor // prevent loop binding issue
+        property int fontPixelSize:
+            (root_.rubyJaInverted && (model.type === 'text' || model.type === 'name')) ?
+            14 * root_._zoomFactor :
+            18 * root_._zoomFactor
+
         font.pixelSize: fontPixelSize
+
+        font.family: root_.fontFamily(model.language)
+        font.bold: model.language === 'ja' && fontPixelSize < 23 // MS Gothic
+                || model.language === 'ko' && fontPixelSize < 24 && !root_.rubyInverted // DFGirl
 
         function renderText() {
           var t
           if (model.comment)
             t = root_.renderComment(model.comment)
+          else if (model.sub)
+            t = root_.renderSub(model.sub)
           else if (model.text) {
-            t = root_.nameVisible ? model.text : removeName(model.text)
+            t = root_.nameVisible ? model.text
+              : Util.removeTextName(model.text, model.type === 'text' ? 16 : 0) // max name limit
+            if (!t)
+              return ""
             if (model.language === 'ja' && (model.type === 'text' || model.type === 'name')) {
               if (root_.removesTextNewLine && ~t.indexOf("\n"))
                 t = t.replace(/\n/g, '')
               if (root_.furiganaEnabled)
-                t = bean_.renderJapanese(
-                  t,
-                  root_.caboChaEnabled,
-                  //root_.msimeParserEnabled,
-                  root_.rubyType,
-                  root_.rubyDic,
-                  Math.round(root_.width / (20 * root_._zoomFactor)), // char per line
-                  Math.round(10 * root_._zoomFactor) + 'px', // ruby size of furigana
-                  textItem_.hover, // colorize
-                  root_.alignCenter
-                )
+                t = root_.renderJapanese(t, textItem_.hover)
+              return t
             }
           }
-          if (root_.splitsTranslation && model.type === 'tr')
+          if (!t)
+            return ""
+          if (root_.isRubyLanguage(model.language) &&
+              ((model.type === 'text' || model.type === 'name') ?
+              root_.rubyTextEnabled : root_.rubyTranslationEnabled))
+            t = root_.renderRuby(t, model.language, textItem_.hover)
+          else if (model.alignObject)
+            t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
+          else if (root_.splitsTranslation && model.type === 'tr')
             t = root_.splitTranslation(t, model.language)
+          if (~t.indexOf("</a>"))
+            t = '<style>a{color:"' + root_.fontColor + '"}</style>' + t
+          //clipboardPlugin_.text = t // for debugging purpose
           return t || ""
           //return !t ? "" : root_.shadowEnabled ? t :
           //  '<span style="background-color:rgba(0,0,0,10)">' + t + '</span>'
@@ -1141,21 +1332,27 @@ Item { id: root_
     //console.log("grimoire.qml: pass")
   //}
 
-  function createTextItem(text, lang, type, provider, comment) {
+  function createTextItem(text, lang, type, alignObject, provider, comment) {
     return {
-      comment: comment
+      comment: type === 'sub' ? null : comment
+      , sub: type === 'sub' ? comment : null
       , language: lang
       , text: text
       , type: type // text, tr, comment, name, or name.tr
+      , alignObject: alignObject // opaque object or null
       , provider: provider
       , textEdit: undefined // placeHolder property
     }
   }
 
   function addText(text, lang, type, provider, comment) {
-    var item = createTextItem.apply(this, arguments)
+    if (modelLocked)
+      return
+    modelLocked = true
+    var item = createTextItem(text, lang, type, null, provider, comment)
     listModel_.append(item) // I assume the text always comes before translation
     listView_.currentIndex = _pageIndex
+    modelLocked = false
   }
 
   function showText(text, lang, timestamp) {
@@ -1173,29 +1370,38 @@ Item { id: root_
     //  pageBreak()
     if  (!root_.nameVisible)
       return
+    if (modelLocked)
+      return
+    modelLocked = true
 
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name')
     var index = _pageIndex + 1 // fix index
+
     if (index <= listModel_.count)
       listModel_.insert(index, item)
     else
       listModel_.append(item)
+
     listView_.currentIndex = _pageIndex
     //if (_pageIndex + 1 < listView_.count) {
     //  listView_.positionViewAtIndex(_pageIndex +1, ListView.Beginning)
     //}
+    modelLocked = false
   }
 
-  function showTranslation(text, lang, provider, timestamp) {
+  function showTranslation(text, lang, provider, alignObject, timestamp) {
     if  (!root_.translationVisible)
       return
+    if (modelLocked)
+      return
+    modelLocked = true
 
     //if (!listModel_.count)
     //  pageBreak()
 
     //text = text.replace(/\n/g, "<br/>")
-    var item = createTextItem(text, lang, 'tr', provider)
+    var item = createTextItem(text, lang, 'tr', alignObject, provider)
     if (_timestamp === Number(timestamp))
       listModel_.append(item)
     else if (_pageIndex <= listModel_.count)
@@ -1203,6 +1409,7 @@ Item { id: root_
     else // this should never happen
       listModel_.append(item)
     listView_.currentIndex = _pageIndex
+    modelLocked = false
   }
 
   function showNameTranslation(text, lang, provider) {
@@ -1210,15 +1417,20 @@ Item { id: root_
       return
     //if (!listModel_.count)
     //  pageBreak()
+    if (modelLocked)
+      return
+    modelLocked = true
 
+    var alignObject = null // TODO: mapping is not implemented for name
     text = "【" + text + "】"
-    var item = createTextItem(text, lang, 'name.tr', provider)
+    var item = createTextItem(text, lang, 'name.tr', alignObject, provider)
     var index = _pageIndex + 3
     if (index <= listModel_.count)
       listModel_.insert(index, item)
     else
       listModel_.append(item)
     listView_.currentIndex = _pageIndex
+    modelLocked = false
   }
 
   function showComment(c) { // actually subtitle rather than comment
@@ -1226,6 +1438,10 @@ Item { id: root_
     //  pageBreak()
 
     addText(c.text, c.language, 'comment', undefined, c)
+  }
+
+  function showSubtitle(s) {
+    addText(s.text, s.language, 'sub', undefined, s)
   }
 
   // Insert a page break
@@ -1245,11 +1461,15 @@ Item { id: root_
     // 1 paragraph is around 4 tr + 1 game text + 1 game name + 1 pagebreak = 7
     // 30 < 5 * 7
     if (listModel_.count > 30) {   // if the list size is greater than 30
+      if (modelLocked)
+        return
+      modelLocked = true
       //console.log("grimoire.qml:slimList: enter: count =", listModel_.count)
       while (listModel_.count > 20) // remove the first 10 items
         listModel_.remove(0)
       if (listView_.currentIndex >= 10) // 10 = 30 - 20
         listView_.currentIndex -= 10
+      modelLocked = false
       //console.log("grimoire.qml:slimList: leave: count =", listModel_.count)
       //console.log("grimoire.qml:slimList: pass")
     }
@@ -1264,17 +1484,15 @@ Item { id: root_
   }
 
   function clear() {
+    if (modelLocked)
+      return
+    modelLocked = true
     _pageIndex = 0
     listModel_.clear()
     //highlight_.visible = false
     root_.highlightVisible = false
+    modelLocked = false
     console.log("grimoire.qml:clear: pass")
-  }
-
-  function removeName(text) {
-    // http://stackoverflow.com/questions/1979884/how-to-use-javascript-regex-over-multiple-lines
-    return text.replace(/^[\s\S]+?「/, '「')
-    //return text.replace(/^【.*?】/, '')
   }
 
   // - Context Menu -
@@ -1316,14 +1534,18 @@ Item { id: root_
     return e ? textEditHoveredText(e) : ''
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     function popup(x, y) {
       popupX = x; popupY = y
 
       var item = listModel_.get(popupIndex())
       //textEditHighlightText(item.textEdit)
 
-      dictAct_.enabled = !!item && (item.type === 'text' || item.type === 'name')
+      termAct_.enabled = !!item && item.type !== 'comment' && item.type !== 'sub'
+      if (termAct_.enabled) {
+        termAct_.itemType = item.type
+        termAct_.itemLanguage = item.language
+      }
 
       var hasComment = !!(item && item.comment)
       editAct_.enabled = hasComment
@@ -1346,20 +1568,25 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.comment)
-          userViewPlugin_.showUser(item.comment.userId)
+          mainPlugin_.showUser(item.comment.userId)
       }
     }
 
     Desktop.Separator {}
 
-    Desktop.MenuItem { id: dictAct_
+    Desktop.MenuItem { id: termAct_
+      property string itemType
+      property string itemLanguage
 
       text: qsTr("Add to the Shared Dictionary")
 
       onTriggered: {
         var t = popupHoveredText()
-        if (t)
-          mainPlugin_.showNewTerm(t)
+        if (t) {
+          var type = itemType === 'tr' || itemType == 'name.tr' ? 'output' : ''
+          var lang = type === 'output' ? itemLanguage : ''
+          mainPlugin_.showNewTerm(t, type, lang)
+        }
       }
     }
 
@@ -1371,7 +1598,8 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.text)
-          clipboardPlugin_.text = item.text
+          clipboardPlugin_.text = Util.removeHtmlTags(item.text)
+          //clipboardPlugin_.text = item.text
       }
     }
 
@@ -1447,7 +1675,7 @@ Item { id: root_
     //    if (e) {
     //      if (t) {
     //        var t = e.selectedText
-    //        yakuAt(t, popupX, popupY)
+    //        lookupRequested(t, 'ja', popupX, popupY)
     //        console.log("grimoire.qml:lookup: pass")
     //      }
     //    }
@@ -1475,7 +1703,9 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.text && item.language) {
-          ttsPlugin_.speak(item.text, item.language)
+          var t = item.text
+          t = root_.normalizeTtsText(t) || t
+          ttsPlugin_.speak(t, item.language)
           console.log("grimoire.qml:readAll: pass")
         }
       }
@@ -1547,7 +1777,7 @@ Item { id: root_
       case Qt.RightButton:
         if (!root_.ignoresFocus) {
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-          contextMenu_.popup(gp.x, gp.y)
+          menu_.popup(gp.x, gp.y)
         } break
       case Qt.MiddleButton:
         root_.speakTextRequested()

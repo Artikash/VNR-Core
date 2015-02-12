@@ -31,7 +31,6 @@ COMMONPROGRAMFILES = u(os.environ.get('CommonProgramFiles')) or os.path.join(PRO
 COMMONPROGRAMFILESx86 = u(os.environ.get('CommonProgramFiles(x86)')) or os.path.join(PROGRAMFILESx86, r"Common Files")
 APPDATA = u(os.environ.get('AppData')) or os.path.join(HOME, r"AppData\Roaming")
 LOCALAPPDATA = u(os.environ.get('LocalAppData')) or os.path.join(HOME, r"AppData\Local")
-
 SYSTEM32 = os.path.join(WINDIR, 'System32')
 
 def prepend_path(path):

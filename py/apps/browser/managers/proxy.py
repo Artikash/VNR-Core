@@ -34,18 +34,30 @@ _PROXY_SITES = {
 _DLSITE_PROXY_SITES = {
   _normalize_host(host):key
   for host,key in (
-    ('www.dlsite.com', '/dlsite/www'),
-    ('img.dlsite.jp', '/dlsite/img'),
+    ('www.dlsite.com', 'dlsite/www'),
+    ('img.dlsite.jp', 'dlsite/img'),
+  )
+} # {string host: string key}
+
+_TORANOANA_PROXY_SITES = {
+  _normalize_host(host):key
+  for host,key in (
+    ('www.toranoana.jp', 'toranoana/www'),
+    ('img.toranoana.jp', 'toranoana/img'),
   )
 } # {string host: string key}
 
 ## Functions ##
 
+_SCHEME_PROXY = {
+  'http': '/proxy/',
+  #'https': '/proxyssl/',
+}
+
 def toproxyurl(url): # QUrl -> QUrl or None
-  if not isinstance(url, QUrl):
-    url = QUrl(url)
-  if url.scheme() == 'http':
-    url = QUrl(url)
+  proxy = _SCHEME_PROXY.get(url.scheme())
+  if proxy:
+    url = QUrl(url) # Avoid modifying the original URL
     host = _normalize_host(url.host())
     ip = _PROXY_DOMAINS.get(host) if _MAINLAND else None
     if ip:
@@ -53,34 +65,37 @@ def toproxyurl(url): # QUrl -> QUrl or None
     else:
       key = _PROXY_SITES.get(host)
       if not key and _MAINLAND:
-        key = _DLSITE_PROXY_SITES.get(host)
+        key = _DLSITE_PROXY_SITES.get(host) or _TORANOANA_PROXY_SITES.get(host)
       if key:
         url.setHost(config.PROXY_HOST)
-        path = '/proxy/' + key + url.path()
+        path = proxy + key + url.path()
         url.setPath(path)
+    #print url
     return url
 
 _re_proxy_key = re.compile(r'/proxy/([^/]+)(.*)')
+_re_proxy_key2 = re.compile(r'/proxy/([^/]+/[^/]+)(.*)') # up to two levels of regex
 def fromproxyurl(url): # QUrl -> QUrl or None
   if not isinstance(url, QUrl):
     url = QUrl(url)
-  if url.scheme() == 'http':
+  if url.scheme() in ('http', 'https'):
     host = url.host()
     if host == config.PROXY_HOST:
       path = url.path()
-      m = _re_proxy_key.match(path)
-      if m:
-        key = m.group(1)
-        if key:
-          host = config.PROXY_SITES.get(key)
-          if host:
-            url = QUrl(url)
-            url.setHost(host)
-            path = m.group(2) or '/'
-            if path[0] != '/':
-              path = '/' + path
-            url.setPath(path)
-            return url
+      for rx in _re_proxy_key, _re_proxy_key2:
+        m = rx.match(path)
+        if m:
+          key = m.group(1)
+          if key:
+            host = config.PROXY_SITES.get(key)
+            if host:
+              url = QUrl(url)
+              url.setHost(host)
+              path = m.group(2) or '/'
+              if path[0] != '/':
+                path = '/' + path
+              url.setPath(path)
+              return url
           #elif _MAINLAND and key == 'dlsite':
           #  host = None
           #  path = m.group(2) or '/'

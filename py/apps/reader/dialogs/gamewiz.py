@@ -2,7 +2,7 @@
 # gamewiz.py
 # 10/14/2012 jichi
 
-__all__ = ['GameWizard']
+__all__ = 'GameWizard',
 
 import os
 from functools import partial
@@ -786,7 +786,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
     self._encodingEdit = QtWidgets.QComboBox()
     self._encodingEdit.setEditable(False)
     self._encodingEdit.setToolTip(tr_("Text encoding"))
-    self._encodingEdit.addItems(map(str.upper, config.ENCODINGS))
+    self._encodingEdit.addItems(map(i18n.encoding_desc, config.ENCODINGS))
     self._encodingEdit.currentIndexChanged.connect(self._refresh)
 
     self._keepsSpaceButton = QtWidgets.QCheckBox(
@@ -971,7 +971,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
       t.name = name
       self._threads[signature] = t
 
-      if name == defs.USER_DEFINED_THREAD_NAME:
+      if name == defs.HCODE_THREAD_NAME:
         n = mytr_("H-code")
       elif name in defs.CAONIMAGEBI_ENGINES:
         n = name + defs.CAONIMAGEBI_USERNAME
@@ -998,7 +998,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
       self._refresh()
 
   def _currentEncoding(self):
-    return self._encodingEdit.currentText().lower()
+    return config.ENCODINGS[self._encodingEdit.currentIndex()]
 
   def _currentSignature(self):
     sig = self._grid.currentValue() # ASSUME THE VALUE IS THE SIGNATURE
@@ -1073,7 +1073,7 @@ Especially if you would like to translate this game.""") % (mail, mail))
 
 class GameWizard(QtWidgets.QWizard):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameWizard, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-gamewiz'))
     self.setWindowTitle(mytr_("Game Wizard"))

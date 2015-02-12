@@ -4,7 +4,7 @@
 # Windows only
 # See: http://stackoverflow.com/questions/5253854/python-import-dll
 
-__all__ = ['TextHook']
+__all__ = 'TextHook',
 
 #from ctypes import c_longlong
 from PySide.QtCore import Signal, QObject, Qt

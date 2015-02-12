@@ -21,7 +21,7 @@
 //         split_ind;    // 20
 //   DWORD module,       // 24
 //         function;     // 28
-//   DataFun extern_fun; // 32, jichi: is this the same in x86 and x86_64?
+//   DataFun text_fun; // 32, jichi: is this the same in x86 and x86_64?
 //   DWORD type;         // 36
 //   WORD length_offset; // 38
 //   BYTE hook_len,      // 39
@@ -108,7 +108,7 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
     t = Convert(offset, data, delim);
     if (t < 0)
       return false; //ConsoleOutput(L"Syntax error.");
-    offset = wcschr(offset , delim[t]);
+    offset = ::wcschr(offset , delim[t]);
     if (offset)
       offset++;   // skip the current delim
     else //goto _error;
@@ -143,11 +143,11 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
   if (hp.split & 0x80000000)
     hp.split -= 4;
   LPWSTR temp = offset;
-  offset = wcschr(offset, L':');
+  offset = ::wcschr(offset, L':');
   if (offset) {
     hp.type |= MODULE_OFFSET;
     offset++;
-    delim = wcschr(offset, L':');
+    delim = ::wcschr(offset, L':');
 
     if (delim) {
       *delim = 0;
@@ -161,11 +161,11 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
       hp.module = Hash(_wcslwr(offset));
 
   } else {
-    offset = wcschr(temp, L'!');
+    offset = ::wcschr(temp, L'!');
     if (offset) {
       hp.type |= MODULE_OFFSET;
       swscanf(offset + 1, L"%x", &hp.module);
-      offset = wcschr(offset + 1, L'!');
+      offset = ::wcschr(offset + 1, L'!');
       if (offset) {
         hp.type |= FUNCTION_OFFSET;
         swscanf(offset + 1, L"%x", &hp.function);
@@ -189,9 +189,10 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
   case L'B':
     hp.length_offset = 1;
     break;
-  case L'h':
-  case L'H':
-    hp.type |= PRINT_DWORD;
+  // jichi 12/7/2014: Disabled
+  //case L'h':
+  //case L'H':
+  //  hp.type |= PRINT_DWORD;
   case L'q':
   case L'Q':
     hp.type |= USING_STRING | USING_UNICODE;
@@ -236,7 +237,7 @@ bool Ith::parseHookCode(const QString &code, HookParam *hp)
   if (ret)
     qDebug()
       << "addr:" << hp->addr
-      << ", extern_fun:" << hp->extern_fun
+      << ", text_fun:" << hp->text_fun
       << ", function:"<< hp->function
       << ", hook_len:" << hp->hook_len
       << ", ind:" << hp->ind

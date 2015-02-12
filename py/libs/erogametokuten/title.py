@@ -2,7 +2,7 @@
 # title.py
 # 6/20/2013 jichi
 
-__all__ = ['TitleApi']
+__all__ = 'TitleApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

@@ -1,49 +1,73 @@
 {# shiori.html 11/25/2012 jichi
+ # @param  language  unicode  not used
  # @param  text  unicode not None  The orignal text to translate
  # @param  feature  unicode or None
- # @param  edict_tuples  [cjklib.dictionary.EntryTuple(Headword, Reading, Translation)]
+ # @param  edict_tuples  (unicode word, unicode yomi, unicode tr)]
  # @param  ld_tuples  [unicode word, unicode xmls]
  # @param  eb_strings  [unicode]
  #
  # Escaping is disabled to improve performance.
 -#}
+%set gg = "https://www.google.com/?#hl=ja&safe=off&q="
+%set bd = "https://www.baidu.com/s?wd="
 <html>
 	<head>
 		<style type="text/css">
-a{color:silver}
+p{margin:6px 0 0}
 i{font-style:normal}
-.f{font-size:134%;background-color:rgba(255,0,0,50%)}
-.sr{font-weight:normal}
-.sk,.th{font-size:150%;background-color:rgba(255,255,0,40%)}
+ul,ol{margin:0}
+li{margin:0;padding:0}
+a{color:silver}
+.q a{text-decoration:none;color:#add8ff}
+.f{background-color:rgba(255,0,0,40%);font-weight:bold}
+.sk,.th{background-color:rgba(128,225,0,40%)}
 .ta{text-align:right}
+.hl{background-color:rgba(255,165,0,40%)}
+u,.edict .role{background-color:rgba(128,0,128,60%)}
+.edict .flag{color:orange}
+/*.sr,.tt{font-weight:normal}*/
 		</style>
 	</head>
 	<body>
 %if feature
-		<p><span class="f">{{feature}}</span></p>
+		<div><span class="f">{{feature}}</span></div>
 %endif
+		<p class="q">
+			<a href="{{gg}}{{text}}">+google</a>
+			{{' '}}<a href="{{bd}}{{text}}">+baidu</a>
+		</p>
 %if ld_tuples
 %	for word, xml in ld_tuples
 		<p class="t">
-			<div><span class="th">{{word}}</span></div>
+			<div class="q">
+				<span class="th">【{{word}}】</span>
+				{{' '}}<a href="{{gg}}{{word}}">+gg</a>
+				{{' '}}<a href="{{bd}}{{word}}">+bd</a>
+			</div>
 			<div class="tt">{{xml}}</div>
 		</p>
 %	endfor
 %endif
-%if eb_strings
-%	for s in eb_strings
-		<p class="s">{{s}}</p>
+%if edict_tuples
+		<hr/>
+%	for word,reading,trans in edict_tuples
+		<p class="t">
+			<div class="q">
+				<span class="th">【{{word}}】</span>
+%		if reading
+				<span class="tr">（{{reading}}）</span>
+%		endif
+				{{' '}}<a href="{{gg}}{{word}}">+gg</a>
+				{{' '}}<a href="{{bd}}{{word}}">+bd</a>
+			</div>
+			<div class="tt edict">{{trans}}</div>
+		</p>
 %	endfor
 %endif
-%if edict_tuples
-%	for t in edict_tuples
-		<p class="t">
-			<div>
-				<span class="th">{{t.Headword}}</span>
-{{" "}}
-				<span class="tr">{{t.Reading or t.Headword}}</span>
-			<div class="tt">{{t.Translation}}</div>
-		</p>
+%if eb_strings
+		<hr/>
+%	for s in eb_strings
+		<p class="s">{{s}}</p>
 %	endfor
 %endif
 	</body>

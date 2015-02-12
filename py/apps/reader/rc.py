@@ -21,11 +21,14 @@ import cacheman, config, defs, hashutil
 DIR_APP = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../..'))
 DIR_APP_LIBRARY = DIR_APP + '/Library'
 DIR_APP_CACHE = DIR_APP + '/Caches'
-DIR_APP_TMP = DIR_APP_CACHE + '/tmp'# $app/Caches/tmp
 
-DIR_TMP = DIR_APP_TMP
+DIR_TMP = DIR_APP_CACHE + '/tmp'# $app/Caches/tmp
 
-DIR_TMP_OCR = DIR_TMP + '/ocr' # $app/Caches/tmp/ocr
+DIR_APP_TMP = DIR_TMP + '/reader'
+
+DIR_TMP_OCR = DIR_APP_TMP + '/ocr'   # $app/Caches/tmp/reader/ocr
+DIR_TMP_TERM = DIR_APP_TMP + '/dict' # $app/Caches/tmp/reader/dict
+DIR_TMP_TTS = DIR_APP_TMP + '/tts'   # $app/Caches/tmp/reader/tts
 
 #DIR_PLUGIN      = DIR_SAKURA + '/userplugin'    # Sakura/userplugin
 #DIR_PLUGIN_PY   = DIR_PLUGIN + '/py/1' # userplugin/py/1
@@ -55,6 +58,8 @@ DIR_CACHE_DMM = DIR_USER_CACHE + '/dmm'         # $user/caches/dmm
 DIR_CACHE_TOKUTEN = DIR_USER_CACHE + '/tokuten' # $user/caches/tokuten
 DIR_CACHE_TRAILERS = DIR_USER_CACHE + '/trailers' # $user/caches/trailers
 DIR_CACHE_SCAPE = DIR_USER_CACHE + '/scape'     # $user/caches/scape
+DIR_CACHE_FREEM = DIR_USER_CACHE + '/freem'     # $user/caches/freem
+DIR_CACHE_STEAM = DIR_USER_CACHE + '/steam'     # $user/caches/steam
 DIR_CACHE_GETCHU = DIR_USER_CACHE + '/getchu'   # $user/caches/getchu
 DIR_CACHE_GYUTTO = DIR_USER_CACHE + '/gyutto'   # $user/caches/gyutto
 DIR_CACHE_DIGIKET = DIR_USER_CACHE + '/digiket'   # $user/caches/digiket
@@ -70,7 +75,11 @@ DIR_CACHE_INST = DIR_APP_CACHE + '/Installers'# $app/Caches/Installers
 DIR_DICT_MECAB = DIR_CACHE_DICT + '/MeCab'      # $app/Caches/Dictionaries/MeCab
 
 #DIR_XML_COMMENT = DIR_USER_XML + '/comments'   # $user/xml/1/comments, unicode
-DIR_XML_COMMENT = DIR_APP_CACHE + '/Subtitles'  # $user/xml/1/comments, unicode
+
+DIR_CACHE_SUB = DIR_APP_CACHE + '/Subtitles'    # $app/Caches/Subtitles
+
+DIR_XML_COMMENT = DIR_CACHE_SUB + '/xml'        # $app/Caches/Subtitles/xml
+DIR_YAML_SUB = DIR_CACHE_SUB + '/yaml'          # $app/Caches/Subtitles/yaml
 
 # Apps
 
@@ -152,6 +161,50 @@ def refs_xml_path(gameId):
   @nothrow
   """
   return "%s/%s.xml" % (DIR_XML_REF, gameId)
+
+def subs_yaml_path(itemId, subLang, gameLang='ja', fmt='yaml'):
+  """
+  @param  itemId  long
+  @param  subLang  str
+  @param  gameLang  str
+  @return  unicode  path
+  @nothrow
+  """
+  return "%s/%s.%s-%s.%s" % (DIR_YAML_SUB, itemId, gameLang[:2], subLang[:2], fmt)
+
+# Terms
+
+#TERM_RELPATHS = {
+#  'ocr': 'ocr',
+#  'speech': 'tts',
+#  'origin': 'game',
+#  'source': 'input',
+#  'target': 'output',
+#  'escape_source': 'escape_input',
+#  'escape_target': 'escape_output',
+#}
+def term_path(type, to, fr):
+  """
+  @param  type  str  term type
+  @param  to  str  target language
+  @param  fr  str  source language
+  @return  unicode  path
+  @nothrow
+  """
+  return "%s/%s-%s/%s.txt" % (DIR_TMP_TERM, fr or 'ja', to or 'ja', type or 'none')
+
+# TTS
+
+def tts_path(url):
+  """
+  @param  type  str
+  @param  language  str
+  @param  text  unicode
+  @return  unicode  path
+  @nothrow
+  """
+  name = hashutil.urlsum(url)
+  return "%s/%s.mp3" % (DIR_TMP_TTS, name)
 
 # MeCab
 
@@ -429,7 +482,7 @@ def file_icon(path):
   @return  QIcon not None
   @nothrow
   """
-  if path and path.endswith(".000"):
+  if path and (path.endswith(".000") or path.lower().endswith(".bin")):
     path = path[:-3] + "exe"
   return FILE_ICON_PROVIDER.icon(path)
 

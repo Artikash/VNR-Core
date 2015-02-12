@@ -26,7 +26,6 @@ from itertools import ifilter
 from sakurakit import skstr
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
-from cconv import cconv
 import mecabdef, mecabfmt, mecabparse, mecabrender
 
 _rx_spaces = re.compile(r'\s+')

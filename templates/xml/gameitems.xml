@@ -26,8 +26,14 @@
 %	if it.image
 			<image>{{it.image|e}}</image>
 %	endif
+%	if it.banner
+			<banner>{{it.banner|e}}</banner>
+%	endif
 %	if it.wiki
 			<wiki>{{it.wiki|e}}</wiki>
+%	endif
+%	if it.fileSize
+			<fileSize>{{it.fileSize}}</fileSize>
 %	endif
 %	if it.tags
 			<tags>{{it.tags|e}}</tags>
@@ -50,8 +56,22 @@
 %	if it.otome
 			<otome>true</otome>
 %	endif
+%	if it.ecchi
+			<ecchi>true</ecchi>
+%	else
+			<ecchi>false</ecchi>
+%	endif
 %	if it.okazu
 			<okazu>true</okazu>
+%	endif
+%	if it.topicCount
+			<topicCount>{{it.topicCount}}</topicCount>
+%	endif
+%	if it.annotCount
+			<annotCount>{{it.annotCount}}</annotCount>
+%	endif
+%	if it.subtitleCount
+			<subtitleCount>{{it.subtitleCount}}</subtitleCount>
 %	endif
 %	if it.scapeMedian
 			<scapeMedian>{{it.scapeMedian}}</scapeMedian>
@@ -70,12 +90,6 @@
 %	endif
 %	if it.ecchiScoreSum
 			<ecchiScoreSum>{{it.ecchiScoreSum}}</ecchiScoreSum>>
-%	endif
-%	if it.easyScoreCount
-			<easyScoreCount>{{it.easyScoreCount}}</easyScoreCount>>
-%	endif
-%	if it.easyScoreSum
-			<easyScoreSum>{{it.easyScoreSum}}</easyScoreSum>>
 %	endif
 		</item>
 %endfor

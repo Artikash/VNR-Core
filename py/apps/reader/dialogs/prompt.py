@@ -13,6 +13,7 @@ import config, growl, i18n, netman, settings #ttsman
 
 Yes = QMessageBox.Yes
 No = QMessageBox.No
+Reset = QMessageBox.Reset
 
 def _parent():
   """
@@ -336,23 +337,51 @@ It might take a couple of seconds to complete."""),
 
 def confirmUpdateTerms():
   """
-  @return  bool
+  @return  {reset=bool} or None
   """
   if not netman.manager().isOnline():
     growl.warn(my.tr("Cannot perform update when offline"))
     return
   #_speak(u"今すぐ辞書を更新しますか？")
   t = settings.global_().termsTime() or config.VERSION_TIMESTAMP
-  return Yes == QMessageBox.question(_parent(),
+  sel = QMessageBox.question(_parent(),
       my.tr("Update user-contributed dictionary"),
       "\n\n".join((
-my.tr("""Dictionary terms are updated on: {0}.
-The dictionary might enhance machine translation quality.
-VNR will check for automatically updates."""),
-my.tr("""Do you want to update now?
-It might take a couple of seconds to complete."""),
+"\n".join((my.tr("Dictionary terms for machine translation are updated on: {0}."),
+           my.tr("VNR will check for automatically updates. Do you want to update now?"))),
+my.tr("""
+VNR will do incremental update by default.
+But if you press Reset, VNR will redownload the entire data, which is slow."""),
 )).format(i18n.timestamp2datetime(t)),
-      Yes|No, No)
+      Yes|No|Reset, No)
+  if sel == Yes:
+    return {'reset':False}
+  elif sel == Reset:
+    return {'reset':True}
+
+def confirmUpdateSubs(timestamp=0):
+  """
+  @param* timestamp  long
+  @return  {reset=bool} or None
+  """
+  if not netman.manager().isOnline():
+    growl.warn(my.tr("Cannot perform update when offline"))
+    return
+  ts = i18n.timestamp2datetime(timestamp) if timestamp else tr_('empty')
+  sel = QMessageBox.question(_parent(),
+      my.tr("Update user-contributed subtitles"),
+      "\n\n".join((
+"\n".join((my.tr("Shared subtitles are updated on: {0}."),
+           my.tr("VNR will check for automatically updates. Do you want to update now?"))),
+my.tr("""
+VNR will do incremental update by default.
+But if you press Reset, VNR will redownload the entire data, which is slow."""),
+)).format(ts),
+      Yes|No|Reset, No)
+  if sel == Yes:
+    return {'reset':False}
+  elif sel == Reset:
+    return {'reset':True}
 
 #def confirmUpdateTranslationScripts():
 #  """
@@ -603,6 +632,16 @@ The program will be installed to {0}.
 There is no way to change the installation location.
 VNR can also uninstall it later if you want.""").format(location),
       Yes|No, No)
+
+#def confirmTranslationSyntaxDisabled():
+#  """
+#  @return  bool
+#  """
+#  return Yes == QMessageBox.question(_parent(),
+#      my.tr("Disable syntax-based translation system"),
+#      my.tr("""VNR has to disable the syntax-based Japanese translation if CaboCha or UniDic is not enabled.
+#Do you want to continue?"""),
+#      Yes|No, No)
 
 # QML
 

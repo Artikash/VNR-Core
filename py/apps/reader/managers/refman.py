@@ -11,7 +11,6 @@ if __name__ == '__main__':
 import re
 from datetime import datetime
 from functools import partial
-from PySide.QtCore import QObject
 from sakurakit import skdatetime, skthreads
 from sakurakit.skclass import memoized, memoizedproperty, hasmemoizedproperty
 #from sakurakit.skcontainer import uniquelist
@@ -162,7 +161,7 @@ class TrailersApi(object):
     dprint("enter")
     if text and not key and (
         isinstance(text, int) or isinstance(text, long) or
-        (isinstance(text, str) or isinstance(text, unicode)) and text.isdigit()
+        isinstance(text, basestring) and text.isdigit()
       ):
       key = text
       text = None
@@ -213,12 +212,34 @@ class ScapeApi(object):
     @param* online  bool
     """
     self.online = online
+    self.proxyEnabled = False
+
+    import settings
+    ss = settings.global_()
+    self.setProxyEnabled(ss.proxyScape())
+    ss.proxyScapeChanged.connect(self.setProxyEnabled)
+
+  def setProxyEnabled(self, t):
+    if self.proxyEnabled != t:
+      dprint(t)
+      self.proxyEnabled = t
+      session = None
+      if t:
+        import features
+        session = features.make_proxy_session()
+      self.setSession(session)
 
   def setOnline(self, v):
     if self.online !=  v:
       self.online = v
       if hasmemoizedproperty(self, 'cachingApi'):
         self.cachingApi.online = v
+
+  def setSession(self, v): # requests.Session
+    if hasmemoizedproperty(self, 'cachingApi'):
+      self.cachingApi.session = v
+    if hasmemoizedproperty(self, 'api'):
+      self.api.session = v
 
   @memoizedproperty
   def cachingApi(self):
@@ -388,10 +409,215 @@ class HolysealApi(object):
           try:
             d = datetime.strptime(d, '%Y/%m/%d')
             d = skdatetime.date2timestamp(d)
-          except: dwarn("failed to parse date")
+          except:
+            dwarn("failed to parse date")
+            d = 0
         item['date'] = d
 
         item['url'] = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % id
+
+        ret.append(item)
+    except Exception, e: dwarn(e)
+    dprint("leave: count = %s" % len(ret))
+    return ret
+
+## Steam API ##
+
+class SteamApi(object):
+
+  def __init__(self, online=True):
+    """
+    @param* online  bool
+    """
+    self.online = online
+
+    import parsedatetime
+    self.pdtc = parsedatetime.Calendar()
+
+  def setOnline(self, v):
+    if self.online !=  v:
+      self.online = v
+      if hasmemoizedproperty(self, 'cachingAppApi'):
+        self.cachingAppApi.online = v
+
+  @memoizedproperty
+  def cachingAppApi(self):
+    from steam.caching import CachingAppApi
+    return CachingAppApi(
+        cachedir=rc.DIR_CACHE_STEAM,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  @memoizedproperty
+  def searchApi(self):
+    from steam.search import SearchApi
+    return SearchApi()
+
+  def _search(self, text=None, key=None, cache=True):
+    """
+    @param  cache  bool  not used
+    @yield  kw
+    """
+    dprint("key, text =", key, text)
+    if key:
+      kw = self.cachingAppApi.query(key)
+      if kw:
+        yield kw
+    elif text:
+      q = self.searchApi.query(text)
+      if q:
+        for it in q:
+          yield it
+
+  def cache(self, text=None, key=None):
+    if key:
+      dprint("enter")
+      self.cachingAppApi.cache(key)
+      dprint("leave")
+
+  @staticmethod
+  def _parsekey(url):
+    """
+    @param  url  unicode
+    @return  unicode or None
+    """
+    if url:
+      m = re.search(r"/([0-9]+)", url)
+      if m:
+        return m.group(1)
+
+  # See: https://affiliate.dmm.com/api/reference/r18/pcgame/
+  def query(self, key=None, text=None, **kwargs):
+    """
+    @return  iter not None
+    """
+    dprint("enter")
+    ret = []
+    if not key and text:
+      if text.isdigit():
+        key = text
+      elif 'steampowered.com' in text:
+        k = self._parsekey(text)
+        if k:
+          key = k
+    s = self._search(key=key, text=text, **kwargs)
+    try:
+      for item in s:
+        k = str(item.pop('id'))
+        item['key'] = k
+        d = item.get('date') or 0 # int
+        if d:
+          try:
+            d = datetime(*self.pdtc.parseDateText(d)[:6])
+            d = skdatetime.date2timestamp(d)
+          except:
+            dwarn("failed to parse date")
+            d = 0
+        item['date'] = d
+
+        if 'img' in item:
+          item['image'] = item.pop('img')
+
+        item['brand'] = item.get('developer') or item.get('publisher') or ''
+
+        ret.append(item)
+    except Exception, e: dwarn(e)
+    dprint("leave: count = %s" % len(ret))
+    return ret
+
+## Freem API ##
+
+class FreemApi(object):
+
+  def __init__(self, online=True):
+    """
+    @param* online  bool
+    """
+    self.online = online
+
+  def setOnline(self, v):
+    if self.online !=  v:
+      self.online = v
+      if hasmemoizedproperty(self, 'cachingGameApi'):
+        self.cachingGameApi.online = v
+
+  @memoizedproperty
+  def cachingGameApi(self):
+    from freem.caching import CachingGameApi
+    return CachingGameApi(
+        cachedir=rc.DIR_CACHE_FREEM,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  @memoizedproperty
+  def searchApi(self):
+    from freem.search import SearchApi
+    return SearchApi()
+
+  def _search(self, text=None, key=None, cache=True):
+    """
+    @param  cache  bool  not used
+    @yield  kw
+    """
+    dprint("key, text =", key, text)
+    if key:
+      kw = self.cachingGameApi.query(key)
+      if kw:
+        yield kw
+    elif text:
+      q = self.searchApi.query(text)
+      if q:
+        for it in q:
+          yield it
+
+  def cache(self, text=None, key=None):
+    if key:
+      dprint("enter")
+      self.cachingGameApi.cache(key)
+      dprint("leave")
+
+  @staticmethod
+  def _parsekey(url):
+    """
+    @param  url  unicode
+    @return  unicode or None
+    """
+    if url:
+      m = re.search(r"/([0-9]+)", url)
+      if m:
+        return m.group(1)
+
+  # See: https://affiliate.dmm.com/api/reference/r18/pcgame/
+  def query(self, key=None, text=None, **kwargs):
+    """
+    @return  iter not None
+    """
+    dprint("enter")
+    ret = []
+    if not key and text:
+      if text.isdigit():
+        key = text
+      elif text.startswith('http://') or text.startswith('www.'):
+        k = self._parsekey(text)
+        if k:
+          key = k
+    s = self._search(key=key, text=text, **kwargs)
+    try:
+      for item in s:
+        k = str(item.pop('id'))
+        item['key'] = k
+        d = item.get('date') or 0 # int
+        if d:
+          try:
+            d = datetime.strptime(d, '%Y-%m-%d')
+            d = skdatetime.date2timestamp(d)
+          except:
+            dwarn("failed to parse date")
+            d = 0
+        item['date'] = d
+
+        if 'img' in item:
+          item['image'] = item.pop('img')
 
         ret.append(item)
     except Exception, e: dwarn(e)
@@ -507,12 +733,14 @@ class GetchuApi(object):
           continue
         item['title'] = title
 
-        d = item['date'] or 0 # int
+        d = item.get('date') or 0 # int
         if d:
           try:
             d = datetime.strptime(d, '%Y/%m/%d')
             d = skdatetime.date2timestamp(d)
-          except: dwarn("failed to parse date")
+          except:
+            dwarn("failed to parse date")
+            d = 0
         item['date'] = d
         item['image'] = item['img']
 
@@ -569,7 +797,7 @@ class GyuttoApi(object):
     """
     dprint("key, text =", key, text)
     if key:
-      if (isinstance(key, str) or isinstance(key, unicode)) and key.startswith('http://'):
+      if isinstance(key, basestring) and key.startswith('http://'):
         kw = self.cachingItemApi.query(url=key)
       else:
         kw = self.cachingItemApi.query(key)
@@ -854,7 +1082,7 @@ class DLsiteApi(object):
           continue
         item['key'] = k
 
-        d = item['date'] or 0 # int
+        d = item.get('date') or 0 # int
         if d:
           d = skdatetime.date2timestamp(d)
         item['date'] = d
@@ -1351,9 +1579,8 @@ class DmmApi(object):
 ## API Wrapper ##
 
 class AsyncApi:
-  def __init__(self, parent=None, api=None):
+  def __init__(self, api=None):
     self.api = api
-    self.parent = parent # QObject
 
   def setOnline(self, v): self.api.setOnline(v)
 
@@ -1369,8 +1596,8 @@ class AsyncApi:
     #  dwarn("missing both search text and key")
     #  return []
     return skthreads.runsync(partial(
-        self.api.query, **kwargs),
-        parent=self.parent) if async else self.api.query(**kwargs)
+      self.api.query, **kwargs),
+    ) if async else self.api.query(**kwargs)
 
   def cache(self, async=True, **kwargs):
     """
@@ -1386,15 +1613,13 @@ class AsyncApi:
 
 class _ReferenceManager(object):
   # The same as dataman.Reference.TYPES
-  API_TYPES = frozenset(('trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
+  API_TYPES = frozenset(('trailers', 'scape', 'freem', 'steam', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
 
-  def __init__(self, parent):
-    self.parent = None
+  def __init__(self):
     self.online = True
 
   def _createApi(self, cls):
-    return AsyncApi(parent=self.parent,
-        api=cls(online=self.online))
+    return AsyncApi(api=cls(online=self.online))
 
   @memoizedproperty
   def amazonApi(self): return self._createApi(AmazonApi)
@@ -1413,6 +1638,12 @@ class _ReferenceManager(object):
 
   @memoizedproperty
   def dlsiteApi(self): return self._createApi(DLsiteApi)
+
+  @memoizedproperty
+  def freemApi(self): return self._createApi(FreemApi)
+
+  @memoizedproperty
+  def steamApi(self): return self._createApi(SteamApi)
 
   @memoizedproperty
   def holysealApi(self): return self._createApi(HolysealApi)
@@ -1436,10 +1667,9 @@ class _ReferenceManager(object):
     if type in self.API_TYPES:
       return getattr(self, type + 'Api')
 
-class ReferenceManager(QObject):
-  def __init__(self, parent=None):
-    super(ReferenceManager, self).__init__(parent)
-    self.__d = _ReferenceManager(self)
+class ReferenceManager:
+  def __init__(self):
+    self.__d = _ReferenceManager()
 
   # FIXME: parent is not broadcast to apis
   # Other wise, it will raise the following error:
@@ -1532,14 +1762,8 @@ class _TrailersManager(object):
 
 class TrailersManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _TrailersManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1556,8 +1780,8 @@ class TrailersManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.query, id),
-        parent=self.parent) if async else self.__d.query(id)
+      self.__d.query, id),
+    ) if async else self.__d.query(id)
 
 ## Getchu review manager ##
 
@@ -1575,14 +1799,8 @@ class _GetchuManager(object):
 
 class GetchuManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _GetchuManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1599,8 +1817,8 @@ class GetchuManager:
     @return  unicode or None
     """
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, id),
-        parent=self.parent) if async else self.__d.reviewApi.query(id)
+      self.__d.reviewApi.query, id),
+    ) if async else self.__d.reviewApi.query(id)
 
 ## Amazon review manager ##
 
@@ -1619,14 +1837,8 @@ class _AmazonManager(object):
 
 class AmazonManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _AmazonManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1643,8 +1855,8 @@ class AmazonManager:
     @return  unicode or None
     """
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, url),
-        parent=self.parent) if async else self.__d.reviewApi.query(url)
+      self.__d.reviewApi.query, url),
+    ) if async else self.__d.reviewApi.query(url)
 
 ## Gyutto review manager ##
 
@@ -1662,14 +1874,8 @@ class _GyuttoManager(object):
 
 class GyuttoManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _GyuttoManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1686,8 +1892,8 @@ class GyuttoManager:
     @return  unicode or None
     """
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, id),
-        parent=self.parent) if async else self.__d.reviewApi.query(id)
+      self.__d.reviewApi.query, id),
+    ) if async else self.__d.reviewApi.query(id)
 
 # Specific to DMM
 
@@ -1705,14 +1911,8 @@ class _DmmManager(object):
 
 class DmmManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _DmmManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1729,16 +1929,16 @@ class DmmManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.api.query, url),
-        parent=self.parent) if async else self.__d.api.query(url)
+      self.__d.api.query, url),
+    ) if async else self.__d.api.query(url)
 
   #def cache(self, url, async=True):
   #  """
   #  @param  id  int or str  Getchu soft ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 # Erogame Tokuten
 
@@ -1762,14 +1962,8 @@ class _TokutenManager(object):
 
 class TokutenManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _TokutenManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1786,16 +1980,16 @@ class TokutenManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.query, key),
-        parent=self.parent) if async else self.__d.query(key)
+      self.__d.query, key),
+    ) if async else self.__d.query(key)
 
   #def cache(self, url, async=True):
   #  """
   #  @param  id  int or str  Getchu soft ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 if __name__ == '__main__':
   #from amazonproduct.api import API
@@ -1998,14 +2192,8 @@ if __name__ == '__main__':
 #
 #class HolysealManager:
 #
-#  def __init__(self, parent=None):
-#    """
-#    @param  parent  QObject
-#    """
+#  def __init__(self):
 #    self.__d = _HolysealManager()
-#    self.parent = parent
-#
-#  def setParent(self, v): self.parent = v
 #
 #  def isOnline(self): return self.__d.online
 #  def setOnline(self, v):
@@ -2023,8 +2211,8 @@ if __name__ == '__main__':
 #    """
 #    self.__d.warmup()
 #    return skthreads.runsync(partial(
-#        self.__d.query, id),
-#        parent=self.parent) if async else self.__d.query(id)
+#      self.__d.query, id),
+#    ) if async else self.__d.query(id)
 
 ## ErogameScape review ##
 
@@ -2047,14 +2235,8 @@ class _ScapeManager(object):
 
 class ScapeManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _ScapeManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v): self.__d.online = v
@@ -2075,16 +2257,16 @@ class ScapeManager:
     if not self.__d.online:
       return []
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, id, **kwargs),
-        parent=self.parent) if async else self.__d.reviewApi.query(id, **kwargs)
+      self.__d.reviewApi.query, id, **kwargs),
+    ) if async else self.__d.reviewApi.query(id, **kwargs)
 
   #def cache(self, id, async=True):
   #  """
   #  @param  id  int or str  ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 # Specific to Getchu
 
@@ -2102,14 +2284,8 @@ class ScapeManager:
 #
 #class GetchuManager:
 #
-#  def __init__(self, parent=None):
-#    """
-#    @param  parent  QObject
-#    """
+#  def __init__(self):
 #    self.__d = _GetchuManager()
-#    self.parent = parent
-#
-#  def setParent(self, v): self.parent = v
 #
 #  def isOnline(self): return self.__d.online
 #  def setOnline(self, v):
@@ -2126,16 +2302,16 @@ class ScapeManager:
 #    @return  {kw}
 #    """
 #    return skthreads.runsync(partial(
-#        self.__d.api.query, id),
-#        parent=self.parent) if async else self.__d.api.query(id)
+#      self.__d.api.query, id),
+#    ) if async else self.__d.api.query(id)
 
   #def cache(self, id, async=True):
   #  """
   #  @param  id  int or str  Getchu soft ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 ## Getchu ##
 

@@ -66,7 +66,8 @@ private:
     foreach (const QChar &c, s)
       switch (c.unicode()) {
       case '(': case ')': case '[': case ']': case '^': case '$':
-      case '|': case '\\': case '?': case '!': case '*': case '.':
+      case '|': case '\\': case '?': case '!': case '+': case '*': case '.':
+      //case ':': case '{': case '}':
         return true;
       }
     return false;
@@ -83,7 +84,7 @@ public:
   //QReadWriteLock lock;
 
   TahScriptRule *rules; // use array for performance reason
-  int ruleCount;
+  size_t ruleCount;
 
   TahScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
   ~TahScriptManagerPrivate() { if (rules) delete[] rules; }
@@ -92,19 +93,21 @@ public:
   {
     ruleCount = 0;
     if (rules) {
-      delete rules;
+      delete[] rules;
       rules = nullptr;
     }
   }
 
-  void reset(int size)
+  void reset(size_t size)
   {
     DOUT(size);
     Q_ASSERT(size > 0);
+    //if (ruleCount != size) {
     ruleCount = size;
     if (rules)
       delete[] rules;
     rules = new TahScriptRule[size];
+    //}
   }
 };
 
@@ -141,7 +144,7 @@ bool TahScriptManager::loadFile(const QString &path)
   QTextStream in(&file);
   in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
-    QString line = in.readLine(); //.trimmed(); // trim the spaces
+    QString line = in.readLine(); // including the trailing \n
     if (!line.isEmpty())
       switch (line[0].unicode()) {
       case TAHSCRIPT_COMMENT_CHAR1:
@@ -162,13 +165,15 @@ bool TahScriptManager::loadFile(const QString &path)
   }
   file.close();
 
-  if (lines.empty())
+  if (lines.empty()) {
+    d_->clear();
     return false;
+  }
 
   //QWriteLocker locker(&d_->lock);
   d_->reset(lines.size());
 
-  int i = 0;
+  size_t i = 0;
   BOOST_FOREACH (const auto &it, lines)
     d_->rules[i++].init(it.first, it.second);
 
@@ -181,10 +186,10 @@ QString TahScriptManager::translate(const QString &text) const
   //QReadLocker locker(&d_->lock);
   QString ret = text;
 #ifdef DEBUG_RULE
-  QString previous;
+  QString previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
-    for (int i = 0; i < d_->ruleCount; i++) {
+    for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       if (rule.sourceRe) {
         if (rule.target.isEmpty())

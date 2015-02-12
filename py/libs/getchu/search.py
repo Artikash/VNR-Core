@@ -2,7 +2,7 @@
 # search.py
 # 8/4/2013 jichi
 
-__all__ = ['SearchApi']
+__all__ = 'SearchApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -89,8 +89,6 @@ class SearchApi(object):
     r'.*?'
     r'<!--PRICE-->'
   , re.IGNORECASE|re.DOTALL)
-  _rx_media = re.compile(ur'メディア：([^<]+?)<!--MEDIA-->')
-  _rx_date = re.compile(ur'発売日：([0-9/]+)<!--発売日-->')
   _rx_price = re.compile(ur'定価：\s*￥([0-9,]+)')
   _rx_brand = re.compile(ur'ブランド名：(.*?)<!--BRAND-->')
   _rx_brand2 = re.compile(r'>([^<]+)<')
@@ -115,15 +113,10 @@ class SearchApi(object):
         }
 
         hh = m.group()
-        mm = self._rx_media.search(hh)
-        item['media'] = unescapehtml(mm.group(1)).strip() if mm else '' # strip
-
-        mm = self._rx_date.search(hh)
-        item['date'] = mm.group(1) or ''
 
         mm = self._rx_price.search(hh)
         try: item['price'] = int(mm.group(1).replace(',', ''))
-        except (KeyError, ValueError, AttributeError): item['price'] = 0
+        except: item['price'] = 0
 
         mm = self._rx_brand.search(hh)
         brand = mm.group(1) if mm else ''
@@ -132,7 +125,23 @@ class SearchApi(object):
           if mm:
             brand = mm.group(1)
         item['brand'] = unescapehtml(brand).strip() if brand else '' # strip
+
+        item.update(self._iterparsefields(hh))
         yield item
+
+  _rx_fields = (
+    ('date', re.compile(ur'発売日：([0-9/]+)<!--発売日-->')),
+    ('media', re.compile(ur'メディア：([^<]+?)<!--MEDIA-->')),
+  )
+  def _iterparsefields(self, h):
+    """
+    @param  h  unicode
+    @yield  (str key, unicode or None)
+    """
+    for k,rx in self._rx_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1)).strip()
 
 if __name__ == '__main__':
   api = SearchApi()

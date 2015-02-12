@@ -15,10 +15,16 @@
 
 // jichi 9/28/2013: Weither use NtThread or RemoteThread
 // RemoteThread works on both Windows 7 or Wine, while NtThread does not work on wine
-#define ITH_ENABLE_THREADMAN    !IthIsWine()
+#define ITH_ENABLE_THREADMAN    (!IthIsWindows8OrGreater() && !IthIsWine())
 //#define ITH_ENABLE_THREADMAN    true
 
 // Helpers
+
+// jichi 2/3/2015: About GetVersion
+// Windows XP SP3: 5.1
+// Windows 7: 6.1, 0x1db10106
+// Windows 8: 6.2, 0x23f00206
+// Windows 10: 6.2, 0x23f00206 (build 9926):
 
 BOOL IthIsWindowsXp()
 {
@@ -26,12 +32,30 @@ BOOL IthIsWindowsXp()
   if (ret < 0) {
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439%28v=vs.85%29.aspx
     DWORD v = ::GetVersion();
-    DWORD major = (DWORD)(LOBYTE(LOWORD(v)));
+    BYTE major = LOBYTE(LOWORD(v));
     //DWORD minor = (DWORD)(HIBYTE(LOWORD(v)));
 
     // Windows XP = 5.1
     //ret =  major < 6 ? 1 : 0;
-    ret =  major < 6 ? TRUE : FALSE;
+    ret = major < 6;
+  }
+  return ret;
+}
+
+// https://msdn.microsoft.com/en-us/library/windows/desktop/dn424972%28v=vs.85%29.aspx
+// The same as IsWindows8OrGreater, which I don't know if the function is available to lower Windows.
+static BOOL IthIsWindows8OrGreater() // this function is not exported
+{
+  static BOOL ret = -1; // cached
+  if (ret < 0) {
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439%28v=vs.85%29.aspx
+    DWORD v = ::GetVersion();
+    BYTE major = LOBYTE(LOWORD(v)),
+         minor = HIBYTE(LOWORD(v));
+    //DWORD minor = (DWORD)(HIBYTE(LOWORD(v)));
+
+    // Windows 8/10 = 6.2
+    ret = major > 6 || (major == 6 && minor >= 2);
   }
   return ret;
 }
@@ -45,7 +69,7 @@ BOOL IthIsWine()
     if (UINT sz = ::GetSystemDirectoryW(buffer, MAX_PATH)) {
       path = buffer;
       buffer[sz] = 0;
-      wcscpy(buffer + sz, L"\\winecfg.exe");
+      ::wcscpy(buffer + sz, L"\\winecfg.exe");
     } else
       path = L"C:\\Windows\\System32\\winecfg.exe";
     //ITH_MSG(path);
@@ -212,22 +236,22 @@ public:
   {
     AcquireLock();
     DWORD pid,addr,len;
-    if (hProc==NtCurrentProcess())
+    if (hProc == NtCurrentProcess())
       pid = ::current_process_id;
     else {
       PROCESS_BASIC_INFORMATION info;
-      NtQueryInformationProcess(hProc,ProcessBasicInformation,&info,sizeof(info),&len);
+      NtQueryInformationProcess(hProc, ProcessBasicInformation, &info, sizeof(info), &len);
       pid=info.uUniqueProcessId;
     }
     pid >>= 2;
-    for (UINT_PTR i=0; i<count; i++)
+    for (UINT_PTR i = 0; i < count; i++)
       if (pid == (proc_record[i] & 0xfff)) {
         addr = proc_record[i] & ~0xfff;
         ReleaseLock();
         return (LPVOID)addr;
       }
     len = 0x1000;
-    NtAllocateVirtualMemory(hProc, (PVOID*)(proc_record+count), 0, &len,
+    NtAllocateVirtualMemory(hProc, (PVOID *)(proc_record + count), 0, &len,
         MEM_COMMIT,PAGE_EXECUTE_READWRITE);
     DWORD base = proc_record[count];
     proc_record[count] |= pid;
@@ -302,8 +326,8 @@ public:
       id.UniqueProcess = (proc_record[i]&0xfff)<<2;
       addr = proc_record[i] & ~0xfff;
       flag = 0;
-      if (NT_SUCCESS(NtOpenProcess(&hProc,PROCESS_VM_OPERATION|PROCESS_VM_READ,&oa,&id))) {
-        if (NT_SUCCESS(NtReadVirtualMemory(hProc,(PVOID)addr,buffer,8,&len)))
+      if (NT_SUCCESS(NtOpenProcess(&hProc, PROCESS_VM_OPERATION|PROCESS_VM_READ, &oa, &id))) {
+        if (NT_SUCCESS(NtReadVirtualMemory(hProc, (PVOID)addr, buffer, 8, &len)))
           if (::memcmp(buffer, normal_routine, 4) == 0)
             flag = 1;
         NtClose(hProc);
@@ -339,13 +363,18 @@ extern "C" {
 void FreeThreadStart(HANDLE hProc)
 {
   if (thread_man_)
-    thread_man_->ReleaseProcessMemory(hProc);
+    ::thread_man_->ReleaseProcessMemory(hProc);
 }
 
 void CheckThreadStart()
 {
   if (thread_man_)
-    thread_man_->CheckProcessMemory();
+    ::thread_man_->CheckProcessMemory();
+
+    // jichi 2/2/2015: This function is only used to wait for injected threads vnrhost.
+    // Sleep for 100 ms to wait for remote thread to start
+    //IthSleep(100);
+    //IthCoolDown();
 }
 
 void IthSleep(int time)
@@ -367,7 +396,7 @@ void IthSleep(int time)
   }
 }
 
-void IthSystemTimeToLocalTime(LARGE_INTEGER* time)
+void IthSystemTimeToLocalTime(LARGE_INTEGER *time)
 { time->QuadPart -= GetTimeBias()->QuadPart; }
 
 int FillRange(LPCWSTR name, DWORD *lower, DWORD *upper)
@@ -384,7 +413,7 @@ int FillRange(LPCWSTR name, DWORD *lower, DWORD *upper)
   }
 
   while (it->SizeOfImage) {
-    if (_wcsicmp(it->BaseDllName.Buffer, name) == 0) {
+    if (::_wcsicmp(it->BaseDllName.Buffer, name) == 0) {
       *lower = *upper = (DWORD)it->DllBase;
       MEMORY_BASIC_INFORMATION info = {};
       DWORD l,size;
@@ -567,9 +596,9 @@ DWORD IthGetMemoryRange(LPCVOID mem, DWORD *base, DWORD *size)
   MEMORY_BASIC_INFORMATION info;
   NtQueryVirtualMemory(NtCurrentProcess(), const_cast<LPVOID>(mem), MemoryBasicInformation, &info, sizeof(info), &r);
   if (base)
-    *base=(DWORD)info.BaseAddress;
+    *base = (DWORD)info.BaseAddress;
   if (size)
-    *size=info.RegionSize;
+    *size = info.RegionSize;
   return (info.Type&PAGE_NOACCESS) == 0;
 }
 
@@ -693,7 +722,7 @@ BOOL IthInitSystemService()
   DWORD size;
   ULONG LowFragmentHeap;
   UNICODE_STRING us;
-  OBJECT_ATTRIBUTES oa = { sizeof(oa), 0, &us, OBJ_CASE_INSENSITIVE, 0, 0 };
+  OBJECT_ATTRIBUTES oa = {sizeof(oa), 0, &us, OBJ_CASE_INSENSITIVE, 0, 0};
   IO_STATUS_BLOCK ios;
   HANDLE codepage_file;
   LARGE_INTEGER sec_size = {0x1000, 0};
@@ -778,10 +807,10 @@ BOOL IthInitSystemService()
     }
   }
 
-  if (!NT_SUCCESS(NtOpenDirectoryObject(&root_obj, READ_CONTROL|0xF, &oa)))
+  if (!NT_SUCCESS(NtOpenDirectoryObject(&::root_obj, READ_CONTROL|0xF, &oa)))
     return FALSE;
 
-  page = peb->InitAnsiCodePageData;
+  ::page = peb->InitAnsiCodePageData;
 
   // jichi 9/23/2013: Access violation on Wine
   if (IthIsWine())
@@ -789,12 +818,12 @@ BOOL IthInitSystemService()
     //page_locale = 0x4e4; // 1252, English
     //page_locale = GetACP(); // This will return 932 when LC_ALL=ja_JP.UTF-8 on wine
     // Always set locale to CP932 on Wine, since C_932.nls could be missing.
-    page_locale = 0x3a4; // = 932
+    ::page_locale = 0x3a4; // = 932
   else
-    page_locale = *(DWORD *)page >> 16;
+    ::page_locale = *(DWORD *)page >> 16;
 
-  if (page_locale == 0x3a4) {
-    oa.hRootDirectory = root_obj;
+  if (::page_locale == 0x3a4) {
+    oa.hRootDirectory = ::root_obj;
     oa.uAttributes |= OBJ_OPENIF;
   } else { // Unreachable or wine
 //#ifdef ITH_WINE
@@ -810,16 +839,16 @@ BOOL IthInitSystemService()
 //    }
 //#endif // ITH_WINE
 
-    wcscpy(file_path + 4, t);
+    ::wcscpy(file_path + 4, t);
     t = file_path;
     while(*++t);
     if (*(t-1)!=L'\\')
       *t++=L'\\';
-    wcscpy(t,L"C_932.nls");
+    ::wcscpy(t,L"C_932.nls");
     RtlInitUnicodeString(&us, file_path);
     if (!NT_SUCCESS(NtOpenFile(&codepage_file, FILE_READ_DATA, &oa, &ios,FILE_SHARE_READ,0)))
       return FALSE;
-    oa.hRootDirectory = root_obj;
+    oa.hRootDirectory = ::root_obj;
     oa.uAttributes |= OBJ_OPENIF;
     RtlInitUnicodeString(&us, L"JPN_CodePage");
     if (!NT_SUCCESS(NtCreateSection(&codepage_section, SECTION_MAP_READ,
@@ -827,9 +856,9 @@ BOOL IthInitSystemService()
       return FALSE;
     NtClose(codepage_file);
     size = 0;
-    page = nullptr;
-    if (!NT_SUCCESS(NtMapViewOfSection(codepage_section, NtCurrentProcess(),
-        &page,
+    ::page = nullptr;
+    if (!NT_SUCCESS(NtMapViewOfSection(::codepage_section, NtCurrentProcess(),
+        &::page,
         0, 0, 0, &size, ViewUnmap, 0,
         PAGE_READONLY)))
       return FALSE;
@@ -855,15 +884,15 @@ BOOL IthInitSystemService()
 //After destroying the heap, all memory allocated by ITH module is returned to system.
 void IthCloseSystemService()
 {
-  if (page_locale != 0x3a4) {
-    NtUnmapViewOfSection(NtCurrentProcess(), page);
-    NtClose(codepage_section);
+  if (::page_locale != 0x3a4) {
+    NtUnmapViewOfSection(NtCurrentProcess(), ::page);
+    NtClose(::codepage_section);
   }
   if (ITH_ENABLE_THREADMAN) {
-    NtUnmapViewOfSection(NtCurrentProcess(), thread_man_);
-    NtClose(thread_man_section);
+    NtUnmapViewOfSection(NtCurrentProcess(), ::thread_man_);
+    NtClose(::thread_man_section);
   }
-  NtClose(root_obj);
+  NtClose(::root_obj);
 #ifdef ITH_HAS_HEAP
   RtlDestroyHeap(::hHeap);
 #endif // ITH_HAS_HEAP
@@ -1169,7 +1198,7 @@ HANDLE IthCreateThread(LPCVOID start_addr, DWORD param, HANDLE hProc)
 {
   HANDLE hThread;
   // jichi 9/27/2013: NtCreateThread is not implemented in Wine 1.7
-  if (thread_man_) { // Native windows
+  if (thread_man_) { // Windows XP
     // jichi 9/29/2013: Reserved && commit stack size
     // See: http://msdn.microsoft.com/en-us/library/windows/desktop/aa366803%28v=vs.85%29.aspx
     // See: http://msdn.microsoft.com/en-us/library/ms810627.aspx

@@ -4,12 +4,13 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+//import '../../../imports/qmlhelper' as Helper
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
-import '../../../imports/qmlhelper' as Helper
 import '../../../components' as Components
 import '../../../components/bootstrap3' as Bootstrap
+import '../../../components/qt5' as Qt5
 
 Item { id: root_
   property string searchText: ""
@@ -36,7 +37,7 @@ Item { id: root_
   property bool commentVisible: true
   //onCommentVisibleChanged: console.log("graffiti.qml: comment visible =", commentVisible)
 
-  //signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  //signal lookupRequested(string text, int x, int y) // popup honyaku of text at (x, y)
 
   // FIXME: This is supposed to be the count of matched items
   property alias count: listModel_.count
@@ -359,7 +360,7 @@ Item { id: root_
       //  acceptedButtons: Qt.NoButton
       //}
 
-      TextEdit { id: textEdit_
+      Qt5.TextEdit5 { id: textEdit_
         anchors.bottom: parent.bottom
         // height is the same as painted height
         width: Math.max(0, listView_.width - 20)
@@ -381,27 +382,24 @@ Item { id: root_
           acceptedButtons: Qt.RightButton
           onPressed: {
             var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-            contextMenu_.popup(gp.x, gp.y, model, textEdit_)
+            menu_.popup(gp.x, gp.y, model, textEdit_)
           }
         }
 
         Plugin.MeCabHighlighter {
-          document: helper_.textedit_document(textEdit_)
-          enabled:
-            textItem_.visible &&
-            textItem_.hover && model.type === 'text' && model.language === 'ja'
+          document: textEdit_.getTextDocument()
+          enabled: textItem_.visible
+                && textItem_.hover
+                && model.type === 'text' && model.language === 'ja'
         }
 
         Plugin.SpellChecker {
-          //Component.onCompleted: setParent(parent)
-
-          document: helper_.textedit_document(textEdit_)
+          document: textEdit_.getTextDocument()
           language: model.language
-          enabled:
-            textItem_.visible &&
-            textItem_.hasComment &&
-            root_.spellCheckEnabled &&
-            Util.spellSupportsLanguage(model.language)
+          enabled: textItem_.visible
+                && textItem_.hasComment
+                && root_.spellCheckEnabled
+                && Util.spellSupportsLanguage(model.language)
         }
 
         Desktop.TooltipArea { id: toolTip_
@@ -424,14 +422,14 @@ Item { id: root_
         //      if (t && t !== lastSelectedText) {
         //        lastSelectedText = t
         //        var gp = Util.itemGlobalPos(parent)
-        //        root_.yakuAt(t, mouse.x + gp.x, mouse.y + gp.y)
+        //        root_.lookupRequested(t, mouse.x + gp.x, mouse.y + gp.y)
         //      }
         //    }
         //  }
 
         //  onClicked: {
         //    var gp = Util.itemGlobalPos(parent)
-        //    contextMenu_.showPopup(mouse.x + gp.x, mouse.y + gp.y)
+        //    menu_.showPopup(mouse.x + gp.x, mouse.y + gp.y)
         //  }
         //}
 
@@ -459,7 +457,6 @@ Item { id: root_
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.pixelSize: 14
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.bold: true
         //font.italic: Util.isLatinLanguage(model.language)
         font.italic: textItem_.hasComment && model.comment.type === 'comment'
@@ -725,8 +722,6 @@ Item { id: root_
 
   Plugin.DataManagerProxy { id: dataman_ }
 
-  //Plugin.UserViewManagerProxy { id: userview_ }
-
   Plugin.GraffitiBean { id: bean_
     Component.onCompleted: {
       bean_.clear.connect(root_.clear)
@@ -745,7 +740,7 @@ Item { id: root_
 
   //Plugin.SubtitleEditorManagerProxy { id: subedit_ }
 
-  Helper.QmlHelper { id: helper_ }
+  //Helper.QmlHelper { id: qmlhelper_ }
 
   // Index of the first item on the last page
   // Assume page index is always less then list view count
@@ -938,7 +933,7 @@ Item { id: root_
     return e.selectedText
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     //Desktop.MenuItem { id: editAct_
     //  text: qsTr("Edit Subtitle in New Window")
@@ -1025,7 +1020,7 @@ Item { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          shiori_.popup(t,
+          shiori_.popup(t, 'ja',
             bean_.x() + popupX, bean_.y() + popupY)
       }
     }
@@ -1043,7 +1038,7 @@ Item { id: root_
   //  acceptedButtons: Qt.RightButton
   //  onPressed: {
   //    var gp = mapToItem(null, mouse.x, mouse.y)
-  //    contextMenu_.popup(gp.x, gp.y)
+  //    menu_.popup(gp.x, gp.y)
   //  }
   //}
 }

@@ -8,7 +8,7 @@ from PySide.QtGui import QColor
 from sakurakit import skfileio, skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
-from modiocr import modiocr
+from modi import modi
 from mytr import my
 from _ocrman import OcrImageObject, OcrSettings
 import _ocrman
@@ -121,9 +121,10 @@ class _OcrManager(object):
 
   @memoizedproperty
   def mouseSelector(self):
+    import defs
     from mousesel import mousesel
     ret = mousesel.MouseSelector()
-    ret.setRefreshInterval(5000) # refresh every 5 seconds
+    ret.setRefreshInterval(defs.HK_REHOOK_INTERVAL)
     ret.setRefreshEnabled(True)
     ret.pressed.connect(self._onMousePressed, Qt.QueuedConnection)
     ret.selected.connect(self._onMouseSelected) # already queued
@@ -258,7 +259,7 @@ class OcrManager(QObject):
     self.__d.settings.setLanguages(v)
 
   def isInstalled(self):
-    return os.path.exists(modiocr.MODI_PATH) and modiocr.available() #and skwin.ADMIN
+    return os.path.exists(modi.MODI_PATH) and modi.available() #and skwin.ADMIN
 
   def isSpaceEnabled(self): return self.__d.settings.isSpaceEnabled()
   def setSpaceEnabled(self, t): self.__d.settings.setSpaceEnabled(t)

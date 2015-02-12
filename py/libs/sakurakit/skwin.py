@@ -595,6 +595,18 @@ if skos.WIN:
       dwarn(e)
       return False
 
+  # No idea why this does not work
+  #def get_app_id(maxlen=255):
+  #  """
+  #  @param* maxlen  int
+  #  @return  unicode or None
+  #  """
+  #  try:
+  #    buf = ctypes.create_unicode_buffer(maxlen)
+  #    if 0 == skwinapi.SetCurrentProcessExplicitAppUserModelID(ctypes.addressof(buf)):
+  #      return buf.value
+  #  except Exception, e: dwarn(e)
+
   ## Task bar ##
 
   # See: http://stackoverflow.com/questions/10085381/how-to-detect-if-autohidden-taskbar-is-visible-or-not
@@ -1168,6 +1180,8 @@ if __name__ == '__main__':
   path = ur"D:\Library\Desktop\GalGame\「虜ノ契」.lnk"
   print os.path.exists(path)
   print get_link_target(path)
-  print '?' in get_link_target(path)
+
+# It is really weird that the following lien would crash LEC pars ...
+#  print '?' in get_link_target(path)
 
 # EOF

@@ -3,7 +3,7 @@
 # 9/9/2014 jichi
 # Windows only
 
-__all__ = ['KeyboardSignal']
+__all__ = 'KeyboardSignal',
 
 #from sakurakit.skclass import memoized
 

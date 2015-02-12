@@ -32,35 +32,15 @@ GAME_HAML = Haml '''\
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
-        .badge(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'o'
-        .badge.badge-warning(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-warning(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'r'
-        .badge.badge-important(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-important(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'g'
-        .badge.badge-success(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-success(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'b'
-        .badge.badge-inverse(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-inverse(title="字幕数/弾幕数/再生数") = g.countString
     :if scoreColor
       :if scoreColor === 'o'
         .badge.badge-warning(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
@@ -77,7 +57,16 @@ GAME_HAML = Haml '''\
       .label(data-text="#{g.moment.format('YYYYMM')}" title="発売日") = g.moment.format('M/D/YYYY')
     :if g.date > CURRENT_TIME
       .label.label-important(title="未発売") 未発売
-  %img.img-rounded(src="#{g.imageUrl}" title="#{tip}")
+    :if sizeColor
+      :if sizeColor === 'o'
+        .label.label-warning(title="容量GB" data-text="GB") #{sizeTag}
+      :if sizeColor === 'r'
+        .label.label-important(title="容量GB" data-text="GB") #{sizeTag}
+      :if sizeColor === 'g'
+        .label.label-success(title="容量GB" data-text="GB") #{sizeTag}
+      :if sizeColor === 'b'
+        .label.label-inverse(title="容量MB" data-text="MB") #{sizeTag}
+  %img(src="#{g.imageUrl}" title="#{tip}")
   .footer
     :if g.artists
       :for it in g.artists.split(',')
@@ -195,7 +184,15 @@ class GameManager
       @options.reverse
       if @filters then JSON.stringify @filters else ''
     ]
-    g.moment = moment(g.date * 1000) for g in l if l.length
+    if l.length
+      for g in l
+        g.moment = moment(g.date * 1000)
+        g.fileSize = Math.floor(g.fileSize / (1024 * 1024)) if g.fileSize > 0 # fileSize is in MB
+
+        s = g.visitCount or 1
+        s = g.commentCount + '/' + s if g.commentCount
+        s = g.subtitleCount + '/' + s if g.subtitleCount
+        g.countString = s
     l
 
   ## Tags ##
@@ -246,7 +243,7 @@ class GameManager
       false
     $('#keyword .label').click ->
       #if @classList.contains cls
-      self.toggleKeyword  $.trim @innerHTML
+      self.toggleKeyword $.trim @innerHTML
       @classList.toggle 'label-info'
       self.refresh()
       false
@@ -477,7 +474,7 @@ class GameManager
 
     scoreColor = (
       unless g.scapeMedian then '' # gray
-      else if g.scapeCount < 10 then 'b' # black
+      else if g.scapeCount < 5 then 'b' # black
       else if g.scapeMedian >= 90 or g.scapeCount > 500 then 'o' # orange
       else if g.scapeMedian >= 80 or g.scapeCount > 300 then 'r' # red
       else if g.scapeMedian >= 70 or g.scapeCount > 100 then 'g' # green
@@ -485,7 +482,9 @@ class GameManager
     )
 
     visitColor = (
-      if g.visitCount < 6000 and g.commentCount > 5000 then 'o' # orange
+      if g.subtitleCount > 5000 then 'o' # orange
+
+      else if g.visitCount < 6000 and g.commentCount > 5000 then 'o' # orange
       else if g.visitCount < 3000 and g.commentCount > 500 then 'r' # red
 
       else if g.visitCount < 300 then '' # gray
@@ -493,6 +492,20 @@ class GameManager
       else if g.visitCount < 3000 then 'g' # green
       else if g.visitCount < 6000 then 'r' # red
       else 'o' # orange
+    )
+
+    sizeColor = (
+      unless g.fileSize then '' # gray
+      else if g.fileSize < 1024 then 'b' # black
+      else if g.fileSize < 2048 then 'g' # green
+      else if g.fileSize < 4048 then 'r' # red
+      else 'o' # orange
+    )
+
+    sizeTag = (
+      unless g.fileSize then ''
+      else if g.fileSize < 1024 then g.fileSize + 'M'
+      else Math.round(g.fileSize / 1024 * 100)/100 + 'G'
     )
 
     #labels = if g.brand then g.brand.split ',' else []
@@ -505,6 +518,8 @@ class GameManager
       width: @itemWidth
       scoreColor: scoreColor
       visitColor: visitColor
+      sizeColor: sizeColor
+      sizeTag: sizeTag
 
     c = ['game', 'new']
     #c.push 'local' if g.local

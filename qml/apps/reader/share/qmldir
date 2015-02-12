@@ -15,6 +15,7 @@ FadingImage         fadingimage.qml
 FadingItem          fadingitem.qml
 FadingRectangle     fadingrectangle.qml
 FloatingRectangle   floatingrectangle.qml
+GameCoverImage      gamecoverimage.qml
 GradientSpinner     gradientspinner.qml
 GrayRangeSlider     grayrangeslider.qml
 HueRangeSlider      huerangeslider.qml

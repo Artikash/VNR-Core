@@ -2,13 +2,13 @@
 # skmvc.py
 # 10/15/2012 jichi
 
-__all__ = [
+__all__ = (
   #'SkFilterProxyModel',
   'SkMultiFilterProxyModel',
   'SkFilterTableController',
   'SkTreeItem', 'SkTreeModel',
   'SkWidgetTreeController',
-]
+)
 
 from PySide import QtCore, QtGui
 from PySide.QtCore import Qt

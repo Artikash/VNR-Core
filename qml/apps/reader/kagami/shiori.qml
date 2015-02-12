@@ -4,10 +4,14 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+//import '../../../imports/qmleffects' as Effects
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
+import '../../../js/eval.min.js' as Eval
+import '../../../js/util.min.js' as Util
 //import '../../../js/util.min.js' as Util
 import '../../../components' as Components
+import '../../../components/qt5' as Qt5
 import '../share' as Share
 
 Rectangle { id: root_
@@ -20,15 +24,40 @@ Rectangle { id: root_
   property bool ignoresFocus: false
   property bool toolTipEnabled: true
 
-  signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
-
   property real globalZoomFactor: 1.0
 
   property real zoomFactor: 1.0
 
   property int defaultWidth //: textEdit_.width / (zoomFactor * globalZoomFactor)
 
+  function popupJson(json, x, y) { // string, int, int ->
+    if (root_.locked)
+      return
+    root_.locked = true
+    var html = bean_.renderJson(json)
+    if (!html) { // thread contention, ignore
+      root_.locked = false
+      return
+    }
+    showPopup(html, x, y, 0.9)
+    root_.locked = false
+  }
+
+  function popupLookup(text, language, x, y) { // string, string, int, int
+    if (root_.locked || !root_.enabled)
+      return
+    root_.locked = true
+    var html = bean_.renderLookup(text, language)
+    if (!html) { // thread contention, ignore
+      root_.locked = false
+      return
+    }
+    showPopup(html, x, y, 1.0)
+    root_.locked = false
+  }
+
   // - Private -
+  property bool locked: false
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
@@ -38,22 +67,26 @@ Rectangle { id: root_
 
   //clip: true // to hide scroll bars, but the close button will also be clipped
 
-  property int _VISIBLE_DURATION: 4000   // 4 seconds
+  property int _VISIBLE_DURATION: 10000   // 10 seconds
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_HEIGHT: 200 * _zoomFactor
+  property int _MAX_HEIGHT: 240 * _zoomFactor * heightFactor
+
+  property real widthFactor: 1.0
+  property real heightFactor: 1.0
 
   //property int _DEFAULT_WIDTH: 300 * zoomFactor
   property int _MIN_WIDTH: 50 * _zoomFactor
-  property int _MAX_WIDTH: 800 * _zoomFactor
+  property int _MAX_WIDTH: 800 * _zoomFactor * widthFactor
 
   property int _CONTENT_MARGIN: 10
 
   width: scrollArea_.width + _CONTENT_MARGIN * 2
   height: scrollArea_.height + _CONTENT_MARGIN * 2
 
-  radius: 10
+  //radius: 10
+  radius: 0 // flat
   opacity: 0 // initial opacity is zero
 
   property real zoomStep: 0.05
@@ -77,11 +110,18 @@ Rectangle { id: root_
   //  GradientStop { position: 0.77; color: '#9f3f3f3f' }
   //  GradientStop { position: 1.0;  color: '#ca6a6d6a' }
   //}
-  color: '#aa000000'
+
+  //color: '#dd000000' // black
+  //color: '#aa000000' // black
+  color: '#bb000000' // black
+  //color: '#eeffffff' // white
+  //color: '#eef4f5fa' // light blue, the same as the website
 
   Plugin.ShioriBean { id: bean_
-    Component.onCompleted:
-      bean_.popup.connect(root_.popup)
+    Component.onCompleted: {
+      bean_.popupLookup.connect(root_.popupLookup)
+      bean_.popupJson.connect(root_.popupJson)
+    }
   }
 
   //Plugin.Tts { id: ttsPlugin_ }
@@ -132,7 +172,7 @@ Rectangle { id: root_
         var dx = mouseX - pressedX
         var w = textEdit_.width - dx
         if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
-          root_.defaultWidth = w / root_._zoomFactor
+          root_.defaultWidth = w / (root_._zoomFactor * root_.widthFactor)
           root_.x += dx
         }
       }
@@ -157,7 +197,7 @@ Rectangle { id: root_
       if (pressed) {
         var w = textEdit_.width + mouseX - pressedX
         if (w > _MIN_WIDTH && w < _MAX_WIDTH)
-          root_.defaultWidth = w / root_._zoomFactor
+          root_.defaultWidth = w / (root_._zoomFactor * root_.widthFactor)
       }
 
     Desktop.TooltipArea { id: rightResizeTip_
@@ -189,28 +229,38 @@ Rectangle { id: root_
       NumberAnimation { property: 'opacity'; duration: 400 }
     }
 
-    TextEdit { id: textEdit_
+    Qt5.TextEdit5 { id: textEdit_
       anchors.centerIn: parent
-      width: root_.defaultWidth * root_._zoomFactor
+      width: root_.defaultWidth * root_._zoomFactor * root_.widthFactor
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
+      //color: 'black'
+      //color: 'white'
+      color: 'snow'
 
       textFormat: TextEdit.RichText
       wrapMode: TextEdit.Wrap
       focus: true
-      color: 'snow'
       font.pixelSize: 12 * root_._zoomFactor
-      font.bold: true
+      //font.bold: true
       font.family: 'MS Mincho' // 明朝
 
       // Not working, which cause textedit width to shrink
       //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
 
-      onLinkActivated: Qt.openUrlExternally(link)
-      //console.log("shiori.qml: link activated:", link)
+      // this does not work anyawy
+      // It erquires selectByMouse = true, and no MouseArea
+      //onLinkActivated: Qt.openUrlExternally(link)
 
-      effect: Share.TextEffect {}
+      effect: Share.TextEffect {} //highlight: root_.hover
+
+      //effect: Effects.Glow {
+      //  offset: '1,1'
+      //  blurRadius: 8
+      //  blurIntensity: 4
+      //  color: '#2d5f5f' // dark green
+      //}
 
       MouseArea { //id: textCursor_
         anchors.fill: parent
@@ -218,6 +268,12 @@ Rectangle { id: root_
         acceptedButtons: Qt.LeftButton
         //enabled: !!model.text
         //hoverEnabled: enabled
+
+        onClicked: {
+          var link = textEdit_.linkAt(mouse.x, mouse.y)
+          if (link)
+            Eval.evalLink(link)
+        }
 
         onDoubleClicked: {
           textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
@@ -288,19 +344,14 @@ Rectangle { id: root_
     opacity = 0
   }
 
-  function reset() {
-    //textEdit_.width = _DEFAULT_WIDTH
-  }
-
-  function popup(text, x, y) {
-    if (!root_.enabled)
-      return
-    var html = bean_.render(text)
-    if (!html) // thread contention, ignore
-      return
-    reset()
-    root_.x = x + _X_OFFSET; root_.y = y + _Y_OFFSET
-    textEdit_.text = html
+  function showPopup(text, x, y, w, h) { // string, string, int, int, real, real
+    if (w)
+      root_.widthFactor = w
+    if (h)
+      root_.heightFactor = h
+    root_.x = x + _X_OFFSET
+    root_.y = y + _Y_OFFSET
+    textEdit_.text = text
     //textEdit_.text = bean_.render(text)
     ensureVisible()
     show()
@@ -321,14 +372,13 @@ Rectangle { id: root_
   // - Context Menu -
 
   function hoverText() {
-    var pos = textEdit_.mapFromItem(null,
-        contextMenu_.popupX, contextMenu_.popupY)
+    var pos = textEdit_.mapFromItem(null, menu_.popupX, menu_.popupY)
     textEdit_.cursorPosition = textEdit_.positionAt(pos.x, pos.y)
     textEdit_.selectWord()
     return textEdit_.selectedText
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
     property int popupX
     property int popupY
 
@@ -358,8 +408,7 @@ Rectangle { id: root_
       text: Sk.tr("Select Word")
       //shortcut: "Ctrl+A"
       onTriggered: {
-        var pos = textEdit_.mapFromItem(null,
-            contextMenu_.popupX, contextMenu_.popupY)
+        var pos = textEdit_.mapFromItem(null, menu_.popupX, menu_.popupY)
         textEdit_.cursorPosition = textEdit_.positionAt(pos.x, pos.y)
         textEdit_.selectWord()
       }
@@ -377,7 +426,7 @@ Rectangle { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          yakuAt(t, contextMenu_.popupX, contextMenu_.popupY)
+          popupLookup(t, 'ja', menu_.popupX, menu_.popupY)
       }
     }
 
@@ -430,7 +479,7 @@ Rectangle { id: root_
     onPressed: if (!root_.ignoresFocus) {
       //var gp = Util.itemGlobalPos(parent)
       var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-      contextMenu_.popup(gp.x, gp.y)
+      menu_.popup(gp.x, gp.y)
     }
   }
 

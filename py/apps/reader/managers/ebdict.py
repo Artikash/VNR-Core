@@ -12,10 +12,9 @@ if __name__ == '__main__':
 
 import os, re
 import eblib
-from cconv.cconv import wide2thin
-from zhszht.zhszht import zhs2zht
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
+from convutil import wide2thin, zhs2zht
 import rc
 
 def init():

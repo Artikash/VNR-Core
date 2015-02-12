@@ -5,8 +5,8 @@
 #include "texthook/ith_p.h"
 #include "texthook/textthread_p.h"
 #include "ith/common/types.h"
-#include "ith/srv/srv.h"
-//#include "ith/srv/settings.h"
+#include "ith/host/srv.h"
+//#include "ith/host/settings.h"
 #include <QtCore/QDebug>
 
 #ifdef WITH_LIB_WINMAKER
@@ -283,7 +283,7 @@ void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
 bool Ihf::attachProcess(DWORD pid)
 {
   DOUT("enter: pid =" << pid);
-  DWORD module = ::IHF_InjectByPID(pid, ITH_DEFAULT_ENGINE);
+  DWORD module = ::IHF_InjectByPID(pid);
 
   enum { AttachDelay = 500 }; // in msec
   ::Sleep(AttachDelay);
@@ -309,7 +309,7 @@ bool Ihf::updateHook(ulong pid, const QString &code)
 {
   DOUT("enter: pid =" << pid << ", code =" << code);
   Q_ASSERT(pid);
-  HookParam hp;
+  HookParam hp = {};
   if (!Ith::parseHookCode(code, &hp)) {
     DOUT("leave: failed to parse hook code");
     return false;

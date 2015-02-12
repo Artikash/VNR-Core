@@ -2,7 +2,7 @@
 # product.py
 # 4/9/2014 jichi
 
-__all__ = ['ProductApi']
+__all__ = 'ProductApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -14,7 +14,10 @@ from sakurakit.skstr import unescapehtml
 
 class ProductApi(object):
 
-  API = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s"
+  #QUERY_HOST = "http://holyseal.net"
+  QUERY_HOST = "http://holyseal.homeip.net"
+  QUERY_PATH = "/cgi-bin/mlistview.cgi?prdcode=%s"
+  API = QUERY_HOST + QUERY_PATH
   ENCODING = 'sjis'
 
   session = None # requests.Session or None
@@ -53,6 +56,7 @@ class ProductApi(object):
         ret = self._parse(h)
         if ret:
           ret['id'] = long(id)
+          url = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % id # reset url
           ret['url'] = url
           return ret
 
@@ -61,17 +65,37 @@ class ProductApi(object):
     @param  h  unicode  html
     @return  {kw}
     """
-    return {
-      'title': self._parsetitle(h),     # unicode
-      'brand': self._parsebrand(h),     # unicode
-      'banner': self._parsebanner(h),   # str url or None
-      'ecchi': self._parseecchi(h),     # bool
-      'otome': self._parseotome(h),     # bool
-      'date': self._parsedate(h),       # str or None  such as 2013/08/23, or 2014/夏
-      'genre': self._parsegenre(h),     # unicode or None  slogan
-      'artists': list(self._iterparseartists(h)), # [unicode]
-      'writers': list(self._iterparsewriters(h)), # [unicode]
-    }
+    title = self._parsetitle(h)
+    if title:
+      ret = {
+        'title': title,  # unicode
+        'ecchi': self._parseecchi(h),     # bool
+        'otome': self._parseotome(h),     # bool
+        'date': self._parsedate(h),       # str or None  such as 2013/08/23, or 2014/夏
+        'genre': self._parsegenre(h),     # unicode or None  slogan
+        'artists': list(self._iterparseartists(h)), # [unicode]
+        'writers': list(self._iterparsewriters(h)), # [unicode]
+      }
+      ret.update(self._iterparsefields(h))
+      return ret
+
+  _re_fields = (
+    # Example: <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
+    ('brand', re.compile(ur' ≫ ([^≫<]*?) ≫ ')),
+
+    # The height is always 550
+    # <p align="center"><img src="http://www.cuffs-cube.jp/products/yourdiary_h/download/banner/bn_600x160_kanade.jpg" width="550" height="146" border="0" alt=""></p>
+    ('banner', re.compile(r'<p align="center"><img src="(.*?)" width="550"')),
+  )
+  def _iterparsefields(self, h):
+    """
+    @param  h  unicode
+    @yield  (str key, unicode or None)
+    """
+    for k,rx in self._re_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1)).strip()
 
   # u"td>15 歳以上" or u"td>18 歳以上"
   def _parseecchi(self, h):
@@ -99,29 +123,6 @@ class ProductApi(object):
     m = self._rx_title.search(h)
     if m:
       return unescapehtml(m.group(1)).strip() # there is a space in the beginning
-
-  # <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
-  _rx_brand = re.compile(ur' ≫ ([^≫<]*?) ≫ ')
-  def _parsebrand(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    m = self._rx_brand.search(h)
-    if m:
-      return unescapehtml(m.group(1)).strip() # there is a space in the beginning
-
-  # The height is always 550
-  # <p align="center"><img src="http://www.cuffs-cube.jp/products/yourdiary_h/download/banner/bn_600x160_kanade.jpg" width="550" height="146" border="0" alt=""></p>
-  _rx_banner = re.compile(r'<p align="center"><img src="(.*?)" width="550"')
-  def _parsebanner(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    m = self._rx_banner.search(h)
-    if m:
-      return unescapehtml(m.group(1))
 
   # Example:
   # <tr class="minfo">
@@ -191,15 +192,7 @@ if __name__ == '__main__':
   k = 1234567 # wrong
   k = 9550
   q = api.query(k)
-  print q['title']
-  print q['brand']
-  print q['banner']
-  print q['ecchi']
-  print q['date']
-  print q['genre']
-  print q['otome']
-  #print q['artists']
-  for it in q['artists']:
-    print it
+  for k,v in q.iteritems():
+    print k,':',v
 
 # EOF

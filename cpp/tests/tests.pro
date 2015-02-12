@@ -6,20 +6,30 @@ TEMPLATE = subdirs
 SUBDIRS += test
 
 SUBDIRS += \
+  avtest \
+  cctest \
+  hanjatest \
+  hanviettest \
   hashtest \
   jsontest \
+  pinyintest \
   pytest \
+  trtest \
   socktest \
   tahtest \
-  trtest \
   uitest
 
 win32: SUBDIRS += \
   ceviotest \
-  dlltest \
+  fastaittest \
+  imetest \
   ocrtest \
+  parstest \
   sehtest \
+  srtest \
   ttstest \
-  vertest
+  vertest \
+  wmptest \
+  zunkotest
 
 # EOF

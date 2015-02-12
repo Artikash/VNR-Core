@@ -2,7 +2,7 @@
 # search.py
 # 6/18/2014 jichi
 
-__all__ = ['SearchApi']
+__all__ = 'SearchApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -15,7 +15,10 @@ from sakurakit.skstr import unescapehtml
 
 class SearchApi(object):
 
-  API = "http://holyseal.net/cgi-bin/mlistview.cgi?word=%s"
+  #QUERY_HOST = "http://holyseal.net"
+  QUERY_HOST = "http://holyseal.homeip.net"
+  QUERY_PATH = "/cgi-bin/mlistview.cgi?word=%s"
+  API = QUERY_HOST + QUERY_PATH
   ENCODING = 'sjis'
 
   session = None # requests.Session or None
@@ -46,7 +49,8 @@ class SearchApi(object):
     @param  text  unicode
     @return  {kw} or None
     """
-    text = text.encode(self.ENCODING, errors='ignore')
+    #text = text.encode(self.ENCODING, errors='ignore')
+    text = sknetio.topercentencoding(text, encoding=self.ENCODING)
     if text:
       url = self._makeurl(text)
       h = self._fetch(url)
@@ -87,7 +91,6 @@ class SearchApi(object):
           ))
         if not years:
           dwarn("cannot find release years, maybe, unknown years")
-
 
         id0 = title0 = None
 

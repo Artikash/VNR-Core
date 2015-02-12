@@ -30,7 +30,7 @@ Item { id: root_
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
   //Plugin.GameViewManagerProxy { id: gameview_ }
-  Plugin.UserViewManagerProxy { id: userview_ }
+  //Plugin.UserViewManagerProxy { id: userview_ }
 
   Desktop.ToolBar {
     anchors.fill: parent
@@ -74,17 +74,31 @@ Item { id: root_
         onClicked: {
           var item = root_.currentItem
           if (item)
-            userview_.showUserWithHash(item.userId, item.userHash)
+            mainPlugin_.showUserWithHash(item.userId, item.userHash)
         }
       }
       Desktop.ToolButton {
         text: Sk.tr("Game")
         tooltip: Sk.tr("Show {0}").replace('{0}'), Sk.tr("game information")
-        visible: !!root_.currentItem && root_.currentItem.gameId
+        visible: !!(root_.currentItem && root_.currentItem.gameId)
         onClicked:
           if (root_.currentItem)
             mainPlugin_.showGameView(root_.currentItem.gameId)
       }
+      //Desktop.ToolButton { // TOO slow to compute
+      //  text: Sk.tr("Name")
+      //  tooltip: Sk.tr("Show {0}").replace('{0}'), My.tr("names")
+      //  visible: !!(root_.currentItem && currentItem.gameId && datamanPlugin_.queryGameItemId(currentItem.gameId))
+      //  onClicked:
+      //    if (root_.currentItem) {
+      //      var id = currentItem.gameId
+      //      if (id) {
+      //        id = datamanPlugin_.queryGameItemId(id)
+      //        if (id)
+      //          mainPlugin_.showGameNames(id)
+      //      }
+      //    }
+      //}
       //Desktop.ToolButton {
       //  text: currentItem && currentItem.disabled ? Sk.tr("Enable") : Sk.tr("Disable")
       //  tooltip: qsTr("Enable or disable the selected entry")
@@ -152,6 +166,13 @@ Item { id: root_
       }
 
       Desktop.ToolButton {
+        text: Sk.tr("Browse")
+        visible: root_.enabled && !!root_.userId
+        tooltip: qsTr("Browse current enabled rules")
+        onClicked: mainPlugin_.showTermCache()
+      }
+
+      Desktop.ToolButton {
         text: Sk.tr("Update")
         visible: root_.enabled && !!root_.userId
         tooltip: qsTr("Update entries online")
@@ -167,7 +188,7 @@ Item { id: root_
       || currentItem.userId === _GUEST_USER_ID && userLevel > 0)
 
   function createTerm() {
-    //datamanPlugin_.createTerm('target', My.tr("Matched text"), My.tr("Replaced text"))
+    //datamanPlugin_.createTerm('output', My.tr("Matched text"), My.tr("Replaced text"))
     mainPlugin_.showTermInput()
   }
   function deleteCurrentItem() {

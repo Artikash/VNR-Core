@@ -156,7 +156,8 @@ Item { id: root_
         height: textEdit_.paintedHeight + 20
         //radius: 15
         //radius: 8 * root_.zoomFactor
-        radius: 8
+        //radius: 8
+        radius: 0 // flat
       }
 
       TextEdit { id: textEdit_
@@ -164,7 +165,10 @@ Item { id: root_
         // height is the same as painted height
         width: Math.max(0, listView_.width - 20)
 
-        onLinkActivated: Qt.openUrlExternally(link)
+        onLinkActivated: {
+          growl_.showMessage(My.tr("Open in external browser"))
+          Qt.openUrlExternally(link)
+        }
 
         effect: Share.TextEffect { highlight: mouse_.containsMouse }
 
@@ -180,12 +184,11 @@ Item { id: root_
 
         selectByMouse: true
 
+        font.bold: true
         //font.family: "Helvetica"
         //font.family: "MS Mincho"
         font.family: "YouYuan"
         //font.family: "Heiti TC"
-
-        font.bold: true
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
@@ -207,7 +210,7 @@ Item { id: root_
           onPressed: if (!root_.ignoresFocus) {
             //var gp = Util.itemGlobalPos(parent)
             var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-            contextMenu_.popup(gp.x, gp.y, textEdit_)
+            menu_.popup(gp.x, gp.y, textEdit_)
           }
         }
       }
@@ -278,7 +281,8 @@ Item { id: root_
 
   //Component.onCompleted: console.log("growl.qml: pass")
 
-  property bool modelLocked: false
+  property bool modelLocked: false // otherwise, VNR might crash when switching fullscreen
+
   property string lastText // previous showed message text
 
   function appendItem(item) {
@@ -307,6 +311,11 @@ Item { id: root_
   function showError(text) { addText(text, 'error'); showMe() }
   function showNotification(text) { addText(text, 'note'); showMe() }
 
+  function msg(text) { showMessage(text) }
+  function warn(text) { showWarning(text) }
+  function error(text) { showError(text) }
+  function notify(text) { showNotification(text) }
+
   // Insert a page break
   function pageBreak() {
     if (_pageIndex !== listModel_.count) {
@@ -320,7 +329,7 @@ Item { id: root_
   // - Context Menu -
 
   property QtObject selectedTextEdit
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: menu_
 
     function popup(x, y, textEdit) {
       selectedTextEdit = textEdit

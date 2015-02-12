@@ -2,7 +2,7 @@
 # GameDialog.py
 # 5/15/2013 jichi
 
-__all__ = ['GameEditorManager', 'GameEditorManagerProxy']
+__all__ = 'GameEditorManager', 'GameEditorManagerProxy'
 
 import os
 from functools import partial
@@ -27,11 +27,11 @@ class _GameEditor(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.infoGroup)
     layout.addWidget(self.locationGroup)
+    layout.addWidget(self.textGroup)
+    layout.addWidget(self.hookGroup)
     if not features.WINE:
       layout.addWidget(self.loaderGroup)
     layout.addWidget(self.timeZoneGroup)
-    layout.addWidget(self.hookGroup)
-    layout.addWidget(self.textGroup)
     q.setCentralWidget(skwidgets.SkLayoutWidget(layout))
 
   def refresh(self):
@@ -160,18 +160,8 @@ class _GameEditor(object):
     row.addWidget(self.encodingEdit)
     layout.addLayout(row)
 
-    ret = QtWidgets.QGroupBox("%s (%s)" % (mytr_("Game language"), tr_("read-only")))
+    ret = QtWidgets.QGroupBox(mytr_("Game language"))
     ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def languageEdit(self):
-    ret = QtWidgets.QLineEdit()
-    skqss.class_(ret, 'readonly')
-    ret.setReadOnly(True)
-    ret.setPlaceholderText(tr_("Not specified"))
-    ret.setToolTip(tr_("Read-only"))
-    ret.setStatusTip(ret.toolTip())
     return ret
 
   @memoizedproperty
@@ -184,15 +174,44 @@ class _GameEditor(object):
     ret.setStatusTip(ret.toolTip())
     return ret
 
-  def _loadText(self):
-    g = self.game
-    self.languageEdit.setText(i18n.language_name2(g.language))
-    self.encodingEdit.setText(g.encoding.upper())
+  @memoizedproperty
+  def languageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLanguage)
+    return ret
 
-    if g.language == 'ja':
-      skqss.removeclass(self.languageEdit, 'warning')
+  def _loadLanguage(self):
+    lang = self.game.language
+    try: langIndex = config.LANGUAGES.index(lang)
+    except ValueError: langIndex = 0 # 'default'
+    w = self.languageEdit
+    w.setCurrentIndex(langIndex)
+    if lang == 'ja':
+      skqss.removeclass(w, 'warning')
     else:
-      skqss.addclass(self.languageEdit, 'warning')
+      skqss.addclass(w, 'warning')
+
+  def _saveLanguage(self):
+    w = self.languageEdit
+    index = w.currentIndex()
+    lang = config.LANGUAGES[index]
+    if lang != self.game.language:
+      dataman.manager().setGameLanguage(lang, md5=self.game.md5)
+    if lang == 'ja':
+      skqss.removeclass(w, 'warning')
+    else:
+      skqss.addclass(w, 'warning')
+
+  def _loadText(self):
+    self._loadLanguage()
+
+    # Load encoding
+    g = self.game
+    self.encodingEdit.setText(i18n.encoding_desc(g.encoding))
+    #self.languageEdit.setText(i18n.language_name2(g.language))
     if g.encoding in ('shift-jis', 'utf-16'):
       skqss.removeclass(self.encodingEdit, 'warning')
     else:
@@ -312,6 +331,13 @@ By default it is the same as the executable of the game process."""))
   @memoizedproperty
   def loaderGroup(self):
     layout = QtWidgets.QVBoxLayout()
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(tr_("Locale") + ":"))
+    row.addWidget(self.launchLanguageEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
     layout.addWidget(self.defaultLoaderButton)
     layout.addWidget(self.disableLoaderButton)
     layout.addWidget(self.applocButton)
@@ -319,12 +345,6 @@ By default it is the same as the executable of the game process."""))
     layout.addWidget(self.ntleasButton)
     layout.addWidget(self.ntleaButton)
     layout.addWidget(self.localeSwitchButton)
-
-    #introLabel = QtWidgets.QLabel(my.tr(
-    #  "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
-    # ))
-    #introLabel.setWordWrap(True)
-    #layout.addWidget(introLabel)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
@@ -394,6 +414,41 @@ By default it is the same as the executable of the game process."""))
     ret.toggled.connect(self._saveLoader)
     return ret
 
+  @memoizedproperty
+  def launchLanguageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItem(tr_("Default"))
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLaunchLanguage)
+    return ret
+
+  def _loadLaunchLanguage(self):
+    lang = self.game.launchLanguage
+    try: langIndex = config.LANGUAGES.index(lang) + 1
+    except ValueError: langIndex = 0 # 'default'
+    w = self.launchLanguageEdit
+    w.setCurrentIndex(langIndex)
+    if lang in ('', 'ja'):
+      skqss.removeclass(w, 'warning')
+    else:
+      skqss.addclass(w, 'warning')
+
+  def _saveLaunchLanguage(self):
+    w = self.launchLanguageEdit
+    index = w.currentIndex()
+    if not index:
+      lang = ''
+    else:
+      lang = config.LANGUAGES[index - 1]
+    if lang != self.game.launchLanguage:
+      dataman.manager().setGameLaunchLanguage(lang, md5=self.game.md5)
+    if lang in ('', 'ja'):
+      skqss.removeclass(w, 'warning')
+    else:
+      skqss.addclass(w, 'warning')
+
   def _loadLoader(self):
     loader = self.game.loader
     b = (self.disableLoaderButton if loader == 'none' else
@@ -406,6 +461,11 @@ By default it is the same as the executable of the game process."""))
     if not b.isChecked():
       b.setChecked(True)
 
+    self._loadLaunchLanguage()
+
+    t = b is self.disableLoaderButton or b is self.localeEmulatorButton
+    self.launchLanguageEdit.setEnabled(not t)
+
   def _saveLoader(self):
     loader = (
       'none' if self.disableLoaderButton.isChecked() else
@@ -415,7 +475,10 @@ By default it is the same as the executable of the game process."""))
       'lsc' if self.localeSwitchButton.isChecked() else
       'le' if self.localeEmulatorButton.isChecked() else
       '')
+    #if loader != self.game.loader: # Not needed since they are connected with toggled signal
     dataman.manager().setGameLoader(loader, md5=self.game.md5)
+
+    self.launchLanguageEdit.setEnabled(loader not in ('none', 'le'))
 
   ## Time zone ##
 
@@ -471,15 +534,12 @@ By default it is the same as the executable of the game process."""))
 
 class GameEditor(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameEditor, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     #self.setWindowTitle(self.tr("Edit Game Properties"))
     self.__d = _GameEditor(self)
     self.setMinimumWidth(350)
-
-    #dataman.manager().loginChanged.connect(self.__d.refreshIfVisible)
-    #netman.manager().onlineChanged.connect(self.__d.refreshIfVisible)
 
   def game(self): return self.__d.game
 
@@ -522,6 +582,16 @@ class _GameEditorManager:
 class GameEditorManager:
   def __init__(self):
     self.__d = _GameEditorManager()
+
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    qApp.aboutToQuit.connect(self.hide)
+
+    #import dataman
+    #dataman.manager().loginChanged.connect(lambda name: name or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   def clear(self):
     self.hide()

@@ -2,7 +2,7 @@
 # rpcman.py
 # 2/1/2013 jichi
 
-__all__ = ['RpcServer', 'RpcClient']
+__all__ = 'RpcServer', 'RpcClient'
 
 if __name__ == '__main__':
   import sys

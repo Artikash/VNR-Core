@@ -2,7 +2,7 @@
 # soft.py
 # 10/20/2013 jichi
 
-__all__ = ['SoftApi']
+__all__ = 'SoftApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -30,6 +30,8 @@ class SoftApi(object):
   ENCODING = 'euc-jp'
   COOKIES = {'getchu_adalt_flag':'getchu.com'}
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -49,7 +51,7 @@ class SoftApi(object):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES)
+    return sknetio.getdata(url, gzip=True, session=self.session, cookies=self.COOKIES)
 
   def query(self, id):
     """
@@ -119,19 +121,17 @@ class SoftApi(object):
         # See: http://www.getchu.com/pc/genre.html
         subgenres = uniquelist(self._iterparsesubgenres(h))
         categories = uniquelist(self._iterparsecateories(h))
-        return {
+        ret = {
           'title': title, # unicode or None
           'writers': writers, # [unicode]
           'artists': artists, # [unicode]
           'sdartists': sdartists, # [unicode]
           'musicians': list(self._iterparsemusicians(h)), # [unicode]
           'brand': self._fixbrand(meta.get(u"ブランド") or meta.get(u"サークル")), # unicode or None
-          'genre': self._parsegenre(h), # unicode or None
           'subgenres': subgenres, # [unicode]
           'categories': categories, # [unicode]
           'otome': u"乙女ゲー" in categories, # bool
           'price': price,                     # int
-          'date': self._parsedate(h),         # str or None, such as 2013/10/25
           #'imageCount': self._parseimagecount(h),
           'sampleImages': list(self._iterparsesampleimages(h)), # [kw]
           'descriptions': list(self._iterparsedescriptions(h)), # [unicode]
@@ -141,9 +141,11 @@ class SoftApi(object):
           'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
 
           # Disabled
-          #'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
-          'characters': [],
+          'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
+          #'characters': [],
         }
+        ret.update(self._iterparsefields(h))
+        return ret
 
   def _fixtitle(self, t):
     """
@@ -169,16 +171,25 @@ class SoftApi(object):
   #  if t:
   #    return t.replace(u"、他", '')
 
-  _rx_genre = re.compile(
-      u'ジャンル：.+?>([^><]+?)<')
-  def _parsegenre(self, h):
+  _re_fields = (
+    # Example:
+    # <b>Developer:</b>
+    # <a href="http://store.steampowered.com/search/?developer=Idea%20Factory%2C%20Inc.&snr=1_5_9__408">Idea Factory, Inc.</a>
+    ('genre', re.compile(ur'ジャンル：.+?>([^><]+?)<')),
+
+    # Example: title="同じ発売日の同ジャンル商品を開く">2013/10/25</a>
+    # str or None, such as 2013/10/25
+    ('date', re.compile(ur'同じ発売日の同ジャンル商品を開く">([0-9/]+?)</a>')),
+  )
+  def _iterparsefields(self, h):
     """
-    @param  h  unicode  html
-    @return  kw
+    @param  h  unicode
+    @yield  (str key, unicode or None)
     """
-    m = self._rx_genre.search(h)
-    if m:
-      return unescapehtml(m.group(1))
+    for k,rx in self._re_fields:
+      m = rx.search(h)
+      if m:
+        yield k, unescapehtml(m.group(1))
 
   # Example:
   # <TR><TD valign="top" align="right">カテゴリ：</TD><TD align="top">シミュレーションRPG、<a href='php/search.phtml?category[0]=C3_F003'>ポリゴン・3D</a>、<a href='php/search.phtml?category[0]=C3_F026'>バトル</a>、<a href='php/search.phtml?category[0]=C3_F004'>アニメーション</a> <a href="/pc/genre.html">[一覧]</a></TD></TR>
@@ -305,20 +316,6 @@ class SoftApi(object):
     if m:
       try: return int(m.group(1).replace(',',''))
       except (ValueError, TypeError): pass
-
-  # Example: title="同じ発売日の同ジャンル商品を開く">2013/10/25</a>
-
-  # Example: 価格：	￥7,140 (税抜￥6,800)
-  _rx_date = re.compile(ur'同じ発売日の同ジャンル商品を開く">([0-9/]+?)</a>')
-  def _parsedate(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode or None
-    """
-    # http://stackoverflow.com/questions/2802168/find-last-match-with-python-regular-expression
-    m = self._rx_date.search(h)
-    if m:
-      return m.group(1)
 
   #_rx_title = re.compile(ur'タイトル：([^"]+?)[,"]')
   #def _parsetitle(self, h):
@@ -593,6 +590,9 @@ class SoftApi(object):
       if not name:
         name = yomi
         yomi = ''
+      if name:
+        # Example: http://www.getchu.com/soft.phtml?id=837244
+        name = name.replace('<charalist>', '').strip()
       if name and name != BAD_NAME:
         yield {
           'id': int(m.group(1)),  # character number, starting from 1
@@ -621,17 +621,18 @@ if __name__ == '__main__':
   k = 718587 # レミニセンス
   k = 798624
   k = 809466 # ちぇ～んじ！
+  k = 837244
   print '-' * 10
   q = api.query(k)
-  #for it in q['characters']:
-  #  for k,v in it.iteritems():
-  #    print k,':',v
+  for it in q['characters']:
+    for k,v in it.iteritems():
+      print k,':',v
 
   #for it in q['descriptions']:
   #  print it
   #print q['characterDescription']
-  for it in q['sampleImages']:
-    print it
+  #for it in q['sampleImages']:
+  #  print it
 
   #print q['price']
   #print q['otome']

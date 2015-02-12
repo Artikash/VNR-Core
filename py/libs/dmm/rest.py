@@ -11,7 +11,7 @@
 # Example
 # http://affiliate-api.dmm.com/?affiliate_id=sakuradite-999&account_id=ezuc1BvgM0f74KV4ZMmS&operation=ItemList&version=1.00&timestamp=2012-01-13%2014%3A08%3A16&site=DMM.com&service=lod&floor=akb48
 
-__all__ = ['RestApi']
+__all__ = 'RestApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

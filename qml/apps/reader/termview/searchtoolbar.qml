@@ -12,6 +12,12 @@ Row { id: root_ // Theme refers to Bootstrap.label
   signal triggered(string text)
   property alias displaysDuplicateRows: duplicateButton_.checked // bool
 
+  function clear() {
+    for (var i = 0; i < children.length; ++i)
+      if (children[i].checked)
+        children[i].checked = false
+  }
+
   // - Private -
   spacing: 2
 
@@ -50,8 +56,7 @@ Row { id: root_ // Theme refers to Bootstrap.label
     width: parent.cellWidth; height: parent.cellHeight
     styleClass: 'btn btn-inverse'
 
-    //text: Sk.tr("language")
-    text: qsTr("lang")
+    text: Sk.tr("lang")
     toolTip: qsTr("Search your language")
 
     onClicked: {
@@ -65,7 +70,7 @@ Row { id: root_ // Theme refers to Bootstrap.label
     width: parent.cellWidth; height: parent.cellHeight
     styleClass: checked ? 'btn btn-success' : 'btn btn-default'
     checkable: true
-    text: qsTr("Dup")
+    text: qsTr("dup")
     toolTip: qsTr("Display duplicate rows which should be avoided")
   }
 }

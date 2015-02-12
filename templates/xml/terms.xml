@@ -16,6 +16,10 @@
 %		if it.userHash
 			<userHash>{{it.userHash}}</userHash>
 %		endif
+%		if it.host
+			<host>{{it.host}}</host>
+%		endif
+			<sourceLanguage>{{it.sourceLanguage}}</sourceLanguage>
 			<language>{{it.language}}</language>
 			<timestamp>{{it.timestamp}}</timestamp>
 %		if it.updateTimestamp
@@ -24,6 +28,9 @@
 %		endif
 %		if it.hentai
 			<hentai>true</hentai>
+%		endif
+%		if it.icase
+			<icase>true</icase>>
 %		endif
 %		if it.special
 			<special>true</special>

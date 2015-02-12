@@ -3,7 +3,7 @@
 # 2/10/2013 jichi
 # See: http://qt-project.org/wiki/Busy-Indicator-for-QML
 
-__all__ = ['QmlGradientSpinner']
+__all__ = 'QmlGradientSpinner',
 
 if __name__ == '__main__':
   import sys

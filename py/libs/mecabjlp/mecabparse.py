@@ -12,8 +12,8 @@ if __name__ == '__main__': # DEBUG
 #import re
 import MeCab
 from sakurakit import skos, skstr
-from cconv import cconv
-from jptraits import jpchars
+from jaconv import jaconv
+from unitraits import jpchars, uniconv
 import mecabdef, mecabfmt
 
 if skos.WIN:
@@ -35,7 +35,7 @@ else:
 #  """
 #  return _rx_cypher.sub(u'ウ', text)
 
-def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
   """
   @param  text  unicode
   @param  tagger  MeCabTagger
@@ -46,7 +46,6 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
   @param* feature  bool   whether return feature
   @param* ruby  unicode
   @param* readingTypes  (int type) or [int type]
-  @param* lougo  bool
   @yield  (unicode surface, int type, unicode yomigana or None, unicode feature or None)
   """
   if not tagger:
@@ -55,16 +54,16 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
   if reading:
     #if ruby == mecabdef.RB_TR:
     #  wordtr = None
-    katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
-                 cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
-                 cconv.kata2thai if ruby == mecabdef.RB_THAI else
-                 cconv.kata2kanji if ruby == mecabdef.RB_KANJI else
-                 cconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_TR) else
+    katatrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
+                 jaconv.kata2ko if ruby == mecabdef.RB_HANGUL else
+                 jaconv.kata2th if ruby == mecabdef.RB_THAI else
+                 #jaconv.kata2kanji if ruby == mecabdef.RB_KANJI else
+                 jaconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_TR) else
                  None)
-    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_HANGUL, mecabdef.RB_THAI, mecabdef.RB_KANJI):
+    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
       readingTypes = None
   encoding = mecabdef.DICT_ENCODING
-  feature2katana = fmt.getkata
+  feature2kata = fmt.getkata
   node = tagger.parseToNode(text.encode(encoding))
   while node:
     if node.stat not in (MeCab.MECAB_BOS_NODE, MeCab.MECAB_EOS_NODE):
@@ -72,7 +71,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
       surface = surface.decode(encoding, errors='ignore')
       #surface = surface.encode('sjis')
 
-      if len(surface) == 1 and surface in jpchars.set_punc:
+      if len(surface) == 1 and surface in jpchars.set_punct:
         char_type = mecabdef.TYPE_PUNCT
       else:
         char_type = node.char_type
@@ -88,10 +87,10 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
           if wordtr:
             if not yomigana:
               yomigana = wordtr(surface)
-          if not yomigana and not lougo:
+          if not yomigana:
             if not feature:
               f = node.feature.decode(encoding, errors='ignore')
-            katagana = feature2katana(f)
+            katagana = feature2kata(f)
             if katagana:
               furigana = None
               if katagana == '*':
@@ -99,21 +98,25 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
                 unknownYomi = True
                 if HAS_MSIME and len(surface) < msime.IME_MAX_SIZE:
                   if ruby == mecabdef.RB_HIRA:
-                    yomigana = msime.to_yomi_hira(surface)
+                    yomigana = msime.to_hira(surface)
                   else:
-                    yomigana = msime.to_yomi_kata(surface)
+                    yomigana = msime.to_kata(surface)
                     if yomigana:
                       if ruby == mecabdef.RB_HIRA:
                         pass
-                      elif ruby == mecabdef.RB_ROMAJI:
-                        yomigana = cconv.wide2thin(cconv.kata2romaji(yomigana))
+                      elif ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU):
+                        if ruby == mecabdef.RB_ROMAJI_RU:
+                          conv = jaconv.kata2ru
+                        else:
+                          conv = jaconv.kata2romaji
+                        yomigana = uniconv.wide2thin(conv(yomigana))
                         if yomigana == surface:
                           yomigana = None
                           unknownYomi = False
                       elif ruby == mecabdef.RB_HANGUL:
-                        yomigana = cconv.kata2hangul(yomigana)
-                      elif ruby == mecabdef.RB_KANJI:
-                        yomigana = cconv.kata2kanji(yomigana)
+                        yomigana = jaconv.kata2ko(yomigana)
+                      #elif ruby == mecabdef.RB_KANJI:
+                      #  yomigana = jaconv.kata2kanji(yomigana)
                 if not yomigana and unknownYomi and readingTypes:
                   yomigana = '?'
               else:
@@ -151,13 +154,13 @@ def toyomi(text, ruby=mecabdef.RB_HIRA, sep='', **kwargs):
   @param* sep  unicode
   @return  unicode
   """
-  furitrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
-               cconv.hira2kata if ruby == mecabdef.RB_KATA else
-               cconv.yomi2romaji if ruby == mecabdef.RB_ROMAJI else
-               cconv.yomi2hangul if ruby == mecabdef.RB_HANGUL else
-               cconv.yomi2thai if ruby == mecabdef.RB_THAI else
-               cconv.yomi2kanji if ruby == mecabdef.RB_KANJI else
-               cconv.kata2hira)
+  furitrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
+               uniconv.hira2kata if ruby == mecabdef.RB_KATA else
+               jaconv.kana2romaji if ruby == mecabdef.RB_ROMAJI else
+               jaconv.kana2ko if ruby == mecabdef.RB_HANGUL else
+               jaconv.kana2th if ruby == mecabdef.RB_THAI else
+               #jaconv.kana2kanji if ruby == mecabdef.RB_KANJI else
+               uniconv.kata2hira)
   # Add space between words
   return sep.join(furigana or furitrans(surface) for surface,furigana in
       parse(text, reading=True, ruby=ruby, **kwargs))

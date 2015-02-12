@@ -15,16 +15,16 @@ Item { id: root_
   //property string postUrl: 'http://192.168.1.105:8080/api/json/post/create'
 
   // string json ->
-  function newPost() { editor_.newPost() }
+  function newPost() { editor_.newPost(0, 'post') }
 
   // - Private -
 
   Plugin.PostInputManager { id: editor_
+    imageEnabled: false
     Component.onCompleted: postReceived.connect(root_.submit)
   }
 
-  function submit(postString) {
-    console.log(postString)
+  function submit(postString, imageString) { // image string is ignored
     var post = JSON.parse(postString)
     var user = statusPlugin_.userName
     var pass = statusPlugin_.userPassword

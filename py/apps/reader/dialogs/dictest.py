@@ -2,7 +2,7 @@
 # dictest.py
 # 2/16/2014 jichi
 
-__all__ = ['DictionaryTester']
+__all__ = 'DictionaryTester',
 
 if __name__ == '__main__':
   import sys
@@ -22,6 +22,12 @@ import dictman, rc
 DEFAULT_INPUT = u"万歳"
 EMPTY_PLACEHOLDER = tr_("Empty") + "! ><"
 
+CSS_TEXTEDIT = """\
+QTextEdit {
+  font-size: 13px;
+}
+"""
+
 #@Q_Q
 class _DictionaryTester(object):
   def __init__(self, q):
@@ -31,10 +37,10 @@ class _DictionaryTester(object):
     layout = QtWidgets.QVBoxLayout()
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.submitButton)
     row.addWidget(self.inputEdit)
-    #row.addWidget(self.clearButton)
+    row.addWidget(self.submitButton)
     row.addWidget(self.pasteButton)
+    row.addWidget(self.clearButton)
     row.addWidget(self.speakButton)
     layout.addLayout(row)
 
@@ -55,17 +61,17 @@ class _DictionaryTester(object):
   def speakButton(self):
     ret = QtWidgets.QPushButton(mytr_("Speak"))
     ret.setToolTip(mytr_("Speak"))
-    skqss.class_(ret, 'btn btn-default')
+    skqss.class_(ret, 'btn btn-inverse')
     ret.clicked.connect(self._speak)
     return ret
 
-  #@memoizedproperty
-  #def clearButton(self):
-  #  ret = QtWidgets.QPushButton(tr_("Clear"))
-  #  ret.setToolTip(tr_("Clear"))
-  #  skqss.class_(ret, 'btn btn-default')
-  #  ret.clicked.connect(self._clear)
-  #  return ret
+  @memoizedproperty
+  def clearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    ret.setToolTip(tr_("Clear"))
+    skqss.class_(ret, 'btn btn-inverse')
+    ret.clicked.connect(self._clear)
+    return ret
 
   @memoizedproperty
   def pasteButton(self):
@@ -79,7 +85,8 @@ class _DictionaryTester(object):
   def inputEdit(self):
     ret = QtWidgets.QLineEdit()
     ret.setText(DEFAULT_INPUT)
-    skqss.class_(ret, 'normal')
+    #skqss.class_(ret, 'normal')
+    skqss.class_(ret, 'texture-inverse')
     ret.setPlaceholderText(tr_("Japanese"))
     ret.setToolTip(ret.placeholderText())
     ret.textChanged.connect(self.refresh)
@@ -88,13 +95,17 @@ class _DictionaryTester(object):
 
   @memoizedproperty
   def resultEdit(self):
-    ret = QtWidgets.QTextEdit()
+    ret = QtWidgets.QTextBrowser()
     ret.setAcceptRichText(False)
-    skqss.class_(ret, 'texture')
+    skqss.class_(ret, 'texture-inverse')
+    #skqss.class_(ret, 'texture')
     #skqss.class_(ret, 'normal')
     #ret.setToolTip(tr_("Result"))
     ret.setReadOnly(True)
     ret.setPlainText(EMPTY_PLACEHOLDER)
+    ret.setStyleSheet(CSS_TEXTEDIT)
+    import osutil
+    ret.anchorClicked.connect(osutil.open_url)
     return ret
 
   def _speak(self):
@@ -109,8 +120,8 @@ class _DictionaryTester(object):
     if t:
       self.inputEdit.setText(t)
 
-  #def _clear(self):
-  #  self.inputEdit.clear()
+  def _clear(self):
+    self.inputEdit.clear()
 
   def _getInputText(self): return self.inputEdit.text().strip()
 
@@ -126,16 +137,16 @@ class _DictionaryTester(object):
   def submit(self):
     t = self._getInputText()
     if t:
-      h = dictman.manager().render(t)
+      h = dictman.manager().renderJapanese(t)
       self.resultEdit.setHtml(h)
 
 class DictionaryTester(QtWidgets.QDialog):
   #termEntered = Signal(QtCore.QObject) # Term
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(DictionaryTester, self).__init__(parent, WINDOW_FLAGS)
-    skqss.class_(self, 'texture')
+    skqss.class_(self, 'texture-inverse')
     self.setWindowTitle(mytr_("Japanese Dictionary"))
     self.setWindowIcon(rc.icon('window-jdict'))
     self.__d = _DictionaryTester(self)

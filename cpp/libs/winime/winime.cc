@@ -5,20 +5,23 @@
 // http://msdn.microsoft.com/en-us/library/windows/desktop/hh851782%28v=vs.85%29.aspx
 // http://tech.ddvip.com/2007-09/118923427533812.html
 // http://www.haogongju.net/art/1673851
+// http://www.ccrun.com/article.asp?i=1028&d=r0j832
 //
 // The code must be wrapped within OleInitialize/OleUninitialize
 
 #include "winime/winime.h"
 #include <windows.h>
 #include <msime.h>
+//#include <QDebug>
+
+// Interface ID for IFELanguage
+// {019F7152-E6DB-11d0-83C3-00C04FDDB82E}
+//DEFINE_GUID(IID_IFELanguage,
+//0x19f7152, 0xe6db, 0x11d0, 0x83, 0xc3, 0x0, 0xc0, 0x4f, 0xdd, 0xb8, 0x2e);
+static const IID IID_IFELanguage = { 0x019f7152, 0xe6db, 0x11d0, { 0x83, 0xc3, 0x00, 0xc0, 0x4f, 0xdd, 0xb8, 0x2e } };
 
 winime_t *winime_create(const wchar_t *cls) ///< create an im engine of given class
 {
-  // Interface ID for IFELanguage
-  // {019F7152-E6DB-11d0-83C3-00C04FDDB82E}
-  //DEFINE_GUID(IID_IFELanguage,
-  //0x19f7152, 0xe6db, 0x11d0, 0x83, 0xc3, 0x0, 0xc0, 0x4f, 0xdd, 0xb8, 0x2e);
-  static const IID IID_IFELanguage = { 0x019f7152, 0xe6db, 0x11d0, { 0x83, 0xc3, 0x00, 0xc0, 0x4f, 0xdd, 0xb8, 0x2e } };
 
   CLSID clsid;
   if (FAILED(::CLSIDFromString(cls, &clsid))) // resolve clsid at runtime, instead of CLSID_MSIME_JAPANESE_?
@@ -30,12 +33,10 @@ winime_t *winime_create(const wchar_t *cls) ///< create an im engine of given cl
                                 reinterpret_cast<LPVOID *>(&ife))))
     return nullptr;
 
-  //Q_ASSERT(ife);
   if (SUCCEEDED(ife->Open())) {
     DWORD dwCaps;
     if(SUCCEEDED(ife->GetConversionModeCaps(&dwCaps)))
       return ife;
-  //Q_ASSERT(ife);
     ife->Close();
   }
   ife->Release();
@@ -54,7 +55,7 @@ void winime_destroy(winime_t *ife)
 bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode,
     const wchar_t *src, size_t len, const winime_apply_fun_t &fun)
 {
-  if (!ife || !src || fun.empty())
+  if (!ife || !src || !fun)
     return false;
   MORRSLT *mr = nullptr;
   if (FAILED(ife->GetJMorphResult(req, mode, len, src, nullptr, &mr)) || !mr)
@@ -69,14 +70,14 @@ bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode,
 bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode,
     const wchar_t *src, size_t len, const winime_collect_fun_t &fun)
 {
-  if (!ife || !src || fun.empty())
+  if (!ife || !src || !fun)
     return false;
   MORRSLT *mr = nullptr;
   if (FAILED(ife->GetJMorphResult(req, mode, len, src, nullptr, &mr)) || !mr)
     return false;
   //Q_ASSERT(mr);
   //qDebug() << QString::fromWCharArray(mr->pwchOutput, mr->cchOutput);
-  //qDebug() << mr->cWDD
+  //qDebug() << mr->cWDD;
 
   //for (int i = 0; i < mr->cWDD; i++) {
   //  const WDD *it = mr->pWDD + i;

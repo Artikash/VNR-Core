@@ -1,7 +1,14 @@
 # brands.yaml
 # 9/23/2013 jichi
 
+noecchi:
+  - Falcom
+  - エクスペリエンス
+  - コーエー
+  - スクウェア・エニックス
+
 otome:
+  - AMEDEO
   - Rejet
   - ひつじぐも
   - マリンハート
@@ -10,21 +17,26 @@ otome:
 
 yuri:
   - 10mile
+  - Shining Star
+  - Shining Star Lily's
   - ゆりんゆりん
 
 junai:
   - 07th Expansion
   - Aries
-  - Astronauts
+  - CLIP☆CRAFT
   - ETERNAL
+  - feng
   - FrontWing
   - HOOKSOFT
   - Innocent Grey
   - Lapis lazuli
   - Leaf
   - light
+  - molamola.software
   - minori
   - Navel
+  - NEKO WORKs
   - onomatope*
   - PeasSoft
   - PULLTOP
@@ -35,6 +47,7 @@ junai:
   - SkyFish
   - SkyFish poco
   - Sphere
+  - sprite
   - Sugar Pot
   - Sugar Pot+
   #- TEATIME
@@ -43,6 +56,7 @@ junai:
   - Whirlpool
   - φage
   - あかべぇそふとつぅ
+  #- きゃんでぃそふと
   - みなとそふと
   - でぼの巣製作所
   - ぱじゃまソフト
@@ -50,20 +64,69 @@ junai:
   - ねこねこソフト
   - アージュ
   - キャラメルBOX
+  - グランドクロス
+  - ファイヤワークス
   - ブルームハンドル
   - ライアーソフト
   - サーカス
   - 枕
   - 戯画
 
+# No hentai image
+junaiimage:
+  # yuri
+  - 10mile
+  # seminuki
+  - エウシュリー
+  - エスクード
+  # junai
+  - 07th Expansion
+  - Aries
+  - ETERNAL
+  - Innocent Grey
+  - light
+  - PULLTOP
+  #- PULLTOP LATTE
+  - Navel
+  - sweet light
+  - sprite
+  - Sugar Pot
+  - Sugar Pot+
+  - あかべぇそふとすりぃ
+  - アージュ
+  - 枕
+  # other junai
+  - 3rdEye
+  - BaseSon
+  - CROSS†CHANNEL
+  - Favorite
+  - FrontWing
+  - key
+  - La'cryma
+  - Qoobrand
+  - Ricotta
+  - Rosebleu
+  - ruf
+  - SagaPlanets
+  - アンサンブル
+  - オーガスト
+  - ニトロプラス
+
 seminuki:
   # Supposed to be nuki but junai at server side
-  #- Galette
-  #- Iris
+  #- Astronauts
+  - bootUP!
+  - BaseSon Light
   - Digital Cute
+  - Galette
+  - Iris
+  - Mink
+  - Mink EGO
   - ぷちぱるふぇ
   - アリスソフト
+  - エルフ
   - エウシュリー
+  - エレンシア
   - エスクード
   - 脳内彼女
 
@@ -72,6 +135,7 @@ nuki:
   - BLACK RAINBOW
   - Cattleya
   - CODEPINK
+  - CYCLET
   - Empress
   - G.J？
   - Guity

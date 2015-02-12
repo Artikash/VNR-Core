@@ -2,7 +2,7 @@
 # retest.py
 # 12/16/2012 jichi
 
-__all__ = ['RegExpTester']
+__all__ = 'RegExpTester',
 
 if __name__ == '__main__':
   import sys
@@ -19,6 +19,13 @@ from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import mytr_
 import rc
+
+def create_label(text=""): # unicode -> QLabel
+  ret = QtWidgets.QLabel()
+  if text:
+    ret.setText(text + ":")
+  ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+  return ret
 
 class _RegExpTester(object):
 
@@ -45,8 +52,8 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
         self.patternEdit.textChanged,
         self.replaceEdit.textChanged,
         self.regexCheckBox.toggled,
-        self.ignoreCaseCheckBox.toggled,
-        ):
+        self.icaseCheckBox.toggled,
+      ):
       sig.connect(self._refresh)
 
     layout = QtWidgets.QVBoxLayout()
@@ -54,22 +61,22 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     grid = QtWidgets.QGridLayout()
 
     # 0
-    grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), 0, 0)
+    grid.addWidget(create_label(tr_("Pattern")), 0, 0)
     grid.addWidget(self.patternEdit, 0, 1)
 
     # 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Text") + ":"))
+    grid.addWidget(create_label(tr_("Translation")))
     grid.addWidget(self.replaceEdit)
 
     # 2
-    grid.addWidget(QtWidgets.QLabel(tr_("Status") + ":"))
+    grid.addWidget(create_label(tr_("Status")))
     grid.addWidget(self.messageEdit)
 
     layout.addLayout(grid)
 
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.regexCheckBox)
-    row.addWidget(self.ignoreCaseCheckBox)
+    row.addWidget(self.icaseCheckBox)
     layout.addLayout(row)
 
     splitter = QtWidgets.QSplitter(Qt.Vertical)
@@ -87,7 +94,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     pattern = self.patternEdit.text().strip()
     repl = self.replaceEdit.text().strip()
     r = self.regexCheckBox.isChecked()
-    i = self.ignoreCaseCheckBox.isChecked()
+    i = self.icaseCheckBox.isChecked()
     result = text
     try:
       if r and i:
@@ -160,7 +167,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     return ret
 
   @memoizedproperty
-  def ignoreCaseCheckBox(self):
+  def icaseCheckBox(self):
     ret = QtWidgets.QCheckBox()
     ret.setText(tr_("Ignore case"))
     ret.setToolTip(tr_("Ignore case"))
@@ -171,7 +178,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
 class RegExpTester(QtWidgets.QDialog):
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(RegExpTester, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.__d = _RegExpTester(self)

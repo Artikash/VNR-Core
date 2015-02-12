@@ -19,13 +19,14 @@ Item { id: root_
   // should be larger enough to hold the panel
   //width: 390 + floatingWidth
   width: buttonGrid_.width + floatingWidth + 28 // floatingWidth = 32 or 64
-  height: buttonGrid_.height + 20 // margin: 10
+  height: buttonGrid_.height + 18 // margin: 10
 
   property alias floatingWidth: floatingRect_.width
 
   property real zoomFactor: 1.0
 
   property bool ignoresFocus
+  property alias autoHide: appMenu_.autoHideChecked
 
   //property alias ignoresFocusChecked: focusButton_.checked
 
@@ -81,8 +82,8 @@ Item { id: root_
   //property alias windowHookChecked: windowHookButton_.checked
   //property alias windowTextChecked: windowTextButton_.checked
 
-  //property alias speaksTextChecked: speakTextButton_.checked
-  property alias speaksTextChecked: speakButton_.checked
+  property alias speaksTextChecked: speakTextButton_.checked
+  property alias speaksTranslationChecked: speakTranslationButton_.checked
 
   property alias copiesTextChecked: copyTextButton_.checked
   property alias copiesSubtitleChecked: copySubtitleButton_.checked
@@ -164,7 +165,8 @@ Item { id: root_
     }
     height: buttonCol_.height + 10
     width: buttonCol_.width + 10
-    radius: 11
+    //radius: 11
+    radius: 0 // flat
 
     color: active ? '#aa000000' : '#55000000'
     property bool active: !panel_.visible
@@ -179,7 +181,12 @@ Item { id: root_
       growlButton_.hover ||
       shadowButton_.hover ||
       glowButton_.hover ||
+      srButton_.hover ||
+      speechAutoButton_.hover ||
+      speechRecognizeButton_.hover ||
       speakButton_.hover ||
+      speakTextButton_.hover ||
+      speakTranslationButton_.hover ||
       commentBarButton_.hover ||
       captureButton_.hover ||
       stretchButton_.hover ||
@@ -200,8 +207,9 @@ Item { id: root_
 
       property int cellWidth: 54 * (slimChecked ? 0.4 : 1) * root_.zoomFactor
       property int cellHeight: 21 * root_.zoomFactor
-      property int cellRadius: 7 * root_.zoomFactor
       property int pixelSize: 12 * root_.zoomFactor
+      //property int cellRadius: 7 * root_.zoomFactor
+      property int cellRadius: 0 // flat
 
       // * .9
       //property int cellWidth: 50 * (slimChecked ? 0.4 : 1) * root_.zoomFactor
@@ -224,7 +232,7 @@ Item { id: root_
       //property color buttonPopupColor: '#aaffff00' // yellow
       //property color buttonPopupColor: '#aaaa007f' // purple-like
 
-      property string cellFont: 'DFGirl'
+      //property string cellFont: 'DFGirl'
 
       Share.TextButton { id: menuButton_
         height: parent.cellHeight; width: parent.cellWidth
@@ -239,7 +247,7 @@ Item { id: root_
         //property alias checked: appMenu_.visible
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         onClicked: if (!root_.ignoresFocus) {
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
@@ -258,7 +266,7 @@ Item { id: root_
         backgroundColor: checked ? parent.buttonPopupColor : parent.buttonColor // gray
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         property alias checked: panel_.visible
         //property bool enabled: root_.visibleChecked
@@ -278,7 +286,7 @@ Item { id: root_
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         toolTip: qsTr("Toggle slim UI")
 
         onClicked: checked = !checked
@@ -319,7 +327,7 @@ Item { id: root_
         //color: enabled ? 'snow' : 'silver'
         backgroundColor: !enabled ? parent.buttonDisabledColor : checked ? parent.buttonCheckedColor : parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         visible: !root_.ignoresFocus && !slimChecked //|| root_.stretchedChecked)
 
@@ -344,24 +352,184 @@ Item { id: root_
         text: slimChecked ? "♪" : My.tr("Speak") // ♪
         font.pixelSize: parent.pixelSize
         //font.bold: true
+        backgroundColor: ttsRect_.visible ? parent.buttonPopupColor :
+                         checked ? parent.buttonCheckedColor :
+                         parent.buttonColor
         radius: parent.cellRadius
-        //visible: !root_.ignoresFocus
-        //visible: !statusPlugin_.wine
+        //font.family: parent.cellFont
 
-        property bool checked
-        //backgroundColor: parent.buttonColor
-        backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
+        property bool checked: speakTextButton_.checked || speakTranslationButton_.checked
+        //  if (checked)
+        //    stretchRect_.visible = false
 
-        //language: root_.language
-        font.family: parent.cellFont
-        //toolTip: qsTr("Read current Japanese game text using TTS")
-        toolTip: qsTr("Automatically read Japanese game text using TTS")
+        //property bool enabled: statusPlugin_.online && statusPlugin_.login
+        //onEnabledChanged:
+        //  if (!enabled) checked = false
 
+        toolTip: qsTr("Automatically read game text or translation using TTS")
         onClicked: {
-          checked = !checked
-          if (checked)
+          ttsRect_.visible = !ttsRect_.visible
+          if (ttsRect_.visible)
             root_.speakTextRequested()
-          //growl_.showMessage(toolTip)
+        }
+
+        Share.FadingRectangle { id: ttsRect_
+          visible: false
+
+          anchors {
+            left: parent.right
+            verticalCenter: parent.verticalCenter
+            leftMargin: 6
+          }
+          height: ttsRow_.height + 10
+          width: ttsRow_.width + 10
+          radius: floatingRect_.radius
+
+          color: floatingRect_.color
+
+          Row { id: ttsRow_
+            anchors.centerIn: parent
+            spacing: 4
+
+            Share.TextButton { id: speakTextButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              text: slimChecked ? Sk.tr("Text").charAt(0) : Sk.tr("Text")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              //font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: {
+                checked = !checked
+                if (checked)
+                  speakTranslationButton_.checked = false
+              }
+
+              toolTip: qsTr("Automatically read game text using TTS")
+            }
+
+            Share.TextButton { id: speakTranslationButton_
+              height: buttonCol_.cellHeight
+              width: buttonCol_.cellWidth
+              text: slimChecked ? qsTr("Trans").charAt(1).toUpperCase() : qsTr("Trans")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              //font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: {
+                checked = !checked
+                if (checked)
+                  speakTextButton_.checked = false
+              }
+
+              toolTip: qsTr("Automatically read subtitle using TTS")
+            }
+          }
+
+          Share.CloseButton { //id: closeButton_
+            anchors { left: parent.left; top: parent.top; margins: -9 }
+            onClicked: ttsRect_.visible = false
+          }
+        }
+      }
+
+      Share.TextButton { id: srButton_
+        visible: false // This button is disabled
+
+        height: parent.cellHeight; width: parent.cellWidth
+        text: slimChecked ? "音" : "ASR"
+        font.pixelSize: parent.pixelSize
+        //font.bold: true
+        backgroundColor: !enabled ? parent.buttonDisabledColor :
+                         srRect_.visible ? parent.buttonPopupColor :
+                         checked ? parent.buttonCheckedColor :
+                         parent.buttonColor
+        radius: parent.cellRadius
+        //font.family: parent.cellFont
+
+        property bool enabled: statusPlugin_.online
+
+        property bool checked: speechAutoButton_.checked
+        //  if (checked)
+        //    stretchRect_.visible = false
+
+        //property bool enabled: statusPlugin_.online && statusPlugin_.login
+        //onEnabledChanged:
+        //  if (!enabled) checked = false
+
+        toolTip: qsTr("Automatic speech recognition from game audio")
+        onClicked:
+          if (enabled)
+            srRect_.visible = !srRect_.visible
+
+        Share.FadingRectangle { id: srRect_
+          visible: false
+
+          anchors {
+            left: parent.right
+            verticalCenter: parent.verticalCenter
+            leftMargin: 6
+          }
+          height: srRow_.height + 10
+          width: srRow_.width + 10
+          radius: floatingRect_.radius
+
+          color: floatingRect_.color
+
+          Row { id: srRow_
+            anchors.centerIn: parent
+            spacing: 4
+
+            Share.TextButton { id: speechRecognizeButton_
+              height: buttonCol_.cellHeight
+              width: buttonCol_.cellWidth
+              text: slimChecked ? qsTr("Recognize").charAt(0) : qsTr("Recognize")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              //font.family: buttonCol_.cellFont
+
+              onClicked:
+                if (srPlugin_.active) {
+                  if (!srPlugin_.singleShot)
+                    srPlugin_.stop()
+                } else {
+                  srPlugin_.singleShot = true
+                  srPlugin_.active = true
+                }
+
+              toolTip: qsTr("Immediately recognize game speech")
+            }
+
+            Share.TextButton { id: speechAutoButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              text: slimChecked ? qsTr("Auto").charAt(0) : qsTr("Auto")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              //font.family: buttonCol_.cellFont
+
+              property bool checked: srPlugin_.active && !srPlugin_.singleShot // cached
+              onClicked:
+                if (checked) {
+                  srPlugin_.singleShot = true
+                  srPlugin_.active = false
+                } else {
+                  srPlugin_.singleShot = false
+                  srPlugin_.active = true
+                }
+
+              toolTip: qsTr("Automatically recognize game speech")
+            }
+          }
+
+          Share.CloseButton { //id: closeButton_
+            anchors { left: parent.left; top: parent.top; margins: -9 }
+            onClicked: srRect_.visible = false
+          }
         }
       }
 
@@ -378,7 +546,7 @@ Item { id: root_
                          checked ? parent.buttonCheckedColor :
                          parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         //visible: !root_.ignoresFocus
 
@@ -417,7 +585,7 @@ Item { id: root_
           }
           height: ocrRow_.height + 10
           width: ocrRow_.width + 10
-          radius: 11
+          radius: floatingRect_.radius
 
           color: floatingRect_.color
 
@@ -435,7 +603,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: checked = !checked
@@ -452,7 +620,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: checked = !checked
@@ -469,7 +637,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: checked = !checked
@@ -497,7 +665,7 @@ Item { id: root_
         backgroundColor: parent.buttonColor
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         //toolTip: qsTr("Read current Japanese game text using TTS")
         toolTip: qsTr("Take a screen shot, and save to the desktop and the clipboard")
 
@@ -517,7 +685,7 @@ Item { id: root_
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         toolTip: qsTr("Toggle background shadow")
         onClicked: checked = !checked
       }
@@ -534,7 +702,7 @@ Item { id: root_
         property bool checked
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
 
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         toolTip: qsTr("Toggle mouse and keyboard shortcuts")
         onClicked: checked = !checked
       }
@@ -551,7 +719,7 @@ Item { id: root_
                          checked ? parent.buttonCheckedColor :
                          parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         visible: !root_.ignoresFocus
 
@@ -582,7 +750,7 @@ Item { id: root_
           }
           height: stretchRow_.height + 10
           width: stretchRow_.width + 10
-          radius: 11
+          radius: floatingRect_.radius
 
           color: floatingRect_.color
 
@@ -600,7 +768,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: {
@@ -623,7 +791,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: (checked && !displayRatioButton_.checked) ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               visible: !root_.wine
 
@@ -654,7 +822,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: (checked && stretchDisplayButton_.checked) ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               visible: !root_.wine
 
@@ -685,7 +853,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked: false
               onClicked: checked = !checked
@@ -712,7 +880,7 @@ Item { id: root_
         //language: root_.language
         backgroundColor: checked ? parent.buttonColor : parent.buttonUncheckedColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         property bool checked: true
         toolTip: checked ? qsTr("Hide subtitles") : qsTr("Show subtitles")
@@ -767,7 +935,7 @@ Item { id: root_
         pauseColor: '#aa555555' // black
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         //toolTip: qsTr("Read current Japanese game text using TTS")
         toolTip: qsTr("{0} out of {1} online users are playing this game now")
             .replace('{0}', count)
@@ -788,8 +956,7 @@ Item { id: root_
   onIgnoresFocusChanged: hidePopups()
 
   function hidePopups() {
-    stretchRect_.visible = false
-    ocrRect_.visible = false
+    stretchRect_.visible = ocrRect_.visible = ttsRect_.visible = srRect_.visible = false
   }
 
   Share.FadingRectangle { id: panel_
@@ -831,7 +998,9 @@ Item { id: root_
     onVisibleChanged: if (visible) hideTimer_.restart()
     Component.onCompleted: visible = false  // hide on startup
 
-    radius: 10
+    //radius: 10
+    radius: 0 // flat
+
     //gradient: Gradient {  // color: aarrggbb
     //  GradientStop { position: 0.0;  color: '#9c8f8c8c' }
     //  GradientStop { position: 0.17; color: '#7a6a6d6a' }
@@ -1212,7 +1381,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("The maximum length of allowed game text. Text longer than that will be ignored.")
         sliderToolTip: qsTr("Maximum number of allowed characters in the game text is {0}").replace('{0}', Math.round(value / 2))
 
@@ -1232,7 +1400,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Zoom font size")
         sliderToolTip: Math.round(value * 100) + "%"
 
@@ -1250,7 +1417,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text box width")
         sliderToolTip: Math.round(value * 100) + "%"
 
@@ -1270,7 +1436,6 @@ Item { id: root_
       //  font.pixelSize: parent.pixelSize
       //  font.bold: true
       //  labelWidth: 40
-      //  handleWidth: 15
       //  toolTip: qsTr("Zoom popup size")
       //  sliderToolTip: Math.round(value * 100) + "%"
       //  //value: 1.0
@@ -1288,7 +1453,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text background shadow transparency")
         sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
@@ -1304,11 +1468,10 @@ Item { id: root_
       Share.LabeledSlider { id: glowIntensitySlider_
         height: parent.cellHeight
         width: parent.cellWidth
-        text: qsTr("Lightness")
+        text: qsTr("Light")
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text glowing intensity")
         sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
@@ -1326,7 +1489,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text glowing range")
         sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 

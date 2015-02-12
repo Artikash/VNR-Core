@@ -403,7 +403,7 @@ if __name__ == '__main__': # DEBUG
   t = Loader(dllpath, bufsize)
   t.init()
 
-  from sakurakit.skprofiler import SkProfiler
+  from sakurakit.skprof import SkProfiler
   with SkProfiler():
     ret = t.translate(s)
   with SkProfiler():

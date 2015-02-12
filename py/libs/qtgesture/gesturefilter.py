@@ -3,7 +3,7 @@
 # 4/5/2012 jichi
 # See: http://doc.qt.nokia.com/qq/qq18-mousegestures.html
 
-__all__ = ['MouseGestureFilter']
+__all__ = 'MouseGestureFilter',
 
 from math import fabs
 from itertools import izip

@@ -1,9 +1,9 @@
 # coding: utf8
-# qtrequests
+# qtrequests.py
 # 8/23/2014 jichi
 # Python requests implemented using QtNetwork.
 
-__all__ = ['Session']
+__all__ = 'Session', 'AsyncSession'
 
 import json, urllib, zlib
 from PySide.QtCore import QUrl, QEventLoop, QCoreApplication
@@ -30,10 +30,19 @@ def _gunzip(data):
   return _zlib_decomp.decompress(data)
 
 class Response:
+  encoding = 'utf8'
+
   def __init__(self, ok=True, content='', url=''):
     self.ok = ok # bool
     self.content = content # str
     self.url = url # unicode
+
+  @property
+  def text(self):
+    if self.content and isinstance(self.content, str):
+      return self.content.decode(self.encoding) # this might throw
+    else:
+      return self.content
 
 class _Session:
   encoding = 'utf8'
@@ -47,6 +56,7 @@ class _Session:
     @param  reply  QNetworkReply
     @param* abortSignal  Signal
     """
+    #loop = QEventLoop(self.nam) # prevent loop from being deleted by accident
     loop = QEventLoop()
     if self.abortSignal:
       self.abortSignal.connect(loop.quit)
@@ -57,9 +67,17 @@ class _Session:
     reply.finished.connect(loop.quit)
     loop.exec_()
 
-  def _createRequest(self, url, params=None, headers=None):
+    if self.abortSignal:
+      self.abortSignal.disconnect(loop.quit)
+    qApp.aboutToQuit.disconnect(loop.quit)
+    reply.finished.disconnect(loop.quit)
+
+    #loop.setParent(None)
+
+  def _createRequest(self, url, params=None, headers=None, verify=True):
     """
     @param  url  unicode
+    @param* verify  whether check SSL, ignored
     @param* headers  {unicode key:unicode value}
     @param* params  {unicode key:unicode value}
     """
@@ -261,6 +279,18 @@ class Session(object):
     content = data or ''
     return Response(ok=ok, content=content, url=url)
 
+from functools import partial
+from sakurakit import skthreads
+class AsyncSession(object):
+  def __init__(self, session):
+    self.session = session
+
+  def get(self, *args, **kwargs):
+    return skthreads.runsync(partial(self.session.get, *args, **kwargs))
+
+  def post(self, *args, **kwargs):
+    return skthreads.runsync(partial(self.session.post, *args, **kwargs))
+
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
@@ -276,7 +306,7 @@ if __name__ == '__main__':
 
     s = Session(nam)
 
-    from sakurakit.skprofiler import SkProfiler
+    from sakurakit.skprof import SkProfiler
     #url = "http://www.google.com"
     url = "http://localhost:8080/json/post/create"
     data = {'lang':'ja'}

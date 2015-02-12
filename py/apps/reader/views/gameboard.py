@@ -2,7 +2,7 @@
 # gameboard.py
 # 7/31/2013 jichi
 
-__all__ = ['GameBoardDialog']
+__all__ = 'GameBoardDialog',
 
 #from functools import partial
 #import operator
@@ -58,7 +58,7 @@ class GameBoardBean(SkWebViewBean):
 
 class GameBoardDialog(SkWebView):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameBoardDialog, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-gameboard'))
     self.setWindowTitle(mytr_("Game Board"))

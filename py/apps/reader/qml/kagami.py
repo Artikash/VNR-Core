@@ -4,20 +4,40 @@
 #
 # Gospel, Gossip, Grimoire, Omajinai, and Mirage
 
-import textwrap
+#import textwrap
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
-from cconv.cconv import wide2thin
-from zhszht.zhszht import zhs2zht
 from mecabjlp import mecabfmt
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
 from sakurakit.skdebug import dprint, dwarn
+from sakurakit.skqml import SkValueObject
 #from sakurakit.skqml import QmlObject
 #from sakurakit.sktr import tr_
 #from msime import msime
+from convutil import zhs2zht
 from mytr import my
-import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings
+import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings, textutil
+
+## Kagami ##
+
+class KagamiBean(QObject):
+
+  instance = None
+
+  def __init__(self, parent=None):
+    super(KagamiBean, self).__init__(parent)
+    KagamiBean.instance = self
+    dprint("pass")
+
+  ocrToggled = Signal()
+
+class KagamiController:
+
+  @staticmethod
+  def toggleOcr():
+    if KagamiBean.instance: # width & height are ignored
+      KagamiBean.instance.ocrToggled.emit()
 
 ## OCR region ##
 
@@ -80,7 +100,8 @@ class OcrRegionBean(QObject):
 
 class OcrRegionController:
 
-  def showRegion(self, x, y, width, height): # int, int, int, int
+  @staticmethod
+  def showRegion(x, y, width, height): # int, int, int, int
     if OcrRegionBean.instance: # width & height are ignored
       OcrRegionBean.instance.regionRequested.emit(x, y, width, height)
 
@@ -99,7 +120,8 @@ class OcrPopupBean(QObject):
 
 class OcrPopupController:
 
-  def showPopup(self, x, y, width, height, imgobj, winobj, text, language): # int, int, int, int, QObject, QObject, unicode, unicode
+  @staticmethod
+  def showPopup(x, y, width, height, imgobj, winobj, text, language): # int, int, int, int, QObject, QObject, unicode, unicode
     if OcrPopupBean.instance: # width & height are ignored
       OcrPopupBean.instance.popupRequested.emit(x, y, imgobj, winobj, text, language)
 
@@ -156,14 +178,25 @@ class GrimoireBean(QObject):
   clear = Signal()
   pageBreak = Signal()
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
-  showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
+  showTranslation = Signal(unicode, unicode, unicode, QObject, long)  # text, lang, provider, align, timestamp
   showComment = Signal(QObject) # dataman.Comment
+  showSubtitle = Signal(QObject) # dataman.SubtitleObject
 
   showNameText = Signal(unicode, unicode)  # text, lang
   showNameTranslation = Signal(unicode, unicode, unicode)  # text, lang, provider
 
-  @Slot(unicode, bool, unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, colorize, center):
+  def lookupFeature(self, text):
+    """
+    @param  text  unicode
+    @return  unicode  or None
+    """
+    return self.__d.features.get(text)
+
+  @Slot(unicode, result=unicode)
+  def convertChinese(self, text): return zhs2zht(text)
+
+  @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
     """
     @return  unicode  html
     """
@@ -174,19 +207,43 @@ class GrimoireBean(QObject):
     fmt = mecabfmt.getfmt(meCabDic)
     render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     return ''.join(
-        render(t, termEnabled=True, features=d.features if feature else None,
-            fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+        render(t, features=d.features if feature else None,
+            fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
-  @Slot(unicode, result=unicode)
-  def convertChinese(self, text): return zhs2zht(text)
+  @Slot(unicode, int, float, bool, bool, bool, bool, bool, result=unicode)
+  def renderKoreanRuby(self, text, charPerLine, rubySize, invertRuby, colorize, center,
+      romajaRubyEnabled, hanjaRubyEnabled):
+    """
+    @return  unicode  html
+    """
+    import uniroman
+    text = textutil.remove_html_tags(text).strip()
+    return uniroman.rendertable(text, 'ko', charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
+        hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
 
-  def lookupFeature(self, text):
+  @Slot(unicode, bool, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderChineseRuby(self, text, simplified, chineseRubyType, charPerLine, rubySize, invertRuby, colorize, center):
     """
-    @param  text  unicode
-    @return  unicode  or None
+    @return  unicode  html
     """
-    return self.__d.features.get(text)
+    import uniroman
+    text = textutil.remove_html_tags(text).strip()
+    lang = 'zhs' if simplified else 'zht'
+    return uniroman.rendertable(text, lang, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
+        chineseRubyType=chineseRubyType)
+
+  @Slot(unicode, unicode, QObject, int, float, bool, bool, result=unicode)
+  def renderAlignment(self, text, language, align, charPerLine, rubySize, colorize, center):
+    """
+    @return  unicode  html
+    """
+    align = align.value()
+    if not align:
+      return text
+    import renderman
+    return renderman.manager().renderAlignment(
+        text, language, align, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
 
 class _GrimoireController:
 
@@ -197,6 +254,8 @@ class _GrimoireController:
     self.nameTrClosure = None # function
     self.nameMissing = False # bool
     self.nameTrMissing = False # bool
+
+    self._retainedObjects = [] # [QObject]
 
     t = self.flushTimer = QTimer(q)
     t.setSingleShot(True)
@@ -214,6 +273,11 @@ class _GrimoireController:
     self.nameTrClosure = None
     self.nameMissing = False
     self.nameTrMissing = False
+
+  def retainObject(self, v):
+    self._retainedObjects.append(v)
+    if len(self._retainedObjects) > 50: # must be larger than the max items in kagami, which is 30
+      del self._retainedObjects[:10] # remove first 10 objects
 
   def _flush(self):
     if self._queue:
@@ -269,22 +333,47 @@ class GrimoireController(QObject):
     else:
       d.nameMissing = True
 
-  def showTranslation(self, text, language, provider, timestamp):
+  def showTranslation(self, text, language, provider, align, timestamp):
+    """
+    @param  text  unicode
+    @param  language  str
+    @param  provider  str
+    @param  align  list or None
+    @param  timestamp  long
+    """
     if not settings.global_().isGrimoireTranslationVisible():
       return
 
-    if self.__d.timestamp > timestamp:
+    d = self.__d
+
+    if d.timestamp > timestamp:
       dprint("translation comes too late, ignored")
       return
-    text = text.replace('\n', '<br/>')
-    self.__d.append(partial(GrimoireBean.instance.showTranslation.emit,
-        text, language, provider, timestamp))
+    if not align:
+      align = None # enforce None
+    else:
+      align = SkValueObject(value=align)
+      d.retainObject(align)
+    #text = text.replace('\n', '<br/>')
+    d.append(partial(GrimoireBean.instance.showTranslation.emit,
+        text, language, provider, align, timestamp))
 
   def showComment(self, c):
+    """
+    @param  c  dataman.Comment
+    """
     if (settings.global_().isGrimoireSubtitleVisible() and
         c.type == 'subtitle' and not c.disabled and not c.deleted):
       self.__d.append(partial(GrimoireBean.instance.showComment.emit,
           c))
+
+  def showSubtitle(self, s):
+    """
+    @param  s  dataman.SubtitleObject
+    """
+    if settings.global_().isGrimoireSubtitleVisible():
+      self.__d.append(partial(GrimoireBean.instance.showSubtitle.emit,
+          s))
 
   # Always send name text, this could help flush the text
   def showNameText(self, text, language):
@@ -494,8 +583,8 @@ class MirageBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
 
-  @Slot(unicode, bool, unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, colorize, center):
+  @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
     """
     @return  unicode  html
     """
@@ -506,8 +595,8 @@ class MirageBean(QObject):
     render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     fmt = mecabfmt.getfmt(meCabDic)
     return ''.join( # disable term by default
-        render(t, termEnabled=False, features=d.features if feature else None,
-            furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+        render(t, features=d.features if feature else None,
+            furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t) or text # return the original text if failed
 
   @Slot(unicode, result=unicode)

@@ -12,7 +12,7 @@ import '../../../components' as Components
 import '../share' as Share
 
 Item { id: root_
-  signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  signal lookupRequested(string text, string language, int x, int y) // popup honyaku of text at (x, y)
 
   property int contentHeight: shadow_.y + shadow_.height
 
@@ -53,6 +53,7 @@ Item { id: root_
 
   //property bool revertsColor: false
 
+  property bool rubyInverted: settings_.rubyJaInverted
   property string rubyType: settings_.rubyType
   property string rubyDic: settings_.meCabDictionary
   property bool rubyEnabled: !!settings_.meCabDictionary
@@ -143,8 +144,8 @@ Item { id: root_
   property color exciteColor: settings_.exciteColor
   property color bingColor: settings_.bingColor
   property color googleColor: settings_.googleColor
+  property color naverColor: settings_.naverColor
   property color baiduColor: settings_.baiduColor
-  property color lougoColor: settings_.lougoColor
   property color hanVietColor: settings_.hanVietColor
   property color jbeijingColor: settings_.jbeijingColor
   property color fastaitColor: settings_.fastaitColor
@@ -173,6 +174,33 @@ Item { id: root_
   property string russianFont: settings_.russianFont
   property string polishFont: settings_.polishFont
   property string dutchFont: settings_.dutchFont
+
+  function translatorColor(host) { // string -> color
+    switch(host) {
+    case 'hanviet': return root_.hanVietColor
+    case 'jbeijing': return root_.jbeijingColor
+    case 'fastait': return root_.fastaitColor
+    case 'dreye': return root_.dreyeColor
+    case 'eztrans': return root_.ezTransColor
+    case 'atlas': return root_.atlasColor
+    case 'lec': return root_.lecColor
+    case 'lecol': return root_.lecOnlineColor
+    case 'transru': return root_.transruColor
+    case 'infoseek': return root_.infoseekColor
+    case 'excite': return root_.exciteColor
+    case 'bing': return root_.bingColor
+    case 'google': return root_.googleColor
+    case 'naver': return root_.naverColor
+    case 'baidu': return root_.baiduColor
+    default:
+      if (host) {
+        var i = host.indexOf(',')
+        if (i !== -1)
+          return translatorColor(host.substr(0, i))
+      }
+      return root_.translationColor
+    }
+  }
 
   //property int _FADE_DURATION: 400
 
@@ -374,8 +402,7 @@ Item { id: root_
       }
     }
 
-
-    Desktop.ContextMenu { id: headerMenu_
+    Desktop.Menu { id: headerMenu_
 
       //Desktop.MenuItem {
       //  text: qsTr("Scroll to the beginning")
@@ -778,7 +805,10 @@ Item { id: root_
         //  z: -1
         //  radius: 15
         //}
-        onLinkActivated: Qt.openUrlExternally(link)
+        onLinkActivated: {
+          growl_.showMessage(My.tr("Open in external browser"))
+          Qt.openUrlExternally(link)
+        }
 
         MouseArea { id: textCursor_
           anchors.fill: parent
@@ -804,7 +834,7 @@ Item { id: root_
               lastSelectedText = t
               //var gp = Util.itemGlobalPos(parent)
               var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-              root_.yakuAt(t, gp.x, gp.y)
+              root_.lookupRequested(t, 'ja', gp.x, gp.y)
             }
           }
 
@@ -818,7 +848,7 @@ Item { id: root_
                 if (root_.popupEnabled && model.language === 'ja') {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                  root_.yakuAt(t, gp.x, gp.y)
+                  root_.lookupRequested(t, 'ja', gp.x, gp.y)
                 }
                 if (root_.copyEnabled)
                   textEdit_.copy()
@@ -891,24 +921,7 @@ Item { id: root_
             //case 'comment': return model.comment.color || root_.commentColor
             case 'tr':
             //case 'name.tr':
-              switch(model.provider) {
-              case 'hanviet': return root_.hanVietColor
-              case 'jbeijing': return root_.jbeijingColor
-              case 'fastait': return root_.fastaitColor
-              case 'dreye': return root_.dreyeColor
-              case 'eztrans': return root_.ezTransColor
-              case 'atlas': return root_.atlasColor
-              case 'lec': return root_.lecColor
-              case 'lecol': return root_.lecOnlineColor
-              case 'transru': return root_.transruColor
-              case 'infoseek': return root_.infoseekColor
-              case 'excite': return root_.exciteColor
-              case 'bing': return root_.bingColor
-              case 'google': return root_.googleColor
-              case 'baidu': return root_.baiduColor
-              case 'lou': return root_.lougoColor
-              default: return root_.translationColor
-              }
+              return root_.translatorColor(model.provider)
             default: return  'transparent'
             }
           }
@@ -925,8 +938,9 @@ Item { id: root_
               //root_.msimeParserEnabled,
               root_.rubyType,
               root_.rubyDic,
-              Math.round(root_.width / (20 * zoomFactor)), // char per line
-              Math.round(10 * zoomFactor) + 'px', // ruby size of furigana
+              Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
+              10 * zoomFactor, // ruby size of furigana
+              root_.rubyInverted,
               toolTip_.containsMouse || textCursor_.containsMouse, // colorize
               root_.alignCenter
             ) :
@@ -948,7 +962,6 @@ Item { id: root_
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.family: root_.fontFamily(model.language)
-        //font.bold: Util.isAsianLanguage(model.language)
         //font.italic: Util.isLatinLanguage(model.language)
 
         //color: root_.revertsColor ? '#050500' : 'snow'
@@ -1122,7 +1135,7 @@ Item { id: root_
     return textEdit.selectedText
   }
 
-  Desktop.ContextMenu { id: contextMenu_
+  Desktop.Menu { id: contextMenu_
     function popup(x, y) {
       popupX = x; popupY = y
 

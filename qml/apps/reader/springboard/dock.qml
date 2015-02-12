@@ -4,6 +4,7 @@
  */
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
+import '../../../js/eval.min.js' as Eval
 
 /**
  *  Model requirements
@@ -35,16 +36,17 @@ ListView {
       //hoverEnabled: true
       acceptedButtons: Qt.LeftButton
 
-      onClicked: if (model.qml !== undefined) {
-        var q = Qt.createQmlObject(model.qml, delegateItem_, 'dockItemOnClicked')
-        if (q !== null) { // && 'run' in q) {
-          console.log('dashboard.qml:runQml: running')
-          q.run()
-          console.log('dashboard.qml:runQml: destroying')
-          q.destroy()
-          console.log('dashboard.qml:runQml: pass')
-        }
-      }
+      onClicked: Eval.evalLink(model.link)
+      //if (model.qml !== undefined) {
+      //  var q = Qt.createQmlObject(model.qml, delegateItem_, 'dockItemOnClicked')
+      //  if (q !== null) { // && 'run' in q) {
+      //    console.log('dashboard.qml:runQml: running')
+      //    q.run()
+      //    console.log('dashboard.qml:runQml: destroying')
+      //    q.destroy()
+      //    console.log('dashboard.qml:runQml: pass')
+      //  }
+      //}
     }
 
     Desktop.TooltipArea { id: toolTip_
@@ -78,6 +80,7 @@ ListView {
     color: '#60ffffff' // dock color
     anchors { fill: parent; margins: -10 }
     z: -1
-    radius: 10
+    //radius: 10
+    radius: 0 // flat
   }
 }

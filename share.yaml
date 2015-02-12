@@ -13,10 +13,12 @@ env:
   - $PWD/../Qt/PySide
   - $PWD/../MeCab/bin
   - $PWD/../CaboCha/bin
+  - $PWD/../Boost/bin
   #- $PWD/../EB/site-packages
 
   pythonpath:
   - $PWD/bin
+  - $PWD/py/apps
   - $PWD/py/libs
   - $PWD/../Qt
   - $PWD/../Qt/PySide   # for shiboken
@@ -32,19 +34,24 @@ env:
   #  - $PWD/bin/xp
 
   integritypath:
-  - $PWD/bin/vnrcli.dll
-  - $PWD/bin/vnrclixp.dll
-  - $PWD/bin/vnreng.dll
-  - $PWD/bin/vnrengxp.dll  # recognized as virus
-  - $PWD/bin/vnrsrv.dll
+  - $PWD/bin/vnrhook.dll
+  - $PWD/bin/vnrhookxp.dll  # recognized as virus
+  - $PWD/bin/vnrhost.dll
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
+  - $PWD/../CaboCha/bin/cabocha.dll
   - $PWD/../EB/site-packages/eb.pyd
+  - $PWD/../Boost/bin/boost_regex.dll
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
   - $PWD/../../Fonts/msgothic.ttf
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2
   #- $PWD/../NTLEA/ntleac.exe # do not work on Code Ultra
+
+webkit:
+  # Default: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/534.34 (KHTML, like Gecko) Website Reader/1416161842 Safari/534.34
+  # Use Chrome: http://www.useragentstring.com/pages/Browserlist/
+  useragent: Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36
 
 # CDN
 cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as qrc://
@@ -54,8 +61,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   bootstrap2: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js
   bootstrap2.css: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css
 
-  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js
-  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css
+  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js
+  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css
 
   #font-awesome.css: http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
   font-awesome3.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
@@ -64,7 +71,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   twitter.widgets: http://platform.twitter.com/widgets.js
 
   # Microsoft CDN: http://www.asp.net/ajaxlibrary/cdn.ashx#Third-Party_Files_on_the_CDN_21
-  jquery: http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js
+  jquery: http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.3.min.js
   #jquery: $PWD/../AJAX/jquery/2.0.3/jquery-2.0.3.min.js
 
   # Google CDN: https://developers.google.com/speed/libraries/devguide
@@ -85,7 +92,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
-  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.0/jquery-ui.min.js
+  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.2/jquery-ui.min.js
 
   bootstrap.growl: $PWD/../AJAX/github/bootstrap-growl.min.js
 
@@ -100,10 +107,10 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
 
-  #moment: http://cdn.jsdelivr.net/momentjs/2.8.3/moment.min.js
-  moment: http://cdn.jsdelivr.net/momentjs/2.8.3/moment-with-locales.min.js
+  moment: http://cdn.jsdelivr.net/momentjs/2.9.0/moment-with-locales.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
-  underscore: http://cdn.jsdelivr.net/lodash/2.4.1/lodash.min.js
+  underscore: http://cdn.jsdelivr.net/lodash/3.0.0/lodash.min.js
+  # Underscore.string has been outdated
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
 
   spin: http://cdn.jsdelivr.net/spinjs/2.0.1/spin.min.js
@@ -148,7 +155,6 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   libs/linkify: $PWD/coffee/libs/linkify.min.js
 
   share/annot: $PWD/coffee/share/annot.min.js
-  share/defs: $PWD/coffee/share/defs.min.js
   share/growl: $PWD/coffee/share/growl.min.js
   share/nogrowl: $PWD/coffee/share/nogrowl.min.js
   share/rest: $PWD/coffee/share/rest.min.js
@@ -157,12 +163,21 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   # Reader
   reader/widgets: $PWD/coffee/reader/widgets.min.js
 
-  reader/chat: $PWD/coffee/reader/chat.min.js
-  reader/chat.css: $PWD/rb/compass/web/css/chat.min.css
-  reader/game: $PWD/coffee/reader/game.min.js
-  reader/game.css: $PWD/rb/compass/web/css/game.min.css
+  reader/gameview: $PWD/coffee/reader/gameview.min.js
+  reader/gameview.css: $PWD/rb/compass/web/css/gameview.min.css
   reader/gameboard: $PWD/coffee/reader/gameboard.min.js
   reader/gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
+  reader/topicview: $PWD/coffee/reader/topicview.min.js
+  reader/topicview.css: $PWD/rb/compass/web/css/topicview.min.css
+  reader/topicsview: $PWD/coffee/reader/topicsview.min.js
+  reader/topicsview.css: $PWD/rb/compass/web/css/topicsview.min.css
+
+  reader/forum/posts: $PWD/coffee/reader/forum/posts.min.js
+  reader/forum/posts.css: $PWD/rb/compass/web/css/forum/posts.min.css
+  reader/forum/topics: $PWD/coffee/reader/forum/topics.min.js
+  reader/forum/topics.css: $PWD/rb/compass/web/css/forum/topics.min.css
+  reader/forum/topic: $PWD/coffee/reader/forum/topic.min.js
+  reader/forum/topic.css: $PWD/rb/compass/web/css/forum/topic.min.css
 
   #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
@@ -172,10 +187,15 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dmm.css: $PWD/rb/compass/web/css/sites/dmm.min.css
 
   # Browser
-  browser/inject: $PWD/coffee/browser/inject.min.js
-  #browser: $PWD/coffee/browser/browser.js
-  browser: $PWD/coffee/browser/browser.min.js
-  browser.css: $PWD/rb/compass/web/css/browser.min.css
+  dmm/localized_welcome: $PWD/coffee/dmm/localized_welcome.min.js
+
+  inject-annot: $PWD/coffee/browser/inject-annot.min.js
+  client-annot: $PWD/coffee/browser/client-annot.min.js
+  client-annot.css: $PWD/rb/compass/web/css/browser-annot.min.css
+
+  inject-site: $PWD/coffee/browser/inject-site.min.js
+  client-site: $PWD/coffee/browser/client-site.min.js
+  client-site.css: $PWD/rb/compass/web/css/browser-site.min.css
 
 # Qt
 
@@ -185,11 +205,18 @@ qt:
 # urls
 
 apis:
+  host: http://153.121.54.194
+  #host: http://localhost:8080
+  #
   rest: http://153.121.54.194/api/xml
   #rest: http://sakuradite.com/api/xml
   #rest: http://localhost:5000/api/xml
+  #
   ajax: http://153.121.54.194/api/json/ # must end with '/'
   #ajax: http://localhost:8080/api/json/
+  #ajax: http://localhost:8080/json/
+  #ajax: http://localhost:5000/json/
+  #
   push: http://153.121.54.194/push/ # must end with '/'
   #push: http://sakuradite.com/push/
   #push: http://localhost:8080/push/
@@ -198,6 +225,8 @@ forum:
   topics:
     global: 50
     term: 51
+  subjects:
+    global: 101
 
 urls:
   reader_demo: "http://www.youtube.com/watch?v=KxRGwS4gkW4"
@@ -207,11 +236,20 @@ emails:
   help: "annotcloud@gmail.com"
 
 proxies:
-  host: 153.121.52.138
+  host: 153.121.52.138 # sakuradite.org
+  #host: 153.121.54.194 # sakuradite.com
+
+  webproxy: http://153.121.52.138/proxy/webproxy
+  webserver: http://153.121.52.138/proxy/webserver
+
+  baidufanyi:   http://153.121.52.138/proxy/baidu/fanyi
+  baidutts:     http://153.121.52.138/proxy/baidu/tts
+  iciba:        http://153.121.52.138/proxy/iciba/jp
 
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
-  googletrans:  http://153.121.52.138/proxy/gg/trans/m
+  googlesr:     http://153.121.52.138/proxy/gg/speech/v2/recognize
+  googletrans:  http://153.121.52.138/proxy/gg/trans/translate_a/t
   googletts:    http://153.121.52.138/proxy/gg/trans/translate_tts
   ytimg:
     i:          http://153.121.52.138/proxy/ytimg/i2
@@ -219,20 +257,29 @@ proxies:
   twimg:
     a:          http://153.121.52.138/proxy/twimg/a0
     pbs:        http://153.121.52.138/proxy/twimg/pbs
-  erogamescape: http://153.121.52.138/proxy/scape/~ap2/ero/toukei_kaiseki
-  dmm:          http://153.121.52.138/proxy/dmm
+  # See: http://erogamescape.dyndns.org/usage/usage_201411.html
+  erogamescape: http://122.219.66.141/~ap2/ero/toukei_kaiseki
+  dmm_jp:       http://153.121.52.138/proxy/dmm
+  dmm_com:      http://153.121.52.138/proxy/dmmcom/www
+  #dmm_com_p:    http://153.121.52.138/proxy/dmmcom/p
   dlsite:       http://153.121.52.138/proxy/dlsite/www
   dlsite_img:   http://153.121.52.138/proxy/dlsite/img
+  toranoana:    http://153.121.52.138/proxy/toranoana/www
+  toranoana_img: http://153.121.52.138/proxy/toranoana/img
 
   # http://sakuradite.com/topic/140
   # http://9gal.com/read.php?tid=417812&page=e
   getchu:       http://210.155.150.152
 
-  domains:
+  # http://kancolle.wikia.com/wiki/Tutorial:_Proxy_Connection
+  kancolle:     http://203.104.209.7
+
+  domains: # persistent DNS
     annot.me:       153.121.54.194
     sakuradite.com: 153.121.54.194
     sakuradite.org: 153.121.52.138
     getchu.com:     210.155.150.152
+    erogamescape.dyndns.org: 122.219.66.141
 
   sites:
     #adlib-software: www.adlib-software.com
@@ -243,7 +290,6 @@ proxies:
     akatsukiworks: www.akatsukiworks.com
     alicesoft: www.alicesoft.com
     applique-soft: www.applique-soft.com
-    asring: asring.1000.tv
     collaborations2005: www.collaborations2005.com
     cosmiccute: www.cosmiccute.com
     #effordomsoft: www.effordomsoft.com
@@ -265,10 +311,27 @@ proxies:
     # http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1715apc10593/
     # http://sakuradite.org/proxy/dmm/mono/pcgame/-/detail/=/cid=1715apc10593/
     dmm: dmm.co.jp
-    #dlsite
-    #dlsite_img
-    #getchu: getchu.com
-    scape: erogamescape.dyndns.org
+    dmmcom/www: dmm.com
+    dmmcom/make: make.dmm.com
+    dmmcom/chariloto: chariloto.dmm.com
+    #dmmcom/log-netgame: log-netgame.dmm.com
+    #dmmcom/osapi: osapi.dmm.com
+
+    twimg/pbs:  pbs.twimg.com
+    twimg/a0:   a0.twimg.com
+    twimg/a1:   a1.twimg.com
+    twimg/a2:   a2.twimg.com
+    twimg/a3:   a3.twimg.com
+
+    ytimg/s:    s.ytimg.com
+    ytimg/s1:   s1.ytimg.com
+    ytimg/s2:   s2.ytimg.com
+    ytimg/i:    i.ytimg.com
+    ytimg/i1:   i1.ytimg.com
+    ytimg/i2:   i2.ytimg.com
+
+    kancolle:   203.104.209.7
+    #scape:     erogamescape.dyndns.org
 
 google:
   search:       https://google.co.jp/search
@@ -296,12 +359,20 @@ dmm: # DMM
 
 # i18n
 
+# http://msdn.microsoft.com/en-us/library/windows/desktop/dd317756%28v=vs.85%29.aspx
 encodings:
- - shift-jis
+ - shift-jis    # cp932, ja
  - utf-16
  - utf-8
- - gbk
- - big5
+ - big5         # cp950, zht
+ - gbk          # cp936, zhs
+ - euc-kr       # cp949, ko
+ - windows-1258 # cp1258, vi
+ - tis-620      # cp874, th
+ - windows-1256 # cp1256, ar
+ - windows-1250 # cp1250, central/eastern europe
+ - windows-1251 # cp1251, cyrillic
+ - latin1       # cp1252, latin
 
 languages:
   all:
@@ -310,8 +381,8 @@ languages:
   - zht
   - zhs
   - ko
-  - th
   - vi
+  - th
   - ms
   - id
   - ar
@@ -337,7 +408,7 @@ languages:
   - vi
   - ms
   - id
-  asian:
+  asian: # on contrast of latin
   - ja
   - zht
   - zhs
@@ -348,6 +419,7 @@ languages:
   - ja
   - zht
   - zhs
+  - ko
   sjis: # SHIFT-JIS compatible
   - ja
   # Latin (European)
@@ -465,7 +537,25 @@ fonts:
   ru: DFGirl    #Helvetica
 
 font:
-  location:         $PWD/../../Fonts
+  location: $PWD/../../Fonts
+
+opencc:
+  s2t:      $PWD/../../Dictionaries/opencc/STCharacters.txt
+  t2s:      $PWD/../../Dictionaries/opencc/TSCharacters.txt
+  t2tw:     $PWD/../../Dictionaries/opencc/TWVariants.txt
+  t2hk:     $PWD/../../Dictionaries/opencc/HKVariants.txt
+  t2ja:     $PWD/../../Dictionaries/opencc/JPVariants.txt
+  t2ko:     $PWD/../../Dictionaries/hanja/dic0.txt
+
+hangul:
+  path:     $PWD/../../Dictionaries/hanja/dic6.txt
+
+pinyin:
+  path:     $PWD/../../Dictionaries/pinyin/Mandarin.dat
+
+hanviet:
+  word:     $PWD/../../Dictionaries/hanviet/ChinesePhienAmWords.txt
+  phrase:   $PWD/../../Dictionaries/hanviet/VietPhrase.txt
 
 # Module options
 
@@ -491,7 +581,6 @@ yaml:
   blacklist:        $PWD/yaml/blacklist.yaml
   brands:           $PWD/yaml/brands.yaml
   messages:         $PWD/yaml/messages.yaml
-  zunko:            $PWD/yaml/zunko.yaml
 
 templates:
   location:         $PWD/templates
@@ -499,7 +588,9 @@ templates:
     qml/opengame:   qml/opengame.qml
     qml/userplugin: qml/userplugin.qml
     html/furigana:  html/furigana.html
+    html/alignment: html/alignment.html
     html/shiori:    html/shiori.html
+    html/term:      html/term.html
     xml/comments:   xml/comments.xml
     xml/games:      xml/games.xml
     xml/gamefiles:  xml/gamefiles.xml
@@ -510,12 +601,16 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
+    xml/subs:       xml/subs.xml
+    yaml/subs:      yaml/subs.yaml
+
     haml/reader/credits:    haml/reader/credits.haml
-    haml/reader/chat:       haml/reader/chat.haml
     haml/reader/help:       haml/reader/help.haml
-    haml/reader/game:       haml/reader/game.haml
+    haml/reader/gameview:   haml/reader/gameview.haml
     haml/reader/gameboard:  haml/reader/gameboard.haml
-    haml/reader/user:       haml/reader/user.haml
+    haml/reader/topicview:  haml/reader/topicview.haml
+    haml/reader/topicsview: haml/reader/topicsview.haml
+    haml/reader/userview:   haml/reader/userview.haml
 
     haml/browser/about:     haml/browser/about.haml
     haml/browser/help:      haml/browser/help.haml
@@ -547,6 +642,7 @@ trdb:
   bing:             $PWD/../../../Caches/Translations/Microsoft
   excite:           $PWD/../../../Caches/Translations/Excite
   google:           $PWD/../../../Caches/Translations/Google
+  naver:            $PWD/../../../Caches/Translations/Naver
   infoseek:         $PWD/../../../Caches/Translations/Infoseek
   lecol:            $PWD/../../../Caches/Translations/LEC
   transru:          $PWD/../../../Caches/Translations/PROMT
@@ -634,36 +730,47 @@ icons:
   pref-locale:      $PWD/images/dock/launch.png
   pref-ocr:         $PWD/images/camera.png
   pref-ocr-path:    $PWD/images/dock/camera.png
+  pref-roman:       $PWD/images/dock/yaku.png
+  pref-rec:         $PWD/images/camera.png
+  pref-share:       $PWD/images/share.png
   pref-shortcuts:   $PWD/images/passage.png
-  pref-tr-path:     $PWD/images/dock/yaku.png
+  pref-sr:          $PWD/images/music.png
   pref-tr:          $PWD/images/people.png
+  pref-tr-path:     $PWD/images/dock/yaku.png
   pref-user:        $PWD/images/user.png
   pref-ui:          $PWD/images/window.png
   pref-tts:         $PWD/images/music.png
   pref-tts-path:    $PWD/images/sound.png
+  pref-zh:          $PWD/images/china.png
   window-bbcode:    $PWD/images/dock/bb.png
-  window-chat:      $PWD/images/dock/messages.png
   window-dict:      $PWD/images/dock/dict.png
   window-jdict:     $PWD/images/dock/jdict.png
+  window-forum:     $PWD/images/dock/messages.png
   window-gameboard: $PWD/images/dock/reader.png
   window-gamefinder: $PWD/images/dock/compass.png
   window-gameview:  $PWD/images/dock/reader.png
   window-gamewiz:   $PWD/images/dock/spotlight.png
   window-mttest:    $PWD/images/dock/yaku.png
+  window-name:      $PWD/images/dock/yaku.png
   window-prefs:     $PWD/images/dock/prefs.png
   window-refinput:  $PWD/images/reader.png
   window-refview:   $PWD/images/dock/edit.png
   window-regexp:    $PWD/images/dock/exp.png
+  window-review:    $PWD/images/dock/messages.png
+  window-srtest:    $PWD/images/dock/speech.png
   window-shortcuts: $PWD/images/passage.png
+  window-syntax:    $PWD/images/dock/tree.png
   window-submaker:  $PWD/images/dock/edit.png
   window-subview:   $PWD/images/dock/edit.png
   window-textedit:  $PWD/images/dock/edit.png
   window-topicview: $PWD/images/dock/reader.png # TODO: Change to a different image
   window-hookprefs: $PWD/images/dock/edit.png
   window-user:      $PWD/images/contact.png
+  window-update:    $PWD/images/updater.png
   window-voice:     $PWD/images/sound.png
 
 images:
+  empty:            $PWD/images/null.png
   logo-browser:     $PWD/images/browser.png
   logo-reader:      $PWD/images/reader.png
   app-update:       $PWD/images/updater.png
@@ -682,6 +789,8 @@ images:
   dock-mttest:      $PWD/images/dock/yaku.png
   dock-prefs:       $PWD/images/dock/prefs.png
   dock-regexp:      $PWD/images/dock/exp.png
+  dock-srtest:      $PWD/images/dock/speech.png
+  dock-syntax:      $PWD/images/dock/tree.png
   dock-textedit:    $PWD/images/dock/edit.png
   dock-textreader:  $PWD/images/dock/magnifier.png
   dock-youtube:     $PWD/images/dock/youtube.png
@@ -690,6 +799,7 @@ images:
   stripes:          $PWD/images/stripes.png
   wallpaper:        $PWD/images/wallpaper/desktop.jpg
   background:       $PWD/images/textures/marble.jpg
+  background-black: $PWD/images/textures/marble-black.jpg
   #texture-white:    $PWD/images/textures/white.jpg
   #texture-black:    $PWD/images/textures/black.jpg
 

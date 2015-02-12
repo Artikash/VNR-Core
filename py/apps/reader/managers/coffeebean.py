@@ -2,7 +2,7 @@
 # coffeebean.py
 # 10/11/2013 jichi
 
-__all__ = ['YoutubeBean', 'CoffeeBeanManager']
+__all__ = 'YoutubeBean', 'CoffeeBeanManager'
 
 from PySide.QtCore import Slot, QObject
 from sakurakit.skclass import memoized, memoizedproperty
@@ -19,6 +19,21 @@ class MainBean(QObject):
   def showUser(self, name): # unicode ->
     import main
     main.manager().showUserView(name=name)
+
+  @Slot(long)
+  def showGame(self, itemId): # long ->
+    import main
+    main.manager().showGameView(itemId=itemId)
+
+  @Slot(long)
+  def showTopic(self, topicId): # long ->
+    import main
+    main.manager().showTopic(topicId)
+
+  @Slot(long)
+  def showGameTopics(self, itemId): # long ->
+    import main
+    main.manager().showGameTopics(itemId)
 
 class YoutubeBean(QObject):
   def __init__(self, parent=None):
@@ -70,6 +85,15 @@ class I18nBean(QObject):
     import config, i18n
     ret = config.htmllocale2language(lang)
     return i18n.language_name2(ret) or ret or lang
+
+  @Slot(unicode, result=unicode)
+  def getTopicTypeName(self, type):
+    """
+    @param  type  unicode
+    @return  unicode
+    """
+    import i18n
+    return i18n.topic_type_name(type)
 
 class JlpBean(QObject):
   def __init__(self, parent):

@@ -35,19 +35,22 @@ SOURCES = \
   subview/searchtoolbar.qml \
   subview/selecttoolbar.qml \
   subview.qml \
+  termview/filtertoolbar.qml \
+  termview/inspector.qml \
   termview/maintoolbar.qml \
-  termview/optionpanel.qml \
   termview/searchtoolbar.qml \
   termview/selecttoolbar.qml \
   termview/table.qml \
   termview.qml \
   textreader/mirage.qml \
-  voiceview/footer.qml \
   voiceview/optionbar.qml \
   voiceview/toolbar.qml \
   voiceview.qml
 
 #TRANSLATIONS = tr/ja_JP.ts tr/zh_CN.ts tr/zh_TW.ts
-TRANSLATIONS = tr/zh_CN.ts tr/zh_TW.ts
+TRANSLATIONS = \
+  tr/ko_KR.ts \
+  tr/zh_CN.ts \
+  tr/zh_TW.ts
 
 # EOF

@@ -4,6 +4,6 @@
 .pragma library // stateless
 
 // Assume the name of this file is the same as the manager object in mytr.py
-function tr(s) { return qsTr(s) }
+function tr(s) { return qsTr(s); }
 
 // EOF

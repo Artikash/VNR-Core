@@ -7,20 +7,28 @@ import skos
 if skos.WIN:
   import pythoncom # Automatically invoke OleInitialize
 
+  def coinit(threading=None):
+    """
+    @param  threading  bool or None
+    """
+    if threading is None: # The same as STA
+      pythoncom.CoInitialize() # this function returns None
+    elif threading: # Multi-thread apartment (MTA)
+      pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
+    else: # Single thread apartment (STA)
+      pythoncom.CoInitializeEx(pythoncom.COINIT_APARTMENTTHREADED)
+
+  def couninit():
+    pythoncom.CoUninitialize()
+
   class SkCoInitializer:
     def __init__(self, threading=None):
       self.threading = threading # bool or None
-
     def __enter__(self):
-      if self.threading is None: # The same as STA
-        pythoncom.CoInitialize()
-      elif self.threading: # Multi-thread apartment (MTA)
-        pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
-      else: # Single thread apartment (STA)
-        pythoncom.CoInitializeEx(pythoncom.COINIT_APARTMENTTHREADED)
-
+      coinit(self.threading)
+      return self
     def __exit__(self, *err):
-      pythoncom.CoUninitialize()
+      couninit()
 
   #class SkCoProcessInitializer:
   #  def __enter__(self): pythoncom.OleInitialize()

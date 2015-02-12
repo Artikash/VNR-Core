@@ -2,7 +2,7 @@
 # appwiz.py
 # 12/13/2012 jichi
 
-__all__ = ['AppWizard']
+__all__ = 'AppWizard',
 
 from functools import partial
 from PySide.QtCore import Qt, Signal

@@ -2,7 +2,7 @@
 # _ocrman.py
 # 9/7/2014 jichi
 
-__all__ = ['OcrImageObject', 'OcrSettings']
+__all__ = 'OcrImageObject', 'OcrSettings'
 
 import math, os
 from PySide.QtCore import Qt, QObject, Property, Signal, Slot, QUrl
@@ -11,13 +11,13 @@ from sakurakit import skfileio
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from colorconv import colorconv
-from modiocr import modiocr
+from modi import modi
 import ocrutil, termman
 
 # TODO: Move to colorutil
 # http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprof import SkProfiler
 
 OCR_MIN_WIDTH = 3
 OCR_MIN_HEIGHT = 3
@@ -56,7 +56,7 @@ class OcrSettings(object):
   def __init__(self):
     self.deliminator = '' # str
     self.languages = [] # [str lang]
-    self.languageFlags = modiocr.LANG_JA # int
+    self.languageFlags = modi.LANG_JA # int
 
   def isSpaceEnabled(self): return bool(self.deliminator)
   def setSpaceEnabled(self, t): self.deliminator = ' ' if t else ''
@@ -64,7 +64,7 @@ class OcrSettings(object):
   def language(self): return self.languages[0] if self.languages else 'ja' # -> str
 
   def setLanguages(self, v): # [str]
-    self.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
+    self.languageFlags = modi.locales2lang(v) or modi.LANG_JA # Japanese by default
 
 @Q_Q
 class _OcrImageObject(object):
@@ -120,7 +120,8 @@ class _OcrImageObject(object):
     #with SkProfiler(): # take around 0.5 seconds
     text = self._readImage()
     if text:
-      text = termman.manager().applyOcrTerms(text)
+      lang = self.settings.language()
+      text = termman.manager().applyOcrTerms(text, lang)
     return text
 
   def captureWindow(self):

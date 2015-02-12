@@ -16,6 +16,7 @@ hcodefile:
   - IDEA.EXE    # 幻創のイデア
 
 processes:
+  - browser.exe # VNR
   - AUTORUN.EXE
   - Autorun.exe
   - autorun.exe
@@ -27,7 +28,10 @@ processes:
   - install.exe
   - Unnstall.exe
   - uninstall.exe
-  - 1ClickDownloader    # Download
+  - 115Chrome.exe       # 115
+  - 1ClickDownloader.exe # Download
+  - 2345Explorer.exe    # 2345
+  - 2345chrome.exe      # 2345
   - 360Chrome.exe       # 360
   - 360chrome.exe       # 360
   - 360Desktop.exe      # 360
@@ -41,6 +45,9 @@ processes:
   - 7zG.exe             # 7-zip
   - 7zFM.exe            # 7-zip
   - agth.exe            # AGTH
+  - AlphaROM Cracker Build20121001.exe  # AlphaROM
+  - AlphaROMdiE.exe     # AlphaROM
+  - alpharomdie.exe     # AlphaROM
   - AppUpdate.exe       # JBeijing
   - Atlas.exe           # Atlas
   - Apoint.exe          # Dell
@@ -57,9 +64,14 @@ processes:
   - BingDesktop.exe     # Microsoft
   - BitComet.exe        # BitComet
   - Bootcamp.exe        # Apple
+  - CalendarMain.exe    # 160
+  - CeVIO Creative Studio FREE.exe # CeVIO
   - chromeplus.exe      # Google?
   - chrome.exe          # Google
   - CHROME.EXE          # Google
+  - CliphookerEX.exe    # CliphookerEX
+  - ComicsViewer.exe    # ComicsViewer
+  - devcpp.exe          # Dev-Cpp
   - DTLite.exe          # Daemon Tools
   - Dwm.exe             # Windows
   - dwm.exe             # Windows
@@ -73,9 +85,12 @@ processes:
   - flashget.exe        # Flashget
   - "Foxit Reader.exe"  # Foxit Reader
   - foobar2000.exe      # foobar
+  - GarenaMessenger.exe # Garena, http://sakuradite.com/topic/525
   - googledrivesync.exe # Google
   - GoogleIMEJaConverter.exe # Google
   - GoogleIMEJaRenderer.exe  # Google
+  - GOM.EXE             # GOM Player
+  - GOM.exe             # GOM Player
   - gvim.exe            # GVIM
   - HaoZip.exe          # HaoYa
   - HD-Agent.exe        # BlueStacks
@@ -83,19 +98,26 @@ processes:
   - hidfind.exe         # Dell
   - idaq.exe            # IDA
   - idea.exe            # Intelij IDEA
+  - IDMan.exe           # Internet Download Manager
+  - iesandbox.exe       # Kuwo
+  - IESandBox.exe       # Kuwo
   - iexplore.exe        # Windows
   - IEXPLORE.EXE        # Windows
   - IMJPDUS.EXE         # Microsoft
   - imjpdus.exe         # Microsoft
+  - ineter_ex.exe       # Microsoft
   - ITH.exe             # ITH
   - iTunes.exe          # Apple
   - iTunesHelper.exe    # Apple
+  - Jane2ch.exe         # 2ch
   - JCT.exe             # JBeijing
   - jct.exe             # JBeijing
   - JCTchs.exe          # JBeijing
+  - JOCR.exe            # JOCR
   - KHALMNPR.exe        # Logitech
   - KuGou.exe           # Kugou
   - MacDrive.exe        # MacDrive
+  - MangaMeeya.exe      # Manga reader
   - mousegesture.exe    # Sogou
   - netbeans.exe        # NetBeans
   - notepad++.exe       # Notepad++
@@ -111,14 +133,25 @@ processes:
   - liebao.exe          # LieBao Browser
   - LIEBAO.EXE          # LieBao Browser
   - LEGUI.exe           # Locale Emulator
+  - LocaleSwitch.exe    # Locale Switch
+  - LSC.exe             # Locale Switch
+  - KanKan.exe          # Xunlei
   - Maxthon.exe         # Maxthon
   - MediaInfo.exe       # MediaInfo
   - mpc-be.exe          # MPC
   - mpc-hc.exe          # MPC
+  - mpc-hc_nvo.exe      # MPC
   - mpcstar.exe         # MPC
   - ntleac.exe          # NTLER
   - NtleaGUI.exe        # NTLER
+  - ntleas.exe          # NTLEAS
+  - NK-Frontend.exe     # Android emulator
+  - ONENOTE.EXE         # Microsoft Office
+  - onenote.exe         # Microsoft Office
   - opera.exe           # Opera
+  - osu!.exe            # Osu!
+  - OSU!.EXE            # Osu!
+  - perfect dark.exe    # Perfect Dark
   - perl.exe            # Perl
   - python.exe          # Python
   - pythonw.exe         # Python
@@ -127,21 +160,28 @@ processes:
   - POWERPNT.EXE        # Microsoft Office
   - PotPlayer.exe       # Pot Player
   - PotPlayerMini.exe   # Pot Player
+  - PPLive.exe          # PPLive
   - QQ.exe              # Tencent
   - QQBrowser.exe       # Tencent
   - QQDownload.exe      # Tencent
+  - QQImageViewer.exe   # Tencent
   - QQMusic.exe         # Tencent
   - QQPlayer.exe        # Tencent
   - qtcreator.exe       # Qt
   - QuickTime.exe       # Apple
+  - QvodPlayer.exe      # QVOD
   - saayaa.exe          # Baidu
   - Safari.exe          # Apple
+  - ScreenshotReaderPortable.exe # http://sakuradite.com/topic/524
   - SetPoint.exe        # Logitech
   - sidebar.exe         # Microsoft Windows
+  - Skype.exe           # Microsoft Skype
   - SogouCloud.exe      # Sogou
   - SogouExplorer.exe   # Sogou
   - sogouexplorer.exe   # Sogou
-  - splayer.exe         # SPlayer
+  - SpoilerAL.exe       # Game editor
+  #- splayer.exe         # SPlayer
+  #- Splayer.exe         # SPlayer # conflict with 真姫裸
   - StormPlayer.exe     # Storm player
   - sttray.exe          # Dell
   - sublime_text.exe    # Sublime Text
@@ -152,6 +192,7 @@ processes:
   - Thunder.exe         # Xunlei
   - thunder.exe         # Xunlei
   - TranEdit.exe        # Dr.eye
+  - TTPlayer.exe        # TTPlayer
   - TTraveler.exe       # Tencent
   - TTSReader.exe       # TextAloud TTS
   - vlc.exe             # VLC
@@ -160,10 +201,20 @@ processes:
   - Translation Aggregator.exe
   - TranslationAggregator.exe
   - TXPlatform.exe      # Tencent
+  - Uedit32.exe         # UltraEdit
   - WinRAR.exe          # WinRAR
   - WINWORD.EXE         # Microsoft Office
+  - XDict.exe           # Kingsoft
+  - XMP.EXE             # Xunlei
+  - XMP.exe             # Xunlei
+  - Xmp.exe             # Xunlei
   - wmplayer.exe        # Windows media player
   - XMP.exe             # Xunlei KanKan
+  - UCBrowser.exe       # Chrome
+  - YahooMessenger.exe  # Yahoo
+  - Yomikaku.exe        # 読取革命
   - YoukuDesktop.exe    # Youku
+  # Unsupported games
+  - KanColleViewer.exe  # http://grabacr.net/kancolleviewer
 
 # EOF

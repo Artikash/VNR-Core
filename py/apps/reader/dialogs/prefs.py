@@ -2,7 +2,7 @@
 # prefs.py
 # 10/28/2012 jichi
 
-__all__ = ['PrefsDialog']
+__all__ = 'PrefsDialog',
 
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
@@ -57,9 +57,11 @@ class _PrefsDialog(object):
     self.textTab = _prefs.TextTab()
     self.ttsTab = _prefs.TtsTab()
     self.ocrTab = _prefs.OcrTab()
+    #self.srTab = _prefs.SrTab()
     self.gameTab = _prefs.GameTab()
     self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
+    self.recordingsTab = _prefs.RecordingsTab()
     self.i18nTab = _prefs.I18nTab()
     self.engineTab = _prefs.EngineTab()
     self.internetTab = _prefs.InternetTab()
@@ -69,7 +71,11 @@ class _PrefsDialog(object):
     self.translationTab = _prefs.TranslationTab()
     self.machineTranslationTab = _prefs.MachineTranslationTab()
     self.dictionaryTranslationTab = _prefs.DictionaryTranslationTab()
+    self.romanTranslationTab = _prefs.RomanTranslationTab()
+    self.chineseTranslationTab = _prefs.ChineseTranslationTab()
     #self.translationScriptTab = _prefs.TranslationScriptTab()
+
+    self.termTab = _prefs.TermTab()
 
     self.downloadsTab = _prefs.DownloadsTab()
     self.dictionaryDownloadsTab = _prefs.DictionaryDownloadsTab()
@@ -149,13 +155,13 @@ class _PrefsDialog(object):
             { 'widget': self.ttsLibraryTab,
               'user': self._indexWidget(self.ttsLibraryTab),
               'decoration': rc.icon('pref-tts-path'),
-              'display': mytr_("Voice"),
+              'display': mytr_("TTS"),
               'toolTip': my.tr("Locations of external TTS"),
             },
             { 'widget': self.ocrLibraryTab,
               'user': self._indexWidget(self.ocrLibraryTab),
               'decoration': rc.icon('pref-ocr-path'),
-              'display': mytr_("Recognition"),
+              'display': mytr_("OCR"),
               'toolTip': my.tr("Locations of external OCR libraries"),
             },
           ]
@@ -178,6 +184,18 @@ class _PrefsDialog(object):
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Preferred look-up dictionaries"),
             },
+            { 'widget': self.romanTranslationTab,
+              'user': self._indexWidget(self.romanTranslationTab),
+              'decoration': rc.icon('pref-roman'),
+              'display': mytr_("C/K Ruby"),
+              'toolTip': my.tr("Romanization of texts in Chinese and Korean"),
+            },
+            { 'widget': self.chineseTranslationTab,
+              'user': self._indexWidget(self.chineseTranslationTab),
+              'decoration': rc.icon('pref-zh'),
+              'display': tr_("Chinese"),
+              'toolTip': my.tr("Preferred Chinese variant"),
+            },
             #{ 'widget': self.translationScriptTab,
             #  'user': self._indexWidget(self.translationScriptTab),
             #  'decoration': rc.icon('pref-script'),
@@ -189,13 +207,19 @@ class _PrefsDialog(object):
         { 'widget': self.ttsTab,
           'user': self._indexWidget(self.ttsTab),
           'decoration': rc.icon('pref-tts'),
-          'display': mytr_("Voice"),
-          'toolTip': mytr_("Text-to-speech") + " (TTS)",
+          'display': mytr_("Text-To-Speech"),
+          'toolTip': mytr_("Text-To-Speech") + " (TTS)",
         },
+        #{ 'widget': self.srTab,
+        #  'user': self._indexWidget(self.srTab),
+        #  'decoration': rc.icon('pref-sr'),
+        #  'display': u"%s (α)" % mytr_("ASR"),
+        #  'toolTip': mytr_("Automatic speech recognition") + " (ASR)",
+        #},
         { 'widget': self.ocrTab,
           'user': self._indexWidget(self.ocrTab),
           'decoration': rc.icon('pref-ocr'),
-          'display': u"%s (α)" % mytr_("Recognition"),
+          'display': u"%s (α)" % mytr_("OCR"),
           'toolTip': mytr_("Optical character recognition") + " (OCR)",
         },
         { 'widget': self.textTab,
@@ -216,6 +240,12 @@ class _PrefsDialog(object):
           'display': mytr_("Shortcuts"),
           'toolTip': my.tr("Mouse and keyboard shortcuts"),
         },
+        { 'widget': self.recordingsTab,
+          'user': self._indexWidget(self.recordingsTab),
+          'decoration': rc.icon('pref-rec'),
+          'display': mytr_("Recordings"),
+          'toolTip': my.tr("Game recordings"),
+        },
         { 'widget': self.uiTab,
           'user': self._indexWidget(self.uiTab),
           'decoration': rc.icon('pref-ui'),
@@ -233,6 +263,12 @@ class _PrefsDialog(object):
           'display': u"%s (α)" % mytr_("Embedded"),
           'decoration': rc.icon('pref-config'),
           'toolTip': my.tr("Embedded subtitles"),
+        },
+        { 'widget': self.termTab,
+          'user': self._indexWidget(self.termTab),
+          'decoration': rc.icon('pref-share'),
+          'display': mytr_("Shared Dictionary"),
+          'toolTip': mytr_("Shared Dictionary"),
         },
         { 'widget': self.internetTab,
           'user': self._indexWidget(self.internetTab),
@@ -286,16 +322,21 @@ class _PrefsDialog(object):
     yield self.uiTab
     yield self.ttsTab
     yield self.ocrTab
+    #yield self.srTab
     yield self.gameTab
     yield self.shortcutsTab
+    yield self.recordingsTab
     yield self.i18nTab
     yield self.internetTab
     yield self.featureTab
     #yield self.pluginTab
+    yield self.termTab
 
     yield self.translationTab
     yield self.machineTranslationTab
     yield self.dictionaryTranslationTab
+    yield self.romanTranslationTab
+    yield self.chineseTranslationTab
     #yield self.translationScriptTab
 
     yield self.downloadsTab
@@ -317,7 +358,7 @@ class _PrefsDialog(object):
 
 class PrefsDialog(QtWidgets.QSplitter):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(PrefsDialog, self).__init__(Qt.Horizontal, parent)
     self.setWindowFlags(WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-prefs'))
@@ -329,9 +370,8 @@ class PrefsDialog(QtWidgets.QSplitter):
     for i in xrange(self.count()):
       skqss.class_(self.widget(i), 'texture')
 
-    #self.resize(500,480)
-    self.resize(500,485) # large enough that there is no vertical scroll bar
-    self.setSizes([160,340])
+    self.resize(550,555) # large enough that there is no vertical scroll bar
+    self.setSizes([170,380]) # 170 + 380 = 550 (width)
     dprint("pass")
 
   def setVisible(self, visible):

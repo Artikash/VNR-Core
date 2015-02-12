@@ -2,7 +2,16 @@
 # sktr.py
 # 11/1/2012 jichi
 import re
+from functools import partial
 from skdebug import dwarn
+
+REGEX_SPECIAL_CHARS = r'()[]^$|\?!*+.'
+
+RE_SPECIAL_CHARS = re.compile(r"[%s]" % re.escape(
+  r'()[]^$|\?!*+.'
+))
+def contains_re_chars(text): # unicode -> bool
+  return bool(RE_SPECIAL_CHARS.search(text))
 
 # http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii
 def isascii(s):
@@ -19,6 +28,31 @@ def signed_ord(c):
   """
   ret = ord(c)
   return ret if ret < 128 else ret - 256
+
+# http://stackoverflow.com/questions/2556108/how-to-replace-the-last-occurence-of-an-expression-in-a-string
+def rreplace(s, old, new, count):
+  """
+  @param  s  unicode
+  @param  old  unicode
+  @param  new  unicode
+  @param  count  int
+  """
+  if count == 1:
+    left, mid, right = s.rpartition(old)
+    if mid:
+      return new.join((left, right))
+  else:
+    l = s.rsplit(old, count)
+    if l:
+      return new.join(l)
+  return s
+
+def _multireplacer_lookup(table, match):
+  """
+  @param  table  {unicode fr:unicode to}
+  @param  match  re.match
+  """
+  return table[match.group(1)]
 
 # http://stackoverflow.com/questions/6609895/efficiently-replace-bad-characters
 def multireplacer(table, flags=0, escape=False, prefix=None, suffix=None):
@@ -42,12 +76,8 @@ def multireplacer(table, flags=0, escape=False, prefix=None, suffix=None):
       prefix = re.escape(prefix)
     pat = prefix + pat
   rx = re.compile(pat, flags)
-  def ret(text):
-    def replace(match):
-      char = match.group(1)
-      return table[char]
-    return rx.sub(replace, text)
-  return ret
+  return partial(rx.sub,
+      partial(_multireplacer_lookup, table))
 
 def removebr(t):
   """Remove leading and trailing br
@@ -141,6 +171,70 @@ def replaceimgurls(h, fun):
   @return  unicode
   """
   return replacefun1(_rx_img, fun, h)
+
+# Validate
+
+# http://stackoverflow.com/questions/6701853/parentheses-pairing-issue
+def checkpair(text, pair=("({[",")}]"), escape='\\'):
+  """
+  @param  text  unicode
+  @param* pair  (unicode open, unicode close)
+  @param* escape  unicode  prefix chars for escape, such as "\\" for regex
+  @return  bool
+  """
+  pushChars, popChars = pair
+  needcheck = False
+  for c in text:
+    if c in pushChars or c in popChars:
+      needcheck = True
+      break
+  if not needcheck:
+    return True
+  if escape:
+    for x in escape:
+      if x in text:
+        text = text.replace(x + x, '')
+        for c in (pushChars + popChars):
+          text = text.replace(x + c, '')
+  stack = []
+  for c in text:
+    if c in pushChars:
+      stack.append(c)
+    elif c in popChars:
+      if not stack:
+        return False
+      else:
+        stackTop = stack.pop()
+        balancingBracket = pushChars[popChars.index(c)]
+        if stackTop != balancingBracket:
+          return False
+    #else:
+    #  return False
+  return not stack
+
+def countleft(text, chars):
+  """Count numbers of chars on the left of text
+  @param  text
+  @param  chars
+  @return  int
+  """
+  if text and chars:
+    for i,c in enumerate(text):
+      if c not in chars:
+        return i
+  return 0
+
+def countright(text, chars):
+  """Count numbers of chars on the right of text
+  @param  text
+  @param  chars
+  @return  int
+  """
+  if text and chars:
+    for i,c in enumerate(reversed(text)):
+      if c not in chars:
+        return i
+  return 0
 
 if __name__ == '__main__':
   #print urlencode('hello world')

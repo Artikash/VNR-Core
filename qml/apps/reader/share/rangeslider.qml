@@ -8,9 +8,10 @@ import '.' as Share
 
 Rectangle { id: root_
   height: 16
-  radius: 7
   opacity: 0.7
   smooth: true
+  radius: 7
+  //radius: 0 // flat
 
   property alias toolTip: toolTip_.text
   property alias startHandleToolTip: startToolTip_.text
@@ -114,6 +115,7 @@ Rectangle { id: root_
     y: 1
     x: 0
     radius: 3
+    //radius: 0 // flat
     smooth: true
     gradient: Gradient {
       GradientStop { position: 0.0; color: startMouse_.pressed ? 'black' : '#555555' }
@@ -155,6 +157,7 @@ Rectangle { id: root_
     y: 1
     x: 0
     radius: 3
+    //radius: 0 // flat
     smooth: true
     gradient: Gradient {
       GradientStop { position: 0.0; color: stopMouse_.pressed ? 'black' : '#555555' }

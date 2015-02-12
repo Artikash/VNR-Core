@@ -4,7 +4,7 @@
 
 #include "ceviotts/ceviotts.h"
 #include "cevio/cevio.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 // For 2.2.5.1
 //#import "libid:D3AAEA482-B527-4818-8CEA-810AFFCB24B6" named_guids rename_namespace("CeVIO")

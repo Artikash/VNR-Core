@@ -2,7 +2,7 @@
 # soft.py
 # 8/14/2013 jichi
 
-__all__ = ['SoftApi']
+__all__ = 'SoftApi',
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -242,6 +242,7 @@ if __name__ == '__main__':
   api = SoftApi()
   k = 8710
   k = 8680
+  k = 11503
   print '-' * 10
   q = api.query(k)
   print q['otome']

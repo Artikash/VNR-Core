@@ -2,6 +2,7 @@
  *  2/19/2014 jichi
  */
 import QtQuick 1.1
+import org.sakuradite.reader 1.0 as Plugin
 import '../../js/define.min.js' as Define
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/reader.min.js' as My
@@ -37,6 +38,8 @@ Item { id: root_
   onVisibleChanged:
     if (visible)
       postList_.refresh()
+
+  //Plugin.MainObjectProxy { id: mainPlugin_ }
 
   PostView.PostEditor { id: postEditor_
     // Invisible item
@@ -122,17 +125,17 @@ Item { id: root_
     Bootstrap.Button {
       styleClass: 'btn btn-primary'
       //width: 40
-      text: Sk.tr("Reply")
+      text: Sk.tr("New")
       toolTip: Sk.tr("Reply")
       onClicked: postInput_.newPost()
     }
 
     Bootstrap.Button {
-      styleClass: 'btn btn-default'
+      styleClass: 'btn btn-success'
       //width: 40
       text: Sk.tr("Browse")
       toolTip: My.tr("Open in external browser")
-      onClicked: Qt.openUrlExternally("http://sakuradite.com/topic/51")
+      onClicked: mainPlugin_.showTopic(51)
     }
   }
 }
