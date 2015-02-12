@@ -425,6 +425,9 @@ class sakurakit(QObject):
       self.tr("Like"),
       self.tr("Dislike"),
 
+      self.tr("Agree"),
+      self.tr("Disagree"),
+
       self.tr("Slow"), self.tr("slow"),
 
       self.tr("Public"),
