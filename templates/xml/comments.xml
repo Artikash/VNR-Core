@@ -31,6 +31,12 @@
 %		if it.updateComment
 			<updateComment>{{it.updateComment|e}}</updateComment>
 %		endif
+%		if it.likeCount
+			<likeCount>{{it.likeCount}}</likeCount>
+%		endif
+%		if it.dislikeCount
+			<dislikeCount>{{it.dislikeCount}}</dislikeCount>
+%		endif
 		</comment>
 %	endif
 %endfor

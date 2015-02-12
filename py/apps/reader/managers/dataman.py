@@ -2119,6 +2119,8 @@ class _Comment(object):
     'contextSize',
     'comment',
     'updateComment',
+    'likeCount',
+    'dislikeCount',
 
     'selected',
 
@@ -2126,7 +2128,7 @@ class _Comment(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked):
+      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, likeCount, dislikeCount, disabled, deleted, locked):
     self.init = False           # bool
     self.id = id                # long
     self.gameId = gameId        # long
@@ -2148,6 +2150,8 @@ class _Comment(object):
     self.contextSize = contextSize # int
     self.comment = comment
     self.updateComment = updateComment
+    self.likeCount = likeCount
+    self.dislikeCount = dislikeCount
 
     self.selected = False       # bool
 
@@ -2225,9 +2229,10 @@ class Comment(QObject):
       hash=0, context="", contextSize=0, comment="", updateComment="",
       disabled=False, deleted=False, locked=False,
       updateUserId=0, updateTimestamp=0,
+      likeCount=0, dislikeCount=0,
       **ignored):
     self.__d = _Comment(self,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked)
+      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, likeCount, dislikeCount, disabled, deleted, locked)
     if init:
       self.init(parent)
 
@@ -2293,6 +2298,8 @@ class Comment(QObject):
   contextSize, contextSizeChanged = __D.synthesize('contextSize', int, sync=True)
   comment, commentChanged = __D.synthesize('comment', unicode, sync=True)
   updateComment, updateCommentChanged = __D.synthesize('updateComment', unicode, sync=True)
+  likeCount, likeCountChanged = __D.synthesize('likeCount', int) # sync=False
+  dislikeCount, dislikeCountChanged = __D.synthesize('dislikeCount', int) # sync=False
   disabled, disabledChanged = __D.synthesize('disabled', bool, sync=True)
   deleted, deletedChanged = __D.synthesize('deleted', bool, sync=True)
   locked, lockedChanged = __D.synthesize('locked', bool, sync=True)

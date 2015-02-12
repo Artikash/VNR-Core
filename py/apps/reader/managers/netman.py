@@ -1107,7 +1107,7 @@ class _NetworkManager(object):
             if path == 3: # grimoire/comments/comment
               tag = elem.tag
               text = elem.text
-              if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp'):
+              if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp', 'likeCount', 'dislikeCount'):
                 kw[tag] = int(text)
               elif tag in ('disabled', 'locked'):
                 kw[tag] = text == 'true'
