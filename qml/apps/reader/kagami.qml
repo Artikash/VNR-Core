@@ -808,6 +808,9 @@ Item { id: root_
         visible: dock_.danmakuChecked
         effectColor: settings_.grimoireDanmakuColor
 
+        userId: statusPlugin_.userId
+        readOnly: !statusPlugin_.online
+
         zoomFactor: root_.globalZoomFactor
 
         ignoresFocus: root_.ignoresFocus

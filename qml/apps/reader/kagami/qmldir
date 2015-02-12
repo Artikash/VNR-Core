@@ -4,6 +4,7 @@ AjaxIndicator   ajaxindicator.qml
 AppMenu         appmenu.qml
 CentralArea     centralarea.qml
 Clock           clock.qml
+Counter         counter.qml
 CommentBar      commentbar.qml
 CommentView     commentview.qml
 DanmakuView     danmakuview.qml

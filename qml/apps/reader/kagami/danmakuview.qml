@@ -8,6 +8,7 @@ import '../../../js/util.min.js' as Util
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../imports/qmleffects' as Effects
 import '../../../js/local.js' as Local // Local.comet
+import '.' as Kagami
 //import '../share' as Share
 
 Item { id: root_
@@ -19,15 +20,44 @@ Item { id: root_
   property bool convertsChinese
   property bool ignoresFocus
 
+  property int userId
+  property bool readOnly
+
   // - Private -
 
   Component.onCompleted: Local.lanes = [] // [bool free]
+
+  property bool canLike: !readOnly && !!userId && userId != 4
 
   //clip: true
 
   //property variant freeway: [] // [bool free] Deficiency in QML
   //property QtObject lanes: ListModel {} // [int:bool free]
   property int _LANE_HEIGHT: 30
+
+  function likeComment(c, t) { // Comment, bool ->
+    if (canLike && userId != c.userId) {
+      if (t) {
+        c.likeCount += 1
+        datamanPlugin_.likeComment(c, 1)
+      } else {
+        c.likeCount -= 1
+        datamanPlugin_.likeComment(c, 0)
+      }
+    }
+  }
+
+  function dislikeComment(c, t) { // Comment, bool ->
+    if (canLike && userId != c.userId) {
+      if (t) {
+        c.dislikeCount += 1
+        datamanPlugin_.likeComment(c, -1)
+      } else {
+        c.dislikeCount -= 1
+        datamanPlugin_.likeComment(c, 0)
+      }
+    }
+  }
 
   //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
 
@@ -48,7 +78,7 @@ Item { id: root_
     model: ListModel { id: model_ }
 
     delegate: Item { id: danmaku_
-      width: text_.width
+      width: text_.width + likeRow_.width
       height: text_.height
 
       //x: 0
@@ -109,6 +139,7 @@ Item { id: root_
       }
 
       Text { id: text_
+        anchors.right: likeRow_.left
         text: root_.renderComment(model.comment)
         font.pixelSize: 20 * root_.zoomFactor
         color: 'snow'
@@ -139,6 +170,23 @@ Item { id: root_
         //function renderText(t) {
         //  return '<span style="background-color:rgba(0,0,0,10)">' + t + '</span>'
         //}
+      }
+
+      Row { id: likeRow_
+        anchors {
+          verticalCenter: text_.verticalCenter
+          right: parent.right
+        }
+
+        Kagami.Counter { // id: likeCounter_
+          enabled: root_.canLike
+          visible: !!model.comment
+          count: (model.comment ? model.comment.likeCount : 0)
+          prefix: "+"
+          zoomFactor: root_.zoomFactor
+          toolTip: Sk.tr("Like")
+          onClicked: if (enabled) root_.likeComment(model.comment)
+        }
       }
 
       MouseArea { id: mouse_
@@ -196,6 +244,13 @@ Item { id: root_
       text: Sk.tr("Remove")
       onTriggered: menu_.getItem().remove()
     }
+    /* // TODO
+    Desktop.Separator {}
+    Desktop.MenuItem {
+      text: Sk.tr("Like")
+      onTriggered: menu_.getItem().remove()
+    }
+    */
 
     property variant modelData
     function getItem() { return repeater_.itemAt(modelData.index) }
