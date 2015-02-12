@@ -157,7 +157,7 @@ TERM_ESCAPE_LATIN = "SA%i" # ESCAPE of escaped terms.
 
 #NAME_ESCAPE = "9%i.%i58" # ESCAPE of escaped character name
 NAME_ESCAPE_KANJI = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
-NAME_ESCAPE_LATIN = "SN%i.%i1" # ESCAPE of escaped character name.
+NAME_ESCAPE_LATIN = "SN%i_%i1" # ESCAPE of escaped character name.
 
 JITTER_ESCAPE_KANJI = "341.143"
 JITTER_ESCAPE_LATIN = "SJ341"
