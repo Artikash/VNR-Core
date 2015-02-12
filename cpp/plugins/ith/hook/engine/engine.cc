@@ -5804,15 +5804,16 @@ int GetSystemAoiVersion() // return result is cached
 
 bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 {
-  const int version = GetSystemAoiVersion();
-  if (version <= 4) { // Aoi <= 4
-    if (addr != ::DrawTextExA && addr != ::DrawTextExW)
-      return false;
-  } else // Aoi >= 5
-    if (addr != ::GetGlyphOutlineW)
-      return false;
-
-  const bool utf16 = addr != DrawTextExA; // DrawTextExA only in < Aoi4
+  int version = GetSystemAoiVersion();
+  bool utf16 = true;
+  if (addr == ::DrawTextExA) // < 4
+    utf16 = false;
+  if (addr == ::DrawTextExW) // 4~5
+    ; // pass
+  else if (addr == ::GetGlyphOutlineW && version >= 5)
+    ; // pass
+  else
+    return false;
 
   DWORD high,low,i,j,k;
   Util::GetCodeRange(module_base_, &low, &high);
@@ -5836,10 +5837,10 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
       //ITH_GROWL_DWORD(hp.addr); // BUNNYBLACK: 0x10024730, base 0x01d0000
       if (hp.addr) {
         ConsoleOutput("vnreng: INSERT SystemAoi");
-        if (version <= 4)
-          NewHook(hp, L"SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
+        if (addr == ::GetGlyphOutlineW)
+          NewHook(hp, L"SystemAoi2"); // jichi 2/12/2015
         else
-          NewHook(hp, L"SystemAoi5"); // jichi 2/12/2015
+          NewHook(hp, L"SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
         ConsoleOutput("vnreng:SystemAoi: disable GDI hooks");
         DisableGDIHooks();
       } else
