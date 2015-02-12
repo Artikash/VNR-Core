@@ -438,7 +438,7 @@ class SteamApi(object):
     if self.online !=  v:
       self.online = v
       if hasmemoizedproperty(self, 'cachingAppApi'):
-        self.cachingGameApi.online = v
+        self.cachingAppApi.online = v
 
   @memoizedproperty
   def cachingAppApi(self):
