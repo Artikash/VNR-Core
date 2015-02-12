@@ -46,9 +46,9 @@ _PATCHES = { # {long id:kw}
   #10489: {'dmm2': '543ka0066'},     # プレスタ！ ～Precious☆Star'sフェスティバル～
   10839: {'brand':u"Mink"},         # 夜勤病棟 復刻版+
   11992: {'amazon': ''}, # 廻る娼館街のリィナ -- delete wrong amazon
-  12410: {'releaseDayNumber': '20141230'},
-  12712: {'releaseDayNumber': '20141128'},
-  13100: {'releaseDayNumber': '20150130'},
+  12410: {'releaseDayNumber': 20141230},
+  12712: {'releaseDayNumber': 20141128},
+  13100: {'releaseDayNumber': 20150130},
 }
 
 # API is stateless
@@ -97,6 +97,7 @@ if __name__ == '__main__':
   t = u"diaborosu"
   t = "2309" # カスタム隷奴III
   t = '415' # ::inedited::
+  t = 8458
   q = api.query(t, type=api.EROGETRAILERS_TYPE)
   print q
 
