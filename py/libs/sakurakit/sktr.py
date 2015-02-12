@@ -423,6 +423,7 @@ class sakurakit(QObject):
 
       self.tr("Recent"),
       self.tr("Like"),
+      self.tr("Dislike"),
 
       self.tr("Slow"), self.tr("slow"),
 

@@ -296,6 +296,45 @@ Item { id: root_
       }
     }
 
+    // Column: Like
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Like")
+      width: 30
+      delegate: Item {
+        height: table_.cellHeight
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          visible: !!itemValue.likeCount
+          text: itemValue.likeCount ? '+' + itemValue.likeCount : ''
+          color: itemSelected ? 'white' : itemColor(itemValue)
+          font.strikeout: !itemSelected && itemValue.disabled
+          font.bold: itemValue.locked
+        }
+      }
+    }
+    // Column: Like
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Dislike")
+      width: 30
+      delegate: Item {
+        height: table_.cellHeight
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          visible: !!itemValue.dislikeCount
+          text: itemValue.dislikeCount ? '-' + itemValue.dislikeCount : ''
+          color: itemSelected ? 'white' : itemColor(itemValue)
+          font.strikeout: !itemSelected && itemValue.disabled
+          font.bold: itemValue.locked
+        }
+      }
+    }
+
     // Column: Text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Text")

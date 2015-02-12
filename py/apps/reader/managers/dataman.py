@@ -5306,6 +5306,8 @@ class _CommentModel(object):
     'type',
     'language',
     'locked',
+    'likeCount',
+    'dislikeCount',
     'text',
     'context',
     'contextSize',
@@ -10696,6 +10698,15 @@ class DataManagerProxy(QObject):
   #@Slot(result=unicode)
   #def getCurrentUserName(self):
   #  return manager().user().name
+
+  @Slot(QObject, int)
+  def likeComment(self, c, value):
+    user = manager().user()
+    userId = user.id
+    if not userId or userId == c.userId:
+      return
+    dprint(value)
+    netman.manager().likeComment(c.id, value, user.name, user.password)
 
   @Slot(QObject, bool)
   def enableComment(self, c, t):

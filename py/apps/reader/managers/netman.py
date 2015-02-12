@@ -2133,7 +2133,7 @@ class NetworkManager(QObject):
       targetId: commentId,
       type: 'like',
       value: value,
-    })
+    }))
 
 @memoized
 def manager(): return NetworkManager()
