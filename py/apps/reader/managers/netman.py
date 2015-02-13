@@ -1485,7 +1485,7 @@ class _NetworkManager(object):
               text = elem.text
               if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp'):
                 kw[tag] = int(text)
-              elif tag in ('special', 'private', 'hentai', 'regex', 'icase', 'disabled'):
+              elif tag in ('special', 'private', 'hentai', 'regex', 'phrase', 'icase', 'disabled'):
                 kw[tag] = text == 'true'
               else:
                 kw[tag] = text or ''
@@ -1565,7 +1565,7 @@ class _NetworkManager(object):
           if len(td.updateComment) <= defs.MAX_TEXT_LENGTH
           else td.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    for pty in 'special', 'private', 'hentai', 'regex', 'icase':
+    for pty in 'special', 'private', 'hentai', 'regex', 'phrase', 'icase':
       if getattr(td, pty):
         params[pty] = True
 
@@ -1636,7 +1636,7 @@ class _NetworkManager(object):
     if 'sourceLanguage' in pty:   params['sourcelang'] = td.sourceLanguage
     if 'disabled' in pty:         params['disable'] = td.disabled
 
-    for k in 'gameId', 'type', 'host', 'special', 'private', 'hentai', 'icase', 'regex':
+    for k in 'gameId', 'type', 'host', 'special', 'private', 'hentai', 'icase', 'regex', 'phrase':
       if k in pty:
         params[k.lower()] = getattr(term, k)
 

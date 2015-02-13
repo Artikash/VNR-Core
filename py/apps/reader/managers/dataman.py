@@ -2412,6 +2412,7 @@ class _Term(object):
     'comment',
     'updateComment',
     'regex',
+    'phrase',
     'disabled',
     'deleted',
     'special',
@@ -2430,7 +2431,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, icase):
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
     #self.priority = 0 # int  assigned after sorting
     self.init = False           # bool
     self.id = id                # long
@@ -2450,6 +2451,7 @@ class _Term(object):
     self.comment = comment      # unicode
     self.updateComment = updateComment  # unicode
     self.regex = regex          # bool
+    self.phrase = phrase        # bool
     #self.bbcode = bbcode        # bool
     self.disabled = disabled    # bool
     self.deleted = deleted      # bool
@@ -2483,7 +2485,7 @@ class _Term(object):
     if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
       termman.manager().invalidateCache() # invalidate term cache when any term is changed
 
-    if self._errorType is not None and name in ('pattern', 'text', 'type', 'host', 'language', 'regex', 'special'):
+    if self._errorType is not None and name in ('pattern', 'text', 'type', 'host', 'language', 'sourceLanguage', 'regex', 'special'):
       self.recheckError()
 
     #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
@@ -2616,6 +2618,16 @@ class _Term(object):
       #if opencc.containsja(self.text): # not checked as it might have Japanese chars such as 桜
       #  return self.W_CHINESE_KANJI
 
+    if self.sourceLanguage.startswith('zh') and self.pattern:
+
+      # W_CHINESE_SIMPLIFIED
+      if self.language == 'zhs' and not opencc.containszhs(self.pattern):
+        return self.W_CHINESE_SIMPLIFIED
+
+      # W_CHINESE_TRADITIONAL
+      if self.language == 'zht' and opencc.containszhs(self.pattern):
+        return self.W_CHINESE_TRADITIONAL
+
     return self.OK
 
   @staticmethod
@@ -2708,11 +2720,11 @@ class Term(QObject):
       type="", host="", language="", sourceLanguage="", timestamp=0, text="",
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
-      regex=False,
+      regex=False, phrase=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, icase=False, #syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, icase)
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase)
     if init:
       self.init(parent)
 
@@ -2748,6 +2760,7 @@ class Term(QObject):
       icase=d.icase,
       #syntax=d.syntax,
       regex=d.regex,
+      phrase=d.phrase,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
       type=d.type, host=d.host, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern)
@@ -2792,6 +2805,7 @@ class Term(QObject):
   special, specialChanged = __D.synthesize('special', bool, sync=True)
   private, privateChanged = __D.synthesize('private', bool, sync=True)
   regex, regexChanged = __D.synthesize('regex', bool, sync=True)
+  phrase, phraseChanged = __D.synthesize('phrase', bool, sync=True)
   hentai, hentaiChanged = __D.synthesize('hentai', bool, sync=True)
   icase, icaseChanged = __D.synthesize('icase', bool, sync=True)
   #syntax, syntaxChanged = __D.synthesize('syntax', bool, sync=True)
@@ -4754,6 +4768,7 @@ class _TermModel(object):
     'host',
     #'syntax',
     'regex',
+    'phrase',
     'icase',
     'hentai',
     'special',
@@ -4851,7 +4866,7 @@ class _TermModel(object):
     @return  any tuple consistent with _equivalent()
     """
     td = t.d
-    return td.pattern, td.text, td.language[:2], td.type, td.regex, td.special, t.gameSeries or td.gameItemId
+    return td.pattern, td.text, td.language[:2], td.type, td.regex, td.phrase, td.special, t.gameSeries or td.gameItemId
 
   @staticmethod
   def _equivalent(x, y):
@@ -4864,6 +4879,7 @@ class _TermModel(object):
     yd = y.d
     return (
       xd.regex == yd.regex
+      #xd.phrase == yd.phrase
       #and xd.special == yd.special
       and (
         xd.language == 'ja'
@@ -8607,7 +8623,7 @@ class _DataManager(object):
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):
               kw[tag] = int(text)
-            elif tag in ('special', 'private', 'hentai', 'regex', 'icase'):
+            elif tag in ('special', 'private', 'hentai', 'regex', 'phrase', 'icase'):
               kw[tag] = text == 'true'
 
           elif path == 2 and kw['type'] in Term.TYPES:

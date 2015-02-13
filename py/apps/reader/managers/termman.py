@@ -20,6 +20,7 @@ from sakurakit import skfileio, skos, skstr, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
+from unitraits import jpchars, jpmacros
 from convutil import kana2name, zhs2zht
 from mytr import my
 import config, cabochaman, dataman, defs, growl, i18n, rc
@@ -29,6 +30,38 @@ if skos.WIN:
 
 @memoized
 def manager(): return TermManager()
+
+def _phrase_lbound(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @return  unicode
+  """
+  if not text:
+    return text
+  if language == 'ja':
+    cat = jpchars.getcat(text[0])
+    if cat:
+      m = jpmacros.getmacro('?<!' + cat)
+      if m:
+        return m
+  return r'\b'
+
+def _phrase_rbound(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @return  unicode
+  """
+  if not text:
+    return text
+  if language == 'ja':
+    cat = jpchars.getcat(text[-1])
+    if cat:
+      m = jpmacros.getmacro('?!' + cat)
+      if m:
+        return m
+  return r'\b'
 
 LANG_SUFFIX_TR = {
   ('ja', 'en'): ((u"の", u"'s"),),
@@ -125,12 +158,13 @@ def _host_categories(host): # str -> int
       ret |= 1 << i
   return ret
 
-class TermTitle(object):
-  __slots__ = 'pattern', 'text', 'regex', 'icase', 'sortKey'
-  def __init__(self, sortKey, pattern='', text='', regex=False, icase=False):
+class TermSuffix(object):
+  __slots__ = 'pattern', 'text', 'regex', 'phrase', 'icase', 'sortKey'
+  def __init__(self, sortKey, pattern='', text='', regex=False, phrase=False, icase=False):
     self.pattern = pattern # unicode
     self.text = text # unicode
     self.regex = regex # bool
+    self.phrase = phrase # bool
     self.icase = icase # bool
     self.sortKey = sortKey # int
 
@@ -163,20 +197,20 @@ class TermWriter:
   def isOutdated(self): # -> bool
     return self.createTime < _TermManager.instance.updateTime
 
-  def saveTerms(self, path, type, to, fr, macros, titles):
+  def saveTerms(self, path, type, to, fr, macros, suffices):
     """This method is invoked from a different thread
     @param  path  unicode
     @param  type  str  term type
     @param  to  str  target text language
     @param  fr  str  source text language
     @param  macros  {unicode pattern:unicode repl}
-    @param  titles  [TermTitle] not None not empty
+    @param  suffices  [TermSuffix] not None not empty
     @return  bool
     """
     #marksChanges = self.marked and type in ('output', 'trans_output')
     convertsChinese = to == 'zht' and type in ('output', 'trans_input', 'trans_output')
     if type not in ('input', 'trans_input', 'trans_output'):
-      titles = None
+      suffices = None
 
     fr2 = fr[:2]
 
@@ -190,7 +224,7 @@ class TermWriter:
       TERM_ESCAPE = defs.TERM_ESCAPE_LATIN
       NAME_ESCAPE = defs.NAME_ESCAPE_LATIN
 
-    titleCount = len(titles) if titles else 0 # int
+    suffixCount = len(suffices) if suffices else 0 # int
 
     empty = True
 
@@ -303,45 +337,62 @@ class TermWriter:
           #    repl += " " # padding space
 
           name = None
-          if titleCount and td.type in name_types:
+          if suffixCount and td.type in name_types:
             if trans_input:
-              name = True
               esc = NAME_ESCAPE + " " # padding space
-              for i,it in enumerate(titles):
+              name = True
+              namePattern = pattern
+              nameRegex = regex
+              if td.phrase:
+                left = namePattern[0]
+                if not nameRegex:
+                  nameRegex = True
+                  namePattern = re.escape(namePattern)
+                namePattern = _phrase_lbound(left, fr) + namePattern
+              for i,it in enumerate(suffices):
                 self._writeLine(f,
                     td.id,
-                    (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
-                    esc % (priority, titleCount - i),
-                    regex or it.regex,
+                    (re.escape(namePattern) if not nameRegex and it.regex else namePattern) + it.pattern,
+                    esc % (priority, suffixCount - i),
+                    nameRegex or it.regex,
                     td.icase or it.icase,
                     td.host,
                     name=False)
             elif trans_output:
               esc = NAME_ESCAPE
-              for i,it in enumerate(titles):
+              for i,it in enumerate(suffices):
                 self._writeLine(f,
                     td.id,
-                    esc % (priority, titleCount - i),
+                    esc % (priority, suffixCount - i),
                     repl + it.text + (" " if padding else ""), # it will be escaped in C++
                     #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
                     regex, # no padding space for Chinese names
                     td.icase or it.icase,
                     td.host)
-            else:
-              name = True
-              #assert padding # this is supposed to be always true
-              for it in titles:
-                self._writeLine(f,
-                    td.id,
-                    (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
-                    repl + it.text + " ",
-                    regex or it.regex,
-                    td.icase or it.icase,
-                    td.host,
-                    name=False) # padding space for Japanese names
+            #else: # this is unreachable branch
+            #  name = True
+            #  #assert padding # this is supposed to be always true
+            #  for it in suffices:
+            #    self._writeLine(f,
+            #        td.id,
+            #        (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
+            #        repl + it.text + " ",
+            #        regex or it.regex,
+            #        td.icase or it.icase,
+            #        td.host,
+            #        name=False) # padding space for Japanese names
 
           if padding:
             repl += " "
+
+          if td.phrase and not trans_output:
+            left = pattern[0]
+            right = pattern[-1]
+            if not regex:
+              regex = True
+              pattern = re.escape(pattern)
+            pattern = _phrase_lbound(left, fr) + pattern + _phrase_rbound(right, fr)
+
           self._writeLine(f,
               td.id,
               pattern,
@@ -488,12 +539,12 @@ class TermWriter:
       dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def queryTermTitles(self, to, fr, macros):
+  def queryTermSuffices(self, to, fr, macros):
     """Terms sorted by length and id
     @param  to  str
     @param  fr  str
     @param  macros  {unicode pattern:unicode repl}
-    @return  [TermTitle]
+    @return  [TermSuffix]
     """
     zht = to == 'zht'
     l = [] # [long id, unicode pattern, unicode replacement, bool regex]
@@ -502,7 +553,7 @@ class TermWriter:
     s = _get_lang_suffices(to, fr)
     if s:
       for k,v in s:
-        l.append(TermTitle(pattern=k, text=v, sortKey=(0,0)))
+        l.append(TermSuffix(pattern=k, text=v, sortKey=(0,0)))
     for td in self._iterTermData('suffix', to, fr):
       pat = td.pattern
       if td.regex:
@@ -513,24 +564,35 @@ class TermWriter:
         if repl: # and self.convertsChinese:
           repl = zhs2zht(repl)
       sortKey = _lang_sort_key(td.language, td.sourceLanguage), td.updateTimestamp or td.timestamp
-      l.append(TermTitle(sortKey=sortKey,
+      l.append(TermSuffix(sortKey=sortKey,
         pattern=pat,
         text=repl,
         regex=td.regex,
+        phrase=td.phrase,
         icase=td.icase,
       ))
       if s:
         for k,v in s:
-          l.append(TermTitle(sortKey=sortKey,
+          l.append(TermSuffix(sortKey=sortKey,
             pattern=pat + k,
             text=repl + v,
             regex=td.regex,
+            phrase=td.phrase,
             icase=td.icase,
           ))
     l.sort(reverse=True, key=lambda it:
         (it.regex, len(it.pattern), not it.icase, it.sortKey)) # regex terms come at first, longer terms come at first, case-sensitive at first, newer come at first
     #for id,pat,repl,regex in l:
-    #  ret[pat] = TermTitle(repl, regex)
+    #  ret[pat] = TermSuffix(repl, regex)
+
+    for it in l:
+      if it.phrase:
+        it.phrase = False
+        right = it.pattern[-1]
+        if not it.regex:
+          it.regex = True
+          it.pattern = re.escape(it.pattern)
+        it.pattern += _phrase_rbound(right, fr)
     return l
 
   def _applyMacros(self, text, macros):
@@ -713,7 +775,7 @@ class _TermManager:
       if ts < self.updateTime: # skip language that does not out of date
         type, to, fr = scriptKey
         macros = w.queryTermMacros(to, fr)
-        titles = w.queryTermTitles(to, fr, macros)
+        suffices = w.queryTermSuffices(to, fr, macros)
 
         if w.isOutdated():
           dwarn("leave: cancel saving out-of-date terms")
@@ -735,7 +797,7 @@ class _TermManager:
         elif not man.isEmpty():
           man.clear()
         try:
-          if w.saveTerms(path, type, to, fr, macros, titles) and man.loadFile(path):
+          if w.saveTerms(path, type, to, fr, macros, suffices) and man.loadFile(path):
             dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
         except:
           self.scriptLocks[scriptKey] = False

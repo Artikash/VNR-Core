@@ -82,6 +82,9 @@ class _TermInput(object):
     grid.addWidget(self.regexButton, r, 1)
     r += 1
 
+    grid.addWidget(self.phraseButton, r, 1)
+    r += 1
+
     grid.addWidget(self.icaseButton, r, 1)
     r += 1
 
@@ -266,6 +269,10 @@ class _TermInput(object):
     return QtWidgets.QCheckBox(tr_("Regular expression"))
 
   @memoizedproperty
+  def phraseButton(self):
+    return QtWidgets.QCheckBox(my.tr("Match phrase boundary"))
+
+  @memoizedproperty
   def icaseButton(self):
     return QtWidgets.QCheckBox(tr_("Case-insensitive"))
 
@@ -435,13 +442,14 @@ class _TermInput(object):
       #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'suffix')
       regex = type == 'macro' or self.regexButton.isChecked() #and type != 'suffix')
       icase = type != 'macro' and self.icaseButton.isChecked()
+      phrase = type != 'macro' and self.phraseButton.isChecked()
       #syntax = type == 'trans' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
       private = self.privateButton.isChecked() and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
           language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
-          special=special, regex=regex, icase=icase, #syntax=syntax,
+          special=special, regex=regex, phrase=phrase, icase=icase, #syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, comment=comment)
 
