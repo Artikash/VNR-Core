@@ -188,6 +188,7 @@ class reader(QObject):
       self.tr("Yomigana"),
       self.tr("Yomi"),
       self.tr("Suffix"),
+      self.tr("Prefix"),
 
       self.tr("TTS"),
       self.tr("OCR"),

@@ -71,6 +71,7 @@ Item { id: root_
     , name: My.tr("Name")
     , yomi: My.tr("Yomi")
     , suffix: My.tr("Suffix")
+    , prefix: My.tr("Prefix")
     , game: Sk.tr("Game")
     , tts: My.tr("TTS")
     , ocr: My.tr("OCR")
@@ -119,7 +120,7 @@ Item { id: root_
     if (text && type == 'yomi')
       ret += "<br/>" + My.tr("Yomi") + ": " + renderYomi(text)
 
-    if (text && (type == 'trans' || type == 'output' || type == 'name' || type == 'suffix') && lang != 'en' && lang != 'ja')
+    if (text && (type == 'trans' || type == 'output' || type == 'name' || type == 'suffix' || type == 'prefix') && lang != 'en' && lang != 'ja')
       ret += "<br/>" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
 
     ret += "<br/>" + Sk.tr("Type") + ": " + typeName(currentItem.type)

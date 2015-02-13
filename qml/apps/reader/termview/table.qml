@@ -159,6 +159,7 @@ Item { id: root_
     , name: My.tr("Name")
     , yomi: My.tr("Yomi")
     , suffix: My.tr("Suffix")
+    , prefix: My.tr("Prefix")
     , game: Sk.tr("Game")
     , tts: My.tr("TTS")
     , ocr: My.tr("OCR")

@@ -216,6 +216,7 @@ var TERM_TYPES = [
   , 'name'
   , 'yomi'
   , 'suffix'
+  , 'prefix'
   , 'game'
   , 'tts'
   , 'ocr'

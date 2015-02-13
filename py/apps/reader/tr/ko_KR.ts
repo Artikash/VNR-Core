@@ -2742,22 +2742,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="495"/>
+        <location filename="dialogs/terminput.py" line="497"/>
         <source>Missing pattern</source>
         <translation>일치하는 원문 없음</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="510"/>
+        <location filename="dialogs/terminput.py" line="512"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>원문이 너무 짧습니다. 시리즈 특정 옵션을 켜실 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="525"/>
+        <location filename="dialogs/terminput.py" line="527"/>
         <source>Everything looks OK</source>
         <translation>상태가 양호합니다</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="573"/>
+        <location filename="dialogs/terminput.py" line="575"/>
         <source>Create dictionary entry</source>
         <translation>사전용어 생성</translation>
     </message>
@@ -2771,7 +2771,7 @@ The dictionary will be installed to {1}.</source>
 사전은 {1}에 설치 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="513"/>
+        <location filename="dialogs/terminput.py" line="515"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>번역이 지정되지 않음. VNR이 원문과 일치하는 텍스트를 제거합니다.</translation>
     </message>
@@ -2868,7 +2868,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>JMDict 일ㆍ네덜란드어 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="463"/>
+        <location filename="dialogs/terminput.py" line="465"/>
         <source>Add new term</source>
         <translation>새 용어 추가</translation>
     </message>
@@ -3592,17 +3592,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 같은 항목을 복제하는것은 더욱 관리가 힘들어 질 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="498"/>
+        <location filename="dialogs/terminput.py" line="500"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>원문과 번역문이 일치하여 유용성이 없습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="516"/>
+        <location filename="dialogs/terminput.py" line="518"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>원문이 너무 잛고 뜻이 모호 할 수 있는 히라가나로만 이루어져있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="519"/>
+        <location filename="dialogs/terminput.py" line="521"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>원문이 너무 깁니다. 공유사전에 문장을 추가하지 말아주세요.</translation>
     </message>
@@ -3765,7 +3765,7 @@ VNR에서는 공백 뒤 내용은 무시됩니다.
         <translation>게임 창의 스크린샷을 찍기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="228"/>
+        <location filename="dialogs/terminput.py" line="230"/>
         <source>reusable regular expression pattern</source>
         <translation>재사용 가능한 정규 표현식 원문</translation>
     </message>
@@ -3882,17 +3882,17 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>번역하기 전 입력 언어를 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="226"/>
+        <location filename="dialogs/terminput.py" line="228"/>
         <source>transform extracted game text</source>
         <translation>추출된 게임원문을 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="222"/>
+        <location filename="dialogs/terminput.py" line="224"/>
         <source>transform text before TTS</source>
         <translation>TTS음성합성 전에 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="224"/>
+        <location filename="dialogs/terminput.py" line="226"/>
         <source>transform text after OCR</source>
         <translation>OCR광학인식 후 교정</translation>
     </message>
@@ -4272,7 +4272,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>히라가나·가타카나 이름표기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="522"/>
+        <location filename="dialogs/terminput.py" line="524"/>
         <source>Yomi type is useless for Chinese translation.</source>
         <translation>요미형식의 발음표기는 중국어 번역에 쓸모 없음.</translation>
     </message>
@@ -4304,7 +4304,7 @@ Enabling proxy might make it better.</source>
 프록시를 활성화할 시 문제가 개선됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="292"/>
+        <location filename="dialogs/terminput.py" line="294"/>
         <source>Only visible to yourself</source>
         <translation>자신에게만 보이기</translation>
     </message>
@@ -4329,12 +4329,12 @@ Enabling proxy might make it better.</source>
         <translation>공유 사전에 일본어 이름 가져오기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="307"/>
+        <location filename="dialogs/terminput.py" line="309"/>
         <source>Yomigana of translation</source>
         <translation>번역문에 요미가나</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="316"/>
+        <location filename="dialogs/terminput.py" line="318"/>
         <source>Guessed kanji of pattern using MSIME</source>
         <translation>MSIME를 사용해서 원문 간지를 추측함</translation>
     </message>
@@ -4376,7 +4376,7 @@ Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation>한국어에 루비문자 표시</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="507"/>
+        <location filename="dialogs/terminput.py" line="509"/>
         <source>Parentheses in the regular expression might not match.</source>
         <translation>정규식 표현의 괄호는 일치하지 않습니다.</translation>
     </message>
@@ -4507,13 +4507,18 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="managers/termman.py" line="773"/>
+        <location filename="managers/termman.py" line="846"/>
         <source>Processing Shared Dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="273"/>
+        <location filename="dialogs/terminput.py" line="275"/>
         <source>Match phrase boundary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="222"/>
+        <source>a title before names</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

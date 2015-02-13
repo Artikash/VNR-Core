@@ -217,6 +217,8 @@ class _TermInput(object):
       t = my.tr("katagana or hiragana of a name")
     elif tt == 'suffix':
       t = my.tr("a title after names")
+    elif tt == 'prefix':
+      t = my.tr("a title before names")
     elif tt == 'tts':
       t = my.tr("transform text before TTS")
     elif tt == 'ocr':
@@ -382,7 +384,7 @@ class _TermInput(object):
   def _isUseless(self): # -> bool  has no effect
     pattern = self.patternEdit.text().strip()
     #if self._getLanguage() not in ('zhs', 'zht', 'ko') or # allow people to force save sth
-    if self._getType() not in ('trans', 'suffix', 'name', 'yomi'):
+    if self._getType() not in ('trans', 'suffix', 'prefix', 'name', 'yomi'):
       text = self.textEdit.text().strip()
       if pattern == text:
         return True

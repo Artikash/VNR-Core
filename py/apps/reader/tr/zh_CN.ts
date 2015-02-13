@@ -2730,22 +2730,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多国语言翻译服务</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="495"/>
+        <location filename="dialogs/terminput.py" line="497"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="510"/>
+        <location filename="dialogs/terminput.py" line="512"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把词条设定为系列专用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="525"/>
+        <location filename="dialogs/terminput.py" line="527"/>
         <source>Everything looks OK</source>
         <translation>看起来还好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="573"/>
+        <location filename="dialogs/terminput.py" line="575"/>
         <source>Create dictionary entry</source>
         <translation>创建词条</translation>
     </message>
@@ -2759,7 +2759,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辞书会被安装到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="513"/>
+        <location filename="dialogs/terminput.py" line="515"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>没有指定翻译。这样的话VNR会删掉匹配的文本。</translation>
     </message>
@@ -2856,7 +2856,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>JMDict日文-荷兰文辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="463"/>
+        <location filename="dialogs/terminput.py" line="465"/>
         <source>Add new term</source>
         <translation>添加词条</translation>
     </message>
@@ -3580,17 +3580,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆会产生重复的条目，管理起来会更加困难。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="498"/>
+        <location filename="dialogs/terminput.py" line="500"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文本和替换的文本相同，这样子做没有意义。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="516"/>
+        <location filename="dialogs/terminput.py" line="518"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，这样很容易产生歧义。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="519"/>
+        <location filename="dialogs/terminput.py" line="521"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>匹配的文本很长。请不要把人工字幕加入共享辞书。</translation>
     </message>
@@ -3753,7 +3753,7 @@ Check this wiki for what to do if there is no correct text.
         <translation>对游戏窗口截取图片</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="228"/>
+        <location filename="dialogs/terminput.py" line="230"/>
         <source>reusable regular expression pattern</source>
         <translation>可重用的正则表达式定义</translation>
     </message>
@@ -3870,17 +3870,17 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
         <translation>在翻译前修正输入的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="226"/>
+        <location filename="dialogs/terminput.py" line="228"/>
         <source>transform extracted game text</source>
         <translation>修正从游戏中提取到的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="222"/>
+        <location filename="dialogs/terminput.py" line="224"/>
         <source>transform text before TTS</source>
         <translation>修正语音合成前的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="224"/>
+        <location filename="dialogs/terminput.py" line="226"/>
         <source>transform text after OCR</source>
         <translation>修正光学识别后的文字</translation>
     </message>
@@ -4260,7 +4260,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>日文姓名的平假名或片假名</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="522"/>
+        <location filename="dialogs/terminput.py" line="524"/>
         <source>Yomi type is useless for Chinese translation.</source>
         <translation>读音类型对中文翻译是没有用的。</translation>
     </message>
@@ -4292,7 +4292,7 @@ Enabling proxy might make it better.</source>
 开启代理也许可以变好一些。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="292"/>
+        <location filename="dialogs/terminput.py" line="294"/>
         <source>Only visible to yourself</source>
         <translation>只有你自己看得到</translation>
     </message>
@@ -4317,12 +4317,12 @@ Enabling proxy might make it better.</source>
         <translation>导入日文的名字到共享辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="307"/>
+        <location filename="dialogs/terminput.py" line="309"/>
         <source>Yomigana of translation</source>
         <translation>翻译的读法</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="316"/>
+        <location filename="dialogs/terminput.py" line="318"/>
         <source>Guessed kanji of pattern using MSIME</source>
         <translation>使用微软日文输入法猜测的汉字</translation>
     </message>
@@ -4364,7 +4364,7 @@ Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation>韩文注音的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="507"/>
+        <location filename="dialogs/terminput.py" line="509"/>
         <source>Parentheses in the regular expression might not match.</source>
         <translation>正则表达式的括号可能不匹配。</translation>
     </message>
@@ -4495,14 +4495,19 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/s
         <translation>链接两个翻译器的中间语言</translation>
     </message>
     <message>
-        <location filename="managers/termman.py" line="773"/>
+        <location filename="managers/termman.py" line="846"/>
         <source>Processing Shared Dictionary</source>
         <translation>处理共享辞书中</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="273"/>
+        <location filename="dialogs/terminput.py" line="275"/>
         <source>Match phrase boundary</source>
         <translation>匹配短语边界</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="222"/>
+        <source>a title before names</source>
+        <translation>这是日文名字前的前缀</translation>
     </message>
 </context>
 </TS>
