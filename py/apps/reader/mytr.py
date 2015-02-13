@@ -189,6 +189,7 @@ class reader(QObject):
       self.tr("Yomi"),
       self.tr("Suffix"),
       self.tr("Prefix"),
+      self.tr("Boundary"),
 
       self.tr("TTS"),
       self.tr("OCR"),
