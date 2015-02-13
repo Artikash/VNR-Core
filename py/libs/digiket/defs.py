@@ -15,7 +15,7 @@ def fromitemkey(key):
   @param  key  str
   @return  int
   """
-  if isinstance(key, int) or isinstance(key, long):
+  if isinstance(key, (int, long)):
     return key
   elif isinstance(key, basestring):
     if key.startswith('ITM'):

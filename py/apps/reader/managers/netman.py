@@ -1107,7 +1107,7 @@ class _NetworkManager(object):
             if path == 3: # grimoire/comments/comment
               tag = elem.tag
               text = elem.text
-              if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp'):
+              if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp', 'likeCount', 'dislikeCount'):
                 kw[tag] = int(text)
               elif tag in ('disabled', 'locked'):
                 kw[tag] = text == 'true'
@@ -2109,6 +2109,31 @@ class NetworkManager(QObject):
   #  """
   #  if self.isOnline():
   #    self.__d.upload('upload/audio', data, params)
+
+  # Shorthands
+
+  def likeComment(self, commentId, value, userName, password):
+    """
+    @param  commentId  long
+    @param  value  {True, None, False, -1, 0, 1}
+    @param  userName  unicode
+    @param  password  unicode
+    """
+    if not isinstance(value, (int, long)):
+      if value is None:
+        value = 0
+      elif value == True:
+        value = 1
+      elif value == False:
+        value = -1
+    return self.updateTicket(json.dumps({
+      'login': userName,
+      'password': password,
+      'targetType': 'annot',
+      'targetId': commentId,
+      'type': 'like',
+      'value': value,
+    }))
 
 @memoized
 def manager(): return NetworkManager()

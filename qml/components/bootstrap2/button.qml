@@ -22,6 +22,8 @@ MouseArea { id: root_
 
   //signal clicked(variant mouse)
 
+  function click()  { clicked(null) }
+
   width: text_.width + 24   // bootstrap: 12px * 2 = 24
   height: text_.height + 10  // bootstrap: 4px * 2 = 8
 

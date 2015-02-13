@@ -886,7 +886,7 @@ class _WebBrowser(object):
   #  @param  title  unicode
   #  """
   #  tw = self.tabWidget
-  #  if not isinstance(tab, int) and not isinstance(tab, long):
+  #  if not isinstance(tab, (int, long)):
   #    tab = tw.indexOf(tab)
   #  if not title:
   #    title = tr_("Empty")

@@ -478,6 +478,9 @@ Item { id: root_
 
         zoomFactor: root_.globalZoomFactor
 
+        userId: statusPlugin_.userId
+        readOnly: !statusPlugin_.online
+
         convertsChinese: settings_.convertsChinese
 
         // FIXME: Why binding loop here?!
@@ -807,6 +810,9 @@ Item { id: root_
         }
         visible: dock_.danmakuChecked
         effectColor: settings_.grimoireDanmakuColor
+
+        userId: statusPlugin_.userId
+        readOnly: !statusPlugin_.online
 
         zoomFactor: root_.globalZoomFactor
 

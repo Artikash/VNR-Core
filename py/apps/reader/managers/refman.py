@@ -160,7 +160,7 @@ class TrailersApi(object):
     """
     dprint("enter")
     if text and not key and (
-        isinstance(text, int) or isinstance(text, long) or
+        isinstance(text, (int, long)) or
         isinstance(text, basestring) and text.isdigit()
       ):
       key = text

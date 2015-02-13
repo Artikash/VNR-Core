@@ -106,7 +106,7 @@ class SkDeclarativeView(QDeclarativeView):
 
       var = root.property('windowFlags')
       if var is not None:
-        assert isinstance(var, int), "check type" # Qt.WindowFlags
+        assert isinstance(var, (int, long)), "check type" # Qt.WindowFlags
         self.setWindowFlags(var)
         root.windowFlagsChanged.connect(self.updateWindowFlags)
 

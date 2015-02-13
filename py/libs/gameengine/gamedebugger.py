@@ -125,7 +125,7 @@ class GameDebugger(object):
     @param  pattern  int or [int] or str
     @return  long  addr
     """
-    if isinstance(pattern, int) or isinstance(pattern, long):
+    if isinstance(pattern, (int, long)):
       return self.search_memory_long(pattern, *args, **kwargs)
     elif isinstance(pattern, basestring):
       return self.search_memory_string(pattern, *args, **kwargs)
