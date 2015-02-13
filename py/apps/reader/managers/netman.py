@@ -2127,12 +2127,12 @@ class NetworkManager(QObject):
       elif value == False:
         value = -1
     return self.updateTicket(json.dumps({
-      login: userName,
-      password: password,
-      targetType: 'annot',
-      targetId: commentId,
-      type: 'like',
-      value: value,
+      'login': userName,
+      'password': password,
+      'targetType': 'annot',
+      'targetId': commentId,
+      'type': 'like',
+      'value': value,
     }))
 
 @memoized

@@ -5,7 +5,7 @@ import '.' as Share
 
 Share.TextButton {
 
-  property bool enabled: true
+  //property bool enabled: true
   property bool checked
 
   // - Private -

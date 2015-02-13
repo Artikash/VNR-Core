@@ -26,6 +26,8 @@ MouseArea { id: root_
 
   //signal clicked(variant mouse)
 
+  function click()  { clicked(null) }
+
   acceptedButtons: Qt.LeftButton
 
   // - Private -

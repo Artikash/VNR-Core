@@ -27,7 +27,7 @@ Item { id: root_
 
   Component.onCompleted: Local.lanes = [] // [bool free]
 
-  property bool canLike: !readOnly && !!userId && userId != 4
+  property bool canVote: !readOnly && !!userId && userId != 4
 
   //clip: true
 
@@ -36,7 +36,7 @@ Item { id: root_
   property int _LANE_HEIGHT: 30
 
   function likeComment(c, t) { // Comment, bool ->
-    if (canLike && userId != c.userId) {
+    if (canVote && userId != c.userId) {
       if (t) {
         c.likeCount += 1
         datamanPlugin_.likeComment(c, 1)
@@ -48,7 +48,7 @@ Item { id: root_
   }
 
   function dislikeComment(c, t) { // Comment, bool ->
-    if (canLike && userId != c.userId) {
+    if (canVote && userId != c.userId) {
       if (t) {
         c.dislikeCount += 1
         datamanPlugin_.likeComment(c, -1)
@@ -78,13 +78,21 @@ Item { id: root_
     model: ListModel { id: model_ }
 
     delegate: Item { id: danmaku_
-      width: text_.width + likeRow_.width
+      width: text_.width + voteCol_.width + 5 // 5 = text_.rightMargin
       height: text_.height
 
       //x: 0
       x: root_.width - width // align right
       y: _LANE_HEIGHT * model.lane
       property real currentX
+
+      property alias likeChecked: likeCounter_.checked
+      property alias likeEnabled: likeCounter_.enabled
+      property alias dislikeChecked: dislikeCounter_.checked
+      property alias dislikeEnabled: dislikeCounter_.enabled
+
+      function toggleLike() { likeCounter_.click() }
+      function toggleDislike() { dislikeCounter_.click() }
 
       Component.onCompleted: {
         model.comment.deletedChanged.connect(remove)
@@ -140,7 +148,10 @@ Item { id: root_
 
 
       Text { id: text_
-        anchors.right: likeRow_.left
+        anchors {
+          right: voteCol_.left
+          rightMargin: 5
+        }
         text: root_.renderComment(model.comment)
         font.pixelSize: 20 * root_.zoomFactor
         color: 'snow'
@@ -173,49 +184,49 @@ Item { id: root_
         //}
       }
 
-      Row { id: likeRow_
+      Column { id: voteCol_
         anchors {
           verticalCenter: text_.verticalCenter
           right: parent.right
         }
 
-        Kagami.Counter { // id: likeCounter_
-          enabled: root_.canLike
+        Kagami.Counter { id: likeCounter_
+          enabled: root_.canVote && !!model.comment && root_.userId != model.comment.userId
           count: (model.comment ? model.comment.likeCount : 0)
           prefix: "+"
           zoomFactor: root_.zoomFactor
           toolTip: Sk.tr("Like")
-          onClicked: if (enabled) root_.likeComment(model.comment)
-          effect: Effects.Glow {
-            color: highlight ? 'red' : (model.comment.color || root_.effectColor)
-            property bool highlight: toolTip_.containsMouse || runningAni_.paused
-            offset: '1,1'
-            //blurRadius: 8
-            blurRadius: 30
-            blurIntensity: highlight ? 2 : 4
+          hoverEnabled: true
+          effectColor: containsMouse ? 'red' : 'green' //checked ? 'green' : (model.comment.color || root_.effectColor)
+          onClicked: if (enabled) {
+            if (dislikeCounter_.checked) {
+              dislikeCounter_.checked = false
+              model.comment.dislikeCount -= 1
+            }
+            root_.likeComment(model.comment, checked)
           }
         }
 
-        Kagami.Counter { // id: dislikeCounter_
-          enabled: root_.canLike
+        Kagami.Counter { id: dislikeCounter_
+          enabled: root_.canVote && !!model.comment && root_.userId != model.comment.userId
           count: (model.comment ? model.comment.dislikeCount : 0)
           prefix: "-"
           zoomFactor: root_.zoomFactor
           toolTip: Sk.tr("Dislike")
-          onClicked: if (enabled) root_.dislikeComment(model.comment)
-          effect: Effects.Glow {
-            color: highlight ? 'red' : (model.comment.color || root_.effectColor)
-            property bool highlight: toolTip_.containsMouse || runningAni_.paused
-            offset: '1,1'
-            //blurRadius: 8
-            blurRadius: 30
-            blurIntensity: highlight ? 2 : 4
+          hoverEnabled: true
+          effectColor: containsMouse ? 'red' : 'magenta' //checked ? 'purple' : (model.comment.color || root_.effectColor)
+          onClicked: if (enabled) {
+            if (likeCounter_.checked) {
+              likeCounter_.checked = false
+              model.comment.likeCount -= 1
+            }
+            root_.dislikeComment(model.comment, checked)
           }
         }
       }
 
-      MouseArea { id: mouse_
-        anchors.fill: parent
+      MouseArea { //id: mouse_
+        anchors.fill: text_
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         drag.target: danmaku_; drag.axis: Drag.XandYAxis
         onDoubleClicked: danmaku_.resume()
@@ -229,7 +240,7 @@ Item { id: root_
       }
 
       Desktop.TooltipArea { id: toolTip_
-        anchors.fill: parent
+        anchors.fill: text_
         text: commentSummary(model.comment)
       }
     }
@@ -269,13 +280,25 @@ Item { id: root_
       text: Sk.tr("Remove")
       onTriggered: menu_.getItem().remove()
     }
-    /* // TODO
     Desktop.Separator {}
-    Desktop.MenuItem {
+    Desktop.MenuItem { id: likeAct_
+      checkable: true
       text: Sk.tr("Like")
-      onTriggered: menu_.getItem().remove()
+      onTriggered: {
+        var item = menu_.getItem()
+        if (item)
+          item.toggleLike()
+      }
     }
-    */
+    Desktop.MenuItem { id: dislikeAct_
+      checkable: true
+      text: Sk.tr("Dislike")
+      onTriggered: {
+        var item = menu_.getItem()
+        if (item)
+          item.toggleDislike()
+      }
+    }
 
     property variant modelData
     function getItem() { return repeater_.itemAt(modelData.index) }
@@ -283,6 +306,13 @@ Item { id: root_
 
     function popup(data, x, y) {
       modelData = data
+
+      var item = getItem()
+      likeAct_.checked = !!item && item.likeChecked
+      dislikeAct_.checked = !!item && item.dislikeChecked
+      likeAct_.enabled = !!item && item.likeEnabled
+      dislikeAct_.enabled = !!item && item.dislikeEnabled
+
       showPopup(x, y)
     }
   }

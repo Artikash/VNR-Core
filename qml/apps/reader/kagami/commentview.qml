@@ -11,6 +11,7 @@ import '../../../js/util.min.js' as Util
 import '../../../imports/texscript' as TexScript
 import '../../../components' as Components
 import '../share' as Share
+import '.' as Kagami
 
 Item { id: root_
   property bool ignoresFocus: false
@@ -24,7 +25,12 @@ Item { id: root_
 
   property real zoomFactor: 1.0
 
+  property int userId
+  property bool readOnly
+
   // - Private -
+
+  property bool canVote: !readOnly && !!userId && userId != 4
 
   property int _BBCODE_TIMESTAMP: 1363922891
 
@@ -43,6 +49,30 @@ Item { id: root_
 
       hrefStyle: "color:snow"
       urlStyle: hrefStyle
+    }
+  }
+
+  function likeComment(c, t) { // Comment, bool ->
+    if (canVote && userId != c.userId) {
+      if (t) {
+        c.likeCount += 1
+        datamanPlugin_.likeComment(c, 1)
+      } else {
+        c.likeCount -= 1
+        datamanPlugin_.likeComment(c, 0)
+      }
+    }
+  }
+
+  function dislikeComment(c, t) { // Comment, bool ->
+    if (canVote && userId != c.userId) {
+      if (t) {
+        c.dislikeCount += 1
+        datamanPlugin_.likeComment(c, -1)
+      } else {
+        c.dislikeCount -= 1
+        datamanPlugin_.likeComment(c, 0)
+      }
     }
   }
 
@@ -199,6 +229,13 @@ Item { id: root_
         onTriggered: textItem_.removeMe()
       }
 
+      property alias likeChecked: likeCounter_.checked
+      property alias likeEnabled: likeCounter_.enabled
+      property alias dislikeChecked: dislikeCounter_.checked
+      property alias dislikeEnabled: dislikeCounter_.enabled
+      function toggleLike() { likeCounter_.click() }
+      function toggleDislike() { dislikeCounter_.click() }
+
       function autoHide() {
         if (hideAct_.checked)
           visibleTimer_.restart()
@@ -277,12 +314,55 @@ Item { id: root_
         }
       }
 
+      Column { id: voteCol_
+        anchors {
+          left: avatar_.visible ? avatarRect_.right : parent.left
+          verticalCenter: parent.verticalCenter
+          leftMargin: 5
+        }
+
+        Kagami.Counter { id: likeCounter_
+          enabled: root_.canVote && !!model.comment && root_.userId != model.comment.userId
+          count: (model.comment ? model.comment.likeCount : 0)
+          prefix: "+"
+          zoomFactor: root_.zoomFactor
+          toolTip: Sk.tr("Like")
+          hoverEnabled: true
+          effectColor: containsMouse ? 'red' : 'green' //checked ? 'green' : (model.comment.color || root_.effectColor)
+          onClicked: if (enabled) {
+            if (dislikeCounter_.checked) {
+              dislikeCounter_.checked = false
+              model.comment.dislikeCount -= 1
+            }
+            root_.likeComment(model.comment, checked)
+          }
+        }
+
+        Kagami.Counter { id: dislikeCounter_
+          enabled: root_.canVote && !!model.comment && root_.userId != model.comment.userId
+          count: (model.comment ? model.comment.dislikeCount : 0)
+          prefix: "-"
+          zoomFactor: root_.zoomFactor
+          toolTip: Sk.tr("Dislike")
+          hoverEnabled: true
+          effectColor: containsMouse ? 'red' : 'magenta' //checked ? 'purple' : (model.comment.color || root_.effectColor)
+          onClicked: if (enabled) {
+            if (likeCounter_.checked) {
+              likeCounter_.checked = false
+              model.comment.likeCount -= 1
+            }
+            root_.dislikeComment(model.comment, checked)
+          }
+        }
+      }
+
       TextEdit { id: textEdit_
         anchors {
           verticalCenter: parent.verticalCenter
-          left: avatar_.visible ? avatarRect_.right : parent.left
+          left: voteCol_.right
           right: parent.right
-          leftMargin: 9; rightMargin: 9
+          leftMargin: 5
+          rightMargin: 9
         }
         // height is the same as painted height
         //width: Math.max(0, listView_.width - 20)
@@ -415,9 +495,9 @@ Item { id: root_
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
       onTriggered: {
-        var item = listModel_.get(popupIndex())
-        if (item && item.comment)
-          mainPlugin_.showSubtitleEditor(item.comment)
+        var c = getPopupComment()
+        if (c)
+          mainPlugin_.showSubtitleEditor(c)
       }
     }
 
@@ -425,18 +505,18 @@ Item { id: root_
       text: Sk.tr("Copy")
       //shortcut: "Ctrl+A"
       onTriggered: {
-        var item = listModel_.get(popupIndex())
-        if (item && item.comment)
-          clipboardPlugin_.text = item.comment.text
+        var c = getPopupComment()
+        if (c)
+          clipboardPlugin_.text = c.text
       }
     }
 
     Desktop.MenuItem {
       text: Sk.tr("User information")
       onTriggered: {
-        var item = listModel_.get(popupIndex())
-        if (item && item.comment)
-          mainPlugin_.showUser(item.comment.userId)
+        var c = getPopupComment()
+        if (c)
+          mainPlugin_.showUser(c.userId)
       }
     }
 
@@ -453,10 +533,37 @@ Item { id: root_
       //shortcut: "Esc"
     }
 
+    Desktop.Separator {}
+    Desktop.MenuItem { id: likeAct_
+      checkable: true
+      text: Sk.tr("Like")
+      onTriggered: {
+        var item = getPopupItem()
+        if (item)
+          item.toggleLike()
+      }
+    }
+    Desktop.MenuItem { id: dislikeAct_
+      checkable: true
+      text: Sk.tr("Dislike")
+      onTriggered: {
+        var item = getPopupItem()
+        if (item)
+          item.toggleDislike()
+      }
+    }
+
     function popup(x, y) {
       popupX = x; popupY = y
       //var item = listModel_.get(popupIndex())
       //editAct_.enabled = !!(item && item.comment)
+
+      var item = getPopupItem()
+      likeAct_.checked = !!item && item.likeChecked
+      dislikeAct_.checked = !!item && item.dislikeChecked
+      likeAct_.enabled = !!item && item.likeEnabled
+      dislikeAct_.enabled = !!item && item.dislikeEnabled
+
       showPopup(x, y)
     }
   }
@@ -478,6 +585,12 @@ Item { id: root_
   function popupIndex() {
     var pos = listView_.mapFromItem(null, popupX, popupY)
     return listView_.indexAt(listView_.contentX + pos.x, listView_.contentY + pos.y)
+  }
+
+  function getPopupItem() { return listModel_.get(popupIndex()) }
+  function getPopupComment() {
+    var item = getPopupItem()
+    return item ? item.comment : null
   }
 
   function textEditAt(index) {

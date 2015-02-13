@@ -10201,6 +10201,8 @@ class DataManager(QObject):
     #self.invalidateComments(md5)
     return True
 
+  def touchComments(self): self.__d.touchComments()
+
   def addDirtyComment(self, comment):
     d = self.__d
     d.dirtyComments.add(comment)
@@ -10706,6 +10708,7 @@ class DataManagerProxy(QObject):
     if not userId or userId == c.userId:
       return
     dprint(value)
+    manager().touchComments()
     netman.manager().likeComment(c.id, value, user.name, user.password)
 
   @Slot(QObject, bool)
