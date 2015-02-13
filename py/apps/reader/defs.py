@@ -165,6 +165,8 @@ JITTER_ESCAPE_LATIN = "SJ341"
 TERM_MACRO_BEGIN = '{{'
 TERM_MACRO_END = '}}'
 
+TERM_CLASS_NAME = "[[N]]"
+
 MAX_NAME_LENGTH = 16 # maximum number of characters in text
 
 # Game info

@@ -63,6 +63,17 @@ def _phrase_rbound(text, language):
         return m
   return r'\b'
 
+def _combine_name_suffix(name, suffix):
+  """
+  @param  name  unicode
+  @param  suffix  unicode
+  @return  unicode
+  """
+  if defs.TERM_CLASS_NAME in suffix:
+    return suffix.replace(defs.TERM_CLASS_NAME, name)
+  else:
+    return name + suffix
+
 LANG_SUFFIX_TR = {
   ('ja', 'en'): ((u"の", u"'s"),),
   ('ja', 'ko'): ((u"の", u"의"),),
@@ -364,7 +375,7 @@ class TermWriter:
                 self._writeLine(f,
                     td.id,
                     esc % (priority, suffixCount - i),
-                    repl + it.text + (" " if padding else ""), # it will be escaped in C++
+                    _combine_name_suffix(repl, it.text) + (" " if padding else ""), # it will be escaped in C++
                     #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
                     regex, # no padding space for Chinese names
                     td.icase or it.icase,
