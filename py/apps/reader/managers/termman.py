@@ -158,6 +158,8 @@ def _host_category(host): # str -> int
   if host:
     if host == 'lecol':
       host = 'lec'
+    elif host == 'excite':
+      host = 'jbeijing'
     try: return 1 << dataman.Term.HOSTS.index(host)
     except: pass
   return 0
