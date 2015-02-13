@@ -26,8 +26,8 @@ Grid { id: root_ // Theme refers to Bootstrap.label
 
       , {value:'name',   text:My.tr("Name"),    toolTip:qsTr("A Japanese first or last name")}
       , {value:'yomi',   text:My.tr("Yomi"),    toolTip:qsTr("Yomigana of a Japanese name")}
-      , {value:'suffix',  text:My.tr("Suffix"), toolTip:qsTr("Title after a Japanese name")}
-      , {width:1, height:1} // empty item
+      , {value:'suffix', text:My.tr("Suffix"),  toolTip:qsTr("Title after a Japanese name")}
+      , {value:'prefix', text:My.tr("Prefix"),  toolTip:qsTr("Title before a Japanese name")}
 
       , {value:'game', text:Sk.tr("Game"),      toolTip:qsTr("Fix game text")}
       , {width:1, height:1} // empty item

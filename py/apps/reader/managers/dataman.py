@@ -2568,7 +2568,7 @@ class _Term(object):
 
     # E_USELESS
     if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
-          or self.type not in ('trans', 'suffix', 'name', 'yomi'))
+          or self.type not in ('trans', 'suffix', 'prefix', 'name', 'yomi'))
         and self.pattern == self.text):
       return self.E_USELESS
 
@@ -2595,7 +2595,7 @@ class _Term(object):
       return self.W_MISSING_TEXT
 
     # W_SHORT
-    if (self.type not in ('suffix', 'ocr', 'macro') and (
+    if (self.type not in ('suffix', 'prefix', 'ocr', 'macro') and (
         len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
         not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1]))):
       return self.W_SHORT
@@ -2653,8 +2653,8 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'game', 'tts', 'ocr', 'macro'
-  TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
+  TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'prefix', 'game', 'tts', 'ocr', 'macro'
+  TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), mytr_("Prefix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
   HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'lec', 'atlas', 'hanviet'
   TR_HOSTS = tuple(map(i18n.translator_name, HOSTS))
