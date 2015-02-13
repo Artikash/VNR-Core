@@ -194,7 +194,7 @@ Item { id: root_
           enabled: root_.canVote && !!model.comment && root_.userId != model.comment.userId
           count: (model.comment ? model.comment.likeCount : 0)
           prefix: "+"
-          zoomFactor: root_.zoomFactor
+          zoomFactor: root_.zoomFactor //* 0.8 // smaller
           toolTip: Sk.tr("Like")
           hoverEnabled: true
           effectColor: containsMouse ? 'red' : 'green' //checked ? 'green' : (model.comment.color || root_.effectColor)
@@ -211,7 +211,7 @@ Item { id: root_
           enabled: root_.canVote && !!model.comment && root_.userId != model.comment.userId
           count: (model.comment ? model.comment.dislikeCount : 0)
           prefix: "-"
-          zoomFactor: root_.zoomFactor
+          zoomFactor: root_.zoomFactor //* 0.8 // smaller
           toolTip: Sk.tr("Dislike")
           hoverEnabled: true
           effectColor: containsMouse ? 'red' : 'magenta' //checked ? 'purple' : (model.comment.color || root_.effectColor)
