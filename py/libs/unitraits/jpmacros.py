@@ -10,30 +10,78 @@ from sakurakit.skdebug import dwarn
 
 # Dump from Shared Dictionary at 1/15/2014
 MACROS = {
-  ':bos:': u'。？！…~～〜♪❤【】＜《（『「“',
-  ':eos:': u'。？！…~～〜♪❤【】＞》）』」”',
+  ':bos:': ur'。？！…~～〜♪❤【】＜《（『「“',
+  ':eos:': ur'。？！…~～〜♪❤【】＞》）』」”',
 
-  ':boc:': u'{{:bos:}}、，―─',
-  ':eoc:': u'{{:eos:}}、，―─',
+  ':boc:': ur'{{:bos:}}、，―─',
+  ':eoc:': ur'{{:eos:}}、，―─',
 
-  'boc': u"(?:^|(?<=[{{:boc:}}]))",
-  'eoc': u"(?:^|(?<=[{{:eoc:}}]))",
+  'boc': ur'(?:^|(?<=[{{:boc:}}]))',
+  'eoc': ur'(?:^|(?<=[{{:eoc:}}]))',
 
-  'bos': u"(?:^|(?<=[{{:bos:}}]))",
-  'eos': u"(?:^|(?<=[{{:eos:}}]))",
+  'bos': ur'(?:^|(?<=[{{:bos:}}]))',
+  'eos': ur'(?:^|(?<=[{{:eos:}}]))',
 
-  ':kanji:': u'一-龥',
-  ':hira:': u'ぁ-ゖ',
-  ':kata:': u'ァ-ヺ',
-  ':kana:': u'{{:hira:}}{{:kata:}}',
+  ':digit:': ur'0-9',
+  ':alpha:': ur'a-zA-Z',
+  ':alnum:': ur'{{:alpha:}}{{:digit:}}',
+  ':kanji:': ur'一-龥',
+  ':hira:': ur'ぁ-ゖ',
+  ':kata:': ur'ァ-ヺ',
+  ':kana:': ur'{{:hira:}}{{:kata:}}',
 
-  'kanji': u'[{{:kanji:}}]',
-  'hira': u'[{{:hira:}}]',
-  'kata': u'[{{:kata:}}]',
-  'kana': u'[{{:kana:}}]',
+  'digit': ur'[{{:digit:}}]',
+  'alpha': ur'[{{:alpha:}}]',
+  'alnum': ur'[{{:alpha:}}]',
+  'kanji': ur'[{{:kanji:}}]',
+  'hira': ur'[{{:hira:}}]',
+  'kata': ur'[{{:kata:}}]',
+  'kana': ur'[{{:kana:}}]',
+
+  '!digit': ur'[^{{:digit:}}]',
+  '?!digit': ur'(?!{{digit}})',
+  '?<!digit': ur'(?<!{{digit}})',
+  '?=digit': ur'(?={{digit}})',
+  '?<=digit': ur'(?<={{digit}})',
+
+  '!alpha': ur'[^{{:alpha:}}]',
+  '?!alpha': ur'(?!{{alpha}})',
+  '?<!alpha': ur'(?<!{{alpha}})',
+  '?=alpha': ur'(?={{alpha}})',
+  '?<=alpha': ur'(?<={{alpha}})',
+
+  '!alnum': ur'[^{{:alnum:}}]',
+  '?!alnum': ur'(?!{{alnum}})',
+  '?<!alnum': ur'(?<!{{alnum}})',
+  '?=alnum': ur'(?={{alnum}})',
+  '?<=alnum': ur'(?<={{alnum}})',
+
+  '!kanji': ur'[^{{:kanji:}}]',
+  '?!kanji': ur'(?!{{kanji}})',
+  '?<!kanji': ur'(?<!{{kanji}})',
+  '?=kanji': ur'(?={{kanji}})',
+  '?<=kanji': ur'(?<={{kanji}})',
+
+  '!hira': ur'[^{{:hira:}}]',
+  '?!hira': ur'(?!{{hira}})',
+  '?<!hira': ur'(?<!{{hira}})',
+  '?=hira': ur'(?={{hira}})',
+  '?<=hira': ur'(?<={{hira}})',
+
+  '!kata': ur'[^{{:kata:}}]',
+  '?!kata': ur'(?!{{kata}})',
+  '?<!kata': ur'(?<!{{kata}})',
+  '?=kata': ur'(?={{kata}})',
+  '?<=kata': ur'(?<={{kata}})',
+
+  '!kana': ur'[^{{:kana:}}]',
+  '?!kana': ur'(?!{{kana}})',
+  '?<!kana': ur'(?<!{{kana}})',
+  '?=kana': ur'(?={{kana}})',
+  '?<=kana': ur'(?<={{kana}})',
 }
 
-_RE_MACRO = re.compile('{{(.+?)}}')
+_RE_MACRO = re.compile(r'{{(.+?)}}')
 
 def evalmacros(macros, limit=1000):
   """

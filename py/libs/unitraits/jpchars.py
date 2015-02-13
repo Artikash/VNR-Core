@@ -92,4 +92,28 @@ def ispunct(ch):
   """
   return ch in s_punct
 
+CAT_DIGIT = 'digit'
+CAT_ALPHA = 'alpha'
+CAT_HIRA = 'hira'
+CAT_KATA = 'kata'
+CAT_KANJI = 'kanji'
+def getcat(ch):
+  """
+  @param  ch  str
+  @return  str
+  """
+  if ch and len(ch) == 1:
+    v = ord(ch)
+    if v >= unichars.ORD_KANJI_FIRST and v <= unichars.ORD_KANJI_LAST:
+      return CAT_KANJI
+    if v >= unichars.ORD_HIRA_FIRST and v <= unichars.ORD_HIRA_LAST:
+      return CAT_HIRA
+    if v >= unichars.ORD_KATA_FIRST and v <= unichars.ORD_KATA_LAST:
+      return CAT_KATA
+    if v >= unichars.ORD_DIGIT_FIRST and v <= unichars.ORD_DIGIT_LAST:
+      return CAT_DIGIT
+    if v >= unichars.ORD_IALPHA_FIRST and v <= unichars.ORD_IALPHA_LAST or v >= unichars.ORD_UALPHA_FIRST and v <= unichars.ORD_UALPHA_LAST:
+      return CAT_ALPHA
+  return ''
+
 # EOF
