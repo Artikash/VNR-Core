@@ -553,7 +553,7 @@ Item { id: root_
 
     // Column: Phrase
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Phrase")
+      role: 'object'; title: My.tr("Boundary")
       width: 30
       delegate: Item {
         height: table_.cellHeight
