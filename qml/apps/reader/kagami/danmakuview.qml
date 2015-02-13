@@ -138,6 +138,7 @@ Item { id: root_
         }
       }
 
+
       Text { id: text_
         anchors.right: likeRow_.left
         text: root_.renderComment(model.comment)
@@ -180,12 +181,36 @@ Item { id: root_
 
         Kagami.Counter { // id: likeCounter_
           enabled: root_.canLike
-          visible: !!model.comment
           count: (model.comment ? model.comment.likeCount : 0)
           prefix: "+"
           zoomFactor: root_.zoomFactor
           toolTip: Sk.tr("Like")
           onClicked: if (enabled) root_.likeComment(model.comment)
+          effect: Effects.Glow {
+            color: highlight ? 'red' : (model.comment.color || root_.effectColor)
+            property bool highlight: toolTip_.containsMouse || runningAni_.paused
+            offset: '1,1'
+            //blurRadius: 8
+            blurRadius: 30
+            blurIntensity: highlight ? 2 : 4
+          }
+        }
+
+        Kagami.Counter { // id: dislikeCounter_
+          enabled: root_.canLike
+          count: (model.comment ? model.comment.dislikeCount : 0)
+          prefix: "-"
+          zoomFactor: root_.zoomFactor
+          toolTip: Sk.tr("Dislike")
+          onClicked: if (enabled) root_.dislikeComment(model.comment)
+          effect: Effects.Glow {
+            color: highlight ? 'red' : (model.comment.color || root_.effectColor)
+            property bool highlight: toolTip_.containsMouse || runningAni_.paused
+            offset: '1,1'
+            //blurRadius: 8
+            blurRadius: 30
+            blurIntensity: highlight ? 2 : 4
+          }
         }
       }
 

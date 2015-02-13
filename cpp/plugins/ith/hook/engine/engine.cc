@@ -5728,6 +5728,8 @@ bool InsertDebonosuHook()
  *
  *  2/12/2015 jichi: SystemAoi5
  *
+ *  Note that BUNNYBLACK 3 also has SystemAoi5 version 4.1
+ *
  *  Hooked to PgsvTd.dll for all SystemAoi engine, which contains GDI functions.
  *  - Old: AoiLib.dll from DrawTextExA
  *  - SystemAoi4: Aoi4.dll from DrawTextExW
@@ -5761,30 +5763,25 @@ bool InsertDebonosuHook()
 namespace { // unnamed
 void SpecialSystemAoiHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD i;
-  union {
-    LPWSTR string_u;
-    PCHAR string_a;
-  };
-  //string_u = *(LPWSTR *)(esp_base + 4);
-  string_u = (LPWSTR)argof(1, esp_base); // jichi: text on the top of the stack
+  *split = 0; // 8/3/2014 jichi: split is zero, so return address is used as split
   if (hp->type & USING_UNICODE) {
-    *len = ::wcslen(string_u);
-    for (i = 0; i < *len; i++)
-      if (string_u[i] == L'>'||string_u[i] == L']') {
-        *data = (DWORD)(string_u+i+1);
-        *split = 0; // 8/3/2014 jichi: split is zero, so return address is used as split
-        *len -= i + 1;
-        *len <<= 1;
+    LPCWSTR wcs = (LPWSTR)argof(1, esp_base); // jichi: text on the top of the stack
+    size_t size = ::wcslen(wcs);
+    for (DWORD i = 0; i < size; i++)
+      if (wcs[i] == L'>' || wcs[i] == L']') { // skip leading ] for scenario and > for name threads
+        *data = (DWORD)(wcs + i + 1);
+        size -= i + 1;
+        *len = size * 2; // * 2 for wstring
         return;
       }
   } else {
-    *len = ::strlen(string_a);
-    for (i=0;i<*len;i++)
-      if (string_a[i]=='>'||string_a[i]==']') {
-        *data = (DWORD)(string_a+i+1);
-        *split = 0; // 8/3/2014 jichi: split is zero, so return address is sued as split
-        *len -= i+1;
+    LPCSTR cs = (LPCSTR)argof(1, esp_base); // jichi: text on the top of the stack
+    size_t size = ::strlen(cs);
+    for (DWORD i = 0; i < size; i++)
+      if (cs[i] == '>' || cs[i] == ']') {
+        *data = (DWORD)(cs + i + 1);
+        size -= i + 1;
+        *len = size;
         return;
       }
   }
@@ -5794,10 +5791,16 @@ int GetSystemAoiVersion() // return result is cached
 {
   static int ret = 0;
   if (!ret) {
-    if (IthCheckFile(L"Aoi5.dll"))
+    if (IthCheckFile(L"Aoi4.dll"))
+      ret = 4
+    else if (IthCheckFile(L"Aoi5.dll"))
       ret = 5;
-    else // Aoi4.dll or AoiLib.dll
-      ret = 4;
+    else if (IthCheckFile(L"Aoi6.dll")) // not exist yet, for future version
+      ret = 6;
+    else if (IthCheckFile(L"Aoi7.dll")) // not exist yet, for future version
+      ret = 7;
+    else // AoiLib.dll, etc
+      ret = 3;
   }
   return ret;
 }
@@ -5815,24 +5818,26 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   else
     return false;
 
-  DWORD high,low,i,j,k;
+  DWORD high, low;
   Util::GetCodeRange(module_base_, &low, &high);
-  i = stack;
-  j = (i & 0xffff0000) + 0x10000;
-  for (; i < j; i += 4) {
-    // jichi 2/15/2015: This seems to dynamically find the ancestor call from the main module
-    k = *(DWORD *)i;
-    if (k > low && k < high &&
+
+  // jichi 2/15/2015: Traverse the stack to dynamically find the ancestor call from the main module
+  const DWORD stop = (stack & 0xffff0000) + 0x10000; // range to traverse the stack
+  for (DWORD i = stack; i < stop; i += 4) {
+    DWORD k = *(DWORD *)i;
+    if (k > low && k < high && // jichi: if the stack address falls into the code region of the main exe module
         ((*(WORD *)(k - 6) == 0x15ff) || *(BYTE *)(k - 5) == 0xe8)) { // jichi 10/20/2014: call dword ptr ds
+
       HookParam hp = {};
-      hp.off = 0x4;
-      hp.text_fun = SpecialSystemAoiHook;
+      hp.off = 0x4; // target text is on the top of the stack
+      hp.text_fun = SpecialSystemAoiHook; // need to remove garbage
       hp.type = utf16 ? USING_UNICODE : USING_STRING;
-      i = *(DWORD *)(k - 4);
-      if (*(DWORD *)(k - 5) == 0xe8)
+
+      i = *(DWORD *)(k - 4); // get function call address
+      if (*(DWORD *)(k - 5) == 0xe8) // sort jump
         hp.addr = i + k;
       else
-        hp.addr = *(DWORD *)i;
+        hp.addr = *(DWORD *)i; // jichi: long jump, this is what is happening in Aoi5
       //NewHook(hp, L"SofthouseChara");
       //ITH_GROWL_DWORD(hp.addr); // BUNNYBLACK: 0x10024730, base 0x01d0000
       if (hp.addr) {

@@ -22,6 +22,7 @@ MouseArea { id: root_
 
   //property alias pressed: mouse_.pressed
   property alias hover: toolTip_.containsMouse
+  property alias effect: text_.effect
 
   //signal clicked(variant mouse)
 

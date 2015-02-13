@@ -15,11 +15,15 @@ Share.TextButton {
 
   text: count ? prefix + count : prefix
 
-  width: 30 * zoomFactor
-  height: 30 * zoomFactor
+  width: 20 * zoomFactor
+  height: 20 * zoomFactor
 
   font.pixelSize: 12 * zoomFactor
+  font.family: 'YouYuan'
 
-  // TODO: color
-  backgroundColor: enabled ? '#aa555555' : '#aa555555' // black : black
+  //property color buttonCheckedColor: '#aa00ff00' // green
+  //property color buttonUncheckedColor: '#aaff0000' // red
+  //property color buttonDisabledColor:  // gray
+  //backgroundColor: enabled ? '#aabebebe' : '#aa555555' // gray : black
+  backgroundColor: 'transparent'
 }
