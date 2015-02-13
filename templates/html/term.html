@@ -78,14 +78,18 @@ a{color:#add8ff}
 				<td class="pp-value text-success">{{td.host}}</td>
 			</tr>
 %endif
+%if td.regex
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Regex')}}: </td>
-%if td.regex
 				<td class="pp-value text-success">{{tr('yes')}}</td>
-%else
-				<td class="pp-value">{{tr('no')}}</td>
-%endif
 			</tr>
+%endif
+%if td.phrase
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Phrase')}}: </td>
+				<td class="pp-value text-success">{{tr('yes')}}</td>
+			</tr>
+%endif
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Game-specific')}}: </td>
 %if td.special

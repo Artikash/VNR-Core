@@ -41,6 +41,9 @@
 %		if it.regex
 			<regex>true</regex>
 %		endif
+%		if it.phrase
+			<phrase>true</phrase>
+%		endif
 %		if it.pattern
 			<pattern>{{it.pattern|e}}</pattern>
 %		endif

@@ -299,8 +299,7 @@ Item { id: root_
     // Column: Game specific
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Private")
-      //width: 40
-      width: 40
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -518,7 +517,7 @@ Item { id: root_
     // Column: Syntax
     //Desktop.TableColumn {
     //  role: 'object'; title: Sk.tr("Syntax")
-    //  width: 40
+    //  width: 30
     //  delegate: Item {
     //    height: table_.cellHeight
     //    Desktop.CheckBox {
@@ -536,7 +535,7 @@ Item { id: root_
     // Column: Regex
     Desktop.TableColumn {
       role: 'object'; title: qsTr("Regex")
-      width: 40
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -551,10 +550,28 @@ Item { id: root_
       }
     }
 
+    // Column: Phrase
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Phrase")
+      width: 30
+      delegate: Item {
+        height: table_.cellHeight
+        Desktop.CheckBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          checked: itemValue.phrase // force regex for macros
+          onCheckedChanged:
+            if (enabled && checked !== itemValue.phrase)
+              itemValue.phrase = checked
+        }
+      }
+    }
+
     // Column: Icase
     Desktop.TableColumn {
       role: 'object'; title: qsTr("Case-insensitive")
-      width: 40
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -573,7 +590,7 @@ Item { id: root_
     // Column: BBCode
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("BBCode")
-      width: 40
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -591,7 +608,7 @@ Item { id: root_
     // Column: Game specific
     Desktop.TableColumn {
       role: 'object'; title: "Hentai" // My.tr("Hentai")
-      width: 40
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -608,7 +625,7 @@ Item { id: root_
     // Column: Game specific
     Desktop.TableColumn {
       role: 'object'; title: qsTr("Series")
-      width: 40
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
