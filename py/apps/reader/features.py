@@ -69,7 +69,7 @@ def setMainlandChina(value):
 
       if PROXY_CONFIG:
         from proxyrequests import proxyconfig
-        PROXY_CONFIG['host'] = proxyconfig.WEBPROXY_CONFIG['host']
+        PROXY_CONFIG['host'] = proxyconfig.USWEBPROXY_CONFIG['host']
 
     else:
       import config
@@ -87,7 +87,7 @@ def setMainlandChina(value):
       googleman.setapi(config.PROXY_GOOGLE_TRANS)
 
       if PROXY_CONFIG:
-        PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
+        PROXY_CONFIG['host'] = config.PROXY_USWEBPROXY
 
       #googletrans.session = make_proxy_session(allows_caching=True)
 
@@ -98,10 +98,10 @@ def get_proxy_config():
   global PROXY_CONFIG
   if not PROXY_CONFIG:
     from proxyrequests import proxyconfig
-    PROXY_CONFIG = dict(proxyconfig.WEBPROXY_CONFIG)
+    PROXY_CONFIG = dict(proxyconfig.USWEBPROXY_CONFIG)
     if MAINLAND_CHINA:
       import config
-      PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
+      PROXY_CONFIG['host'] = config.PROXY_USWEBPROXY
   return PROXY_CONFIG
 
 def make_proxy_session(*args, **kwargs):

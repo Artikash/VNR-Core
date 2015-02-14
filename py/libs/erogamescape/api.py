@@ -220,7 +220,7 @@ if __name__ == '__main__':
     import requests
     s = requests.Session()
     from proxyrequests import proxyconfig, proxyrequests
-    site = proxyconfig.WEBPROXY_CONFIG
+    site = proxyconfig.USWEBPROXY_CONFIG
     #site = proxyconfig.WEBSERVER_CONFIG
     s = proxyrequests.Session(site, session=s, allows_caching=True)
     GameTableApi.session = s

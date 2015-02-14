@@ -392,7 +392,8 @@ if __name__ == '__main__':
     #print t
 
     #from proxyrequests import proxyconfig, proxyrequests
-    #config = proxyconfig.WEBPROXY_CONFIG
+    #config = proxyconfig.USWEBPROXY_CONFIG
+    ##config = proxyconfig.WEBPROXY_CONFIG
     ##config = proxyconfig.WEBSERVER_CONFIG
     #session = proxyrequests.Session(config, allows_caching=True)
 

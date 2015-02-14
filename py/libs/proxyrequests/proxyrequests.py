@@ -82,8 +82,8 @@ if __name__ == '__main__':
 
   import proxyconfig
   url = "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/select.php"
-  #config = proxyconfig.WEBPROXY_CONFIG
-  #config['host'] = 'http://153.121.52.138/proxy/webproxy'
+  #config = proxyconfig.USWEBPROXY_CONFIG
+  #config['host'] = 'http://153.121.52.138/proxy/uswebproxy'
   config = proxyconfig.WEBSERVER_CONFIG
   s = Session(config)
   with SkProfiler():
