@@ -230,7 +230,8 @@ _PROXY = SHARE_YAML['proxies']
 PROXY_HOST = _PROXY['host']
 
 #PROXY_WEBSERVER = _PROXY['webserver']
-PROXY_WEBPROXY = _PROXY['webproxy']
+#PROXY_WEBPROXY = _PROXY['webproxy']
+PROXY_USWEBPROXY = _PROXY['uswebproxy']
 
 PROXY_BAIDU_FANYI = _PROXY['baidufanyi']
 PROXY_BAIDU_TTS = _PROXY['baidutts']
