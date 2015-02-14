@@ -308,6 +308,7 @@ if __name__ == '__main__':
     (u'まえだ', u'มาเอดะ'),
     (u'ふうちゃん', u'ฟูจัง'), # http://th.wikipedia.org/wiki/รักลวงป่วนใจ
     (u'ゆうま', u'ยูมะ'),
+    (u'とうこ', u'โทวโกะ'),
     #(u'つきの', u'สึคิโนะ'), # fail because of ki
     #(u'てんまく', u'เทนมาขุ'), # fail because of te
     #(u'えんにし', u'เอนิชิ'), # fail because ennishi => enishi
