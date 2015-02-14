@@ -4866,7 +4866,7 @@ class _TermModel(object):
     @return  any tuple consistent with _equivalent()
     """
     td = t.d
-    return td.pattern, td.text, td.language[:2], td.type, td.regex, td.phrase, td.special, t.gameSeries or td.gameItemId
+    return td.pattern, td.language[:2], td.type, td.special, t.gameSeries or td.gameItemId
 
   @staticmethod
   def _equivalent(x, y):
@@ -4877,10 +4877,7 @@ class _TermModel(object):
     """
     xd = x.d
     yd = y.d
-    return (
-      xd.regex == yd.regex
-      #xd.phrase == yd.phrase
-      #and xd.special == yd.special
+    return (xd.pattern == yd.pattern
       and (
         xd.language == 'ja'
         or yd.language == 'ja'
@@ -4892,7 +4889,6 @@ class _TermModel(object):
       )
       and not (xd.type == 'yomi' and yd.type == 'name' and yd.language.startswith('zh'))
       and not (yd.type == 'yomi' and xd.type == 'name' and xd.language.startswith('zh'))
-      and xd.pattern == yd.pattern
       #and xd.text == yd.text
       and (
         not xd.special
