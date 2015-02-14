@@ -191,6 +191,7 @@ processes:
   - thunderbird.exe     # Mozilla
   - Thunder.exe         # Xunlei
   - thunder.exe         # Xunlei
+  - TianTianPlayer.exe  # Kaopu
   - TranEdit.exe        # Dr.eye
   - TTPlayer.exe        # TTPlayer
   - TTraveler.exe       # Tencent
