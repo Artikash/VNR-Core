@@ -40,7 +40,8 @@ _NO_RE = re.compile('')
 
 __PARAGRAPH_DELIM = u"【】「」…♪" # machine translation of sentence deliminator
 _PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
-_PARAGRAPH_RE = re.compile(r"([%s])" % ''.join(_PARAGRAPH_SET))
+_PARAGRAPH_RE = re.compile(r"(%s|[%s])" %
+    (defs.TERM_ESCAPE_EOS, ''.join(_PARAGRAPH_SET)))
 
 #__SENTENCE_DELIM = u"\n【】「」。♪" #…！？# machine translation of sentence deliminator
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)
@@ -297,7 +298,7 @@ class MachineTranslator(Translator):
     self.cache.clear()
     self._cache.clear()
 
-  def __cachedtr(self, text, tr, to, fr, async):
+  def __tr(self, text, tr, to, fr, async):
     """
     @param  text  unicode
     @param  async  bool
@@ -338,28 +339,20 @@ class MachineTranslator(Translator):
           trcache.add(key=self.key, fr=fr, to=to, text=text, translation=ret)
     return ret
 
-  def __tr(self, text, tr, to, fr, async):
-    """
-    @param  t  unicode
-    @return  unicode or None
-    """
-    # Current max length of escaped char is 12
-    return ('' if not text else
-        text if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) else #len(text) <= 12 and sktypes.is_float(text) else
-        self.__cachedtr(text, tr, to, fr, async))
-
   def _itertexts(self, text):
     """
     @param  text  unicode
     @yield  unicode
     """
-    for line in ifilter(textutil.skip_empty_line,
-        (it.strip() for it in _PARAGRAPH_RE.split(text))):
-      if not self.splitsSentences:
-        yield line
-      else:
-        for sentence in _SENTENCE_RE.sub(r"\1\n", line).split("\n"):
-          yield sentence
+    for line in _PARAGRAPH_RE.split(text):
+      line = line.strip()
+      if line and line != '\n' and line != defs.TERM_ESCAPE_EOS:
+        if not self.splitsSentences or len(line) == 1:
+          yield line
+        else:
+          for sentence in _SENTENCE_RE.sub(r"\1\n", line).split("\n"):
+            if sentence:
+              yield sentence
 
   def _splitTranslate(self, text, tr, to, fr, async):
     """
@@ -369,12 +362,16 @@ class MachineTranslator(Translator):
     @return  [unicode] not None
     """
     ret = []
-    for line in self._itertexts(text):
-      t = self.__tr(line, tr, to, fr, async)
-      if t is None:
-        dwarn("translation failed or aborted using '%s'" % self.key)
-        return []
-      ret.append(t)
+    for text in self._itertexts(text):
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text):
+        ret.append(text)
+      else:
+        text = self.__tr(text, tr, to, fr, async)
+        if text is None:
+          dwarn("translation failed or aborted using '%s'" % self.key)
+          return []
+        if text:
+          ret.append(text)
     return ret
 
   def _translate(self, emit, text, tr, to, fr, async, align=None):
@@ -499,6 +496,7 @@ class MachineTranslator(Translator):
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyTargetTerms(text, to=to, fr=fr, mark=mark, host=self.key)
+    text = text.replace(defs.TERM_ESCAPE_EOS, '')
     #if self._needsJitter(to, fr):
     if fr == 'ja':
       text = self._unescapeJitter(text, to, fr)

@@ -31,6 +31,15 @@ if skos.WIN:
 @memoized
 def manager(): return TermManager()
 
+def _unescape_term_text(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if not text or '&' not in text or ';' not in text:
+    return text
+  return skstr.unescapehtml(text).replace('&eos;', defs.TERM_ESCAPE_EOS)
+
 def _phrase_lbound(text, language):
   """
   @param  text  unicode
@@ -276,7 +285,7 @@ class TermWriter:
           if trans_output:
             pattern = key
           else:
-            pattern = td.pattern
+            pattern = _unescape_term_text(td.pattern)
             if regex:
               pattern = self._applyMacros(pattern, macros)
             if z:
@@ -288,7 +297,7 @@ class TermWriter:
             elif fr == 'zht':
               pattern = opencc.ja2zht(pattern)
 
-          repl = td.text
+          repl = _unescape_term_text(td.text)
           repl_left = repl_right = ''
 
           if (toLatinLanguage and (trans_input or trans_output)
@@ -529,7 +538,7 @@ class TermWriter:
     @param  fr  str
     @return  {unicode pattern:unicode repl} not None
     """
-    ret = {td.pattern:td.text for td in self._iterTermData('macro', to, fr)}
+    ret = {_unescape_term_text(td.pattern):_unescape_term_text(td.text) for td in self._iterTermData('macro', to, fr)}
     MAX_ITER_COUNT = 1000
     for count in xrange(1, MAX_ITER_COUNT):
       dirty = False
@@ -607,6 +616,8 @@ class TermWriter:
     #  ret[pat] = TermTitle(repl, regex)
 
     for it in l:
+      it.pattern = _unescape_term_text(it.pattern)
+      it.text = _unescape_term_text(it.text)
       if it.phrase:
         it.phrase = False
         left = it.pattern[0]
@@ -842,6 +853,8 @@ class _TermManager:
     @param* mark  bool or None
     @param* ignoreIfNotReady bool
     """
+    if not text:
+      return text
     if mark is None:
       mark = self.marked
     key = type, to, fr

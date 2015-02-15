@@ -129,12 +129,12 @@ __normalize_name_re = re.compile(ur"[【】]")
 def normalize_name(text):
   return __normalize_name_re.sub('', text)
 
-def skip_empty_line(text):
-  """
-  @param  text  unicode
-  @return  bool
-  """
-  return bool(text) and text != '\n'
+#def skip_empty_line(text):
+#  """
+#  @param  text  unicode
+#  @return  bool
+#  """
+#  return bool(text) and text != '\n'
 
 normalize_punct = skstr.multireplacer({
   u"〜": u"～",
