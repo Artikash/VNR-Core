@@ -49,6 +49,7 @@ processes:
   - AlphaROMdiE.exe     # AlphaROM
   - alpharomdie.exe     # AlphaROM
   - AppUpdate.exe       # JBeijing
+  - AralTrans.exe       # Aral Trans
   - Atlas.exe           # Atlas
   - Apoint.exe          # Dell
   - ApntEx.exe          # Dell
