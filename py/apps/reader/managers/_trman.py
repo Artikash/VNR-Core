@@ -1685,7 +1685,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param  to  str
     @return baidu.baidufanyi or kingsoft.iciba
     """
-    if fr in self.ICIBA_LANGUAGES or to in self.ICIBA_LANGUAGES:
+    if fr in self.ICIBA_LANGUAGES and to in self.ICIBA_LANGUAGES:
       return self.iciba
     else:
       return self.baidufanyi
