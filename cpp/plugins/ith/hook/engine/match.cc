@@ -456,12 +456,6 @@ bool DetermineEngineByProcessName()
   if (InsertShinaHook())
     return true;
 
-  // jichi 2/14/2015: Guilty+ ＲＩＮ×ＳＥＮ (PK)
-  if (IthCheckFile(L"rio.ini") || IthFindFile(L"*.war")) {
-    ConsoleOutput("vnreng: IGNORE unknown ShinaRio");
-    return true;
-  }
-
   // jichi 8/10/2013: Since *.bin is common, move CaramelBox to the end
   str[len - 3] = L'b';
   str[len - 2] = L'i';
@@ -615,6 +609,12 @@ bool DetermineNoEngine()
   //  ConsoleOutput("vnreng: IGNORE Unity");
   //  return true;
   //}
+
+  // jichi 2/14/2015: Guilty+ ＲＩＮ×ＳＥＮ (PK)
+  if (IthCheckFile(L"rio.ini") || IthFindFile(L"*.war")) {
+    ConsoleOutput("vnreng: IGNORE unknown ShinaRio");
+    return true;
+  }
 
   if (IthCheckFile(L"AdvHD.exe") || IthCheckFile(L"AdvHD.dll")) {
     ConsoleOutput("vnreng: IGNORE Adv Player HD");
