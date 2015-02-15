@@ -37,6 +37,8 @@ class ChineseConversionManager:
     @param  text  unicode
     @return  unicode
     """
+    if not text:
+      return text
     if self.__d.variantConvert:
       text = self.__d.variantConvert(text)
     return text
@@ -46,6 +48,8 @@ class ChineseConversionManager:
     @param  text  unicode
     @return  unicode
     """
+    if not text:
+      return text
     text = opencc.zhs2zht(text)
     if self.__d.variantConvert:
       text = self.__d.variantConvert(text)

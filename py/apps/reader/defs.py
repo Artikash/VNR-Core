@@ -167,6 +167,8 @@ TERM_MACRO_END = '}}'
 
 TERM_CLASS_NAME = "[[N]]"
 
+TERM_ESCAPE_EOS = u"…eos…"
+
 MAX_NAME_LENGTH = 16 # maximum number of characters in text
 
 # Game info
