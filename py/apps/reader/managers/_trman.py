@@ -346,8 +346,8 @@ class MachineTranslator(Translator):
     """
     for line in _PARAGRAPH_RE.split(text):
       line = line.strip()
-      if line and line != '\n' and line != defs.TERM_ESCAPE_EOS:
-        if not self.splitsSentences or len(line) == 1:
+      if line and line != '\n':
+        if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS:
           yield line
         else:
           for sentence in _SENTENCE_RE.sub(r"\1\n", line).split("\n"):
@@ -363,7 +363,7 @@ class MachineTranslator(Translator):
     """
     ret = []
     for text in self._itertexts(text):
-      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text):
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
         ret.append(text)
       else:
         text = self.__tr(text, tr, to, fr, async)
