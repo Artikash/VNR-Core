@@ -346,7 +346,7 @@ class MachineTranslator(Translator):
     """
     for line in _PARAGRAPH_RE.split(text):
       line = line.strip()
-      if line and line != '\n':
+      if line:
         if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS:
           yield line
         else:
