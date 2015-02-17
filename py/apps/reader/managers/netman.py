@@ -1832,9 +1832,10 @@ class NetworkManager(QObject):
     if self.isOnline():
       return skthreads.runsync(self.__d.getGameFiles)
 
-  def queryGame(self, id=0, md5=None, cached=True):
+  def queryGame(self, id=0, md5=None, cached=True, timeout=config.APP_GAME_QUERY_TIMEOUT):
     """Either id or digest should be specified
-    @param  cached  bool
+    @param* cached  bool
+    @param* timeout  int  wait for at most seconds and stop
     @return  dataman.Game or None
 
     Thread-safe.
@@ -1852,23 +1853,26 @@ class NetworkManager(QObject):
 
     if self.isOnline():
       ret = skthreads.runsync(partial(
-          d.queryGame, id, md5))
+          d.queryGame, id, md5),
+          timeout=timeout)
       if ret:
         d.cachedGamesById[ret.id] = ret
         d.cachedGamesById[ret.md5] = ret
       return ret
 
-  def updateGame(self, game, userName, password, deleteHook=False):
+  def updateGame(self, game, userName, password, deleteHook=False, timeout=config.APP_GAME_UPDATE_TIMEOUT):
     """Either id or digest should be specified.
     @param[inout]  game  dataman.Game  Update gameid If succeed,.
     @param  deleteHook  bool
+    @param* timeout  int  wait for at most seconds and stop
     @return  bool  if succeed
 
     Thread-safe.
     """
     if self.isOnline() and (game.id or game.md5) and userName and password:
       return skthreads.runsync(partial(
-          self.__d.updateGame, game, userName, password, deleteHook=deleteHook))
+          self.__d.updateGame, game, userName, password, deleteHook=deleteHook),
+          timeout=timeout)
     return False
 
   ## Items ##

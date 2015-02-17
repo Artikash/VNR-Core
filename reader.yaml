@@ -15,6 +15,9 @@ version:
 app:
   #debug: true
   debug: false
+  gameQueryTimeout:         7000        # at most 7 seconds
+  gameUpdateTimeout:        5000        # at most 5 seconds
+  onlineTranslationTimeout: 7000        # at most 7 seconds
   saveSettingsInterval:     300         # every 5 minutes
   updateTermsInterval:      3600 * 8    # every 8 hours
   greetingInterval:         3600 * 10   # every 10 hours

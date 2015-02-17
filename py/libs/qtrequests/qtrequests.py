@@ -6,7 +6,7 @@
 __all__ = 'Session', 'AsyncSession'
 
 import json, urllib, zlib
-from PySide.QtCore import QUrl, QEventLoop, QCoreApplication
+from PySide.QtCore import QUrl, QTimer, QEventLoop, QCoreApplication
 from PySide.QtNetwork import QNetworkRequest
 
 #class EventLoop(QEventLoop):
@@ -47,9 +47,10 @@ class Response:
 class _Session:
   encoding = 'utf8'
 
-  def __init__(self, nam, abortSignal):
+  def __init__(self, nam, requestTimeout, abortSignal):
     self.nam = nam # QNetworkAccessManager
-    self.abortSignal = abortSignal # Signal
+    self.requestTimeout = requestTimeout # int
+    self.abortSignal = abortSignal # Signal or None
 
   def _waitReply(self, reply):
     """
@@ -61,12 +62,21 @@ class _Session:
     if self.abortSignal:
       self.abortSignal.connect(loop.quit)
 
+    timer = None
+    if self.requestTimeout:
+      timer = QTimer()
+      timer.setInterval(self.requestTimeout)
+      timer.setSingleShot(True)
+      timer.timeout.connect(loop.quit)
+
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(loop.quit)
 
     reply.finished.connect(loop.quit)
     loop.exec_()
 
+    if timer:
+      timer.timeout.disconnect(loop.quit)
     if self.abortSignal:
       self.abortSignal.disconnect(loop.quit)
     qApp.aboutToQuit.disconnect(loop.quit)
@@ -219,14 +229,18 @@ class _Session:
 
 class Session(object):
 
-  def __init__(self, nam, abortSignal=None):
+  def __init__(self, nam, requestTimeout=0, abortSignal=None):
     """
     @param  nam  QNetworkAccessManager
+    @param* requestTimeout  int
     @param* abortSignal  Signal
     """
-    self.__d = _Session(nam, abortSignal) # Network access manager
+    self.__d = _Session(nam, requestTimeout, abortSignal) # Network access manager
 
   # Properties
+
+  def requestTimeout(self): return self.__d.timeout
+  def setTequestTimeout(self, v): self.__d.timeout = v # int
 
   def networkAccessManager(self):
     """

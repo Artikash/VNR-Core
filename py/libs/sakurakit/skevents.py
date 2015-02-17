@@ -15,11 +15,12 @@ def runlater(slot, interval=0):
   QtCore.QTimer.singleShot(interval, slot)
 
 @debugfunc
-def waitsignal(signal, type=Qt.AutoConnection,
+def waitsignal(signal, type=Qt.AutoConnection, timeout=0,
     abortSignal=None, autoQuit=True):
   """
   @param  signal  Signal not None
   @param* type  Qt.ConnectionType
+  @param* timeout  int
   @param* abortSignal  Signal or None  signal with auto type
   @param* autoQuit  bool  if quit eventloop when qApp.aboutToQuit
   """
@@ -34,8 +35,17 @@ def waitsignal(signal, type=Qt.AutoConnection,
     qApp = QtCore.QCoreApplication.instance()
     qApp.aboutToQuit.connect(loop.quit)
 
+  timer = None
+  if timeout:
+    timer = QtCore.QTimer()
+    timer.setInterval(timeout)
+    timer.setSingleShot(True)
+    timer.timeout.connect(loop.quit)
+
   loop.exec_()
 
+  if timer:
+    timer.timeout.disconnect(loop.quit)
   # FIXME 10/14/2014: Disconnect queued signal would crash PySide
   if type == Qt.AutoConnection:
     signal.disconnect(loop.quit)
