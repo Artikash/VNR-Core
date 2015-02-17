@@ -1,6 +1,7 @@
 # coding: utf8
 # imt.py
 # 10/12/2012 jichi
+# VNR's interactive machine translation online.
 #
 # See: http://transer.com/sdk/rest_api_function.html
 # See (auth): http://translation.infoseek.ne.jp/js/translation-text.js
