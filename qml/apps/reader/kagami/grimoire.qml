@@ -829,7 +829,7 @@ Item { id: root_
         anchors {
           verticalCenter: parent.verticalCenter
           left: saveButton_.right
-          leftMargin: -6
+          leftMargin: -2
         }
         width: 50; height: 25
         text: Sk.tr("load") + "]"
