@@ -1494,7 +1494,7 @@ class YouTranslator(OnlineMachineTranslator):
   def __init__(self, session=None, **kwargs):
     super(YouTranslator, self).__init__(**kwargs)
 
-    import youtrans
+    from youtrans import youtrans
     youtrans.session = session or requests.Session()
     self.engine = youtrans
 

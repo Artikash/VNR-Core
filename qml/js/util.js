@@ -204,7 +204,7 @@ function translatorName(tr) {
       t.push(TRANSLATOR_NAME[s[i]]);
     ret = t.join(',');
   }
-  return ret; //|| '';
+  return ret || '';
 }
 
 // - Type constants -
