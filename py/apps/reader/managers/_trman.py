@@ -1485,6 +1485,50 @@ class TransruTranslator(OnlineMachineTranslator):
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
+class YouTranslator(OnlineMachineTranslator):
+  key = 'youtrans' # override
+  #asyncSupported = True # override  enable async
+  asyncSupported = False # override  disable async
+  alignSupported = True # override
+
+  def __init__(self, session=None, **kwargs):
+    super(YouTranslator, self).__init__(**kwargs)
+
+    import youtrans
+    youtrans.session = session or requests.Session()
+    self.engine = youtrans
+
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+    """@reimp"""
+    if fr != 'ja':
+      return None, None, None
+    if not to.startswith('zh'):
+      to = 'zhs'
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit)
+        if to == 'zht':
+          repl = zhs2zht(repl)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """@reimp"""
+    #async = True # force enable async
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
+    except Exception, e: dwarn(e); return ''
+
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
   #asyncSupported = True # override  enable async

@@ -1,5 +1,4 @@
 # coding: utf8
-# youmt.py
 # 10/12/2012 jichi
 # VNR's interactive machine translation online.
 #
@@ -21,8 +20,8 @@ from sakurakit.sknetio import GZIP_HEADERS
 session = requests # global session
 
 #HOST = "http://sakuradite.com"
-HOST = "http://localhost:5000"
-#HOST = "http://153.121.54.194"
+#HOST = "http://localhost:5000"
+HOST = "http://153.121.54.194"
 API = HOST + "/api/json/mt/tr"
 
 def translate(text, to='zhs', fr='ja', align=None):
