@@ -422,6 +422,14 @@ class Settings(QSettings):
   #def kagamiIgnoresFocus(self):
   #  return to_bool(self.value('KagamiIgnoresFocus', True))
 
+  applicationFontFamilyChanged = Signal(str)
+  def applicationFontFamily(self):
+    return self.value('ApplicationFontFamily') or ''
+  def setApplicationFontFamily(self, value):
+    if value != self.applicationFontFamily():
+      self.setValue('ApplicationFontFamily', value)
+      self.applicationFontFamilyChanged.emit(value)
+
   cursorThemeEnabledChanged = Signal(bool)
   def isCursorThemeEnabled(self):
     return to_bool(self.value('CursorThemeEnabled', True))
