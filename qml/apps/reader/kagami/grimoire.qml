@@ -814,7 +814,7 @@ Item { id: root_
         }
         width: 50; height: 25
         text: "[" + Sk.tr("save")
-        font.pixelSize: 16
+        font.pixelSize: 12
         font.bold: false
         font.family: "DFGirl"
         styleColor: 'deepskyblue'
@@ -833,7 +833,7 @@ Item { id: root_
         }
         width: 50; height: 25
         text: Sk.tr("load") + "]"
-        font.pixelSize: 16
+        font.pixelSize: 12
         font.bold: false
         font.family: "DFGirl"
         styleColor: 'deepskyblue'
@@ -872,7 +872,7 @@ Item { id: root_
         width: 50; height: 25
         text: "[" + Sk.tr("lock")
         font.family: "DFGirl"
-        font.pixelSize: 16
+        font.pixelSize: 12
         font.bold: false
         styleColor: checked ? 'red' : 'deepskyblue'
         backgroundColor: hover ? '#336a6d6a' : 'transparent' // black
@@ -892,7 +892,7 @@ Item { id: root_
         width: 50; height: 25
         text: Sk.tr("unlock") + "]"
         font.family: "DFGirl"
-        font.pixelSize: 16
+        font.pixelSize: 12
         font.bold: false
         styleColor: checked ? 'red' : 'deepskyblue'
         backgroundColor: hover ? '#336a6d6a' : 'transparent' // black
