@@ -5,7 +5,17 @@
 #include "cpputil/cppunicode.h"
 #include <utf8.h>
 #include <fstream>
-#include <unordered_map>
+
+#ifdef __clang__
+# define USE_BOOST_CXX11
+#endif // __clang__
+
+#ifdef USE_BOOST_CXX11
+# include <boost/unordered_map.hpp>
+#else
+# include <unordered_map>
+#endif // USE_BOOST_CXX11
+
 //#include <iostream>
 
 //#define DELIM   '\t' // deliminator of the rule pair
@@ -27,7 +37,12 @@ inline void utf8to32(const std::string &src, cpp_u32string &target)
 class SimpleChineseConverterPrivate
 {
 public:
+#ifdef USE_BOOST_CXX11
+  typedef boost::unordered_map<wchar_t, wchar_t> map_type;
+#else
   typedef std::unordered_map<wchar_t, wchar_t> map_type;
+#endif // USE_BOOST_CXX11
+
   map_type map;
 
   void add(wchar_t key, wchar_t value)

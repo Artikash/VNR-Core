@@ -36,9 +36,14 @@ SK_END_NAMESPACE
 #define SK_NOP          SK_UNUSED(0)
 
 // same as Q_DISABLE_COPY and boost::noncopyable
-#define SK_DISABLE_COPY(_class) \
+// Disable when BOOST_PYTHON is enabled
+#ifdef BOOST_PYTHON
+# define SK_DISABLE_COPY(_class)
+#else
+# define SK_DISABLE_COPY(_class) \
   _class(const _class &); \
   _class &operator=(const _class &);
+#endif // BOOST_PYTHON
 
 // - Qt-like Pimp -
 

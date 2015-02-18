@@ -150,6 +150,11 @@ VERSION_DOMAIN = _VERSION['domain']
 VERSION_TIMESTAMP = int(_VERSION['timestamp'])
 
 _APP = APP_YAML['app']
+
+APP_GAME_QUERY_TIMEOUT = parse_int(_APP['gameQueryTimeout'])
+APP_GAME_UPDATE_TIMEOUT = parse_int(_APP['gameUpdateTimeout'])
+APP_ONLINE_TRANSLATION_TIMEOUT = parse_int(_APP['onlineTranslationTimeout'])
+
 APP_UPDATE_INTERVAL = parse_int(_APP['updateInterval'])
 APP_GREETING_INTERVAL = parse_int(_APP['greetingInterval'])
 APP_SAVE_SETTINGS_INTERVAL = parse_int(_APP['saveSettingsInterval'])
