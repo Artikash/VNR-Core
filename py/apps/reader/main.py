@@ -1743,6 +1743,11 @@ class MainObject(QObject):
     online = self.isOnline()
 
     dprint("schedule to login later")
+
+    user = dm.user()
+    # Force broadcast user on startup
+    if user and user.isLoginable() and not user.isGuest():
+      dm.loginChanged.emit(user.name, user.password)
     skevents.runlater(dm.reloadUser)
 
     if online:

@@ -69,7 +69,7 @@ class _TranslatorManager(object):
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager() # parent is not assigned
     from qtrequests import qtrequests
-    self.session = qtrequests.Session(nam, abortSignal=self.abortSignal, timeout=config.APP_ONLINE_TRANSLATION_TIMEOUT)
+    self.session = qtrequests.Session(nam, abortSignal=self.abortSignal, requestTimeout=config.APP_ONLINE_TRANSLATION_TIMEOUT)
 
   normalizeText = staticmethod(textutil.normalize_punct)
 

@@ -1,5 +1,5 @@
 # coding: utf8
-# imt.py
+# youmt.py
 # 10/12/2012 jichi
 # VNR's interactive machine translation online.
 #

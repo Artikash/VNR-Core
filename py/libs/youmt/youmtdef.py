@@ -1,5 +1,5 @@
 # coding: utf8
-# imtdef.py
+# youmtdef.py
 # 2/9/2015 jichi
 
 MT_SOURCE_LANGUAGES = 'ja',

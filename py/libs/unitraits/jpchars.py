@@ -29,14 +29,17 @@ l_kata = list(s_kata)
 
 def anyhira(text): return unichars.ordany(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira.search(text))
 def anykata(text): return unichars.ordany(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata.search(text))
+def allkanji(text): return unichars.ordall(text, unichars.ORD_KANJI_FIRST, unichars.ORD_KANJI_LAST)
 def allhira(text): return unichars.ordall(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira_all.match(text))
 def allkata(text): return unichars.ordall(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata_all.match(text))
+def anykanji(text): return unichars.ordany(text, unichars.ORD_KANJI_FIRST, unichars.ORD_KANJI_LAST)
 
 def allkana(text): return allhira(text) or allkata(text)
 def anykana(text): return anyhira(text) or anykata(text)
 
 def ishirachar(ch): return len(ch) == 1 and unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST
 def iskatachar(ch): return len(ch) == 1 and unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST
+def iskanjichar(ch): return len(ch) == 1 and unichars.ORD_KANJI_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KANJI_LAST
 def iskanachar(ch): return len(ch) == 1 and (
     unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST or
     unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST)
@@ -115,5 +118,14 @@ def getcat(ch):
     if v >= unichars.ORD_IALPHA_FIRST and v <= unichars.ORD_IALPHA_LAST or v >= unichars.ORD_UALPHA_FIRST and v <= unichars.ORD_UALPHA_LAST:
       return CAT_ALPHA
   return ''
+
+# Alpha, Number, Punctuation, Space
+re_all_anps = re.compile(ur"^(?:[a-zA-Z0-9%s]|\s)+$" % s_punct)
+def allanps(text):
+  """
+  @param  text  unicode
+  @return  str
+  """
+  return re_all_anps.match(text)
 
 # EOF
