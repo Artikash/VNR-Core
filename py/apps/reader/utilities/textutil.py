@@ -136,11 +136,12 @@ def normalize_name(text):
 #  """
 #  return bool(text) and text != '\n'
 
-normalize_punct = skstr.multireplacer({
-  u"〜": u"～",
-  u"‥": u"…",
-  #u"\n": u" ", # JBeijing cannot handle multiple lines
-})
+def normalize_punct(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return text.replace(u"〜", u"～").replace(u"‥", u"…").replace("...", u"…")
 
 __match_kata_hira_punc_re = re.compile(r"[%s]+" % ''.join((jpchars.s_kata, jpchars.s_hira, jpchars.s_punct)))
 def match_kata_hira_punc(text):
