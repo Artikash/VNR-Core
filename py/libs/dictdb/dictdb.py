@@ -62,6 +62,14 @@ def queryentries(cur, word='', wordlike='', limit=0):
   cur.execute(sql, params)
   return cur.fetchall()
 
+def iterentries(cur, *args, **kwargs):
+  """
+  @param  cursor
+  @return  [unicode word, unicode content]
+  @raise
+  """
+  return queryentries(cur, *args, **kwargs)
+
 def insertentry(cur, entry): # cursor, entry; raise
   """
   @param  cursor
