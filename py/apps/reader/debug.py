@@ -58,9 +58,24 @@ def show(text, key=None):
   w.setPlainText(text)
   w.show()
 
+def dumpzhongri():
+  import ebdict
+  from scripts import eb2db
+
+  import rc
+  gaiji = rc.gaiji_dict('ZHONG_RI')
+  path = 'Z:/Local/Windows/Applications/EB/ZHONG_RI'
+
+  eb2db.dump(path, gaiji)
+
 if __name__ == '__main__':
   print "debug: enter"
   initenv()
+
+  dumpzhongri()
+
+  import sys
+  sys.exit(0)
 
   #import settings
   #ss = settings.global_()
