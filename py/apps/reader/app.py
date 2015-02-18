@@ -9,7 +9,7 @@ from Qt5.QtWidgets import QApplication
 from sakurakit import skos
 from sakurakit.skdebug import dprint, dwarn, derror
 from mytr import mytr_
-import config, rc
+import config, rc, settings
 
 #if skos.WIN:
 #  from win32con import WM_QUIT, WM_ENDSESSION, WM_QUERYENDSESSION
@@ -48,6 +48,11 @@ class Application(QApplication):
     #  ignoreWindowsExceptions()
 
     dprint("pass")
+
+  def setFontFamily(self, family):
+    font = self.font()
+    font.setFamily(family)
+    self.setFont(font)
 
   # FIXME: wParam does not exist in PySide MSG
   # Bug: https://bugreports.qt-project.org/browse/PYSIDE-84
@@ -90,7 +95,6 @@ ERROR MESSAGE END""" % e,
 
   @staticmethod
   def applicationLocale():
-    import settings
     #lang = settings.global_().userLanguage()
     lang = settings.global_().uiLanguage()
     locale = config.language2locale(lang)

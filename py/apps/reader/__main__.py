@@ -142,6 +142,7 @@ def main():
   dprint("create app")
   import app
   a = app.Application(sys.argv)
+
   #dprint("os default font:", a.font())
   #a.setFont(config.FONT_DEFAULT)
   #dprint("current default font:", a.font())
@@ -177,6 +178,12 @@ def main():
           dprint(QFontDatabase.applicationFontFamilies(index))
         else:
           dwarn("failed to load font %s" % f)
+
+  ff = ss.applicationFontFamily()
+  if ff:
+    dprint("font family = %s" % ff)
+    a.setFontFamily(ff)
+  ss.applicationFontFamilyChanged.connect(a.setFontFamily)
 
   dprint("load translation")
   a.loadTranslations()

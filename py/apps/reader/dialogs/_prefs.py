@@ -465,6 +465,7 @@ class _UiTab(object):
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.fontGroup)
     if not features.WINE:
       layout.addWidget(self.mouseGroup)
     layout.addWidget(self.springBoardGroup)
@@ -472,25 +473,78 @@ class _UiTab(object):
     layout.addStretch()
     q.setLayout(layout)
 
+  ## Font ##
+
+  @memoizedproperty
+  def fontGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.uiFontResetButton)
+    row.addWidget(self.uiFontEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
+    layout.addWidget(QtWidgets.QLabel(my.tr("Changing font might require restarting VNR")))
+
+    ret = QtWidgets.QGroupBox(my.tr("Global UI font"))
+    ret.setLayout(layout)
+
+    self._refreshUiFont()
+    return ret
+
+  @memoizedproperty
+  def uiFontEdit(self):
+    ret = QtWidgets.QFontComboBox()
+    ret.setEditable(True)
+    ret.setMaximumWidth(150)
+    ret.setToolTip(tr_("Font"))
+    ff = settings.global_().applicationFontFamily()
+    ret.setEditText(ff or tr_('Default'))
+    ret.editTextChanged.connect(self._refreshUiFont)
+    ret.currentIndexChanged.connect(self._saveUiFont)
+    return ret
+
+  def _refreshUiFont(self):
+    w = self.uiFontEdit
+    t = w.currentText().strip()
+    ok = t == tr_('Default') or w.findText(t, Qt.MatchFixedString) >= 0 # case-insensitive match
+    skqss.class_(w, 'default' if ok else 'error')
+
+  @memoizedproperty
+  def uiFontResetButton(self):
+    ret = create_toggle_button(u"×") # ばつ
+    ret.setToolTip(tr_("Reset"))
+    ret.clicked.connect(self._resetUiFont)
+    return ret
+
+  def _resetUiFont(self):
+    settings.global_().setApplicationFontFamily('')
+    self.uiFontEdit.setEditText(tr_('Default'))
+
+  def _saveUiFont(self):
+    ff = self.uiFontEdit.currentFont().family()
+    settings.global_().setApplicationFontFamily(ff)
+
   ## Comet ##
 
-  @memoizedproperty
-  def statusGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.cometCounterButton)
+  #@memoizedproperty
+  #def statusGroup(self):
+  #  layout = QtWidgets.QVBoxLayout()
+  #  layout.addWidget(self.cometCounterButton)
 
-    ret = QtWidgets.QGroupBox(my.tr("Peer status"))
-    ret.setLayout(layout)
-    return ret
+  #  ret = QtWidgets.QGroupBox(my.tr("Peer status"))
+  #  ret.setLayout(layout)
+  #  return ret
 
-  @memoizedproperty
-  def cometCounterButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Display online user counter on the Spring Board"))
-    #ret.setToolTip(my.tr("Automatically change wallpaper for different games"))
-    ss = settings.global_()
-    ret.setChecked(ss.isCometCounterVisible())
-    ret.toggled.connect(ss.setCometCounterVisible)
-    return ret
+  #@memoizedproperty
+  #def cometCounterButton(self):
+  #  ret = QtWidgets.QCheckBox(my.tr("Display online user counter on the Spring Board"))
+  #  #ret.setToolTip(my.tr("Automatically change wallpaper for different games"))
+  #  ss = settings.global_()
+  #  ret.setChecked(ss.isCometCounterVisible())
+  #  ret.toggled.connect(ss.setCometCounterVisible)
+  #  return ret
 
   ## SpringBoard ##
 
