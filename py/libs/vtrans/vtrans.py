@@ -24,6 +24,9 @@ session = requests # global session
 HOST = "http://153.121.54.194"
 API = HOST + "/api/json/mt/tr"
 
+CLIENT_KEY = 'vnr' # str
+CLIENT_VERSION = 0 # int
+
 def translate(text, to='zhs', fr='ja', align=None):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
@@ -40,6 +43,8 @@ def translate(text, to='zhs', fr='ja', align=None):
         'hl': fr, # host language
         's': to, # source languaeg
         'q': text, # query
+        'client': CLIENT_KEY,
+        'version': CLIENT_VERSION,
         #'align': 'true' if align is not None else '',
       }
     )
