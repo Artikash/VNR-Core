@@ -278,6 +278,8 @@ class _TranslatorManager(object):
       return 'transruTranslator'
     if key == 'hanviet':
       return 'hanVietTranslator'
+    if key == 'vtrans':
+      return 'vTranslator'
     return key + 'Translator'
 
   def getTranslator(self, key):

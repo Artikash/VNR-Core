@@ -1495,6 +1495,7 @@ class VTranslator(OnlineMachineTranslator):
     super(VTranslator, self).__init__(**kwargs)
 
     from vtrans import vtrans
+    vtrans.CLIENT_VERSION = config.VERSION_TIMESTAMP
     vtrans.session = session or requests.Session()
     self.engine = vtrans
 
