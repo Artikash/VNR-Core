@@ -755,6 +755,9 @@ class _MainObject(object):
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
 
+    ret.setVTransEnabled(ss.isVTransEnabled())
+    ss.vtransEnabledChanged.connect(ret.setVTransEnabled)
+
     ret.setFastaitEnabled(ss.isFastaitEnabled())
     ss.fastaitEnabledChanged.connect(ret.setFastaitEnabled)
 

@@ -1485,18 +1485,18 @@ class TransruTranslator(OnlineMachineTranslator):
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
-class YouTranslator(OnlineMachineTranslator):
-  key = 'youtrans' # override
+class VTranslator(OnlineMachineTranslator):
+  key = 'vtrans' # override
   #asyncSupported = True # override  enable async
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
   def __init__(self, session=None, **kwargs):
-    super(YouTranslator, self).__init__(**kwargs)
+    super(VTranslator, self).__init__(**kwargs)
 
-    from youtrans import youtrans
-    youtrans.session = session or requests.Session()
-    self.engine = youtrans
+    from vtrans import vtrans
+    vtrans.session = session or requests.Session()
+    self.engine = vtrans
 
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""

@@ -174,6 +174,7 @@ var TRANSLATOR_HOST_KEYS = [
   , 'lec'
   , 'atlas'
   , 'hanviet'
+  , 'vtrans'
 ];
 
 var TRANSLATOR_NAME = {
@@ -194,6 +195,7 @@ var TRANSLATOR_NAME = {
   , transru: "Translate.Ru"
   //, lou: "ルー語"
   , hanviet: "Hán Việt"
+  , vtrans: "VTrans"
 };
 function translatorName(tr) {
   var ret = TRANSLATOR_NAME[tr];

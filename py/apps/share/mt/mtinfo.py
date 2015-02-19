@@ -17,6 +17,7 @@ MT_INFO = {
   'atlas':      {'online':False, 'align':False,  'script':True,  },
   'lec':        {'online':False, 'align':False,  'script':True,  },
   'hanviet':    {'online':False, 'align':True,   'script':False, },
+  'vtrans':     {'online':True,  'align':False,  'script':False, },
 }
 
 def test_online(key):
@@ -127,6 +128,9 @@ def get_mod_def(key):
   if key == 'hanviet':
     from hanviet import hanvietdef
     return hanvietdef
+  if key == 'vtrans':
+    from vtrans import vdef
+    return vdef
   return None
 
 # EOF

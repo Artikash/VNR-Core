@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1424237943
+  timestamp: 1424321528
 
 app:
   #debug: true
@@ -83,6 +83,7 @@ settings:
   danmakuColor: '#2d5f5f' # dark green
   # Translator colors:
   bingColor: '#800080' # purple+green
+  vtransColor: '#000a0a' # black + blue/green
   googleColor: '#32807c' # cyan
   #infoseekColor: '#ee5500' # orange
   infoseekColor: '#55aa00' # deep green

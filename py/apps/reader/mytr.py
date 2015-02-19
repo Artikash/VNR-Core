@@ -138,6 +138,7 @@ class reader(QObject):
       self.tr("Daijisen"),
       self.tr("Wadoku"),
       self.tr("Zhongri"),
+      #self.tr("VTrans"),
       self.tr("JBeijing"),
       self.tr("JBeijing7"),
       self.tr("Dr.eye"),

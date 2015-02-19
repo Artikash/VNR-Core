@@ -148,6 +148,7 @@ Item { id: root_
   property color baiduColor: settings_.baiduColor
   property color hanVietColor: settings_.hanVietColor
   property color jbeijingColor: settings_.jbeijingColor
+  property color vtransColor: settings_.vtransColor
   property color fastaitColor: settings_.fastaitColor
   property color dreyeColor: settings_.dreyeColor
   property color ezTransColor: settings_.ezTransColor

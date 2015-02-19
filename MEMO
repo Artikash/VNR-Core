@@ -46,14 +46,16 @@ reader:
   settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
   config.py: JBEIJING_COLOR
   libman.py: ..
+  dataman.py: ..
+  i18n.py: ..
   mytr.py: ..
-  trtraits.py: ..
-  mtinfo.py: ..
   main.py: jbeijingEnabled
   __main__.py: jbeijing
   _prefs.py: jbeijing
   _trman.py: ..
   trman.py: ..
+share/mt
+  mtinfo.py: ..
 
 browser:
   settings.py: jbeijingEnabled jbeijingLocation

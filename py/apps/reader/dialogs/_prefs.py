@@ -2596,9 +2596,10 @@ class _TextTab(object):
       ('fastait',   None, None, 'zh'),
       ('dreye',     None, None,  'zh'),
       ('eztrans',  'EzTrans',  'ezTrans', 'ko'),
-      ('hanviet',  'HanViet',  'hanViet', 'vi'),
       ('lec',       None, None, 'en'),
       ('atlas',     None, None, 'en'),
+      ('hanviet',  'HanViet',  'hanViet', 'vi'),
+      ('vtrans',   'VTrans', None, 'zh'),
     )
     i = 0
     for key, Name, name, lang in conf:
@@ -2652,7 +2653,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -2985,6 +2986,11 @@ class _MachineTranslationTab(object):
       #row = create_retrans_row('transru', self.transruButton)
       #grid.addLayout(row, r, 1, 1, 2)
 
+    if 'zh' not in blans:
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://sakuradite.com/trans"), r, 0)
+      grid.addWidget(self.vtransButton, r, 1)
+
     # Offline
     r += 1
     grid.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"), r, 0, 1, 2)
@@ -3313,6 +3319,18 @@ class _MachineTranslationTab(object):
     ret.toggled.connect(ss.setNaverRubyEnabled)
     #ret.setEnabled(ss.isNaverEnabled())
     #ss.naverEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def vtransButton(self):
+    ret = QtWidgets.QCheckBox(u"%s (α, %s, %s)" % (
+      my.tr("VNR's online translator trained by user-contributed subtitles for VNs"),
+      my.tr("Japanese-Chinese only"),
+      my.tr("experimental"),
+    ))
+    ret.setStyleSheet("QCheckBox{color:brown}")
+    ret.setChecked(settings.global_().isVTransEnabled())
+    ret.toggled.connect(settings.global_().setVTransEnabled)
     return ret
 
   @memoizedproperty
