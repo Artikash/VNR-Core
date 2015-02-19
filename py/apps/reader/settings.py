@@ -610,6 +610,15 @@ class Settings(QSettings):
       self.setValue('HanVietColor', value)
       self.hanVietColorChanged.emit(value)
 
+  vtransColorChanged = Signal(str)
+  def vtransColor(self):
+    return self.value('VTransColor', config.SETTINGS_VTRANS_COLOR)
+  def setVTransColor(self, value):
+    value = value or config.SETTINGS_VTRANS_COLOR
+    if value != self.vtransColor():
+      self.setValue('VTransColor', value)
+      self.vtransColorChanged.emit(value)
+
   jbeijingColorChanged = Signal(str)
   def jbeijingColor(self):
     return self.value('JBeijingColor', config.SETTINGS_JBEIJING_COLOR)
@@ -1369,6 +1378,15 @@ class Settings(QSettings):
       self.lecEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
+  vtransEnabledChanged = Signal(bool)
+  def isVTransEnabled(self):
+    return to_bool(self.value('VTransEnabled'))
+  def setVTransEnabled(self, value):
+    if value != self.isVTransEnabled():
+      self.setValue('VTransEnabled', value)
+      self.vtransEnabledChanged.emit(value)
+      self.machineTranslatorChanged.emit()
+
   jbeijingEnabledChanged = Signal(bool)
   def isJBeijingEnabled(self):
     return to_bool(self.value('JBeijingEnabled'))
@@ -1931,6 +1949,7 @@ class SettingsProxy(QObject):
     g.transruColorChanged.connect(self.transruColorChanged)
     g.hanVietColorChanged.connect(self.hanVietColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
+    g.vtransColorChanged.connect(self.vtransColorChanged)
     g.fastaitColorChanged.connect(self.fastaitColorChanged)
     g.dreyeColorChanged.connect(self.dreyeColorChanged)
     g.ezTransColorChanged.connect(self.ezTransColorChanged)
@@ -2230,6 +2249,8 @@ class SettingsProxy(QObject):
   transruColor = unicode_property('TransruColor', config.SETTINGS_TRANSRU_COLOR, notify=transruColorChanged)
   hanVietColorChanged = Signal(unicode)
   hanVietColor = unicode_property('HanVietColor', config.SETTINGS_HANVIET_COLOR, notify=hanVietColorChanged)
+  vtransColorChanged = Signal(unicode)
+  vtransColor = unicode_property('VTransColor', config.SETTINGS_VTRANS_COLOR, notify=vtransColorChanged)
   jbeijingColorChanged = Signal(unicode)
   jbeijingColor = unicode_property('JBeijingColor', config.SETTINGS_JBEIJING_COLOR, notify=jbeijingColorChanged)
   fastaitColorChanged = Signal(unicode)

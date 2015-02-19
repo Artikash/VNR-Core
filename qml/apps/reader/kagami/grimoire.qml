@@ -66,6 +66,7 @@ Item { id: root_
   property color baiduColor
   property color hanVietColor
   property color jbeijingColor
+  property color vtransColor
   property color fastaitColor
   property color dreyeColor
   property color ezTransColor
@@ -262,6 +263,7 @@ Item { id: root_
     switch(host) {
     case 'hanviet': return root_.hanVietColor
     case 'jbeijing': return root_.jbeijingColor
+    case 'vtrans': return root_.vtransColor
     case 'fastait': return root_.fastaitColor
     case 'dreye': return root_.dreyeColor
     case 'eztrans': return root_.ezTransColor

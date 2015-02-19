@@ -118,6 +118,7 @@ TRANSLATOR_NAMES = { # [TranslatorTraits]
   'atlas': mytr_("ATLAS"),
   'lec': mytr_("LEC"),
   'hanviet': u"Hán Việt",
+  'vtrans': mytr_("VTrans"),
 }
 def translator_name(key): return TRANSLATOR_NAMES.get(key) or ''
 

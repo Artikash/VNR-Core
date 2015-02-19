@@ -656,6 +656,7 @@ Item { id: root_
         baiduColor: settings_.baiduColor
         hanVietColor: settings_.hanVietColor
         jbeijingColor: settings_.jbeijingColor
+        vtransColor: settings_.vtransColor
         fastaitColor: settings_.fastaitColor
         dreyeColor: settings_.dreyeColor
         ezTransColor: settings_.ezTransColor

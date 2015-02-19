@@ -42,6 +42,7 @@ class _TranslatorManager(object):
     self.bingEnabled = \
     self.googleEnabled = \
     self.naverEnabled = \
+    self.vtransEnabled = \
     self.baiduEnabled = \
     self.lecOnlineEnabled = \
     self.transruEnabled = \
@@ -52,7 +53,7 @@ class _TranslatorManager(object):
     self.ezTransEnabled = \
     self.atlasEnabled = \
     self.lecEnabled = \
-    True # bool
+    False # bool
 
     self.alignEnabled = {} # {str key:bool t}
     self.scriptEnabled = {} # {str key:bool t}
@@ -185,6 +186,13 @@ class _TranslatorManager(object):
   def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
 
   @memoizedproperty
+  def vTranslator(self):
+    return self._newtr(_trman.VTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess))
+
+  @memoizedproperty
   def googleTranslator(self):
     return self._newtr(_trman.GoogleTranslator(
         abortSignal=self.abortSignal,
@@ -315,9 +323,11 @@ class _TranslatorManager(object):
         if self.googleEnabled: yield self.googleTranslator
         if self.bingEnabled: yield self.bingTranslator
         if self.naverEnabled: yield self.naverTranslator
+        if self.vtransEnabled: yield self.vTranslator
         if self.baiduEnabled: yield self.baiduTranslator
       else:
         if self.baiduEnabled: yield self.baiduTranslator
+        if self.vtransEnabled: yield self.vTranslator
         if self.naverEnabled: yield self.naverTranslator
         if self.bingEnabled: yield self.bingTranslator
         if self.googleEnabled: yield self.googleTranslator
@@ -443,6 +453,9 @@ class TranslatorManager(QObject):
   def isGoogleEnabled(self): return self.__d.googleEnabled
   def setGoogleEnabled(self, value): self.__d.googleEnabled = value
 
+  def isVTransEnabled(self): return self.__d.vtransEnabled
+  def setVTransEnabled(self, value): self.__d.vtransEnabled = value
+
   def isBingEnabled(self): return self.__d.bingEnabled
   def setBingEnabled(self, value): self.__d.bingEnabled = value
 
@@ -558,6 +571,7 @@ class TranslatorManager(QObject):
     d = self.__d
     return any((
       d.baiduEnabled,
+      d.vtransEnabled,
       d.naverEnabled,
       d.googleEnabled,
       d.bingEnabled,
@@ -603,6 +617,7 @@ class TranslatorManager(QObject):
     if d.atlasEnabled: r.append('atlas')
 
     if d.baiduEnabled: r.append('baidu')
+    if d.vtransEnabled: r.append('vtrans')
     if d.naverEnabled: r.append('naver')
     if d.googleEnabled: r.append('google')
     if d.bingEnabled: r.append('bing')
