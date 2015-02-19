@@ -653,6 +653,12 @@ bool DetermineNoEngine()
     return true;
   }
 
+  // jichi 2/18/2015: Ignore if there is Nitro+ copyright
+  if (Util::SearchResourceString(L"Nitro+")) {
+    ConsoleOutput("vnreng: IGNORE unknown Nitro+");
+    return true;
+  }
+
   // jichi 12/28/2014: "Chartreux Inc." in Copyright.
   // Sublimary brands include Rosebleu, MORE, etc.
   // GetGlyphOutlineA already works.
