@@ -3328,7 +3328,7 @@ class _MachineTranslationTab(object):
       my.tr("Japanese-Chinese only"),
       my.tr("experimental"),
     ))
-    ret.setStyleSheet("QCheckBox{color:darkgreen}")
+    ret.setStyleSheet("QCheckBox{color:brown}")
     ret.setChecked(settings.global_().isVTransEnabled())
     ret.toggled.connect(settings.global_().setVTransEnabled)
     return ret
