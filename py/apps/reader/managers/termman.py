@@ -530,7 +530,7 @@ class TermWriter:
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
-          and (fr == 'ja' or td.sourceLanguage.startswith(fr2)
+          and (td.sourceLanguage.startswith(fr2)
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
             or td.sourceLanguage == 'ja' and (
               td.type in jatypes
