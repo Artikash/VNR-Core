@@ -2567,7 +2567,7 @@ class _Term(object):
       return self.E_BAD_HOST
 
     # E_USELESS
-    if ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
+    if self.sourceLanguage == 'ja' and ((self.language not in ('zhs', 'zht', 'ja', 'ko') and self.type != 'yomi'
           or self.type not in ('trans', 'suffix', 'prefix', 'name', 'yomi'))
         and self.pattern == self.text):
       return self.E_USELESS
@@ -2589,6 +2589,10 @@ class _Term(object):
     # W_NOT_GAME
     if not self.regex and self.type == 'game' and self.text and unichars.isascii(self.text) and not unichars.isascii(self.pattern):
       return self.W_NOT_GAME
+
+    # W_KANA_TEXT
+    if self.sourceLanguage == 'ja' and self.type in ('name', 'suffix', 'trans', 'output') and jpchars.anykana(self.text):
+      return self.W_KANA_TEXT
 
     # W_MISSING_TEXT
     if not self.text and len(self.pattern) > 3 and self.type in ('trans', 'name', 'yomi'):
@@ -2667,6 +2671,7 @@ class _Term(object):
   W_LONG = 11               # being too long
   W_SHORT = 12              # being too short
   W_MISSING_TEXT = 20       # text is empty
+  W_KANA_TEXT = 25          # Japanese characters in translation
   W_NOT_GAME = 30           # should not use game type
   W_NOT_INPUT = 31          # should not use input type
   W_BAD_REGEX = 100         # mismatch regex
