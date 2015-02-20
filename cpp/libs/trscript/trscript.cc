@@ -19,6 +19,7 @@
 #define SCRIPT_CH_ICASE     L'i'    // case insensitive
 #define SCRIPT_CH_NAME      L'n'    // a name without suffix
 #define SCRIPT_CH_SUFFIX    L's'    // a name with suffix
+#define SCRIPT_CH_FORCE     L'f'    // a name with suffix
 
 /** Helpers */
 
@@ -103,6 +104,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
       size_t pos = 0;
       for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
         switch (line[pos]) {
+        case SCRIPT_CH_FORCE: param.f_force = true; break;
         case SCRIPT_CH_REGEX: param.f_regex = true; break;
         case SCRIPT_CH_ICASE: param.f_icase = true; break;
         case SCRIPT_CH_NAME: param.f_parent = true; break;

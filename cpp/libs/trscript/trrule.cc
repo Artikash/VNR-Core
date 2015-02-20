@@ -19,6 +19,8 @@ void TranslationScriptRule::init(const param_type &param, bool precompile_regex)
 
   if (param.f_icase)
     flags |= IcaseFlag;
+  if (param.f_force)
+    flags |= ForceFlag;
 
   if (param.f_regex) {
     flags |= RegexFlag;

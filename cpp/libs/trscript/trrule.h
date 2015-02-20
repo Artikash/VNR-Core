@@ -19,14 +19,15 @@ struct TranslationScriptParam
                source,
                target;
   int category;
-  uint8_t f_regex,  // this is a regex
+  uint8_t f_force,  // force apply certain transformation
+          f_regex,  // this is a regex
           f_icase,  // case insensitive
           f_parent, // this is a name
           f_child;  // this is a name+suffix
 
   //TranslationScriptParam() {} // uninitialized
 
-  void clear_flags() { f_regex = f_parent = f_child = f_icase = 0; }
+  void clear_flags() { f_force = f_regex = f_parent = f_child = f_icase = 0; }
 };
 
 class TranslationScriptRule
@@ -35,8 +36,9 @@ class TranslationScriptRule
 
   enum Flag : uint8_t {
     ListFlag = 1
-    , RegexFlag = 1 << 1
-    , IcaseFlag = 1 << 2
+    , ForceFlag = 1 << 1
+    , RegexFlag = 1 << 2
+    , IcaseFlag = 1 << 3
   };
 
   uint8_t flags;
@@ -80,6 +82,7 @@ public:
   // Replacement
 private:
   bool is_list() const { return flags & ListFlag; }
+  bool is_force() const { return flags & ForceFlag; }
   bool is_regex() const { return flags & RegexFlag; }
   bool is_icase() const { return flags & IcaseFlag; }
 
@@ -106,7 +109,7 @@ private:
 
 public:
   bool exists(const std::wstring &text) const
-  { return is_regex() ? regex_exists(text) : string_exists(text); }
+  { return is_force() || (is_regex() ? regex_exists(text) : string_exists(text)); }
 
   bool replace(std::wstring &ret, bool mark) const
   {

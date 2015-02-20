@@ -417,7 +417,9 @@ class TermWriter:
           if padding:
             repl += " "
 
+          force = False
           if td.phrase and not trans_output:
+            force = True
             left = pattern[0]
             right = pattern[-1]
             if not regex:
@@ -425,7 +427,7 @@ class TermWriter:
               pattern = re.escape(pattern)
             pattern = _phrase_lbound(left, fr) + pattern + _phrase_rbound(right, fr)
 
-          self._writeLine(f, td.id, pattern, repl, regex, td.icase, td.host, name=name)
+          self._writeLine(f, td.id, pattern, repl, regex, td.icase, td.host, name=name, force=force)
 
           empty = False
 
@@ -439,7 +441,7 @@ class TermWriter:
     return False
 
   @staticmethod
-  def _writeLine(f, tid, pattern, repl, regex, icase, host, name=None):
+  def _writeLine(f, tid, pattern, repl, regex, icase, host, name=None, force=False):
     """
     @param  f  file
     @param  tid  long
@@ -449,6 +451,7 @@ class TermWriter:
     @param  icase  bool
     @param  host  str
     @param  name  True (name) of False (suffix) or None
+    @param  force  bool
     @return  unicode or None
     """
     if '\n' in pattern or '\n' in repl:
@@ -469,6 +472,8 @@ class TermWriter:
         ret = 'n' + ret # a name without suffix
       else:
         ret = 's' + ret # a name with suffix
+      if force:
+        ret = 'f' + ret # force applying regex
     f.write(ret)
 
   def _renderHeader(self, type, to, fr):
