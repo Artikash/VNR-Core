@@ -140,6 +140,7 @@ Item { id: root_
     case 11: return qsTr("Long")    // W_LONG
     case 12: return qsTr("Short")   // W_SHORT
     case 20: return qsTr("Missing") // W_MISSING_TEXT
+    case 25: return Sk.tr("Kana")   // W_KANA_TEXT
     case 30: return Sk.tr("Game")   // W_NOT_GAME
     case 31: return My.tr("Input")  // W_NOT_INPUT
     case 100: return qsTr("Brackets") // W_BAD_REGEX

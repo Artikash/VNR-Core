@@ -12,10 +12,7 @@ if __name__ == '__main__':
 
 import json
 import requests
-from collections import OrderedDict
-#from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
-from sakurakit.sknetio import GZIP_HEADERS
 
 session = requests # global session
 

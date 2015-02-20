@@ -250,6 +250,7 @@ class sakurakit(QObject):
       self.tr("Katagana"),
       self.tr("Romaji"), self.tr("romaji"),
       self.tr("Kanji"),
+      self.tr("Kana"),
       self.tr("Pinyin"),
 
       self.tr("Hanja"),

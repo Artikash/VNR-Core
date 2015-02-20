@@ -2590,6 +2590,10 @@ class _Term(object):
     if not self.regex and self.type == 'game' and self.text and unichars.isascii(self.text) and not unichars.isascii(self.pattern):
       return self.W_NOT_GAME
 
+    # W_KANA_TEXT
+    if self.sourceLanguage == 'ja' and self.type in ('name', 'suffix', 'trans', 'output') and jpchars.anykana(self.text):
+      return self.W_KANA_TEXT
+
     # W_MISSING_TEXT
     if not self.text and len(self.pattern) > 3 and self.type in ('trans', 'name', 'yomi'):
       return self.W_MISSING_TEXT
@@ -2667,6 +2671,7 @@ class _Term(object):
   W_LONG = 11               # being too long
   W_SHORT = 12              # being too short
   W_MISSING_TEXT = 20       # text is empty
+  W_KANA_TEXT = 25          # Japanese characters in translation
   W_NOT_GAME = 30           # should not use game type
   W_NOT_INPUT = 31          # should not use input type
   W_BAD_REGEX = 100         # mismatch regex
