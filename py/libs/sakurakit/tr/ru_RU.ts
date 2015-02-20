@@ -99,12 +99,12 @@
         <translation>Подтвердить</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="292"/>
+        <location filename="sktr.py" line="293"/>
         <source>Default</source>
         <translation>Дефолт</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="292"/>
+        <location filename="sktr.py" line="293"/>
         <source>default</source>
         <translation>дефолт</translation>
     </message>
@@ -279,12 +279,12 @@
         <translation>Кандзи</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="270"/>
+        <location filename="sktr.py" line="271"/>
         <source>Account</source>
         <translation>Счет</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="295"/>
+        <location filename="sktr.py" line="296"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -649,7 +649,7 @@
         <translation>Цель</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="274"/>
+        <location filename="sktr.py" line="275"/>
         <source>Author</source>
         <translation>Автор</translation>
     </message>
@@ -889,12 +889,12 @@
         <translation>с учетом регистра</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="281"/>
+        <location filename="sktr.py" line="282"/>
         <source>Creation Time</source>
         <translation>Время создания</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="281"/>
+        <location filename="sktr.py" line="282"/>
         <source>Creation time</source>
         <translation>Время создания</translation>
     </message>
@@ -909,7 +909,7 @@
         <translation>Время обновления</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="293"/>
+        <location filename="sktr.py" line="294"/>
         <source>Draft</source>
         <translation>Проект</translation>
     </message>
@@ -959,17 +959,17 @@
         <translation>рекомендуемые</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="283"/>
+        <location filename="sktr.py" line="284"/>
         <source>Color</source>
         <translation>Цвет</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="290"/>
+        <location filename="sktr.py" line="291"/>
         <source>Dictionary</source>
         <translation>Словарь</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="291"/>
+        <location filename="sktr.py" line="292"/>
         <source>Dictionaries</source>
         <translation>Словари</translation>
     </message>
@@ -1074,7 +1074,7 @@
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="294"/>
+        <location filename="sktr.py" line="295"/>
         <source>Encoding</source>
         <translation>Кодирование</translation>
     </message>
@@ -1119,7 +1119,7 @@
         <translation>Тайский</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="286"/>
+        <location filename="sktr.py" line="287"/>
         <source>Context</source>
         <translation>Контекст</translation>
     </message>
@@ -1194,7 +1194,7 @@
         <translation>Комментарии</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="280"/>
+        <location filename="sktr.py" line="281"/>
         <source>Creator</source>
         <translation>Создатель</translation>
     </message>
@@ -1204,12 +1204,12 @@
         <translation>Экспорт</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="284"/>
+        <location filename="sktr.py" line="285"/>
         <source>Content</source>
         <translation>Содержание</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="285"/>
+        <location filename="sktr.py" line="286"/>
         <source>Contents</source>
         <translation>Содержание</translation>
     </message>
@@ -1334,7 +1334,7 @@
         <translation>Индонезийский</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="273"/>
+        <location filename="sktr.py" line="274"/>
         <source>Aside</source>
         <translation>В сторону</translation>
     </message>
@@ -1349,7 +1349,7 @@
         <translation>Домашняя страница</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="276"/>
+        <location filename="sktr.py" line="277"/>
         <source>Avatar</source>
         <translation>Аватар</translation>
     </message>
@@ -1369,12 +1369,12 @@
         <translation>игнорировать</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="287"/>
+        <location filename="sktr.py" line="288"/>
         <source>Context menu</source>
         <translation>Контекстное меню</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="287"/>
+        <location filename="sktr.py" line="288"/>
         <source>context menu</source>
         <translation>Контекстное меню</translation>
     </message>
@@ -1439,22 +1439,22 @@
         <translation>неизвестный</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="279"/>
+        <location filename="sktr.py" line="280"/>
         <source>Cover</source>
         <translation>Крышка</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="259"/>
+        <location filename="sktr.py" line="260"/>
         <source>Brand</source>
         <translation>Марка</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="260"/>
+        <location filename="sktr.py" line="261"/>
         <source>Label</source>
         <translation>Этикетка</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="272"/>
+        <location filename="sktr.py" line="273"/>
         <source>Age</source>
         <translation>Возраст</translation>
     </message>
@@ -1464,7 +1464,7 @@
         <translation>Цена</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="263"/>
+        <location filename="sktr.py" line="264"/>
         <source>Visit</source>
         <translation>Визит</translation>
     </message>
@@ -1494,7 +1494,7 @@
         <translation>Экран</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="261"/>
+        <location filename="sktr.py" line="262"/>
         <source>Series</source>
         <translation>Серия</translation>
     </message>
@@ -1509,7 +1509,7 @@
         <translation>никто</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="275"/>
+        <location filename="sktr.py" line="276"/>
         <source>Authors</source>
         <translation>Авторов</translation>
     </message>
@@ -1524,7 +1524,7 @@
         <translation>Ключевые слова</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="258"/>
+        <location filename="sktr.py" line="259"/>
         <source>CG</source>
         <translation>CG</translation>
     </message>
@@ -1539,7 +1539,7 @@
         <translation>Категория</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="264"/>
+        <location filename="sktr.py" line="265"/>
         <source>Visits</source>
         <translation>Просмотров</translation>
     </message>
@@ -1549,12 +1549,12 @@
         <translation>игра</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="282"/>
+        <location filename="sktr.py" line="283"/>
         <source>Credits</source>
         <translation>Кредиты</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="288"/>
+        <location filename="sktr.py" line="289"/>
         <source>Date</source>
         <translation>Дата</translation>
     </message>
@@ -1609,7 +1609,7 @@
         <translation>Материковый Китай</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="271"/>
+        <location filename="sktr.py" line="272"/>
         <source>All</source>
         <translation>Все</translation>
     </message>
@@ -1649,17 +1649,17 @@
         <translation>Скрыть {0}</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="259"/>
+        <location filename="sktr.py" line="260"/>
         <source>brand</source>
         <translation>марка</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="260"/>
+        <location filename="sktr.py" line="261"/>
         <source>label</source>
         <translation>этикетка</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="261"/>
+        <location filename="sktr.py" line="262"/>
         <source>series</source>
         <translation>серия</translation>
     </message>
@@ -1669,7 +1669,7 @@
         <translation>название</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="288"/>
+        <location filename="sktr.py" line="289"/>
         <source>date</source>
         <translation>дата</translation>
     </message>
@@ -1694,17 +1694,17 @@
         <translation>Нисходящий</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="266"/>
+        <location filename="sktr.py" line="267"/>
         <source>Year</source>
         <translation>Год</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="267"/>
+        <location filename="sktr.py" line="268"/>
         <source>Month</source>
         <translation>Месяц</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="268"/>
+        <location filename="sktr.py" line="269"/>
         <source>Day</source>
         <translation>День</translation>
     </message>
@@ -1951,10 +1951,10 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>Engine</source>
-        <translation>Двигатель</translation>
+        <translation type="obsolete">エンジン</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="277"/>
+        <location filename="sktr.py" line="278"/>
         <source>Background</source>
         <translation>Фон</translation>
     </message>
@@ -2129,7 +2129,7 @@
         <translation>Все языки</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="271"/>
+        <location filename="sktr.py" line="272"/>
         <source>all</source>
         <translation>все</translation>
     </message>
@@ -2204,7 +2204,7 @@
         <translation>Больше не надо</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="295"/>
+        <location filename="sktr.py" line="296"/>
         <source>error</source>
         <translation>ошибка</translation>
     </message>
@@ -2274,7 +2274,7 @@
         <translation>Нет ответов</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="289"/>
+        <location filename="sktr.py" line="290"/>
         <source>Desktop</source>
         <translation>Рабочий стол</translation>
     </message>
@@ -2299,7 +2299,7 @@
         <translation>Объем</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="278"/>
+        <location filename="sktr.py" line="279"/>
         <source>Column</source>
         <translation>Колонка</translation>
     </message>
@@ -2414,12 +2414,12 @@
         <translation>равным</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="255"/>
+        <location filename="sktr.py" line="256"/>
         <source>Hanja</source>
         <translation>Ханжа</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="256"/>
+        <location filename="sktr.py" line="257"/>
         <source>Romaja</source>
         <translation>Romaja</translation>
     </message>
@@ -2484,7 +2484,7 @@
         <translation>Место действия</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="253"/>
+        <location filename="sktr.py" line="254"/>
         <source>Pinyin</source>
         <translation>Пиньинь</translation>
     </message>
@@ -2522,6 +2522,11 @@
         <location filename="sktr.py" line="344"/>
         <source>Phrase</source>
         <translation>Фраза</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="253"/>
+        <source>Kana</source>
+        <translation>Кана</translation>
     </message>
 </context>
 </TS>
