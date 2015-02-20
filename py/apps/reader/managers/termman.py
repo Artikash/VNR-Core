@@ -10,7 +10,7 @@
 
 #from sakurakit.skprof import SkProfiler
 
-import os, re
+import os, string, re
 #from collections import OrderedDict
 from functools import partial
 from time import time
@@ -48,13 +48,14 @@ def _phrase_lbound(text, language):
   """
   if not text:
     return text
+  ch = text[0]
   if language == 'ja':
-    cat = jpchars.getcat(text[0])
+    cat = jpchars.getcat(ch)
     if cat:
       m = jpmacros.getmacro('?<!' + cat)
       if m:
         return m
-  return r'\b'
+  return r'\b' if ch not in string.punctuation else ''
 
 def _phrase_rbound(text, language):
   """
@@ -64,13 +65,14 @@ def _phrase_rbound(text, language):
   """
   if not text:
     return text
+  ch = text[-1]
   if language == 'ja':
-    cat = jpchars.getcat(text[-1])
+    cat = jpchars.getcat(ch)
     if cat:
       m = jpmacros.getmacro('?!' + cat)
       if m:
         return m
-  return r'\b'
+  return r'\b' if ch not in string.punctuation else ''
 
 def _combine_name_title(name, title, prefix, paddingPrefix):
   """
@@ -373,22 +375,24 @@ class TermWriter:
             if trans_input:
               esc = NAME_ESCAPE + " " # padding space
               name = True
-              namePattern = pattern
-              nameRegex = regex
-              if td.phrase:
-                left = namePattern[0]
-                if not nameRegex:
-                  nameRegex = True
-                  namePattern = re.escape(namePattern)
-                namePattern = _phrase_lbound(left, fr) + namePattern
               for i,it in enumerate(titles):
                 x = esc % (priority, titleCount - i)
+                namePattern = pattern
+                nameRegex = regex
+                if td.phrase:
+                  if not nameRegex:
+                    nameRegex = True
+                    namePattern = re.escape(namePattern)
+                  if it.prefix: # prefix
+                    namePattern = namePattern + _phrase_rbound(pattern, fr)
+                  else: # suffix
+                    namePattern = _phrase_lbound(pattern, fr) + namePattern
                 p = re.escape(namePattern) if not nameRegex and it.regex else namePattern
                 if not it.prefix: # suffix
                   p += it.pattern
-                elif frLatinLanguage:
+                elif frLatinLanguage: # prefix and latin
                   p = it.pattern + " " + p
-                else:
+                else: # prefix and not latin
                   p = it.pattern + p
                 self._writeLine(f, td.id, p, x,
                     nameRegex or it.regex, td.icase or it.icase, td.host, name=False)
@@ -526,7 +530,7 @@ class TermWriter:
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
-          and (fr == 'ja' or td.sourceLanguage.startswith(fr2)
+          and (td.sourceLanguage.startswith(fr2)
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
             or td.sourceLanguage == 'ja' and (
               td.type in jatypes
