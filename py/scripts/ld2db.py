@@ -85,10 +85,9 @@ def main(argv):
     dwarn("invalid number of parameters")
     usage()
   else:
-    args = list(argv)
-    while len(args) < 4:
-      args.append(None)
-    ldpath, inenc, outenc, dbpath = args
+    while len(argv) < 4:
+      argv.append(None)
+    ldpath, inenc, outenc, dbpath = argv
     try: ok = ld2db(ldpath, dbpath, inenc, outenc)
     except Exception, e: dwarn(e)
   ret = 0 if ok else 1

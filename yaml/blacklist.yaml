@@ -139,6 +139,7 @@ processes:
   - KanKan.exe          # Xunlei
   - Maxthon.exe         # Maxthon
   - MediaInfo.exe       # MediaInfo
+  - ModOrganizer.exe    # Skyrim Mod Organizer
   - mpc-be.exe          # MPC
   - mpc-hc.exe          # MPC
   - mpc-hc_nvo.exe      # MPC
