@@ -36,7 +36,7 @@ class _UpdateDialog:
     osutil.open_location(rc.app_path('updater'))
 
   def openChanges(self):
-    url = 'http://sakuradite.com/app/vnr/changes'
+    url = 'http://sakuradite.com/changes/vnr'
     osutil.open_url(url)
 
   def _createUi(self, q):
@@ -59,7 +59,7 @@ You can find recent changes here:"""))
     layout.addWidget(infoLabel)
 
     linkstyle = 'color:#428bca' # bootstrap btn-link
-    url = 'http://sakuradite.com/app/vnr/changes'
+    url = 'http://sakuradite.com/changes/vnr'
     changesLabel = QtWidgets.QLabel(
         '<a href="{1}" style="{0}">{1}</a>'.format(linkstyle, url))
     changesLabel.setOpenExternalLinks(True)
