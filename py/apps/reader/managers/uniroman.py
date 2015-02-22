@@ -56,7 +56,7 @@ def _toroman(text, language='', type=''):
       #text = t.title() # always title
   else:
     text = unidecode(text)
-    if language == 'ko':
+    if text and language == 'ko':
       text = text.title()
   return text
 
