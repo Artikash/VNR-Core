@@ -43,7 +43,7 @@ def toroman(text, language=''): # unicode, str -> unicode
   #  #ret = ko2zht(ret)
   #  ret = pinyinconv.to_pinyin(ret, capital=True)
   #else:
-  ret = unidecode(text)
+  ret = unidecode(text) or text
   if ret[-1] == ' ':
     ret = ret[:-1]
   if language in ('ko', 'ja') and ret != text:

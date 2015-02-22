@@ -45,7 +45,7 @@ class _AboutDialog:
     #self.versionLabel.setWordWrap(True)
 
     linkstyle = 'color:#428bca' # bootstrap btn-link
-    url = 'http://sakuradite.com/app/vnr/changes'
+    url = 'http://sakuradite.com/changes/vnr'
     changesLabel = QtWidgets.QLabel(
         '<a href="%s" style="%s">%s</a>' %
         (url, linkstyle, tr_("Recent Changes")))

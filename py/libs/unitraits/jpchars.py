@@ -129,10 +129,10 @@ def getcat(ch):
   return ''
 
 # Alpha, Number, Punctuation, Space
-re_any_anp = re.compile(ur"[a-zA-Z0-9%s]" % s_punct)
-re_all_anp = re.compile(ur"^[a-zA-Z0-9%s]+$" % s_punct)
-re_any_anps = re.compile(ur"[a-zA-Z0-9%s]" % s_punct)
-re_all_anps = re.compile(ur"^(?:[a-zA-Z0-9%s]|\s)+$" % s_punct)
+re_any_anp = re.compile(ur"[a-zA-Z0-9%s]" % (s_punct + '.'))
+re_all_anp = re.compile(ur"^[a-zA-Z0-9%s]+$" % (s_punct + '.'))
+re_any_anps = re.compile(ur"[a-zA-Z0-9%s]" % (s_punct + '.'))
+re_all_anps = re.compile(ur"^(?:[a-zA-Z0-9%s]|\s)+$" % (s_punct + '.'))
 def anyanp(text): return bool(re_any_anp.search(text))
 def allanp(text): return bool(re_all_anp.match(text))
 def anyanps(text): return bool(re_any_anps.search(text))
