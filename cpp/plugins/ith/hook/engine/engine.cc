@@ -5635,7 +5635,7 @@ void InsertStuffScriptHook()
 bool InsertTriangleHook()
 {
   for (DWORD i = module_base_; i < module_limit_ - 4; i++)
-    if ((*(DWORD*)i & 0xffffff) == 0x75403c) // cmp al,0x40; jne
+    if ((*(DWORD *)i & 0xffffff) == 0x75403c) // cmp al,0x40; jne
       for (DWORD j = i + 4 + *(BYTE*)(i+3), k = j + 0x20; j < k; j++)
         if (*(BYTE*)j == 0xe8) {
           DWORD t = j + 5 + *(DWORD *)(j + 1);
@@ -5897,7 +5897,7 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
       hp.type = utf16 ? USING_UNICODE : USING_STRING;
 
       i = *(DWORD *)(k - 4); // get function call address
-      if (*(DWORD *)(k - 5) == 0xe8) // sort jump
+      if (*(DWORD *)(k - 5) == 0xe8) // short jump
         hp.addr = i + k;
       else
         hp.addr = *(DWORD *)i; // jichi: long jump, this is what is happening in Aoi5
