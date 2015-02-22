@@ -391,7 +391,7 @@ def gaiji_dict(name):
     path = gaiji_path(name)
     ret = {}
     if path:
-      try: ret = plistlib.readPlist(path)
+      try: ret = plistlib.readPlist(path) # may raise if there are illegal characters in gaiji
       except Exception, e: dwarn(e)
     GAIJI[name] = ret
   return ret
