@@ -387,9 +387,13 @@ def gaiji_dict(name):
   @throw  KeyError  when unknown name
   """
   ret = GAIJI.get(name)
-  if not ret:
+  if ret is None:
     path = gaiji_path(name)
-    GAIJI[name] = ret = plistlib.readPlist(path) if path else {}
+    ret = {}
+    if path:
+      try: ret = plistlib.readPlist(path) # may raise if there are illegal characters in gaiji
+      except Exception, e: dwarn(e)
+    GAIJI[name] = ret
   return ret
 
 def trdb_path(key, fr, to):
