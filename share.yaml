@@ -239,9 +239,8 @@ proxies:
   host: 153.121.52.138 # sakuradite.org
   #host: 153.121.54.194 # sakuradite.com
 
-  webproxy: http://153.121.52.138/proxy/webproxy
+  jpwebproxy: http://153.121.52.138/proxy/jpwebproxy
   uswebproxy: http://153.121.52.138/proxy/uswebproxy
-  webserver: http://153.121.52.138/proxy/webserver
 
   baidufanyi:   http://153.121.52.138/proxy/baidu/fanyi
   baidutts:     http://153.121.52.138/proxy/baidu/tts

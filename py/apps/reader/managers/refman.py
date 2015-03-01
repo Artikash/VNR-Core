@@ -1159,7 +1159,7 @@ class AmazonApi(object):
     """
     if url:
       #m = re.search(r"/(B00[0-9A-Z]+)", url)
-      m = re.search(r"/([0-9A-Z]+)", url)
+      m = re.search(r"/(B[0-9A-Z]+)", url)
       if m:
         return m.group(1)
 

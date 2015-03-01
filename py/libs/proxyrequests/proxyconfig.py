@@ -1,26 +1,30 @@
 # coding: utf8
 # proxyconfig.py
 # 1/2/2015 jichi
+# See: https://twitter.com/bypassproxy
 
-WEBPROXY_CONFIG = { # faster, but jittered
-  'host': 'http://webproxy.nu',
-  'referer': 'http://webproxy.nu',
+JPWEBPROXY_CONFIG = { # faster, but jittered
+  'host': 'http://japanwebproxy.biz',
+  'referer': 'http://japanwebproxy.biz',
   'postkey': 'x',
   'region': 'ja',
 }
 
-USWEBPROXY_CONFIG = {
-  'host': 'http://uswebproxy.nu',
-  'referer': 'http://uswebproxy.nu',
+USWEBPROXY_CONFIG = { # faster, but jittered
+  'host': 'http://japanwebproxy.com', # cannot access erogamescape
+  'referer': 'http://japanwebproxy.com',
   'postkey': 'x',
-  'region': 'en',
-}
-
-WEBSERVER_CONFIG = { # slower, but not jittered
-  'host': 'http://web-server.se',
-  'referer': 'http://web-server.se',
-  'postkey': 'q',
   'region': 'ja',
 }
+
+# Currently not supported yet
+#USWEBPROXY_CONFIG = {
+#  #'host': 'http://www.unblock-proxy.us',
+#  #'referer': 'http://www.unblock-proxy.us',
+#  'host': 'http://www.uswebproxy.com',
+#  'referer': 'http://www.uswebproxy.com',
+#  'postkey': 'x',
+#  'region': 'en',
+#}
 
 # EOF

@@ -69,13 +69,13 @@ def setMainlandChina(value):
 
       if PROXY_CONFIG:
         from proxyrequests import proxyconfig
-        PROXY_CONFIG['host'] = proxyconfig.USWEBPROXY_CONFIG['host']
+        PROXY_CONFIG['host'] = proxyconfig.JPWEBPROXY_CONFIG['host']
 
     else:
       import config
       googlesr.setapi(config.PROXY_GOOGLE_SR)
       googletts.setapi(config.PROXY_GOOGLE_TTS)
-      #googletrans.setapi(config.PROXY_GOOGLE_TRANS)
+      #googletrans.setapi(config.PROXY_GOOGLE_TRANS) # handled in googleman
       erogamescape.api.sethost(config.PROXY_EROGAMESCAPE) # temporarily disabled
       dmm.game.sethost(config.PROXY_DMM_JP)
       dlsite.search.sethost(config.PROXY_DLSITE)
@@ -87,7 +87,7 @@ def setMainlandChina(value):
       googleman.setapi(config.PROXY_GOOGLE_TRANS)
 
       if PROXY_CONFIG:
-        PROXY_CONFIG['host'] = config.PROXY_USWEBPROXY
+        PROXY_CONFIG['host'] = config.PROXY_JPWEBPROXY
 
       #googletrans.session = make_proxy_session(allows_caching=True)
 
@@ -98,10 +98,10 @@ def get_proxy_config():
   global PROXY_CONFIG
   if not PROXY_CONFIG:
     from proxyrequests import proxyconfig
-    PROXY_CONFIG = dict(proxyconfig.USWEBPROXY_CONFIG)
+    PROXY_CONFIG = dict(proxyconfig.JPWEBPROXY_CONFIG)
     if MAINLAND_CHINA:
       import config
-      PROXY_CONFIG['host'] = config.PROXY_USWEBPROXY
+      PROXY_CONFIG['host'] = config.PROXY_JPWEBPROXY
   return PROXY_CONFIG
 
 def make_proxy_session(*args, **kwargs):
