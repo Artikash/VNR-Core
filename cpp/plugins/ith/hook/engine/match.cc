@@ -309,10 +309,11 @@ bool DetermineEngineByFile3()
     InsertTriangleHook();
     return true;
   }
-  if (IthCheckFile(L"PSetup.exe")) {
-    InsertPensilHook();
-    return true;
-  }
+  // jichi 2/28/2015: No longer work for "大正×対称アリス episode I" from Primula
+  //if (IthCheckFile(L"PSetup.exe")) {
+  //  InsertPensilHook();
+  //  return true;
+  //}
   if (IthCheckFile(L"Yanesdk.dll")) {
     InsertAB2TryHook();
     return true;
@@ -373,6 +374,16 @@ bool DetermineEngineByFile4()
   //if (IthCheckFile(L"dSoh.dat")) { // no idea why this file does not work
   if (IthCheckFile(L"dSch.dat")) {
     InsertSyuntadaHook();
+    return true;
+  }
+
+  // jichi 2/28/2015: Delay checking Pensil in case something went wrong
+  // File pattern observed in [Primula] 大正×対称アリス episode I
+  // - PSetup.exe no longer exists
+  // - MovieTexture.dll information shows MovieTex dynamic library, copyright Pensil 2013
+  // - ta_trial.exe information shows 2XT - Primula Adventure Engine
+  if (IthFindFile(L"PSetup.exe") || IthFindFile(L"MovieTexture.dll") || Util::SearchResourceString(L"2XT -")) {
+    InsertPensilHook();
     return true;
   }
   return false;
