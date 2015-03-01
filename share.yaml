@@ -92,7 +92,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
-  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.2/jquery-ui.min.js
+  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.3/jquery-ui.min.js
 
   bootstrap.growl: $PWD/../AJAX/github/bootstrap-growl.min.js
 
@@ -109,7 +109,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   moment: http://cdn.jsdelivr.net/momentjs/2.9.0/moment-with-locales.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
-  underscore: http://cdn.jsdelivr.net/lodash/3.0.0/lodash.min.js
+  underscore: http://cdn.jsdelivr.net/lodash/3.3.0/lodash.min.js
   # Underscore.string has been outdated
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
 
