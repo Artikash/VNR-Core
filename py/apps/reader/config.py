@@ -235,8 +235,7 @@ _PROXY = SHARE_YAML['proxies']
 
 PROXY_HOST = _PROXY['host']
 
-#PROXY_WEBSERVER = _PROXY['webserver']
-#PROXY_WEBPROXY = _PROXY['webproxy']
+PROXY_JPWEBPROXY = _PROXY['jpwebproxy']
 PROXY_USWEBPROXY = _PROXY['uswebproxy']
 
 PROXY_BAIDU_FANYI = _PROXY['baidufanyi']
