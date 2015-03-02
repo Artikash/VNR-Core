@@ -131,6 +131,8 @@ class PostList
       postId = $post.data 'id'
       post = self.getPost postId
 
+      $post.addClass 'highlight' if post.highlight
+
       $header = $post.find '> .right > .header'
       $footer = $post.find '> .right > .footer'
 

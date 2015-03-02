@@ -146,6 +146,8 @@ class Topic
     $header = $topic.find '> .right > .header'
     $footer = $topic.find '> .right > .footer'
 
+    $topic.addClass 'finished' if topic.finished
+
     $topic.find('a.link-game').click ->
       mainBean.showGame subjectId if subjectId
       false

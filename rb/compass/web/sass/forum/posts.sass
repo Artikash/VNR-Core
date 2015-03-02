@@ -7,6 +7,14 @@
 @import main/shadow
 @import main/transition
 
+// Copied from my bootstrap/color.sass
+$bg-warning-color: #fcf8e3
+$bg-warning-hover-color: #faf2cc
+.bg-warning
+  background-color: $bg-warning-color
+  &:hover
+    background-color: $bg-warning-hover-color
+
 $avatar-width: 40px
 $reply-avatar-width: $avatar-width * 0.8
 
@@ -19,6 +27,8 @@ $reply-avatar-width: $avatar-width * 0.8
   .post
     padding-top: 9px // include the height of footer
     min-height: $avatar-width
+    &.highlight
+      @extend .bg-warning
     > a > img.avatar
       float: left
       width: $avatar-width
