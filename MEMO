@@ -36,12 +36,14 @@ Info
 - Google Code
 
 # Translator related files
-util.js: jbeijing: & make
+qml/util.js: jbeijing: & make
 kagami.qml: jbeijingColor
 grimoire.qml: ..
 mirage.qml: ..
 share.yaml: baidu
 reader.yaml: ..
+share/mt
+  mtinfo.py: ..
 reader:
   settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
   config.py: JBEIJING_COLOR
@@ -52,10 +54,8 @@ reader:
   main.py: jbeijingEnabled
   __main__.py: jbeijing
   _prefs.py: jbeijing
-  _trman.py: ..
   trman.py: ..
-share/mt
-  mtinfo.py: ..
+  _trman.py: ..
 
 browser:
   settings.py: jbeijingEnabled jbeijingLocation

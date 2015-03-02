@@ -655,6 +655,15 @@ class Settings(QSettings):
       self.setValue('EzTransColor', value)
       self.ezTransColorChanged.emit(value)
 
+  transcatColorChanged = Signal(str)
+  def transcatColor(self):
+    return self.value('TransCATColor', config.SETTINGS_TRANSCAT_COLOR)
+  def setTranscatColor(self, value):
+    value = value or config.SETTINGS_TRANSCAT_COLOR
+    if value != self.transcatColor():
+      self.setValue('TransCATColor', value)
+      self.transcatColorChanged.emit(value)
+
   atlasColorChanged = Signal(str)
   def atlasColor(self):
     return self.value('AtlasColor', config.SETTINGS_ATLAS_COLOR)
@@ -1222,6 +1231,11 @@ class Settings(QSettings):
   def setEzTransLocation(self, path):
     self.setValue('ezTransLocation', path)
 
+  def transcatLocation(self):
+    return to_unicode(self.value('TransCATLocation'))
+  def setTranscatLocation(self, path):
+    self.setValue('TransCATLocation', path)
+
   def dreyeLocation(self):
     return to_unicode(self.value('DreyeLocation'))
   def setDreyeLocation(self, path):
@@ -1421,6 +1435,15 @@ class Settings(QSettings):
     if value != self.isEzTransEnabled():
       self.setValue('ezTransEnabled', value)
       self.ezTransEnabledChanged.emit(value)
+      self.machineTranslatorChanged.emit()
+
+  transcatEnabledChanged = Signal(bool)
+  def isTranscatEnabled(self):
+    return to_bool(self.value('TransCATEnabled'))
+  def setTranscatEnabled(self, value):
+    if value != self.isTranscatEnabled():
+      self.setValue('TransCATEnabled', value)
+      self.transcatEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
   ## Translation options ##
@@ -1953,6 +1976,7 @@ class SettingsProxy(QObject):
     g.fastaitColorChanged.connect(self.fastaitColorChanged)
     g.dreyeColorChanged.connect(self.dreyeColorChanged)
     g.ezTransColorChanged.connect(self.ezTransColorChanged)
+    g.transcatColorChanged.connect(self.transcatColorChanged)
     g.atlasColorChanged.connect(self.atlasColorChanged)
     g.lecColorChanged.connect(self.lecColorChanged)
 
@@ -2259,6 +2283,8 @@ class SettingsProxy(QObject):
   dreyeColor = unicode_property('DreyeColor', config.SETTINGS_DREYE_COLOR, notify=dreyeColorChanged)
   ezTransColorChanged = Signal(unicode)
   ezTransColor = unicode_property('EzTransColor', config.SETTINGS_EZTRANS_COLOR, notify=ezTransColorChanged)
+  transcatColorChanged = Signal(unicode)
+  transcatColor = unicode_property('TransCATColor', config.SETTINGS_TRANSCAT_COLOR, notify=transcatColorChanged)
   atlasColorChanged = Signal(unicode)
   atlasColor = unicode_property('AtlasColor', config.SETTINGS_ATLAS_COLOR, notify=atlasColorChanged)
   lecColorChanged = Signal(unicode)

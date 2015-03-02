@@ -638,15 +638,15 @@ tahscript:
   atlas:            $PWD/../../Dictionaries/tahscript/atlas.txt
   lec:              $PWD/../../Dictionaries/tahscript/lec.txt
 
-trdb:
-  baidu:            $PWD/../../../Caches/Translations/Baidu
-  bing:             $PWD/../../../Caches/Translations/Microsoft
-  excite:           $PWD/../../../Caches/Translations/Excite
-  google:           $PWD/../../../Caches/Translations/Google
-  naver:            $PWD/../../../Caches/Translations/Naver
-  infoseek:         $PWD/../../../Caches/Translations/Infoseek
-  lecol:            $PWD/../../../Caches/Translations/LEC
-  transru:          $PWD/../../../Caches/Translations/PROMT
+#trdb:
+#  baidu:            $PWD/../../../Caches/Translations/Baidu
+#  bing:             $PWD/../../../Caches/Translations/Microsoft
+#  excite:           $PWD/../../../Caches/Translations/Excite
+#  google:           $PWD/../../../Caches/Translations/Google
+#  naver:            $PWD/../../../Caches/Translations/Naver
+#  infoseek:         $PWD/../../../Caches/Translations/Infoseek
+#  lecol:            $PWD/../../../Caches/Translations/LEC
+#  transru:          $PWD/../../../Caches/Translations/PROMT
 
 # Must be consistent with python scripts and dicts.py
 mecab:

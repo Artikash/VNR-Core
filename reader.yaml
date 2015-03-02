@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1425251610
+  timestamp: 1425276998
 
 app:
   #debug: true
@@ -96,6 +96,7 @@ settings:
   fastaitColor: '#55aa00' # deep green
   dreyeColor: '#555500' # yellow
   ezTransColor: '#0055ff' # blue
+  transcatColor: '#555500' # yellow
   atlasColor: '#555500' # yellow
   lecColor: '#0055ff'   # blue
   lecOnlineColor: '#000000' # black

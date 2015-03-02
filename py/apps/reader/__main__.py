@@ -272,7 +272,10 @@ def main():
 
   from sakurakit import skpaths
   skpaths.append_paths((
+    # TransCAT must be initialized BEFORE JBeijing, or the translation will fail
+    ss.transcatLocation(),
     ss.jbeijingLocation(),
+
     ss.ezTransLocation(),
     ss.atlasLocation(),
     ss.zunkoLocation(),

@@ -26,7 +26,7 @@ from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
 from unitraits import unichars, jpmacros
 from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
-import config, defs, growl, mecabman, termman, textutil, trman, trcache, tahscript
+import config, defs, growl, mecabman, termman, textutil, trman, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
     ur'{{boc}}({{kana}})[っッ]?(?=[、…]\1)'))
@@ -278,7 +278,7 @@ class YueTranslator(Translator):
 class MachineTranslator(Translator):
 
   splitsSentences = False # bool
-  persistentCaching = False # bool  whether use sqlite to cache the translation
+  #persistentCaching = False # bool  whether use sqlite to cache the translation
 
   #_CACHE_LENGTH = 10 # length of the translation to cache
 
@@ -316,12 +316,13 @@ class MachineTranslator(Translator):
     if ret:
       return ret
 
-    if self.persistentCaching:
-      #with SkProfiler(): # takes about 0.03 to create, 0.02 to insert
-      ret = trcache.get(key=self.key, fr=fr, to=to, text=text)
-      if ret:
-        self._cache.update(text, ret)
-        return ret
+    # Persistent caching is always disabled now
+    #if self.persistentCaching:
+    #  #with SkProfiler(): # takes about 0.03 to create, 0.02 to insert
+    #  ret = trcache.get(key=self.key, fr=fr, to=to, text=text)
+    #  if ret:
+    #    self._cache.update(text, ret)
+    #    return ret
 
     #with SkProfiler():
     ret = skthreads.runsync(partial(
@@ -334,9 +335,10 @@ class MachineTranslator(Translator):
         ret = ret.decode('utf8', errors='ignore')
       if ret:
         self._cache.update(text, ret)
-        if self.persistentCaching:
-          #with SkProfiler(): # takes about 0.003
-          trcache.add(key=self.key, fr=fr, to=to, text=text, translation=ret)
+        # Persistent caching is always disabled now
+        #if self.persistentCaching:
+        #  #with SkProfiler(): # takes about 0.003
+        #  trcache.add(key=self.key, fr=fr, to=to, text=text, translation=ret)
     return ret
 
   def _itertexts(self, text):
@@ -560,14 +562,13 @@ class MachineTranslator(Translator):
 
 class OfflineMachineTranslator(MachineTranslator):
   onlineRequired = False # overrie
-  persistentCaching = False # bool  disable sqlite
+  #persistentCaching = False # bool  disable sqlite
   def __init__(self, *args, **kwargs):
     super(OfflineMachineTranslator, self).__init__(*args, **kwargs)
 
 class OnlineMachineTranslator(MachineTranslator):
   onlineRequired = True # override
   #persistentCaching = True # bool  enable sqlite
-  persistentCaching = False # bool  temporarily disabled, or it will break the syntax translator
   def __init__(self, *args, **kwargs):
     super(OnlineMachineTranslator, self).__init__(*args, **kwargs)
 
@@ -781,7 +782,6 @@ class EzTranslator(OfflineMachineTranslator):
   __ez_repl_before = staticmethod(skstr.multireplacer({
     u'『': u'『"『', # a double quote in the middle
     u'』': u'』"』',
-
   }))
   __ez_repl_after = staticmethod(skstr.multireplacer({
     u'「"「': u'『',
@@ -820,6 +820,87 @@ class EzTranslator(OfflineMachineTranslator):
           dwarn(e)
           if not async:
             growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")),
+                async=async)
+    return None, None, None
+
+class TransCATTranslator(OfflineMachineTranslator):
+  key = 'transcat' # override
+
+  def __init__(self, **kwargs):
+    super(TransCATTranslator, self).__init__(**kwargs)
+    self.engine = self.createengine()
+    self._warned = False # bool
+
+  @staticmethod
+  def createengine():
+    from transcat import transcat
+    ret = transcat.create_engine()
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy) # not needed by transcat
+    if ok:
+      growl.msg(my.tr("TransCAT JK is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("TransCAT")))
+    return ret
+
+  def warmup(self, to='', fr=''):
+    """@reimp"""
+    self.engine.warmup()
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """@reimp"""
+    try: return self._translateTest(self.engine.translate, text, async=async)
+    except Exception, e:
+      dwarn(e)
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("TransCAT")),
+          async=async)
+      return ''
+
+  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
+    return self.engine.translate(text)
+
+  #__cat_repl_before = staticmethod(skstr.multireplacer({
+  #  u'『': u'『"『', # a double quote in the middle
+  #  u'』': u'』"』',
+  #}))
+  #__cat_repl_after = staticmethod(skstr.multireplacer({
+  #  u'「"「': u'『',
+  #  u'」"」': u'』',
+  #}))
+  # Example: GPS97351.678 => GPS97351. 678
+  __re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, **kwargs):
+    """@reimp"""
+    to = 'ko'
+    if emit:
+      self.emitLanguages(fr='ja', to=to)
+    if fr != 'ja':
+      return None, None, None
+    if not emit:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, fr=fr, emit=emit)
+    if repl:
+      try:
+        #repl = self.__cat_repl_before(repl)
+        repl = self._translate(emit, repl,
+            self._translateApi,
+            to, fr, async)
+        if repl:
+          #repl = self.__cat_repl_after(repl)
+          repl = self.__re_term_fix.sub('', repl)
+          repl = self._unescapeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit)
+          self.cache.update(text, repl)
+          return repl, to, self.key
+      #except RuntimeError, e:
+      except Exception, e:
+        if not self._warned:
+          self._warned = True
+          dwarn(e)
+          if not async:
+            growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("TransCAT")),
                 async=async)
     return None, None, None
 

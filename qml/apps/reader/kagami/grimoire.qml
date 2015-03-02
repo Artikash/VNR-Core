@@ -70,6 +70,7 @@ Item { id: root_
   property color fastaitColor
   property color dreyeColor
   property color ezTransColor
+  property color transcatColor
   property color atlasColor
   property color lecColor
   property color lecOnlineColor
@@ -267,6 +268,7 @@ Item { id: root_
     case 'fastait': return root_.fastaitColor
     case 'dreye': return root_.dreyeColor
     case 'eztrans': return root_.ezTransColor
+    case 'transcat': return root_.transcatColor
     case 'atlas': return root_.atlasColor
     case 'lec': return root_.lecColor
     case 'lecol': return root_.lecOnlineColor

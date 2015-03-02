@@ -139,7 +139,7 @@ MAX_UPLOAD_IMAGE_SIZE = 2 * 1024 * 1024 # 2MB
 TOPIC_TYPES = (
   'chat',
   'question',
-  'solved',
+  #'solved',
   'news',
   'article',
   #'slides',

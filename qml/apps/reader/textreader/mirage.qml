@@ -152,6 +152,7 @@ Item { id: root_
   property color fastaitColor: settings_.fastaitColor
   property color dreyeColor: settings_.dreyeColor
   property color ezTransColor: settings_.ezTransColor
+  property color transcatColor: settings_.transcatColor
   property color atlasColor: settings_.atlasColor
   property color lecColor: settings_.lecColor
   property color lecOnlineColor: settings_.lecOnlineColor
@@ -183,6 +184,7 @@ Item { id: root_
     case 'fastait': return root_.fastaitColor
     case 'dreye': return root_.dreyeColor
     case 'eztrans': return root_.ezTransColor
+    case 'transcat': return root_.transcatColor
     case 'atlas': return root_.atlasColor
     case 'lec': return root_.lecColor
     case 'lecol': return root_.lecOnlineColor

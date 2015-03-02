@@ -171,6 +171,7 @@ var TRANSLATOR_HOST_KEYS = [
   , 'fastait'
   , 'dreye'
   , 'eztrans'
+  , 'transcat'
   , 'lec'
   , 'atlas'
   , 'hanviet'
@@ -189,13 +190,14 @@ var TRANSLATOR_NAME = {
   , fastait: "金山快譯"
   , dreye: "Dr.eye"
   , eztrans: "ezTrans XP"
+  , transcat: "TransCAT"
   , atlas: "ATLAS"
   , lec: "LEC"
   , lecol: "LEC Online"
   , transru: "Translate.Ru"
   //, lou: "ルー語"
   , hanviet: "Hán Việt"
-  , vtrans: "VTrans"
+  , vtrans: "vTrans"
 };
 function translatorName(tr) {
   var ret = TRANSLATOR_NAME[tr];

@@ -196,6 +196,31 @@ class EzTrans(Library):
       if path:
         skpaths.append_path(path)
 
+class TransCAT(Library):
+  URL = "http://www.clickq.com"
+
+  def location(self):
+    """@reimp"""
+    ret = settings.global_().transcatLocation()
+    if self.verifyLocation(ret):
+      return ret
+
+    from transcat import transcat
+    ret = transcat.location()
+    if self.verifyLocation(ret):
+      return ret
+    return settings.global_().transcatLocation()
+
+  def verifyLocation(self, path):
+    """@reimp"""
+    return bool(path) and os.path.exists(os.path.join(path, "D_JK.dll"))
+
+  def setLocation(self, path):
+    if path != self.location():
+      settings.global_().setTranscatLocation(path)
+      if path:
+        skpaths.append_path(path)
+
 class LocaleEmulator(Library):
   #URL = "http://www.hongfire.com/forum/showthread.php/418962-Locale-Emulator-another-tool-for-japanese-locale-emulation"
   #URL = "https://github.com/xupefei/Locale-Emulator"
@@ -287,6 +312,8 @@ def fastait(): return FastAIT()
 def dreye(): return Dreye()
 @memoized
 def eztrans(): return EzTrans()
+@memoized
+def transcat(): return TransCAT()
 @memoized
 def quicktime(): return QuickTime()
 @memoized

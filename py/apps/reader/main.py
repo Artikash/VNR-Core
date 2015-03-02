@@ -647,13 +647,13 @@ class _MainObject(object):
   #  self.dataManager.translationScriptsChanged.connect(ret.reloadScripts)
   #  return ret
 
-  @memoizedproperty
-  def translationCacheManager(self):
-    dprint("create translation cache manager")
-    import trcache
-    ret = trcache.manager()
-    ret.setParent(self.q)
-    return ret
+  #@memoizedproperty
+  #def translationCacheManager(self):
+  #  dprint("create translation cache manager")
+  #  import trcache
+  #  ret = trcache.manager()
+  #  ret.setParent(self.q)
+  #  return ret
 
   #@memoizedproperty
   #def tahScriptManager(self):
@@ -754,6 +754,9 @@ class _MainObject(object):
 
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
+
+    ret.setTranscatEnabled(ss.isTranscatEnabled())
+    ss.transcatEnabledChanged.connect(ret.setTranscatEnabled)
 
     ret.setVTransEnabled(ss.isVTransEnabled())
     ss.vtransEnabledChanged.connect(ret.setVTransEnabled)
@@ -1664,7 +1667,7 @@ class MainObject(QObject):
     #d.translationScriptManager
     #d.tahScriptManager
     d.translatorManager
-    d.translationCacheManager
+    #d.translationCacheManager
     d.dictionaryManager
     d.meCabManager
     d.caboChaManager

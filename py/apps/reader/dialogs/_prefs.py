@@ -2596,6 +2596,7 @@ class _TextTab(object):
       ('fastait',   None, None, 'zh'),
       ('dreye',     None, None,  'zh'),
       ('eztrans',  'EzTrans',  'ezTrans', 'ko'),
+      ('transcat',  None, None, 'ko'),
       ('lec',       None, None, 'en'),
       ('atlas',     None, None, 'en'),
       ('hanviet',  'HanViet',  'hanViet', 'vi'),
@@ -2653,7 +2654,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -3021,9 +3022,10 @@ class _MachineTranslationTab(object):
       r += 1
       grid.addWidget(self.ezTransBrowseButton, r, 0)
       grid.addWidget(self.ezTransButton, r, 1)
-      #r += 1
-      #row = create_retrans_row('eztrans', self.ezTransButton)
-      #grid.addLayout(row, r, 1, 1, 2)
+
+      r += 1
+      grid.addWidget(self.transcatBrowseButton, r, 0)
+      grid.addWidget(self.transcatButton, r, 1)
 
     if 'en' not in blans or 'ru' not in blans:
       r += 1
@@ -3366,7 +3368,7 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def dreyeButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
+    ret = QtWidgets.QCheckBox(my.tr("Dr.eye Japanese/Chinese/English translator"))
     ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isDreyeEnabled())
     ret.toggled.connect(settings.global_().setDreyeEnabled)
@@ -3378,7 +3380,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def jbeijingButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("JBeijing Chinese translator"),
+        my.tr("JBeijing Japanese-Chinese translator"),
         my.tr("recommended for Chinese")))
     ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isJBeijingEnabled())
@@ -3404,7 +3406,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def ezTransButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("ezTrans XP Korean translator"),
+        my.tr("ezTrans XP Japanese-Korean translator"),
         my.tr("recommended for Korean")))
     ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isEzTransEnabled())
@@ -3413,6 +3415,17 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def ezTransBrowseButton(self):
     return self._createBrowseButton(libman.eztrans().location)
+
+  @memoizedproperty
+  def transcatButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("TransCAT Japanese-Korean translator"))
+    ret.setStyleSheet("QCheckBox{color:purple}")
+    ret.setChecked(settings.global_().isTranscatEnabled())
+    ret.toggled.connect(settings.global_().setTranscatEnabled)
+    return ret
+  @memoizedproperty
+  def transcatBrowseButton(self):
+    return self._createBrowseButton(libman.transcat().location)
 
   @memoizedproperty
   def hanVietButton(self):
@@ -3436,7 +3449,7 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def atlasButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
+    ret = QtWidgets.QCheckBox(my.tr("ATLAS Japanese-English translator"))
     ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isAtlasEnabled())
     ret.toggled.connect(settings.global_().setAtlasEnabled)
@@ -3459,7 +3472,7 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def lecButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("LEC English/Russian translator"))
+    ret = QtWidgets.QCheckBox(my.tr("LEC Japanese/English/Russian translator"))
     ret.setStyleSheet("QCheckBox{color:purple}")
     ret.setChecked(settings.global_().isLecEnabled())
     ret.toggled.connect(settings.global_().setLecEnabled)
@@ -3507,6 +3520,10 @@ class _MachineTranslationTab(object):
       t = ss.isEzTransEnabled() or bool(libman.eztrans().location())
       self.ezTransButton.setEnabled(t)
       self.ezTransBrowseButton.setEnabled(t)
+
+      t = ss.isTranscatEnabled() or bool(libman.transcat().location())
+      self.transcatButton.setEnabled(t)
+      self.transcatBrowseButton.setEnabled(t)
 
     if 'en' not in blans:
       t = ss.isAtlasEnabled() or bool(libman.atlas().location())
@@ -5830,6 +5847,7 @@ class _TranslatorLibraryTab(object):
       layout.addWidget(self.dreyeGroup)
     if 'ko' not in blans:
       layout.addWidget(self.ezTransGroup)
+      layout.addWidget(self.transcatGroup)
     if 'en' not in blans:
       layout.addWidget(self.atlasGroup)
     if 'en' not in blans or 'ru' not in blans:
@@ -6219,6 +6237,103 @@ ezTrans is detected on your system at the above location.""")
 ezTrans is <span style="color:purple">not free</span>, and you can purchase one here from ChangShin Soft:
 <center><a href="%s">%s</a></center>""") % (url, url))
 
+  ## TransCAT ##
+
+  @memoizedproperty
+  def transcatGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    editRow = QtWidgets.QHBoxLayout()
+    editRow.addWidget(self.transcatLocationEdit)
+    editRow.addWidget(self.transcatLocationButton)
+    editRow.addWidget(self.transcatLocationClearButton)
+    layout.addLayout(editRow)
+    layout.addWidget(self.transcatInfoEdit)
+    ret = QtWidgets.QGroupBox(notr_("ClickQ - TransCAT JK (140MB)"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def transcatLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    ret.setToolTip(tr_("Location"))
+    return ret
+
+  @memoizedproperty
+  def transcatLocationButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
+    skqss.class_(ret, BROWSE_BTN_CLASS)
+    ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("TransCAT")))
+    ret.clicked.connect(self._getTranscatLocation)
+    return ret
+
+  @memoizedproperty
+  def transcatLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearTranscatLocation)
+    return ret
+
+  @memoizedproperty
+  def transcatInfoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    return ret
+
+  def _getTranscatLocation(self):
+    path = libman.transcat().location() or skpaths.HOME
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format('"D_JK.dll"'),
+        path, 0)
+    if path:
+      if not libman.transcat().verifyLocation(path):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(mytr_("TransCAT")))
+      else:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+        libman.transcat().setLocation(path)
+        self._refreshTranscat()
+
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
+
+  def _clearTranscatLocation(self):
+    libman.transcat().setLocation('')
+    self._refreshTranscat()
+
+  def _refreshTranscat(self):
+    libman.transcat().refresh()
+    ok = libman.transcat().exists()
+    if ok:
+      path = libman.transcat().location()
+      if path:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+      ok = bool(path) and os.path.exists(path)
+    self.transcatLocationClearButton.setVisible(ok)
+    #self.transcatLocationButton.setVisible(not ok)
+    skqss.class_(self.transcatLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
+    self.transcatLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("TransCAT")))
+
+    #url = libman.TransCAT.URL
+    self.transcatInfoEdit.setHtml((my.tr(
+"""ClickQ TransCAT is used by <span style="color:purple">offline Japanese-Korean</span> translation.<br/>
+TransCAT is detected on your system at the above location.""")
+    if ok else my.tr(
+"""ClickQ TransCAT JK is needed by <span style="color:purple">offline Japanese-Korean</span> translation.<br/>
+TransCAT is <span style="color:purple">not free</span>, and seems not for sale any more.
+You might get one from your friends who purchased it in the past."""))
+
++ "<br/>" + my.tr('<span style="color:red">Note: The path cannot contain non-English characters!</span>')
++ "<br/>" + my.tr('<span style="color:red">TransCAT must be put in a directory with <b>write-permission</b>.</span>')
+    )
+
   ## Atlas ##
 
   @memoizedproperty
@@ -6413,6 +6528,7 @@ It is <span style="color:purple">not free</span>, and you can purchase one here 
       self._refreshDreye()
     if 'ko' not in blans:
       self._refreshEzTrans()
+      self._refreshTranscat()
     if 'en' not in blans:
       self._refreshAtlas()
       self._refreshLec()
