@@ -9,9 +9,19 @@
 
 $avatar-width: 40px
 
+// Copied from my bootstrap/color.sass
+$bg-success-color: #dff0d8
+$bg-success-hover-color: #d0e9c6
+.bg-success
+  background-color: $bg-success-color
+  &:hover
+    background-color: $bg-success-hover-color
+
 .forum-topic .topic
   //a[class*="link-"]
   //  @extend .cursor-pointer
+  &.finished
+    @extend .bg-success
   img.avatar
     width: $avatar-width
     //height: $avatar-width
