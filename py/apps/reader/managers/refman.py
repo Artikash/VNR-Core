@@ -303,8 +303,7 @@ class ScapeApi(object):
     dprint("leave: count = %s" % len(ret))
     return ret
 
-  @staticmethod
-  def _formatItem(item):
+  def _formatItem(self, item):
     """
     @param  item  kw
     @raise
@@ -313,6 +312,8 @@ class ScapeApi(object):
     d = item.pop('sellday')
     item['date'] = skdatetime.date2timestamp(d) if d else 0
     item['title'] = item['gamename']
+    if self.proxyEnabled and 'shoukai' in item:
+      del item['shoukai']
 
 ## Holyseal API ##
 
