@@ -24,10 +24,6 @@ import win32api
 #from sakurakit import msvcrt
 from sakurakit.skdebug import dprint, dwarn
 
-# See: http://en.wikipedia.org/wiki/Code_page
-ENC_JA = 'sjis'
-ENC_KO = 'uhc'
-
 EZTR_INIT_STR = 'CSUSER123455'
 
 class _Loader(object):
@@ -98,6 +94,11 @@ class _Loader(object):
     return ret
 
 class Loader(object):
+
+  # See: http://en.wikipedia.org/wiki/Code_page
+  INPUT_ENCODING = 'sjis' # Japanese
+  OUTPUT_ENCODING = 'uhc' # Korean
+
   def __init__(self):
     self.__d = _Loader()
 
@@ -122,7 +123,7 @@ class Loader(object):
     @throw  RuntimeError
     """
     try: return self.__d.translate(
-        text.encode(ENC_JA, errors='ignore')).decode(ENC_KO, errors='ignore')
+        text.encode(self.INPUT_ENCODING, errors='ignore')).decode(self.OUTPUT_ENCODING, errors='ignore')
     except (WindowsError, AttributeError), e:
       dwarn("failed to load j2kengine dll, raise runtime error", e)
       raise RuntimeError("failed to access j2kengine dll")
