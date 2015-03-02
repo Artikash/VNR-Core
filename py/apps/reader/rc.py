@@ -30,6 +30,8 @@ DIR_TMP_OCR = DIR_APP_TMP + '/ocr'   # $app/Caches/tmp/reader/ocr
 DIR_TMP_TERM = DIR_APP_TMP + '/dict' # $app/Caches/tmp/reader/dict
 DIR_TMP_TTS = DIR_APP_TMP + '/tts'   # $app/Caches/tmp/reader/tts
 
+#DIR_TMP_TRANSCAT = DIR_APP_TMP + '/transcat' # $app/Caches/tmp/reader/transcat
+
 #DIR_PLUGIN      = DIR_SAKURA + '/userplugin'    # Sakura/userplugin
 #DIR_PLUGIN_PY   = DIR_PLUGIN + '/py/1' # userplugin/py/1
 #DIR_PLUGIN_JS   = DIR_PLUGIN + '/js/1' # userplugin/js/1
@@ -396,14 +398,14 @@ def gaiji_dict(name):
     GAIJI[name] = ret
   return ret
 
-def trdb_path(key, fr, to):
-  """
-  @param  key  str
-  @param  fr  str  language
-  @param  to  str  language
-  @return  unicode  path
-  """
-  return "%s/%s-%s.db" % (config.TRDB_LOCATIONS[key], fr, to)
+#def trdb_path(key, fr, to):
+#  """
+#  @param  key  str
+#  @param  fr  str  language
+#  @param  to  str  language
+#  @return  unicode  path
+#  """
+#  return "%s/%s-%s.db" % (config.TRDB_LOCATIONS[key], fr, to)
 
 # Lingoes
 #def lingoes_path(lang):

@@ -660,6 +660,7 @@ Item { id: root_
         fastaitColor: settings_.fastaitColor
         dreyeColor: settings_.dreyeColor
         ezTransColor: settings_.ezTransColor
+        transcatColor: settings_.transcatColor
         atlasColor: settings_.atlasColor
         lecColor: settings_.lecColor
         lecOnlineColor: settings_.lecOnlineColor

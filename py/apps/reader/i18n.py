@@ -113,12 +113,13 @@ TRANSLATOR_NAMES = { # [TranslatorTraits]
   'baidu': mytr_("Baidu") + ".com",
   'jbeijing': mytr_("JBeijing"),
   'fastait': mytr_("FastAIT"),
-  'dreye': mytr_("Dr.eye"),
-  'eztrans': mytr_("ezTrans XP"),
-  'atlas': mytr_("ATLAS"),
-  'lec': mytr_("LEC"),
+  'dreye': "Dr.eye",
+  'eztrans': "ezTrans XP",
+  'transcat': 'TransCAT',
+  'atlas': "ATLAS",
+  'lec': "LEC",
   'hanviet': u"Hán Việt",
-  'vtrans': mytr_("VTrans"),
+  'vtrans': "vTrans",
 }
 def translator_name(key): return TRANSLATOR_NAMES.get(key) or ''
 

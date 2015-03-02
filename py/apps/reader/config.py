@@ -204,6 +204,7 @@ SETTINGS_JBEIJING_COLOR = _SETTINGS['jbeijingColor']
 SETTINGS_FASTAIT_COLOR = _SETTINGS['fastaitColor']
 SETTINGS_DREYE_COLOR = _SETTINGS['dreyeColor']
 SETTINGS_EZTRANS_COLOR = _SETTINGS['ezTransColor']
+SETTINGS_TRANSCAT_COLOR = _SETTINGS['transcatColor']
 SETTINGS_ATLAS_COLOR = _SETTINGS['atlasColor']
 SETTINGS_LEC_COLOR = _SETTINGS['lecColor']
 SETTINGS_LECONLINE_COLOR = _SETTINGS['lecOnlineColor']
@@ -507,7 +508,7 @@ YAML_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
 CURSOR_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
     for k,v in SHARE_YAML['cursors'].iteritems()}
 
-TRDB_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
-    for k,v in SHARE_YAML['trdb'].iteritems()}
+#TRDB_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
+#    for k,v in SHARE_YAML['trdb'].iteritems()}
 
 # EOF

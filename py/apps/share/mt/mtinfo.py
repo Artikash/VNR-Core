@@ -14,6 +14,7 @@ MT_INFO = {
   'fastait':    {'online':False, 'align':False,  'script':False, },
   'dreye':      {'online':False, 'align':False,  'script':False, },
   'eztrans':    {'online':False, 'align':False,  'script':False, },
+  'transcat':   {'online':False, 'align':False,  'script':False, },
   'atlas':      {'online':False, 'align':False,  'script':True,  },
   'lec':        {'online':False, 'align':False,  'script':True,  },
   'hanviet':    {'online':False, 'align':True,   'script':False, },
@@ -95,6 +96,9 @@ def get_mod_def(key):
   if key == 'eztrans':
     from eztrans import ezdef
     return ezdef
+  if key == 'transcat':
+    from transcat import transcatdef
+    return transcatdef
   if key == 'jbeijing':
     from jbeijing import jbdef
     return jbdef

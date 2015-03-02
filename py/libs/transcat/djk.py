@@ -140,7 +140,7 @@ class _Loader(object):
     if isinstance(path, unicode):
       path = path.encode(enoding)
     if path[-1] != '\\':
-      path += '\\'
+      path += '\\' # must end with '\'
     return path
 
   def init(self):
@@ -160,7 +160,7 @@ class _Loader(object):
       tempDir = ''
     else:
       if not os.path.exists(tempDir):
-        os.makedirs(path)
+        os.makedirs(tempDir)
       tempDir = self._normalizeDirPath(tempDir)
 
     # Import needed Windows functions
@@ -218,7 +218,7 @@ class _Loader(object):
     s = '' # char s[1] = {'0'};
     res = dll.GSetJK_ITEngineEx(s, s)
     ok = res == 1
-    return res
+    return ok
 
   def translate(self, text):
     """
@@ -227,12 +227,13 @@ class _Loader(object):
     @raise  WindowsError, AttributeError
     """
     dll = self.dll
-    if 2 == dll.JKTransStart(text, len(text)):
-      buffer = self.buffer
-      ok = dll.JKTransEndingEx(1, ctypes.byref(buffer), len(buffer))
+    res = dll.JKTransStart(text, len(text))
+    if res == 2:
+      buf = self.buffer
+      ok = dll.JKTransEndingEx(1, ctypes.byref(buf), len(buf))
       if ok == 1:
-	#dll.JKFreeMem(buffer) # buffer not freed but being reused
-        return buffer.value
+        #dll.JKFreeMem(buf) # buffer not freed but being reused
+        return buf.value
     dwarn("translate functions return false")
     return ''
 
@@ -242,8 +243,12 @@ class Loader(object):
   INPUT_ENCODING = 'sjis' # Japanese
   OUTPUT_ENCODING = 'uhc' # Korean
 
-  def __init__(self):
+  def __init__(self, tmpdir=''):
+    """
+    @param* tmpdir  unicode
+    """
     self.__d = _Loader()
+    self.__d.tempDir = tmpdir
 
   def __del__(self):
     self.destroy()

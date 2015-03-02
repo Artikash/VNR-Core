@@ -51,6 +51,7 @@ class _TranslatorManager(object):
     self.fastaitEnabled = \
     self.dreyeEnabled = \
     self.ezTransEnabled = \
+    self.transcatEnabled = \
     self.atlasEnabled = \
     self.lecEnabled = \
     False # bool
@@ -169,6 +170,9 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def ezTranslator(self): return self._newtr(_trman.EzTranslator())
+
+  @memoizedproperty
+  def transcatTranslator(self): return self._newtr(_trman.TransCATTranslator())
 
   @memoizedproperty
   def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(
@@ -299,17 +303,28 @@ class _TranslatorManager(object):
     v = self._getTranslatorPropertyName(key)
     return hasmemoizedproperty(self, v)
 
-  def iterOfflineTranslators(self):
+  def iterOfflineTranslators(self, reverse=False):
     """
     @yield  Translator
     """
-    if self.jbeijingEnabled: yield self.jbeijingTranslator
-    if self.fastaitEnabled: yield self.fastaitTranslator
-    if self.dreyeEnabled: yield self.dreyeTranslator
-    if self.ezTransEnabled: yield self.ezTranslator
-    if self.hanVietEnabled: yield self.hanVietTranslator
-    if self.lecEnabled: yield self.lecTranslator
-    if self.atlasEnabled: yield self.atlasTranslator
+    if reverse:
+      if self.atlasEnabled: yield self.atlasTranslator
+      if self.lecEnabled: yield self.lecTranslator
+      if self.hanVietEnabled: yield self.hanVietTranslator
+      if self.transcatEnabled: yield self.transcatTranslator
+      if self.ezTransEnabled: yield self.ezTranslator
+      if self.dreyeEnabled: yield self.dreyeTranslator
+      if self.fastaitEnabled: yield self.fastaitTranslator
+      if self.jbeijingEnabled: yield self.jbeijingTranslator
+    else:
+      if self.jbeijingEnabled: yield self.jbeijingTranslator
+      if self.fastaitEnabled: yield self.fastaitTranslator
+      if self.dreyeEnabled: yield self.dreyeTranslator
+      if self.ezTransEnabled: yield self.ezTranslator
+      if self.transcatEnabled: yield self.transcatTranslator
+      if self.hanVietEnabled: yield self.hanVietTranslator
+      if self.lecEnabled: yield self.lecTranslator
+      if self.atlasEnabled: yield self.atlasTranslator
 
   def iterOnlineTranslators(self, reverse=False):
     """
@@ -488,6 +503,9 @@ class TranslatorManager(QObject):
   def isEzTransEnabled(self): return self.__d.ezTransEnabled
   def setEzTransEnabled(self, value): self.__d.ezTransEnabled = value
 
+  def isTranscatEnabled(self): return self.__d.transcatEnabled
+  def setTranscatEnabled(self, value): self.__d.transcatEnabled = value
+
   def isLecEnabled(self): return self.__d.lecEnabled
   def setLecEnabled(self, value): self.__d.lecEnabled = value
 
@@ -562,7 +580,8 @@ class TranslatorManager(QObject):
 
   def warmup(self, to='', fr='ja'):
     if features.MACHINE_TRANSLATION:
-      for it in self.__d.iterOfflineTranslators():
+      # 3/1/2015: Do it reversely so that TransCAT is initialized before JBeijing
+      for it in self.__d.iterOfflineTranslators(reverse=True):
         dprint("warm up %s" % it.key)
         it.warmup(to=to, fr=fr)
 
@@ -594,6 +613,7 @@ class TranslatorManager(QObject):
       d.fastaitEnabled,
       d.dreyeEnabled,
       d.ezTransEnabled,
+      d.transcatEnabled,
       d.lecEnabled,
       d.atlasEnabled,
     ))
@@ -615,6 +635,7 @@ class TranslatorManager(QObject):
     if d.fastaitEnabled: r.append('fastait')
     if d.dreyeEnabled: r.append('dreye')
     if d.ezTransEnabled: r.append('eztrans')
+    if d.transcatEnabled: r.append('transcat')
     if d.lecEnabled: r.append('lec')
     if d.atlasEnabled: r.append('atlas')
 
