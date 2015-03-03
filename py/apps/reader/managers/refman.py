@@ -313,6 +313,8 @@ class ScapeApi(object):
     d = item.pop('sellday')
     item['date'] = skdatetime.date2timestamp(d) if d else 0
     item['title'] = item['gamename']
+    #if self.proxyEnabled and 'shoukai' in item:
+    #  del item['shoukai']
 
 ## Holyseal API ##
 

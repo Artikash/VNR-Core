@@ -283,7 +283,7 @@ class _OnlineThread:
     from qtrequests import qtrequests
     from PySide.QtNetwork import QNetworkAccessManager
     nam = QNetworkAccessManager()
-    self.session = qtrequests.Session(nam, q.abortSignal)
+    self.session = qtrequests.Session(nam, abortSignal=q.abortSignal)
 
     q.abortSignalRequested.connect(q.abortSignal, Qt.QueuedConnection)
 
