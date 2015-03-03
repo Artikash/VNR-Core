@@ -5141,8 +5141,8 @@ bool InsertLiveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   if (addr != ::GetGlyphOutlineA || !frame)
     return false;
   DWORD k = *(DWORD *)frame;
-  k = *(DWORD *)(k+4);
-  if (*(BYTE *)(k-5)!=0xe8)
+  k = *(DWORD *)(k + 4);
+  if (*(BYTE *)(k - 5) != 0xe8)
     k = *(DWORD *)(frame + 4);
   DWORD j = k + *(DWORD *)(k - 4);
   if (j > module_base_ && j < module_limit_) {
