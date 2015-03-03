@@ -557,7 +557,7 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
  *  1001399a   e8 e16fffff      call _3.1000a980
  */
 
-#if 0 // not used
+#if 0 // not used, as KiriKiriZ is sufficient, and most KiriKiriZ games use KAGParserEx instead of KAGParser.
 namespace { // unnamed
 
 bool KAGParserFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
