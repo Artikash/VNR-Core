@@ -605,7 +605,7 @@ templates:
     xml/subs:       xml/subs.xml
     yaml/subs:      yaml/subs.yaml
 
-    haml/reader/credits:    haml/reader/credits.haml
+    #haml/reader/credits:    haml/reader/credits.haml
     haml/reader/help:       haml/reader/help.haml
     haml/reader/gameview:   haml/reader/gameview.haml
     haml/reader/gameboard:  haml/reader/gameboard.haml

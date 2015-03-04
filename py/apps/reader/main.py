@@ -2056,7 +2056,7 @@ class MainObject(QObject):
   def showPreferences(self): _MainObject.showWindow(self.__d.prefsDialog)
   def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
   def showHelp(self): _MainObject.showWindow(self.__d.appHelpDialog)
-  def showCredits(self): _MainObject.showWindow(self.__d.creditsDialog)
+
   def showTermHelp(self): _MainObject.showWindow(self.__d.termHelpDialog)
   def showTextReaderHelp(self): _MainObject.showWindow(self.__d.textReaderHelpDialog)
   def showCommentHelp(self): _MainObject.showWindow(self.__d.commentHelpDialog)
@@ -2089,6 +2089,10 @@ class MainObject(QObject):
     import osutil
     url = rc.wiki_url(text, language=language)
     osutil.open_url(url)
+
+  def showCredits(self):
+    self.openWiki('VNR/Credits', 'en')
+    #_MainObject.showWindow(self.__d.creditsDialog)
 
   # Show comments online
   #def liveEdit(self):
