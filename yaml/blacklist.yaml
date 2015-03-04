@@ -118,6 +118,7 @@ processes:
   - KHALMNPR.exe        # Logitech
   - KuGou.exe           # Kugou
   - MacDrive.exe        # MacDrive
+  - MagicISO.exe        # Magic ISO Maker
   - MangaMeeya.exe      # Manga reader
   - mousegesture.exe    # Sogou
   - netbeans.exe        # NetBeans
@@ -205,6 +206,7 @@ processes:
   - TranslationAggregator.exe
   - TXPlatform.exe      # Tencent
   - Uedit32.exe         # UltraEdit
+  - UltraISO.exe        # UltraISO
   - WinRAR.exe          # WinRAR
   - WINWORD.EXE         # Microsoft Office
   - XDict.exe           # Kingsoft
