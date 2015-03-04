@@ -2,6 +2,9 @@
 # online.py
 # 10/8/2014 jichi
 #
+# See: http://www.ah-soft.com/voiceroid/index.html
+# See: http://www.ah-soft.com/product/index.html
+#
 # 東北ずん子: http://www.ah-soft.com/voiceroid/zunko/
 #
 # Text: 憎しみは憎しみしか生まない。
