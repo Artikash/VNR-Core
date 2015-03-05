@@ -412,6 +412,22 @@ class GameInfo(object):
   #        return GyuttoItem(**kw)
 
   @memoizedproperty
+  def melon(self):
+    """Online
+    @return  kw or None
+    """
+    key = None
+    type = 'melon'
+    for it in self.referenceData:
+      if it.type == type:
+        key = it.key
+        break
+    if key:
+      kw = refman.manager().queryOne(key=key, type=type, async=self.async)
+      if kw:
+        return MelonReference(**kw)
+
+  @memoizedproperty
   def digiket(self):
     """Online
     @return  kw or None
@@ -520,7 +536,7 @@ class GameInfo(object):
     return g.scapeMedian if g else 0
 
   def _iterReferences(self):
-    for it in self.trailers, self.freem, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon, self.steam:
+    for it in self.trailers, self.freem, self.scape, self.holyseal, self.melon, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon, self.steam:
       if it:
         yield it
 
@@ -580,9 +596,9 @@ class GameInfo(object):
 
   @property
   def event(self):
-    r = self.digiket
-    if r:
-      return r.event
+    for r in self.melon, self.digiket:
+      if r and r.event:
+        return r.event
 
   def hasTwitterWidgets(self):
     r = self.scape
@@ -671,14 +687,15 @@ class GameInfo(object):
     """
     @return  bool
     """
-    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape or self.freem or self.steam) #or self.tokutenUrl
+    return bool(self.getchu or self.gyutto or self.digiket or self.melon or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape or self.freem or self.steam) #or self.tokutenUrl
 
   def iterLinks(self):
     """
     @yield  {str url, str type}
     """
-    if self.getchu:
-      yield self.getchu.url, 'getchu'
+    for r in self.getchu, self.melon:
+      if r:
+        yield r.url, r.type
 
     if self.gyutto:
        url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
@@ -757,7 +774,7 @@ class GameInfo(object):
     ret = self.brand0
     if ret:
       return ret
-    for r in self.trailers, self.freem, self.digiket, self.dmm, self.amazon, self.getchu, self.gyutto, self.dlsite, self.steam:
+    for r in self.trailers, self.freem, self.melon, self.digiket, self.dmm, self.amazon, self.getchu, self.gyutto, self.dlsite, self.steam:
       if r:
         ret = r.brand
         if ret:
@@ -772,7 +789,7 @@ class GameInfo(object):
   @memoizedproperty
   def price(self): # long or None
     try: return max(it.price
-        for it in (self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket) if it)
+        for it in (self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket, self.melon) if it)
     except ValueError: return 0
 
   @memoizedproperty
@@ -821,7 +838,7 @@ class GameInfo(object):
   def ecchi(self): # bool not None
     if self.ecchi0:
       return True
-    for r in self.trailers, self.freem, self.holyseal, self.dmm, self.amazon, self.dlsite:
+    for r in self.trailers, self.freem, self.holyseal, self.dmm, self.amazon, self.dlsite, self.melon:
       if r:
         return r.ecchi
     if self.steam:
@@ -880,7 +897,7 @@ class GameInfo(object):
   def doujin(self): # bool not None
     if self.dlsite and not self.amazon and self.price < 3000:
       return True
-    for r in self.dmm, self.trailers, self.gyutto:
+    for r in self.dmm, self.trailers, self.gyutto: #, self.melon
       if r and r.doujin:
         return True
     return False
@@ -961,7 +978,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.amazon, self.digiket, self.dlsite, self.dmm, self.freem, self.steam:
+    for r in self.getchu, self.amazon, self.digiket, self.melon, self.dlsite, self.dmm, self.freem, self.steam:
       if r and r.hasDescriptions():
         yield r
 
@@ -1074,6 +1091,7 @@ class GameInfo(object):
         (self.amazon, 'amazon'),
         (self.dmm, 'dmm'),
         (self.getchu, 'getchu'),
+        (self.melon, 'melon'),
         (self.dlsite, 'dlsite'),
         (self.digiket, 'digiket'),
         (self.freem, 'freem'),
@@ -1152,7 +1170,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    l = [self.getchu, self.freem, self.dlsite, self.amazon, self.dmm, self.digiket, self.steam]
+    l = [self.melon, self.getchu, self.freem, self.dlsite, self.amazon, self.dmm, self.digiket, self.steam]
     if features.MAINLAND_CHINA and self.dlsite: # disable dlsite in MAINLAND_CHINA
       l.remove(self.dlsite)
     for r in l:
@@ -1188,6 +1206,7 @@ class GameInfo(object):
     img = self.image0
     return bool(img) and (
         'getchu.com' in img or
+        'melonbooks.co.jp' in img or
         'gyutto.com' in img or
         'dlsite.jp' in img or
         'digiket.net' in img or
@@ -1224,7 +1243,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def artists(self): # [kw] or None
-    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal, self.dmm:
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal, self.dmm, self.melon:
       if r and r.artists:
         return r.artists
 
@@ -1288,7 +1307,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket, self.freem, self.steam: #, self.tokuten:
+    for r in self.getchu, self.melon, self.dlsite, self.amazon, self.dmm, self.digiket, self.freem, self.steam: #, self.tokuten:
       if r and r.hasSampleImages():
         yield r
 
@@ -3263,8 +3282,8 @@ class _Reference(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite', 'freem', 'steam'
-  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite', 'FreeM', 'Steam'
+  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'melon', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite', 'freem', 'steam'
+  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'MelonBooks', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite', 'FreeM', 'Steam'
 
 class Reference(QObject):
   __D = _Reference
@@ -3319,6 +3338,8 @@ class Reference(QObject):
       cls = GyuttoReference
     elif type == 'digiket':
       cls = DiGiketReference
+    elif type == 'melon':
+      cls = MelonReference
     elif type == 'amazon':
       cls = AmazonReference
     elif type == 'dmm':
@@ -3958,6 +3979,52 @@ class DiGiketReference(Reference): #(object):
 
   def hasReview(self): return bool(self.review)
   def renderReview(self): return self.review
+
+class MelonReference(Reference): #(object):
+  def __init__(self, parent=None,
+      type='melon',
+      image="",
+      price=0,
+      sampleImages = [],
+      doujin=False, ecchi=True,
+      description='', event='', artist='',
+      **kwargs):
+    super(MelonReference, self).__init__(parent=parent,
+        type=type, **kwargs)
+    self.largeImage = image # str
+    self.ecchi = ecchi # bool
+    self.doujin = doujin # bool
+    self.price = price # int
+    self.description = description # unicode
+    self.event = event # unicode
+
+    self.sampleImages = sampleImages
+
+    self.artists = [artist] if artist else []
+
+  def hasSampleImages(self): return bool(self.sampleImages)
+
+  def iterSampleImageUrls(self, cache=True):
+    """
+    @yield  str  url
+    """
+    #if self.hasSampleImages():
+    for it in self.sampleImages:
+      yield cacheman.cache_image_url(it) if cache else it
+
+  def hasDescriptions(self):
+    """
+    @return  bool
+    """
+    return bool(self.description)
+
+  def iterDescriptions(self):
+    """
+    @yield  unicode
+    """
+    if self.description:
+      yield self.description
+      #yield cacheman.cache_html(self.description)
 
 class AmazonReference(Reference):
   def __init__(self, parent=None,
@@ -6088,6 +6155,7 @@ class _ReferenceModel(object):
     q.getchuItemChanged.emit(q.getchuItem)
     q.gyuttoItemChanged.emit(q.gyuttoItem)
     q.digiketItemChanged.emit(q.digiketItem)
+    q.melonItemChanged.emit(q.melonItem)
     q.dmmItemChanged.emit(q.dmmItem)
     q.amazonItemChanged.emit(q.amazonItem)
     q.dlsiteItemChanged.emit(q.dlsiteItem)
@@ -6332,6 +6400,11 @@ class ReferenceModel(QAbstractListModel):
   digiketItem = Property(QObject,
       lambda self: self.__d.findItem(type='digiket'),
       notify=digiketItemChanged)
+
+  melonItemChanged = Signal(QObject)
+  melonItem = Property(QObject,
+      lambda self: self.__d.findItem(type='melon'),
+      notify=melonItemChanged)
 
   holysealItemChanged = Signal(QObject)
   holysealItem = Property(QObject,

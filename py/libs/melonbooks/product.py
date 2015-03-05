@@ -14,7 +14,7 @@ from sakurakit.skcontainer import uniquelist
 from sakurakit.skstr import unescapehtml
 #from sakurakit.skdebug import dwarn
 
-class SoftApi(object):
+class ProductApi(object):
   QUERY_HOST = "https://www.melonbooks.co.jp"
   QUERY_PATH = "/detail/detail.php?product_id=%s"
   API = QUERY_HOST + QUERY_PATH
@@ -228,7 +228,7 @@ class SoftApi(object):
     except: return 0
 
 if __name__ == '__main__':
-  api = SoftApi()
+  api = ProductApi()
   k = 114240 # ecchi
   k = 117934 # non-ecchi, event
   k = 113958 # 神のラプソディ

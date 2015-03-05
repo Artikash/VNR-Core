@@ -76,4 +76,28 @@ ttsman.py
 _ttsman.py
 _prefs.py
 
+## Ref related file
+./py/apps/reader/main.py -- getchu
+./py/apps/reader/__main__.py
+./py/apps/reader/rc.py
+./qml/apps/reader/refview/inspector.qml
+./qml/apps/reader/refview/table.qml
+./py/apps/reader/i18n.py
+
+./py/apps/reader/managers/refman.py
+./py/apps/reader/dialogs/refinput.py
+./py/apps/reader/managers/dataman.py
+
+# ref proxy
+./py/apps/reader/config.py
+./py/apps/reader/features.py
+./py/apps/reader/managers/proxy.py
+./rb/compass/web/sass/sites/getchu.sass
+./share.yaml
+
+# debug
+debug refinput search game
+debug add game
+debug render in gameview
+
 # EOF

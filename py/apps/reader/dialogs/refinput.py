@@ -115,12 +115,13 @@ class _ReferenceInput(object):
     shortcut('alt+4', self.freemButton.click, parent=q)
 
     shortcut('alt+5', self.getchuButton.click, parent=q)
-    shortcut('alt+6', self.gyuttoButton.click, parent=q)
-    shortcut('alt+7', self.digiketButton.click, parent=q)
-    shortcut('alt+8', self.dmmButton.click, parent=q)
-    shortcut('alt+9', self.dlsiteButton.click, parent=q)
+    shortcut('alt+6', self.melonButton.click, parent=q)
+    shortcut('alt+7', self.gyuttoButton.click, parent=q)
+    shortcut('alt+8', self.digiketButton.click, parent=q)
+    shortcut('alt+9', self.dmmButton.click, parent=q)
+    shortcut('alt+0', self.dlsiteButton.click, parent=q)
 
-    shortcut('alt+0', self.amazonButton.click, parent=q)
+    #shortcut('alt+0', self.amazonButton.click, parent=q)
     #shortcut('alt+0', self.steamButton.click, parent=q)
 
   def _createUi(self, q, readonly):
@@ -148,6 +149,8 @@ class _ReferenceInput(object):
 
     r += 1; c = 0
     grid.addWidget(self.getchuButton, r, c)
+    c += 1
+    grid.addWidget(self.melonButton, r, c)
     c += 1
     grid.addWidget(self.gyuttoButton, r, c)
     c += 1
@@ -216,37 +219,44 @@ class _ReferenceInput(object):
     return ret
 
   @memoizedproperty
+  def melonButton(self):
+    ret = QtWidgets.QRadioButton("MelonBooks")
+    ret.setToolTip("melonbooks.co.jp (Alt+6)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
+  @memoizedproperty
   def amazonButton(self):
     ret = QtWidgets.QRadioButton("Amazon")
-    ret.setToolTip("amazon.co.jp (Alt+0)")
+    ret.setToolTip("amazon.co.jp")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dmmButton(self):
     ret = QtWidgets.QRadioButton("DMM")
-    ret.setToolTip("dmm.co.jp (Alt+8)")
+    ret.setToolTip("dmm.co.jp (Alt+9)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dlsiteButton(self):
     ret = QtWidgets.QRadioButton("DLsite")
-    ret.setToolTip("dlsite.com (Alt+9)")
+    ret.setToolTip("dlsite.com (Alt+0)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def digiketButton(self):
     ret = QtWidgets.QRadioButton("DiGiket")
-    ret.setToolTip("digiket.com (Alt+7)")
+    ret.setToolTip("digiket.com (Alt+8)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def gyuttoButton(self):
     ret = QtWidgets.QRadioButton("Gyutto")
-    ret.setToolTip("gyutto.com (Alt+6)")
+    ret.setToolTip("gyutto.com (Alt+7)")
     ret.toggled.connect(self._searchLater)
     return ret
 
@@ -269,6 +279,7 @@ class _ReferenceInput(object):
         'trailers' if self.trailersButton.isChecked() else
         'scape' if self.scapeButton.isChecked() else
         'holyseal' if self.holysealButton.isChecked() else
+        'melon' if self.melonButton.isChecked() else
         'getchu' if self.getchuButton.isChecked() else
         'gyutto' if self.gyuttoButton.isChecked() else
         'dmm' if self.dmmButton.isChecked() else
@@ -391,7 +402,7 @@ class _ReferenceInput(object):
     if item: #and item.get('type') == self._selectedType():
       dprint("key: %s, title: %s" % (item['key'], item['title']))
       type = item['type']
-      if type in ('digiket', 'gyutto', 'holyseal', 'stream'):
+      if type in ('digiket', 'gyutto', 'holyseal', 'melon', 'stream'):
         skevents.runlater(partial(self._saveNew, item), 200) # runlater so that it won't block GUI
       else:
         self.q.itemSelected.emit(item)
