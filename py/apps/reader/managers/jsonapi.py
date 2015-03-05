@@ -23,13 +23,19 @@ KEYS = (
   'series0',
   'okazu0',
   'otome0',
-  'scapeMedian0',
-  'scapeCount0',
   'tags0',
   'artists0',
   'sdartists0',
   'writers0',
   'musicians0',
+  'scapeMedian0',
+  'scapeCount0',
+  'overallScore0',
+  'overallScoreCount0',
+  'overallScoreSum0',
+  'ecchiScore0',
+  'ecchiScoreCount0',
+  'ecchiScoreSum0',
 )
 
 class GameInfoEncoder(json.JSONEncoder):
