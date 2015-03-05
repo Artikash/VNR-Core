@@ -535,6 +535,54 @@ class GameInfo(object):
     g = self.gameItem
     return g.scapeMedian if g else 0
 
+  @memoizedproperty
+  def overallScore0(self):
+    """
+    @return  int not None
+    """
+    g = self.gameItem
+    return g.overallScoreSum / g.overallScoreCount if g and g.overallScoreCount else 0
+
+  @memoizedproperty
+  def ecchiScore0(self):
+    """
+    @return  int not None
+    """
+    g = self.gameItem
+    return g.ecchiScoreSum / g.ecchiScoreCount if g and g.ecchiScoreCount else 0
+
+  @property
+  def overallScoreCount0(self):
+    """
+    @return  int not None
+    """
+    g = self.gameItem
+    return g.overallScoreCount if g else 0
+
+  @property
+  def ecchiScoreCount0(self):
+    """
+    @return  int not None
+    """
+    g = self.gameItem
+    return g.ecchiScoreCount if g else 0
+
+  @property
+  def overallScoreSum0(self):
+    """
+    @return  int not None
+    """
+    g = self.gameItem
+    return g.overallScoreSum if g else 0
+
+  @property
+  def ecchiScoreSum0(self):
+    """
+    @return  int not None
+    """
+    g = self.gameItem
+    return g.ecchiScoreSum if g else 0
+
   def _iterReferences(self):
     for it in self.trailers, self.freem, self.scape, self.holyseal, self.melon, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon, self.steam:
       if it:

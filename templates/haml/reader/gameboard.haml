@@ -26,8 +26,8 @@
         .search.pull-right
           %btn.close(title="#{tr('Clear')}") &times;
           %input#search.search-query.input-mini(type="search", \
-              placeholder="#{tr('Search')} ... ex. BALDR, 201308", \
-              title="Ctrl+F: #{tr('Press Enter to submit')} (#{tr('title')}, #{tr('brand')}, #{tr('date')}, #{tr('regular expression')}, #{tr('case-insensitive')})")
+              placeholder="#{tr('Search')} ...", \
+              title="ex. BALDR 201502. Ctrl+F: #{tr('Press Enter to submit')} (#{tr('title')}, #{tr('brand')}, #{tr('date')}, #{tr('regular expression')}, #{tr('case-insensitive')})")
 
         ; Sort
         %ul#sort-by.option-set(data-option-key="sort")
@@ -47,9 +47,17 @@
             弾幕
           %li: %a(href="#sort=subtitles",data-option-value="subtitleCount",title="#{tr('Subtitles')}")
             字幕
-          %li: %a(href="#sort=scapeMedian",data-option-value="scapeMedian",title="批評空間の得点")
+          %li: %a(href="#sort=overallScore",data-option-value="overallScore",title="総合得点の平均値",style="text-decoration:overline")
+            &#9734;
+          %li: %a(href="#sort=overallScoreSum",data-option-value="overallScoreSum",title="総合得点総量")
+            &Sigma;&#9734;
+          %li: %a(href="#sort=ecchiScore",data-option-value="ecchiScore",title="えっち得点の平均値",style="text-decoration:overline")
+            H
+          %li: %a(href="#sort=ecchiScoreSum",data-option-value="ecchiScoreSum",title="えっち得点総量")
+            &Sigma;H
+          %li: %a(href="#sort=scapeMedian",data-option-value="scapeMedian",title="批評空間得点の中位数")
             得点
-          %li: %a(href="#sort=scapeCount",data-option-value="scapeCount",title="批評空間の点数")
+          %li: %a(href="#sort=scapeCount",data-option-value="scapeCount",title="批評空間全ての点数")
             点数
 
         %ul#sort-direction.option-set(data-option-key="reverse")
@@ -251,7 +259,7 @@
       -for it in 'jquery', \
           'underscore', 'underscore.string', \
           'dragdealer', 'masonry', \
-          'haml', 'moment', \
+          'haml', 'moment', 'sprintf', \
           'libs/choco', \
           'reader/widgets', 'reader/gameboard'
         %script(src="#{rc.cdn_url(it)}")

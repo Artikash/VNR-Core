@@ -41,6 +41,16 @@ GAME_HAML = Haml '''\
         .badge.badge-success(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'b'
         .badge.badge-inverse(title="字幕数/弾幕数/再生数") = g.countString
+    :if g.overallScoreCount
+      .badge.badge-important(title="総合得点×点数")
+        &#9734;#{sprintf('%.1f', g.overallScore)}
+        :if g.overallScoreCount > 1
+          x#{g.overallScoreCount}
+    :if g.ecchiScoreCount
+      .badge.badge-warning(title="えっち得点×点数")
+        H  #{sprintf('%.1f', g.ecchiScore)}
+        :if g.ecchiScoreCount > 1
+          x#{g.ecchiScoreCount}
     :if scoreColor
       :if scoreColor === 'o'
         .badge.badge-warning(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
