@@ -1243,7 +1243,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def artists(self): # [kw] or None
-    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal, self.dmm, self.melon:
+    for r in self.trailersItem, self.melon, self.digiket, self.getchu, self.gyutto, self.holyseal, self.dmm:
       if r and r.artists:
         return r.artists
 
@@ -1255,7 +1255,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def writers(self): # [kw] or None
-    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+    for r in self.trailersItem, self.melon, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
       if r and r.writers:
         return r.writers
 
@@ -3987,7 +3987,7 @@ class MelonReference(Reference): #(object):
       price=0,
       sampleImages = [],
       doujin=False, ecchi=True,
-      description='', event='', artist='',
+      description='', event='', artists=[], writers=[],
       **kwargs):
     super(MelonReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -4000,7 +4000,8 @@ class MelonReference(Reference): #(object):
 
     self.sampleImages = sampleImages
 
-    self.artists = [artist] if artist else []
+    self.artists = artists
+    self.writers = writers
 
   def hasSampleImages(self): return bool(self.sampleImages)
 
