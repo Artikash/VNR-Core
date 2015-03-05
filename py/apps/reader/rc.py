@@ -342,6 +342,28 @@ def jinja_template(name):
     ret = TEMPLATES[name] = jinja.get_template(config.TEMPLATE_ENTRIES[name])
   return ret
 
+def jinja_template_write(path, template_key, **context):
+  """
+  @param  path  str  id
+  @param  template_key  str
+  @return  jinjia2.template  path
+  @return  bool
+  """
+  t = jinja_template(template_key)
+  rv = t.stream(context)
+  rv.enable_buffering(100) # yield every 100 string
+  return skfileio.iterwritefile(path, rv, flush=False)
+
+def jinja_template_write_xml(key, **context):
+  """
+  @param  key  str  id
+  @return  jinjia2.template  path
+  @return  bool
+  """
+  xmlfile = xml_path(key)
+  xmltpl = 'xml/' + key
+  return jinja_template_write(xmlfile, xmltpl, **context)
+
 HAML_TEMPLATES = {} # {str name:jinja_template}
 def haml_template(name):
   """

@@ -5607,7 +5607,7 @@ bool InsertApricoTHook()
           NewHook(hp, L"ApRicoT");
           //RegisterEngineType(ENGINE_APRICOT);
           // jichi 2/14/2015: disable cached GDI functions
-          ConsoleOutput("vnreng:SystemAoi: disable GDI hooks");
+          ConsoleOutput("vnreng:ApRicoT: disable GDI hooks");
           DisableGDIHooks();
           return true;
         }
