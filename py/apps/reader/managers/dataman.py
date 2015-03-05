@@ -3987,7 +3987,7 @@ class MelonReference(Reference): #(object):
       price=0,
       sampleImages = [],
       doujin=False, ecchi=True,
-      description='', event='', artists=[], writers=[],
+      intro='', event='', artists=[], writers=[],
       **kwargs):
     super(MelonReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -3995,7 +3995,7 @@ class MelonReference(Reference): #(object):
     self.ecchi = ecchi # bool
     self.doujin = doujin # bool
     self.price = price # int
-    self.description = description # unicode
+    self.description = intro # unicode
     self.event = event # unicode
 
     self.sampleImages = sampleImages
