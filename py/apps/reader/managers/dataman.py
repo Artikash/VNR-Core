@@ -5527,12 +5527,10 @@ class _CommentModel(object):
     if manager().savingComments():
       self._saveLater()
     else:
-      data = rc.jinja_template('xml/comments').render({
-         'now': datetime.now(),
-         'comments': (it.d for it in self.sourceData),
-         #'contexts'
-      })
-      ok = skfileio.writefile(xmlfile, data)
+      ok = rc.jinja_template_write(xmlfile, 'xml/comments',
+        now=datetime.now(),
+        comments=(it.d for it in self.sourceData),
+      )
       if ok:
         dprint("pass: xml = %s" % xmlfile)
       else:
@@ -6992,7 +6990,7 @@ class _DataManager(object):
     if not self.games:
       if os.path.exists(xmlfile):
         skfileio.removefile(xmlfile)
-    else:
+    else: # Game saved in traditional way so that it will not get corrupted
       data = rc.jinja_template('xml/games').render({
         'now': datetime.now(),
         'games': self.games.itervalues(),
@@ -7029,7 +7027,6 @@ class _DataManager(object):
     if not os.path.exists(xmlfile):
       dprint("pass: xml not found, %s" % xmlfile)
       return
-
     try:
       context = etree.iterparse(xmlfile, events=('start', 'end'))
       items = {} # {long itemId:GameItem}
@@ -7191,17 +7188,15 @@ class _DataManager(object):
     if not self._gameFilesDirty or not self.gameFiles:
       return
 
-    xmlfile = rc.xml_path('gamefiles')
-    data = rc.jinja_template('xml/gamefiles').render({
-      'now': datetime.now(),
-      'files': self.gameFiles.itervalues(),
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write_xml('gamefiles',
+      now=datetime.now(),
+      files=self.gameFiles.itervalues(),
+    )
     if ok:
       settings.global_().setGameFilesTime(skdatetime.current_unixtime())
-      dprint("pass: xml = %s" % xmlfile)
+      dprint("pass: xml = gamefiles")
     else:
-      dwarn("failed: xml = %s" % xmlfile)
+      dwarn("failed: xml = gamefiles")
 
     #if self.gameFiles:
     #  dprint("enter")
@@ -7214,7 +7209,7 @@ class _DataManager(object):
     #    dwarn(e)
     #  dprint("leave")
 
-  def reloadGames(self):
+  def reloadGames(self): # not writing stream template to security reason, so that games xml will not corrupted
     self._gamesDirty = False
     self.games = {}
 
@@ -7388,17 +7383,15 @@ class _DataManager(object):
 
   def saveUsers(self):
     if self.users:
-      xmlfile = rc.xml_path('users')
-      data = rc.jinja_template('xml/users').render({
-        'now': datetime.now(),
-        'users': self.users.itervalues(),
-      })
-      ok = skfileio.writefile(xmlfile, data)
+      ok = rc.jinja_template_write_xml('user',
+        now=datetime.now(),
+        users=self.users.itervalues(),
+      )
       if ok:
         settings.global_().setUserDigestsTime(skdatetime.current_unixtime())
-        dprint("pass: xml = %s" % xmlfile)
+        dprint("pass: xml = users")
       else:
-        dwarn("failed: xml = %s" % xmlfile)
+        dwarn("failed: xml = users")
 
   def reloadUsers(self):
     xmlfile = rc.xml_path('users')
@@ -7770,12 +7763,11 @@ class _DataManager(object):
     xmlfile = rc.subs_yaml_path(itemId, subLang, gameLang, fmt='xml')
     dprint("save modified subtitles to %s" % xmlfile)
 
-    data = rc.jinja_template('xml/subs').render({
-      'subs': subs,
-      'timestamp': timestamp,
-      'now': skdatetime.timestamp2datetime(timestamp),
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write(xmlfile, 'xml/subs',
+      subs=subs,
+      timestamp=timestamp,
+      now=skdatetime.timestamp2datetime(timestamp),
+    )
     if ok:
       dprint("pass: xml = %s" % xmlfile)
     else:
@@ -7794,19 +7786,18 @@ class _DataManager(object):
     yamlfile = rc.subs_yaml_path(itemId, subLang, gameLang)
     dprint("save modified subtitles to %s" % yamlfile)
 
-    data = rc.jinja_template('yaml/subs').render({
-      'ys': ystr,
-      'subs': subs,
-      'subCount': len(subs),
-      'timestamp': timestamp,
-      'now': skdatetime.timestamp2datetime(timestamp),
-      'gameId': itemId,
-      'options': {
+    ok = rc.jinja_template_write(yamlfile, 'yaml/subs',
+      ys=ystr,
+      subs=subs,
+      subCount=len(subs),
+      timestamp=timestamp,
+      now=skdatetime.timestamp2datetime(timestamp),
+      gameId=itemId,
+      options={
         'subLang': subLang,
         'textLang': gameLang,
       }
-    })
-    ok = skfileio.writefile(yamlfile, data)
+    )
     if ok:
       dprint("pass: yaml = %s" % yamlfile)
     else:
@@ -7997,12 +7988,11 @@ class _DataManager(object):
     if not md5:
       return
     xmlfile = rc.comments_xml_path(md5=md5)
-    data = rc.jinja_template('xml/comments').render({
-      'now': datetime.now(),
-      'comments': self.iterCommentData(),
-      'contexts': self.contexts,
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write(xmlfile, 'xml/comments',
+      now=datetime.now(),
+      comments=self.iterCommentData(),
+      contexts=self.contexts,
+    )
     if ok:
       dprint("pass: xml = %s" % xmlfile)
     else:
@@ -8019,11 +8009,10 @@ class _DataManager(object):
       dprint("remove xml = %s" % xmlfile)
       skfileio.removefile(xmlfile)
       return
-    data = rc.jinja_template('xml/voices').render({
-      'now': datetime.now(),
-      'voices': self.iterCharacterData(),
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write(xmlfile, 'xml/voices',
+      now=datetime.now(),
+      voices=self.iterCharacterData(),
+    )
     if ok:
       dprint("pass: xml = %s" % xmlfile)
     else:
@@ -8109,17 +8098,15 @@ class _DataManager(object):
   def saveGameItems(self):
     if not self.gameItems: #or not self._gameItemsDirty:
       return
-    xmlfile = rc.xml_path('gameitems')
-    data = rc.jinja_template('xml/gameitems').render({
-      'now': datetime.now(),
-      'items': self.gameItems.itervalues(),
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write_xml('gameitems',
+      now=datetime.now(),
+      items=self.gameItems.itervalues(),
+    )
     if ok:
       settings.global_().setGameItemsTime(skdatetime.current_unixtime())
-      dprint("pass: xml = %s" % xmlfile)
+      dprint("pass: xml = gameitems")
     else:
-      dwarn("failed: xml = %s" % xmlfile)
+      dwarn("failed: xml = gameitems")
 
   #def saveReferenceDigests(self):
   #  if not self.referenceDigests: #or not self._referenceDigestsDirty:
@@ -8545,16 +8532,14 @@ class _DataManager(object):
       dprint("warning: dirty terms are locked, save later")
       self._saveTermsLater()
       return False
-    xmlfile = rc.xml_path('terms')
-    data = rc.jinja_template('xml/terms').render({
-      'now': datetime.now(),
-      'terms': self.iterTermData(),
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write_xml('terms',
+      now=datetime.now(),
+      terms=self.iterTermData(),
+    )
     if ok:
-      dprint("pass: xml = %s" % xmlfile)
+      dprint("pass: xml = terms")
     else:
-      dwarn("failed: xml = %s" % xmlfile)
+      dwarn("failed: xml = terms")
     return ok
 
   def reloadTerms(self):
@@ -10117,11 +10102,10 @@ class DataManager(QObject):
         try: os.path.remove(xmlfile)
         except Exception, e: dwarn(e)
       return
-    data = rc.jinja_template('xml/refs').render({
-      'now': datetime.now(),
-      'refs': (it.d for it in refs),
-    })
-    ok = skfileio.writefile(xmlfile, data)
+    ok = rc.jinja_template_write(xmlfile, 'xml/refs',
+      now=datetime.now(),
+      refs=(it.d for it in refs),
+    )
     if ok:
       dprint("pass: xml = %s" % xmlfile)
 
