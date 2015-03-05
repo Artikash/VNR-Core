@@ -246,6 +246,7 @@ def main():
     rc.DIR_CACHE_TOKUTEN,
     rc.DIR_CACHE_FREEM,
     rc.DIR_CACHE_STEAM,
+    rc.DIR_CACHE_MELON,
     rc.DIR_CACHE_GETCHU,
     rc.DIR_CACHE_GYUTTO,
     rc.DIR_CACHE_DIGIKET,

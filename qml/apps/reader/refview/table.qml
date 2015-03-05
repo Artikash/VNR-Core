@@ -185,6 +185,7 @@ Item { id: root_
               switch (itemValue.type) {
               case 'trailers': return "Trailers"
               case 'scape': return "ErogameScape"
+              case 'melon': return "MelonBooks"
               case 'getchu': return "Getchu"
               case 'gyutto': return "Gyutto"
               case 'digiket': return "DiGiket"
