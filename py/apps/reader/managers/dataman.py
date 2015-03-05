@@ -7383,7 +7383,7 @@ class _DataManager(object):
 
   def saveUsers(self):
     if self.users:
-      ok = rc.jinja_template_write_xml('user',
+      ok = rc.jinja_template_write_xml('users',
         now=datetime.now(),
         users=self.users.itervalues(),
       )
