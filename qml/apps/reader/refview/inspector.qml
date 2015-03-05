@@ -55,14 +55,14 @@ Item { id: root_
       var ts = Util.timestampToString(currentItem.timestamp)
       ret += Sk.tr("Creation") + ": " + renderUser(currentItem.userName) + " (" + ts + ")"
       if (currentItem.comment)
-        ret += ": " + Util.escape(currentItem.comment)
+        ret += ": " + Underscore.escape(currentItem.comment)
 
       if (currentItem.updateUserId) {
         ret += "<br/>"
         ts = Util.timestampToString(currentItem.updateTimestamp)
         ret += Sk.tr("Update") + ": " + renderUser(currentItem.updateUserName) + " (" + ts + ")"
         if (currentItem.updateComment)
-          ret += ": " + Util.escape(currentItem.updateComment)
+          ret += ": " + Underscore.escape(currentItem.updateComment)
       }
     }
     return ret
