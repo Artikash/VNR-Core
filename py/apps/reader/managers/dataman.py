@@ -693,7 +693,7 @@ class GameInfo(object):
     """
     @yield  {str url, str type}
     """
-    for r in self.getchu, self.melon:
+    for r in self.getchu,:
       if r:
         yield r.url, r.type
 
@@ -701,7 +701,7 @@ class GameInfo(object):
        url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
        yield url, 'gyutto'
 
-    for r in self.amazon, self.digiket, self.dlsite, self.dmm, self.steam, self.freem, self.trailers:
+    for r in self.amazon, self.melon, self.digiket, self.dlsite, self.dmm, self.steam, self.freem, self.trailers:
       if r:
         yield r.url, r.type
 
