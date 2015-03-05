@@ -79,8 +79,14 @@ class ProductApi(object):
       desc = self._parsedesc(h)
       if desc:
         ret['date'] = self._parsedesctable(desc, u'発行日')
-        ret['artist'] = self._parsedesctable(desc, u'作家名')
         ret['event'] = self._parsedesctable(desc, u'イベント')
+        ret['writers'] = self._parsecreator(h, u'シナリオ') or [] # [unicode]
+
+        artist = self._parsedesctable(desc, u'作家名')
+        artists = self._parsecreator(h, u'原画') or [] # [unicode]
+        if artist and artist not in artists:
+          artists.insert(0, artist)
+        ret['artists'] = artists
 
       imgid = self._parseimageid(h)
       if imgid:
@@ -88,6 +94,17 @@ class ProductApi(object):
         ret['sampleImages'] = list(self._iterparsesampleimages(h, imgid))
         #'descriptions': list(self._iterparsedescriptions(h)), # [unicode]
       return ret
+
+  # Example: <br>原画:克/月杜尋<br>シナリオ:御影/溝淵涼<br>
+  def _parsecreator(self, h, key):
+    """
+    @param  h  unicode  html
+    @param  key  unicode
+    @return  int
+    """
+    ret = skstr.findbetween(h, '<br>%s:' % key, '<br>')
+    if ret and '<' not in ret:
+      return unescapehtml(ret).split('/')
 
   # Example: ="/resize_image.php?image=214000005276.jpg&amp;width=450&amp;height=450"
   def _parseimageid(self, h):
@@ -232,6 +249,7 @@ if __name__ == '__main__':
   k = 114240 # ecchi
   k = 117934 # non-ecchi, event
   k = 113958 # 神のラプソディ
+  k = 110968 # クロノクロック
   print '-' * 10
   q = api.query(k)
   for k,v in q.iteritems():
