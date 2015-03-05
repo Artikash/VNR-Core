@@ -47,6 +47,34 @@ def rreplace(s, old, new, count):
       return new.join(l)
   return s
 
+def findbetween(text, begin, end):
+  """
+  @param  text  unicode
+  @param  begin  unicode
+  @param  end  unicode
+  @return  unicode or None
+  """
+  start = text.find(begin)
+  if start != -1:
+    start += len(begin)
+    stop = text.find(end, start)
+    if stop != -1:
+      return text[start:stop]
+
+def rfindbetween(text, begin, end):
+  """
+  @param  text  unicode
+  @param  begin  unicode
+  @param  end  unicode
+  @return  unicode or None
+  """
+  stop = text.rfind(end)
+  if stop != -1:
+    start = text.rfind(begin, 0, stop)
+    if start != -1:
+      start += len(begin)
+      return text[start:stop]
+
 def _multireplacer_lookup(table, match):
   """
   @param  table  {unicode fr:unicode to}
