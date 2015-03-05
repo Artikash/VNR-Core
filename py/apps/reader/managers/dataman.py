@@ -1170,7 +1170,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    l = [self.melon, self.getchu, self.freem, self.dlsite, self.amazon, self.dmm, self.digiket, self.steam]
+    l = [self.getchu, self.freem, self.melon, self.dlsite, self.amazon, self.dmm, self.digiket, self.steam]
     if features.MAINLAND_CHINA and self.dlsite: # disable dlsite in MAINLAND_CHINA
       l.remove(self.dlsite)
     for r in l:
