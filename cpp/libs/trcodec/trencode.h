@@ -11,14 +11,14 @@
 class TranslationEncoderPrivate;
 class TranslationEncoder
 {
-  SK_CLASS(TranslationEncoderManager)
-  SK_DISABLE_COPY(TranslationEncoderManager)
-  SK_DECLARE_PRIVATE(TranslationEncoderManagerPrivate)
+  SK_CLASS(TranslationEncoder)
+  SK_DISABLE_COPY(TranslationEncoder)
+  SK_DECLARE_PRIVATE(TranslationEncoderPrivate)
 
   // - Construction -
 public:
-  explicit TranslationScriptManager();
-  ~TranslationScriptManager();
+  explicit TranslationEncoder();
+  ~TranslationEncoder();
 
   // Initialization
 
@@ -32,7 +32,7 @@ public:
   void clear();
 
   ///  Add script from file
-  bool addScript(const std::wstring &path, TranslationScriptType type);
+  bool loadScript(const std::wstring &path);
 
   // Replacement
   std::wstring encode(const std::wstring &text, int category = 0) const;

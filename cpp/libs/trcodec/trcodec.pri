@@ -12,11 +12,11 @@ LIBS += -lboost_regex$$BOOST_VARIANT
 HEADERS += \
   $$PWD/trdefine.h \
   $$PWD/trescape.h \
-  $$PWD/trrule.h \
-  $$PWD/trencode.h
+  $$PWD/trencode.h \
+  $$PWD/trencoderule.h
 
 SOURCES += \
-  $$PWD/trrule.cc \
-  $$PWD/trencode.cc
+  $$PWD/trencode.cc \
+  $$PWD/trencoderule.cc
 
 # EOF

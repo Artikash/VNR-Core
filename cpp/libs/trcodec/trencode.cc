@@ -2,9 +2,10 @@
 // 3/5/2015 jichi
 
 #include "trcodec/trencode.h"
-#include "trcodec/trrule.h"
+#include "trcodec/trencoderule.h"
 #include "cpputil/cpplocale.h"
 #include <fstream>
+#include <list>
 //#include <QDebug>
 
 #define SK_NO_QT
@@ -31,17 +32,17 @@ const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 /** Private class */
 
-class TranslationScriptManagerPrivate
+class TranslationEncoderPrivate
 {
 
 public:
   //QReadWriteLock lock;
 
-  TranslationScriptRule *rules; // use array for performance reason
+  TranslationEncodeRule *rules; // use array for performance reason
   size_t ruleCount;
 
-  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
-  ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
+  TranslationEncoderPrivate() : rules(nullptr), ruleCount(0) {}
+  ~TranslationEncoderPrivate() { if (rules) delete[] rules; }
 
   void clear()
   {
@@ -57,7 +58,7 @@ public:
     clear(); // clear first for thread-safety
     if (rules)
       delete[] rules;
-    rules = new TranslationScriptRule[size];
+    rules = new TranslationEncodeRule[size];
     ruleCount = size;
   }
 };
@@ -66,22 +67,22 @@ public:
 
 // Construction
 
-TranslationScriptManager::TranslationScriptManager() : d_(new D) {}
-TranslationScriptManager::~TranslationScriptManager() { delete d_; }
+TranslationEncoder::TranslationEncoder() : d_(new D) {}
+TranslationEncoder::~TranslationEncoder() { delete d_; }
 
-int TranslationScriptManager::size() const { return d_->ruleCount; }
-bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
+int TranslationEncoder::size() const { return d_->ruleCount; }
+bool TranslationEncoder::isEmpty() const { return !d_->ruleCount; }
 
-//bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
-//void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
+//bool TranslationEncoder::isLinkEnabled() const { return d_->link; }
+//void TranslationEncoder::setLinkEnabled(bool t) { d_->link = t; }
 
-//std::wstring TranslationScriptManager::linkStyle() const { return d_->linkStyle; }
-//void TranslationScriptManager::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+//std::wstring TranslationEncoder::linkStyle() const { return d_->linkStyle; }
+//void TranslationEncoder::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
 
-void TranslationScriptManager::clear() { d_->clear(); }
+void TranslationEncoder::clear() { d_->clear(); }
 
 // Initialization
-bool TranslationScriptManager::loadFile(const std::wstring &path)
+bool TranslationEncoder::loadScript(const std::wstring &path)
 {
 #ifdef _MSC_VER
   std::wifstream fin(path);
@@ -95,8 +96,8 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   }
   fin.imbue(UTF8_LOCALE);
 
-  TranslationScriptRule::param_type param;
-  TranslationScriptRule::param_list params; // id, pattern, text, regex
+  TranslationEncodeRule::param_type param;
+  std::list<TranslationEncodeRule::param_type> params; // id, pattern, text, regex
   size_t parentCount = 0;
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != SCRIPT_CH_COMMENT) {
@@ -147,39 +148,23 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   d_->reset(parentCount);
 
   size_t i = 0;
-  for (auto p = params.cbegin(), q = params.cend(); p != params.cend(); ++p)
-    if (p->f_child) {
-      if (q == params.cend())
-        q = p;
-    } else if (p->f_parent && q != params.cend()) {
-      d_->rules[i++].init_list(*p, q, p);
-      q = params.cend();
-    } else
-      d_->rules[i++].init(*p);
+  for (auto p = params.cbegin(); p != params.cend(); ++p)
+    d_->rules[i++].init(*p);
 
   return true;
 }
 
 // Translation
-std::wstring TranslationScriptManager::translate(const std::wstring &text, int category, bool mark) const
+std::wstring TranslationEncoder::encode(const std::wstring &text, int category) const
 {
   //QReadLocker locker(&d_->lock);
   std::wstring ret = text;
-#ifdef DEBUG_RULE
-  std::wstring previous = text;
-#endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
       if (rule.is_valid() && rule.match_category(category))
-        rule.replace(ret, mark);
-
-#ifdef DEBUG_RULE
-      if (previous != ret)
-        DOUT(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
-      previous = ret;
-#endif // DEBUG_RULE
+        rule.replace(ret);
     }
   return ret;
 }

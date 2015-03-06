@@ -20,8 +20,8 @@ int main()
   //path = L"/Users/jichi/tmp/escape_input.txt";
 
   TranslationEncoder m;
-  //m.loadFile(path);
-  //qDebug() << m.size();
+  m.loadScript(path);
+  qDebug() << m.size();
 
   //if (!m.isEmpty()) {
   //  qDebug() << QString::fromStdWString(text);
