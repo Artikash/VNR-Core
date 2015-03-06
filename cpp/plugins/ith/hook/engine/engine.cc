@@ -5543,8 +5543,8 @@ static void SpecialHookApricoT(DWORD esp_base, HookParam *, BYTE, DWORD *data, D
   DWORD reg_esi = *(DWORD *)(esp_base - 0x20);
   DWORD base = *(DWORD *)(reg_esi + 0x24);
   DWORD index = *(DWORD *)(reg_esi + 0x3c);
-  DWORD *script = (DWORD *)(base + index*4);
-  // jichi 12/14/2015
+  DWORD *script = (DWORD *)(base + index * 4);
+  // jichi 2/14/2015
   // Change reg_esp to the return address
   //DWORD reg_esp = regof(esp, esp_base);
   //*split = reg_esp;
@@ -5567,7 +5567,7 @@ static void SpecialHookApricoT(DWORD esp_base, HookParam *, BYTE, DWORD *data, D
         // jichi 1/4/2014: The way I save subconext is not able to distinguish the split value
         // Change to shift 16
         //*split |= 1 << 31;
-        *split |= 1 << 16; // differentiate ame and ext script
+        *split |= 1 << 16; // jichi: differentiate name and text script
       } break;
     case L'T':
       if (script[2] == L'e' && script[3] == L'x' && script[4] == L't') {
