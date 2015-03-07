@@ -277,7 +277,7 @@ bool AVRecorder::addImageData(const uint8_t *data, int64_t size, int bytesPerLin
 
      // This determine th speed;
 
-     if(d_->videoCodecContext->coded_frame->key_frame)
+     if (d_->videoCodecContext->coded_frame->key_frame)
        pkt.flags |= AV_PKT_FLAG_KEY;
 
      pkt.stream_index = d_->videoStream->index;

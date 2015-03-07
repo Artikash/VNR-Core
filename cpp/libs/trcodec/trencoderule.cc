@@ -2,7 +2,7 @@
 // 9/20/2014 jichi
 
 #include "trcodec/trencoderule.h"
-#include "trcodec/trescape.h"
+#include "trcodec/trrule.h"
 //#include <QDebug>
 
 #define SK_NO_QT
@@ -11,7 +11,7 @@
 
 // Construction
 
-void TranslationEncodeRule::init(const param_type &param, bool precompile_regex)
+void TranslationEncodeRule::init(const TranslationRule &param, bool precompile_regex)
 {
   id = param.id;
   category = param.category;

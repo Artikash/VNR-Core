@@ -456,7 +456,7 @@ static EXCEPTION_DISPOSITION cxx_frame_handler(PEXCEPTION_RECORD rec, cxx_except
 
   /* stack unwinding */
   if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND)) {
-    if(frame->trylevel >= descr->unwind_count) //stack corruption
+    if (frame->trylevel >= descr->unwind_count) //stack corruption
       terminate();
     if (descr->unwind_count)
       cxx_local_unwind(frame, descr, -1);

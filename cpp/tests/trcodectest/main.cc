@@ -1,6 +1,6 @@
 // main.cc
 // 9/20/2014 jichi
-#include "trcodec/trencode.h"
+#include "trcodec/trcodec.h"
 #include <QtCore>
 
 int main()
@@ -19,7 +19,7 @@ int main()
   //path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
   //path = L"/Users/jichi/tmp/escape_input.txt";
 
-  TranslationEncoder m;
+  TranslationCodec m;
   m.loadScript(path);
   qDebug() << m.size();
 

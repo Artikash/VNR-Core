@@ -5,8 +5,7 @@
 // 9/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include "trcodec/trdefine.h"
-#include <string>
+#include "trcodec/trrule.h"
 
 class TranslationEncoderPrivate;
 class TranslationEncoder
@@ -32,12 +31,12 @@ public:
   void clear();
 
   ///  Add script from file
-  bool loadScript(const std::wstring &path);
+  void setRules(const TranslationRuleList &rules);
 
   // Replacement
 
   /// Encode translation with selected category and limit maximum number of iterations
-  std::wstring encode(const std::wstring &text, int selector = 0, int limit = 100) const;
+  void encode(std::wstring &text, int selector = 0, int limit = 100) const;
 };
 
 #endif // TRENCODE_H

@@ -12,21 +12,7 @@
 # pragma clang diagnostic ignored "-Wlogical-op-parentheses"
 #endif // __clang__
 
-struct TranslationScriptRule
-{
-  std::wstring token,   // the LHS token
-               source,  // the RHS source
-               target;  // the RHS target
-
-  // Features
-  int id,
-      category;
-
-  // Flags
-  uint8_t f_regex,  // this is a regex
-          f_icase;  // case insensitive
-};
-
+class TranslationRule;
 class TranslationEncodeRule
 {
   typedef TranslationEncodeRule Self;
@@ -45,8 +31,6 @@ class TranslationEncodeRule
   mutable boost::wregex *source_re; // cached compiled regex
 
 public:
-  typedef TranslationScriptRule param_type;
-
   TranslationEncodeRule()
     : flags(0)
     , category(0)
@@ -61,7 +45,7 @@ public:
 
   bool match_category(int v) const { return !v || !category || v & category; }
 
-  void init(const param_type &param, bool precompile_regex = true);
+  void init(const TranslationRule &param, bool precompile_regex = true);
 
   // Replacement
 private:

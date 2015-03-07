@@ -10,12 +10,15 @@ LIBS += -lboost_regex$$BOOST_VARIANT
 #QT += core
 
 HEADERS += \
+  $$PWD/trcodec.h \
   $$PWD/trdefine.h \
   $$PWD/trescape.h \
   $$PWD/trencode.h \
-  $$PWD/trencoderule.h
+  $$PWD/trencoderule.h \
+  $$PWD/trrule.h
 
 SOURCES += \
+  $$PWD/trcodec.cc \
   $$PWD/trencode.cc \
   $$PWD/trencoderule.cc
 

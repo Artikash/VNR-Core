@@ -156,7 +156,7 @@ bool HanVietPhraseDictionary::addFile(const std::wstring &path)
   std::string spath(path.begin(), path.end());
   std::wifstream fin(spath.c_str());
 #endif // _MSC_VER
-  if(!fin.is_open())
+  if (!fin.is_open())
     return false;
   fin.imbue(UTF8_LOCALE);
 

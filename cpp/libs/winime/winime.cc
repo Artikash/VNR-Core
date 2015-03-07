@@ -35,7 +35,7 @@ winime_t *winime_create(const wchar_t *cls) ///< create an im engine of given cl
 
   if (SUCCEEDED(ife->Open())) {
     DWORD dwCaps;
-    if(SUCCEEDED(ife->GetConversionModeCaps(&dwCaps)))
+    if (SUCCEEDED(ife->GetConversionModeCaps(&dwCaps)))
       return ife;
     ife->Close();
   }
@@ -113,7 +113,7 @@ HRESULT SetIMEEngine(LPCWSTR msime)
   Q_ASSERT(ife);
   if (S_OK == ife->Open()) {
     DWORD dwCaps;
-    if(S_OK == ife->GetConversionModeCaps(&dwCaps)) {
+    if (S_OK == ife->GetConversionModeCaps(&dwCaps)) {
       MORRSLT *mr = nullptr;
 
       // http://msdn.microsoft.com/ja-jp/library/windows/desktop/hh851782%28v=vs.85%29.aspx
@@ -143,8 +143,8 @@ HRESULT SetIMEEngine(LPCWSTR msime)
 
   //m_bCoCreat = TRUE;
 
-  //if( m_pIFELanguage )
-  //  if( m_pIFELanguage->Open() == S_OK )
+  //if (m_pIFELanguage)
+  //  if (m_pIFELanguage->Open() == S_OK)
   //    m_bLangOpen = TRUE;
 
   //m_pIFELanguage->GetConversionModeCaps( &m_dwCaps );
