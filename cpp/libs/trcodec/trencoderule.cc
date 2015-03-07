@@ -3,6 +3,7 @@
 
 #include "trcodec/trencoderule.h"
 #include "trcodec/trescape.h"
+#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trencoderule.cc"
@@ -19,8 +20,6 @@ void TranslationEncodeRule::init(const param_type &param, bool precompile_regex)
 
   if (param.f_icase)
     flags |= IcaseFlag;
-  if (param.f_force)
-    flags |= ForceFlag;
 
   if (param.f_regex) {
     flags |= RegexFlag;

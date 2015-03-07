@@ -8,7 +8,7 @@ int main()
   qDebug() << "enter";
 
   //wchar_t ws[] = L"ルナ様";
-  wchar_t ws[] = L"「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」【綾波レイ】";
+  wchar_t ws[] = L"【綾波レイ】「こんにちは、世界！」";
   std::wstring text = ws;
 
   std::wstring path;
@@ -23,11 +23,11 @@ int main()
   m.loadScript(path);
   qDebug() << m.size();
 
-  //if (!m.isEmpty()) {
-  //  qDebug() << QString::fromStdWString(text);
-  //  text = m.translate(text, 2);
-  //  qDebug() << QString::fromStdWString(text);
-  //}
+  if (!m.isEmpty()) {
+    qDebug() << QString::fromStdWString(text);
+    text = m.encode(text);
+    qDebug() << QString::fromStdWString(text);
+  }
 
   qDebug() << "leave";
   return 0;

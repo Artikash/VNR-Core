@@ -148,6 +148,7 @@ Item { id: root_
     case -101: return qsTr("Regex") // E_USELESS_REGEX
     case -800: return My.tr("Translator") // E_BAD_HOST
     case -900: return "\\n" // E_NEWLINE
+    case -901: return "\\t" // E_TAB
     //case -1000: // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
     }

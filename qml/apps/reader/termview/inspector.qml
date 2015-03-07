@@ -223,6 +223,7 @@ Item { id: root_
     case -101: return qsTr("Pattern does not need enabling regex") // E_USELESS_REGEX
     case -800: return qsTr("Entry type does not allow being translator-specific") // E_BAD_HOST
     case -900: return qsTr("New line characters are not allowed in text") // E_NEWLINE
+    case -901: return qsTr("Tab characters are not allowed in text") // E_TAB
     case -1000: return qsTr("Missing pattern") // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr("Unknown warning") : Sk.tr("Unknown error")
     }

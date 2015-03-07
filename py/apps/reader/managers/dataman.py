@@ -2629,6 +2629,10 @@ class _Term(object):
     if '\n' in self.pattern or self.text and '\n' in self.text:
       return self.E_NEWLINE
 
+    # E_TAB
+    if '\t' in self.pattern or self.text and '\t' in self.text:
+      return self.E_TAB
+
     # E_BAD_HOST
     if self.host and self.type not in self.HOST_TYPES:
       return self.E_BAD_HOST
@@ -2745,6 +2749,7 @@ class _Term(object):
   E_USELESS_REGEX = -101    # regex flag is redundant
   E_BAD_HOST = -800         # having new line characters in pattern or repl
   E_NEWLINE = -900          # having new line characters in pattern or repl
+  E_TAB = -901              # having tag characters in pattern or repl
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
   HOST_TYPES = 'input', 'output', 'trans', 'name', 'yomi' # types allow host

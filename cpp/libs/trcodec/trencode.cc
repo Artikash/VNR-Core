@@ -10,7 +10,7 @@
 #include <fstream>
 #include <list>
 #include <vector>
-#include <QDebug>
+//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trscript.cc"
