@@ -18,4 +18,6 @@ SOURCES += \
   $$PWD/trrule.cc \
   $$PWD/trscript.cc
 
+OTHER_FILES += example.txt
+
 # EOF

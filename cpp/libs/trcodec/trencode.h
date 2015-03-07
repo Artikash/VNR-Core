@@ -35,7 +35,7 @@ public:
   bool loadScript(const std::wstring &path);
 
   // Replacement
-  std::wstring encode(const std::wstring &text, int category = 0) const;
+  std::wstring encode(const std::wstring &text, int selector = 0) const;
 };
 
 #endif // TRENCODE_H

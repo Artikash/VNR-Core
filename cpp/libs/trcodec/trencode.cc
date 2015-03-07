@@ -1,26 +1,22 @@
-// trencode.cc
+// trenccde.cc
 // 3/5/2015 jichi
 
 #include "trcodec/trencode.h"
+#include "trcodec/trdefine.h"
 #include "trcodec/trencoderule.h"
 #include "cpputil/cpplocale.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <fstream>
 #include <list>
-//#include <QDebug>
+#include <vector>
+#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trscript.cc"
 #include "sakurakit/skdebug.h"
 
 //#define DEBUG_RULE // output the rule that is applied
-
-#define SCRIPT_CH_COMMENT   L'#'    // indicate the beginning of a line comment
-#define SCRIPT_CH_DELIM     L'\t'   // deliminator of the rule pair
-#define SCRIPT_CH_REGEX     L'r'    // a regex rule
-#define SCRIPT_CH_ICASE     L'i'    // case insensitive
-#define SCRIPT_CH_NAME      L'n'    // a name without suffix
-#define SCRIPT_CH_SUFFIX    L's'    // a name with suffix
-#define SCRIPT_CH_FORCE     L'f'    // a name with suffix
 
 /** Helpers */
 
@@ -96,44 +92,46 @@ bool TranslationEncoder::loadScript(const std::wstring &path)
   }
   fin.imbue(UTF8_LOCALE);
 
-  TranslationEncodeRule::param_type param;
   std::list<TranslationEncodeRule::param_type> params; // id, pattern, text, regex
-  size_t parentCount = 0;
+  const auto column_sep = boost::lambda::_1 == TRSCRIPT_CH_COLUMNSEP,
+             feature_sep = boost::lambda::_1 == TRSCRIPT_CH_FEATURESEP;
+  std::vector<std::wstring> cols;
+  std::vector<std::string> features;
   for (std::wstring line; std::getline(fin, line);)
-    if (!line.empty() && line[0] != SCRIPT_CH_COMMENT) {
-      param.clear_flags();
-      size_t pos = 0;
-      for (; pos < line.size() && line[pos] != SCRIPT_CH_DELIM; pos++)
-        switch (line[pos]) {
-        case SCRIPT_CH_FORCE: param.f_force = true; break;
-        case SCRIPT_CH_REGEX: param.f_regex = true; break;
-        case SCRIPT_CH_ICASE: param.f_icase = true; break;
-        case SCRIPT_CH_NAME: param.f_parent = true; break;
-        case SCRIPT_CH_SUFFIX: param.f_child = true; break;
-        }
-      if (pos == line.size())
-        continue;
-      //line.pop_back(); // remove trailing '\n'
-      const wchar_t *cur = line.c_str() + pos;
-      long id = ::wcstol(cur, const_cast<wchar_t **>(&cur), 10); // base 10
-      if (cur && *cur++) { // skip first delim
-        param.category = ::wcstol(cur, const_cast<wchar_t **>(&cur), 10); // base 10
-        if (cur && *cur++) {
-          param.id = id ? std::to_wstring((long long)id) : std::wstring();
-          if (const wchar_t *delim = ::wcschr(cur, SCRIPT_CH_DELIM)) {
-            param.source.assign(cur, delim - cur);
-            param.target.assign(delim + 1);
-          } else {
-            param.source.assign(cur);
-            param.target.clear();
-          }
-          if (!param.source.empty()) {
-            if (!param.f_child)
-              parentCount++;
-            params.push_back(param);
-            //qDebug() << QString::fromStdWString(param.id) << param.category << QString::fromStdWString(param.source) << QString::fromStdWString(param.target);
+    if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
+      boost::split(cols, line, column_sep);
+      if (!cols.empty()) {
+        TranslationEncodeRule::param_type param = {};
+        if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
+          param.token = cols[TRSCRIPT_COLUMN_TOKEN];
+        if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
+          param.source = cols[TRSCRIPT_COLUMN_SOURCE];
+        if (cols.size() > TRSCRIPT_COLUMN_TARGET)
+          param.target = cols[TRSCRIPT_COLUMN_TARGET];
+        if (cols.size() > TRSCRIPT_COLUMN_FEATURE) {
+          std::string feature(cols[TRSCRIPT_COLUMN_FEATURE].begin(),
+                              cols[TRSCRIPT_COLUMN_FEATURE].end());
+          if (!feature.empty()) {
+            boost::split(features, feature, feature_sep);
+            if (!features.empty()) {
+              if (features.size() > TRSCRIPT_FEATURE_ID)
+                param.id = std::stoi(features[TRSCRIPT_FEATURE_ID].c_str());
+              if (features.size() > TRSCRIPT_FEATURE_CATEGORY)
+                param.category = std::stoi(features[TRSCRIPT_FEATURE_CATEGORY].c_str());
+              if (features.size() > TRSCRIPT_FEATURE_FLAGS) {
+                const std::string &flags = features[TRSCRIPT_FEATURE_FLAGS];
+                for (size_t pos = 0; pos < flags.size(); pos++)
+                  switch (flags[pos]) {
+                  case TRSCRIPT_CH_REGEX: param.f_regex = true; break;
+                  case TRSCRIPT_CH_ICASE: param.f_icase = true; break;
+                  }
+              }
+            }
           }
         }
+
+        if (!param.token.empty() && !param.source.empty())
+          params.push_back(param);
       }
     }
 
@@ -145,7 +143,7 @@ bool TranslationEncoder::loadScript(const std::wstring &path)
   }
 
   //QWriteLocker locker(&d_->lock);
-  d_->reset(parentCount);
+  d_->reset(params.size());
 
   size_t i = 0;
   for (auto p = params.cbegin(); p != params.cend(); ++p)

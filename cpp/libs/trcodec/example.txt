@@ -1,0 +1,12 @@
+# Sample script
+# 3/6/2015
+# See also: http://joshua-decoder.org/6.0/file-formats.html
+# Format:
+#   class TAB source TAB target TAB features
+# Features
+#   id selector flags
+
+x	こんにちは	hello	123 -1 ri
+x	世界	world	123 -1 ri
+x	、	,	123 -1 r
+x	delete		123 12 r
