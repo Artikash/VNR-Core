@@ -1,8 +1,8 @@
 #ifndef TRDEFINE_H
 #define TRDEFINE_H
 
-// trencode.h
-// 9/20/2014 jichi
+// trdefine.h
+// 3/5/2015 jichi
 
 // Translation script special characters
 enum : wchar_t {

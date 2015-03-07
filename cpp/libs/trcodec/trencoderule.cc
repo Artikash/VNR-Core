@@ -3,7 +3,7 @@
 
 #include "trcodec/trencoderule.h"
 #include "trcodec/trescape.h"
-#include <QDebug>
+//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trencoderule.cc"

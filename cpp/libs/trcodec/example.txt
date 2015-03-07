@@ -7,6 +7,6 @@
 #   id selector flags
 
 x	こんにちは	hello	123 -1
-x	世界	world	123 -1
+n	世界	world	123 -1
 x	、	,	123 -1
 x	delete		123 12

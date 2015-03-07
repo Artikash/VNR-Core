@@ -35,7 +35,9 @@ public:
   bool loadScript(const std::wstring &path);
 
   // Replacement
-  std::wstring encode(const std::wstring &text, int selector = 0) const;
+
+  /// Encode translation with selected category and limit maximum number of iterations
+  std::wstring encode(const std::wstring &text, int selector = 0, int limit = 100) const;
 };
 
 #endif // TRENCODE_H

@@ -92,7 +92,7 @@ bool TranslationEncoder::loadScript(const std::wstring &path)
   }
   fin.imbue(UTF8_LOCALE);
 
-  std::list<TranslationEncodeRule::param_type> params; // id, pattern, text, regex
+  std::list<TranslationScriptRule> rules; // id, pattern, text, regex
   const auto column_sep = boost::lambda::_1 == TRSCRIPT_CH_COLUMNSEP,
              feature_sep = boost::lambda::_1 == TRSCRIPT_CH_FEATURESEP;
   std::vector<std::wstring> cols;
@@ -101,13 +101,13 @@ bool TranslationEncoder::loadScript(const std::wstring &path)
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
       boost::split(cols, line, column_sep);
       if (!cols.empty()) {
-        TranslationEncodeRule::param_type param = {};
+        TranslationScriptRule rule = {};
         if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
-          param.token = cols[TRSCRIPT_COLUMN_TOKEN];
+          rule.token = cols[TRSCRIPT_COLUMN_TOKEN];
         if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
-          param.source = cols[TRSCRIPT_COLUMN_SOURCE];
+          rule.source = cols[TRSCRIPT_COLUMN_SOURCE];
         if (cols.size() > TRSCRIPT_COLUMN_TARGET)
-          param.target = cols[TRSCRIPT_COLUMN_TARGET];
+          rule.target = cols[TRSCRIPT_COLUMN_TARGET];
         if (cols.size() > TRSCRIPT_COLUMN_FEATURE) {
           std::string feature(cols[TRSCRIPT_COLUMN_FEATURE].begin(),
                               cols[TRSCRIPT_COLUMN_FEATURE].end());
@@ -115,56 +115,61 @@ bool TranslationEncoder::loadScript(const std::wstring &path)
             boost::split(features, feature, feature_sep);
             if (!features.empty()) {
               if (features.size() > TRSCRIPT_FEATURE_ID)
-                param.id = std::stoi(features[TRSCRIPT_FEATURE_ID].c_str());
+                rule.id = std::stoi(features[TRSCRIPT_FEATURE_ID].c_str());
               if (features.size() > TRSCRIPT_FEATURE_CATEGORY)
-                param.category = std::stoi(features[TRSCRIPT_FEATURE_CATEGORY].c_str());
+                rule.category = std::stoi(features[TRSCRIPT_FEATURE_CATEGORY].c_str());
               if (features.size() > TRSCRIPT_FEATURE_FLAGS) {
                 const std::string &flags = features[TRSCRIPT_FEATURE_FLAGS];
                 for (size_t pos = 0; pos < flags.size(); pos++)
                   switch (flags[pos]) {
-                  case TRSCRIPT_CH_REGEX: param.f_regex = true; break;
-                  case TRSCRIPT_CH_ICASE: param.f_icase = true; break;
+                  case TRSCRIPT_CH_REGEX: rule.f_regex = true; break;
+                  case TRSCRIPT_CH_ICASE: rule.f_icase = true; break;
                   }
               }
             }
           }
         }
 
-        if (!param.token.empty() && !param.source.empty())
-          params.push_back(param);
+        if (!rule.token.empty() && !rule.source.empty())
+          rules.push_back(rule);
       }
     }
 
   fin.close();
 
-  if (params.empty()) {
+  if (rules.empty()) {
     d_->clear();
     return false;
   }
 
   //QWriteLocker locker(&d_->lock);
-  d_->reset(params.size());
+  d_->reset(rules.size());
 
   size_t i = 0;
-  for (auto p = params.cbegin(); p != params.cend(); ++p)
+  for (auto p = rules.cbegin(); p != rules.cend(); ++p)
     d_->rules[i++].init(*p);
 
   return true;
 }
 
 // Translation
-std::wstring TranslationEncoder::encode(const std::wstring &text, int category) const
+std::wstring TranslationEncoder::encode(const std::wstring &text, int category, int limit) const
 {
+  if (!d_->ruleCount || !d_->rules)
+    return text;
   //QReadLocker locker(&d_->lock);
-  std::wstring ret = text;
-  if (d_->ruleCount && d_->rules)
+  std::wstring result = text,
+               lastResult;
+  for (int count = 0; lastResult != result && (!limit || count < limit); count++) {
+    lastResult = result;
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
       if (rule.is_valid() && rule.match_category(category))
-        rule.replace(ret);
+        rule.replace(result);
     }
-  return ret;
+  }
+  return result;
 }
 
 // EOF

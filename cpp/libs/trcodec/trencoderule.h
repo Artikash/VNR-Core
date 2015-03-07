@@ -12,7 +12,7 @@
 # pragma clang diagnostic ignored "-Wlogical-op-parentheses"
 #endif // __clang__
 
-struct TranslationEncodeParam
+struct TranslationScriptRule
 {
   std::wstring token,   // the LHS token
                source,  // the RHS source
@@ -45,7 +45,7 @@ class TranslationEncodeRule
   mutable boost::wregex *source_re; // cached compiled regex
 
 public:
-  typedef TranslationEncodeParam param_type;
+  typedef TranslationScriptRule param_type;
 
   TranslationEncodeRule()
     : flags(0)
