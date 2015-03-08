@@ -28,6 +28,8 @@ enum TRSCRIPT_FEATURE {
   , TRSCRIPT_FEATURE_COUNT // totally 3 features
 };
 
+#define TR_RE_TOKEN L"[a-zA-Z0-9_]+"
+
 #endif // TRDEFINE_H
 
 //enum TranslationScriptType {

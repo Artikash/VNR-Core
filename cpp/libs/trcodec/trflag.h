@@ -7,9 +7,8 @@
 #include <cstdint>
 
 enum TranslationFlag : uint8_t {
-  TranslationSymbolicFlag = 1    // this rule contains gammar symbols
-  , TranslationRegexFlag = 1 << 1       // source is regular expression
-  , TranslationIcaseFlag = 1 << 2       // ignore case for source
+  TranslationRegexFlag = 1          // source is regular expression
+  , TranslationIcaseFlag = 1 << 1   // ignore case for source
 };
 
 struct TranslationFlagStruct
@@ -24,7 +23,6 @@ struct TranslationFlagStruct
   bool is_##_method() const { return has_flag(_flag); } \
   void set_##_method(bool t) { set_flag(_flag, t); }
 
-  DEF_FLAG(symbolic, TranslationSymbolicFlag)
   DEF_FLAG(regex, TranslationRegexFlag)
   DEF_FLAG(icase, TranslationIcaseFlag)
 #undef DEF_FLAG

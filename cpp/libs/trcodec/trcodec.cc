@@ -5,7 +5,6 @@
 #include "trcodec/trdefine.h"
 #include "trcodec/trencode.h"
 #include "trcodec/trrule.h"
-#include "trcodec/trsymbol.h"
 #include "cpputil/cpplocale.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -102,10 +101,8 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
           }
         }
 
-        if (!rule.source.empty()) {
-          rule.set_symbolic(trsymbol::contains_symbol(rule.source));
+        if (!rule.source.empty())
           rules.push_back(rule);
-        }
       }
     }
 

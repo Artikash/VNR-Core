@@ -18,20 +18,18 @@ class TranslationEncodeRule : private TranslationRule
 {
   SK_EXTEND_CLASS(TranslationEncodeRule, TranslationRule)
 
-  std::wstring token;
-  int category;
-
+  std::wstring token,
+               target,
+               source;
+  boost::wregex *source_re; // cached compiled regex
+  int source_symbol_count;
   mutable bool valid; // whether the object is valid
-  mutable std::wstring target;
-  mutable std::wstring source;
-  mutable boost::wregex *source_re; // cached compiled regex
 
 public:
-  using Base::is_symbolic;
-
   TranslationEncodeRule()
-    : valid(false)
-    , source_re(nullptr)
+    : source_re(nullptr)
+    , source_symbol_count(0)
+    , valid(false)
   {}
 
   ~TranslationEncodeRule()
@@ -41,10 +39,12 @@ public:
 
   void init(const TranslationRule &param);
   bool is_valid() const { return valid; }
+  bool is_symbolic() const { return source_symbol_count; }
 
   // Replacement
 private:
   void init_source(); // may throw regular expression exception
+  void init_target();
   void cache_target() const;
 
   void string_replace(std::wstring &ret) const;

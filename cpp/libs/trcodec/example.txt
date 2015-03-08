@@ -6,7 +6,9 @@
 # Features
 #   id selector flags
 
-n	悠真	Yuuma	11 -1
-n	[[n]]くん	[[n]]-kun	14 -1
-	DELETE		14 -1
-#x	[[x]][[x]]	[[x]]	14 -1
+n	悠真	Yuuma	1 -1
+v	攻略	capture	2 -1
+n	[[n]]くん	[[n]]-kun	3 -1
+x	[[n]]を[[v]]	[[v]] [[n]]	4 -1
+	DELETE		5 -1
+#x	[[x]][[x]]	[[x]]	6 -1

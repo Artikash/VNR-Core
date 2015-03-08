@@ -28,6 +28,7 @@ void TranslationEncodeRule::init(const TranslationRule &param)
   if (!param.target.empty())
     token = param.token;
 
+  source_symbol_count = trsymbol::count_raw_symbols(source);
   WITH (
     init_source();
     valid = true; // do this at last to prevent crash
@@ -38,13 +39,12 @@ void TranslationEncodeRule::init(const TranslationRule &param)
 
 void TranslationEncodeRule::cache_target() const
 {
-  if (target.empty() && !token.empty()) {
-    target = trsymbol::create_symbol(token, id);
-
-    if (source_re)
-      source.clear(); // no longer needed any more
-  }
+  if (target.empty() && !token.empty())
+    self()->init_target();
 }
+
+void TranslationEncodeRule::init_target()
+{ target = trsymbol::create_symbol_target(token, id, source_symbol_count); }
 
 void TranslationEncodeRule::init_source()
 {
@@ -54,9 +54,10 @@ void TranslationEncodeRule::init_source()
   }
   if (is_regex()) {
     if (is_icase())
-      source_re = new boost::wregex(source, boost::wregex::icase);
+      source_re = new boost::wregex(source, boost::wregex::perl|boost::wregex::icase); // perl is the default flag
     else
       source_re = new boost::wregex(source);
+    source.clear(); // no longer needed any more
   }
 }
 
