@@ -5,6 +5,7 @@
 #include "trcodec/trdefine.h"
 #include "trcodec/trencode.h"
 #include "trcodec/trrule.h"
+#include "trcodec/trsymbol.h"
 #include "cpputil/cpplocale.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -72,7 +73,7 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
       boost::split(cols, line, column_sep);
       if (!cols.empty()) {
-        TranslationRule rule = {};
+        TranslationRule rule;
         if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
           rule.token = cols[TRSCRIPT_COLUMN_TOKEN];
         if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
@@ -93,16 +94,18 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
                 const std::string &flags = features[TRSCRIPT_FEATURE_FLAGS];
                 for (size_t pos = 0; pos < flags.size(); pos++)
                   switch (flags[pos]) {
-                  case TRSCRIPT_CH_REGEX: rule.f_regex = true; break;
-                  case TRSCRIPT_CH_ICASE: rule.f_icase = true; break;
+                  case TRSCRIPT_CH_REGEX: rule.set_regex(true); break;
+                  case TRSCRIPT_CH_ICASE: rule.set_icase(true); break;
                   }
               }
             }
           }
         }
 
-        if (!rule.token.empty() && !rule.source.empty())
+        if (!rule.source.empty()) {
+          rule.set_symbolic(trsymbol::contains_symbol(rule.source));
           rules.push_back(rule);
+        }
       }
     }
 
@@ -117,8 +120,8 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
 TranslationCodec::TranslationCodec() : d_(new D) {}
 TranslationCodec::~TranslationCodec() { delete d_; }
 
-int TranslationCodec::size() const { return d_->encoder->size(); }
-bool TranslationCodec::isEmpty() const { return d_->encoder->isEmpty(); }
+int TranslationCodec::size() const { return d_->decoder->size(); }
+bool TranslationCodec::isEmpty() const { return d_->decoder->isEmpty(); }
 
 //bool TranslationCodec::isLinkEnabled() const { return d_->link; }
 //void TranslationCodec::setLinkEnabled(bool t) { d_->link = t; }
@@ -143,7 +146,6 @@ bool TranslationCodec::loadScript(const std::wstring &path)
 
   d_->encoder->setRules(rules);
   d_->decoder->setRules(rules);
-
   return true;
 }
 

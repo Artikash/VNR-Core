@@ -55,8 +55,6 @@ public:
   void reset(size_t size)
   {
     clear(); // clear first for thread-safety
-    if (rules)
-      delete[] rules;
     rules = new TranslationScriptRule[size];
     ruleCount = size;
   }

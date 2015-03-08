@@ -15,11 +15,14 @@ HEADERS += \
   $$PWD/trescape.h \
   $$PWD/trencode.h \
   $$PWD/trencoderule.h \
-  $$PWD/trrule.h
+  $$PWD/trflag.h \
+  $$PWD/trrule.h \
+  $$PWD/trsymbol.h
 
 SOURCES += \
   $$PWD/trcodec.cc \
   $$PWD/trencode.cc \
-  $$PWD/trencoderule.cc
+  $$PWD/trencoderule.cc \
+  $$PWD/trsymbol.cc
 
 # EOF

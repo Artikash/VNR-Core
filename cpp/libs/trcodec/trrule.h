@@ -4,12 +4,12 @@
 // trrule.h
 // 9/20/2014 jichi
 
+#include "trcodec/trflag.h"
 #include <list>
 #include <string>
 
-class TranslationRule
+struct TranslationRule : TranslationFlagStruct
 {
-public:
   std::wstring token,   // the LHS token
                source,  // the RHS source
                target;  // the RHS target
@@ -18,9 +18,7 @@ public:
   int id,
       category;
 
-  // Flags
-  bool f_regex,  // this is a regex
-       f_icase;  // case insensitive
+  TranslationRule() : id(0), category(0) {}
 };
 
 typedef std::list<TranslationRule> TranslationRuleList;

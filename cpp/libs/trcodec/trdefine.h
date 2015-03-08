@@ -28,7 +28,6 @@ enum TRSCRIPT_FEATURE {
   , TRSCRIPT_FEATURE_COUNT // totally 3 features
 };
 
-
 #endif // TRDEFINE_H
 
 //enum TranslationScriptType {

@@ -13,7 +13,6 @@
 
 class TranslationEncoderPrivate
 {
-
 public:
   //QReadWriteLock lock;
 
@@ -35,8 +34,6 @@ public:
   void reset(size_t size)
   {
     clear(); // clear first for thread-safety
-    if (rules)
-      delete[] rules;
     rules = new TranslationEncodeRule[size];
     ruleCount = size;
   }
@@ -74,11 +71,13 @@ void TranslationEncoder::encode(std::wstring &result, int category, int limit) c
     return;
   std::wstring lastResult;
   for (int count = 0; lastResult != result && (!limit || count < limit); count++) {
+    //qDebug() << count;
     lastResult = result;
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
-      //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
-      if (rule.is_valid() && rule.match_category(category))
+      if (rule.is_valid()
+          && rule.match_category(category)
+          && (!count || rule.is_symbolic()))
         rule.replace(result);
     }
   }

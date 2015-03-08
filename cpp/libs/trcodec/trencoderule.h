@@ -4,6 +4,8 @@
 // trencoderule.h
 // 9/20/2014 jichi
 
+#include "trcodec/trrule.h"
+#include "sakurakit/skglobal.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 #include <cstdint>
@@ -12,57 +14,37 @@
 # pragma clang diagnostic ignored "-Wlogical-op-parentheses"
 #endif // __clang__
 
-class TranslationRule;
-class TranslationEncodeRule
+class TranslationEncodeRule : private TranslationRule
 {
-  typedef TranslationEncodeRule Self;
+  SK_EXTEND_CLASS(TranslationEncodeRule, TranslationRule)
 
-  enum Flag : uint8_t {
-    RegexFlag = 1
-    , IcaseFlag = 1 << 1
-  };
-
-  uint8_t flags;
-  std::wstring id,
-               source,
-               target;
+  std::wstring token,
+               source;
   int category;
   mutable bool valid; // whether the object is valid
-  mutable boost::wregex *source_re; // cached compiled regex
+  boost::wregex *source_re; // cached compiled regex
+  mutable std::wstring target;
 
 public:
+  using Base::is_symbolic;
+
   TranslationEncodeRule()
-    : flags(0)
-    , category(0)
-    , valid(false)
+    : valid(false)
     , source_re(nullptr)
   {}
 
   ~TranslationEncodeRule()
   { if (source_re) delete source_re; }
 
-  bool is_valid() const { return valid; }
-
   bool match_category(int v) const { return !v || !category || v & category; }
 
-  void init(const TranslationRule &param, bool precompile_regex = true);
+  void init(const TranslationRule &param);
+  bool is_valid() const { return valid; }
 
   // Replacement
 private:
-  bool is_regex() const { return flags & RegexFlag; }
-  bool is_icase() const { return flags & IcaseFlag; }
-
-  void cache_re() const // may throw
-  {
-    if (!source_re) {
-      if (is_icase())
-        source_re = new boost::wregex(source, boost::wregex::icase);
-      else
-        source_re = new boost::wregex(source);
-    }
-  }
-
-  std::wstring render_target() const;
+  void init_source(); // may throw regular expression exception
+  void cache_target() const;
 
   void string_replace(std::wstring &ret) const;
   void regex_replace(std::wstring &ret) const;

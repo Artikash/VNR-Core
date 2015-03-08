@@ -7,8 +7,8 @@ int main()
 {
   qDebug() << "enter";
 
-  //wchar_t ws[] = L"ルナ様";
-  wchar_t ws[] = L"【綾波レイ】「こんにちは、世界！」";
+  wchar_t ws[] = L"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」";
+  //wchar_t ws[] = L"【綾波レイ】「こんにちは、DELETE世界！」";
   std::wstring text = ws;
 
   std::wstring path;
