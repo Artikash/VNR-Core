@@ -88,7 +88,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   std::wifstream fin(spath.c_str());
 #endif // _MSC_VER
   if (!fin.is_open()) {
-    DOUT("unable to open file");
+    DERR("unable to open file");
     return false;
   }
   fin.imbue(UTF8_LOCALE);
@@ -175,7 +175,7 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text, int c
 
 #ifdef DEBUG_RULE
       if (previous != ret)
-        DOUT(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
+        DERR(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
       previous = ret;
 #endif // DEBUG_RULE
     }

@@ -27,19 +27,19 @@ QStringList SocketService::unpackStringList(const QByteArray &data, const char *
 {
   const quint32 dataSize = data.size(); // never modified in this function
   if (dataSize < UInt32Size) {
-    DOUT("insufficient list size");
+    DERR("insufficient list size");
     return QStringList();
   }
   quint32 headOffset = 0;
   quint32 count = unpackUInt32(data, headOffset); headOffset += UInt32Size;
   if (Q_UNLIKELY(count == 0)) {
-    DOUT("empty list");
+    DERR("empty list");
     return QStringList();
   }
 
   quint32 bodyOffset = headOffset + count * UInt32Size;
   if (Q_UNLIKELY(bodyOffset > dataSize)) {
-    DOUT("insufficient head size");
+    DERR("insufficient head size");
     return QStringList();
   }
 
@@ -53,7 +53,7 @@ QStringList SocketService::unpackStringList(const QByteArray &data, const char *
       ret.append(QString());
     // size > 0
     else if (Q_UNLIKELY(bodyOffset + size > dataSize)) {
-      DOUT("insufficient data size");
+      DERR("insufficient data size");
       return QStringList();
     } else {
       QString s = codec->toUnicode(p + bodyOffset, size); bodyOffset += size;

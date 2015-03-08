@@ -60,7 +60,7 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
   std::wifstream fin(spath.c_str());
 #endif // _MSC_VER
   if (!fin.is_open()) {
-    DOUT("unable to open file");
+    DERR("unable to open file");
     return false;
   }
   fin.imbue(UTF8_LOCALE);

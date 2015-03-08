@@ -29,7 +29,7 @@ void TranslationScriptRule::init(const param_type &param, bool precompile_regex)
       try {
         cache_re();
       } catch (...) { // boost::bad_pattern
-        DWOUT("invalid term: " << param.id << ", regex pattern: " << param.source);
+        DWERR("invalid term: " << param.id << ", regex pattern: " << param.source);
         valid = false;
         return;
       }
@@ -134,7 +134,7 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
           boost::match_default|boost::format_all);
     }
   } catch (...) {
-    DWOUT("invalid term: " << id << ", regex pattern: " << source);
+    DWERR("invalid term: " << id << ", regex pattern: " << source);
     valid = false;
   }
 }
@@ -146,7 +146,7 @@ bool TranslationScriptRule::regex_exists(const std::wstring &t) const
     boost::wsmatch m; // search first, which has less opportunity to happen
     return boost::regex_search(t, m, *source_re);
   } catch (...) {
-    DWOUT("invalid term: " << id << ", regex pattern: " << source);
+    DWERR("invalid term: " << id << ", regex pattern: " << source);
     valid = false;
     return false;
   }

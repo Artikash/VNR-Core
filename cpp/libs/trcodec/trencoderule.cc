@@ -13,7 +13,7 @@
   try { \
     __VA_ARGS__ \
   } catch (boost::regex_error &e) { \
-    DWOUT("invalid term: " << id << ", what: " << e.what() << ", regex pattern: " << source); \
+    DWERR("invalid term: " << id << ", what: " << e.what() << ", regex pattern: " << source); \
     valid = false; \
   }
 

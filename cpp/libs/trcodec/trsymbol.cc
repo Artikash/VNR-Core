@@ -77,7 +77,7 @@ static std::wstring decode_symbol_stack(const wchar_t *str, const trsymbol::deco
           break;
         }
       }
-      DOUT("failed to decode symbol stack");
+      DERR("failed to decode symbol stack");
       return std::wstring();
     default:
       if (::isdigit(ch) || ch == '-')
@@ -89,7 +89,7 @@ static std::wstring decode_symbol_stack(const wchar_t *str, const trsymbol::deco
               args.clear();
           }
         }
-      DOUT("failed to decode symbol character");
+      DERR("failed to decode symbol character");
       return std::wstring();
     }
 
