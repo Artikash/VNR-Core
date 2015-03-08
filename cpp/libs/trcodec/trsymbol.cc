@@ -23,19 +23,19 @@ std::wstring trsymbol::create_symbol_target(const std::wstring &token, int id, i
   std::wstring ret = L"{{";
   ret += token;
   ret += L'<';
-  ret += std::to_wstring(id);
   if (argc) {
     for (int i = 1; i <= argc; i++) {
-      ret += L'$';
-      if (i < 10)
+      ret += L'\\';
+      if (i < 10){
         ret += (L'0' + i);
-      else {
+      }else {
         ret += L'{';
         ret += std::to_wstring(i);
         ret += L'}';
       }
     }
   }
+  ret += std::to_wstring(id);
   ret += L">}}";
   return ret;
 }
@@ -44,13 +44,23 @@ int trsymbol::count_raw_symbols(const std::wstring &s)
 {
   if (!contains_raw_symbol(s))
     return 0;
-  static const boost::wregex rx(L"\\[\\[" TR_RE_TOKEN L"\\]\\]");
+  static const boost::wregex rx(
+    L"\\[\\["
+      TR_RE_TOKEN
+      L"(:#[0-9]+)?"
+    L"\\]\\]"
+   );
   return ::cpp_wregex_count(s, rx);
 }
 
 std::wstring trsymbol::encode_symbol(const std::wstring &s)
 {
-  static const boost::wregex rx(L"\\[\\[" L"(" TR_RE_TOKEN L")" L"\\]\\]");
+  static const boost::wregex rx(
+    L"\\[\\["
+      L"(" TR_RE_TOKEN L")"
+      L"(:#[0-9]+)?"
+    L"\\]\\]"
+  );
   return boost::regex_replace(s, rx, L"{{$1\\([-0-9<>]+\\)}}");
 }
 
@@ -60,41 +70,37 @@ static std::wstring decode_symbol_stack(const wchar_t *str, const trsymbol::deco
   std::stack<std::wstring> tokens;
   std::vector<std::wstring> args;
   while (wchar_t ch = *str++)
-    switch (ch) {
-    case '<': tokens.push(std::wstring()); break;
-    case '>': // reducee
-      while (!tokens.empty() && !tokens.top().empty()) {
-        args.push_back(tokens.top());
-        tokens.pop();;
-      }
-      if (!tokens.empty()) {
-        int id = 0;
-        std::wstring t = fun(id, args);
-        if (!t.empty()) {
-          tokens.push(t);
-          if (!args.empty())
-            args.clear();
-          break;
-        }
-      }
-      DERR("failed to decode symbol stack");
-      return std::wstring();
-    default:
+    if (ch == '<')
+       tokens.push(std::wstring());
+    else {
       if (::isdigit(ch) || ch == '-')
-        if (int id = ::wcstol(str - 1, nullptr, 10)) {
-          std::wstring t = fun(id, args);
-          if (!t.empty()) {
-            tokens.push(t);
-            if (!args.empty())
-              args.clear();
+        if (int id = ::wcstol(str - 1, const_cast<wchar_t **>(&str), 10))
+          if (*str++ == '>') { // start reduce
+            while (!tokens.empty() && !tokens.top().empty()) {
+              args.push_back(tokens.top());
+              tokens.pop();
+            }
+            if (!tokens.empty()) {
+              tokens.pop();
+              std::wstring tok = fun(id, args);
+              if (!tok.empty()) {
+                tokens.push(tok);
+                if (!args.empty())
+                  args.clear();
+                continue;
+              }
+            }
           }
-        }
-      DERR("failed to decode symbol character");
+      DERR("failed to decode symbol id");
       return std::wstring();
     }
 
-  std::wstring ret;
-  return ret;
+
+  if (tokens.size() == 1)
+    return tokens.top();
+
+  DERR("failed to decode symbol stack");
+  return std::wstring();
 }
 
 std::wstring trsymbol::decode_symbol(const std::wstring &text, const decode_fun_t &fun)
