@@ -4,6 +4,9 @@
 // trdefine.h
 // 3/5/2015 jichi
 
+// Pattern used to describe a symbol token's name
+#define TR_RE_TOKEN L"[a-zA-Z0-9_]+"
+
 // Translation script special characters
 enum : wchar_t {
   TRSCRIPT_CH_COMMENT = L'#'    // indicate the beginning of a line comment
@@ -27,8 +30,6 @@ enum TRSCRIPT_FEATURE {
   , TRSCRIPT_FEATURE_FLAGS // the third feature is a set of flags
   , TRSCRIPT_FEATURE_COUNT // totally 3 features
 };
-
-#define TR_RE_TOKEN L"[a-zA-Z0-9_]+"
 
 #endif // TRDEFINE_H
 

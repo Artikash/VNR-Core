@@ -14,16 +14,13 @@ class TranslationDecodeRule : private TranslationRule
 {
   SK_EXTEND_CLASS(TranslationDecodeRule, TranslationRule)
 
-  std::wstring token,
-               target,
-               source;
   mutable bool valid; // whether the object is valid
 
 public:
+  using Base::match_category;
+
   TranslationDecodeRule() : valid(false) {}
   ~TranslationDecodeRule() {}
-
-  bool match_category(int v) const { return !v || !category || v & category; }
 
   void init(const TranslationRule &param);
   bool is_valid() const { return valid; }

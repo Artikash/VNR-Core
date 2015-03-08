@@ -18,6 +18,8 @@ struct TranslationRule : TranslationFlagStruct
   int id,
       category;
 
+  bool match_category(int v) const { return !v || !category || v & category; }
+
   TranslationRule() : id(0), category(0) {}
 };
 

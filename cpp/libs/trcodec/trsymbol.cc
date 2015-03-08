@@ -12,11 +12,56 @@
 #define DEBUG "trencode.cc"
 #include "sakurakit/skdebug.h"
 
+// Precompiled regex
+namespace { namespace rx {
+
+const boost::wregex
+  // To test [[x#123]]
+  raw_symbol(
+    L"\\[\\["
+      TR_RE_TOKEN
+      L"(:#[0-9]+)?"
+    L"\\]\\]"
+  )
+
+  // To capture [[x#123]]'s x part
+  , grouped_raw_symbol(
+    L"\\[\\["
+      L"(" TR_RE_TOKEN L")"
+      L"(:#[0-9]+)?"
+    L"\\]\\]"
+  )
+
+  // To test {{x<123>}}
+  , encoded_symbol(
+    L"{{"
+      TR_RE_TOKEN
+      L"<[-0-9<>]+>"
+    L"}}"
+  )
+
+  // To capture {{x<123>}}'s <123> parts
+  , grouped_encoded_symbol(
+    L"{{"
+      TR_RE_TOKEN
+      L"(" L"<[-0-9<>]+>" L")"
+    L"}}"
+  )
+;
+
+}} // unnamed namespace rx
+
 bool trsymbol::contains_raw_symbol(const std::wstring &s)
-{ return boost::algorithm::contains(s, L"[[") && boost::algorithm::contains(s, L"]]"); }
+{
+  return boost::algorithm::contains(s, L"[[")
+      && cpp_regex_contains(s, rx::raw_symbol);
+}
 
 bool trsymbol::contains_encoded_symbol(const std::wstring &s)
-{ return boost::algorithm::contains(s, L"{{") && boost::algorithm::contains(s, L">}}"); }
+{
+  return boost::algorithm::contains(s, L"{{")
+      && cpp_regex_contains(s, rx::encoded_symbol);
+}
 
 std::wstring trsymbol::create_symbol_target(const std::wstring &token, int id, int argc)
 {
@@ -42,27 +87,12 @@ std::wstring trsymbol::create_symbol_target(const std::wstring &token, int id, i
 
 int trsymbol::count_raw_symbols(const std::wstring &s)
 {
-  if (!contains_raw_symbol(s))
-    return 0;
-  static const boost::wregex rx(
-    L"\\[\\["
-      TR_RE_TOKEN
-      L"(:#[0-9]+)?"
-    L"\\]\\]"
-   );
-  return ::cpp_wregex_count(s, rx);
+  return !boost::algorithm::contains(s, L"[[") ? 0
+       : ::cpp_regex_count(s, rx::raw_symbol);
 }
 
 std::wstring trsymbol::encode_symbol(const std::wstring &s)
-{
-  static const boost::wregex rx(
-    L"\\[\\["
-      L"(" TR_RE_TOKEN L")"
-      L"(:#[0-9]+)?"
-    L"\\]\\]"
-  );
-  return boost::regex_replace(s, rx, L"{{$1\\([-0-9<>]+\\)}}");
-}
+{ return boost::regex_replace(s, rx::grouped_raw_symbol, L"{{$1\\([-0-9<>]+\\)}}"); }
 
 // Example text to decode: 4<3<1>>,<2>
 static std::wstring decode_symbol_stack(const wchar_t *str, const trsymbol::decode_fun_t &fun)
@@ -105,8 +135,7 @@ static std::wstring decode_symbol_stack(const wchar_t *str, const trsymbol::deco
 
 std::wstring trsymbol::decode_symbol(const std::wstring &text, const decode_fun_t &fun)
 {
-  static const boost::wregex rx(L"{{" TR_RE_TOKEN L"(<[-0-9<>]+>)" L"}}");
-  return boost::regex_replace(text, rx, [&fun](const boost::wsmatch &m) {
+  return boost::regex_replace(text, rx::grouped_encoded_symbol, [&fun](const boost::wsmatch &m) {
     const std::wstring &matched_text = m[1];
     return decode_symbol_stack(matched_text.c_str(), fun);
   });
