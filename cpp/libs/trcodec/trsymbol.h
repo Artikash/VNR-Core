@@ -4,7 +4,9 @@
 // trsymbol.h
 // 9/20/2014 jichi
 
+#include <functional>
 #include <string>
+#include <vector>
 
 namespace trsymbol {
 
@@ -26,6 +28,11 @@ int count_raw_symbols(const std::wstring &target);
 
 ///  Replace [[x]] by regular expression for {{x}}
 std::wstring encode_symbol(const std::wstring &text);
+
+typedef std::function<std::wstring (int, const std::vector<std::wstring> &)> decode_fun_t; // id, args -> result
+
+///  Replace {{x}} by something else
+std::wstring decode_symbol(const std::wstring &text, const decode_fun_t &fun);
 };
 
 #endif // trsymbol_H

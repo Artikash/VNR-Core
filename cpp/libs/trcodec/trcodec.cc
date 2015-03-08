@@ -69,6 +69,7 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
              feature_sep = boost::lambda::_1 == TRSCRIPT_CH_FEATURESEP;
   std::vector<std::wstring> cols;
   std::vector<std::string> features;
+  int missing_id = 0; // assign negative id for missing id
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
       boost::split(cols, line, column_sep);
@@ -102,8 +103,11 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
           }
         }
 
-        if (!rule.source.empty())
+        if (!rule.source.empty()) { // an unique ID must be given, or I will use a negative value as a random id
+          if (!rule.id)
+            rule.id = --missing_id;
           rules.push_back(rule);
+        }
       }
     }
 
@@ -118,8 +122,9 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
 TranslationCodec::TranslationCodec() : d_(new D) {}
 TranslationCodec::~TranslationCodec() { delete d_; }
 
-int TranslationCodec::size() const { return d_->decoder->size(); }
-bool TranslationCodec::isEmpty() const { return d_->decoder->isEmpty(); }
+// Use encoder which is initialized latter
+int TranslationCodec::size() const { return d_->encoder->size(); }
+bool TranslationCodec::isEmpty() const { return d_->encoder->isEmpty(); }
 
 //bool TranslationCodec::isLinkEnabled() const { return d_->link; }
 //void TranslationCodec::setLinkEnabled(bool t) { d_->link = t; }
@@ -142,8 +147,9 @@ bool TranslationCodec::loadScript(const std::wstring &path)
 
   //QWriteLocker locker(&d_->lock);
 
-  d_->encoder->setRules(rules);
+  // Initialize decoder first
   d_->decoder->setRules(rules);
+  d_->encoder->setRules(rules);
   return true;
 }
 
@@ -158,12 +164,12 @@ std::wstring TranslationCodec::encode(const std::wstring &text, int category, in
   return ret;
 }
 
-std::wstring TranslationCodec::decode(const std::wstring &text, int category, bool mark, int limit) const
+std::wstring TranslationCodec::decode(const std::wstring &text, int category, bool mark) const
 {
   if (text.empty() || d_->decoder->isEmpty())
     return text;
   std::wstring ret = text;
-  d_->decoder->decode(ret, category, limit);
+  d_->decoder->decode(ret, category, mark);
   return ret;
 }
 

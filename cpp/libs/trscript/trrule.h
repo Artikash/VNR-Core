@@ -96,7 +96,7 @@ private:
     }
   }
 
-  std::wstring render_target() const;
+  std::wstring render_target(const std::wstring &matched_text = std::wstring()) const;
 
   void string_replace(std::wstring &ret, bool mark) const;
   void regex_replace(std::wstring &ret, bool mark) const;

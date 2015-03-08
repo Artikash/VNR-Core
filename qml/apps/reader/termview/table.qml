@@ -58,6 +58,12 @@ Item { id: root_
   property string _UNSAVED_RICH_TEXT: // cached
        '<span style="background-color:red">' + Sk.tr("Unsaved") + '</span>'
 
+  property string _DELETED_RICH_TEXT: // cached
+       '<span style="color:red">(' + Sk.tr("Delete") + ')</span>'
+
+  property string _EQUAL_RICH_TEXT: // cached
+       '<span style="color:red">(' + Sk.tr("Equal") + ')</span>'
+
   function canEdit(term) { // object -> bool
     return !!term && !!userId && (userId === _SUPER_USER_ID
         || term.userId === userId && !term.protected
@@ -767,7 +773,7 @@ Item { id: root_
       }
     }
 
-    // Column: Text
+    // Column: Translation text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Translation")
       width: 80
@@ -776,11 +782,14 @@ Item { id: root_
         property bool editable: canEdit(itemValue)
         Text {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          textFormat: Text.PlainText
+          textFormat: (!itemValue.text || itemValue.text === itemValue.pattern) ?
+                      Text.RichText : Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
           visible: !itemSelected //|| !editable
-          text: itemValue.text
+          text: !itemValue.text ? root_._DELETED_RICH_TEXT
+                : itemValue.text === itemValue.pattern ? root_._EQUAL_RICH_TEXT
+                : itemValue.text
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
           font.bold: itemValue.regex //|| itemValue.syntax

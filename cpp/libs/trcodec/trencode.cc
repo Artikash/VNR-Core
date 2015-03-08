@@ -4,10 +4,8 @@
 #include "trcodec/trencode.h"
 #include "trcodec/trencoderule.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/lambda/lambda.hpp>
+#include <boost/foreach.hpp>
 //#include <QDebug>
-
-//#define DEBUG_RULE // output the rule that is applied
 
 /** Private class */
 
@@ -59,8 +57,8 @@ void TranslationEncoder::setRules(const TranslationRuleList &rules)
   else {
     d_->reset(rules.size());
     size_t i = 0;
-    for (auto p = rules.cbegin(); p != rules.cend(); ++p)
-      d_->rules[i++].init(*p);
+    BOOST_FOREACH (const auto &it, rules)
+      d_->rules[i++].init(it);
   }
 }
 

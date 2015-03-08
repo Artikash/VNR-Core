@@ -31,12 +31,18 @@ public:
   void clear();
 
   ///  Add script from file
-  void setRules(const TranslationRuleList &rules);
+  void addRules(const TranslationRuleList &rules);
+
+  void setRules(const TranslationRuleList &rules)
+  {
+    clear();
+    addRules(rules);
+  }
 
   // Replacement
 
   /// Decode translation with selected category and limit maximum number of iterations
-  void decode(std::wstring &text, int selector = 0, int limit = 100) const;
+  void decode(std::wstring &text, int selector = 0, bool mark = true) const;
 };
 
 #endif // TRDECODE_H

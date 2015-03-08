@@ -3,6 +3,7 @@
 
 #include "trscript/trrule.h"
 #include "trscript/trescape.h"
+#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trrule.cc"
@@ -57,7 +58,7 @@ void TranslationScriptRule::init_list(const param_type &param,
 
 // A sample expected output without escape:
 // <a href='json://{"type":"term","id":12345,"source":"pattern","target":"text"}'>pattern</a>
-std::wstring TranslationScriptRule::render_target() const
+std::wstring TranslationScriptRule::render_target(const std::wstring &matched_text) const
 {
   if (id.empty()) // do not render mark if there is no termid
     return L"<u>" + target + L"</u>";
@@ -65,14 +66,17 @@ std::wstring TranslationScriptRule::render_target() const
   std::wstring ret = L"{\"type\":\"term\"";
   ret.append(L",\"id\":")
      .append(id);
-  // do not save regex pattern to save memory
-  if (!is_regex() && !source.empty()
-      && !(source.size() > 1 && ::isdigit(source[source.size() - 2]))) { // do not save escaped floating number
-    std::string s = ::trescape(source);
+
+  std::wstring ws = matched_text;
+  if (ws.empty() && !is_regex()) // do not save regex pattern to save memory
+    ws = source;
+  if (!ws.empty()) {
+    std::string s = ::trescape(ws);
     ret.append(L",\"source\":\"")
        .append(s.cbegin(), s.cend())
        .push_back('"');
   }
+
   if (!target.empty()) {
     std::string s = ::trescape(target);
     ret.append(L",\"target\":\"")
@@ -119,9 +123,16 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
     cache_re();
-    ret = boost::regex_replace(ret, *source_re,
-        target.empty() ? std::wstring() : !mark ? target : render_target(),
-        boost::match_default|boost::format_all);
+    if (target.empty() || !mark)
+      ret = boost::regex_replace(ret, *source_re, target,
+          boost::match_default|boost::format_all);
+    else {
+      auto repl = [this](const boost::wsmatch &m) {
+        return render_target(m[0]);
+      };
+      ret = boost::regex_replace(ret, *source_re, repl,
+          boost::match_default|boost::format_all);
+    }
   } catch (...) {
     DWOUT("invalid term: " << id << ", regex pattern: " << source);
     valid = false;

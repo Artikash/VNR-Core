@@ -8,11 +8,6 @@
 #include "sakurakit/skglobal.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
-#include <cstdint>
-
-#ifdef __clang__
-# pragma clang diagnostic ignored "-Wlogical-op-parentheses"
-#endif // __clang__
 
 class TranslationEncodeRule : private TranslationRule
 {
@@ -26,14 +21,8 @@ class TranslationEncodeRule : private TranslationRule
   mutable bool valid; // whether the object is valid
 
 public:
-  TranslationEncodeRule()
-    : source_re(nullptr)
-    , source_symbol_count(0)
-    , valid(false)
-  {}
-
-  ~TranslationEncodeRule()
-  { if (source_re) delete source_re; }
+  TranslationEncodeRule() : source_re(nullptr), source_symbol_count(0), valid(false) {}
+  ~TranslationEncodeRule() { if (source_re) delete source_re; }
 
   bool match_category(int v) const { return !v || !category || v & category; }
 

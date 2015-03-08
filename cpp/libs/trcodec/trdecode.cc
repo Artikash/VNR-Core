@@ -3,40 +3,30 @@
 
 #include "trcodec/trdecode.h"
 #include "trcodec/trdecoderule.h"
+#include "trcodec/trsymbol.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/lambda/lambda.hpp>
-//#include <QDebug>
+#include <boost/foreach.hpp>
+#include <QDebug>
 
-//#define DEBUG_RULE // output the rule that is applied
+#ifdef __clang__
+# define USE_BOOST_CXX11
+#endif // __clang__
+
+#ifdef USE_BOOST_CXX11
+# include <boost/unordered_map.hpp>
+  using boost::unordered_map;
+#else
+# include <unordered_map>
+  using std::unordered_map;
+#endif // USE_BOOST_CXX11
 
 /** Private class */
 
 class TranslationDecoderPrivate
 {
 public:
-  //QReadWriteLock lock;
-
-  TranslationDecodeRule *rules; // use array for performance reason
-  size_t ruleCount;
-
-  TranslationDecoderPrivate() : rules(nullptr), ruleCount(0) {}
-  ~TranslationDecoderPrivate() { if (rules) delete[] rules; }
-
-  void clear()
-  {
-    ruleCount = 0;
-    if (rules) {
-      delete[] rules;
-      rules = nullptr;
-    }
-  }
-
-  void reset(size_t size)
-  {
-    clear(); // clear first for thread-safety
-    rules = new TranslationDecodeRule[size];
-    ruleCount = size;
-  }
+  typedef unordered_map<int, TranslationDecodeRule> map_type; // {id:rule}
+  map_type map;
 };
 
 /** Public class */
@@ -46,41 +36,34 @@ public:
 TranslationDecoder::TranslationDecoder() : d_(new D) {}
 TranslationDecoder::~TranslationDecoder() { delete d_; }
 
-int TranslationDecoder::size() const { return d_->ruleCount; }
-bool TranslationDecoder::isEmpty() const { return !d_->ruleCount; }
+int TranslationDecoder::size() const { return d_->map.size(); }
+bool TranslationDecoder::isEmpty() const { return d_->map.empty(); }
 
-void TranslationDecoder::clear() { d_->clear(); }
+void TranslationDecoder::clear() { d_->map.clear(); }
 
 // Initialization
-void TranslationDecoder::setRules(const TranslationRuleList &rules)
+void TranslationDecoder::addRules(const TranslationRuleList &rules)
 {
-  if (rules.empty())
-    d_->clear();
-  else {
-    d_->reset(rules.size());
-    size_t i = 0;
-    for (auto p = rules.cbegin(); p != rules.cend(); ++p)
-      d_->rules[i++].init(*p);
-  }
+  BOOST_FOREACH (const auto &it, rules)
+    d_->map[it.id].init(it);
 }
 
 // Translation
-void TranslationDecoder::decode(std::wstring &result, int category, int limit) const
+void TranslationDecoder::decode(std::wstring &text, int category, bool mark) const
 {
-  if (!d_->ruleCount || !d_->rules)
+  if (d_->map.empty())
     return;
-  std::wstring lastResult;
-  for (int count = 0; lastResult != result && (!limit || count < limit); count++) {
-    //qDebug() << count;
-    lastResult = result;
-    for (size_t i = 0; i < d_->ruleCount; i++) {
-      const auto &rule = d_->rules[i];
-      if (rule.is_valid()
-          && rule.match_category(category)
-          && (!count || rule.is_symbolic()))
-        rule.replace(result);
+  if (!trsymbol::contains_encoded_symbol(text))
+    return;
+  text = trsymbol::decode_symbol(text, [this, category, mark](int id, const std::vector<std::wstring> &args) {
+    auto p = d_->map.find(id);
+    if (p != d_->map.end()) {
+      const auto &rule = p->second;
+      if (rule.is_valid() && rule.match_category(category))
+        return rule.render(args, mark);
     }
-  }
+    return std::wstring();
+  });
 }
 
 // EOF
