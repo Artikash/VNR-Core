@@ -3,11 +3,19 @@
 
 #include "trcodec/trencoderule.h"
 #include "trcodec/trsymbol.h"
-//#include <QDebug>
+#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trencoderule.cc"
 #include "sakurakit/skdebug.h"
+
+#define WITH(...) \
+  try { \
+    __VA_ARGS__ \
+  } catch (boost::regex_error &e) { \
+    DWOUT("invalid term: " << id << ", what: " << e.what() << ", regex pattern: " << source); \
+    valid = false; \
+  }
 
 // Construction
 
@@ -20,28 +28,28 @@ void TranslationEncodeRule::init(const TranslationRule &param)
   if (!param.target.empty())
     token = param.token;
 
-  try {
+  WITH (
     init_source();
-  } catch (...) { // boost::bad_pattern
-    DWOUT("invalid term: " << param.id << ", regex pattern: " << param.source);
-    return;
-  }
-
-  valid = true; // do this at last to prevent crash
+    valid = true; // do this at last to prevent crash
+  )
 }
 
 // Initialization
 
 void TranslationEncodeRule::cache_target() const
 {
-  if (target.empty() && !token.empty())
-    target = trsymbol::render_symbol(token, id);
+  if (target.empty() && !token.empty()) {
+    target = trsymbol::create_symbol(token, id);
+
+    if (source_re)
+      source.clear(); // no longer needed any more
+  }
 }
 
 void TranslationEncodeRule::init_source()
 {
   if (is_symbolic()) {
-    source;
+    source = trsymbol::encode_symbol(source);
     set_regex(true);
   }
   if (is_regex()) {
@@ -49,7 +57,6 @@ void TranslationEncodeRule::init_source()
       source_re = new boost::wregex(source, boost::wregex::icase);
     else
       source_re = new boost::wregex(source);
-    source.clear(); // no longer needed any more
   }
 }
 
@@ -73,28 +80,22 @@ void TranslationEncodeRule::string_replace(std::wstring &ret) const
 
 void TranslationEncodeRule::regex_replace(std::wstring &ret) const
 {
-  try  {
+  WITH (
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
     cache_target();
     ret = boost::regex_replace(ret, *source_re, target,
         boost::match_default|boost::format_all);
-  } catch (boost::regex_error &e) {
-    DWOUT("invalid term: " << id << ", what: " << e.what() << ", regex pattern: " << source);
-    valid = false;
-  }
+  )
 }
 
 bool TranslationEncodeRule::regex_exists(const std::wstring &t) const
 {
-  try  {
+  WITH (
     boost::wsmatch m; // search first, which has less opportunity to happen
     return boost::regex_search(t, m, *source_re);
-  } catch (boost::regex_error &e) {
-    DWOUT("invalid term: " << id << ", what: " << e.what() << ", regex pattern: " << source);
-    valid = false;
-    return false;
-  }
+  )
+  return false;
 }
 
 // EOF

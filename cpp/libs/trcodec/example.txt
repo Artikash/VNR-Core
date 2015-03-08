@@ -8,5 +8,5 @@
 
 n	悠真	Yuuma	11 -1
 n	[[n]]くん	[[n]]-kun	14 -1
-x	DELETE		14 -1
+	DELETE		14 -1
 #x	[[x]][[x]]	[[x]]	14 -1

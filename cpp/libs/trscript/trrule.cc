@@ -115,7 +115,7 @@ void TranslationScriptRule::string_replace(std::wstring &ret, bool mark) const
 
 void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
 {
-  try  {
+  try {
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
     cache_re();
@@ -130,7 +130,7 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
 
 bool TranslationScriptRule::regex_exists(const std::wstring &t) const
 {
-  try  {
+  try {
     cache_re();
     boost::wsmatch m; // search first, which has less opportunity to happen
     return boost::regex_search(t, m, *source_re);
