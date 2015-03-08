@@ -33,10 +33,13 @@ public:
   ///  Add script from file
   bool loadScript(const std::wstring &path);
 
-  // Replacement
+  // Transformation
 
   /// Encode translation with selected category and limit maximum number of iterations
   std::wstring encode(const std::wstring &text, int selector = 0, int limit = 100) const;
+
+  /// Decode translation with selected category and limit maximum number of iterations, and mark changes
+  std::wstring decode(const std::wstring &text, int selector = 0, bool mark = true, int limit = 100) const;
 };
 
 #endif // TRCODE_H

@@ -3,6 +3,7 @@
 
 #include "trcodec/trcodec.h"
 #include "trcodec/trdefine.h"
+#include "trcodec/trdecode.h"
 #include "trcodec/trencode.h"
 #include "trcodec/trrule.h"
 #include "cpputil/cpplocale.h"
@@ -35,9 +36,9 @@ public:
   //QReadWriteLock lock;
 
   TranslationEncoder *encoder;
-  TranslationEncoder *decoder;
+  TranslationDecoder *decoder;
 
-  TranslationCodecPrivate() : encoder(new TranslationEncoder), decoder(new TranslationEncoder) {}
+  TranslationCodecPrivate() : encoder(new TranslationEncoder), decoder(new TranslationDecoder) {}
   ~TranslationCodecPrivate() {  delete encoder; delete decoder; }
 
   void clear()
@@ -146,7 +147,8 @@ bool TranslationCodec::loadScript(const std::wstring &path)
   return true;
 }
 
-// Translation
+// Transformation
+
 std::wstring TranslationCodec::encode(const std::wstring &text, int category, int limit) const
 {
   if (text.empty() || d_->encoder->isEmpty())
@@ -155,5 +157,15 @@ std::wstring TranslationCodec::encode(const std::wstring &text, int category, in
   d_->encoder->encode(ret, category, limit);
   return ret;
 }
+
+std::wstring TranslationCodec::decode(const std::wstring &text, int category, bool mark, int limit) const
+{
+  if (text.empty() || d_->decoder->isEmpty())
+    return text;
+  std::wstring ret = text;
+  d_->decoder->decode(ret, category, limit);
+  return ret;
+}
+
 
 // EOF

@@ -27,6 +27,9 @@ int main()
     qDebug() << QString::fromStdWString(text);
     text = m.encode(text);
     qDebug() << QString::fromStdWString(text);
+
+    text = m.decode(text);
+    qDebug() << QString::fromStdWString(text);
   }
 
   qDebug() << "leave";
