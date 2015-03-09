@@ -38,7 +38,7 @@ struct TranslationBaseRule : TranslationBaseFlag
 
   bool match_category(int v) const { return v & category; }
 
-  TranslationBaseRule() : id(0), category(0) {}
+  TranslationBaseRule() : id(0), category(-1) {}
 };
 
 struct TranslationRule : TranslationBaseRule

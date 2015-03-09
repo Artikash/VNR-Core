@@ -1,6 +1,6 @@
-# pytrscript.pro
+# pytrcodec.pro
 # 9/21/2014 jichi
-# Build pytrscript.pyd
+# Build pytrcodec.pyd
 #
 # Though Qt is not indispensible, shiboken could save me some time for development.
 # Switch to pure PyC and get rid of QStringList if it becomes a performance bottle neck.
@@ -8,33 +8,33 @@
 CONFIG += pyplugin shiboken noqt
 include(../../../config.pri)
 include($$LIBDIR/trrender/trrender.pri)
-include($$LIBDIR/trscript/trscript.pri)
+include($$LIBDIR/trcodec/trcodec.pri)
 
-INCLUDEPATH += $$LIBDIR/trscript # needed by shiboken generated code
+INCLUDEPATH += $$LIBDIR/trcodec # needed by shiboken generated code
 
 ## Sources
 
-SRCPATH = binding/pytrscript
+SRCPATH = binding/pytrcodec
 INCLUDEPATH += $SRCPATH
 DEPENDPATH += $SRCPATH
 
 TEMPLATE = lib
-TARGET = pytrscript
+TARGET = pytrcodec
 
 HEADERS += \
-  pytrscript_config.h \
-  $$SRCPATH/pytrscript_python.h \
-  $$SRCPATH/translationscriptperformer_wrapper.h
+  pytrcodec_config.h \
+  $$SRCPATH/pytrcodec_python.h \
+  $$SRCPATH/translationcodec_wrapper.h
 
 SOURCES += \
-  $$SRCPATH/pytrscript_module_wrapper.cpp \
-  $$SRCPATH/translationscriptperformer_wrapper.cpp
+  $$SRCPATH/pytrcodec_module_wrapper.cpp \
+  $$SRCPATH/translationcodec_wrapper.cpp
 
 #!wince*: LIBS += -lshell32
-#RC_FILE += trscript.rc
+#RC_FILE += trcodec.rc
 
 OTHER_FILES += \
-  typesystem_trscript.xml \
+  typesystem_trcodec.xml \
   update_binding.cmd
 
 # EOF

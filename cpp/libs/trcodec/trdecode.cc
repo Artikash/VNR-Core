@@ -55,15 +55,17 @@ void TranslationDecoder::decode(std::wstring &text, int category, bool mark) con
     return;
   if (!trsymbol::contains_encoded_symbol(text))
     return;
-  text = trsymbol::decode_symbol(text, [this, category, mark](int id, const std::vector<std::wstring> &args) {
-    auto p = d_->map.find(id);
-    if (p != d_->map.end()) {
-      const auto &rule = p->second;
-      if (rule.is_valid() && rule.match_category(category))
-        return rule.render_target(args, mark);
+  text = trsymbol::decode_symbol(text,
+    [this, category, mark](int id, const std::vector<std::wstring> &args) -> std::wstring {
+      auto p = d_->map.find(id);
+      if (p != d_->map.end()) {
+        const auto &rule = p->second;
+        if (rule.is_valid() && rule.match_category(category))
+          return rule.render_target(args, mark);
+      }
+      return std::wstring();
     }
-    return std::wstring();
-  });
+  );
 }
 
 // EOF

@@ -88,12 +88,12 @@ std::string trsymbol::create_symbol_target(const std::string &token, int id, int
         ret.push_back('0' + i);
       else {
         ret += '{';
-        ret += std::to_string(i);
+        ret += std::to_string((long long)i);
         ret += '}';
       }
     }
   }
-  ret += std::to_string(id);
+  ret += std::to_string((long long)id);
   ret += ">}}";
   return ret;
 }
@@ -193,10 +193,12 @@ static std::wstring _decode_symbol_stack(const char *str, const trsymbol::decode
 
 std::wstring trsymbol::decode_symbol(const std::wstring &text, const decode_f &fun)
 {
-  return boost::regex_replace(text, rx::encoded_symbol_with_param_group, [&fun](const boost::wsmatch &m) {
-    std::string matched_text = ::cpp_string_of(m.str(1));
-    return _decode_symbol_stack(matched_text.c_str(), fun);
-  });
+  return boost::regex_replace(text, rx::encoded_symbol_with_param_group,
+    [&fun](const boost::wsmatch &m) -> std::wstring {
+      std::string matched_text = ::cpp_string_of(m.str(1));
+      return _decode_symbol_stack(matched_text.c_str(), fun);
+    }
+  );
 }
 
 // EOF

@@ -37,7 +37,7 @@ struct TranslationScriptBaseRule : TranslationScriptFlag
   int id;
   int category;
 
-  TranslationScriptBaseRule() : id(0), category(0) {}
+  TranslationScriptBaseRule() : id(0), category(-1) {}
 };
 
 class TranslationScriptRule : private TranslationScriptBaseRule
@@ -53,7 +53,7 @@ public:
 
   bool is_valid() const { return valid; }
 
-  bool match_category(int v) const { return !v || !category || v & category; }
+  bool match_category(int v) const { return v & category; }
 
   void init(const Base &param, bool precompile_regex = true);
 

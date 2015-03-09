@@ -13,7 +13,7 @@ std::wstring tr_render_rule(const std::wstring &target, int id, const std::wstri
 
   std::wstring ret = L"{\"type\":\"term\"";
   ret.append(L",\"id\":")
-     .append(std::to_wstring(id));
+     .append(std::to_wstring((long long)id));
 
   if (!source.empty()) {
     std::string s = ::trescape(source);

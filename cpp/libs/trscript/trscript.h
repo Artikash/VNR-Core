@@ -7,17 +7,17 @@
 #include "sakurakit/skglobal.h"
 #include <string>
 
-class TranslationScriptManagerPrivate;
-class TranslationScriptManager
+class TranslationScriptPerformerPrivate;
+class TranslationScriptPerformer
 {
-  SK_CLASS(TranslationScriptManager)
-  SK_DISABLE_COPY(TranslationScriptManager)
-  SK_DECLARE_PRIVATE(TranslationScriptManagerPrivate)
+  SK_CLASS(TranslationScriptPerformer)
+  SK_DISABLE_COPY(TranslationScriptPerformer)
+  SK_DECLARE_PRIVATE(TranslationScriptPerformerPrivate)
 
   // - Construction -
 public:
-  explicit TranslationScriptManager();
-  ~TranslationScriptManager();
+  explicit TranslationScriptPerformer();
+  ~TranslationScriptPerformer();
 
   // Initialization
 
@@ -31,12 +31,12 @@ public:
   void clear();
 
   ///  Add script from file
-  bool loadFile(const std::wstring &path);
+  bool loadScript(const std::wstring &path);
 
   // Replacement
 
   // Rewrite the text according to the script, thread-safe
-  std::wstring translate(const std::wstring &text, int category = 0, bool mark = false) const;
+  std::wstring translate(const std::wstring &text, int category = -1, bool mark = false) const;
 
   // Render option
 

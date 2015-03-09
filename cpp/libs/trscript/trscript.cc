@@ -26,7 +26,7 @@ const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 /** Private class */
 
-class TranslationScriptManagerPrivate
+class TranslationScriptPerformerPrivate
 {
 
 public:
@@ -35,8 +35,8 @@ public:
   TranslationScriptRule *rules; // use array for performance reason
   size_t ruleCount;
 
-  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
-  ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
+  TranslationScriptPerformerPrivate() : rules(nullptr), ruleCount(0) {}
+  ~TranslationScriptPerformerPrivate() { if (rules) delete[] rules; }
 
   void clear()
   {
@@ -59,22 +59,22 @@ public:
 
 // Construction
 
-TranslationScriptManager::TranslationScriptManager() : d_(new D) {}
-TranslationScriptManager::~TranslationScriptManager() { delete d_; }
+TranslationScriptPerformer::TranslationScriptPerformer() : d_(new D) {}
+TranslationScriptPerformer::~TranslationScriptPerformer() { delete d_; }
 
-int TranslationScriptManager::size() const { return d_->ruleCount; }
-bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
+int TranslationScriptPerformer::size() const { return d_->ruleCount; }
+bool TranslationScriptPerformer::isEmpty() const { return !d_->ruleCount; }
 
-//bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
-//void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
+//bool TranslationScriptPerformer::isLinkEnabled() const { return d_->link; }
+//void TranslationScriptPerformer::setLinkEnabled(bool t) { d_->link = t; }
 
-//std::wstring TranslationScriptManager::linkStyle() const { return d_->linkStyle; }
-//void TranslationScriptManager::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+//std::wstring TranslationScriptPerformer::linkStyle() const { return d_->linkStyle; }
+//void TranslationScriptPerformer::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
 
-void TranslationScriptManager::clear() { d_->clear(); }
+void TranslationScriptPerformer::clear() { d_->clear(); }
 
 // Initialization
-bool TranslationScriptManager::loadFile(const std::wstring &path)
+bool TranslationScriptPerformer::loadScript(const std::wstring &path)
 {
 #ifdef _MSC_VER
   std::wifstream fin(path);
@@ -92,7 +92,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
-      TranslationScriptBaseRule rule = {};
+      TranslationScriptBaseRule rule;
       size_t pos = 0;
       for (; pos < line.size() && line[pos] != TRSCRIPT_CH_DELIM; pos++)
         switch (line[pos]) {
@@ -137,7 +137,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 }
 
 // Translation
-std::wstring TranslationScriptManager::translate(const std::wstring &text, int category, bool mark) const
+std::wstring TranslationScriptPerformer::translate(const std::wstring &text, int category, bool mark) const
 {
   //QReadLocker locker(&d_->lock);
   std::wstring ret = text;
