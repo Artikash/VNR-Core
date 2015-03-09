@@ -10,6 +10,12 @@
 
 namespace trsymbol {
 
+typedef std::function<void (const std::string &)> collect_string_f; // string ->
+typedef std::function<void (const std::wstring &)> collect_wstring_f; // wstring ->
+
+/// Return rendered target for specified rule id given arguments
+typedef std::function<std::wstring (int, const std::vector<std::wstring> &)> decode_f; // id, args -> result
+
 ///  Return if source text contains [[symbol]]
 bool contains_raw_symbol(const std::wstring &source);
 
@@ -21,18 +27,19 @@ bool contains_encoded_symbol(const std::wstring &source);
  *  @param  id
  *  @param  argc  number of tokens in the target
  */
-std::wstring create_symbol_target(const std::wstring &token, int id, int argc);
+std::string create_symbol_target(const std::string &token, int id, int argc);
 
 ///  Return number of [[x]] in the target
-int count_raw_symbols(const std::wstring &target);
+size_t count_raw_symbols(const std::wstring &target);
+
+///  Collect raw symbols
+void iter_raw_symbols(const std::wstring &target, const collect_string_f &fun);
 
 ///  Replace [[x]] by regular expression for {{x}}
 std::wstring encode_symbol(const std::wstring &text);
 
-typedef std::function<std::wstring (int, const std::vector<std::wstring> &)> decode_fun_t; // id, args -> result
-
 ///  Replace {{x}} by something else
-std::wstring decode_symbol(const std::wstring &text, const decode_fun_t &fun);
+std::wstring decode_symbol(const std::wstring &text, const decode_f &fun);
 };
 
 #endif // trsymbol_H

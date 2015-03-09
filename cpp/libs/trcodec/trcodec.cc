@@ -7,11 +7,12 @@
 #include "trcodec/trencode.h"
 #include "trcodec/trrule.h"
 #include "cpputil/cpplocale.h"
+#include "cpputil/cppstring.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <fstream>
 #include <vector>
-//#include <QDebug>
+#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trcodec.cc"
@@ -65,25 +66,24 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
   }
   fin.imbue(UTF8_LOCALE);
 
-  const auto column_sep = boost::lambda::_1 == TRSCRIPT_CH_COLUMNSEP,
-             feature_sep = boost::lambda::_1 == TRSCRIPT_CH_FEATURESEP;
+  const auto column_sep = boost::first_finder(TRSCRIPT_COLUMNSEP);
+  const auto feature_sep = boost::lambda::_1 == TRSCRIPT_CH_FEATURESEP;
   std::vector<std::wstring> cols;
   std::vector<std::string> features;
   int missing_id = 0; // assign negative id for missing id
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
-      boost::split(cols, line, column_sep);
+      boost::iter_split(cols, line, column_sep);
       if (!cols.empty()) {
         TranslationRule rule;
         if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
-          rule.token = cols[TRSCRIPT_COLUMN_TOKEN];
+          rule.token = ::cpp_string_of(cols[TRSCRIPT_COLUMN_TOKEN]);
         if (cols.size() > TRSCRIPT_COLUMN_TOKEN)
           rule.source = cols[TRSCRIPT_COLUMN_SOURCE];
         if (cols.size() > TRSCRIPT_COLUMN_TARGET)
           rule.target = cols[TRSCRIPT_COLUMN_TARGET];
         if (cols.size() > TRSCRIPT_COLUMN_FEATURE) {
-          std::string feature(cols[TRSCRIPT_COLUMN_FEATURE].begin(),
-                              cols[TRSCRIPT_COLUMN_FEATURE].end());
+          std::string feature = ::cpp_string_of(cols[TRSCRIPT_COLUMN_FEATURE]);
           if (!feature.empty()) {
             boost::split(features, feature, feature_sep);
             if (!features.empty()) {
@@ -172,6 +172,5 @@ std::wstring TranslationCodec::decode(const std::wstring &text, int category, bo
   d_->decoder->decode(ret, category, mark);
   return ret;
 }
-
 
 // EOF

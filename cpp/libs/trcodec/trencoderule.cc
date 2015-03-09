@@ -3,7 +3,8 @@
 
 #include "trcodec/trencoderule.h"
 #include "trcodec/trsymbol.h"
-//#include <QDebug>
+#include "cpputil/cppregex.h"
+#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trencoderule.cc"
@@ -26,7 +27,7 @@ void TranslationEncodeRule::init(const TranslationRule &param)
   category = param.category;
   source = param.source;
   if (!param.target.empty())
-    token = param.token;
+    target_token = param.token;
 
   source_symbol_count = trsymbol::count_raw_symbols(source);
   WITH (
@@ -37,14 +38,8 @@ void TranslationEncodeRule::init(const TranslationRule &param)
 
 // Initialization
 
-void TranslationEncodeRule::cache_target() const
-{
-  if (target.empty() && !token.empty())
-    self()->init_target();
-}
-
 void TranslationEncodeRule::init_target()
-{ target = trsymbol::create_symbol_target(token, id, source_symbol_count); }
+{ target = trsymbol::create_symbol_target(target_token, id, source_symbol_count); }
 
 void TranslationEncodeRule::init_source()
 {
@@ -65,7 +60,7 @@ void TranslationEncodeRule::init_source()
 
 void TranslationEncodeRule::string_replace(std::wstring &ret) const
 {
-  if (token.empty()) {
+  if (target_token.empty()) {
     if (is_icase())
       boost::ierase_all(ret, source);
     else
@@ -93,8 +88,7 @@ void TranslationEncodeRule::regex_replace(std::wstring &ret) const
 bool TranslationEncodeRule::regex_exists(const std::wstring &t) const
 {
   WITH (
-    boost::wsmatch m; // search first, which has less opportunity to happen
-    return boost::regex_search(t, m, *source_re);
+    return ::cpp_regex_contains(t, *source_re);
   )
   return false;
 }

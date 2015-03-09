@@ -36,7 +36,7 @@ public:
   // Replacement
 
   /// Encode translation with selected category and limit maximum number of iterations
-  void encode(std::wstring &text, int selector = 0, int limit = 100) const;
+  void encode(std::wstring &text, int selector = -1, int limit = 100) const;
 };
 
 #endif // TRENCODE_H

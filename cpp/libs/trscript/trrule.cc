@@ -3,7 +3,8 @@
 
 #include "trscript/trrule.h"
 #include "trscript/trescape.h"
-#include <QDebug>
+#include "cpputil/cppregex.h"
+//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trrule.cc"
@@ -143,8 +144,7 @@ bool TranslationScriptRule::regex_exists(const std::wstring &t) const
 {
   try {
     cache_re();
-    boost::wsmatch m; // search first, which has less opportunity to happen
-    return boost::regex_search(t, m, *source_re);
+    return ::cpp_regex_contains(t, *source_re);
   } catch (...) {
     DWERR("invalid term: " << id << ", regex pattern: " << source);
     valid = false;

@@ -7,13 +7,15 @@
 // Pattern used to describe a symbol token's name
 #define TR_RE_TOKEN L"[a-zA-Z0-9_]+"
 
+#define TRSCRIPT_COLUMNSEP L" ||| "   // deliminator of fields in a line, wrapped with spaces
+
 // Translation script special characters
 enum : wchar_t {
-  TRSCRIPT_CH_COMMENT = L'#'    // indicate the beginning of a line comment
-  , TRSCRIPT_CH_COLUMNSEP = L'\t'  // deliminator of fields in a line
-  , TRSCRIPT_CH_FEATURESEP = L' ' // deliminator of features
-  , TRSCRIPT_CH_REGEX = L'r'    // a regex rule
-  , TRSCRIPT_CH_ICASE = L'i'    // case insensitive
+  TRSCRIPT_CH_COMMENT = L'#'        // indicate the beginning of a line comment
+  // TRSCRIPT_CH_COLUMNSEP = L'\t'  // deliminator of fields in a line
+  , TRSCRIPT_CH_FEATURESEP = L' '   // deliminator of features
+  , TRSCRIPT_CH_REGEX = L'r'        // a regex rule
+  , TRSCRIPT_CH_ICASE = L'i'        // case insensitive
 };
 
 enum TRSCRIPT_COLUMN {

@@ -42,7 +42,7 @@ public:
   // Replacement
 
   /// Decode translation with selected category and limit maximum number of iterations
-  void decode(std::wstring &text, int selector = 0, bool mark = true) const;
+  void decode(std::wstring &text, int selector = -1, bool mark = true) const;
 };
 
 #endif // TRDECODE_H

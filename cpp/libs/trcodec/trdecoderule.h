@@ -14,12 +14,16 @@ class TranslationDecodeRule : private TranslationBaseRule
 {
   SK_EXTEND_CLASS(TranslationDecodeRule, TranslationBaseRule)
 
+  enum : char { source_symbol_sep = ',' };
+
   mutable bool valid; // whether the object is valid
   std::wstring target;
+  std::string source_symbols; // symbols in source separated by ','
+  size_t source_symbol_count;
 public:
   using Base::match_category;
 
-  TranslationDecodeRule() : valid(false) {}
+  TranslationDecodeRule() : valid(false), source_symbol_count(0) {}
   ~TranslationDecodeRule() {}
 
   void init(const TranslationRule &param);
@@ -27,7 +31,7 @@ public:
 
 public:
   /// Render target replacement
-  std::wstring render(const std::vector<std::wstring> &args, bool mark = true) const;
+  std::wstring render_target(const std::vector<std::wstring> &args, bool mark = true) const;
 };
 
 #endif // TRDECODERULE_H

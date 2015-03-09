@@ -36,15 +36,15 @@ struct TranslationBaseRule : TranslationBaseFlag
   int id,
       category;
 
-  bool match_category(int v) const { return !v || !category || v & category; }
+  bool match_category(int v) const { return v & category; }
 
   TranslationBaseRule() : id(0), category(0) {}
 };
 
 struct TranslationRule : TranslationBaseRule
 {
-  std::wstring token,   // the LHS token
-               source,  // the RHS source
+  std::string token;    // the LHS token
+  std::wstring source,  // the RHS source
                target;  // the RHS target
 };
 

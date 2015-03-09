@@ -2,13 +2,12 @@
 # 3/6/2015
 # See also: http://joshua-decoder.org/6.0/file-formats.html
 # Format:
-#   class TAB source TAB target TAB features
+#   lfs_token ||| rhs_source ||| rhs_target ||| features
 # Features
-#   id selector flags
-
-n	悠真	Yuuma	1 -1
-v	攻略	capture	2 -1
-n	[[n]]くん	[[n]]-kun	3 -1
-x	[[n]]を[[v]]	[[v]] [[n]]	4 -1
-	DELETE		5 -1
-#x	[[x]][[x]]	[[x]]	6 -1
+#   id:int selector:int flags:string
+n ||| 悠真 ||| Yuuma ||| 1 -1
+v ||| 攻略 ||| capture ||| 2 -1
+n ||| [[n]]くん ||| [[n]]-kun ||| 3 -1
+x ||| [[n]]を[[v]] ||| [[v]] [[n]] ||| 4 -1
+ ||| DELETE |||  ||| 5 -1
+x ||| [[x]][[x]] ||| [[x]] ||| 6 -1

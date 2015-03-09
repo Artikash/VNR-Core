@@ -60,7 +60,7 @@ void TranslationDecoder::decode(std::wstring &text, int category, bool mark) con
     if (p != d_->map.end()) {
       const auto &rule = p->second;
       if (rule.is_valid() && rule.match_category(category))
-        return rule.render(args, mark);
+        return rule.render_target(args, mark);
     }
     return std::wstring();
   });

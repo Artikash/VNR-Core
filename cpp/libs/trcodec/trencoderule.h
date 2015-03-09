@@ -15,11 +15,11 @@ class TranslationEncodeRule : private TranslationBaseRule
 
   mutable bool valid; // whether the object is valid
 
-  std::wstring token,   // the LHS token
-               source,  // the RHS source
-               target;  // the RHS target
+  std::wstring source;  // the RHS source
+  std::string target,   // the RHS target
+              target_token;  // the LHS token
   boost::wregex *source_re; // cached compiled regex. Either source_re or source exists after init.
-  int source_symbol_count;
+  size_t source_symbol_count;
 
 public:
   using Base::match_category;
@@ -35,7 +35,12 @@ public:
 private:
   void init_source(); // may throw regular expression exception
   void init_target();
-  void cache_target() const;
+
+  void cache_target() const
+  {
+    if (target.empty() && !target_token.empty())
+      self()->init_target();
+  }
 
   void string_replace(std::wstring &ret) const;
   void regex_replace(std::wstring &ret) const;
