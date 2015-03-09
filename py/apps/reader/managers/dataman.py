@@ -2476,6 +2476,7 @@ class _Term(object):
     'updateUserId',
     'text',
     'pattern',
+    'role',
     'comment',
     'updateComment',
     'regex',
@@ -2498,7 +2499,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
     #self.priority = 0 # int  assigned after sorting
     self.init = False           # bool
     self.id = id                # long
@@ -2515,6 +2516,7 @@ class _Term(object):
     self.updateUserId = updateUserId   # long
     self.text = text            # unicode
     self.pattern = pattern      # unicode
+    self.role = role            # unicode
     self.comment = comment      # unicode
     self.updateComment = updateComment  # unicode
     self.regex = regex          # bool
@@ -2552,7 +2554,7 @@ class _Term(object):
     if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
       termman.manager().invalidateCache() # invalidate term cache when any term is changed
 
-    if self._errorType is not None and name in ('pattern', 'text', 'type', 'host', 'language', 'sourceLanguage', 'regex', 'special'):
+    if self._errorType is not None and name in ('pattern', 'text', 'role', 'type', 'host', 'language', 'sourceLanguage', 'regex', 'special'):
       self.recheckError()
 
     #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
@@ -2625,6 +2627,10 @@ class _Term(object):
     if not self.pattern:
       return self.E_EMPTY_PATTERN
 
+    # E_EMPTY_TEXT
+    if not self.text and self.type == 'proxy':
+      return self.E_EMPTY_TEXT
+
     # E_NEWLINE
     if '\n' in self.pattern or self.text and '\n' in self.text:
       return self.E_NEWLINE
@@ -2632,6 +2638,12 @@ class _Term(object):
     # E_TAB
     if '\t' in self.pattern or self.text and '\t' in self.text:
       return self.E_TAB
+
+    # E_BAD_ROLE
+    if self.role and not unichars.isascii(self.role):
+      return self.E_BAD_ROLE
+    if self.role and self.type not in self.ROLE_TYPES:
+      return self.E_BAD_ROLE
 
     # E_BAD_HOST
     if self.host and self.type not in self.HOST_TYPES:
@@ -2727,8 +2739,8 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'prefix', 'game', 'tts', 'ocr', 'macro'
-  TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), mytr_("Prefix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro"), mytr_("VTrans")
+  TYPES = 'trans', 'input', 'output', 'name', 'yomi', 'suffix', 'prefix', 'game', 'tts', 'ocr', 'macro', 'proxy'
+  TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Yomi"), mytr_("Suffix"), mytr_("Prefix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro"), tr_("Proxy")
 
   HOSTS = 'bing', 'google', 'lecol', 'infoseek', 'excite', 'transru', 'naver', 'baidu', 'jbeijing', 'fastait', 'dreye', 'eztrans', 'transcat', 'lec', 'atlas', 'hanviet', 'vtrans'
   TR_HOSTS = tuple(map(i18n.translator_name, HOSTS))
@@ -2747,12 +2759,15 @@ class _Term(object):
   W_BAD_REGEX = 100         # mismatch regex
   E_USELESS = -100          # translation has no effect
   E_USELESS_REGEX = -101    # regex flag is redundant
-  E_BAD_HOST = -800         # having new line characters in pattern or repl
+  E_BAD_HOST = -800         # invalid translation host
+  E_BAD_ROLE = -801         # invalid role character
   E_NEWLINE = -900          # having new line characters in pattern or repl
   E_TAB = -901              # having tag characters in pattern or repl
+  E_EMPTY_TEXT = -999       # translation text is empty
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
-  HOST_TYPES = 'input', 'output', 'trans', 'name', 'yomi' # types allow host
+  HOST_TYPES = 'input', 'output', 'trans', 'suffix', 'prefix', 'name', 'yomi' # types allow host
+  ROLE_TYPES = 'trans', 'suffix', 'prefix', 'name', 'yomi', 'proxy' # types allow role
 
 class Term(QObject):
   __D = _Term
@@ -2765,6 +2780,8 @@ class Term(QObject):
   TR_HOSTS = __D.TR_HOSTS
   HOST_NAMES = dict(zip(_Term.HOSTS, _Term.TR_HOSTS))
   HOST_TYPES = __D.HOST_TYPES
+
+  ROLE_TYPES = __D.ROLE_TYPES
 
   @classmethod
   def typeName(cls, t):
@@ -2794,13 +2811,13 @@ class Term(QObject):
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
       type="", host="", language="", sourceLanguage="", timestamp=0, text="",
-      pattern="", comment="", updateComment="",
+      pattern="", role="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False, phrase=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, icase=False, #syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase)
+      id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase)
     if init:
       self.init(parent)
 
@@ -2839,7 +2856,7 @@ class Term(QObject):
       phrase=d.phrase,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
-      type=d.type, host=d.host, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern)
+      type=d.type, host=d.host, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern, role=d.role)
 
   ## Dirty ##
 
@@ -2872,6 +2889,7 @@ class Term(QObject):
   host, hostChanged = __D.synthesize('host', str, sync=True)
   language, languageChanged = __D.synthesize('language', str, sync=True)
   sourceLanguage, sourceLanguageChanged = __D.synthesize('sourceLanguage', str, sync=True)
+  role, roleChanged = __D.synthesize('role', unicode, sync=True)
   pattern, patternChanged = __D.synthesize('pattern', unicode, sync=True)
   text, textChanged = __D.synthesize('text', unicode, sync=True)
   comment, commentChanged = __D.synthesize('comment', unicode, sync=True)
@@ -4898,6 +4916,7 @@ class _TermModel(object):
     'hentai',
     'special',
     'gameId',
+    'role',
     'pattern',
     'text',
     'comment',
@@ -5118,6 +5137,8 @@ class _TermModel(object):
         if col == 'id':
           try: return int(t) == td.id
           except ValueError: return False
+        elif col == 'role':
+          return t == td.role
         elif col == 'user':
           q = term.userName,
         elif col == 'game':
@@ -8730,7 +8751,7 @@ class _DataManager(object):
           if path == 3: # grimoire/terms/term
             tag = elem.tag
             text = elem.text
-            if tag in ('language', 'sourceLanguage', 'host', 'pattern', 'text', 'comment', 'updateComment'):
+            if tag in ('language', 'sourceLanguage', 'host', 'pattern', 'text', 'role', 'comment', 'updateComment'):
               kw[tag] = text or ''
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):

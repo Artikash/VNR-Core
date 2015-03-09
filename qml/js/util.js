@@ -225,6 +225,7 @@ var TERM_TYPES = [
   , 'tts'
   , 'ocr'
   , 'macro'
+  , 'proxy'
 ];
 
 // - Cast -

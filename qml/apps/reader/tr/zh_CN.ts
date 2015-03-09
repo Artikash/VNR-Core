@@ -505,22 +505,27 @@
         <translation>日文姓名前边的前缀</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="32"/>
+        <location filename="../termview/filtertoolbar.qml" line="33"/>
+        <source>Delegate translation roles</source>
+        <translation>代理翻译所属的Role</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="37"/>
         <source>Fix game text</source>
         <translation>修正游戏的文本</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="34"/>
+        <location filename="../termview/filtertoolbar.qml" line="39"/>
         <source>Fix text to send to TTS</source>
         <translation>在语音合成前修正文本</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="35"/>
+        <location filename="../termview/filtertoolbar.qml" line="40"/>
         <source>Fix text received from OCR</source>
         <translation>在光学识别后修正文本</translation>
     </message>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="25"/>
+        <location filename="../termview/filtertoolbar.qml" line="32"/>
         <source>Reusable regular expression</source>
         <translation>正则表达式的定义</translation>
     </message>
@@ -802,32 +807,32 @@
         <translation>从Dashboard中移除这个游戏</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="216"/>
+        <location filename="../termview/inspector.qml" line="217"/>
         <source>Pattern is too short</source>
         <translation>匹配的文本太短了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="215"/>
+        <location filename="../termview/inspector.qml" line="216"/>
         <source>Pattern or translation is very long</source>
         <translation>匹配或翻译的文本很长</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="217"/>
+        <location filename="../termview/inspector.qml" line="218"/>
         <source>Translation is empty</source>
         <translation>翻译被删掉了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="218"/>
+        <location filename="../termview/inspector.qml" line="219"/>
         <source>Translation should not contain Japanese</source>
         <translation>日文的翻译中不应该包含日文字符</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="219"/>
+        <location filename="../termview/inspector.qml" line="220"/>
         <source>Game type should not be used for translation</source>
         <translation>不应该用游戏词条来做翻译</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="220"/>
+        <location filename="../termview/inspector.qml" line="221"/>
         <source>Type should not translation instead of input</source>
         <translation>词条类型应该是翻译而不应该是输入</translation>
     </message>
@@ -836,47 +841,57 @@
         <translation type="obsolete">中文翻译中包含日本汉字</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="213"/>
+        <location filename="../termview/inspector.qml" line="214"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>翻译不包含简体字的词条的语言应该是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="212"/>
+        <location filename="../termview/inspector.qml" line="213"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>如果翻译包含简体字，那么词条的语言不应该是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="221"/>
+        <location filename="../termview/inspector.qml" line="222"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>正则表达式中的括号可能不匹配</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="222"/>
+        <location filename="../termview/inspector.qml" line="223"/>
         <source>This rule is useless that has no effect</source>
         <translation>这个词条是没有作用的</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="223"/>
+        <location filename="../termview/inspector.qml" line="224"/>
         <source>Pattern does not need enabling regex</source>
         <translation>匹配的文本不需要开启正则表达</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="224"/>
+        <location filename="../termview/inspector.qml" line="225"/>
         <source>Entry type does not allow being translator-specific</source>
         <translation>词条类型不允许指定翻译器</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="225"/>
+        <location filename="../termview/inspector.qml" line="226"/>
+        <source>Please use only ASCII characters for translation role</source>
+        <translation>翻译的Role只可以包含ASCII字符</translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="227"/>
         <source>New line characters are not allowed in text</source>
         <translation>词条不可以包含\n字符</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="226"/>
+        <location filename="../termview/inspector.qml" line="228"/>
         <source>Tab characters are not allowed in text</source>
         <translation>词条不可以包含\t字符</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="227"/>
+        <location filename="../termview/inspector.qml" line="229"/>
+        <source>Missing translation</source>
+        <translation>翻译被删掉了</translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="230"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
@@ -1371,43 +1386,43 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="141"/>
+        <location filename="../termview/table.qml" line="147"/>
         <source>Short</source>
         <translation>太短</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="140"/>
+        <location filename="../termview/table.qml" line="146"/>
         <source>Long</source>
         <translation>很长</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="142"/>
+        <location filename="../termview/table.qml" line="148"/>
         <source>Missing</source>
         <translation>缺失</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="146"/>
+        <location filename="../termview/table.qml" line="152"/>
         <source>Brackets</source>
         <translation>括号</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="147"/>
+        <location filename="../termview/table.qml" line="153"/>
         <source>Useless</source>
         <translation>无用</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="148"/>
-        <location filename="../termview/table.qml" line="540"/>
+        <location filename="../termview/table.qml" line="154"/>
+        <location filename="../termview/table.qml" line="549"/>
         <source>Regex</source>
         <translation>正则表达</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="576"/>
+        <location filename="../termview/table.qml" line="585"/>
         <source>Case-insensitive</source>
         <translation>大小写忽略</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="630"/>
+        <location filename="../termview/table.qml" line="639"/>
         <source>Series</source>
         <translation>系列专用</translation>
     </message>

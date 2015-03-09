@@ -116,6 +116,10 @@ class _TermInput(object):
     grid.addWidget(self.yomiEdit, r, 1) # span for two rows
     r += 1
 
+    grid.addWidget(create_label(tr_("Role")), r, 0)
+    grid.addWidget(self.roleEdit, r, 1)
+    r += 1
+
     grid.addWidget(create_label(tr_("Comment")), r, 0)
     grid.addWidget(self.commentEdit, r, 1)
     r += 1
@@ -227,6 +231,8 @@ class _TermInput(object):
       t = my.tr("transform extracted game text")
     elif tt == 'macro':
       t = my.tr("reusable regular expression pattern")
+    elif tt == 'proxy':
+      t = my.tr("delegate translation for specific role")
     else:
       t = ''
     if t:
@@ -321,6 +327,15 @@ class _TermInput(object):
     return ret
 
   @memoizedproperty
+  def roleEdit(self):
+    ret = QtWidgets.QLineEdit()
+    #skqss.class_(ret, 'normal')
+    ret.setPlaceholderText(my.tr("Such as x (Phrase) or m (Name)"))
+    ret.setToolTip(my.tr("Optional"))
+    ret.textChanged.connect(self.refresh)
+    return ret
+
+  @memoizedproperty
   def patternEdit(self):
     ret = QtWidgets.QLineEdit()
     skqss.class_(ret, 'normal')
@@ -374,17 +389,29 @@ class _TermInput(object):
     ret = QtWidgets.QLineEdit()
     #skqss.class_(ret, 'normal')
     ret.setPlaceholderText(tr_("Comment"))
-    ret.setToolTip(ret.placeholderText())
+    ret.setToolTip(my.tr("Optional"))
     #ret.textChanged.connect(self.refresh)
     return ret
 
   def _canSave(self): # -> bool
-    return bool(self.patternEdit.text().strip()) and not self._isUseless()
+    return bool(self.patternEdit.text().strip()) and not self._isUseless() and not self._isIncompleted() and self._isAllowed()
+
+  def _isIncompleted(self):
+    if self._getType() == 'proxy' and (not self.roleEdit.text().strip() or not self.textEdit.text().strip()):
+      return True
+    return False
+
+  def _isAllowed(self):
+    if self._getType() in ('suffix', 'prefix', 'macro', 'proxy'):
+      user = dataman.manager().user()
+      if user.isGuest():
+        return False
+    return True
 
   def _isUseless(self): # -> bool  has no effect
     pattern = self.patternEdit.text().strip()
     #if self._getLanguage() not in ('zhs', 'zht', 'ko') or # allow people to force save sth
-    if self._getType() not in ('trans', 'suffix', 'prefix', 'name', 'yomi'):
+    if self._getType() in ('input', 'output', 'game', 'ocr', 'tts'):
       text = self.textEdit.text().strip()
       if pattern == text:
         return True
@@ -438,6 +465,7 @@ class _TermInput(object):
       sourceLang = self._getSourceLanguage()
       type = self._getType()
       host = self._getHost() if type in dataman.Term.HOST_TYPES else ''
+      role = self.roleEdit.text().strip() if type in dataman.Term.ROLE_TYPES else ''
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
@@ -447,7 +475,7 @@ class _TermInput(object):
       phrase = type != 'macro' and self.phraseButton.isChecked()
       #syntax = type == 'trans' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
-      private = self.privateButton.isChecked() and not user.isGuest()
+      private = (type == 'proxy' or self.privateButton.isChecked()) and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
           language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
@@ -483,6 +511,7 @@ class _TermInput(object):
 
     type = self._getType()
     self.hostEdit.setEnabled(type in dataman.Term.HOST_TYPES)
+    self.roleEdit.setEnabled(type in dataman.Term.ROLE_TYPES)
 
     self._refreshTypeLabel()
     self._refreshKanji()
@@ -492,16 +521,23 @@ class _TermInput(object):
   def _refreshStatus(self):
     w = self.statusLabel
     pattern = self.patternEdit.text().strip()
+    type = self._getType()
     if not pattern:
       skqss.class_(w, 'text-primary')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Missing pattern")))
+    elif self._isIncompleted():
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s" % (tr_("Error"), my.tr("Missing translation or role.")))
     elif self._isUseless():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))
+    elif not self._isAllowed():
+      skqss.class_(w, 'text-warning')
+      w.setText("%s: %s" % (tr_("Warning"), my.tr("Guest user is not allowed to create rules in such type.")))
     elif self._getSourceLanguage() != 'ja':
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
-    elif (self.regexButton.isChecked() or self._getType() == 'macro') and (
+    elif (self.regexButton.isChecked() or type == 'macro') and (
         not textutil.validate_regex(pattern)
         or not textutil.validate_macro(self.textEdit.text().strip())
       ):
@@ -519,9 +555,12 @@ class _TermInput(object):
     elif len(pattern) > 10 and not self.regexButton.isChecked(): # and not self.syntaxButton.isChecked():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
-    elif self._getType() == 'yomi' and self._getTargetLanguage().startswith('zh'):
+    elif type == 'yomi' and self._getTargetLanguage().startswith('zh'):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("Yomi type is useless for Chinese translation.")))
+    elif type == 'proxy':
+      skqss.class_(w, 'text-success')
+      w.setText("%s: %s" % (tr_("Note"), my.tr("Proxy term is private by default. Please debug it again and again before make it public.")))
     else:
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))

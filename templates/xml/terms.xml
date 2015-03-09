@@ -50,6 +50,9 @@
 %		if it.text
 			<text>{{it.text|e}}</text>
 %		endif
+%		if it.role
+			<role>{{it.role|e}}</role>
+%		endif
 %		if it.comment
 			<comment>{{it.comment|e}}</comment>
 %		endif

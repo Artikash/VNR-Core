@@ -335,6 +335,7 @@ class sakurakit(QObject):
       self.tr("Notification"),
       self.tr("Opacity"),
       self.tr("Option"), self.tr("option"),
+      self.tr("Optional"),
       self.tr("Options"), self.tr("options"),
       self.tr("Order"),
       self.tr("Owner"),
@@ -363,6 +364,7 @@ class sakurakit(QObject):
       self.tr("Release"),
       self.tr("Release Date"), self.tr("Release date"),
       self.tr("Review"), self.tr("review"),
+      self.tr("Role"),
       self.tr("Row"),
       #self.tr("Scratch"),
       #self.tr("Subject"),
@@ -447,6 +449,8 @@ class sakurakit(QObject):
       self.tr("Found"),
       self.tr("Not found"),
       self.tr("Not specified"), self.tr("not specified"),
+
+      self.tr("Invalid"),
 
       self.tr("Press Enter to submit"),
 
