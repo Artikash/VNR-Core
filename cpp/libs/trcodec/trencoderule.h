@@ -56,14 +56,13 @@ private:
 public:
   bool replace(std::wstring &ret) const
   {
-    if (exists(ret)) {
-      if (is_regex())
-        regex_replace(ret);
-      else
-        string_replace(ret);
-      return true;
-    }
-    return false;
+    if (!exists(ret))
+      return false;
+    if (is_regex())
+      regex_replace(ret);
+    else
+      string_replace(ret);
+    return true;
   }
 };
 

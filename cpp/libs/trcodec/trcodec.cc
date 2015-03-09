@@ -12,7 +12,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <fstream>
 #include <vector>
-#include <QDebug>
+//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trcodec.cc"
@@ -100,8 +100,8 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
                 const std::string &flags = features[TRSCRIPT_FEATURE_FLAGS];
                 for (size_t pos = 0; pos < flags.size(); pos++)
                   switch (flags[pos]) {
-                  case TRSCRIPT_CH_REGEX: rule.set_regex(true); break;
-                  case TRSCRIPT_CH_ICASE: rule.set_icase(true); break;
+                  case TRSCRIPT_CH_REGEX: rule.set_regex(); break;
+                  case TRSCRIPT_CH_ICASE: rule.set_icase(); break;
                   }
               }
             }

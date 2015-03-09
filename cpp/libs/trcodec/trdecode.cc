@@ -6,7 +6,7 @@
 #include "trcodec/trsymbol.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
-#include <QDebug>
+//#include <QDebug>
 
 #ifdef __clang__
 # define USE_BOOST_CXX11

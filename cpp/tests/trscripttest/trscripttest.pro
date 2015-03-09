@@ -3,6 +3,7 @@
 
 CONFIG += noqtgui
 include(../../../config.pri)
+include($$LIBDIR/trrender/trrender.pri)
 include($$LIBDIR/trscript/trscript.pri)
 
 # Source

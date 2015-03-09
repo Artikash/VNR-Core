@@ -5,7 +5,7 @@
 #include "trcodec/trencoderule.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
-#include <QDebug>
+//#include <QDebug>
 
 /** Private class */
 

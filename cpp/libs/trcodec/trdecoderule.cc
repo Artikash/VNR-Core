@@ -5,11 +5,26 @@
 #include "trcodec/trsymbol.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/lambda/lambda.hpp>
-#include <QDebug>
+//#include <QDebug>
 
 //#define SK_NO_QT
 //#define DEBUG "trdecoderule.cc"
 //#include "sakurakit/skdebug.h"
+
+// Helper functions
+
+#ifdef WITH_LIB_TRRENDER
+# include "trrender/trrender.h"
+#endif // WITH_LIB_TRRENDER
+
+static inline std::wstring _render(const std::wstring &target, int id)
+{
+#ifdef WITH_LIB_TRRENDER
+  return ::tr_render_rule(target, id);
+#else
+  return L"<u>" + target + L"</u>";
+#endif // WITH_LIB_TRRENDER
+}
 
 // Construction
 
@@ -34,7 +49,7 @@ void TranslationDecodeRule::init(const TranslationRule &param)
   valid = true;
 }
 
-// Initialization
+// Render
 
 std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring> &args, bool mark) const
 {
@@ -52,9 +67,8 @@ std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring
         boost::replace_all(ret, symbols[i], args[i]);
     }
   }
-  if (mark) {
-    // render target with underlined here
-  }
+  if (mark)
+    ret = _render(ret, id);
   return ret;
 }
 

@@ -7,7 +7,7 @@
 #include <stack>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
-#include <QDebug>
+//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trencode.cc"

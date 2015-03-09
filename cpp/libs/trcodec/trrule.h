@@ -11,20 +11,20 @@
 
 struct TranslationBaseFlag
 {
+  mutable uint8_t flags;
+  TranslationBaseFlag() : flags(0) {}
+
+  bool has_flag(uint8_t f) const { return flags & f; }
+  void set_flag(uint8_t f, bool t = true) { if (t) flags |= f; else flags &= ~f; }
+
   enum : uint8_t {
     TranslationRegexFlag = 1          // source is regular expression
     , TranslationIcaseFlag = 1 << 1   // ignore case for source
   };
 
-  mutable uint8_t flags;
-  TranslationBaseFlag() : flags(0) {}
-
-  bool has_flag(uint8_t f) const { return flags & f; }
-  void set_flag(uint8_t f, bool t) { if (t) flags |= f; else flags &= ~f; }
-
 #define DEF_FLAG(_method, _flag) \
   bool is_##_method() const { return has_flag(_flag); } \
-  void set_##_method(bool t) { set_flag(_flag, t); }
+  void set_##_method(bool t = true) { set_flag(_flag, t); }
 
   DEF_FLAG(regex, TranslationRegexFlag)
   DEF_FLAG(icase, TranslationIcaseFlag)
