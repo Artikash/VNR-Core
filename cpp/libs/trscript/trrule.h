@@ -34,8 +34,8 @@ struct TranslationScriptBaseRule : TranslationScriptFlag
 {
   std::wstring source,
                target;
-  int id;
-  int category;
+  int id,
+      category;
 
   TranslationScriptBaseRule() : id(0), category(-1) {}
 };

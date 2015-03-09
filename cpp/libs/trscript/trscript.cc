@@ -8,13 +8,13 @@
 #include <boost/foreach.hpp>
 #include <fstream>
 #include <list>
-//#include <QDebug>
 
 #define SK_NO_QT
 #define DEBUG "trscript.cc"
 #include "sakurakit/skdebug.h"
 
 //#define DEBUG_RULE // output the rule that is applied
+//#include <QDebug>
 
 /** Helpers */
 
@@ -90,6 +90,7 @@ bool TranslationScriptPerformer::loadScript(const std::wstring &path)
 
   std::list<TranslationScriptBaseRule> rules;
 
+  int missing_id = 0; // assign negative id for missing id
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {
       TranslationScriptBaseRule rule;
@@ -113,8 +114,13 @@ bool TranslationScriptPerformer::loadScript(const std::wstring &path)
             rule.target.assign(delim + 1);
           } else
             rule.source.assign(cur);
-          if (!rule.source.empty())
+          if (!rule.source.empty()) {
+            if (!rule.id)
+              rule.id = --missing_id;
+            if (!rule.category) // always enable category if not specified
+              rule.category = -1;
             rules.push_back(rule);
+          }
         }
       }
     }
@@ -147,13 +153,13 @@ std::wstring TranslationScriptPerformer::translate(const std::wstring &text, int
   if (d_->ruleCount && d_->rules)
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
-      //qDebug() << QString::fromStdWString(rule.id) << rule.flags << QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target);
       if (rule.is_valid() && rule.match_category(category))
         rule.replace(ret, mark);
 
 #ifdef DEBUG_RULE
+     TranslationScriptBaseRule *r = (TranslationScriptBaseRule *)&rule;
       if (previous != ret)
-        DERR(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
+        qDebug() << QString::fromStdWString(r->source) << QString::fromStdWString(r->target) << QString::fromStdWString(ret);
       previous = ret;
 #endif // DEBUG_RULE
     }

@@ -111,6 +111,8 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
         if (!rule.source.empty()) { // an unique ID must be given, or I will use a negative value as a random id
           if (!rule.id)
             rule.id = --missing_id;
+          if (!rule.category) // always enable category if not specified
+            rule.category = -1;
           rules.push_back(rule);
         }
       }
