@@ -68,8 +68,13 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
 
   const auto column_sep = boost::first_finder(TRSCRIPT_COLUMNSEP);
   const auto feature_sep = boost::lambda::_1 == TRSCRIPT_CH_FEATURESEP;
+
   std::vector<std::wstring> cols;
+  cols.reserve(TRSCRIPT_COLUMN_COUNT);
+
   std::vector<std::string> features;
+  features.reserve(TRSCRIPT_FEATURE_COUNT);
+
   int missing_id = 0; // assign negative id for missing id
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty() && line[0] != TRSCRIPT_CH_COMMENT) {

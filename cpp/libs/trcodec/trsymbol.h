@@ -35,8 +35,8 @@ size_t count_raw_symbols(const std::wstring &target);
 ///  Collect raw symbols
 void iter_raw_symbols(const std::wstring &target, const collect_string_f &fun);
 
-///  Replace [[x]] by regular expression for {{x}}
-std::wstring encode_symbol(const std::wstring &text);
+///  Replace [[x]] by regular expression for {{x}}. Escape specifies whether escape regex special chars.
+std::wstring encode_symbol(const std::wstring &text, bool escape = false);
 
 ///  Replace {{x}} by something else
 std::wstring decode_symbol(const std::wstring &text, const decode_f &fun);

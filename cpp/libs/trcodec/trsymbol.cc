@@ -13,6 +13,8 @@
 #define DEBUG "trencode.cc"
 #include "sakurakit/skdebug.h"
 
+#define SYMBOL_ESCAPE_RE L"\\|?!.+*^$<>(){}" // characters needed to be escaped for a regex, escapt []
+
 // Precompiled regex
 namespace { namespace rx {
 
@@ -21,7 +23,7 @@ const boost::wregex
   raw_symbol(
     L"\\[\\["
       TR_RE_TOKEN
-      L"(:#[0-9]+)?"
+      L"(?:#[0-9]+)?"
     L"\\]\\]"
   )
 
@@ -29,7 +31,7 @@ const boost::wregex
   , raw_symbol_with_token_group(
     L"\\[\\["
       L"(" TR_RE_TOKEN L")"
-      L"(:#[0-9]+)?"
+      L"(?:#[0-9]+)?"
     L"\\]\\]"
   )
 
@@ -38,7 +40,7 @@ const boost::wregex
     L"\\[\\["
       L"("
         TR_RE_TOKEN
-        L"(:#[0-9]+)?"
+        L"(?:#[0-9]+)?"
       L")"
     L"\\]\\]"
   )
@@ -102,8 +104,32 @@ size_t trsymbol::count_raw_symbols(const std::wstring &s)
        : ::cpp_regex_count(s, rx::raw_symbol);
 }
 
-std::wstring trsymbol::encode_symbol(const std::wstring &s)
-{ return boost::regex_replace(s, rx::raw_symbol_with_token_group, "{{$1\\([-0-9<>]+\\)}}"); }
+/// Return whether a text contains regex special chars except '[]'
+static inline bool _symbol_needs_escape_re(const std::wstring &s)
+{ return std::wstring::npos != s.find_first_of(SYMBOL_ESCAPE_RE); }
+
+/// Escape regex special chars
+static inline std::wstring _symbol_escape_re(const wchar_t *s)
+{
+  std::wstring ret;
+  while (wchar_t c = *s) {
+    if (::wcschr(SYMBOL_ESCAPE_RE, c))
+      ret.push_back(L'\\');
+    ret.push_back(c);
+  }
+  return ret;
+}
+
+static inline std::wstring _symbol_escape_re(const std::wstring &s)
+{ return _symbol_escape_re(s.c_str()); }
+
+std::wstring trsymbol::encode_symbol(const std::wstring &s, bool escape)
+{
+  if (escape && _symbol_needs_escape_re(s))
+    return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, "{{$1\\([-0-9<>]+\\)}}");
+  else
+    return boost::regex_replace(s, rx::raw_symbol_with_token_group, "{{$1\\([-0-9<>]+\\)}}");
+}
 
 void trsymbol::iter_raw_symbols(const std::wstring &target, const collect_string_f &fun)
 {
@@ -118,7 +144,7 @@ void trsymbol::iter_raw_symbols(const std::wstring &target, const collect_string
 }
 
 // Example text to decode: 4<3<1>>,<2>
-static std::wstring decode_symbol_stack(const char *str, const trsymbol::decode_f &fun)
+static std::wstring _decode_symbol_stack(const char *str, const trsymbol::decode_f &fun)
 {
   std::vector<std::wstring> args;
 
@@ -139,7 +165,7 @@ static std::wstring decode_symbol_stack(const char *str, const trsymbol::decode_
         if (int id = ::strtol(str - 1, const_cast<char **>(&str), 10))
           if (*str++ == '>') { // start reduce
             while (!tokens.empty() && !tokens.top().empty()) {
-              args.push_back(tokens.top());
+              args.insert(args.begin(), tokens.top()); // might be slow to insert at the beginning
               tokens.pop();
             }
             if (!tokens.empty()) {
@@ -169,7 +195,7 @@ std::wstring trsymbol::decode_symbol(const std::wstring &text, const decode_f &f
 {
   return boost::regex_replace(text, rx::encoded_symbol_with_param_group, [&fun](const boost::wsmatch &m) {
     std::string matched_text = ::cpp_string_of(m.str(1));
-    return decode_symbol_stack(matched_text.c_str(), fun);
+    return _decode_symbol_stack(matched_text.c_str(), fun);
   });
 }
 

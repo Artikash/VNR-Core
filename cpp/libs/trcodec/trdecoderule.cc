@@ -45,6 +45,7 @@ std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring
     else {
       const auto symbol_splitter = boost::lambda::_1 == ',';
       std::vector<std::string> symbols;
+      symbols.reserve(source_symbol_count);
       boost::split(symbols, source_symbols, symbol_splitter);
       //assert(symbols.size() == source_symbol_count);
       for (size_t i = 0; i < args.size(); i++)

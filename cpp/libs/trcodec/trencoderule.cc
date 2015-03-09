@@ -44,7 +44,8 @@ void TranslationEncodeRule::init_target()
 void TranslationEncodeRule::init_source()
 {
   if (is_symbolic()) {
-    source = trsymbol::encode_symbol(source);
+    bool escape = !is_regex();
+    source = trsymbol::encode_symbol(source, escape);
     set_regex(true);
   }
   if (is_regex()) {
