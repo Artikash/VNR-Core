@@ -21,8 +21,8 @@ int main()
   //path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
   //path = L"/Users/jichi/tmp/escape_input.txt";
 
-  TranslationScriptManager m;
-  m.loadFile(path);
+  TranslationScriptPerformer m;
+  m.loadScript(path);
   qDebug() << m.size();
 
   if (!m.isEmpty()) {
