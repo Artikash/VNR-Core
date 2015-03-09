@@ -17,8 +17,8 @@ void TranslationDecodeRule::init(const TranslationRule &param)
   flags = param.flags;
   category = param.category;
   target = param.target;
-  if (trsymbol::contains_raw_symbol(target)) // only need do this when containing symbol
-    source = param.source;
+  //if (trsymbol::contains_raw_symbol(target)) // only need do this when containing symbol
+  //  source = param.source;
   valid = true;
 }
 
@@ -27,9 +27,9 @@ void TranslationDecodeRule::init(const TranslationRule &param)
 std::wstring TranslationDecodeRule::render(const std::vector<std::wstring> &args, bool mark) const
 {
   std::wstring ret = target;
-  if (!source.empty()) {
-    // handle symbol here
-  }
+  //if (!source.empty()) {
+  //  // handle symbol here
+  //}
   if (mark) {
     // render target with underlined here
   }

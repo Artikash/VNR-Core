@@ -10,12 +10,12 @@
 #include <boost/regex.hpp>
 #include <vector>
 
-class TranslationDecodeRule : private TranslationRule
+class TranslationDecodeRule : private TranslationBaseRule
 {
-  SK_EXTEND_CLASS(TranslationDecodeRule, TranslationRule)
+  SK_EXTEND_CLASS(TranslationDecodeRule, TranslationBaseRule)
 
   mutable bool valid; // whether the object is valid
-
+  std::wstring target;
 public:
   using Base::match_category;
 

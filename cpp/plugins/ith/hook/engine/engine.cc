@@ -5672,6 +5672,7 @@ bool InsertPensilHook()
   ConsoleOutput("vnreng:Pensil: failed");
   return false;
 }
+#if 0 // jich 3/8/2015: disabled
 bool IsPensilSetup()
 {
   HANDLE hFile = IthCreateFile(L"PSetup.exe", FILE_READ_DATA, FILE_SHARE_READ, FILE_OPEN);
@@ -5693,6 +5694,7 @@ bool IsPensilSetup()
   NtFreeVirtualMemory(NtCurrentProcess(), &buffer, &info.AllocationSize.LowPart, MEM_RELEASE);
   return ret;
 }
+#endif // if 0
 static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD retn = *(DWORD*)esp_base;

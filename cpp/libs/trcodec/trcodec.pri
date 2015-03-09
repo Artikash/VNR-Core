@@ -16,7 +16,6 @@ HEADERS += \
   $$PWD/trdefine.h \
   $$PWD/trencode.h \
   $$PWD/trencoderule.h \
-  $$PWD/trflag.h \
   $$PWD/trrule.h \
   $$PWD/trsymbol.h
 

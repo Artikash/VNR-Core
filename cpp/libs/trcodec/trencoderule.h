@@ -9,18 +9,22 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-class TranslationEncodeRule : private TranslationRule
+class TranslationEncodeRule : private TranslationBaseRule
 {
-  SK_EXTEND_CLASS(TranslationEncodeRule, TranslationRule)
+  SK_EXTEND_CLASS(TranslationEncodeRule, TranslationBaseRule)
 
+  mutable bool valid; // whether the object is valid
+
+  std::wstring token,   // the LHS token
+               source,  // the RHS source
+               target;  // the RHS target
   boost::wregex *source_re; // cached compiled regex. Either source_re or source exists after init.
   int source_symbol_count;
-  mutable bool valid; // whether the object is valid
 
 public:
   using Base::match_category;
 
-  TranslationEncodeRule() : source_re(nullptr), source_symbol_count(0), valid(false) {}
+  TranslationEncodeRule() : valid(false), source_re(nullptr), source_symbol_count(0) {}
   ~TranslationEncodeRule() { if (source_re) delete source_re; }
 
   void init(const TranslationRule &param);
