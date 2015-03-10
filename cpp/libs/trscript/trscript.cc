@@ -143,7 +143,7 @@ bool TranslationScriptPerformer::loadScript(const std::wstring &path)
 }
 
 // Translation
-std::wstring TranslationScriptPerformer::translate(const std::wstring &text, int category, bool mark) const
+std::wstring TranslationScriptPerformer::transform(const std::wstring &text, int category, bool mark) const
 {
   //QReadLocker locker(&d_->lock);
   std::wstring ret = text;

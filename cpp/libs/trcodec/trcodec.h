@@ -1,5 +1,5 @@
-#ifndef TRCODE_H
-#define TRCODE_H
+#ifndef TRCODEC_H
+#define TRCODEC_H
 
 // trcode.h
 // 9/20/2014 jichi
@@ -7,17 +7,17 @@
 #include "sakurakit/skglobal.h"
 #include <string>
 
-class TranslationCodecPrivate;
-class TranslationCodec
+class TranslationCoderPrivate;
+class TranslationCoder
 {
-  SK_CLASS(TranslationCodec)
-  SK_DISABLE_COPY(TranslationCodec)
-  SK_DECLARE_PRIVATE(TranslationCodecPrivate)
+  SK_CLASS(TranslationCoder)
+  SK_DISABLE_COPY(TranslationCoder)
+  SK_DECLARE_PRIVATE(TranslationCoderPrivate)
 
   // - Construction -
 public:
-  explicit TranslationCodec();
-  ~TranslationCodec();
+  explicit TranslationCoder();
+  ~TranslationCoder();
 
   // Initialization
 
@@ -42,4 +42,4 @@ public:
   std::wstring decode(const std::wstring &text, int selector = -1, bool mark = false) const;
 };
 
-#endif // TRCODE_H
+#endif // TRCODEC_H

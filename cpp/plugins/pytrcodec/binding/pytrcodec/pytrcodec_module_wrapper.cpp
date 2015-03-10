@@ -19,7 +19,7 @@ static PyMethodDef pytrcodec_methods[] = {
 };
 
 // Classes initialization functions ------------------------------------------------------------
-void init_TranslationCodec(PyObject* module);
+void init_TranslationCoder(PyObject* module);
 
 
 // Module initialization ------------------------------------------------------------
@@ -109,7 +109,7 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pytrcodec)
 #endif
 
     // Initialize classes in the type system
-    init_TranslationCodec(module);
+    init_TranslationCoder(module);
 
     // Register converter for type 'std::wstring'.
     SbkpytrcodecTypeConverters[SBK_STD_WSTRING_IDX] = Shiboken::Conversions::createConverter(&PyUnicode_Type, std_wstring_CppToPython_std_wstring);

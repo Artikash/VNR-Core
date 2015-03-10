@@ -30,7 +30,7 @@ const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 /** Private class */
 
-class TranslationCodecPrivate
+class TranslationCoderPrivate
 {
 
 public:
@@ -39,8 +39,8 @@ public:
   TranslationEncoder *encoder;
   TranslationDecoder *decoder;
 
-  TranslationCodecPrivate() : encoder(new TranslationEncoder), decoder(new TranslationDecoder) {}
-  ~TranslationCodecPrivate() {  delete encoder; delete decoder; }
+  TranslationCoderPrivate() : encoder(new TranslationEncoder), decoder(new TranslationDecoder) {}
+  ~TranslationCoderPrivate() {  delete encoder; delete decoder; }
 
   void clear()
   {
@@ -52,7 +52,7 @@ public:
 
 };
 
-bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRuleList &rules)
+bool TranslationCoderPrivate::loadRules(const std::wstring &path, TranslationRuleList &rules)
 {
 #ifdef _MSC_VER
   std::wifstream fin(path);
@@ -126,23 +126,23 @@ bool TranslationCodecPrivate::loadRules(const std::wstring &path, TranslationRul
 
 // Construction
 
-TranslationCodec::TranslationCodec() : d_(new D) {}
-TranslationCodec::~TranslationCodec() { delete d_; }
+TranslationCoder::TranslationCoder() : d_(new D) {}
+TranslationCoder::~TranslationCoder() { delete d_; }
 
 // Use encoder which is initialized latter
-int TranslationCodec::size() const { return d_->encoder->size(); }
-bool TranslationCodec::isEmpty() const { return d_->encoder->isEmpty(); }
+int TranslationCoder::size() const { return d_->encoder->size(); }
+bool TranslationCoder::isEmpty() const { return d_->encoder->isEmpty(); }
 
-//bool TranslationCodec::isLinkEnabled() const { return d_->link; }
-//void TranslationCodec::setLinkEnabled(bool t) { d_->link = t; }
+//bool TranslationCoder::isLinkEnabled() const { return d_->link; }
+//void TranslationCoder::setLinkEnabled(bool t) { d_->link = t; }
 
-//std::wstring TranslationCodec::linkStyle() const { return d_->linkStyle; }
-//void TranslationCodec::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+//std::wstring TranslationCoder::linkStyle() const { return d_->linkStyle; }
+//void TranslationCoder::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
 
-void TranslationCodec::clear() { d_->clear(); }
+void TranslationCoder::clear() { d_->clear(); }
 
 // Initialization
-bool TranslationCodec::loadScript(const std::wstring &path)
+bool TranslationCoder::loadScript(const std::wstring &path)
 {
   TranslationRuleList rules; // id, pattern, text, regex
   D::loadRules(path, rules);
@@ -162,7 +162,7 @@ bool TranslationCodec::loadScript(const std::wstring &path)
 
 // Transformation
 
-std::wstring TranslationCodec::encode(const std::wstring &text, int category, int limit) const
+std::wstring TranslationCoder::encode(const std::wstring &text, int category, int limit) const
 {
   if (text.empty() || d_->encoder->isEmpty())
     return text;
@@ -171,7 +171,7 @@ std::wstring TranslationCodec::encode(const std::wstring &text, int category, in
   return ret;
 }
 
-std::wstring TranslationCodec::decode(const std::wstring &text, int category, bool mark) const
+std::wstring TranslationCoder::decode(const std::wstring &text, int category, bool mark) const
 {
   if (text.empty() || d_->decoder->isEmpty())
     return text;

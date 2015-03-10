@@ -16,7 +16,7 @@
 #include <string>
 
 // Type indices
-#define SBK_TRANSLATIONCODEC_IDX                                     0
+#define SBK_TRANSLATIONCODER_IDX                                     0
 #define SBK_pytrcodec_IDX_COUNT                                      1
 
 // This variable stores all Python types exported by this module.
@@ -35,7 +35,7 @@ namespace Shiboken
 {
 
 // PyType functions, to get the PyObjectType for a type T
-template<> inline PyTypeObject* SbkType< ::TranslationCodec >() { return reinterpret_cast<PyTypeObject*>(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX]); }
+template<> inline PyTypeObject* SbkType< ::TranslationCoder >() { return reinterpret_cast<PyTypeObject*>(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX]); }
 
 } // namespace Shiboken
 

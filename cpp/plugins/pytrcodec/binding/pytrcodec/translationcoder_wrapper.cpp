@@ -5,7 +5,7 @@
 #include <typeinfo>
 #include "pytrcodec_python.h"
 
-#include "translationcodec_wrapper.h"
+#include "translationcoder_wrapper.h"
 
 // Extra includes
 #include <trcodec.h>
@@ -16,26 +16,26 @@
 
 extern "C" {
 static int
-Sbk_TranslationCodec_Init(PyObject* self, PyObject* args, PyObject* kwds)
+Sbk_TranslationCoder_Init(PyObject* self, PyObject* args, PyObject* kwds)
 {
     SbkObject* sbkSelf = reinterpret_cast<SbkObject*>(self);
-    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::TranslationCodec >()))
+    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::TranslationCoder >()))
         return -1;
 
-    ::TranslationCodec* cptr = 0;
+    ::TranslationCoder* cptr = 0;
 
     // Call function/method
     {
 
         if (!PyErr_Occurred()) {
-            // TranslationCodec()
+            // TranslationCoder()
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cptr = new ::TranslationCodec();
+            cptr = new ::TranslationCoder();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
 
-    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::TranslationCodec >(), cptr)) {
+    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::TranslationCoder >(), cptr)) {
         delete cptr;
         return -1;
     }
@@ -46,13 +46,13 @@ Sbk_TranslationCodec_Init(PyObject* self, PyObject* args, PyObject* kwds)
     return 1;
 }
 
-static PyObject* Sbk_TranslationCodecFunc_clear(PyObject* self)
+static PyObject* Sbk_TranslationCoderFunc_clear(PyObject* self)
 {
-    ::TranslationCodec* cppSelf = 0;
+    ::TranslationCoder* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::TranslationCodec*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX], (SbkObject*)self));
+    cppSelf = ((::TranslationCoder*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX], (SbkObject*)self));
 
     // Call function/method
     {
@@ -71,13 +71,13 @@ static PyObject* Sbk_TranslationCodecFunc_clear(PyObject* self)
     Py_RETURN_NONE;
 }
 
-static PyObject* Sbk_TranslationCodecFunc_decode(PyObject* self, PyObject* args, PyObject* kwds)
+static PyObject* Sbk_TranslationCoderFunc_decode(PyObject* self, PyObject* args, PyObject* kwds)
 {
-    ::TranslationCodec* cppSelf = 0;
+    ::TranslationCoder* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::TranslationCodec*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX], (SbkObject*)self));
+    cppSelf = ((::TranslationCoder*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp[] = { 0, 0, 0 };
@@ -88,10 +88,10 @@ static PyObject* Sbk_TranslationCodecFunc_decode(PyObject* self, PyObject* args,
 
     // invalid argument lengths
     if (numArgs + numNamedArgs > 3) {
-        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.decode(): too many arguments");
+        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.decode(): too many arguments");
         return 0;
     } else if (numArgs < 1) {
-        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.decode(): not enough arguments");
+        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.decode(): not enough arguments");
         return 0;
     }
 
@@ -114,28 +114,28 @@ static PyObject* Sbk_TranslationCodecFunc_decode(PyObject* self, PyObject* args,
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_TranslationCodecFunc_decode_TypeError;
+    if (overloadId == -1) goto Sbk_TranslationCoderFunc_decode_TypeError;
 
     // Call function/method
     {
         if (kwds) {
             PyObject* value = PyDict_GetItemString(kwds, "selector");
             if (value && pyArgs[1]) {
-                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.decode(): got multiple values for keyword argument 'selector'.");
+                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.decode(): got multiple values for keyword argument 'selector'.");
                 return 0;
             } else if (value) {
                 pyArgs[1] = value;
                 if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1]))))
-                    goto Sbk_TranslationCodecFunc_decode_TypeError;
+                    goto Sbk_TranslationCoderFunc_decode_TypeError;
             }
             value = PyDict_GetItemString(kwds, "mark");
             if (value && pyArgs[2]) {
-                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.decode(): got multiple values for keyword argument 'mark'.");
+                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.decode(): got multiple values for keyword argument 'mark'.");
                 return 0;
             } else if (value) {
                 pyArgs[2] = value;
                 if (!(pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2]))))
-                    goto Sbk_TranslationCodecFunc_decode_TypeError;
+                    goto Sbk_TranslationCoderFunc_decode_TypeError;
             }
         }
         ::std::wstring cppArg0 = ::std::wstring();
@@ -148,7 +148,7 @@ static PyObject* Sbk_TranslationCodecFunc_decode(PyObject* self, PyObject* args,
         if (!PyErr_Occurred()) {
             // decode(std::wstring,int,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::TranslationCodec*>(cppSelf)->decode(cppArg0, cppArg1, cppArg2);
+            std::wstring cppResult = const_cast<const ::TranslationCoder*>(cppSelf)->decode(cppArg0, cppArg1, cppArg2);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkpytrcodecTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
@@ -160,19 +160,19 @@ static PyObject* Sbk_TranslationCodecFunc_decode(PyObject* self, PyObject* args,
     }
     return pyResult;
 
-    Sbk_TranslationCodecFunc_decode_TypeError:
+    Sbk_TranslationCoderFunc_decode_TypeError:
         const char* overloads[] = {"std::wstring, int = -1, bool = false", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pytrcodec.TranslationCodec.decode", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pytrcodec.TranslationCoder.decode", overloads);
         return 0;
 }
 
-static PyObject* Sbk_TranslationCodecFunc_encode(PyObject* self, PyObject* args, PyObject* kwds)
+static PyObject* Sbk_TranslationCoderFunc_encode(PyObject* self, PyObject* args, PyObject* kwds)
 {
-    ::TranslationCodec* cppSelf = 0;
+    ::TranslationCoder* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::TranslationCodec*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX], (SbkObject*)self));
+    cppSelf = ((::TranslationCoder*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp[] = { 0, 0, 0 };
@@ -183,10 +183,10 @@ static PyObject* Sbk_TranslationCodecFunc_encode(PyObject* self, PyObject* args,
 
     // invalid argument lengths
     if (numArgs + numNamedArgs > 3) {
-        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.encode(): too many arguments");
+        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.encode(): too many arguments");
         return 0;
     } else if (numArgs < 1) {
-        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.encode(): not enough arguments");
+        PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.encode(): not enough arguments");
         return 0;
     }
 
@@ -209,28 +209,28 @@ static PyObject* Sbk_TranslationCodecFunc_encode(PyObject* self, PyObject* args,
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_TranslationCodecFunc_encode_TypeError;
+    if (overloadId == -1) goto Sbk_TranslationCoderFunc_encode_TypeError;
 
     // Call function/method
     {
         if (kwds) {
             PyObject* value = PyDict_GetItemString(kwds, "selector");
             if (value && pyArgs[1]) {
-                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.encode(): got multiple values for keyword argument 'selector'.");
+                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.encode(): got multiple values for keyword argument 'selector'.");
                 return 0;
             } else if (value) {
                 pyArgs[1] = value;
                 if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1]))))
-                    goto Sbk_TranslationCodecFunc_encode_TypeError;
+                    goto Sbk_TranslationCoderFunc_encode_TypeError;
             }
             value = PyDict_GetItemString(kwds, "limit");
             if (value && pyArgs[2]) {
-                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCodec.encode(): got multiple values for keyword argument 'limit'.");
+                PyErr_SetString(PyExc_TypeError, "pytrcodec.TranslationCoder.encode(): got multiple values for keyword argument 'limit'.");
                 return 0;
             } else if (value) {
                 pyArgs[2] = value;
                 if (!(pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[2]))))
-                    goto Sbk_TranslationCodecFunc_encode_TypeError;
+                    goto Sbk_TranslationCoderFunc_encode_TypeError;
             }
         }
         ::std::wstring cppArg0 = ::std::wstring();
@@ -243,7 +243,7 @@ static PyObject* Sbk_TranslationCodecFunc_encode(PyObject* self, PyObject* args,
         if (!PyErr_Occurred()) {
             // encode(std::wstring,int,int)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::TranslationCodec*>(cppSelf)->encode(cppArg0, cppArg1, cppArg2);
+            std::wstring cppResult = const_cast<const ::TranslationCoder*>(cppSelf)->encode(cppArg0, cppArg1, cppArg2);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkpytrcodecTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
@@ -255,19 +255,19 @@ static PyObject* Sbk_TranslationCodecFunc_encode(PyObject* self, PyObject* args,
     }
     return pyResult;
 
-    Sbk_TranslationCodecFunc_encode_TypeError:
+    Sbk_TranslationCoderFunc_encode_TypeError:
         const char* overloads[] = {"std::wstring, int = -1, int = 100", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pytrcodec.TranslationCodec.encode", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pytrcodec.TranslationCoder.encode", overloads);
         return 0;
 }
 
-static PyObject* Sbk_TranslationCodecFunc_isEmpty(PyObject* self)
+static PyObject* Sbk_TranslationCoderFunc_isEmpty(PyObject* self)
 {
-    ::TranslationCodec* cppSelf = 0;
+    ::TranslationCoder* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::TranslationCodec*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX], (SbkObject*)self));
+    cppSelf = ((::TranslationCoder*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
 
     // Call function/method
@@ -276,7 +276,7 @@ static PyObject* Sbk_TranslationCodecFunc_isEmpty(PyObject* self)
         if (!PyErr_Occurred()) {
             // isEmpty()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::TranslationCodec*>(cppSelf)->isEmpty();
+            bool cppResult = const_cast<const ::TranslationCoder*>(cppSelf)->isEmpty();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -289,13 +289,13 @@ static PyObject* Sbk_TranslationCodecFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_TranslationCodecFunc_loadScript(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_TranslationCoderFunc_loadScript(PyObject* self, PyObject* pyArg)
 {
-    ::TranslationCodec* cppSelf = 0;
+    ::TranslationCoder* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::TranslationCodec*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX], (SbkObject*)self));
+    cppSelf = ((::TranslationCoder*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp;
@@ -308,7 +308,7 @@ static PyObject* Sbk_TranslationCodecFunc_loadScript(PyObject* self, PyObject* p
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_TranslationCodecFunc_loadScript_TypeError;
+    if (overloadId == -1) goto Sbk_TranslationCoderFunc_loadScript_TypeError;
 
     // Call function/method
     {
@@ -330,19 +330,19 @@ static PyObject* Sbk_TranslationCodecFunc_loadScript(PyObject* self, PyObject* p
     }
     return pyResult;
 
-    Sbk_TranslationCodecFunc_loadScript_TypeError:
+    Sbk_TranslationCoderFunc_loadScript_TypeError:
         const char* overloads[] = {"std::wstring", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrcodec.TranslationCodec.loadScript", overloads);
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrcodec.TranslationCoder.loadScript", overloads);
         return 0;
 }
 
-static PyObject* Sbk_TranslationCodecFunc_size(PyObject* self)
+static PyObject* Sbk_TranslationCoderFunc_size(PyObject* self)
 {
-    ::TranslationCodec* cppSelf = 0;
+    ::TranslationCoder* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::TranslationCodec*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX], (SbkObject*)self));
+    cppSelf = ((::TranslationCoder*)Shiboken::Conversions::cppPointer(SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
 
     // Call function/method
@@ -351,7 +351,7 @@ static PyObject* Sbk_TranslationCodecFunc_size(PyObject* self)
         if (!PyErr_Occurred()) {
             // size()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            int cppResult = const_cast<const ::TranslationCodec*>(cppSelf)->size();
+            int cppResult = const_cast<const ::TranslationCoder*>(cppSelf)->size();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
         }
@@ -364,32 +364,32 @@ static PyObject* Sbk_TranslationCodecFunc_size(PyObject* self)
     return pyResult;
 }
 
-static PyMethodDef Sbk_TranslationCodec_methods[] = {
-    {"clear", (PyCFunction)Sbk_TranslationCodecFunc_clear, METH_NOARGS},
-    {"decode", (PyCFunction)Sbk_TranslationCodecFunc_decode, METH_VARARGS|METH_KEYWORDS},
-    {"encode", (PyCFunction)Sbk_TranslationCodecFunc_encode, METH_VARARGS|METH_KEYWORDS},
-    {"isEmpty", (PyCFunction)Sbk_TranslationCodecFunc_isEmpty, METH_NOARGS},
-    {"loadScript", (PyCFunction)Sbk_TranslationCodecFunc_loadScript, METH_O},
-    {"size", (PyCFunction)Sbk_TranslationCodecFunc_size, METH_NOARGS},
+static PyMethodDef Sbk_TranslationCoder_methods[] = {
+    {"clear", (PyCFunction)Sbk_TranslationCoderFunc_clear, METH_NOARGS},
+    {"decode", (PyCFunction)Sbk_TranslationCoderFunc_decode, METH_VARARGS|METH_KEYWORDS},
+    {"encode", (PyCFunction)Sbk_TranslationCoderFunc_encode, METH_VARARGS|METH_KEYWORDS},
+    {"isEmpty", (PyCFunction)Sbk_TranslationCoderFunc_isEmpty, METH_NOARGS},
+    {"loadScript", (PyCFunction)Sbk_TranslationCoderFunc_loadScript, METH_O},
+    {"size", (PyCFunction)Sbk_TranslationCoderFunc_size, METH_NOARGS},
 
     {0} // Sentinel
 };
 
 } // extern "C"
 
-static int Sbk_TranslationCodec_traverse(PyObject* self, visitproc visit, void* arg)
+static int Sbk_TranslationCoder_traverse(PyObject* self, visitproc visit, void* arg)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_traverse(self, visit, arg);
 }
-static int Sbk_TranslationCodec_clear(PyObject* self)
+static int Sbk_TranslationCoder_clear(PyObject* self)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_clear(self);
 }
 // Class Definition -----------------------------------------------
 extern "C" {
-static SbkObjectType Sbk_TranslationCodec_Type = { { {
+static SbkObjectType Sbk_TranslationCoder_Type = { { {
     PyVarObject_HEAD_INIT(&SbkObjectType_Type, 0)
-    /*tp_name*/             "pytrcodec.TranslationCodec",
+    /*tp_name*/             "pytrcodec.TranslationCoder",
     /*tp_basicsize*/        sizeof(SbkObject),
     /*tp_itemsize*/         0,
     /*tp_dealloc*/          &SbkDeallocWrapper,
@@ -409,13 +409,13 @@ static SbkObjectType Sbk_TranslationCodec_Type = { { {
     /*tp_as_buffer*/        0,
     /*tp_flags*/            Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_GC,
     /*tp_doc*/              0,
-    /*tp_traverse*/         Sbk_TranslationCodec_traverse,
-    /*tp_clear*/            Sbk_TranslationCodec_clear,
+    /*tp_traverse*/         Sbk_TranslationCoder_traverse,
+    /*tp_clear*/            Sbk_TranslationCoder_clear,
     /*tp_richcompare*/      0,
     /*tp_weaklistoffset*/   0,
     /*tp_iter*/             0,
     /*tp_iternext*/         0,
-    /*tp_methods*/          Sbk_TranslationCodec_methods,
+    /*tp_methods*/          Sbk_TranslationCoder_methods,
     /*tp_members*/          0,
     /*tp_getset*/           0,
     /*tp_base*/             reinterpret_cast<PyTypeObject*>(&SbkObject_Type),
@@ -423,7 +423,7 @@ static SbkObjectType Sbk_TranslationCodec_Type = { { {
     /*tp_descr_get*/        0,
     /*tp_descr_set*/        0,
     /*tp_dictoffset*/       0,
-    /*tp_init*/             Sbk_TranslationCodec_Init,
+    /*tp_init*/             Sbk_TranslationCoder_Init,
     /*tp_alloc*/            0,
     /*tp_new*/              SbkObjectTpNew,
     /*tp_free*/             0,
@@ -442,47 +442,47 @@ static SbkObjectType Sbk_TranslationCodec_Type = { { {
 // Type conversion functions.
 
 // Python to C++ pointer conversion - returns the C++ object of the Python wrapper (keeps object identity).
-static void TranslationCodec_PythonToCpp_TranslationCodec_PTR(PyObject* pyIn, void* cppOut) {
-    Shiboken::Conversions::pythonToCppPointer(&Sbk_TranslationCodec_Type, pyIn, cppOut);
+static void TranslationCoder_PythonToCpp_TranslationCoder_PTR(PyObject* pyIn, void* cppOut) {
+    Shiboken::Conversions::pythonToCppPointer(&Sbk_TranslationCoder_Type, pyIn, cppOut);
 }
-static PythonToCppFunc is_TranslationCodec_PythonToCpp_TranslationCodec_PTR_Convertible(PyObject* pyIn) {
+static PythonToCppFunc is_TranslationCoder_PythonToCpp_TranslationCoder_PTR_Convertible(PyObject* pyIn) {
     if (pyIn == Py_None)
         return Shiboken::Conversions::nonePythonToCppNullPtr;
-    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_TranslationCodec_Type))
-        return TranslationCodec_PythonToCpp_TranslationCodec_PTR;
+    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_TranslationCoder_Type))
+        return TranslationCoder_PythonToCpp_TranslationCoder_PTR;
     return 0;
 }
 
 // C++ to Python pointer conversion - tries to find the Python wrapper for the C++ object (keeps object identity).
-static PyObject* TranslationCodec_PTR_CppToPython_TranslationCodec(const void* cppIn) {
+static PyObject* TranslationCoder_PTR_CppToPython_TranslationCoder(const void* cppIn) {
     PyObject* pyOut = (PyObject*)Shiboken::BindingManager::instance().retrieveWrapper(cppIn);
     if (pyOut) {
         Py_INCREF(pyOut);
         return pyOut;
     }
-    const char* typeName = typeid(*((::TranslationCodec*)cppIn)).name();
-    return Shiboken::Object::newObject(&Sbk_TranslationCodec_Type, const_cast<void*>(cppIn), false, false, typeName);
+    const char* typeName = typeid(*((::TranslationCoder*)cppIn)).name();
+    return Shiboken::Object::newObject(&Sbk_TranslationCoder_Type, const_cast<void*>(cppIn), false, false, typeName);
 }
 
-void init_TranslationCodec(PyObject* module)
+void init_TranslationCoder(PyObject* module)
 {
-    SbkpytrcodecTypes[SBK_TRANSLATIONCODEC_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_TranslationCodec_Type);
+    SbkpytrcodecTypes[SBK_TRANSLATIONCODER_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_TranslationCoder_Type);
 
-    if (!Shiboken::ObjectType::introduceWrapperType(module, "TranslationCodec", "TranslationCodec*",
-        &Sbk_TranslationCodec_Type, &Shiboken::callCppDestructor< ::TranslationCodec >)) {
+    if (!Shiboken::ObjectType::introduceWrapperType(module, "TranslationCoder", "TranslationCoder*",
+        &Sbk_TranslationCoder_Type, &Shiboken::callCppDestructor< ::TranslationCoder >)) {
         return;
     }
 
     // Register Converter
-    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_TranslationCodec_Type,
-        TranslationCodec_PythonToCpp_TranslationCodec_PTR,
-        is_TranslationCodec_PythonToCpp_TranslationCodec_PTR_Convertible,
-        TranslationCodec_PTR_CppToPython_TranslationCodec);
+    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_TranslationCoder_Type,
+        TranslationCoder_PythonToCpp_TranslationCoder_PTR,
+        is_TranslationCoder_PythonToCpp_TranslationCoder_PTR_Convertible,
+        TranslationCoder_PTR_CppToPython_TranslationCoder);
 
-    Shiboken::Conversions::registerConverterName(converter, "TranslationCodec");
-    Shiboken::Conversions::registerConverterName(converter, "TranslationCodec*");
-    Shiboken::Conversions::registerConverterName(converter, "TranslationCodec&");
-    Shiboken::Conversions::registerConverterName(converter, typeid(::TranslationCodec).name());
+    Shiboken::Conversions::registerConverterName(converter, "TranslationCoder");
+    Shiboken::Conversions::registerConverterName(converter, "TranslationCoder*");
+    Shiboken::Conversions::registerConverterName(converter, "TranslationCoder&");
+    Shiboken::Conversions::registerConverterName(converter, typeid(::TranslationCoder).name());
 
 
 

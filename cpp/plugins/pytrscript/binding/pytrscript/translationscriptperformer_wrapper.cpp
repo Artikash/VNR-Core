@@ -174,7 +174,7 @@ static PyObject* Sbk_TranslationScriptPerformerFunc_size(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_TranslationScriptPerformerFunc_translate(PyObject* self, PyObject* args, PyObject* kwds)
+static PyObject* Sbk_TranslationScriptPerformerFunc_transform(PyObject* self, PyObject* args, PyObject* kwds)
 {
     ::TranslationScriptPerformer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -191,54 +191,54 @@ static PyObject* Sbk_TranslationScriptPerformerFunc_translate(PyObject* self, Py
 
     // invalid argument lengths
     if (numArgs + numNamedArgs > 3) {
-        PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.translate(): too many arguments");
+        PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.transform(): too many arguments");
         return 0;
     } else if (numArgs < 1) {
-        PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.translate(): not enough arguments");
+        PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.transform(): not enough arguments");
         return 0;
     }
 
-    if (!PyArg_ParseTuple(args, "|OOO:translate", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2])))
+    if (!PyArg_ParseTuple(args, "|OOO:transform", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2])))
         return 0;
 
 
     // Overloaded function decisor
-    // 0: translate(std::wstring,int,bool)const
+    // 0: transform(std::wstring,int,bool)const
     if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], (pyArgs[0])))) {
         if (numArgs == 1) {
-            overloadId = 0; // translate(std::wstring,int,bool)const
+            overloadId = 0; // transform(std::wstring,int,bool)const
         } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1])))) {
             if (numArgs == 2) {
-                overloadId = 0; // translate(std::wstring,int,bool)const
+                overloadId = 0; // transform(std::wstring,int,bool)const
             } else if ((pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2])))) {
-                overloadId = 0; // translate(std::wstring,int,bool)const
+                overloadId = 0; // transform(std::wstring,int,bool)const
             }
         }
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_TranslationScriptPerformerFunc_translate_TypeError;
+    if (overloadId == -1) goto Sbk_TranslationScriptPerformerFunc_transform_TypeError;
 
     // Call function/method
     {
         if (kwds) {
             PyObject* value = PyDict_GetItemString(kwds, "category");
             if (value && pyArgs[1]) {
-                PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.translate(): got multiple values for keyword argument 'category'.");
+                PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.transform(): got multiple values for keyword argument 'category'.");
                 return 0;
             } else if (value) {
                 pyArgs[1] = value;
                 if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1]))))
-                    goto Sbk_TranslationScriptPerformerFunc_translate_TypeError;
+                    goto Sbk_TranslationScriptPerformerFunc_transform_TypeError;
             }
             value = PyDict_GetItemString(kwds, "mark");
             if (value && pyArgs[2]) {
-                PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.translate(): got multiple values for keyword argument 'mark'.");
+                PyErr_SetString(PyExc_TypeError, "pytrscript.TranslationScriptPerformer.transform(): got multiple values for keyword argument 'mark'.");
                 return 0;
             } else if (value) {
                 pyArgs[2] = value;
                 if (!(pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2]))))
-                    goto Sbk_TranslationScriptPerformerFunc_translate_TypeError;
+                    goto Sbk_TranslationScriptPerformerFunc_transform_TypeError;
             }
         }
         ::std::wstring cppArg0 = ::std::wstring();
@@ -249,9 +249,9 @@ static PyObject* Sbk_TranslationScriptPerformerFunc_translate(PyObject* self, Py
         if (pythonToCpp[2]) pythonToCpp[2](pyArgs[2], &cppArg2);
 
         if (!PyErr_Occurred()) {
-            // translate(std::wstring,int,bool)const
+            // transform(std::wstring,int,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::TranslationScriptPerformer*>(cppSelf)->translate(cppArg0, cppArg1, cppArg2);
+            std::wstring cppResult = const_cast<const ::TranslationScriptPerformer*>(cppSelf)->transform(cppArg0, cppArg1, cppArg2);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
@@ -263,9 +263,9 @@ static PyObject* Sbk_TranslationScriptPerformerFunc_translate(PyObject* self, Py
     }
     return pyResult;
 
-    Sbk_TranslationScriptPerformerFunc_translate_TypeError:
+    Sbk_TranslationScriptPerformerFunc_transform_TypeError:
         const char* overloads[] = {"std::wstring, int = -1, bool = false", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pytrscript.TranslationScriptPerformer.translate", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pytrscript.TranslationScriptPerformer.transform", overloads);
         return 0;
 }
 
@@ -274,7 +274,7 @@ static PyMethodDef Sbk_TranslationScriptPerformer_methods[] = {
     {"isEmpty", (PyCFunction)Sbk_TranslationScriptPerformerFunc_isEmpty, METH_NOARGS},
     {"loadScript", (PyCFunction)Sbk_TranslationScriptPerformerFunc_loadScript, METH_O},
     {"size", (PyCFunction)Sbk_TranslationScriptPerformerFunc_size, METH_NOARGS},
-    {"translate", (PyCFunction)Sbk_TranslationScriptPerformerFunc_translate, METH_VARARGS|METH_KEYWORDS},
+    {"transform", (PyCFunction)Sbk_TranslationScriptPerformerFunc_transform, METH_VARARGS|METH_KEYWORDS},
 
     {0} // Sentinel
 };

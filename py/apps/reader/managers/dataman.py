@@ -2498,6 +2498,12 @@ class _Term(object):
     '_gameItemId',
   )
 
+  # Aliases
+  @property
+  def fr(self): self.sourceLanguage
+  @property
+  def to(self): self.language
+
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
     #self.priority = 0 # int  assigned after sorting

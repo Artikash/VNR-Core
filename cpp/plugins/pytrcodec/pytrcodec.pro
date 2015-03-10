@@ -24,11 +24,11 @@ TARGET = pytrcodec
 HEADERS += \
   pytrcodec_config.h \
   $$SRCPATH/pytrcodec_python.h \
-  $$SRCPATH/translationcodec_wrapper.h
+  $$SRCPATH/translationcoder_wrapper.h
 
 SOURCES += \
   $$SRCPATH/pytrcodec_module_wrapper.cpp \
-  $$SRCPATH/translationcodec_wrapper.cpp
+  $$SRCPATH/translationcoder_wrapper.cpp
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += trcodec.rc

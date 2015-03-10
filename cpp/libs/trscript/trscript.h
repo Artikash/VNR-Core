@@ -36,7 +36,7 @@ public:
   // Replacement
 
   // Rewrite the text according to the script, thread-safe
-  std::wstring translate(const std::wstring &text, int category = -1, bool mark = false) const;
+  std::wstring transform(const std::wstring &text, int category = -1, bool mark = false) const;
 
   // Render option
 

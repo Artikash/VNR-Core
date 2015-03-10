@@ -27,7 +27,7 @@ int main()
 
   if (!m.isEmpty()) {
     qDebug() << QString::fromStdWString(text);
-    text = m.translate(text);
+    text = m.transform(text);
     qDebug() << QString::fromStdWString(text);
   }
 
