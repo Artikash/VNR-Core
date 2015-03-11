@@ -593,7 +593,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && item.type !== 'proxy' //&& !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && itemValue.type !== 'proxy' //&& !itemValue.syntax // prevent from using regex
           checked: itemValue.phrase // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.phrase)
