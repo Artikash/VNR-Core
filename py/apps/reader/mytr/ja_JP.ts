@@ -209,9 +209,9 @@
         <translation>百度</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="77"/>
+        <location filename="mytr.py" line="128"/>
         <source>Youdao</source>
-        <translation type="obsolete">有道</translation>
+        <translation>有道</translation>
     </message>
     <message>
         <location filename="mytr.py" line="143"/>

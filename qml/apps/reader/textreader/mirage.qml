@@ -146,6 +146,7 @@ Item { id: root_
   property color googleColor: settings_.googleColor
   property color naverColor: settings_.naverColor
   property color baiduColor: settings_.baiduColor
+  property color youdaoColor: settings_.youdaoColor
   property color hanVietColor: settings_.hanVietColor
   property color jbeijingColor: settings_.jbeijingColor
   property color vtransColor: settings_.vtransColor
@@ -195,6 +196,7 @@ Item { id: root_
     case 'google': return root_.googleColor
     case 'naver': return root_.naverColor
     case 'baidu': return root_.baiduColor
+    case 'youdao': return root_.youdaoColor
     default:
       if (host) {
         var i = host.indexOf(',')

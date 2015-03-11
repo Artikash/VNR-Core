@@ -256,8 +256,8 @@ class _TermManager:
       return ret
     return self._rx_delegate.sub(fn, text)
 
-  _rx_undelegate = re.compile(r"(Z[A-Y]+Z)")
-  _rx_undelegate_latin = re.compile(r"\b(Z[A-X]+Z)\b")
+  _rx_undelegate = re.compile(r"Z[A-Y]+Z")
+  #_rx_undelegate_latin = re.compile(r"\b(Z[A-X]+Z)\b")
   def undelegateTranslation(self, text, to, fr, host, proxies):
     """
     @param  text  unicode
@@ -269,15 +269,14 @@ class _TermManager:
     """
     if not proxies:
       return text
-    to_latin = config.is_latin_language(to)
     if 'Z' in text:
-      rx = self._rx_undelegate_latin if to_latin else self._rx_undelegate
       def fn(m): # re.match -> unicode
         matched_text = m.group()
         try: return proxies.pop(matched_text)
         except KeyError: return matched_text
-      text = rx.sub(fn, text)
+      text = self._rx_undelegate.sub(fn, text)
     if proxies:
+      to_latin = config.is_latin_language(to)
       for k,v in proxies.iteritems():
         if to_latin:
           try:

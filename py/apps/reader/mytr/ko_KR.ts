@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ko_KR">
+<!DOCTYPE TS><TS version="1.1" language="ko_KR">
 <context>
     <name>reader</name>
     <message>
@@ -209,9 +208,9 @@
         <translation>바이두</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="77"/>
+        <location filename="mytr.py" line="128"/>
         <source>Youdao</source>
-        <translation type="obsolete">Youdao</translation>
+        <translation type="unfinished">Youdao</translation>
     </message>
     <message>
         <location filename="mytr.py" line="143"/>

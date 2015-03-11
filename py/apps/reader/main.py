@@ -737,6 +737,9 @@ class _MainObject(object):
     ret.setBaiduAlignEnabled(ss.isBaiduRubyEnabled())
     ss.baiduRubyEnabledChanged.connect(ret.setBaiduAlignEnabled)
 
+    ret.setYoudaoEnabled(ss.isYoudaoEnabled())
+    ss.youdaoEnabledChanged.connect(ret.setYoudaoEnabled)
+
     ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
     ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)
 

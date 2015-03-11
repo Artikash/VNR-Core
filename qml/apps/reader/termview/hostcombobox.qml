@@ -19,17 +19,18 @@ DesktopEx.MultiComboBox { id: root_
   TermView.HostMenuItem { id: i6; value: 'transru' }
   TermView.HostMenuItem { id: i7; value: 'naver' }
   TermView.HostMenuItem { id: i8; value: 'baidu' }
-  TermView.HostMenuItem { id: i9; value: 'jbeijing' }
-  TermView.HostMenuItem { id: i10; value: 'fastait' }
-  TermView.HostMenuItem { id: i11; value: 'dreye' }
-  TermView.HostMenuItem { id: i12; value: 'eztrans' }
-  TermView.HostMenuItem { id: i13; value: 'transcat' }
-  TermView.HostMenuItem { id: i14; value: 'atlas' }
-  TermView.HostMenuItem { id: i15; value: 'lec' }
-  TermView.HostMenuItem { id: i16; value: 'hanviet' }
-  TermView.HostMenuItem { id: i17; value: 'vtrans' }
+  TermView.HostMenuItem { id: i9; value: 'youdao' }
+  TermView.HostMenuItem { id: i10; value: 'jbeijing' }
+  TermView.HostMenuItem { id: i11; value: 'fastait' }
+  TermView.HostMenuItem { id: i12; value: 'dreye' }
+  TermView.HostMenuItem { id: i13; value: 'eztrans' }
+  TermView.HostMenuItem { id: i14; value: 'transcat' }
+  TermView.HostMenuItem { id: i15; value: 'atlas' }
+  TermView.HostMenuItem { id: i16; value: 'lec' }
+  TermView.HostMenuItem { id: i17; value: 'hanviet' }
+  TermView.HostMenuItem { id: i18; value: 'vtrans' }
 
-  menuItems: [i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16, i17]
+  menuItems: [i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16, i17, i18]
 
   property string valueSep: ','
 

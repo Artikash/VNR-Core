@@ -10,6 +10,7 @@ MT_INFO = {
   'transru':    {'online':True,  'align':False,  'script':True,  },
   'naver':      {'online':True,  'align':True,   'script':False, },
   'baidu':      {'online':True,  'align':True,   'script':False, },
+  'youdao':     {'online':True,  'align':True,   'script':False, },
   'jbeijing':   {'online':False, 'align':False,  'script':False, },
   'fastait':    {'online':False, 'align':False,  'script':False, },
   'dreye':      {'online':False, 'align':False,  'script':False, },
@@ -111,6 +112,9 @@ def get_mod_def(key):
   if key == 'baidu':
     from baidu import baidudef
     return baidudef
+  if key == 'youdao':
+    from youdao import youdaodef
+    return youdaodef
   if key == 'naver':
     from naver import naverdef
     return naverdef

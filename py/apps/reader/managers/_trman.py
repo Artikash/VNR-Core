@@ -1872,6 +1872,70 @@ class BaiduTranslator(OnlineMachineTranslator):
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
+class YoudaoTranslator(OnlineMachineTranslator):
+  key = 'youdao' # override
+  asyncSupported = False # override  disable async
+  alignSupported = False # override  disable translation alignment
+
+  def __init__(self, session=None, **kwargs):
+    super(YoudaoTranslator, self).__init__(**kwargs)
+
+    from youdao import youdaofanyi
+    youdaofanyi.session = session or requests.Session()
+    self.engine = youdaofanyi
+
+  __youdao_repl_before = staticmethod(skstr.multireplacer({
+    #u'【': u'‘', # open single quote
+    #u'】': u'’：', # close single quote
+    #u'「': u'“', # open double quote
+    #u'」': u'”', # close double quote
+    u'『': u'“‘', # open double single quote
+    u'』': u'’”', # close single double quote
+
+  }))
+  __youdao_repl_after = staticmethod(skstr.multireplacer({
+    #u'‘': u'【', # open single quote
+    #u'’：': u'】', # close single quote
+    #u'“': u'「', # open double quote
+    #u'”': u'」', # close double quote
+    u'“‘': u'『', # open double single quote
+    u'’”': u'』', # close single double quote
+  }))
+  __youdao_proxy_fix = re.compile(r"z[a-y]+z")
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+    """@reimp"""
+    #if fr not in ('ja', 'en', 'zhs', 'zht'):
+    #  return None, None, None
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    #if lang not in ('zhs', 'zht', 'ja', 'en'):
+    #  return None, None, None
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
+    if repl:
+      repl = self.__youdao_repl_before(repl)
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        repl = self.__youdao_proxy_fix.sub(lambda m:m.group().upper(), repl)
+        if to == 'zht':
+          repl = zhs2zht(repl)
+        repl = self.__youdao_repl_after(repl)
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """@reimp"""
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
 # EOF
 
 #from youdao import youdaofanyi
@@ -1882,23 +1946,6 @@ class BaiduTranslator(OnlineMachineTranslator):
 #  def __init__(self, **kwargs):
 #    super(YoudaoTranslator, self).__init__(**kwargs)
 #
-#  __youdao_repl_before = staticmethod(skstr.multireplacer({
-#    #u'【': u'‘', # open single quote
-#    #u'】': u'’：', # close single quote
-#    #u'「': u'“', # open double quote
-#    #u'」': u'”', # close double quote
-#    u'『': u'“‘', # open double single quote
-#    u'』': u'’”', # close single double quote
-#
-#  }))
-#  __youdao_repl_after = staticmethod(skstr.multireplacer({
-#    #u'‘': u'【', # open single quote
-#    #u'’：': u'】', # close single quote
-#    #u'“': u'「', # open double quote
-#    #u'”': u'」', # close double quote
-#    u'“‘': u'『', # open double single quote
-#    u'’”': u'』', # close single double quote
-#  }))
 #  def translate(self, text, to='zhs', fr='ja', async=False, emit=False):
 #    """@reimp"""
 #    #if fr not in ('ja', 'en', 'zhs', 'zht'):
