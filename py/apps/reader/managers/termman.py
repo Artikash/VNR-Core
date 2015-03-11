@@ -8,7 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-#from sakurakit.skprof import SkProfiler
+from sakurakit.skprof import SkProfiler
 
 import os, string, re
 #from collections import OrderedDict
@@ -246,7 +246,7 @@ class _TermManager:
       ret = None
       if unused_proxies:
         for proxy in unused_proxies:
-          if (proxy.category & category) and proxy.role == role and proxy not in used_proxies and proxy.input not in text:
+          if (proxy.category & category) and proxy.role == role and proxy not in used_proxies and proxy.input not in text and proxy.output not in text:
             used_proxies.add(proxy)
             proxies[proxy.output] = matched_text
             return proxy.input
@@ -478,7 +478,8 @@ class TermManager(QObject):
       return text
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.0005 seconds, underline = True
-    #with SkProfiler():
+    # 3/11/2015: 0.01 seconds new trscript
+    #with SkProfiler("output term"):
     return d.applyTerms(text, 'output', to, fr, host=host, mark=mark)
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
@@ -498,7 +499,8 @@ class TermManager(QObject):
       return text
     # 9/25/2014: Qt 0.0005 seconds
     # 9/26/2014: Boost 0.001 seconds
-    #with SkProfiler():
+    # 3/11/2015: 0.002 seconds new trscript
+    #with SkProfiler("input term"):
     return d.applyTerms(text, 'input', to, fr, host=host)
     #dm = dataman.manager()
     #d = self.__d
@@ -525,10 +527,11 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.01 seconds
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
-    #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
+    # 3/11/2015: 0.003 seconds with codec
+    #with SkProfiler("encode trans"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
     return d.applyTerms(text, 'encode', to, fr, host=host)
 
-  _rx_decode_open = re.compile(r'(?<=\w){{', re.UNICODE)
+  _rx_decode_open = re.compile(r'(?<=[,.?!]|\w){{', re.UNICODE)
   _rx_decode_close = re.compile(r'}}(?=\w)', re.UNICODE)
   def decodeTranslation(self, text, to, fr, host='', mark=None):
     """
@@ -542,15 +545,15 @@ class TermManager(QObject):
     d = self.__d
     if not d.enabled or not text or '{{' not in text or '}}' not in text:
       return text
-    # 9/25/2014: Qt 0.009 seconds
-    # 9/26/2014: Boost 0.05 seconds, underline = True
-    # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
-    #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
     if config.is_latin_language(to):
       ret = self._rx_decode_open.sub(" {{", text)
       ret = self._rx_decode_close.sub("}} ", text)
-    ret = d.applyTerms(text, 'decode', to, fr, host=host, mark=mark)
-    return ret
+    # 9/25/2014: Qt 0.009 seconds
+    # 9/26/2014: Boost 0.05 seconds, underline = True
+    # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
+    # 3/11/2015: 0.00016 seconds with codec
+    #with SkProfiler("decode trans"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
+    return d.applyTerms(text, 'decode', to, fr, host=host, mark=mark)
 
   def delegateTranslation(self, text, to, fr, host='', proxies={}):
     """
@@ -564,6 +567,8 @@ class TermManager(QObject):
     d = self.__d
     if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
+    # 3/11/2015: 5e-5 seconds with codec
+    #with SkProfiler("delegate term"):
     return d.delegateTranslation(text, to, fr, host, proxies)
 
   def undelegateTranslation(self, text, to, fr, host='', proxies={}):
@@ -578,6 +583,8 @@ class TermManager(QObject):
     d = self.__d
     if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
+    # 3/11/2015: 4e-5 seconds with codec
+    #with SkProfiler("undelegate term"):
     return d.undelegateTranslation(text, to, fr, host, proxies)
 
 # EOF

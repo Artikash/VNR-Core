@@ -774,7 +774,7 @@ class EzTranslator(OfflineMachineTranslator):
     u'」"」': u'』',
   }))
   # Example: GPS97351.678 => GPS97351. 678
-  __re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
+  #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""
     to = 'ko'
@@ -796,7 +796,7 @@ class EzTranslator(OfflineMachineTranslator):
             to, fr, async)
         if repl:
           repl = self.__ez_repl_after(repl)
-          repl = self.__re_term_fix.sub('', repl)
+          #repl = self.__re_term_fix.sub('', repl)
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
           return repl, to, self.key
@@ -856,7 +856,7 @@ class TransCATTranslator(OfflineMachineTranslator):
   #  u'」"」': u'』',
   #}))
   # Example: GPS97351.678 => GPS97351. 678
-  __re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
+  #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""
     to = 'ko'
@@ -878,7 +878,7 @@ class TransCATTranslator(OfflineMachineTranslator):
             to, fr, async)
         if repl:
           #repl = self.__cat_repl_after(repl)
-          repl = self.__re_term_fix.sub('', repl)
+          #repl = self.__re_term_fix.sub('', repl)
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
           return repl, to, self.key
@@ -1374,7 +1374,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  __fix_escape = re.compile(r'(?<=[0-9]) .(?=[0-9])') # replace ' .' between digits with '.'
+  #__fix_escape = re.compile(r'(?<=[0-9]) .(?=[0-9])') # replace ' .' between digits with '.'
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
@@ -1391,7 +1391,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async, align=align)
       if repl:
-        repl = self.__fix_escape.sub('.', repl)
+        #repl = self.__fix_escape.sub('.', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
     return repl, to, self.key
@@ -1628,7 +1628,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #  '...': u'…',
   #}))
   # Fix numbers such as 929,005.678。
-  __re_term_fix = re.compile(r'(?<=\d),(?=\d{2})')
+  #__re_term_fix = re.compile(r'(?<=\d),(?=\d{2})')
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
@@ -1647,7 +1647,7 @@ class GoogleTranslator(OnlineMachineTranslator):
           to, fr, async, align=align)
       if repl:
         #if self.languageNeedsEscape(to, fr):
-        repl = self.__re_term_fix.sub('', repl)
+        #repl = self.__re_term_fix.sub('', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         if to.startswith('zh'):
           repl = repl.replace("...", u'…')
@@ -1679,7 +1679,7 @@ class BingTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  __fix_escape = re.compile(r'(?<=[0-9]),(?=[0-9])') # replace ',' between digits with '.'
+  #__fix_escape = re.compile(r'(?<=[0-9]),(?=[0-9])') # replace ',' between digits with '.'
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     #if fr != 'ja':
@@ -1698,7 +1698,7 @@ class BingTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async, align=align)
       if repl:
-        repl = self.__fix_escape.sub('.', repl)
+        #repl = self.__fix_escape.sub('.', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
     return repl, to, self.key
