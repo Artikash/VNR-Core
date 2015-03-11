@@ -151,6 +151,18 @@ TOPIC_TYPES = (
 
 # Translations
 
+TERM_MACRO_BEGIN = '{{'
+TERM_MACRO_END = '}}'
+
+TERM_CLASS_NAME = "[[N]]"
+
+TERM_ESCAPE_EOS = u"…eos…"
+
+TERM_NAME_ROLE = 'm'
+TERM_PHRASE_ROLE = 'x'
+
+MAX_NAME_LENGTH = 16 # maximum number of characters in text
+
 #TERM_ESCAPE = "9%i.67" # ESCAPE of escaped terms.
 #TERM_ESCAPE_KANJI = "9%i.678" # ESCAPE of escaped terms. At least 3 digits so that youdao work well!
 #TERM_ESCAPE_LATIN = "SA%i" # ESCAPE of escaped terms.
@@ -163,17 +175,15 @@ TOPIC_TYPES = (
 #JITTER_ESCAPE_LATIN = "SJ341"
 JITTER_PROXY = 'ZJZ'
 
-TERM_MACRO_BEGIN = '{{'
-TERM_MACRO_END = '}}'
-
-TERM_CLASS_NAME = "[[N]]"
-
-TERM_ESCAPE_EOS = u"…eos…"
-
-TERM_NAME_ROLE = 'm'
-TERM_PHRASE_ROLE = 'x'
-
-MAX_NAME_LENGTH = 16 # maximum number of characters in text
+def term_role_proxy(role, index):
+  """
+  @param  role  str
+  @param  index  int
+  @return str
+  """
+  role = 'M' if role == TERM_NAME_ROLE else 'X'
+  return 'Z%s%sZ' % (role,
+      chr(ord('A') + (index % 25)))
 
 # Game info
 OKAZU_TAGS = [

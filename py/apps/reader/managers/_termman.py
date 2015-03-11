@@ -12,28 +12,29 @@
 
 import os, string, re
 #from collections import OrderedDict
-from itertools import imap
-from functools import partial
-from time import time
-from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
-#from rbmt import api as rbmt
-from sakurakit import skfileio, skos, skstr, skthreads
-from sakurakit.skclass import memoized, Q_Q
+from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
 from unitraits import jpchars, jpmacros
 from convutil import kana2name, zhs2zht
-from mytr import my
-import config, dataman, defs, growl, i18n, rc
+import config, dataman, defs, i18n
 
 ## Translation proxy
 
 class TranslationProxy(object):
-  __slots__ = 'input', 'output', 'category'
+  __slots__ = (
+    'id',
+    'category',
+    'input',
+    'output',
+    'role',
+  )
   def __init__(self, td):
     """
     @param  td  _Term
     """
+    self.id = td.id
+    self.role = td.role
     self.input = _unescape_term_text(td.pattern)
     self.output = _unescape_term_text(td.text)
     self.category = host_categories(td.host)
@@ -415,10 +416,11 @@ class TermWriter:
     """
     @param  to  str
     @param  fr  str
-    @return  {unicode input:TranslationProxy} not None
+    @return  [TranslationProxy] not None
     """
-    l = imap(TranslationProxy, self.iterTermData('proxy', to, fr))
-    return {it.input:it for it in l}
+    return [TranslationProxy(td)
+        for td in self.iterTermData('proxy', to, fr)
+        if td.pattern and td.text and td.role]
 
   def queryMacros(self, to, fr):
     """

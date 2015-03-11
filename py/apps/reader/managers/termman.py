@@ -10,7 +10,7 @@
 
 #from sakurakit.skprof import SkProfiler
 
-import os, string, re
+import os, re
 #from collections import OrderedDict
 from functools import partial
 from time import time
@@ -20,7 +20,7 @@ from sakurakit import skfileio, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from mytr import my
-import dataman, growl, rc
+import config, dataman, defs, growl, rc
 import _termman
 
 @memoized
@@ -186,8 +186,6 @@ class _TermManager:
     @param* mark  bool or None
     @param* ignoreIfNotReady bool
     """
-    if not text:
-      return text
     if mark is None:
       mark = self.marked
     if type in ('encode', 'decode'):
@@ -221,7 +219,13 @@ class _TermManager:
     else:
       return man.transform(text, category, mark)
 
-  def encodeProxies(self, text, to, fr, host, proxies):
+  _rx_delegate = re.compile(
+    r"{{"
+      r"([a-zA-Z0-9_]+)" # TR_RE_TOKEN
+      r"<[-0-9<>]+>"
+    r"}}"
+  )
+  def delegateTranslation(self, text, to, fr, host, proxies):
     """
     @param  text  unicode
     @param  to  str  language
@@ -230,9 +234,31 @@ class _TermManager:
     @param* proxies  {unicode input:unicode output}
     @return  unicode
     """
-    return text
+    if '{{' not in text or '}}' not in text:
+      return text
+    category = _termman.host_category(host)
+    unused_proxies = self.proxies.get((to, fr)) # [TranslationProxy]
+    used_proxies = set() # [TranslationProxy]
 
-  def decodeProxies(self, text, to, fr, host, proxies):
+    def fn(m): # re.match -> unicode
+      matched_text = m.group()
+      role = m.group(1)
+      ret = None
+      if unused_proxies:
+        for proxy in unused_proxies:
+          if (proxy.category & category) and proxy.role == role and proxy not in used_proxies:
+            used_proxies.add(proxy)
+            proxies[proxy.output] = matched_text
+            return proxy.input
+      index = len(proxies)
+      ret = defs.term_role_proxy(role, index)
+      proxies[ret] = matched_text
+      return ret
+    return self._rx_delegate.sub(fn, text)
+
+  _rx_undelegate = re.compile(r"(Z[A-Y]+Z)")
+  _rx_undelegate_latin = re.compile(r"\b(Z[A-X]+Z)\b")
+  def undelegateTranslation(self, text, to, fr, host, proxies):
     """
     @param  text  unicode
     @param  to  str  language
@@ -241,6 +267,26 @@ class _TermManager:
     @param* proxies  {unicode input:unicode output}
     @return  unicode
     """
+    if not proxies:
+      return text
+    to_latin = config.is_latin_language(to)
+    if 'Z' in text:
+      rx = self._rx_undelegate_latin if to_latin else self._rx_undelegate
+      def fn(m): # re.match -> unicode
+        matched_text = m.group()
+        try: return proxies.pop(matched_text)
+        except KeyError: return matched_text
+      text = rx.sub(fn, text)
+    if proxies:
+      for k,v in proxies.iteritems():
+        if to_latin:
+          try:
+            pattern = r"\b%s\b" % re.escape(k)
+            text = re.sub(pattern, v, text)
+          except Exception, e:
+            dwarn(e)
+        else:
+          text = text.replace(k, v)
     return text
 
 class TermManager(QObject):
@@ -383,7 +429,9 @@ class TermManager(QObject):
     # 9/25/2014: Qt 3e-05 seconds
     # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja', ignoreIfNotReady=ignoreIfNotReady) if d.enabled else text
+    if not d.enabled or not text:
+      return text
+    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja', ignoreIfNotReady=ignoreIfNotReady)
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
@@ -401,7 +449,9 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'tts', 'ja', language or d.targetLanguage) if d.enabled else text
+    if not d.enabled or not text:
+      return text
+    return d.applyTerms(text, 'tts', 'ja', language or d.targetLanguage)
 
   def applyOcrTerms(self, text, language=None):
     """
@@ -410,7 +460,9 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    return d.applyTerms(text, 'ocr', 'ja', language or 'ja') if d.enabled else text
+    if not d.enabled or not text:
+      return text
+    return d.applyTerms(text, 'ocr', 'ja', language or 'ja')
 
   def applyOutputTerms(self, text, to, fr, host='', mark=None):
     """
@@ -422,10 +474,12 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
+    if not d.enabled or not text:
+      return text
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     #with SkProfiler():
-    return d.applyTerms(text, 'output', to, fr, host=host, mark=mark) if d.enabled else text
+    return d.applyTerms(text, 'output', to, fr, host=host, mark=mark)
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
@@ -440,10 +494,12 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
+    if not d.enabled or not text:
+      return text
     # 9/25/2014: Qt 0.0005 seconds
     # 9/26/2014: Boost 0.001 seconds
     #with SkProfiler():
-    return d.applyTerms(text, 'input', to, fr, host=host) if d.enabled else text
+    return d.applyTerms(text, 'input', to, fr, host=host)
     #dm = dataman.manager()
     #d = self.__d
     #text = d.applyTerms(dm.iterSourceTerms(), text, language)
@@ -464,7 +520,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.01 seconds
     # 9/26/2014: Boost 0.033 seconds, underline = True
@@ -482,19 +538,19 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.009 seconds
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
     ret = d.applyTerms(text, 'decode', to, fr, host=host, mark=mark)
-    if d.marked and to.startswith('zh'):
-      ret = ret.replace("> ", ">")
-      ret = ret.replace(" <", "<")
+    #if d.marked and to.startswith('zh'):
+    #  ret = ret.replace("> ", ">")
+    #  ret = ret.replace(" <", "<")
     return ret
 
-  def encodeProxies(self, text, to, fr, host='', proxies={}):
+  def delegateTranslation(self, text, to, fr, host='', proxies={}):
     """
     @param  text  unicode
     @param  to  str  language
@@ -504,11 +560,11 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
-    return d.encodeProxies(text, to, fr, host, proxies)
+    return d.delegateTranslation(text, to, fr, host, proxies)
 
-  def decodeProxies(self, text, to, fr, host='', proxies={}):
+  def undelegateTranslation(self, text, to, fr, host='', proxies={}):
     """
     @param  text  unicode
     @param  to  str  language
@@ -518,8 +574,8 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
       return text
-    return d.decodeProxies(text, to, fr, host, proxies)
+    return d.undelegateTranslation(text, to, fr, host, proxies)
 
 # EOF
