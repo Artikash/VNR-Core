@@ -1,0 +1,476 @@
+# coding: utf8
+# _termman.py
+# 10/8/2012 jichi
+#
+# Terminology:
+# - data: raw game text byte code
+# - text: original game text
+# - translation: machine translation
+# - comment: user's subtitle or comment
+
+#from sakurakit.skprof import SkProfiler
+
+import os, string, re
+#from collections import OrderedDict
+from functools import partial
+from time import time
+from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
+#from rbmt import api as rbmt
+from sakurakit import skfileio, skos, skstr, skthreads
+from sakurakit.skclass import memoized, Q_Q
+from sakurakit.skdebug import dprint, dwarn
+from opencc import opencc
+from unitraits import jpchars, jpmacros
+from convutil import kana2name, zhs2zht
+from mytr import my
+import config, dataman, defs, growl, i18n, rc
+
+## Helper functions used by termman
+
+def host_category(host):
+  """
+  @param  host  str  single host
+  @return  int  category flag mark
+  """
+  if host:
+    if host == 'lecol':
+      host = 'lec'
+    elif host == 'excite':
+      host = 'jbeijing'
+    try: return 1 << dataman.Term.HOSTS.index(host)
+    except: pass
+  return -1
+
+def host_categories(host): # str -> int
+  """
+  @param  host  str  host separated by ','
+  @return  int  category flag mark
+  """
+  if not host:
+    return -1
+  sep = ','
+  if sep not in host:
+    return host_category(host)
+  ret = 0
+  l = host.split(sep)
+  for i,h in enumerate(dataman.Term.HOSTS):
+    if h in l:
+      ret |= 1 << i
+  return ret or -1 # if no match, apply to all hosts
+
+def _lang_level(lang):
+  """Larger applied first
+  @param  lang  str
+  @return  int
+  """
+  if not lang or lang == 'ja':
+    return 0
+  if lang == 'en':
+    return 1
+  if config.is_latin_language(lang):
+    return 2
+  return 3
+def _lang_sort_key(t, s):
+  """Larger applied first
+  @param  t  str  target language
+  @param  s  str  source language
+  @return  int
+  """
+  return _lang_level(t) * 20 + _lang_level(s)
+
+def _role_priority(role, type):
+  """Larger applied first
+  @param  role  str
+  @param  type  str
+  @return  int
+  """
+  if type == 'suffix':
+    return -3
+  if type == 'prefix':
+    return -2
+  if role == defs.TERM_NAME_ROLE:
+    return -1
+  if role and role != defs.TERM_PHRASE_ROLE: # apply user-defined symbols at last
+    return -4
+  return 0 # zero is the base line for phrase
+
+def _td_sort_key(td):
+  """Sort term data reversely. Larger applied first, true is applied first
+  @param  td  _Term
+  @return  tuple
+  """
+  role = td.role or _tdrm_default_role(td)
+  return (not _contains_syntax_symbol(td.pattern), _role_priority(role, td.type), len(td.pattern), td.private, td.special, not td.icase, _lang_sort_key(td.language, td.sourceLanguage), td.id) #, it.regex)
+
+def sort_terms(termdata):
+  """
+  @param  termdata  [_Term]
+  """
+  termdata.sort(reverse=True, key=_td_sort_key)
+
+def _td_default_role(td): # string -> string or None
+  if td.type in ('name', 'prefix', 'suffix', 'yomi'):
+    return defs.TERM_NAME_ROLE
+  if td.type in ('trans'):
+    return defs.TERM_PHRASE_ROLE
+
+## Local helper functions
+
+def _unescape_term_text(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if not text or '&' not in text or ';' not in text:
+    return text
+  return skstr.unescapehtml(text).replace('&eos;', defs.TERM_ESCAPE_EOS)
+
+def _phrase_lbound(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @return  unicode
+  """
+  if not text:
+    return text
+  ch = text[0]
+  if language == 'ja':
+    cat = jpchars.getcat(ch)
+    if cat:
+      m = jpmacros.getmacro('?<!' + cat)
+      if m:
+        return m
+  return r'\b' if ch not in string.punctuation else ''
+
+def _phrase_rbound(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @return  unicode
+  """
+  if not text:
+    return text
+  ch = text[-1]
+  if language == 'ja':
+    cat = jpchars.getcat(ch)
+    if cat:
+      m = jpmacros.getmacro('?!' + cat)
+      if m:
+        return m
+  return r'\b' if ch not in string.punctuation else ''
+
+def _contains_syntax_symbol(text):
+  """Return if text contains things such as [[x#1]]. In accurate test.
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(text) and '[[' in text and ']]' in text
+
+class TermWriter:
+
+  RE_MACRO = re.compile('{{(.+?)}}')
+
+  def __init__(self, createTime, termData, gameIds, hentai, parent):
+    self.createTime = createTime # float
+    self.termData = termData # [_Term]
+    self.gameIds = gameIds # set(ing gameId)
+    self.hentai = hentai # bool
+    self.parent = parent # _TermManager.instance
+
+  def isOutdated(self): # -> bool
+    return self.createTime < self.parent.updateTime
+
+  def saveTerms(self, path, type, to, fr, macros):
+    """This method is invoked from a different thread
+    @param  path  unicode
+    @param  type  str  term type
+    @param  to  str  target text language
+    @param  fr  str  source text language
+    @param  macros  {unicode pattern:unicode repl}
+    @return  bool
+    """
+    #marksChanges = self.marked and type in ('output', 'trans_output')
+    convertsChinese = to == 'zht' and type in ('output', 'trans')
+    #if type not in ('input', 'trans_input', 'trans_output'):
+    #  titles = None
+
+    trans_type = type == 'trans'
+
+    fr2 = fr[:2]
+
+    frKanjiLanguage = config.is_kanji_language(fr)
+    frLatinLanguage = not frKanjiLanguage
+
+    toKanjiLanguage = config.is_kanji_language(to)
+    toLatinLanguage = not toKanjiLanguage
+
+    empty = True
+
+    #padding = trans_input or toLatinLanguage and td.type in ('trans', 'name', 'yomi')
+
+    count = len(self.termData)
+    try:
+      with open(path, 'w') as f:
+        f.write(self._renderHeader(type, to, fr))
+        for td in self._iterTermData(type, to, fr):
+          if self.isOutdated():
+            raise Exception("cancel saving out-of-date terms")
+          z = convertsChinese and td.language == 'zhs'
+          # no padding space for Chinese names
+
+          regex = td.regex
+
+          role = td.role or _td_default_role(td)
+
+          pattern = _unescape_term_text(td.pattern)
+          pattern = self._applyMacros(pattern, macros)
+          if z:
+            pattern = zhs2zht(pattern)
+
+          if trans_type and role == defs.TERM_NAME_ROLE and fr2 == 'zh':
+            if fr == 'zhs':
+              pattern = opencc.ja2zhs(pattern)
+            elif fr == 'zht':
+              pattern = opencc.ja2zht(pattern)
+
+          repl = _unescape_term_text(td.text)
+          repl = self._applyMacros(pattern, repl)
+          if z:
+            repl = zhs2zht(repl)
+          if td.type == 'yomi':
+            repl = kana2name(repl, to) or repl
+
+          if td.phrase:
+            left = pattern[0]
+            right = pattern[-1]
+            if not regex:
+              regex = True
+              pattern = re.escape(pattern)
+            pattern = _phrase_lbound(left, fr) + pattern + _phrase_rbound(right, fr)
+
+          if trans_type:
+            if td.type == 'suffix':
+              if not _contains_syntax_symbol(pattern):
+                pattern = "[[%s]]%s" % (defs.TERM_NAME_ROLE, pattern)
+              if not _contains_syntax_symbol(repl):
+                repl = "[[%s]]%s" % (defs.TERM_NAME_ROLE, repl)
+            elif td.type == 'prefix':
+              if not _contains_syntax_symbol(pattern):
+                if frLatinLanguage:
+                  pattern = "%s [[%s]]" % (pattern, defs.TERM_NAME_ROLE)
+                else:
+                  pattern = "%s[[%s]]" % (pattern, defs.TERM_NAME_ROLE)
+              if not _contains_syntax_symbol(repl):
+                if toLatinLanguage:
+                  repl = "%s [[%s]]" % (repl, defs.TERM_NAME_ROLE)
+                else:
+                  repl = "%s[[%s]]" % (repl, defs.TERM_NAME_ROLE)
+
+          if trans_type:
+            self._writeCodecLine(f, td.id, pattern, repl, regex, td.icase, td.host, role)
+          else:
+            self._writeTransformLine(f, td.id, pattern, repl, regex, td.icase, td.host)
+
+          empty = False
+
+      if not empty:
+        return True
+
+    except Exception, e:
+      dwarn(e)
+
+    skfileio.removefile(path) # Remove file when failed
+    return False
+
+  @staticmethod
+  def _writeTransformLine(f, tid, pattern, repl, regex, icase, host):
+    """
+    @param  f  file
+    @param  tid  long
+    @param  pattern  unicode
+    @param  repl  unicode
+    @param  regex  bool
+    @param  icase  bool
+    @param  host  str
+    @return  unicode or None
+    """
+    if '\n' in pattern or '\n' in repl:
+      dwarn("skip new line in term: id = %s" % tid)
+      return
+    cat = host_categories(host)
+    cols = [str(tid), str(cat), pattern]
+    if repl:
+      cols.append(repl)
+    line = '\t'.join(cols)
+    line = "\t%s\n" % line # add leading/trailing spaces
+    if icase:
+      line = 'i' + line
+    if regex:
+      line = 'r' + line
+    f.write(line)
+
+  @staticmethod
+  def _writeCodecLine(f, tid, pattern, repl, regex, icase, host, role):
+    """
+    @param  f  file
+    @param  tid  long
+    @param  pattern  unicode
+    @param  repl  unicode
+    @param  regex  bool
+    @param  icase  bool
+    @param  host  str
+    @param  role  str
+    @return  unicode or None
+    """
+    if '\n' in pattern or '\n' in repl:
+      dwarn("skip new line in term: id = %s" % tid)
+      return
+    cat = host_categories(host)
+    features = [str(tid), str(cat)]
+    flags = ''
+    if icase:
+      flags += 'i'
+    if regex:
+      flags += 'r'
+    if flags:
+      features.append(flags)
+
+    feature = ' '.join(features)
+
+    if not repl:
+      role = '' # disable role if need to delete replacement
+    cols = [role, pattern, repl, flags]
+    line = ' ||| '.join(cols) + '\n'
+    f.write(line)
+
+  def _renderHeader(self, type, to, fr):
+    """
+    @param  type  str
+    @param  to  str
+    @param  fr  str
+    @return  unicode
+    """
+    return """\
+# This file is automatically generated for debugging purposes.
+# Modifying this file will NOT affect VNR.
+#
+# Unix time: %s
+# Options: type = %s, to = %s, fr = %s, hentai = %s, files = (%s)
+#
+""" % (self.createTime, type, to, fr, self.hentai,
+    ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
+
+  def _iterTermData(self, type, to, fr):
+    """
+    @param  type  str
+    @param  to  str
+    @param  fr  str
+    @yield  _Term
+    """
+    if type == 'trans':
+      types = ['trans', 'name', 'suffix', 'prefix']
+      if not to.startswith('zh'):
+        types.append('yomi')
+    else:
+      types = type,
+
+    # Types do not apply to non-Japanese languages
+    jatypes = 'macro', 'game', 'ocr' # Japanese types applied to all languages
+    zhtypes = 'name', 'yomi' # Japanese types applied to all Chinese languages
+    fr2 = fr[:2]
+    fr_is_latin = config.is_latin_language(fr)
+    #items = set() # skip duplicate names
+    types = frozenset(types)
+    for td in self.termData:
+      if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
+          td.type in types
+          and (not td.hentai or self.hentai)
+          and i18n.language_compatible_to(td.language, to)
+          and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
+          and (td.sourceLanguage.startswith(fr2)
+            or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
+            or td.sourceLanguage == 'ja' and (
+              td.type in jatypes
+              or fr2 == 'zh' and td.type in zhtypes
+            )
+          )
+        ): #and (td.type, td.pattern) not in items:
+        #items.add((td.type, td.pattern))
+        yield td
+
+  def queryMacros(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  {unicode pattern:unicode repl} not None
+    """
+    ret = {_unescape_term_text(td.pattern):_unescape_term_text(td.text) for td in self._iterTermData('macro', to, fr)}
+    MAX_ITER_COUNT = 1000
+    for count in xrange(1, MAX_ITER_COUNT):
+      dirty = False
+      for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
+        if text and defs.TERM_MACRO_BEGIN in text:
+          dirty = True
+          ok = False
+          for m in self.RE_MACRO.finditer(text):
+            macro = m.group(1)
+            repl = ret.get(macro)
+            if repl:
+              text = text.replace("{{%s}}" % macro, repl)
+              ok = True
+            else:
+              dwarn("missing macro", macro, text)
+              ok = False
+              break
+          if ok:
+            ret[pattern] = text
+          else:
+            ret[pattern] = None # delete this pattern
+      if not dirty:
+        break
+    if count == MAX_ITER_COUNT - 1:
+      dwarn("recursive macro definition")
+    return {k:v for k,v in ret.iteritems() if v is not None}
+
+  def _applyMacros(self, text, macros):
+    """
+    @param  text  unicode
+    @param  macros  {unicode pattern:unicode repl}
+    @return  unicode
+    """
+    if not text:
+      return ''
+    for m in self.RE_MACRO.finditer(text):
+      macro = m.group(1)
+      repl = macros.get(macro)
+      if repl is None:
+        dwarn("missing macro", macro)
+      else:
+        text = text.replace("{{%s}}" % macro, repl)
+    return text
+
+# EOF
+
+# S_PUNCT = u"、？！。…「」『』【】" # full-width punctuations
+# def _partition_punct(text, punct=S_PUNCT):
+#   """
+#   @param  text  unicode
+#   @return  (unicode left, unicode middle, unicode right) not None
+#   """
+#   left = right = ''
+#   count = skstr.countright(text, punct)
+#   if count:
+#     right = text[-count:]
+#     text = text[:-count]
+#   count = skstr.countleft(text, punct)
+#   if count:
+#     left = text[:count]
+#     text = text[count:]
+#   return left, text, right
+
+#          if (toLatinLanguage and (trans_input or trans_output)
+#              and repl and (repl[0] in S_PUNCT or repl[-1] in S_PUNCT)):
+#            if trans_output:
+#              repl = repl.strip(S_PUNCT)
+#            elif trans_input:
+#              repl_left, repl, repl_right = _partition_punct(repl)

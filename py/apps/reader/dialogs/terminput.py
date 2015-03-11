@@ -206,7 +206,7 @@ class _TermInput(object):
 
     tt = self._getType()
     #self.regexButton.setEnabled(tt not in ('suffix', 'macro'))
-    self.regexButton.setEnabled(tt != 'macro')
+    #self.regexButton.setEnabled(tt != 'macro')
     #self.syntaxButton.setEnabled(tt == 'trans' and not user.isGuest())
 
     if tt == 'trans':
@@ -470,9 +470,9 @@ class _TermInput(object):
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
       #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'suffix')
-      regex = type == 'macro' or self.regexButton.isChecked() #and type != 'suffix')
+      regex = self.regexButton.isChecked() #and type != 'suffix')
       icase = type != 'macro' and self.icaseButton.isChecked()
-      phrase = type != 'macro' and self.phraseButton.isChecked()
+      phrase = type not in ('macro', 'proxy') and self.phraseButton.isChecked()
       #syntax = type == 'trans' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
       private = (type == 'proxy' or self.privateButton.isChecked()) and not user.isGuest()
@@ -537,8 +537,7 @@ class _TermInput(object):
     elif self._getSourceLanguage() != 'ja':
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
-    elif (self.regexButton.isChecked() or type == 'macro') and (
-        not textutil.validate_regex(pattern)
+    elif (self.regexButton.isChecked() and not textutil.validate_regex(pattern)
         or not textutil.validate_macro(self.textEdit.text().strip())
       ):
       skqss.class_(w, 'text-error')

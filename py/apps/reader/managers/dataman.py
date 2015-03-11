@@ -2498,11 +2498,11 @@ class _Term(object):
     '_gameItemId',
   )
 
-  # Aliases
-  @property
-  def fr(self): self.sourceLanguage
-  @property
-  def to(self): self.language
+  # Aliases for share/trscript
+  #@property
+  #def fr(self): return self.sourceLanguage
+  #@property
+  #def to(self): return self.language
 
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, host, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
@@ -2772,8 +2772,9 @@ class _Term(object):
   E_EMPTY_TEXT = -999       # translation text is empty
   E_EMPTY_PATTERN = -1000   # pattern is empty
 
-  HOST_TYPES = 'input', 'output', 'trans', 'suffix', 'prefix', 'name', 'yomi' # types allow host
-  ROLE_TYPES = 'trans', 'suffix', 'prefix', 'name', 'yomi', 'proxy' # types allow role
+  HOST_TYPES = 'input', 'output', 'trans', 'suffix', 'prefix', 'name', 'yomi', 'proxy' # types allow host
+  ROLE_TYPES = 'trans', 'yomi', 'proxy' # types allow role
+  #ROLE_TYPES = 'trans', 'suffix', 'prefix', 'name', 'yomi', 'proxy' # types allow role
 
 class Term(QObject):
   __D = _Term

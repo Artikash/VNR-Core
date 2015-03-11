@@ -152,39 +152,6 @@ class Translator(object):
   def emitSplitTranslations(self, l):
     trman.manager().splitTranslationsReceived.emit(l)
 
-#class LougoTranslator(Translator):
-#  key = 'lou' # override
-#
-#  def translate(self, text, to='en', fr='ja', emit=False, **kwargs):
-#    """@reimp"""
-#    if emit:
-#      self.emitLanguages(fr='ja', to='en')
-#    if fr != 'ja':
-#      return None, None, None
-#
-#    #if scriptEnabled:
-#    #  t = text
-#    #  text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
-#    #  if emit and text != t:
-#    #    self.emitNormalizedText(text)
-#
-#    tm = termman.manager()
-#    t = text
-#    text = tm.applySourceTerms(text, to='en', fr='ja', host=self.key)
-#    if emit and text != t:
-#      self.emitSourceText(text)
-#    sub = mecabman.tolou(text)
-#    if sub:
-#      if emit:
-#        self.emitJointTranslation(text)
-#      sub = textutil.beautify_subtitle(sub)
-#    return sub, 'ja', self.key
-#
-#  def translateTest(self, text, **kwargs):
-#    """@reimp"""
-#    return mecabman.tolou(text)
-
-
 ## Cascaded machine translator
 
 class Retranslator(Translator):
@@ -455,7 +422,7 @@ class MachineTranslator(Translator):
     tm = termman.manager()
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applySourceTerms(text, to=to, fr=fr, host=self.key)
+    text = tm.applyInputTerms(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
       self.emitSourceText(text)
 
@@ -464,7 +431,7 @@ class MachineTranslator(Translator):
     #if self._needsJitter(to, fr):
     if fr == 'ja':
       text = self._escapeJitter(text, to, fr)
-    text = tm.prepareEscapeTerms(text, to=to, fr=fr, host=self.key)
+    text = tm.encodeTranslation(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
       self.emitEscapedText(text)
 
@@ -492,12 +459,12 @@ class MachineTranslator(Translator):
     #text = self.__google_repl_after(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
-    text = tm.applyEscapeTerms(text, to=to, fr=fr, mark=mark, host=self.key)
+    text = tm.decodeTranslation(text, to=to, fr=fr, mark=mark, host=self.key)
     if emit and text != t:
       self.emitEscapedTranslation(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applyTargetTerms(text, to=to, fr=fr, mark=mark, host=self.key)
+    text = tm.applyOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
     text = text.replace(defs.TERM_ESCAPE_EOS, '')
     #if self._needsJitter(to, fr):
     if fr == 'ja':
@@ -532,8 +499,7 @@ class MachineTranslator(Translator):
     @param  fr  str  unused
     @return  unicode
     """
-    esc = defs.JITTER_ESCAPE_KANJI if config.is_kanji_language(to) else defs.JITTER_ESCAPE_LATIN
-    return _re_jitter.sub(esc, text)
+    return _re_jitter.sub(defs.JITTER_PROXY, text)
 
   def _unescapeJitter(self, text, to, fr):
     """
@@ -542,7 +508,7 @@ class MachineTranslator(Translator):
     @param  fr  str  unused
     @return  unicode
     """
-    esc = defs.JITTER_ESCAPE_KANJI if config.is_kanji_language(to) else defs.JITTER_ESCAPE_LATIN
+    esc = defs.JITTER_PROXY
     i = text.rfind(esc)
     while i >= 0:
       jitter = '' # jittered char
@@ -1906,7 +1872,7 @@ class BaiduTranslator(OnlineMachineTranslator):
 #    #if lang not in ('zhs', 'zht', 'ja', 'en', 'fr', 'ko', 'ru', 'es'):
 #    #  return None, None, None
 #    tm = termman.manager()
-#    text = tm.applySourceTerms(text, lang, host=self.key)
+#    text = tm.applyInputTerms(text, lang, host=self.key)
 #    text = tm.prepareEscapeTerms(text, lang, host=self.key)
 #    #text = self._prepareSentenceTransformation(text)
 #    text = self.__youdao_repl_before(text)

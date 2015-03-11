@@ -82,12 +82,12 @@ ListModel {
       , link: createLink('showDictionaryTester')
     })
 
-    append({ name: My.tr("Japanese Syntax Tree")
-      , searchText: "Japanese Syntax Tree" + "\n" + My.tr("Japanese Syntax Tree")
-      , icon: 'image://rc/dock-syntax'
-      , toolTip: My.tr("Test Japanese syntax tree")
-      , link: createLink('showJapaneseSyntaxTester')
-    })
+    //append({ name: My.tr("Japanese Syntax Tree")
+    //  , searchText: "Japanese Syntax Tree" + "\n" + My.tr("Japanese Syntax Tree")
+    //  , icon: 'image://rc/dock-syntax'
+    //  , toolTip: My.tr("Test Japanese syntax tree")
+    //  , link: createLink('showJapaneseSyntaxTester')
+    //})
 
     append({ name: My.tr("Speech Recognition")
       , searchText: "Speech Recognition" + "\n" + My.tr("Speech Recognition")

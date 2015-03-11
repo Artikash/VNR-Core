@@ -152,15 +152,16 @@ TOPIC_TYPES = (
 # Translations
 
 #TERM_ESCAPE = "9%i.67" # ESCAPE of escaped terms.
-TERM_ESCAPE_KANJI = "9%i.678" # ESCAPE of escaped terms. At least 3 digits so that youdao work well!
-TERM_ESCAPE_LATIN = "SA%i" # ESCAPE of escaped terms.
+#TERM_ESCAPE_KANJI = "9%i.678" # ESCAPE of escaped terms. At least 3 digits so that youdao work well!
+#TERM_ESCAPE_LATIN = "SA%i" # ESCAPE of escaped terms.
 
 #NAME_ESCAPE = "9%i.%i58" # ESCAPE of escaped character name
-NAME_ESCAPE_KANJI = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
-NAME_ESCAPE_LATIN = "SN%i_%i1" # ESCAPE of escaped character name.
+#NAME_ESCAPE_KANJI = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
+#NAME_ESCAPE_LATIN = "SN%i_%i1" # ESCAPE of escaped character name.
 
-JITTER_ESCAPE_KANJI = "341.143"
-JITTER_ESCAPE_LATIN = "SJ341"
+#JITTER_ESCAPE_KANJI = "341.143"
+#JITTER_ESCAPE_LATIN = "SJ341"
+JITTER_PROXY = 'ZJZ'
 
 TERM_MACRO_BEGIN = '{{'
 TERM_MACRO_END = '}}'
@@ -168,6 +169,9 @@ TERM_MACRO_END = '}}'
 TERM_CLASS_NAME = "[[N]]"
 
 TERM_ESCAPE_EOS = u"…eos…"
+
+TERM_NAME_ROLE = 'm'
+TERM_PHRASE_ROLE = 'x'
 
 MAX_NAME_LENGTH = 16 # maximum number of characters in text
 

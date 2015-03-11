@@ -177,15 +177,6 @@ def subs_yaml_path(itemId, subLang, gameLang='ja', fmt='yaml'):
 
 # Terms
 
-#TERM_RELPATHS = {
-#  'ocr': 'ocr',
-#  'speech': 'tts',
-#  'origin': 'game',
-#  'source': 'input',
-#  'target': 'output',
-#  'escape_source': 'escape_input',
-#  'escape_target': 'escape_output',
-#}
 def term_path(type, to, fr):
   """
   @param  type  str  term type

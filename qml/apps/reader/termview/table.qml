@@ -123,7 +123,8 @@ Item { id: root_
   function typeAllowsRole(type) { // string -> bool
     switch (type) {
     case 'trans':
-    case 'name': case 'yomi': case 'prefix': case 'suffix':
+    //case 'name': case 'yomi': case 'prefix': case 'suffix': // force to be 'm'
+    case 'yomi':
     case 'proxy':
       return true
     default: return false
@@ -496,8 +497,8 @@ Item { id: root_
               var t = model.get(selectedIndex).value
               if (t !== itemValue.type) {
                 itemValue.type = t
-                if (t === 'macro' && !itemValue.regex)
-                  itemValue.regex = true
+                //if (t === 'macro' && !itemValue.regex)
+                //  itemValue.regex = true
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
               }
@@ -574,8 +575,8 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
-          checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
+          enabled: canEdit(itemValue) //&& itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          checked: itemValue.regex //|| itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
               itemValue.regex = checked
@@ -592,7 +593,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && item.type !== 'proxy' //&& !itemValue.syntax // prevent from using regex
           checked: itemValue.phrase // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.phrase)
