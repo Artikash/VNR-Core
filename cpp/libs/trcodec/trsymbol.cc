@@ -112,7 +112,7 @@ static inline bool _symbol_needs_escape_re(const std::wstring &s)
 static inline std::wstring _symbol_escape_re(const wchar_t *s)
 {
   std::wstring ret;
-  while (wchar_t c = *s) {
+  while (wchar_t c = *s++) {
     if (::wcschr(SYMBOL_ESCAPE_RE, c))
       ret.push_back(L'\\');
     ret.push_back(c);

@@ -4,7 +4,7 @@
 #include "hanviet/phrasedic.h"
 #include "cpputil/cpplocale.h"
 #include "unistr/unichar.h"
-#include "trscript/trescape.h" // cross module include is bad
+#include "trrender/trescape.h" // cross module include is bad
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <fstream>

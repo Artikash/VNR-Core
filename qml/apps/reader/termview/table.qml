@@ -575,7 +575,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) //&& itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'proxy' // && !itemValue.syntax // prevent from using regex
           checked: itemValue.regex //|| itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
@@ -611,7 +611,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && itemValue.type !== 'proxy' // prevent from using regex
           checked: itemValue.icase // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.icase)

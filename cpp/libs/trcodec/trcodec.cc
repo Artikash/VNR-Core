@@ -145,7 +145,11 @@ void TranslationCoder::clear() { d_->clear(); }
 bool TranslationCoder::loadScript(const std::wstring &path)
 {
   TranslationRuleList rules; // id, pattern, text, regex
-  D::loadRules(path, rules);
+  try {
+    D::loadRules(path, rules);
+  } catch (...) {
+    DERR("failed to parse script");
+  }
 
   if (rules.empty()) {
     d_->clear();

@@ -62,12 +62,11 @@ private:
 
   void cache_re() const // may throw
   {
-    if (!source_re) {
-      if (is_icase())
-        source_re = new boost::wregex(source, boost::wregex::icase);
-      else
-        source_re = new boost::wregex(source);
-    }
+    if (!source_re)
+      source_re = new boost::wregex(source,
+        is_icase() ? boost::wregex::perl|boost::wregex::icase
+                   : boost::wregex::perl
+      );
   }
 
   std::wstring render_target(const std::wstring &matched_text = std::wstring()) const;

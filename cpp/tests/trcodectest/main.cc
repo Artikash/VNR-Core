@@ -7,19 +7,15 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」";
-  //wchar_t ws[] = L"【綾波レイ】「こんにちは、DELETE世界！」";
+  //wchar_t ws[] = L"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」";
+  wchar_t ws[] = L"hello";
   std::wstring text = ws;
 
   std::wstring path;
-  //path = L"../cpp/libs/trscript/example.txt";
-  //path = L"/Users/jichi/stream/Caches/tmp/reader/dict/ja-zhs/trans_input.txt";
-  path = L"/Users/jichi/opt/stream/Library/Frameworks/Sakura/cpp/libs/trcodec/example.txt";
-  //path = L"/Users/jichi/stream/Caches/tmp/reader/dict/ja/game.txt";
-  //path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
-  //path = L"/Users/jichi/tmp/escape_input.txt";
+  //path = L"/Users/jichi/opt/stream/Library/Frameworks/Sakura/cpp/libs/trcodec/example.txt";
+  path = L"/Users/jichi/opt/stream/Caches/tmp/reader/dict/ja-zhs/trans.txt";
 
-  TranslationCodec m;
+  TranslationCoder m;
   m.loadScript(path);
   qDebug() << m.size();
 

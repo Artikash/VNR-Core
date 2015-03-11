@@ -28,11 +28,11 @@ def manager(): return TermManager()
 
 def _make_script_interpreter(type):
   if type == 'trans':
-    from pytrscript import TranslationScriptPerformer
-    return TranslationScriptPerformer()
-  else:
     from pytrcodec import TranslationCoder
     return TranslationCoder()
+  else:
+    from pytrscript import TranslationScriptPerformer
+    return TranslationScriptPerformer()
 
 @Q_Q
 class _TermManager:
@@ -58,6 +58,7 @@ class _TermManager:
     self.scripts = {} # {(str type, str fr, str to):TranslationScriptPerformer or ScriptCoder}
     self.scriptLocks = {} #  {(str lang, str fr, str to):bool}
     self.scriptTimes = {} # [(str lang, str fr, str to):float time]
+    self.proxies = {} # {(str fr, str to):TranslationProxy}
 
     #self.rbmt = {} # {str language:rbmt.api.Translator}
     #self.rbmtTimes = {} # [str language:float time]
@@ -158,7 +159,14 @@ class _TermManager:
         elif not man.isEmpty():
           man.clear()
         try:
+          if type == 'trans':
+            proxies = self.proxies.get((to, fr))
+            if proxies:
+              proxies.clear()
+
           if w.saveTerms(path, type, to, fr, macros) and man.loadScript(path):
+            if type == 'trans':
+              self.proxies[(to, fr)] = w.queryProxies(to, fr)
             dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
         except:
           self.scriptLocks[scriptKey] = False
@@ -212,6 +220,28 @@ class _TermManager:
       return man.decode(text, category, mark)
     else:
       return man.transform(text, category, mark)
+
+  def encodeProxies(self, text, to, fr, host, proxies):
+    """
+    @param  text  unicode
+    @param  to  str  language
+    @param  fr  str  language
+    @param  host  str
+    @param* proxies  {unicode input:unicode output}
+    @return  unicode
+    """
+    return text
+
+  def decodeProxies(self, text, to, fr, host, proxies):
+    """
+    @param  text  unicode
+    @param  to  str  language
+    @param  fr  str  language
+    @param  host  str
+    @param* proxies  {unicode input:unicode output}
+    @return  unicode
+    """
+    return text
 
 class TermManager(QObject):
 
@@ -463,5 +493,33 @@ class TermManager(QObject):
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")
     return ret
+
+  def encodeProxies(self, text, to, fr, host='', proxies={}):
+    """
+    @param  text  unicode
+    @param  to  str  language
+    @param  fr  str  language
+    @param* host  str
+    @param* proxies  {unicode input:unicode output}
+    @return  unicode
+    """
+    d = self.__d
+    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+      return text
+    return d.encodeProxies(text, to, fr, host, proxies)
+
+  def decodeProxies(self, text, to, fr, host='', proxies={}):
+    """
+    @param  text  unicode
+    @param  to  str  language
+    @param  fr  str  language
+    @param* host  str
+    @param* proxies  {unicode input:unicode output}
+    @return  unicode
+    """
+    d = self.__d
+    if not d.enabled: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+      return text
+    return d.decodeProxies(text, to, fr, host, proxies)
 
 # EOF

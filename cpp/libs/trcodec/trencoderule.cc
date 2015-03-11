@@ -16,6 +16,9 @@
   } catch (boost::regex_error &e) { \
     DWERR("invalid term: " << id << ", what: " << e.what() << ", regex pattern: " << source); \
     valid = false; \
+  } catch (...) { \
+    DWERR("invalid term: " << id << ", regex pattern: " << source); \
+    valid = false; \
   }
 
 // Construction
@@ -49,10 +52,10 @@ void TranslationEncodeRule::init_source()
     set_regex(true);
   }
   if (is_regex()) {
-    if (is_icase())
-      source_re = new boost::wregex(source, boost::wregex::perl|boost::wregex::icase); // perl is the default flag
-    else
-      source_re = new boost::wregex(source);
+    source_re = new boost::wregex(source,
+      is_icase() ? boost::wregex::perl|boost::wregex::icase
+                 : boost::wregex::perl
+    );
     source.clear(); // no longer needed any more
   }
 }

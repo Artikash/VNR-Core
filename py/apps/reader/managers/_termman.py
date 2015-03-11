@@ -12,6 +12,7 @@
 
 import os, string, re
 #from collections import OrderedDict
+from itertools import imap
 from functools import partial
 from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
@@ -24,6 +25,18 @@ from unitraits import jpchars, jpmacros
 from convutil import kana2name, zhs2zht
 from mytr import my
 import config, dataman, defs, growl, i18n, rc
+
+## Translation proxy
+
+class TranslationProxy(object):
+  __slots__ = 'input', 'output', 'category'
+  def __init__(self, td):
+    """
+    @param  td  _Term
+    """
+    self.input = _unescape_term_text(td.pattern)
+    self.output = _unescape_term_text(td.text)
+    self.category = host_categories(td.host)
 
 ## Helper functions used by termman
 
@@ -212,7 +225,7 @@ class TermWriter:
     try:
       with open(path, 'w') as f:
         f.write(self._renderHeader(type, to, fr))
-        for td in self._iterTermData(type, to, fr):
+        for td in self.iterTermData(type, to, fr):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
@@ -234,7 +247,7 @@ class TermWriter:
               pattern = opencc.ja2zht(pattern)
 
           repl = _unescape_term_text(td.text)
-          repl = self._applyMacros(pattern, repl)
+          repl = self._applyMacros(repl, macros)
           if z:
             repl = zhs2zht(repl)
           if td.type == 'yomi':
@@ -294,8 +307,8 @@ class TermWriter:
     @param  host  str
     @return  unicode or None
     """
-    if '\n' in pattern or '\n' in repl:
-      dwarn("skip new line in term: id = %s" % tid)
+    if '\n' in pattern or '\n' in repl or '\t' in pattern or '\t' in repl:
+      dwarn("skip tab or new line in term: id = %s" % tid)
       return
     cat = host_categories(host)
     cols = [str(tid), str(cat), pattern]
@@ -339,7 +352,7 @@ class TermWriter:
 
     if not repl:
       role = '' # disable role if need to delete replacement
-    cols = [role, pattern, repl, flags]
+    cols = [role, pattern, repl, feature]
     line = ' ||| '.join(cols) + '\n'
     f.write(line)
 
@@ -360,7 +373,7 @@ class TermWriter:
 """ % (self.createTime, type, to, fr, self.hentai,
     ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
 
-  def _iterTermData(self, type, to, fr):
+  def iterTermData(self, type, to, fr):
     """
     @param  type  str
     @param  to  str
@@ -398,13 +411,22 @@ class TermWriter:
         #items.add((td.type, td.pattern))
         yield td
 
+  def queryProxies(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  {unicode input:TranslationProxy} not None
+    """
+    l = imap(TranslationProxy, self.iterTermData('proxy', to, fr))
+    return {it.input:it for it in l}
+
   def queryMacros(self, to, fr):
     """
     @param  to  str
     @param  fr  str
     @return  {unicode pattern:unicode repl} not None
     """
-    ret = {_unescape_term_text(td.pattern):_unescape_term_text(td.text) for td in self._iterTermData('macro', to, fr)}
+    ret = {_unescape_term_text(td.pattern):_unescape_term_text(td.text) for td in self.iterTermData('macro', to, fr)}
     MAX_ITER_COUNT = 1000
     for count in xrange(1, MAX_ITER_COUNT):
       dirty = False

@@ -53,28 +53,11 @@ public:
     rules = new TranslationScriptRule[size];
     ruleCount = size;
   }
+
+  static bool loadRules(const std::wstring &path, std::list<TranslationScriptBaseRule> &rules);
 };
 
-/** Public class */
-
-// Construction
-
-TranslationScriptPerformer::TranslationScriptPerformer() : d_(new D) {}
-TranslationScriptPerformer::~TranslationScriptPerformer() { delete d_; }
-
-int TranslationScriptPerformer::size() const { return d_->ruleCount; }
-bool TranslationScriptPerformer::isEmpty() const { return !d_->ruleCount; }
-
-//bool TranslationScriptPerformer::isLinkEnabled() const { return d_->link; }
-//void TranslationScriptPerformer::setLinkEnabled(bool t) { d_->link = t; }
-
-//std::wstring TranslationScriptPerformer::linkStyle() const { return d_->linkStyle; }
-//void TranslationScriptPerformer::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
-
-void TranslationScriptPerformer::clear() { d_->clear(); }
-
-// Initialization
-bool TranslationScriptPerformer::loadScript(const std::wstring &path)
+bool TranslationScriptPerformerPrivate::loadRules(const std::wstring &path, std::list<TranslationScriptBaseRule> &rules)
 {
 #ifdef _MSC_VER
   std::wifstream fin(path);
@@ -87,8 +70,6 @@ bool TranslationScriptPerformer::loadScript(const std::wstring &path)
     return false;
   }
   fin.imbue(UTF8_LOCALE);
-
-  std::list<TranslationScriptBaseRule> rules;
 
   int missing_id = 0; // assign negative id for missing id
   for (std::wstring line; std::getline(fin, line);)
@@ -126,11 +107,40 @@ bool TranslationScriptPerformer::loadScript(const std::wstring &path)
     }
 
   fin.close();
+  return true;
+}
 
-  if (rules.empty()) {
-    d_->clear();
-    return false;
+/** Public class */
+
+// Construction
+
+TranslationScriptPerformer::TranslationScriptPerformer() : d_(new D) {}
+TranslationScriptPerformer::~TranslationScriptPerformer() { delete d_; }
+
+int TranslationScriptPerformer::size() const { return d_->ruleCount; }
+bool TranslationScriptPerformer::isEmpty() const { return !d_->ruleCount; }
+
+//bool TranslationScriptPerformer::isLinkEnabled() const { return d_->link; }
+//void TranslationScriptPerformer::setLinkEnabled(bool t) { d_->link = t; }
+
+//std::wstring TranslationScriptPerformer::linkStyle() const { return d_->linkStyle; }
+//void TranslationScriptPerformer::setLinkStyle(const std::wstring &css) { d_->linkStyle = css; }
+
+void TranslationScriptPerformer::clear() { d_->clear(); }
+
+// Initialization
+bool TranslationScriptPerformer::loadScript(const std::wstring &path)
+{
+  d_->clear();
+
+  std::list<TranslationScriptBaseRule> rules;
+  try {
+    D::loadRules(path, rules);
+  } catch (...) {
+    DERR("failed to parse script");
   }
+  if (rules.empty())
+    return false;
 
   //QWriteLocker locker(&d_->lock);
   d_->reset(rules.size());
