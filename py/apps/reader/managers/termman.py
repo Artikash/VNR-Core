@@ -280,7 +280,10 @@ class _TermManager:
       for k,v in proxies.iteritems():
         if to_latin:
           try:
-            pattern = r"\b%s\b" % re.escape(k)
+            if k.istitle():
+              pattern = r"%s\b" % re.escape(k)
+            else:
+              pattern = r"\b%s\b" % re.escape(k)
             text = re.sub(pattern, v, text)
           except Exception, e:
             dwarn(e)
