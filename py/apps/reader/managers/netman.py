@@ -1545,6 +1545,11 @@ class _NetworkManager(object):
     elif td.gameMd5:
       params['md5'] = td.gameMd5
 
+    if td.role:
+      params['role'] = (td.role
+          if len(td.role) <= defs.MAX_TEXT_LENGTH
+          else td.role[:defs.MAX_TEXT_LENGTH])
+
     if td.pattern:
       params['pattern'] = (td.pattern
           if len(td.pattern) <= defs.MAX_TEXT_LENGTH
@@ -1641,7 +1646,7 @@ class _NetworkManager(object):
         params[k.lower()] = getattr(term, k)
 
     # Note: actually, there is no 'delpattern'
-    for k in 'pattern', 'text', 'comment', 'updateComment':
+    for k in 'pattern', 'text', 'role', 'comment', 'updateComment':
       if k in pty:
         v = getattr(td, k)
         if v:

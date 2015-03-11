@@ -583,6 +583,15 @@ class Settings(QSettings):
       self.setValue('BaiduColor', value)
       self.baiduColorChanged.emit(value)
 
+  youdaoColorChanged = Signal(str)
+  def youdaoColor(self):
+    return self.value('YoudaoColor', config.SETTINGS_YOUDAO_COLOR)
+  def setYoudaoColor(self, value):
+    value = value or config.SETTINGS_YOUDAO_COLOR
+    if value != self.youdaoColor():
+      self.setValue('YoudaoColor', value)
+      self.youdaoColorChanged.emit(value)
+
   lecOnlineColorChanged = Signal(str)
   def lecOnlineColor(self):
     return self.value('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR)
@@ -1339,6 +1348,14 @@ class Settings(QSettings):
       self.setValue('BaiduRubyEnabled', value)
       self.baiduRubyEnabledChanged.emit(value)
 
+  youdaoEnabledChanged = Signal(bool)
+  def isYoudaoEnabled(self):
+    return to_bool(self.value('YoudaoEnabled'))
+  def setYoudaoEnabled(self, value):
+    if value != self.isYoudaoEnabled():
+      self.setValue('YoudaoEnabled', value)
+      self.youdaoEnabledChanged.emit(value)
+
   lecOnlineEnabledChanged = Signal(bool)
   def isLecOnlineEnabled(self):
     return to_bool(self.value('LecOnlineEnabled'))
@@ -1968,6 +1985,7 @@ class SettingsProxy(QObject):
     g.googleColorChanged.connect(self.googleColorChanged)
     g.naverColorChanged.connect(self.naverColorChanged)
     g.baiduColorChanged.connect(self.baiduColorChanged)
+    g.youdaoColorChanged.connect(self.youdaoColorChanged)
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.transruColorChanged.connect(self.transruColorChanged)
     g.hanVietColorChanged.connect(self.hanVietColorChanged)
@@ -2265,6 +2283,8 @@ class SettingsProxy(QObject):
   bingColor = unicode_property('BingColor', config.SETTINGS_BING_COLOR, notify=bingColorChanged)
   baiduColorChanged = Signal(unicode)
   baiduColor = unicode_property('BaiduColor', config.SETTINGS_BAIDU_COLOR, notify=baiduColorChanged)
+  youdaoColorChanged = Signal(unicode)
+  youdaoColor = unicode_property('YoudaoColor', config.SETTINGS_YOUDAO_COLOR, notify=youdaoColorChanged)
   naverColorChanged = Signal(unicode)
   naverColor = unicode_property('NaverColor', config.SETTINGS_NAVER_COLOR, notify=naverColorChanged)
   lecOnlineColorChanged = Signal(unicode)

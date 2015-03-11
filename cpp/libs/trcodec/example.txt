@@ -1,0 +1,13 @@
+# Sample script
+# 3/6/2015
+# See also: http://joshua-decoder.org/6.0/file-formats.html
+# Format:
+#   lfs_token ||| rhs_source ||| rhs_target ||| features
+# Features
+#   id:int selector:int flags:string
+n ||| 悠真 ||| Yuuma ||| 1 -1
+v ||| 攻略 ||| capture ||| 2 -1
+n ||| [[n#1]]くん ||| [[n#1]]-kun ||| 3 -1
+x ||| [[n]]を[[v]] ||| [[v]] [[n]] ||| 4 -1
+ ||| DELETE |||  ||| 5 -1
+x ||| [[x]][[x]] ||| [[x]] ||| 6 -1

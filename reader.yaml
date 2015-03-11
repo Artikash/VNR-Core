@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1425586239
+  timestamp: 1426074450
 
 app:
   #debug: true
@@ -91,7 +91,7 @@ settings:
   transruColor: '#0055ff' # blue
   naverColor: '#800080' # purple
   baiduColor: '#800080' # purple
-  #youdaoColor: '#555500' # yellow
+  youdaoColor: '#555500' # yellow
   jbeijingColor: '#0055ff' # blue
   fastaitColor: '#55aa00' # deep green
   dreyeColor: '#555500' # yellow

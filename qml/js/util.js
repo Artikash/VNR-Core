@@ -167,6 +167,7 @@ var TRANSLATOR_HOST_KEYS = [
   , 'transru'
   , 'naver'
   , 'baidu'
+  , 'youdao'
   , 'jbeijing'
   , 'fastait'
   , 'dreye'
@@ -185,7 +186,7 @@ var TRANSLATOR_NAME = {
   , google: "Google.com"
   , naver: "Naver.com"
   , baidu: "百度.com"
-  //, youdao: "有道.com"
+  , youdao: "有道.com"
   , jbeijing: "J北京"
   , fastait: "金山快譯"
   , dreye: "Dr.eye"
@@ -225,6 +226,7 @@ var TERM_TYPES = [
   , 'tts'
   , 'ocr'
   , 'macro'
+  , 'proxy'
 ];
 
 // - Cast -

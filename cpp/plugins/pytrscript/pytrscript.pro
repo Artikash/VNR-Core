@@ -7,6 +7,7 @@
 
 CONFIG += pyplugin shiboken noqt
 include(../../../config.pri)
+include($$LIBDIR/trrender/trrender.pri)
 include($$LIBDIR/trscript/trscript.pri)
 
 INCLUDEPATH += $$LIBDIR/trscript # needed by shiboken generated code
@@ -23,11 +24,11 @@ TARGET = pytrscript
 HEADERS += \
   pytrscript_config.h \
   $$SRCPATH/pytrscript_python.h \
-  $$SRCPATH/translationscriptmanager_wrapper.h
+  $$SRCPATH/translationscriptperformer_wrapper.h
 
 SOURCES += \
   $$SRCPATH/pytrscript_module_wrapper.cpp \
-  $$SRCPATH/translationscriptmanager_wrapper.cpp
+  $$SRCPATH/translationscriptperformer_wrapper.cpp
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += trscript.rc

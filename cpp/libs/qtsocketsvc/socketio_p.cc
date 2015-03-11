@@ -37,13 +37,13 @@ QByteArray SocketService::readSocket(QIODevice *socket, quint32 &dataSize)
   qint64 bytesAvailable = socket->bytesAvailable();
   if (!dataSize) {
     if (bytesAvailable < HeadSize) {
-      DOUT("insufficient head size");
+      DERR("insufficient head size");
       return QByteArray();
     }
     QByteArray head = socket->read(HeadSize);
     qint32 size = unpackUInt32(head);
     if (!size) {
-      DOUT("empty message size");
+      DERR("empty message size");
       return QByteArray();
     }
     dataSize = size;
@@ -51,11 +51,11 @@ QByteArray SocketService::readSocket(QIODevice *socket, quint32 &dataSize)
   }
 
   if (dataSize == 0) {
-    DOUT("zero data size");
+    DERR("zero data size");
     return QByteArray();
   }
   if (bytesAvailable < dataSize) {
-    DOUT("insufficient message size:" << bytesAvailable << "<" << dataSize);
+    DERR("insufficient message size:" << bytesAvailable << "<" << dataSize);
     return QByteArray();
   }
   //DOUT("message size =" << dataSize);

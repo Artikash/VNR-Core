@@ -18,7 +18,6 @@ client:
 - kagami.qml: indonesianFont
 - grimoire.qml: ..
 - mirage.qml: ..
-- hostcombobox.qml: .., plus the menuItems
 - windefs.py
 - tsupdate.py: 'id'
 - sktr.py: "id" "Indonesian"
@@ -42,6 +41,7 @@ grimoire.qml: ..
 mirage.qml: ..
 share.yaml: baidu
 reader.yaml: ..
+hostcombobox.qml: .., plus the menuItems
 share/mt
   mtinfo.py: ..
 reader:
@@ -95,7 +95,25 @@ _prefs.py
 ./rb/compass/web/sass/sites/getchu.sass
 ./share.yaml
 
-# debug
+## Term type
+./qml/apps/reader/termview/filtertoolbar.qml
+./qml/apps/reader/termview/inspector.qml
+./qml/apps/reader/termview/table.qml
+./qml/js/util.js
+
+./xml/terms.xml
+
+./apps/reader/managers/dataman.py
+./apps/reader/dialogs/terminput.py
+./apps/reader/managers/termman.py
+
+./libs/sakurakit/sktr.py # translation
+mytr.py # translation
+
+#./scripts/tahcompile.py
+#./libs/unitraits/jpmacros.py
+
+## Debug
 debug refinput search game
 debug add game
 debug render in gameview

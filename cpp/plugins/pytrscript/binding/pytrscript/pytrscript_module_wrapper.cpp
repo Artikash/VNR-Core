@@ -19,7 +19,7 @@ static PyMethodDef pytrscript_methods[] = {
 };
 
 // Classes initialization functions ------------------------------------------------------------
-void init_TranslationScriptManager(PyObject* module);
+void init_TranslationScriptPerformer(PyObject* module);
 
 
 // Module initialization ------------------------------------------------------------
@@ -109,7 +109,7 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pytrscript)
 #endif
 
     // Initialize classes in the type system
-    init_TranslationScriptManager(module);
+    init_TranslationScriptPerformer(module);
 
     // Register converter for type 'std::wstring'.
     SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX] = Shiboken::Conversions::createConverter(&PyUnicode_Type, std_wstring_CppToPython_std_wstring);

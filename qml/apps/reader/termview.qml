@@ -299,6 +299,7 @@ Item { id: root_
         append({value:'game', text:Sk.tr("Game")})
         append({value:'pattern', text:Sk.tr("Pattern")})
         append({value:'text', text:Sk.tr("Translation")})
+        append({value:'role', text:Sk.tr("Role")})
         append({value:'comment', text:Sk.tr("Comment")})
       }
     }

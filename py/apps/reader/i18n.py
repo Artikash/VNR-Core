@@ -111,6 +111,7 @@ TRANSLATOR_NAMES = { # [TranslatorTraits]
   'transru': "Translate.Ru",
   'naver': "Naver.com",
   'baidu': mytr_("Baidu") + ".com",
+  'youdao': mytr_("Youdao") + ".com",
   'jbeijing': mytr_("JBeijing"),
   'fastait': mytr_("FastAIT"),
   'dreye': "Dr.eye",

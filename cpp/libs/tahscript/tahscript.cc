@@ -46,7 +46,7 @@ struct TahScriptRule
     if (isRegExp(s)) {
       QRegExp *re = new QRegExp(s, Qt::CaseSensitive, QRegExp::RegExp2); // use Perl-compatible syntax, default in Qt5
       if (re->isEmpty()) {
-        DOUT("invalid regexp:" << s);
+        DERR("invalid regexp:" << s);
         delete re;
         return false;
       }
@@ -135,7 +135,7 @@ bool TahScriptManager::loadFile(const QString &path)
   // http://stackoverflow.com/questions/2612103/qt-reading-from-a-text-file
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly)) {
-    DOUT("failed to open file at path:" << path);
+    DERR("failed to open file at path:" << path);
     return false;
   }
 

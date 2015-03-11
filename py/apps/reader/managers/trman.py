@@ -44,6 +44,7 @@ class _TranslatorManager(object):
     self.naverEnabled = \
     self.vtransEnabled = \
     self.baiduEnabled = \
+    self.youdaoEnabled = \
     self.lecOnlineEnabled = \
     self.transruEnabled = \
     self.hanVietEnabled = \
@@ -218,6 +219,13 @@ class _TranslatorManager(object):
         postprocess=self.postprocess))
 
   @memoizedproperty
+  def youdaoTranslator(self):
+    return self._newtr(_trman.YoudaoTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session,
+        postprocess=self.postprocess))
+
+  @memoizedproperty
   def naverTranslator(self):
     return self._newtr(_trman.NaverTranslator(
         abortSignal=self.abortSignal,
@@ -341,9 +349,11 @@ class _TranslatorManager(object):
         if self.bingEnabled: yield self.bingTranslator
         if self.naverEnabled: yield self.naverTranslator
         if self.vtransEnabled: yield self.vTranslator
+        if self.youdaoEnabled: yield self.youdaoTranslator
         if self.baiduEnabled: yield self.baiduTranslator
       else:
         if self.baiduEnabled: yield self.baiduTranslator
+        if self.youdaoEnabled: yield self.youdaoTranslator
         if self.vtransEnabled: yield self.vTranslator
         if self.naverEnabled: yield self.naverTranslator
         if self.bingEnabled: yield self.bingTranslator
@@ -427,13 +437,15 @@ class TranslatorManager(QObject):
   # Logs
   languagesReceived = Signal(unicode, unicode) # fr, to
   normalizedTextReceived = Signal(unicode) # text after applying translation replacement scripts
-  sourceTextReceived = Signal(unicode) # text after applying source terms
-  escapedTextReceived = Signal(unicode) # text after preparing escaped terms
+  inputTextReceived = Signal(unicode) # text after applying source terms
+  encodedTextReceived = Signal(unicode) # text after preparing escaped terms
+  delegateTextReceived = Signal(unicode) # text after applying proxied terms
   splitTextsReceived = Signal(list)  # texts after splitting
   splitTranslationsReceived = Signal(list)  # translations after applying translation
   jointTranslationReceived = Signal(unicode)  # translation before applying terms
-  escapedTranslationReceived = Signal(unicode)  # translation after unescaping terms
-  targetTranslationReceived = Signal(unicode)  # translation after applying target terms
+  delegateTranslationReceived = Signal(unicode) # text after recovering proxied terms
+  decodedTranslationReceived = Signal(unicode)  # translation after unescaping terms
+  outputTranslationReceived = Signal(unicode)  # translation after applying target terms
 
   clearCacheRequested = Signal() # async
 
@@ -478,6 +490,9 @@ class TranslatorManager(QObject):
 
   def isBaiduEnabled(self): return self.__d.baiduEnabled
   def setBaiduEnabled(self, value): self.__d.baiduEnabled = value
+
+  def isYoudaoEnabled(self): return self.__d.youdaoEnabled
+  def setYoudaoEnabled(self, value): self.__d.youdaoEnabled = value
 
   def isNaverEnabled(self): return self.__d.naverEnabled
   def setNaverEnabled(self, value): self.__d.naverEnabled = value
@@ -592,6 +607,7 @@ class TranslatorManager(QObject):
     d = self.__d
     return any((
       d.baiduEnabled,
+      d.youdaoEnabled,
       d.vtransEnabled,
       d.naverEnabled,
       d.googleEnabled,
@@ -640,6 +656,7 @@ class TranslatorManager(QObject):
     if d.atlasEnabled: r.append('atlas')
 
     if d.baiduEnabled: r.append('baidu')
+    if d.youdaoEnabled: r.append('youdao')
     if d.vtransEnabled: r.append('vtrans')
     if d.naverEnabled: r.append('naver')
     if d.googleEnabled: r.append('google')

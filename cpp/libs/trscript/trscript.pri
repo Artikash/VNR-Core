@@ -10,12 +10,14 @@ LIBS += -lboost_regex$$BOOST_VARIANT
 #QT += core
 
 HEADERS += \
-  $$PWD/trescape.h \
+  $$PWD/trdefine.h \
   $$PWD/trrule.h \
   $$PWD/trscript.h
 
 SOURCES += \
   $$PWD/trrule.cc \
   $$PWD/trscript.cc
+
+OTHER_FILES += example.txt
 
 # EOF

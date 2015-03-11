@@ -16,7 +16,7 @@
 #include <string>
 
 // Type indices
-#define SBK_TRANSLATIONSCRIPTMANAGER_IDX                             0
+#define SBK_TRANSLATIONSCRIPTPERFORMER_IDX                           0
 #define SBK_pytrscript_IDX_COUNT                                     1
 
 // This variable stores all Python types exported by this module.
@@ -35,7 +35,7 @@ namespace Shiboken
 {
 
 // PyType functions, to get the PyObjectType for a type T
-template<> inline PyTypeObject* SbkType< ::TranslationScriptManager >() { return reinterpret_cast<PyTypeObject*>(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTMANAGER_IDX]); }
+template<> inline PyTypeObject* SbkType< ::TranslationScriptPerformer >() { return reinterpret_cast<PyTypeObject*>(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTPERFORMER_IDX]); }
 
 } // namespace Shiboken
 

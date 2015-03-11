@@ -576,7 +576,7 @@ class tree {
 //           const typename tree<T, tree_node_allocator>::iterator& two)
 //   {
 //   txtout << "operator< " << one.node < two.node << std::endl;
-//   if(one.node < two.node) return true;
+//   if (one.node < two.node) return true;
 //   return false;
 //   }
 //
@@ -585,7 +585,7 @@ class tree {
 //           const typename tree<T, tree_node_allocator>::iterator& two)
 //   {
 //   txtout << "operator== " << one.node == two.node << std::endl;
-//   if(one.node == two.node) return true;
+//   if (one.node == two.node) return true;
 //   return false;
 //   }
 //
@@ -594,7 +594,7 @@ class tree {
 //           const typename tree<T, tree_node_allocator>::iterator_base& two)
 //   {
 //   txtout << "operator> " << one.node < two.node << std::endl;
-//   if(one.node > two.node) return true;
+//   if (one.node > two.node) return true;
 //   return false;
 //   }
 
@@ -657,7 +657,7 @@ void tree<T, tree_node_allocator>::head_initialise_()
 template <class T, class tree_node_allocator>
 tree<T,tree_node_allocator>& tree<T, tree_node_allocator>::operator=(const tree<T, tree_node_allocator>& other)
   {
-  if(this != &other)
+  if (this != &other)
     copy_(other);
   return *this;
   }
@@ -693,7 +693,7 @@ void tree<T, tree_node_allocator>::copy_(const tree<T, tree_node_allocator>& oth
 template <class T, class tree_node_allocator>
 void tree<T, tree_node_allocator>::clear()
   {
-  if(head)
+  if (head)
     while(head->next_sibling!=feet)
       erase(pre_order_iterator(head->next_sibling));
   }
@@ -702,7 +702,7 @@ template<class T, class tree_node_allocator>
 void tree<T, tree_node_allocator>::erase_children(const iterator_base& it)
   {
 //  std::cout << "erase_children " << it.node << std::endl;
-  if(it.node==0) return;
+  if (it.node==0) return;
 
   tree_node *cur=it.node->first_child;
   tree_node *prev=0;
@@ -730,13 +730,13 @@ iter tree<T, tree_node_allocator>::erase(iter it)
   ret.skip_children();
   ++ret;
   erase_children(it);
-  if(cur->prev_sibling==0) {
+  if (cur->prev_sibling==0) {
     cur->parent->first_child=cur->next_sibling;
     }
   else {
     cur->prev_sibling->next_sibling=cur->next_sibling;
     }
-  if(cur->next_sibling==0) {
+  if (cur->next_sibling==0) {
     cur->parent->last_child=cur->prev_sibling;
     }
   else {
@@ -777,7 +777,7 @@ template <class T, class tree_node_allocator>
 typename tree<T, tree_node_allocator>::post_order_iterator tree<T, tree_node_allocator>::begin_post() const
   {
   tree_node *tmp=head->next_sibling;
-  if(tmp!=feet) {
+  if (tmp!=feet) {
     while(tmp->first_child)
       tmp=tmp->first_child;
     }
@@ -800,13 +800,13 @@ typename tree<T, tree_node_allocator>::fixed_depth_iterator tree<T, tree_node_al
   unsigned int curdepth=0;
   while(curdepth<dp) { // go down one level
     while(tmp->first_child==0) {
-      if(tmp->next_sibling==0) {
+      if (tmp->next_sibling==0) {
         // try to walk up and then right again
         do {
-          if(tmp==ret.top_node)
+          if (tmp==ret.top_node)
              throw std::range_error("tree: begin_fixed out of range");
           tmp=tmp->parent;
-               if(tmp==0)
+               if (tmp==0)
              throw std::range_error("tree: begin_fixed out of range");
                --curdepth;
            } while(tmp->next_sibling==0);

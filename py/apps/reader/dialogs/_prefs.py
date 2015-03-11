@@ -2592,6 +2592,7 @@ class _TextTab(object):
       ('transru',   None, None,  None),
       ('naver',     None, None,  'ko'),
       ('baidu',     None, None,  'zh'),
+      ('youdao',    None, None,  'zh'),
       ('jbeijing',  'JBeijing', None, 'zh'),
       ('fastait',   None, None, 'zh'),
       ('dreye',     None, None,  'zh'),
@@ -2654,7 +2655,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -2909,6 +2910,13 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.baiduRubyButton, r, 1)
       r += 1
       row = create_retrans_row('baidu', self.baiduButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://fanyi.youdao.com"), r, 0)
+      grid.addWidget(self.youdaoButton, r, 1)
+      r += 1
+      row = create_retrans_row('youdao', self.youdaoButton)
       grid.addLayout(row, r, 1, 1, 2)
 
     if 'ko' not in blans:
@@ -3301,6 +3309,14 @@ class _MachineTranslationTab(object):
     ret.toggled.connect(ss.setBaiduRubyEnabled)
     #ret.setEnabled(ss.isBaiduEnabled())
     #ss.baiduEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def youdaoButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
+    ret.setChecked(settings.global_().isYoudaoEnabled())
+    ret.toggled.connect(settings.global_().setYoudaoEnabled)
     return ret
 
   @memoizedproperty

@@ -99,6 +99,8 @@ class reader(QObject):
       self.tr("Speak"),
       self.tr("Text-to-speech"), self.tr("Text-To-Speech"),
 
+      self.tr("User-defined"),
+
       self.tr("Context count"),
       self.tr("Previous context"),
 
@@ -123,7 +125,7 @@ class reader(QObject):
 
       #self.tr("ATLAS"),
       self.tr("Baidu"),
-      #self.tr("Youdao"),
+      self.tr("Youdao"),
       self.tr("Infoseek"),
       self.tr("Excite"),
       self.tr("Yahoo!"),

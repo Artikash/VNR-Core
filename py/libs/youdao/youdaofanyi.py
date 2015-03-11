@@ -92,10 +92,12 @@ if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
+import json
 import requests
 #from time import time
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
+import youdaodef
 
 session = requests # global session
 
@@ -103,46 +105,6 @@ session = requests # global session
 #FANYI_API = "http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule&smartresult=ugc&sessionFrom=null"
 FANYI_API = "http://fanyi.youdao.com/translate"
 
-
-# fanyi.coffee:
-#   t.LANGUAGETYPES =
-#     AUTO: "自动检测语言"
-#     EN2ZH_CN: "英语 &raquo; 中文"
-#     ZH_CN2EN: "中文 &raquo; 英语"
-#     JA2ZH_CN: "日语 &raquo; 中文"
-#     ZH_CN2JA: "中文 &raquo; 日语"
-#     FR2ZH_CN: "法语 &raquo; 中文"
-#     ZH_CN2FR: "中文 &raquo; 法语"
-#     KR2ZH_CN: "韩语 &raquo; 中文"
-#     ZH_CN2KR: "中文 &raquo; 韩语"
-#     RU2ZH_CN: "俄语 &raquo; 中文"
-#     ZH_CN2RU: "中文 &raquo; 俄语"
-#     SP2ZH_CN: "西语 &raquo; 中文"
-#     ZH_CN2SP: "中文 &raquo; 西语"
-FANYI_TYPES = {
-  'enzh': 'EN2ZH_CN',
-  'zhen': 'ZH_CN2EN',
-  'jazh': 'JA2ZH_CN',
-  'zhja': 'ZH_CN2JA',
-  'frzh': 'FR2ZH_CN',
-  'zhfr': 'ZH_CN2FR',
-  'kozh': 'KR2ZH_CN',
-  'zhko': 'ZH_CN2KR',
-  'ruzh': 'RU2ZH_CN',
-  'zhru': 'ZH_CN2RU',
-  'eszh': 'SP2ZH_CN',
-  'zhes': 'ZH_CN2SP',
-}
-def _typeof(to, fr):
-  """
-  @param  text  unicode not None
-  @param  fr  unicode not None
-  @param  to  unicode not None
-  @return  unicode not None
-  """
-  return FANYI_TYPES.get(fr[:2] + to[:2]) or 'AUTO'
-
-_translate_result = "result="
 def translate(text, to='zhs', fr='ja'):
   """Translate from/into simplified Chinese.
   @param  text  unicode not None
@@ -155,9 +117,15 @@ def translate(text, to='zhs', fr='ja'):
   try:
     r = session.post(FANYI_API,
       #headers=GZIP_HEADERS,
+      # Example:
+      #type=JA2ZH_CN&i=%C3%A3%C2%81%C2%93%C3%A3%C2%82%C2%93%C3%A3%C2%81%C2%AB%C3%A3%C2%81%C2%A1%C3%A3%C2%81%C2%AF&doctype=json&xmlVersion=1.6&keyfrom=fanyi.web&ue=UTF-8&typoResult=true
       data = {
-        'doctype': 'text', # or json, xml, etc
-        'type': _typeof(to, fr),
+        'doctype': 'json', # or json, xml, etc
+        #'xmlVersion': '1.6',
+        #'keyfrom': 'fanyi.web',
+        #'ue': 'UTF-8',
+        #'typoResult': 'true',
+        'type': youdaodef.langtype(to, fr),
         'i':  text, # utf8
       }
     )
@@ -166,9 +134,11 @@ def translate(text, to='zhs', fr='ja'):
     #   errorcode=0
     #   result=hello world
     if r.ok and len(ret) > 10:
-      ret = ret.decode('utf8', errors='ignore')
-      i = ret.index(_translate_result) # may throw value error
-      return ret[i+len(_translate_result):].rstrip() # rstrip to remove right "\n"
+      # Example: {"type":"JA2ZH_CN","errorCode":0,"elapsedTime":3,"translateResult":[[{"src":"こんにちは？","tgt":"你好?"}]]}
+      #ret = ret.decode('utf8', errors='ignore')
+      ret = json.loads(ret)
+      ret = '\n'.join(it['tgt'] for it in ret['translateResult'][0])
+      return ret
 
   #except socket.error, e:
   #  dwarn("socket error", e.args)
@@ -190,13 +160,16 @@ if __name__ == "__main__":
   #t = translate(u"Hello World!\nhello", to='zhs', fr='en')
   #t = translate(u"Hello World!\nhello", to='zhs', fr='ja')
 
-  t = translate(u"こんにちは？", to='zhs', fr='ja')
+  s = u"オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"
+  #s = u"こんにちは？"
+  t = translate(s, to='zhs', fr='ja')
   #t = translate(u"神楽", to='zhs', fr='ja')
+  print t
 
-  from PySide.QtGui import *
-  a = QApplication(sys.argv)
-  w = QLabel(t)
-  w.show()
-  a.exec_()
+  #from PySide.QtGui import *
+  #a = QApplication(sys.argv)
+  #w = QLabel(t)
+  #w.show()
+  #a.exec_()
 
 # EOF

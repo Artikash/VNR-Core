@@ -76,6 +76,7 @@ Item { id: root_
     , tts: My.tr("TTS")
     , ocr: My.tr("OCR")
     , macro: Sk.tr("Macro")
+    , proxy: Sk.tr("Proxy")
   }
   function typeName(type) {
     return _TYPE_NAMES[type] // string -> string
@@ -90,6 +91,23 @@ Item { id: root_
       return '+ ' + names.join(' + ')
     } else
       return '+ ' + Util.translatorName(host)
+  }
+
+  function typeDefaultRole(type) { // string -> string, the same as table.qml
+    switch (type) {
+    case 'trans':
+      return 'x'
+    case 'name': case 'yomi': case 'prefix': case 'suffix':
+      return 'm'
+    //case 'proxy': return 'x'
+    }
+  }
+  function roleName(role) { // string -> string
+    switch (role) {
+    case 'm': return Sk.tr("Name")
+    case 'x': return Sk.tr("Phrase")
+    default: return My.tr("User-defined")
+    }
   }
 
   function summary() {
@@ -129,6 +147,13 @@ Item { id: root_
         + ")"
     if (currentItem.host)
       ret += " " + hostName(currentItem.host)
+    var role = currentItem.role || typeDefaultRole(currentItem.type)
+    if (role) {
+      ret += " [[" + role + "]]"
+      var t = roleName(role)
+      if (t)
+        ret += "(" + t + ")"
+    }
 
     if (currentItem.gameId > 0)
       ret += "<br/>" + Sk.tr("Game") + ": " + gameSummary(currentItem.gameId)
@@ -222,7 +247,10 @@ Item { id: root_
     case -100: return qsTr("This rule is useless that has no effect") // E_USELESS
     case -101: return qsTr("Pattern does not need enabling regex") // E_USELESS_REGEX
     case -800: return qsTr("Entry type does not allow being translator-specific") // E_BAD_HOST
+    case -801: return qsTr("Please use only ASCII characters for translation role") // E_BAD_ROLE
     case -900: return qsTr("New line characters are not allowed in text") // E_NEWLINE
+    case -901: return qsTr("Tab characters are not allowed in text") // E_TAB
+    case -999: return qsTr("Missing translation") // E_EMPTY_TEXT
     case -1000: return qsTr("Missing pattern") // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr("Unknown warning") : Sk.tr("Unknown error")
     }

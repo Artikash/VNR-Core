@@ -58,6 +58,12 @@ Item { id: root_
   property string _UNSAVED_RICH_TEXT: // cached
        '<span style="background-color:red">' + Sk.tr("Unsaved") + '</span>'
 
+  property string _DELETED_TEXT: // cached
+       '(' + Sk.tr("Delete") + ')'
+
+  property string _EQUAL_TEXT: // cached
+       '(' + Sk.tr("Equal") + ')'
+
   function canEdit(term) { // object -> bool
     return !!term && !!userId && (userId === _SUPER_USER_ID
         || term.userId === userId && !term.protected
@@ -74,7 +80,7 @@ Item { id: root_
   }
 
   function shouldHighlight(term) { // object -> bool
-    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'game' || term.type === 'macro'
+    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'game' || term.type === 'macro' || term.type === 'proxy'
   }
 
   function itemColor(term) { // object -> string
@@ -104,10 +110,32 @@ Item { id: root_
       return Util.translatorName(host)
   }
 
+  function typeDefaultRole(type) { // string -> string, the same as table.qml
+    switch (type) {
+    case 'trans':
+      return 'x'
+    case 'name': case 'yomi': case 'prefix': case 'suffix':
+      return 'm'
+    //case 'proxy': return 'x'
+    }
+  }
+
+  function typeAllowsRole(type) { // string -> bool
+    switch (type) {
+    case 'trans':
+    //case 'name': case 'yomi': case 'prefix': case 'suffix': // force to be 'm'
+    case 'yomi':
+    case 'proxy':
+      return true
+    default: return false
+    }
+  }
+
   function typeAllowsHost(type) { // string -> bool
     switch (type) {
     case 'input': case 'output': case 'trans':
-    case 'name': case 'yomi':
+    case 'name': case 'yomi': case 'prefix': case 'suffix':
+    case 'proxy':
       return true
     default: return false
     }
@@ -147,7 +175,10 @@ Item { id: root_
     case -100: return qsTr("Useless") // E_USELESS
     case -101: return qsTr("Regex") // E_USELESS_REGEX
     case -800: return My.tr("Translator") // E_BAD_HOST
+    case -801: return Sk.tr("Role") // E_BAD_ROLE
     case -900: return "\\n" // E_NEWLINE
+    case -901: return "\\t" // E_TAB
+    case -999: return Sk.tr("Invalid") // E_MEMPTY_TEXT
     //case -1000: // E_EMPTY_PATTERN
     default: return v > 0 ? Sk.tr('Warning') : Sk.tr('Error')
     }
@@ -165,6 +196,7 @@ Item { id: root_
     , tts: My.tr("TTS")
     , ocr: My.tr("OCR")
     , macro: Sk.tr("Macro")
+    , proxy: Sk.tr("Proxy")
   }
   function typeName(type) {
     return _TYPE_NAMES[type] // string -> string
@@ -279,7 +311,7 @@ Item { id: root_
     // Column: Disabled
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Enable")
-      width: 45
+      width: 30
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -465,8 +497,8 @@ Item { id: root_
               var t = model.get(selectedIndex).value
               if (t !== itemValue.type) {
                 itemValue.type = t
-                if (t === 'macro' && !itemValue.regex)
-                  itemValue.regex = true
+                //if (t === 'macro' && !itemValue.regex)
+                //  itemValue.regex = true
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
               }
@@ -543,8 +575,8 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
-          checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
+          enabled: canEdit(itemValue) && itemValue.type !== 'proxy' // && !itemValue.syntax // prevent from using regex
+          checked: itemValue.regex //|| itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
               itemValue.regex = checked
@@ -561,7 +593,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && item.type !== 'proxy' //&& !itemValue.syntax // prevent from using regex
           checked: itemValue.phrase // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.phrase)
@@ -579,7 +611,7 @@ Item { id: root_
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           //enabled: canEdit(itemValue) && itemValue.type !== 'suffix' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
-          enabled: canEdit(itemValue) && itemValue.type !== 'macro' //&& !itemValue.syntax // prevent from using regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'macro' && itemValue.type !== 'proxy' // prevent from using regex
           checked: itemValue.icase // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.icase)
@@ -644,7 +676,7 @@ Item { id: root_
     // Column: Game
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Game")
-      width: 120
+      width: 90
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -717,6 +749,60 @@ Item { id: root_
       }
     }
 
+    // Column: Role
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Role")
+      width: 45
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue) && (
+                             root_.userId == _SUPER_USER_ID || !!itemValue.role || root_.typeAllowsRole(itemValue.type))
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          horizontalAlignment: Text.AlignHCenter
+          visible: !itemSelected //|| !editable
+          text: {
+            var ret = itemValue.role || root_.typeDefaultRole(itemValue.type)
+            return ret ? "[[" + ret + "]]" : "-"
+          }
+          color: itemSelected ? 'white' : itemColor(itemValue)
+          font.strikeout: !itemSelected && itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        TextInput {
+          anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
+          color: 'white'
+          selectByMouse: true
+          selectionColor: 'white'
+          selectedTextColor: 'black'
+          visible: itemSelected //&& editable
+          readOnly: !editable
+          maximumLength: 32 // the same limit value as server side
+          //font.bold: itemValue.regex
+
+          //property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
+
+          Component.onCompleted: text = itemValue.role
+
+          onTextChanged: save()
+          onAccepted: save()
+          function save() {
+            if (editable) {
+              var t = Util.trim(text)
+              if (t && t !== itemValue.role) {
+                itemValue.role = t
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Column: Pattern
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Pattern")
@@ -737,7 +823,7 @@ Item { id: root_
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
-          color: valid ? 'white' : 'red'
+          color: 'white'
           selectByMouse: true
           selectionColor: 'white'
           selectedTextColor: 'black'
@@ -746,7 +832,7 @@ Item { id: root_
           maximumLength: _MAX_TEXT_LENGTH
           //font.bold: itemValue.regex
 
-          property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
+          //property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
 
           Component.onCompleted: text = itemValue.pattern
 
@@ -755,7 +841,7 @@ Item { id: root_
           function save() {
             if (editable) {
               var t = Util.trim(text)
-              if (t && t !== itemValue.pattern && valid) {
+              if (t && t !== itemValue.pattern) {
                 itemValue.pattern = t
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
@@ -766,7 +852,7 @@ Item { id: root_
       }
     }
 
-    // Column: Text
+    // Column: Translation text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Translation")
       width: 80
@@ -779,7 +865,9 @@ Item { id: root_
           clip: true
           verticalAlignment: Text.AlignVCenter
           visible: !itemSelected //|| !editable
-          text: itemValue.text
+          text: !itemValue.text ? root_._DELETED_TEXT
+                : itemValue.text === itemValue.pattern ? root_._EQUAL_TEXT
+                : itemValue.text
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
           font.bold: itemValue.regex //|| itemValue.syntax

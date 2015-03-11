@@ -10,6 +10,7 @@ HEADERS += \
     $$PWD/cpplocale.h \
     $$PWD/cppmarshal.h \
     $$PWD/cpppath.h \
+    $$PWD/cppregex.h \
     $$PWD/cppstring.h \
     $$PWD/cpptype.h \
     $$PWD/cppunicode.h

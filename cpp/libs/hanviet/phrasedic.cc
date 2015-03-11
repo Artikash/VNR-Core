@@ -4,7 +4,7 @@
 #include "hanviet/phrasedic.h"
 #include "cpputil/cpplocale.h"
 #include "unistr/unichar.h"
-#include "trscript/trescape.h" // cross module include is bad
+#include "trrender/trescape.h" // cross module include is bad
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <fstream>
@@ -156,7 +156,7 @@ bool HanVietPhraseDictionary::addFile(const std::wstring &path)
   std::string spath(path.begin(), path.end());
   std::wifstream fin(spath.c_str());
 #endif // _MSC_VER
-  if(!fin.is_open())
+  if (!fin.is_open())
     return false;
   fin.imbue(UTF8_LOCALE);
 

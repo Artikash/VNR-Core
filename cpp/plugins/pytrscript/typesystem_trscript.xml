@@ -3,5 +3,5 @@
 <typesystem package='pytrscript'>
   <load-typesystem name="typesystem_cpp_types.xml" generate="yes" />
   <load-typesystem name="typesystem_std_string.xml" generate="yes" />
-  <object-type name="TranslationScriptManager" />
+  <object-type name="TranslationScriptPerformer" />
 </typesystem>

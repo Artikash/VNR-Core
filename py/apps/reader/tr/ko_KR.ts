@@ -203,27 +203,27 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>기본 색상 복원</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7621"/>
+        <location filename="dialogs/_prefs.py" line="7637"/>
         <source>Preferred Chinese characters</source>
         <translation>중국한자 우선</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3912"/>
+        <location filename="dialogs/_prefs.py" line="3928"/>
         <source>Convert Simplified Chinese subtitles to Traditional Chinese</source>
         <translation>중국어 간체 번역문을 중국어 번체로 변환</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4085"/>
+        <location filename="dialogs/_prefs.py" line="4101"/>
         <source>Preferred Japanese furigana characters</source>
         <translation>일본어 후리가나 문자 우선</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4165"/>
+        <location filename="dialogs/_prefs.py" line="4181"/>
         <source>like this</source>
         <translation>예시</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3060"/>
+        <location filename="dialogs/_prefs.py" line="3068"/>
         <source>Preferred machine translation providers</source>
         <translation>기계번역 선택</translation>
     </message>
@@ -263,27 +263,27 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>기본 배경화면으로 복원</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7386"/>
+        <location filename="dialogs/_prefs.py" line="7402"/>
         <source>Please select the folder containing {0}</source>
         <translation>{0}가 존재하는 폴더를 선택해주세요</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7357"/>
+        <location filename="dialogs/_prefs.py" line="7373"/>
         <source>Select the location of {0}</source>
         <translation>{0}의 위치 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7391"/>
+        <location filename="dialogs/_prefs.py" line="7407"/>
         <source>Couldn&apos;t find {0} from the specified location</source>
         <translation>지정된 경로에서 {0}을 찾을 수 없습니다</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7405"/>
+        <location filename="dialogs/_prefs.py" line="7421"/>
         <source>Not found, please specify the location of {0}</source>
         <translation>찾을 수 없음, {0}의 위치를 지정해주세요</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4202"/>
+        <location filename="dialogs/_prefs.py" line="4218"/>
         <source>Preferred Japanese phrase dictionaries</source>
         <translation>일본어 사전 선택</translation>
     </message>
@@ -550,7 +550,7 @@ Especially if you would like to translate this game.</source>
 이 게임의 번역률이 상승 할 것 입니다.</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="4258"/>
+        <location filename="dialogs/_prefs.py" line="4274"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>코지엔(広辞苑) 일ㆍ일사전</translation>
     </message>
@@ -815,32 +815,32 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation type="obsolete">Dr.eye 중ㆍ일/영 번역기</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="599"/>
+        <location filename="managers/_trman.py" line="583"/>
         <source>ATLAS translator is loaded</source>
         <translation>ATLAS 영ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="674"/>
+        <location filename="managers/_trman.py" line="659"/>
         <source>LEC translator is loaded</source>
         <translation>LEC 영ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1278"/>
+        <location filename="managers/_trman.py" line="1269"/>
         <source>Dr.eye Japanese-Chinese translator is loaded</source>
         <translation>Dr.eye 일ㆍ중 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1291"/>
+        <location filename="managers/_trman.py" line="1282"/>
         <source>Dr.eye English-Chinese translator is loaded</source>
         <translation>Dr.eye 영ㆍ중 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="986"/>
+        <location filename="managers/_trman.py" line="975"/>
         <source>JBeijing translator is loaded</source>
         <translation>JBeijing(J北京) 중ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1014"/>
+        <location filename="managers/_trman.py" line="1003"/>
         <source>Failed to load user-defined dictionaries</source>
         <translation>사용자 사전 준비실패</translation>
     </message>
@@ -865,82 +865,82 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>사용자 댓글 업데이트</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1349"/>
+        <location filename="managers/_trman.py" line="1341"/>
         <source>Cannot load {0} for machine translation. Please check Preferences/Location</source>
         <translation>기계번역에 {0}을 준비 할 수 없음. 환경설정/위치를 확인해주세요</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1008"/>
+        <location filename="managers/_trman.py" line="997"/>
         <source>Load user-defined dictionaries</source>
         <translation>사용자 사전 준비</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6805"/>
+        <location filename="managers/dataman.py" line="6960"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>&apos;{0}&apos;로 로그인</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6806"/>
+        <location filename="managers/dataman.py" line="6961"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>언어는 &apos;{0}&apos;입니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6811"/>
+        <location filename="managers/dataman.py" line="6966"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>&apos;{0}&apos;로 로그인 실패</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7961"/>
+        <location filename="managers/dataman.py" line="8109"/>
         <source>Fetching comments</source>
         <translation>댓글 등록</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7972"/>
+        <location filename="managers/dataman.py" line="8120"/>
         <source>Loading offline comments</source>
         <translation>오프라인 댓글 불러오는 중</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7982"/>
+        <location filename="managers/dataman.py" line="8130"/>
         <source>Found {0} comments</source>
         <translation>{0}개의 댓글 발견</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8534"/>
+        <location filename="managers/dataman.py" line="8678"/>
         <source>Failed to save changes, will try later</source>
         <translation>변경을 저장하는데 실패해서, VNR에서 다시시도합니다.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9349"/>
+        <location filename="managers/dataman.py" line="9491"/>
         <source>Found {0} terms</source>
         <translation>{0}개의 용어 찾음</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9355"/>
+        <location filename="managers/dataman.py" line="9497"/>
         <source>Failed to download terms online</source>
         <translation>온라인에서 사전용어 다운로드 실패</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9356"/>
+        <location filename="managers/dataman.py" line="9498"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>인터넷 연결이 불안정합니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9742"/>
+        <location filename="managers/dataman.py" line="9884"/>
         <source>Failed to get game information</source>
         <translation>게임 정보 획득 실패</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9930"/>
+        <location filename="managers/dataman.py" line="10072"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>게임이 존재하지 않습니다. 지우시겠습니까?</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10511"/>
+        <location filename="managers/dataman.py" line="10652"/>
         <source>Please sign in to submit comment</source>
         <translation>댓글을 등록하시려면 로그인 해주세요</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10528"/>
+        <location filename="managers/dataman.py" line="10669"/>
         <source>Cannot connect to the Internet</source>
         <translation>인터넷에 연결할 수 없음</translation>
     </message>
@@ -965,17 +965,17 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>사용자 후킹코드 적용</translation>
     </message>
     <message>
-        <location filename="main.py" line="1522"/>
+        <location filename="main.py" line="1525"/>
         <source>Please close the current game first before opening new games</source>
         <translation>새로운 게임을 열기전에, 현재 게임을 먼저 닫아주세요.</translation>
     </message>
     <message>
-        <location filename="main.py" line="1814"/>
+        <location filename="main.py" line="1817"/>
         <source>Found running game</source>
         <translation>실행중 게임 찾음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1824"/>
+        <location filename="main.py" line="1827"/>
         <source>Found new game</source>
         <translation>새로운 게임 찾음</translation>
     </message>
@@ -985,32 +985,32 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation type="obsolete">오프라인이기 때문에, 게임 마법사를 이용해서 게임을 수동으로 추가해주세요</translation>
     </message>
     <message>
-        <location filename="main.py" line="1610"/>
+        <location filename="main.py" line="1613"/>
         <source>File does not exist {0}</source>
         <translation>파일이 존재하지 않습니다:{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="2119"/>
+        <location filename="main.py" line="2126"/>
         <source>Update requires Internet access</source>
         <translation>업데이트를 하려면 인터넷 연결이 필요합니다</translation>
     </message>
     <message>
-        <location filename="main.py" line="2132"/>
+        <location filename="main.py" line="2139"/>
         <source>You are using the latest app</source>
         <translation>이미 최신 버전입니다</translation>
     </message>
     <message>
-        <location filename="main.py" line="2137"/>
+        <location filename="main.py" line="2144"/>
         <source>Update released</source>
         <translation>새로운 업데이트 발견</translation>
     </message>
     <message>
-        <location filename="main.py" line="2161"/>
+        <location filename="main.py" line="2168"/>
         <source>Critical update message</source>
         <translation>매우 중요한 업데이트 발견</translation>
     </message>
     <message>
-        <location filename="main.py" line="2265"/>
+        <location filename="main.py" line="2272"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>사전이 비어있습니다. 인터넷에 연결하고 새로고침 해주세요.</translation>
     </message>
@@ -1055,17 +1055,17 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>사진의 위치를 선택해 주세요</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9222"/>
+        <location filename="managers/dataman.py" line="9364"/>
         <source>Updating game database online</source>
         <translation>온라인 게임 데이터베이스 업데이트 중</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9245"/>
+        <location filename="managers/dataman.py" line="9387"/>
         <source>Failed to update game database</source>
         <translation>게임 데이터베이스 업데이트 실패</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9262"/>
+        <location filename="managers/dataman.py" line="9404"/>
         <source>Game database is updated</source>
         <translation>게임 데이터베이스 업데이트 완료</translation>
     </message>
@@ -1087,12 +1087,12 @@ It might take a couple of seconds to complete.</source>
 완료하는데 몇 초 걸립니다.</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="4272"/>
+        <location filename="dialogs/_prefs.py" line="4288"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>일ㆍ중 통합 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3265"/>
+        <location filename="dialogs/_prefs.py" line="3273"/>
         <source>excluding {0}</source>
         <translation>{0}을 포함하지 않음</translation>
     </message>
@@ -1107,27 +1107,27 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}은 관리자 권한이 필요합니다. VNR을 관리자 권한으로 재실행 해주세요</translation>
     </message>
     <message>
-        <location filename="main.py" line="2284"/>
+        <location filename="main.py" line="2291"/>
         <source>There are no user-contributed subtitles</source>
         <translation>사용자 번역문이 없습니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10584"/>
+        <location filename="managers/dataman.py" line="10725"/>
         <source>Shared dictionary is empty</source>
         <translation>공유 사전이 비어있습니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10581"/>
+        <location filename="managers/dataman.py" line="10722"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>사전용어들이 바탕화면에 저장되었습니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10627"/>
+        <location filename="managers/dataman.py" line="10768"/>
         <source>There are no subtitles</source>
         <translation>자막이 존재하지 않습니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10624"/>
+        <location filename="managers/dataman.py" line="10765"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>바탕화면에 자막이 저장되었습니다</translation>
     </message>
@@ -1137,17 +1137,17 @@ It might take a couple of seconds to complete.</source>
         <translation>일본어 로컬 Windows에 적합</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10186"/>
+        <location filename="managers/dataman.py" line="10327"/>
         <source>Please start the game to submit comment</source>
         <translation>댓글을 등록하기 위해 게임을 시작해주세요</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5568"/>
+        <location filename="managers/dataman.py" line="5717"/>
         <source>No user-contributed subtitles found</source>
         <translation>사용자 자막을 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1939"/>
+        <location filename="main.py" line="1942"/>
         <source>Loading comment ... patient!</source>
         <translation>댓글 로딩 중…잠시만 기다리세요!</translation>
     </message>
@@ -1157,40 +1157,40 @@ It might take a couple of seconds to complete.</source>
         <translation type="obsolete">ezTrans XP 한ㆍ일 번역기</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="761"/>
+        <location filename="managers/_trman.py" line="747"/>
         <source>ezTrans XP is loaded</source>
         <translation>ezTrans XP 한ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5948"/>
+        <location filename="dialogs/_prefs.py" line="5964"/>
         <source>Kodensha JBeijing v7 is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; translation.&lt;br/&gt;
 JBeijing is detected on your system at the above location.</source>
         <translation>Kodensha(高電社) JBeijing v7 는 &lt;span style=&quot;color:purple&quot;&gt;오프라인 중ㆍ일&lt;/span&gt;번역에 사용됩니다.&lt;br/&gt;
 JBeijing(J北京)은 아래 위치에서 탐색됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6142"/>
+        <location filename="dialogs/_prefs.py" line="6158"/>
         <source>Inventec Dr.eye v9.0 is used by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 Dr.eye is detected on your system at the above location.</source>
         <translation>Inventec Dr.eye v9.0 는 &lt;span style=&quot;color:purple&quot;&gt;오프라인 중ㆍ일/영&lt;/span&gt;번역에 사용됩니다.&lt;br/&gt;
 Dr.eye은 아래 위치에서 탐색됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6235"/>
+        <location filename="dialogs/_prefs.py" line="6251"/>
         <source>ChangShin Soft ezTrans XP is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 ezTrans is detected on your system at the above location.</source>
         <translation>창신소프트 ezTrans XP는 &lt;span style=&quot;color:purple&quot;&gt;오프라인 한ㆍ일&lt;/span&gt;번역에 사용됩니다.&lt;br/&gt;
 ezTrans은 아래 위치에서 탐색됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6425"/>
+        <location filename="dialogs/_prefs.py" line="6441"/>
         <source>Fujitsu Atlas v14 is used for &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English&lt;/span&gt; translation.&lt;br/&gt;
 Atlas is detected on your system at the above location.</source>
         <translation>후지쯔(富士通) ATLAS v14는 &lt;span style=&quot;color:purple&quot;&gt;오프라인 영ㆍ일&lt;/span&gt;번역에 사용됩니다.&lt;br/&gt;
 ATLAS은 아래 위치에서 탐색됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6428"/>
+        <location filename="dialogs/_prefs.py" line="6444"/>
         <source>Fujitsu Atlas v14 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English&lt;/span&gt; translation.&lt;br/&gt;
 You can get a free version of Atlas here from Fujitsu:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1206,7 +1206,7 @@ Power Translator is detected on your system at the above location.</source>
 Power Translator은 아래 위치에서 탐색됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6712"/>
+        <location filename="dialogs/_prefs.py" line="6728"/>
         <source>Iwanami Kojien dictionary is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese&lt;/span&gt; word translation.&lt;br/&gt;
 Kojien is detected on your system at the above location.</source>
         <translation>이와나미 코지엔 사전을 이용하여&lt;span style=&quot;color:purple&quot;&gt;일본어 단어검색&lt;/span&gt;사전을 사용합니다.&lt;br/&gt;
@@ -1218,7 +1218,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>일본 표준시로 게임 실행</translation>
     </message>
     <message>
-        <location filename="main.py" line="1331"/>
+        <location filename="main.py" line="1334"/>
         <source>Analyzing data ... patient!</source>
         <translation>데이터 분석 중… 잠시만 기다려주세요!</translation>
     </message>
@@ -1233,7 +1233,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}%</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9614"/>
+        <location filename="managers/dataman.py" line="9756"/>
         <source>Searching game information online</source>
         <translation>온라인에서 게임 정보 찾는 중</translation>
     </message>
@@ -1243,7 +1243,7 @@ Kojien is detected on your system at the above location.</source>
         <translation type="obsolete">알 수 없는 게임입니다. 게임 마법사를 사용해서 추가해주세요.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9609"/>
+        <location filename="managers/dataman.py" line="9751"/>
         <source>The game already exists</source>
         <translation>게임이 이미 존재합니다</translation>
     </message>
@@ -1276,12 +1276,12 @@ If yes, VNR will block all settings for this language.</source>
 그럴경우, VNR은 모든 설정에서 이 언어를 차단할겁니다.</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="5051"/>
+        <location filename="dialogs/_prefs.py" line="5067"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>와도쿠(和独) 일ㆍ독 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5951"/>
+        <location filename="dialogs/_prefs.py" line="5967"/>
         <source>Kodensha JBeijing v7 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; translation.&lt;br/&gt;
 JBeijing is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Kodensha:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1291,7 +1291,7 @@ JBeijing는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt
 &lt;span style=&quot;color:red&quot;&gt;주의: JBeijing(J北京)의 경로에 중국어를 포함하면 안됩니다.&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6238"/>
+        <location filename="dialogs/_prefs.py" line="6254"/>
         <source>ChangShin Soft ezTrans XP is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 ezTrans is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from ChangShin Soft:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1309,7 +1309,7 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6716"/>
+        <location filename="dialogs/_prefs.py" line="6732"/>
         <source>Iwanami Kojien is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese&lt;/span&gt; word translation.&lt;br/&gt;
 It is a ja-ja dictionary distributed in &lt;a href=&quot;%s&quot;&gt;EPWING&lt;/a&gt; format DVD.&lt;br/&gt;
 Kojien is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Iwanami:
@@ -1320,14 +1320,14 @@ Kojien is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and 
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6979"/>
+        <location filename="dialogs/_prefs.py" line="6995"/>
         <source>Shogakukan Zhongri is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; word translation.&lt;br/&gt;
 Zhongri is detected on your system at the above location.</source>
         <translation>쇼가쿠칸 일ㆍ중통합사전은 &lt;span style=&quot;color:purple&quot;&gt;오프라인 일ㆍ중&lt;/span&gt;단어 번역을 하는데 필요합니다.&lt;br/&gt;
 일ㆍ중통합사전은 위 장소에서 감지되었습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6983"/>
+        <location filename="dialogs/_prefs.py" line="6999"/>
         <source>Shogakukan Zhongri is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; translation.&lt;br/&gt;
 It is a ja-zh dictionary distributed in &lt;a href=&quot;%s&quot;&gt;EPWING&lt;/a&gt; format DVD.&lt;br/&gt;
 Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Amazon:
@@ -1363,12 +1363,12 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>모든 항목을 영구삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3289"/>
+        <location filename="dialogs/_prefs.py" line="3297"/>
         <source>Baidu.com Chinese translation service</source>
         <translation>바이두 중국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8697"/>
+        <location filename="managers/dataman.py" line="8839"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>당신의 {0}은 &apos;{1}&apos;입니다</translation>
     </message>
@@ -1413,7 +1413,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>호버 텍스트 번역 중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3138"/>
+        <location filename="dialogs/_prefs.py" line="3146"/>
         <source>Microsoft Bing.com multilingual translation service</source>
         <translation>마이크로소프트 Bing 다국어 번역 서비스</translation>
     </message>
@@ -1423,7 +1423,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>오프라인 상태로 업데이트 할 수 없음</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6985"/>
+        <location filename="dialogs/_prefs.py" line="7001"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;Note: EPWING path cannot contain non-English characters!&lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color:red&quot;&gt;주의: EPWING의 경로는 영어가 아닌 문자를 포함하면 안됩니다!</translation>
     </message>
@@ -1449,32 +1449,32 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>단축키 대상이 존재하지 않습니다</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7331"/>
+        <location filename="managers/dataman.py" line="7483"/>
         <source>Remove bad user-defined hcode</source>
         <translation>사용자 h코드에서 오류 제거</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6172"/>
+        <location filename="managers/dataman.py" line="6322"/>
         <source>Update game information</source>
         <translation>게임 정보 업데이트</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6180"/>
+        <location filename="managers/dataman.py" line="6330"/>
         <source>Found {0} references</source>
         <translation>{0}참조 찾음</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6182"/>
+        <location filename="managers/dataman.py" line="6332"/>
         <source>No game references found</source>
         <translation>게임 참조 찾을수 없음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1999"/>
+        <location filename="main.py" line="2002"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>알 수 없는 게임. 데이터베이스를 업데이트 해주세요.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10083"/>
+        <location filename="managers/dataman.py" line="10225"/>
         <source>Please sign in to submit reference</source>
         <translation>참조를 등록하려면 로그인 해주세요.</translation>
     </message>
@@ -1499,7 +1499,7 @@ For example, you can put in &quot;typo&quot;, &quot;inaccurate&quot;, or &quot;s
         <translation>게임 제목이 지정되지 않았습니다. 수정 버튼을 눌러 게임 제목을 추가할 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/refinput.py" line="622"/>
+        <location filename="dialogs/refinput.py" line="633"/>
         <source>Please select the game title</source>
         <translation>게임 제목을 선택해 주세요</translation>
     </message>
@@ -1533,19 +1533,19 @@ GDI 나 DirectX로 렌터링 된 텍스트는 찾을 수 없습니다.
 하지만, 구글 크롬과 Foxit Reader는 지원하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3167"/>
+        <location filename="dialogs/_prefs.py" line="3175"/>
         <source>Google.com multilingual translation service</source>
         <translation>Google.com 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4486"/>
+        <location filename="dialogs/_prefs.py" line="4502"/>
         <source>Mainland China has blocked many international services including Google.
 If you enable this option, VNR will try providing alternative services.</source>
         <translation>중국 정부는 Google을 포함한 많은 국제 서비스를 차단하고 있습니다.
 이 설정을 활성화하신다면, VNR은 다른 방법을 제공할겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4492"/>
+        <location filename="dialogs/_prefs.py" line="4508"/>
         <source>You are currently living in Mainland China</source>
         <translation>중국에 살고 있을 경우</translation>
     </message>
@@ -1629,7 +1629,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
 사용자 특권은 자막과 같이 다른 사용자를 위한 노력을 나타냅니다.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6451"/>
+        <location filename="managers/dataman.py" line="6606"/>
         <source>Reference already existed</source>
         <translation>참조 이미 존재함</translation>
     </message>
@@ -1664,7 +1664,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>다른 사용자에게 지워진 이 게임의 최근 /H 코드</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6334"/>
+        <location filename="dialogs/_prefs.py" line="6350"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;Note: The path cannot contain non-English characters!&lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color:red&quot;&gt;주의:경로에 영어가 아닌 문자가 들어있습니다!&lt;/span&gt;</translation>
     </message>
@@ -1689,7 +1689,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>다른 사용자에게 덮어쓰기를 허용하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main.py" line="1554"/>
+        <location filename="main.py" line="1557"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1737,27 +1737,27 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>필요시 일본 시각으로 게임을 실행합니다</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="264"/>
+        <location filename="i18n.py" line="266"/>
         <source>Text thread from Windows Non-GUI function</source>
         <translation>윈도우 비GUI환경으로부터 텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="265"/>
+        <location filename="i18n.py" line="267"/>
         <source>Text thread from Windows GUI function</source>
         <translation>윈도우 GUI환경으로부터 텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="266"/>
+        <location filename="i18n.py" line="268"/>
         <source>Text thread from game-specific engine</source>
         <translation>게임 지정 엔진으로부터 게임 스레드</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="263"/>
+        <location filename="i18n.py" line="265"/>
         <source>Text thread from user-defined H-code</source>
         <translation>사용자 H코드로부터 텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5198"/>
+        <location filename="dialogs/_prefs.py" line="5214"/>
         <source>recommended for Chinese</source>
         <translation>중국어에 추천</translation>
     </message>
@@ -1767,7 +1767,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>마지막 저장한 설정으로 복귀</translation>
     </message>
     <message>
-        <location filename="main.py" line="1558"/>
+        <location filename="main.py" line="1561"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1815,7 +1815,7 @@ than turning on global repetition filters here.</source>
         <translation>경고: 반복이 없다면 반복필터를 켜지 말아주세요!</translation>
     </message>
     <message>
-        <location filename="main.py" line="1893"/>
+        <location filename="main.py" line="1896"/>
         <source>The feature is not available on Wine</source>
         <translation>이 기능은 Wine에서는 아직 이용할수 없습니다.</translation>
     </message>
@@ -2026,7 +2026,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>단어(영어) 사이의 공백 유지</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7370"/>
+        <location filename="managers/dataman.py" line="7522"/>
         <source>Remove non-existed game</source>
         <translation>존재하지 않는 게임을 제거</translation>
     </message>
@@ -2036,7 +2036,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>음성합성 엔진 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6618"/>
+        <location filename="dialogs/_prefs.py" line="6634"/>
         <source>Microsoft Japanese IME is detected on your system at the above location.&lt;br/&gt;
 It could significantly improve the quality of Japanese analysis.&lt;br/&gt;
 It is &lt;span style=&quot;color:purple&quot;&gt;free&lt;/span&gt; for Office users, and you can get the latest version here from Microsoft:
@@ -2051,7 +2051,7 @@ Office 사용자들이 사용할 수 있으며, 최신버전을 &lt;span style=&
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6624"/>
+        <location filename="dialogs/_prefs.py" line="6640"/>
         <source>Microsoft Japanese IME could significantly improve the quality of Japanese analysis.&lt;br/&gt;
 It is &lt;span style=&quot;color:purple&quot;&gt;free&lt;/span&gt; for Office users, and you can get the latest version here from Microsoft:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
@@ -2064,7 +2064,7 @@ Office 사용자들이 사용할 수 있으며, 최신버전을 &lt;span style=&
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7191"/>
+        <location filename="dialogs/_prefs.py" line="7207"/>
         <source>VoiceText Misaki is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Misaki is a Japanese female TTS SAPI library.&lt;br/&gt;
 VoiceText is detected on your system at the above location.</source>
@@ -2073,7 +2073,7 @@ Misaki는 일본어 여성 TTS SAPI 라이브러리입니다.&lt;br/&gt;
 Misaki는 다음 위치에서 발견됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7195"/>
+        <location filename="dialogs/_prefs.py" line="7211"/>
         <source>VoiceText Misaki is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Misaki is a Japanese female TTS SAPI library.&lt;br/&gt;
 Misaki is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from HOYA SERVICE:
@@ -2084,12 +2084,12 @@ Misaki는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7301"/>
+        <location filename="dialogs/_prefs.py" line="7317"/>
         <source>Please select the location of {0}</source>
         <translation>{0}의 위치를 선택해주세요</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7325"/>
+        <location filename="dialogs/_prefs.py" line="7341"/>
         <source>Voiceroid+ Yukari from AHS is used by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Yukari is a Japanese female TTS app.&lt;br/&gt;
 Voiceroid is detected on your system at the above location.</source>
@@ -2098,7 +2098,7 @@ Voiceroid is detected on your system at the above location.</source>
 유카리(結月ゆかり)는 다음 위치에서 발견됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7329"/>
+        <location filename="dialogs/_prefs.py" line="7345"/>
         <source>Voiceroid+ Yukari could be used for &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Yukari is a Japanese female TTS app.&lt;br/&gt;
 Yukari is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from AHS:
@@ -2169,7 +2169,7 @@ Yukari is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and 
         <translation>게임에 따라 배경을 자동으로 바꿉니다</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7238"/>
+        <location filename="dialogs/_prefs.py" line="7254"/>
         <source>VoiceText Show is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Show is a Japanese &lt;span style=&quot;color:red&quot;&gt;male&lt;/span&gt; TTS SAPI library.&lt;br/&gt;
 VoiceText is detected on your system at the above location.</source>
@@ -2178,7 +2178,7 @@ Show는 &lt;span style=&quot;color:red&quot;&gt;남성&lt;/span&gt;일본어 TTS
 Show는 위 장소에서 감지되었습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7242"/>
+        <location filename="dialogs/_prefs.py" line="7258"/>
         <source>VoiceText Show is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Show is a Japanese &lt;span style=&quot;color:red&quot;&gt;male&lt;/span&gt; TTS SAPI library.&lt;br/&gt;
 Show is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from HOYA SERVICE:
@@ -2189,107 +2189,107 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="341"/>
+        <location filename="dialogs/mttest.py" line="364"/>
         <source>Current game for game-specific terms in the Shared Dictionary</source>
         <translation>공유사전에 현재게임 지정 용어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="392"/>
+        <location filename="dialogs/mttest.py" line="415"/>
         <source>Text language</source>
         <translation>텍스트 언어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="401"/>
+        <location filename="dialogs/mttest.py" line="424"/>
         <source>User language</source>
         <translation>사용자 언어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="412"/>
+        <location filename="dialogs/mttest.py" line="435"/>
         <source>Current translator</source>
         <translation>현재 번역기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="428"/>
+        <location filename="dialogs/mttest.py" line="451"/>
         <source>Language adjusted for the translator</source>
         <translation>번역기를 위해 언어 재배열</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="528"/>
+        <location filename="dialogs/mttest.py" line="551"/>
         <source>Original text to translate</source>
         <translation>번역할 원문</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="556"/>
+        <location filename="dialogs/mttest.py" line="579"/>
         <source>Direct translation</source>
         <translation>직역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="565"/>
+        <location filename="dialogs/mttest.py" line="588"/>
         <source>Concatenated translation</source>
         <translation>결합된 번역문</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="572"/>
+        <location filename="dialogs/mttest.py" line="595"/>
         <source>Final translation</source>
         <translation>최종 번역 결과</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="600"/>
         <source>Prepare escaped terms and names</source>
-        <translation>용어와 이름을 사용해 번역</translation>
+        <translation type="obsolete">용어와 이름을 사용해 번역</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="608"/>
         <source>Unescape terms and names</source>
-        <translation>용어와 이름을 사용하지 않고 번역</translation>
+        <translation type="obsolete">용어와 이름을 사용하지 않고 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="624"/>
+        <location filename="dialogs/mttest.py" line="660"/>
         <source>Split by punctuations</source>
         <translation>문장부호로 나누기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="627"/>
+        <location filename="dialogs/mttest.py" line="663"/>
         <source>Split either by sentences for offline Latin languages or by paragraphs otherwise</source>
         <translation>오프라인 라틴계 언어의 문장이거나, 단락이 나누어져있으면 나눠서 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="631"/>
+        <location filename="dialogs/mttest.py" line="667"/>
         <source>Separated translations</source>
         <translation>나눠진 번역문</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="235"/>
         <source>Procedures marked as {0} behave differently for different user languages.</source>
-        <translation>사용자 언어와 {0}로 생성된 번역이 다른 언어입니다.</translation>
+        <translation type="obsolete">사용자 언어와 {0}로 생성된 번역이 다른 언어입니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="559"/>
+        <location filename="dialogs/mttest.py" line="582"/>
         <source>Direct translation without modifications by VNR</source>
         <translation>VNR에 의한 변경사항없이 바로 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="568"/>
+        <location filename="dialogs/mttest.py" line="591"/>
         <source>Join split translations</source>
         <translation>나눠서 번역하기</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="596"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages</source>
-        <translation>공유사전/게임정보의 캐릭터 이름은 라틴어 언어로만 적용됩니다</translation>
+        <translation type="obsolete">공유사전/게임정보의 캐릭터 이름은 라틴어 언어로만 적용됩니다</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="611"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages</source>
-        <translation>공유사전/게임정보에서 캐릭터 이름은 간지(일본어 한자) 언어에만 적용됩니다.</translation>
+        <translation type="obsolete">공유사전/게임정보에서 캐릭터 이름은 간지(일본어 한자) 언어에만 적용됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="634"/>
+        <location filename="dialogs/mttest.py" line="670"/>
         <source>Translations for split texts</source>
         <translation>나눠진 텍스트 번역</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="575"/>
+        <location filename="dialogs/mttest.py" line="598"/>
         <source>Actual translation used by VNR</source>
         <translation>VNR을 이용한 실제 번역</translation>
     </message>
@@ -2309,14 +2309,14 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
         <translation>외부 로컬변경 프로그램 위치</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5545"/>
+        <location filename="dialogs/_prefs.py" line="5561"/>
         <source>Some of the features of VNR need external applications to be installed.
 You can specify the locations of external libraries here.</source>
         <translation>VNR의 몇몇 기능은 외부 프로그램을 설치할 필요가 있습니다.
 외부 라이브러리 위치를 여기서 지정하실 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="234"/>
+        <location filename="dialogs/mttest.py" line="255"/>
         <source>Procedures marked as {0} would utilize Shared Dictionary.</source>
         <translation>{0}로 표시된 공유사전이 설치 될 겁니다.</translation>
     </message>
@@ -2326,7 +2326,7 @@ You can specify the locations of external libraries here.</source>
         <translation>알 수 없는 게임</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5673"/>
+        <location filename="dialogs/_prefs.py" line="5689"/>
         <source>Locale Emulator could help change Japanese game to your locale.
 It is similar to NTLEA, and seems to work better in Windows 7/8.
 You could get the latest version here:
@@ -2343,7 +2343,7 @@ NTLEA과 비슷하며, Windows 7/8에서는 더 잘 작동하는 것 같습니�
 </translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5573"/>
+        <location filename="dialogs/_prefs.py" line="5589"/>
         <source>You don&apos;t have to change Japanese games&apos; locale in Wine.
 Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source>
         <translation>Wine에서는 일본어 게임 로컬로 바꿀 필요가 없습니다.
@@ -2365,17 +2365,17 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>{0}개의 YouTube 동영상을 찾음</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7361"/>
+        <location filename="managers/dataman.py" line="7513"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>텍스트 설정에서 모든 시나리오 스레드 유지불가 설정됨</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7352"/>
+        <location filename="managers/dataman.py" line="7504"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>텍스트 설정에서 반복 필터 무시</translation>
     </message>
     <message>
-        <location filename="dialogs/refinput.py" line="286"/>
+        <location filename="dialogs/refinput.py" line="297"/>
         <source>Type part of the game title or game ID or URL of the webpage</source>
         <translation>게임 ID나 웹사이트 URL나 게임 타이틀 부분을 입력하세요</translation>
     </message>
@@ -2630,37 +2630,37 @@ VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습
 그럴 경우 【후킹코드 수정】을 눌러서, 에러가 발생하는 후킹코드를 지우세요.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4517"/>
+        <location filename="dialogs/_prefs.py" line="4533"/>
         <source>By default, VNR will automatically detect whether you have got Internet access. If the detection does not work well, you can force enabling/disabling the Internet here.</source>
         <translation>기본값으로, VNR은 자동으로 인터넷 상태를 감지합니다. 만약, 잘 작동하지않으면, 인터넷 상태를 여기서 강제로 활성화/비활성화 선택할 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4527"/>
+        <location filename="dialogs/_prefs.py" line="4543"/>
         <source>Automatically detect Internet status</source>
         <translation>자동으로 인터넷 상태 감지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4528"/>
+        <location filename="dialogs/_prefs.py" line="4544"/>
         <source>Always enable Internet access</source>
         <translation>인터넷 연결을 항상 활성화</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4529"/>
+        <location filename="dialogs/_prefs.py" line="4545"/>
         <source>Always disable Internet access</source>
         <translation>인터넷 연결을 항상 비활성화</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4657"/>
+        <location filename="dialogs/_prefs.py" line="4673"/>
         <source>Disable online and offline machine translation</source>
         <translation>온/오프라인 기계번역 비활성화</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4667"/>
+        <location filename="dialogs/_prefs.py" line="4683"/>
         <source>Disable user-contributed comments and danmaku</source>
         <translation>사용자 댓글과 탄막 비활성화</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5121"/>
+        <location filename="dialogs/_prefs.py" line="5137"/>
         <source>EDICT Japanese-English dictionary</source>
         <translation>EDICT 일ㆍ영 사전</translation>
     </message>
@@ -2675,7 +2675,7 @@ VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습
         <translation>환경설정에서 위치를 다시 확인해 주세요.</translation>
     </message>
     <message>
-        <location filename="main.py" line="1969"/>
+        <location filename="main.py" line="1972"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>알 수 없는 게임. 게임 정보를 수정해 주세요.</translation>
     </message>
@@ -2690,7 +2690,7 @@ VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습
         <translation>사전 다운로드</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4710"/>
+        <location filename="dialogs/_prefs.py" line="4726"/>
         <source>Some of the free resources are large but not useful to all users.
 So, these resources are not distributed together with VNR by default.
 You can select only the resources you need to download here.</source>
@@ -2722,42 +2722,42 @@ You can redownload it later if you have Internet access.</source>
 인터넷 접속을 통해서 나중에 다시 다운로드 하실 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5025"/>
+        <location filename="dialogs/_prefs.py" line="5041"/>
         <source>Reload dictionary caches</source>
         <translation>사전 캐시 정리</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5122"/>
+        <location filename="dialogs/_prefs.py" line="5138"/>
         <source>recommended for English</source>
         <translation>영어학습에 추천</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3197"/>
+        <location filename="dialogs/_prefs.py" line="3205"/>
         <source>Infoseek.ne.jp multilingual translation service</source>
         <translation>Infoseek.ne.jp 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3234"/>
+        <location filename="dialogs/_prefs.py" line="3242"/>
         <source>Excite.co.jp multilingual translation service</source>
         <translation>Excite.co.jp 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="497"/>
+        <location filename="dialogs/terminput.py" line="527"/>
         <source>Missing pattern</source>
         <translation>일치하는 원문 없음</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="512"/>
+        <location filename="dialogs/terminput.py" line="547"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>원문이 너무 짧습니다. 시리즈 특정 옵션을 켜실 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="527"/>
+        <location filename="dialogs/terminput.py" line="565"/>
         <source>Everything looks OK</source>
         <translation>상태가 양호합니다</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="575"/>
+        <location filename="dialogs/terminput.py" line="613"/>
         <source>Create dictionary entry</source>
         <translation>사전용어 생성</translation>
     </message>
@@ -2771,7 +2771,7 @@ The dictionary will be installed to {1}.</source>
 사전은 {1}에 설치 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="515"/>
+        <location filename="dialogs/terminput.py" line="550"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>번역이 지정되지 않음. VNR이 원문과 일치하는 텍스트를 제거합니다.</translation>
     </message>
@@ -2808,7 +2808,7 @@ VNR can also uninstall it later if you want.</source>
 나중에 원하면 지울 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5455"/>
+        <location filename="dialogs/_prefs.py" line="5471"/>
         <source>Microsoft AppLocale is required to change the game locale to Japanese.
 It is not needed if you have already changed your Windows locale to Japanese.
 &lt;br/&gt;
@@ -2868,12 +2868,12 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>JMDict 일ㆍ네덜란드어 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="465"/>
+        <location filename="dialogs/terminput.py" line="493"/>
         <source>Add new term</source>
         <translation>새 용어 추가</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5011"/>
+        <location filename="dialogs/_prefs.py" line="5027"/>
         <source>Dictionaries for looking up Japanese phrases</source>
         <translation>일본어 구문검색 사전</translation>
     </message>
@@ -2893,22 +2893,22 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>IPAdic 일본어 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4788"/>
+        <location filename="dialogs/_prefs.py" line="4804"/>
         <source>MeCab dictionaries for parsing Japanese</source>
         <translation>일본어 구문분석용 MeCab 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3973"/>
+        <location filename="dialogs/_prefs.py" line="3989"/>
         <source>Preferred MeCab dictionary for parsing Japanese</source>
         <translation>일본어 구문분석용 MeCab 사전 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3980"/>
+        <location filename="dialogs/_prefs.py" line="3996"/>
         <source>Do not parse Japanese to furigana</source>
         <translation>일본어를 후리가나로 분석하지 않기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4976"/>
+        <location filename="dialogs/_prefs.py" line="4992"/>
         <source>Using phrase dictionaries requires at least one MeCab dictionary to be installed.</source>
         <translation>구문분석 사전을 이용하려면 적어도 하나의 MeCab 사전이 설치되어야 합니다.</translation>
     </message>
@@ -2918,12 +2918,12 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>게임 텍스트 속도를 최대로 설정하십시오(도움말 참조).</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3263"/>
+        <location filename="dialogs/_prefs.py" line="3271"/>
         <source>LEC.com multilingual translation service</source>
         <translation>LEC.com 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3264"/>
+        <location filename="dialogs/_prefs.py" line="3272"/>
         <source>recommended for European</source>
         <translation>유럽계열 언어에 추천</translation>
     </message>
@@ -2963,47 +2963,47 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>글로벌 게임 단축키</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="220"/>
+        <location filename="dialogs/terminput.py" line="224"/>
         <source>a title after names</source>
         <translation>일본어 이름 표기 후 제목</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2902"/>
+        <location filename="dialogs/_prefs.py" line="2903"/>
         <source>Online translators</source>
         <translation>온라인 번역기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2997"/>
+        <location filename="dialogs/_prefs.py" line="3005"/>
         <source>Offline translators</source>
         <translation>오프라인 번역기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3341"/>
+        <location filename="dialogs/_prefs.py" line="3357"/>
         <source>Translate.Ru multilingual translation service</source>
         <translation>Translate.Ru 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3342"/>
+        <location filename="dialogs/_prefs.py" line="3358"/>
         <source>recommended for Russian</source>
         <translation>러시아어에 추천</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3343"/>
+        <location filename="dialogs/_prefs.py" line="3359"/>
         <source>including {0}</source>
         <translation>{0}포함</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4251"/>
+        <location filename="dialogs/_prefs.py" line="4267"/>
         <source>recommended for Japanese learners</source>
         <translation>일본어 학습자에게 추천</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4204"/>
+        <location filename="dialogs/_prefs.py" line="4220"/>
         <source>Download required</source>
         <translation>다운로드 필요</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4224"/>
+        <location filename="dialogs/_prefs.py" line="4240"/>
         <source>Manual installation required</source>
         <translation>수동 설치 필요</translation>
     </message>
@@ -3067,7 +3067,7 @@ wiki에서 더 많은 도움말을 얻으실 수 있습니다:
 VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영어, 중국어 등 언어들을 지원합니다.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7232"/>
+        <location filename="managers/dataman.py" line="7384"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR의 게임 설정（%s）이 손상되었습니다. 백업으로부터 복구되었습니다.</translation>
     </message>
@@ -3082,7 +3082,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>이 게임은 시작하거나 로딩된 뒤에 VNR을 실행해야합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4086"/>
+        <location filename="dialogs/_prefs.py" line="4102"/>
         <source>require MeCab dictionaries</source>
         <translation>MeCab 사전 필요</translation>
     </message>
@@ -3097,42 +3097,42 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>이 게임은 반복제거를 사용해야 할 필요가 있습니다</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7578"/>
+        <location filename="dialogs/_prefs.py" line="7594"/>
         <source>Preferred game text extraction method</source>
         <translation>게임원문 추출방법 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7587"/>
+        <location filename="dialogs/_prefs.py" line="7603"/>
         <source>Use VNR&apos;s built-in hook instead of ITH if possible</source>
         <translation>가능하면 ITH 대신 VNR 내장 후커 사용</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7595"/>
+        <location filename="dialogs/_prefs.py" line="7611"/>
         <source>Changing the text extraction method requires restarting the game.</source>
         <translation>텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7678"/>
+        <location filename="dialogs/_prefs.py" line="7694"/>
         <source>Translation wait time</source>
         <translation>번역 대기시간</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7683"/>
+        <location filename="dialogs/_prefs.py" line="7699"/>
         <source>Embedding options</source>
         <translation>내장 텍스트 설정</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7711"/>
+        <location filename="dialogs/_prefs.py" line="7727"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>대기시간이 클수록 번역이 느릴때 게임도 같이 느려질겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7718"/>
+        <location filename="dialogs/_prefs.py" line="7734"/>
         <source>Disable text extraction when Ctrl is pressed</source>
         <translation>Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7728"/>
+        <location filename="dialogs/_prefs.py" line="7744"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -3235,12 +3235,12 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
 이 기능때문에 게임에 팅기면, Debug VNR을 사용해서 VNR을 실행해 주세요, 그러면 vnragent.log 파일을 VNR폴더에 생성할 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7596"/>
+        <location filename="dialogs/_prefs.py" line="7612"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
         <translation>이 기능은 현재 개발중입니다. ITH의 일부 게임만을 지원합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7597"/>
+        <location filename="dialogs/_prefs.py" line="7613"/>
         <source>The current supported game engines are: {0}</source>
         <translation>현재 지원하는 게임 엔진은:{0}</translation>
     </message>
@@ -3250,7 +3250,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6486"/>
+        <location filename="dialogs/_prefs.py" line="6502"/>
         <source>You have non-ascii characters in the path which might work as expected</source>
         <translation>작동하려면 경로에 ASCII가 아닌 문자가 존재하면 안됩니다.</translation>
     </message>
@@ -3260,7 +3260,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>텍스트 추출:VNR</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7365"/>
+        <location filename="dialogs/_prefs.py" line="7381"/>
         <source>Clear the specified location</source>
         <translation>선택된 위치 지우기</translation>
     </message>
@@ -3275,7 +3275,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>VNR 내장 후커는 H코드를 지원하지 않음</translation>
     </message>
     <message>
-        <location filename="main.py" line="2037"/>
+        <location filename="main.py" line="2040"/>
         <source>Unknown game engine</source>
         <translation>알 수 없는 게임 엔진</translation>
     </message>
@@ -3285,7 +3285,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>선택된 {0}개의 항목을 영구 삭제 하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10440"/>
+        <location filename="managers/dataman.py" line="10581"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>다른 사람의 항목을 수정할 수 없음</translation>
     </message>
@@ -3295,12 +3295,12 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>맞춤법 오류와 같은 변경 사유를 지정해주세요.</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="334"/>
+        <location filename="dialogs/mttest.py" line="357"/>
         <source>Equal</source>
         <translation>일치</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="334"/>
+        <location filename="dialogs/mttest.py" line="357"/>
         <source>Not equal</source>
         <translation>불일치</translation>
     </message>
@@ -3310,7 +3310,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>선택된 {0}개의 항목을 비활성화 하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="10454"/>
+        <location filename="managers/dataman.py" line="10595"/>
         <source>{0} items updated</source>
         <translation>{0}개의 항목 수정됨</translation>
     </message>
@@ -3405,7 +3405,7 @@ VNR를 Debug VNR.cmd로 실행하면, VNR 폴더에 vnragent.log 파일로 디�
 VNR때문에 게임이 팅기면, 로그log 파일에서 팅긴 원인을 찾을 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4166"/>
+        <location filename="dialogs/_prefs.py" line="4182"/>
         <source>require EDICT</source>
         <translation>EDICT사전 필요</translation>
     </message>
@@ -3415,17 +3415,17 @@ VNR때문에 게임이 팅기면, 로그log 파일에서 팅긴 원인을 찾을
         <translation>{0}사전 CaboCha 모형</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4025"/>
+        <location filename="dialogs/_prefs.py" line="4041"/>
         <source>Syntax highlighting Japanese using CaboCha</source>
         <translation>CaboCha를 사용하여 일본어 통사구조 강조</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4887"/>
+        <location filename="dialogs/_prefs.py" line="4903"/>
         <source>CaboCha models for highlighting Japanese</source>
         <translation>일본어 통사구조 강조를 위한 CaboCha 모형</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3968"/>
+        <location filename="dialogs/_prefs.py" line="3984"/>
         <source>Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP).</source>
         <translation>MeCab 사전 수정 후 VNR 재시작 필요（Windows XP은 항상 필요）</translation>
     </message>
@@ -3455,19 +3455,19 @@ VNR때문에 게임이 팅기면, 로그log 파일에서 팅긴 원인을 찾을
         <translation>선택된 {0}개의 항목을 활성화 하시겠습니까?</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="dialogs/_prefs.py" line="4250"/>
+        <location filename="dialogs/_prefs.py" line="4266"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>다이지린(大辞林) 일ㆍ일/영 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6806"/>
+        <location filename="dialogs/_prefs.py" line="6822"/>
         <source>Sanseido Daijirin dictionary is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese and English&lt;/span&gt; word translation.&lt;br/&gt;
 Daijirin is detected on your system at the above location.</source>
         <translation>산세이도 다이지린 사전은 &lt;span style=&quot;color:purple&quot;&gt;오프라인 일ㆍ영&lt;/span&gt;단어 번역을 이용합니다.&lt;br/&gt;
 다음 위치로 다이지린이 설정되었습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6810"/>
+        <location filename="dialogs/_prefs.py" line="6826"/>
         <source>Sanseido Daijirin is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese and English&lt;/span&gt; word translation.&lt;br/&gt;
 It is a ja-ja/ja-en dictionary distributed in &lt;a href=&quot;%s&quot;&gt;EPWING&lt;/a&gt; format DVD.&lt;br/&gt;
 Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Sanseido:
@@ -3478,17 +3478,17 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3432"/>
+        <location filename="dialogs/_prefs.py" line="3448"/>
         <source>Han Viet Chinese-Vietnamese translator</source>
         <translation>Hán Việt 중국-베트남 번역기(베트남어를 중국어로 번역)</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4595"/>
+        <location filename="dialogs/_prefs.py" line="4611"/>
         <source>Since context menu would break full screen in most games, you normally don&apos;t want to enable this unless you have a very small screen size.</source>
         <translation>대부분의 게임에서 컨텍스트 메뉴가 전체화면을 깰 수 있기때문에, 노트북같이 매우 작은 화면이 아니라면 컨텍스트 메뉴를 사용하지 마세요.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4604"/>
+        <location filename="dialogs/_prefs.py" line="4620"/>
         <source>Force enabling context menu in full screen</source>
         <translation>전체화면 콘텍스트 메뉴 강제사용설정</translation>
     </message>
@@ -3508,7 +3508,7 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
         <translation>GBK일ㆍ중 간결사전</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2683"/>
+        <location filename="dialogs/_prefs.py" line="2684"/>
         <source>You can select your preferred machine translators and look-up dictionaries here. The translators and dictionaries are independent that do not require each other. Look-up dictionaries require downloading at least one offline MeCab dictionary.</source>
         <translation>이곳에서 선택된 기계 번역과 검색할 사전을 선택하실 수 있습니다. 번역기와 사전은 독립적이며, 서로를 필요로 하지 않습니다. 사전 기능을 사용하기 위해서는, 적어도 하나의 오프라인 MeCab 사전을 받아야합니다.</translation>
     </message>
@@ -3528,7 +3528,7 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
         <translation>일본어 OCR 광학인식 실행</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7500"/>
+        <location filename="dialogs/_prefs.py" line="7516"/>
         <source>Microsoft MODI OCR from Office 2007 is needed by VNR&apos;s &lt;span style=&quot;color:purple&quot;&gt;optical character recognition&lt;/span&gt;.
 You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or download MODI from the following page:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</source>
@@ -3567,7 +3567,7 @@ Office 2007를 구매하여 MODI OCR를 이용 할 수도 있고, 다음 페이�
         <translation>Ntleas를 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5761"/>
+        <location filename="dialogs/_prefs.py" line="5777"/>
         <source>Ntleas is an application that could help change Japanese game to your locale.&lt;br/&gt;
 It is a descendant of NTLEA whose development has stopped.
 Ntleas is &lt;span style=&quot;color:purple&quot;&gt;free&lt;/span&gt; and open source. You could get the latest version here:
@@ -3592,22 +3592,22 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 같은 항목을 복제하는것은 더욱 관리가 힘들어 질 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="500"/>
+        <location filename="dialogs/terminput.py" line="533"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>원문과 번역문이 일치하여 유용성이 없습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="518"/>
+        <location filename="dialogs/terminput.py" line="553"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>원문이 너무 잛고 뜻이 모호 할 수 있는 히라가나로만 이루어져있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="521"/>
+        <location filename="dialogs/terminput.py" line="556"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>원문이 너무 깁니다. 공유사전에 문장을 추가하지 말아주세요.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4508"/>
+        <location filename="dialogs/_prefs.py" line="4524"/>
         <source>Internet connection</source>
         <translation>인터넷 연결</translation>
     </message>
@@ -3632,7 +3632,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>나중에 다시 시도해주세요</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="589"/>
+        <location filename="dialogs/mttest.py" line="612"/>
         <source>Rewrite Japanese according to the rules in TAH script</source>
         <translation>TAH 일ㆍ영 기계번역 규칙을 사용해서 일본어 다시쓰기</translation>
     </message>
@@ -3765,7 +3765,7 @@ VNR에서는 공백 뒤 내용은 무시됩니다.
         <translation>게임 창의 스크린샷을 찍기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="230"/>
+        <location filename="dialogs/terminput.py" line="234"/>
         <source>reusable regular expression pattern</source>
         <translation>재사용 가능한 정규 표현식 원문</translation>
     </message>
@@ -3785,19 +3785,19 @@ VNR에서는 공백 뒤 내용은 무시됩니다.
         <translation>활성화하면, 텍스트를 단축키+마우스로 선택하면 읽습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3396"/>
+        <location filename="dialogs/_prefs.py" line="3412"/>
         <source>FastAIT Chinese-Japanese/English translator</source>
         <translation>FastAIT 오프라인 중ㆍ일/영 번역기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6049"/>
+        <location filename="dialogs/_prefs.py" line="6065"/>
         <source>Kingsoft FastAIT All Professional Edition is used by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 FastAIT is detected on your system at the above location.</source>
         <translation>Kingsoft FastAIT은 &lt;span style=&quot;color:purple&quot;&gt;오프라인 중-일/영&lt;/span&gt;번역에 필요합니다.&lt;br/&gt;
 FastAIT은 다음 위치에서 발견됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6052"/>
+        <location filename="dialogs/_prefs.py" line="6068"/>
         <source>Kingsoft FastAIT All Professional Edition is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 FastAIT is &lt;span style=&quot;color:green&quot;&gt;free&lt;/span&gt;, and you can download one here from iCIBA:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -3807,7 +3807,7 @@ FastAIT는 &lt;span style=&quot;color:green&quot;&gt;무료&lt;/span&gt;이며, 
 &lt;span style=&quot;color:red&quot;&gt;주의:FastAIT 경로에 한글을 포함하지 마세요.&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6145"/>
+        <location filename="dialogs/_prefs.py" line="6161"/>
         <source>Inventec Dr.eye v9.0 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 Dr.eye is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Inventec:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -3817,102 +3817,102 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
 &lt;span style=&quot;color:red&quot;&gt;주의:Dr.eye 경로에 한글을 포함하지 마세요.&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1106"/>
+        <location filename="managers/_trman.py" line="1096"/>
         <source>FastAIT Japanese-Chinese translator is loaded</source>
         <translation>FastAIT 일ㆍ중 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1132"/>
+        <location filename="managers/_trman.py" line="1122"/>
         <source>FastAIT English-Chinese translator is loaded</source>
         <translation>FastAIT 영ㆍ중 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1158"/>
+        <location filename="managers/_trman.py" line="1148"/>
         <source>FastAIT Chinese-English translator is loaded</source>
         <translation>FastAIT 중ㆍ영 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7617"/>
+        <location filename="dialogs/_prefs.py" line="7633"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
         <translation>내장 번역에서는 중국어 간체를 중국어 번체나 일본어 간지로 변환합니다. 적용하지 않으면 중국어가 물음표로 표시 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7630"/>
+        <location filename="dialogs/_prefs.py" line="7646"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>중국어 번체나 일본어 간지 사용</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7314"/>
+        <location filename="managers/dataman.py" line="7466"/>
         <source>Disable keeping space for Kanji language</source>
         <translation>간지언어에 공백 유지하지 않기</translation>
     </message>
     <message>
-        <location filename="main.py" line="2067"/>
+        <location filename="main.py" line="2070"/>
         <source>Browse current enabled terms</source>
         <translation>현재 사용가능한 용어 찾아보기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="216"/>
+        <location filename="dialogs/terminput.py" line="220"/>
         <source>a character name</source>
         <translation>캐릭터 이름</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="545"/>
+        <location filename="dialogs/mttest.py" line="568"/>
         <source>Apply game terms</source>
         <translation>게임 용어 적용</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="548"/>
+        <location filename="dialogs/mttest.py" line="571"/>
         <source>Apply game terms in the Shared Dictionary to correct game text</source>
         <translation>공유사전의 게임용어를 적용하여 게임원문 고치기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="210"/>
+        <location filename="dialogs/terminput.py" line="214"/>
         <source>translate text from input to text language</source>
         <translation>입력한 텍스트를 번역해서 출력</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="214"/>
+        <location filename="dialogs/terminput.py" line="218"/>
         <source>transform text in output language after translation</source>
         <translation>번역한 후 출력할 언어를 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="212"/>
+        <location filename="dialogs/terminput.py" line="216"/>
         <source>transform text in input langauge before translation</source>
         <translation>번역하기 전 입력 언어를 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="228"/>
+        <location filename="dialogs/terminput.py" line="232"/>
         <source>transform extracted game text</source>
         <translation>추출된 게임원문을 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="224"/>
+        <location filename="dialogs/terminput.py" line="228"/>
         <source>transform text before TTS</source>
         <translation>TTS음성합성 전에 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="226"/>
+        <location filename="dialogs/terminput.py" line="230"/>
         <source>transform text after OCR</source>
         <translation>OCR광학인식 후 교정</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="593"/>
         <source>Apply input terms and names</source>
-        <translation>입력한 용어와 이름 적용</translation>
+        <translation type="obsolete">입력한 용어와 이름 적용</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="616"/>
+        <location filename="dialogs/mttest.py" line="652"/>
         <source>Apply output terms</source>
         <translation>출력 용어 사용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="619"/>
         <source>Apply output terms in the Shared Dictionary to correct translations from the machine translator</source>
-        <translation>기계번역에 공유사전의 출력용어를 적용해 번역하기</translation>
+        <translation type="obsolete">기계번역에 공유사전의 출력용어를 적용해 번역하기</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="513"/>
+        <location filename="dialogs/mttest.py" line="536"/>
         <source>Original text</source>
         <translation>원문</translation>
     </message>
@@ -3979,7 +3979,7 @@ Do you want to continue?</source>
         <translation>MeCab, CaboCha, 또는 UniDic을 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7076"/>
+        <location filename="dialogs/_prefs.py" line="7092"/>
         <source>Windows Media Player is needed by &lt;span style=&quot;color:purple&quot;&gt;Online TTS&lt;/span&gt;.&lt;br/&gt;
 Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
 It is detected on your system at the above location.</source>
@@ -3988,7 +3988,7 @@ It is detected on your system at the above location.</source>
 위 위치에서 감지되었습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7080"/>
+        <location filename="dialogs/_prefs.py" line="7096"/>
         <source>Windows Media Player is needed by &lt;span style=&quot;color:purple&quot;&gt;Online TTS&lt;/span&gt;.&lt;br/&gt;
 Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
 You can reinistall Windows Media Player here from Microsoft for free:
@@ -4024,12 +4024,12 @@ You can reinistall Windows Media Player here from Microsoft for free:
         <translation>SAPI TTS는 VNR이 관리자계정으로 실행될 시 작동하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3616"/>
+        <location filename="dialogs/_prefs.py" line="3632"/>
         <source>Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)</source>
         <translation>중국 북경어를 중국 광동어로 변환(바이두 사용)</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7413"/>
+        <location filename="dialogs/_prefs.py" line="7429"/>
         <source>Voiceroid+ Zunko from AHS is used by &lt;span style=&quot;color:purple&quot;&gt;offline text-to-speech&lt;/span&gt;.&lt;br/&gt;
 Zunko is a Japanese female TTS app.&lt;br/&gt;
 VNR does &lt;span style=&quot;color:purple&quot;&gt;NOT&lt;/span&gt; need .NET to work with Zunko.&lt;br/&gt;
@@ -4040,7 +4040,7 @@ VNR은 준코(東北ずん子)를 작동하는데 .NET이 &lt;span style=&quot;c
 VNR은 준코(東北ずん子)는 위 위치에서 감지되었습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="7418"/>
+        <location filename="dialogs/_prefs.py" line="7434"/>
         <source>Voiceroid+ Zunko could be used for &lt;span style=&quot;color:purple&quot;&gt;offline text-to-speech&lt;/span&gt;.&lt;br/&gt;
 Zunko is a Japanese female TTS app.&lt;br/&gt;
 VNR does &lt;span style=&quot;color:purple&quot;&gt;NOT&lt;/span&gt; need .NET to work with Zunko.&lt;br/&gt;
@@ -4063,22 +4063,22 @@ VNR은 준코(東北ずん子)를 작동하는데 .NET이 &lt;span style=&quot;c
         <translation>{0}을 불러오기 실패했습니다. 환경설정/위치를 확인해주세요.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3577"/>
+        <location filename="dialogs/_prefs.py" line="3593"/>
         <source>Preferred Chinese variants for machine translation</source>
         <translation>기계번역에 중국어 문자 변환 사용</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3585"/>
+        <location filename="dialogs/_prefs.py" line="3601"/>
         <source>Do not convert Chinese</source>
         <translation>중국어 문자 변환하지 않기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3651"/>
+        <location filename="dialogs/_prefs.py" line="3667"/>
         <source>Convert Simplified Chinese subtitles to Standard Chinese</source>
         <translation>중국어 간체 자막을 번체로 변환하기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3644"/>
+        <location filename="dialogs/_prefs.py" line="3660"/>
         <source>Preferred Chinese variants for community subtitles</source>
         <translation>공동자막에 중국어 문자 변환 사용</translation>
     </message>
@@ -4212,22 +4212,22 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
 하지만【초기화】를 누르면, VNR에서 모든 데이터를 다시 다운로드하기에 매우 느려집니다.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9311"/>
+        <location filename="managers/dataman.py" line="9453"/>
         <source>Waiting for dictionary update</source>
         <translation>사전 업데이트를 기다리는 중</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9316"/>
+        <location filename="managers/dataman.py" line="9458"/>
         <source>Redownload the entire dictionary terms</source>
         <translation>사전의 모든 용어를 다시 다운로드</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9318"/>
+        <location filename="managers/dataman.py" line="9460"/>
         <source>Update dictionary terms incrementally</source>
         <translation>공유사전을 점차적으로 업데이트</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9351"/>
+        <location filename="managers/dataman.py" line="9493"/>
         <source>No changes found for Shared Dictionary</source>
         <translation>공유사전에 변경사항 찾을 수 없음</translation>
     </message>
@@ -4247,17 +4247,17 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>공유자막이 {0}시에 업데이트됨.</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7737"/>
+        <location filename="managers/dataman.py" line="7887"/>
         <source>Found {0} subtitles</source>
         <translation>{0}개의 자막 찾음</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8927"/>
+        <location filename="managers/dataman.py" line="9069"/>
         <source>Subtitles not found</source>
         <translation>자막을 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7714"/>
+        <location filename="managers/dataman.py" line="7864"/>
         <source>Updating online subtitles</source>
         <translation>온라인 자막 업데이트 중</translation>
     </message>
@@ -4267,44 +4267,44 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>사용자 자막 업데이트</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="218"/>
+        <location filename="dialogs/terminput.py" line="222"/>
         <source>katagana or hiragana of a name</source>
         <translation>히라가나·가타카나 이름표기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="524"/>
+        <location filename="dialogs/terminput.py" line="559"/>
         <source>Yomi type is useless for Chinese translation.</source>
         <translation>요미형식의 발음표기는 중국어 번역에 쓸모 없음.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3722"/>
+        <location filename="dialogs/_prefs.py" line="3738"/>
         <source>Display ruby below instead of above kanji</source>
         <translation>간지(일본한자) 아래에 요미가나 발음표기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4444"/>
+        <location filename="dialogs/_prefs.py" line="4460"/>
         <source>Website-specific proxies</source>
         <translation>웹사이트 지정 프록시</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4453"/>
+        <location filename="dialogs/_prefs.py" line="4469"/>
         <source>Proxy accesses to ErogameScape.com if you are blocked due to being outside of Japan</source>
         <translation>일본 외부 지역이라서 차단되었을시, ErogameScape.com을 접속하기 위해 프록시 사용</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4463"/>
+        <location filename="dialogs/_prefs.py" line="4479"/>
         <source>Proxy accesses to Baidu.com if it is slow due to being outside of Mainland China</source>
         <translation>중국 본토가 아니라서, Baidu.com에 느릴시 프록시 사용</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4443"/>
+        <location filename="dialogs/_prefs.py" line="4459"/>
         <source>Certain websites might be blocked or slow to access in your area.
 Enabling proxy might make it better.</source>
         <translation>살고 있는 지역에서 몇몇 웹사이트는 접속이 차단되었거나 느릴 수 있습니다.
 프록시를 활성화할 시 문제가 개선됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="294"/>
+        <location filename="dialogs/terminput.py" line="300"/>
         <source>Only visible to yourself</source>
         <translation>자신에게만 보이기</translation>
     </message>
@@ -4329,32 +4329,32 @@ Enabling proxy might make it better.</source>
         <translation>공유 사전에 일본어 이름 가져오기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="309"/>
+        <location filename="dialogs/terminput.py" line="315"/>
         <source>Yomigana of translation</source>
         <translation>번역문에 요미가나</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="318"/>
+        <location filename="dialogs/terminput.py" line="324"/>
         <source>Guessed kanji of pattern using MSIME</source>
         <translation>MSIME를 사용해서 원문 간지를 추측함</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3716"/>
+        <location filename="dialogs/_prefs.py" line="3732"/>
         <source>Display ruby for the selected text</source>
         <translation>선택한 텍스트에 루비문자 표시</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3731"/>
+        <location filename="dialogs/_prefs.py" line="3747"/>
         <source>Display ruby for game text</source>
         <translation>게임원문에 루비문자 표시</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3739"/>
+        <location filename="dialogs/_prefs.py" line="3755"/>
         <source>Display ruby for translation</source>
         <translation>번역문에 루비문자 표시</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3760"/>
+        <location filename="dialogs/_prefs.py" line="3776"/>
         <source>Languages to display ruby</source>
         <translation>표시할 루비문자 언어</translation>
     </message>
@@ -4364,19 +4364,19 @@ Enabling proxy might make it better.</source>
         <translation type="obsolete">일본어가 아닌 언어의 로마자표기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3703"/>
+        <location filename="dialogs/_prefs.py" line="3719"/>
         <source>This tab is for displaying ruby for non-Japanese non-English languages.
 Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation>일본어/영어가 아닌 언어에 루비문자를 표시하는 탭입니다.
 일본어 로마자표기는 사전 탭에서 조정하실 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3792"/>
+        <location filename="dialogs/_prefs.py" line="3808"/>
         <source>Preferred ruby for Korean text</source>
         <translation>한국어에 루비문자 표시</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="509"/>
+        <location filename="dialogs/terminput.py" line="544"/>
         <source>Parentheses in the regular expression might not match.</source>
         <translation>정규식 표현의 괄호는 일치하지 않습니다.</translation>
     </message>
@@ -4386,14 +4386,14 @@ Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation type="obsolete">LEC 영어ㆍ러시아어 번역기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6518"/>
+        <location filename="dialogs/_prefs.py" line="6534"/>
         <source>LEC Power Translator v15 is used for &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English/European&lt;/span&gt; translation.&lt;br/&gt;
 Power Translator is detected on your system at the above location.</source>
         <translation>LEC Power Translator v15를 이용하여&lt;span style=&quot;color:purple&quot;&gt;오프라인 일ㆍ영/유럽어&lt;/span&gt;번역을 사용합니다.&lt;br/&gt;
 Power Translator은 아래 위치에서 탐색됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6521"/>
+        <location filename="dialogs/_prefs.py" line="6537"/>
         <source>LEC Power Translator v15 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English/European&lt;/span&gt; translation.
 It is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from LEC:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -4402,17 +4402,17 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3309"/>
+        <location filename="dialogs/_prefs.py" line="3325"/>
         <source>Naver.com Korean translation service</source>
         <translation>네이버 한국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3410"/>
+        <location filename="dialogs/_prefs.py" line="3426"/>
         <source>recommended for Korean</source>
         <translation>한국어에 추천</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9604"/>
+        <location filename="managers/dataman.py" line="9746"/>
         <source>Failed to read game executable</source>
         <translation>게임 실행파일을 읽는데 실패함</translation>
     </message>
@@ -4432,7 +4432,7 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation>VNR에 게임이 아닌 프로그램을 추가하지 말아주세요!</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3442"/>
+        <location filename="dialogs/_prefs.py" line="3458"/>
         <source>Display translation alignment</source>
         <translation>번역문 정렬을 표시</translation>
     </message>
@@ -4447,12 +4447,12 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation>번역이 도착할 도착어</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="320"/>
+        <location filename="dialogs/mttest.py" line="343"/>
         <source>Underline modified translation</source>
         <translation>변경된 번역문에 밑줄</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="321"/>
+        <location filename="dialogs/mttest.py" line="344"/>
         <source>Underline modified translation when possible.</source>
         <translation>가능하면 변경된 번역문에 밑줄표시합니다.</translation>
     </message>
@@ -4462,7 +4462,7 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation>H신에 hentai 번역규칙을 활성화</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4036"/>
+        <location filename="dialogs/_prefs.py" line="4052"/>
         <source>Display yomigana below instead of above kanji</source>
         <translation>요미가나를 간지 위 대신 아래에 표시</translation>
     </message>
@@ -4472,7 +4472,7 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation>한국어와 중국어를 로마자표기</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3828"/>
+        <location filename="dialogs/_prefs.py" line="3844"/>
         <source>Preferred ruby for Chinese text</source>
         <translation>중국어에 루비표기 선택</translation>
     </message>
@@ -4487,37 +4487,37 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3487"/>
+        <location filename="dialogs/_prefs.py" line="3503"/>
         <source>Enable Japanese-English translation script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="586"/>
+        <location filename="dialogs/mttest.py" line="609"/>
         <source>Apply translation script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3086"/>
+        <location filename="dialogs/_prefs.py" line="3094"/>
         <source>Secondary translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3102"/>
+        <location filename="dialogs/_prefs.py" line="3110"/>
         <source>Intermediate language to connect two translators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="managers/termman.py" line="882"/>
+        <location filename="managers/termman.py" line="207"/>
         <source>Processing Shared Dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="275"/>
+        <location filename="dialogs/terminput.py" line="281"/>
         <source>Match phrase boundary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="222"/>
+        <location filename="dialogs/terminput.py" line="226"/>
         <source>a title before names</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4532,71 +4532,156 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3330"/>
+        <location filename="dialogs/_prefs.py" line="3346"/>
         <source>Japanese-Chinese only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3331"/>
+        <location filename="dialogs/_prefs.py" line="3347"/>
         <source>experimental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3329"/>
+        <location filename="dialogs/_prefs.py" line="3345"/>
         <source>VNR&apos;s online translator trained by user-contributed subtitles for VNs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3371"/>
+        <location filename="dialogs/_prefs.py" line="3387"/>
         <source>Dr.eye Japanese/Chinese/English translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3383"/>
+        <location filename="dialogs/_prefs.py" line="3399"/>
         <source>JBeijing Japanese-Chinese translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3409"/>
+        <location filename="dialogs/_prefs.py" line="3425"/>
         <source>ezTrans XP Japanese-Korean translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3421"/>
+        <location filename="dialogs/_prefs.py" line="3437"/>
         <source>TransCAT Japanese-Korean translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3452"/>
+        <location filename="dialogs/_prefs.py" line="3468"/>
         <source>ATLAS Japanese-English translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3475"/>
+        <location filename="dialogs/_prefs.py" line="3491"/>
         <source>LEC Japanese/English/Russian translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6328"/>
+        <location filename="dialogs/_prefs.py" line="6344"/>
         <source>ClickQ TransCAT is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 TransCAT is detected on your system at the above location.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="842"/>
+        <location filename="managers/_trman.py" line="829"/>
         <source>TransCAT JK is loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6331"/>
+        <location filename="dialogs/_prefs.py" line="6347"/>
         <source>ClickQ TransCAT JK is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 TransCAT is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and seems not for sale any more.
 You might get one from your friends who purchased it in the past.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6335"/>
+        <location filename="dialogs/_prefs.py" line="6351"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;TransCAT must be put in a directory with &lt;b&gt;write-permission&lt;/b&gt;.&lt;/span&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="236"/>
+        <source>delegate translation for specific role</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="530"/>
+        <source>Missing translation or role.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="536"/>
+        <source>Guest user is not allowed to create rules in such type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="562"/>
+        <source>Proxy term is private by default. Please debug it again and again before make it public.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="333"/>
+        <source>Such as x (Phrase) or m (Name)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="616"/>
+        <source>Apply input terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="619"/>
+        <source>Apply input terms in the Shared Dictionary to correct input text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="623"/>
+        <source>Encode translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="626"/>
+        <source>Apply name and translation terms in Shared Dictionary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="630"/>
+        <source>Delegate translation roles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="633"/>
+        <source>Apply proxy terms in the Shared Dictionary to hide translation replacement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="637"/>
+        <source>Undelegate translation roles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="640"/>
+        <source>Recover applied proxy terms in the Shared Dictionary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="644"/>
+        <source>Decode translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="647"/>
+        <source>Recover applied name and translation terms in the Shared Dictionary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="655"/>
+        <source>Apply output terms in the Shared Dictionary to correct output translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="3316"/>
+        <source>Youdao.com Chinese translation service</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

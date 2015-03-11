@@ -12,8 +12,10 @@
 
 #ifdef USE_BOOST_CXX11
 # include <boost/unordered_map.hpp>
+  using boost::unordered_map;
 #else
 # include <unordered_map>
+  using std::unordered_map;
 #endif // USE_BOOST_CXX11
 
 //#include <iostream>
@@ -37,11 +39,7 @@ inline void utf8to32(const std::string &src, cpp_u32string &target)
 class SimpleChineseConverterPrivate
 {
 public:
-#ifdef USE_BOOST_CXX11
-  typedef boost::unordered_map<wchar_t, wchar_t> map_type;
-#else
-  typedef std::unordered_map<wchar_t, wchar_t> map_type;
-#endif // USE_BOOST_CXX11
+  typedef unordered_map<wchar_t, wchar_t> map_type;
 
   map_type map;
 
@@ -73,7 +71,7 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
   std::string spath(path.begin(), path.end());
   std::ifstream fin(spath.c_str());
 #endif // _MSC_VER
-  if(!fin.is_open())
+  if (!fin.is_open())
     return false;
   //fin.imbue(UTF8_LOCALE);
 

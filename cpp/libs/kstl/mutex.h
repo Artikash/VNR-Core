@@ -285,20 +285,20 @@ public:
    explicit AutoGuardPtr(Guard* guard)
       :guard_(guard)
    {
-      if(guard_)
+      if (guard_)
         guard_->enter();
    }
    void reset(Guard* guard)
    {
-      if(guard_)
+      if (guard_)
         guard_->leave();
       guard_= guard;
-      if(guard_)
+      if (guard_)
         guard_->enter();
    }
    ~AutoGuardPtr()
    {
-      if(guard_)
+      if (guard_)
         guard_->leave();
    }
 };
@@ -319,7 +319,7 @@ public:
       :h_(h){}
       ~HandleGuard(void)
       {
-        if(h_)
+        if (h_)
         {
            CloseUserOrKernelHandle(h_);
         }
@@ -333,7 +333,7 @@ public:
       }
       void reset(HANDLE h)
       {
-        if(h_)
+        if (h_)
         {
            CloseUserOrKernelHandle(h_);
         }
@@ -350,7 +350,7 @@ public:
       :h_(h){}
       ~ObjectGuard(void)
       {
-        if(h_)
+        if (h_)
            ObDereferenceObject(h_);
       }
       PVOID get(){return h_;}
@@ -362,7 +362,7 @@ public:
       }
       void reset(PVOID h)
       {
-        if(h_)
+        if (h_)
            ObDereferenceObject(h_);
         h_ = h;
       }
@@ -391,7 +391,7 @@ public:
       :h_(h){}
       ~ProcessAttacher()
       {
-        if(h_)
+        if (h_)
            KeAttachProcess(h_);
       }
       PEPROCESS get(){return h_;}
@@ -403,7 +403,7 @@ public:
       }
       void reset(PEPROCESS h)
       {
-        if(h_)
+        if (h_)
            KeDetachProcess();
         h_ = h;
       }
@@ -493,7 +493,7 @@ public:
     void wait()
     {
         NTSTATUS status = KeWaitForSingleObject(&event_, Executive, KernelMode, FALSE, NULL);
-        if(!NT_SUCCESS(status))
+        if (!NT_SUCCESS(status))
         {
             KdPrint((__FUNCTION__" KeWaitForMutexObject fail %08X\n", status));
             __asm int 3;
@@ -541,10 +541,10 @@ public:
             AutoGuard<LockType> guard(lock_);
             --count_;
             ASSERT(count_ >= 0);
-            if(count_ == 0)
+            if (count_ == 0)
             ready = true;
     }
-    if(ready)
+    if (ready)
             readyEvent_.set();
     }
 };

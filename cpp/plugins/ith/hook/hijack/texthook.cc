@@ -49,6 +49,7 @@ namespace { // unnamed
 //provide const time hook entry.
 int userhook_count;
 
+#if 0 // 3/6/2015 jichi: this hook is not used and hence disabled
 const byte common_hook2[] = {
   0x89, 0x3c,0xe4, // mov [esp],edi
   0x60, // pushad
@@ -61,6 +62,7 @@ const byte common_hook2[] = {
   0x61, // popad
   0x5f, // pop edi ; skip return address on stack
 }; //...
+#endif // 0
 
 const BYTE common_hook[] = {
   0x9c, // pushfd

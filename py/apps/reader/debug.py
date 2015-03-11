@@ -70,12 +70,6 @@ def dumpzhongri():
 
 if __name__ == '__main__':
   print "debug: enter"
-  initenv()
-
-  dumpzhongri()
-
-  import sys
-  sys.exit(0)
 
   #import settings
   #ss = settings.global_()
@@ -210,6 +204,14 @@ if __name__ == '__main__':
 
   #test_phonon()
 
-  test_cc()
+  def test_dll():
+    from pytrscript import TranslationScriptPerformer
+    from pytrcodec import TranslationCoder
+
+  def test_dpwing():
+    dumpzhongri()
+
+  initenv()
+  test_dll()
 
 # EOF
