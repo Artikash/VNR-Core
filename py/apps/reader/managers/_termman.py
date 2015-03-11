@@ -99,7 +99,7 @@ def _td_sort_key(td):
   @param  td  _Term
   @return  tuple
   """
-  role = td.role or _tdrm_default_role(td)
+  role = td.role or _td_default_role(td)
   return (not _contains_syntax_symbol(td.pattern), _role_priority(role, td.type), len(td.pattern), td.private, td.special, not td.icase, _lang_sort_key(td.language, td.sourceLanguage), td.id) #, it.regex)
 
 def sort_terms(termdata):

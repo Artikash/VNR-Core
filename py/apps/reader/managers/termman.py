@@ -210,7 +210,7 @@ class _TermManager:
       return man.encode(text, category)
     elif type == 'decode':
       return man.decode(text, category, mark)
-    else
+    else:
       return man.transform(text, category, mark)
 
 class TermManager(QObject):

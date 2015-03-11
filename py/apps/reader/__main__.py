@@ -431,6 +431,11 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1426048313: # clear old terms by default
+      xmlfile = rc.xml_path('terms')
+      if xmlfile and os.path.exists(xmlfile):
+        skfileio.removefile(xmlfile)
+
     if ss_version <= 1423687966: # reset retranslator
       ss.setValue('Retranslator', '')
 
@@ -656,11 +661,6 @@ def migrate(ss_version): # long ->
 
     if ss_version <= 1365691951: # enable user-defined hook by default
       ss.setValue('HookCodeEnabled', True) # enable user-defined hook code
-
-    if ss_version <= 1365674660: # clear old terms by default
-      xmlfile = rc.xml_path('terms')
-      if xmlfile and os.path.exists(xmlfile):
-        skfileio.removefile(xmlfile)
 
   except Exception, e:
     dwarn(e)
