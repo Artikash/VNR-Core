@@ -276,19 +276,20 @@ class _TermManager:
         except KeyError: return matched_text
       text = self._rx_undelegate.sub(fn, text)
     if proxies:
-      to_latin = config.is_latin_language(to)
+      #to_latin = config.is_latin_language(to)
       for k,v in proxies.iteritems():
-        if to_latin:
-          try:
-            if k.istitle():
-              pattern = r"%s\b" % re.escape(k)
-            else:
-              pattern = r"\b%s\b" % re.escape(k)
-            text = re.sub(pattern, v, text)
-          except Exception, e:
-            dwarn(e)
-        else:
-          text = text.replace(k, v)
+        #if to_latin:
+        #  try:
+        #    if k.istitle():
+        #      pattern = r"%s\b" % re.escape(k)
+        #    else:
+        #      pattern = r"\b%s\b" % re.escape(k)
+        #    rx = re.compile(pattern, re.UNICODE)
+        #    text = rx.sub(v, text)
+        #  except Exception, e:
+        #    dwarn(e)
+        #else:
+        text = text.replace(k, v)
     return text
 
 class TermManager(QObject):
