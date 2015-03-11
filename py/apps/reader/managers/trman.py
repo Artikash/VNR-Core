@@ -427,15 +427,15 @@ class TranslatorManager(QObject):
   # Logs
   languagesReceived = Signal(unicode, unicode) # fr, to
   normalizedTextReceived = Signal(unicode) # text after applying translation replacement scripts
-  sourceTextReceived = Signal(unicode) # text after applying source terms
-  escapedTextReceived = Signal(unicode) # text after preparing escaped terms
+  inputTextReceived = Signal(unicode) # text after applying source terms
+  encodedTextReceived = Signal(unicode) # text after preparing escaped terms
   delegateTextReceived = Signal(unicode) # text after applying proxied terms
   splitTextsReceived = Signal(list)  # texts after splitting
   splitTranslationsReceived = Signal(list)  # translations after applying translation
   jointTranslationReceived = Signal(unicode)  # translation before applying terms
   delegateTranslationReceived = Signal(unicode) # text after recovering proxied terms
-  escapedTranslationReceived = Signal(unicode)  # translation after unescaping terms
-  targetTranslationReceived = Signal(unicode)  # translation after applying target terms
+  decodedTranslationReceived = Signal(unicode)  # translation after unescaping terms
+  outputTranslationReceived = Signal(unicode)  # translation after applying target terms
 
   clearCacheRequested = Signal() # async
 

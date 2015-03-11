@@ -47,7 +47,7 @@ _NE_LABEL = u'<span style="color:red">≠</span>'
 
 _EMPTY_TEXT = "(%s)" % tr_("Not changed")
 _DISABLED_TEXT = "(%s)" % tr_("Disabled")
-_LANGUAGE_STAR = '<span style="color:green">+</span>' # plus
+#_LANGUAGE_STAR = '<span style="color:green">+</span>' # plus
 _TERM_STAR = '<span style="color:red">*</span>' # star
 
 _TEXTEDIT_MINWIDTH = 150
@@ -65,20 +65,25 @@ class _MTTester(object):
         self.setToLanguageLabelText(to)))
     tm.normalizedTextReceived.connect(lambda t:
         self.normalizedTextEdit.setPlainText(t or _EMPTY_TEXT))
-    tm.sourceTextReceived.connect(lambda t:
-        self.sourceTextEdit.setPlainText(t or _EMPTY_TEXT))
-    tm.escapedTextReceived.connect(lambda t:
-        self.escapedTextEdit.setPlainText(t or _EMPTY_TEXT))
+    tm.inputTextReceived.connect(lambda t:
+        self.inputTextEdit.setPlainText(t or _EMPTY_TEXT))
+    tm.encodedTextReceived.connect(lambda t:
+        self.encodedTextEdit.setPlainText(t or _EMPTY_TEXT))
+    tm.delegateTextReceived.connect(lambda t:
+        self.delegateTextEdit.setPlainText(t or _EMPTY_TEXT))
 
     tm.splitTextsReceived.connect(lambda l:
         self.splitTextEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
 
+    tm.delegateTranslationReceived.connect(lambda t:
+        self.delegateTranslationEdit.setPlainText(t or _EMPTY_TEXT))
     tm.jointTranslationReceived.connect(lambda t:
-        self.jointTranslationEdit.setHtml(t or _EMPTY_TEXT))
-    tm.escapedTranslationReceived.connect(lambda t:
-        self.escapedTranslationEdit.setHtml(t or _EMPTY_TEXT))
-    tm.targetTranslationReceived.connect(lambda t:
-        self.targetTranslationEdit.setHtml(t or _EMPTY_TEXT))
+        self.jointTranslationEdit.setPlainText(t or _EMPTY_TEXT))
+
+    tm.decodedTranslationReceived.connect(lambda t:
+        self.decodedTranslationEdit.setHtml(t or _EMPTY_TEXT))
+    tm.outputTranslationReceived.connect(lambda t:
+        self.outputTranslationEdit.setHtml(t or _EMPTY_TEXT))
 
     tm.splitTranslationsReceived.connect(lambda l:
         self.splitTranslationEdit.setHtml('<br/>--------<br/>'.join(l) if l else _EMPTY_TEXT))
@@ -146,16 +151,24 @@ class _MTTester(object):
     grid.addWidget(QtWidgets.QLabel(_RIGHTARROW), r, c)
     c += 1
     cell = QtWidgets.QVBoxLayout()
-    cell.addWidget(self.sourceTextLabel)
-    cell.addWidget(self.sourceTextEdit)
+    cell.addWidget(self.inputTextLabel)
+    cell.addWidget(self.inputTextEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
     grid.addWidget(QtWidgets.QLabel(_RIGHTARROW), r, c)
     c += 1
     cell = QtWidgets.QVBoxLayout()
-    cell.addWidget(self.escapedTextLabel)
-    cell.addWidget(self.escapedTextEdit)
+    cell.addWidget(self.encodedTextLabel)
+    cell.addWidget(self.encodedTextEdit)
+    grid.addLayout(cell, r, c)
+
+    c += 1
+    grid.addWidget(QtWidgets.QLabel(_RIGHTARROW), r, c)
+    c += 1
+    cell = QtWidgets.QVBoxLayout()
+    cell.addWidget(self.delegateTextLabel)
+    cell.addWidget(self.delegateTextEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
@@ -200,16 +213,24 @@ class _MTTester(object):
     grid.addWidget(QtWidgets.QLabel(_LEFTARROW), r, c)
     c += 1
     cell = QtWidgets.QVBoxLayout()
-    cell.addWidget(self.targetTranslationLabel)
-    cell.addWidget(self.targetTranslationEdit)
+    cell.addWidget(self.outputTranslationLabel)
+    cell.addWidget(self.outputTranslationEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
     grid.addWidget(QtWidgets.QLabel(_LEFTARROW), r, c)
     c += 1
     cell = QtWidgets.QVBoxLayout()
-    cell.addWidget(self.escapedTranslationLabel)
-    cell.addWidget(self.escapedTranslationEdit)
+    cell.addWidget(self.decodedTranslationLabel)
+    cell.addWidget(self.decodedTranslationEdit)
+    grid.addLayout(cell, r, c)
+
+    c += 1
+    grid.addWidget(QtWidgets.QLabel(_LEFTARROW), r, c)
+    c += 1
+    cell = QtWidgets.QVBoxLayout()
+    cell.addWidget(self.delegateTranslationLabel)
+    cell.addWidget(self.delegateTranslationEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
@@ -230,9 +251,9 @@ class _MTTester(object):
 
     layout.addLayout(grid)
     # Footer
-    layout.addWidget(QtWidgets.QLabel("%s: %s" % (tr_("Note"), " ".join((
-        my.tr("Procedures marked as {0} would utilize Shared Dictionary.").format(_TERM_STAR),
-        my.tr("Procedures marked as {0} behave differently for different user languages.").format(_LANGUAGE_STAR))))))
+    layout.addWidget(QtWidgets.QLabel("%s: %s" % (tr_("Note"),
+        my.tr("Procedures marked as {0} would utilize Shared Dictionary.").format(_TERM_STAR))))
+        #my.tr("Procedures marked as {0} behave differently for different user languages.").format(_LANGUAGE_STAR))))))
 
     q.setLayout(layout)
 
@@ -242,13 +263,15 @@ class _MTTester(object):
         self.directTranslationEdit,
         self.gameTextEdit,
         self.normalizedTextEdit,
-        self.sourceTextEdit,
-        self.escapedTextEdit,
+        self.inputTextEdit,
+        self.encodedTextEdit,
+        self.delegateTextEdit,
         self.splitTextEdit,
         self.splitTranslationEdit,
         self.jointTranslationEdit,
-        self.escapedTranslationEdit,
-        self.targetTranslationEdit,
+        self.delegateTranslationEdit,
+        self.decodedTranslationEdit,
+        self.outputTranslationEdit,
         self.finalTranslationEdit,
       ):
       it.setPlainText(_EMPTY_TEXT)
@@ -424,7 +447,7 @@ class _MTTester(object):
   @memoizedproperty
   def toLanguageLabel(self):
     ret = QtWidgets.QLabel()
-    ret.setText(self.toLanguageEdit.text() + _LANGUAGE_STAR)
+    ret.setText(self.toLanguageEdit.text())
     ret.setToolTip(my.tr("Language adjusted for the translator"))
     skqss.class_(ret, 'text-info')
     return ret
@@ -446,7 +469,7 @@ class _MTTester(object):
     label = self.toLanguageLabel
     edit = self.toLanguageEdit
     t = i18n.language_name2(lang)
-    label.setText(t + _LANGUAGE_STAR)
+    label.setText(t)
     skqss.class_(label, 'text-info' if t == edit.text() else 'text-error')
 
   # Text edits
@@ -589,39 +612,52 @@ class _MTTester(object):
     return self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
 
   @memoizedproperty
-  def sourceTextLabel(self):
-    return self._createTextLabel(self.sourceTextEdit, my.tr("Apply input terms and names") + _TERM_STAR + _LANGUAGE_STAR)
+  def inputTextLabel(self):
+    return self._createTextLabel(self.inputTextEdit, my.tr("Apply input terms") + _TERM_STAR)
   @memoizedproperty
-  def sourceTextEdit(self):
-    return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages"))
+  def inputTextEdit(self):
+    return self._createTextView(my.tr("Apply input terms in the Shared Dictionary to correct input text"))
 
   @memoizedproperty
-  def escapedTextLabel(self):
-    return self._createTextLabel(self.escapedTextEdit, my.tr("Prepare escaped terms and names") + _TERM_STAR + _LANGUAGE_STAR)
+  def encodedTextLabel(self):
+    return self._createTextLabel(self.encodedTextEdit, my.tr("Encode translations") + _TERM_STAR)
   @memoizedproperty
-  def escapedTextEdit(self):
-    return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages"))
+  def encodedTextEdit(self):
+    return self._createTextView(my.tr("Apply name and translation terms in Shared Dictionary"))
 
   @memoizedproperty
-  def escapedTranslationLabel(self):
-    return self._createTextLabel(self.escapedTranslationEdit,
-        my.tr("Unescape terms and names") + _TERM_STAR + _LANGUAGE_STAR)
+  def delegateTextLabel(self):
+    return self._createTextLabel(self.delegateTextEdit, my.tr("Delegate translation roles") + _TERM_STAR)
   @memoizedproperty
-  def escapedTranslationEdit(self):
-    return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages"),
+  def delegateTextEdit(self):
+    return self._createTextView(my.tr("Apply proxy terms in the Shared Dictionary to hide translation replacement"))
+
+  @memoizedproperty
+  def delegateTranslationLabel(self):
+    return self._createTextLabel(self.delegateTranslationEdit, my.tr("Undelegate translation roles") + _TERM_STAR)
+  @memoizedproperty
+  def delegateTranslationEdit(self):
+    return self._createTextView(my.tr("Recover applied proxy terms in the Shared Dictionary"))
+
+  @memoizedproperty
+  def decodedTranslationLabel(self):
+    return self._createTextLabel(self.decodedTranslationEdit, my.tr("Decode translations") + _TERM_STAR)
+  @memoizedproperty
+  def decodedTranslationEdit(self):
+    return self._createTextView(my.tr("Recover applied name and translation terms in the Shared Dictionary"),
         rich=True)
 
   @memoizedproperty
-  def targetTranslationLabel(self):
-    return self._createTextLabel(self.targetTranslationEdit, my.tr("Apply output terms") + _TERM_STAR)
+  def outputTranslationLabel(self):
+    return self._createTextLabel(self.outputTranslationEdit, my.tr("Apply output terms") + _TERM_STAR)
   @memoizedproperty
-  def targetTranslationEdit(self):
-    return self._createTextView(my.tr("Apply output terms in the Shared Dictionary to correct translations from the machine translator"),
+  def outputTranslationEdit(self):
+    return self._createTextView(my.tr("Apply output terms in the Shared Dictionary to correct output translations"),
         rich=True)
 
   @memoizedproperty
   def splitTextLabel(self):
-    return self._createTextLabel(self.splitTextEdit, my.tr("Split by punctuations") + _LANGUAGE_STAR)
+    return self._createTextLabel(self.splitTextEdit, my.tr("Split by punctuations"))
   @memoizedproperty
   def splitTextEdit(self):
     return self._createTextView(my.tr("Split either by sentences for offline Latin languages or by paragraphs otherwise"))

@@ -246,7 +246,7 @@ class _TermManager:
       ret = None
       if unused_proxies:
         for proxy in unused_proxies:
-          if (proxy.category & category) and proxy.role == role and proxy not in used_proxies:
+          if (proxy.category & category) and proxy.role == role and proxy not in used_proxies and proxy.input not in text:
             used_proxies.add(proxy)
             proxies[proxy.output] = matched_text
             return proxy.input

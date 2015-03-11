@@ -182,8 +182,14 @@ def term_role_proxy(role, index):
   @return str
   """
   role = 'M' if role == TERM_NAME_ROLE else 'X'
-  return 'Z%s%sZ' % (role,
-      chr(ord('A') + (index % 25)))
+  if index <= 25:
+    esc = chr(ord('A') + (index % 25))
+  else:
+    esc = ''
+    while index:
+      esc += chr(ord('A') + (index % 25))
+      index = index / 25
+  return 'Z%s%sZ' % (role, esc)
 
 # Game info
 OKAZU_TAGS = [

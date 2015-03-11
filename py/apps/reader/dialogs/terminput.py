@@ -331,7 +331,7 @@ class _TermInput(object):
     ret = QtWidgets.QLineEdit()
     #skqss.class_(ret, 'normal')
     ret.setPlaceholderText(my.tr("Such as x (Phrase) or m (Name)"))
-    ret.setToolTip(my.tr("Optional"))
+    ret.setToolTip(tr_("Optional"))
     ret.textChanged.connect(self.refresh)
     return ret
 
@@ -389,7 +389,7 @@ class _TermInput(object):
     ret = QtWidgets.QLineEdit()
     #skqss.class_(ret, 'normal')
     ret.setPlaceholderText(tr_("Comment"))
-    ret.setToolTip(my.tr("Optional"))
+    ret.setToolTip(tr_("Optional"))
     #ret.textChanged.connect(self.refresh)
     return ret
 

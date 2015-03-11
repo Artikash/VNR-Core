@@ -137,20 +137,20 @@ class Translator(object):
     trman.manager().languagesReceived.emit(fr, to)
   def emitNormalizedText(self, t):
     trman.manager().normalizedTextReceived.emit(t)
-  def emitSourceText(self, t):
-    trman.manager().sourceTextReceived.emit(t)
-  def emitEscapedText(self, t):
-    trman.manager().escapedTextReceived.emit(t)
+  def emitInputText(self, t):
+    trman.manager().inputTextReceived.emit(t)
+  def emitEncodedText(self, t):
+    trman.manager().encodedTextReceived.emit(t)
   def emitDelegateText(self, t):
     trman.manager().delegateTextReceived.emit(t)
   def emitJointTranslation(self, t):
     trman.manager().jointTranslationReceived.emit(t)
   def emitDelegateTranslation(self, t):
     trman.manager().delegateTranslationReceived.emit(t)
-  def emitEscapedTranslation(self, t):
-    trman.manager().escapedTranslationReceived.emit(t)
-  def emitTargetTranslation(self, t):
-    trman.manager().targetTranslationReceived.emit(t)
+  def emitDecodedTranslation(self, t):
+    trman.manager().decodedTranslationReceived.emit(t)
+  def emitOutputTranslation(self, t):
+    trman.manager().outputTranslationReceived.emit(t)
   def emitSplitTexts(self, l):
     trman.manager().splitTextsReceived.emit(l)
   def emitSplitTranslations(self, l):
@@ -429,7 +429,7 @@ class MachineTranslator(Translator):
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyInputTerms(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
-      self.emitSourceText(text)
+      self.emitInputText(text)
 
     t = text
     #with SkProfiler(): # 9/26/2014: C++ 0.015 seconds, Python: 0.05 seconds
@@ -438,7 +438,7 @@ class MachineTranslator(Translator):
       text = self._escapeJitter(text, to, fr)
     text = tm.encodeTranslation(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
-      self.emitEscapedText(text)
+      self.emitEncodedText(text)
 
     if proxies is not None:
       t = text
@@ -479,7 +479,7 @@ class MachineTranslator(Translator):
     #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
     text = tm.decodeTranslation(text, to=to, fr=fr, mark=mark, host=self.key)
     if emit and text != t:
-      self.emitEscapedTranslation(text)
+      self.emitDecodedTranslation(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
@@ -488,7 +488,7 @@ class MachineTranslator(Translator):
     if fr == 'ja':
       text = self._unescapeJitter(text, to, fr)
     if emit and text != t:
-      self.emitTargetTranslation(text)
+      self.emitOutputTranslation(text)
     #text = text.replace("( ", '(')
     #text = text.replace(u"\n】", u"】\n")
     if text:
