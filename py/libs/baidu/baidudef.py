@@ -343,7 +343,7 @@ BD_LANGUAGES = {
 }
 def bdlang(lang): return BD_LANGUAGES.get(lang) or lang
 
-BD_SOURCE_LANGUAGES = BD_TARGET_LANGUAGES = frozenset(BD_LANGUAGES.keys())
+BD_SOURCE_LANGUAGES = BD_TARGET_LANGUAGES = frozenset(BD_LANGUAGES.iterkeys())
 
 def mt_s_langs(online=False): return BD_SOURCE_LANGUAGES
 def mt_t_langs(online=False): return BD_TARGET_LANGUAGES
