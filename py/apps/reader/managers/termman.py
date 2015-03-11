@@ -10,7 +10,7 @@
 
 #from sakurakit.skprof import SkProfiler
 
-import os, re
+import os, string, re
 #from collections import OrderedDict
 from functools import partial
 from time import time
@@ -162,7 +162,7 @@ class _TermManager:
           if type == 'trans':
             proxies = self.proxies.get((to, fr))
             if proxies:
-              proxies.clear()
+              del proxies[:]
 
           if w.saveTerms(path, type, to, fr, macros) and man.loadScript(path):
             if type == 'trans':
@@ -528,6 +528,8 @@ class TermManager(QObject):
     #with SkProfiler("prepare escape"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
     return d.applyTerms(text, 'encode', to, fr, host=host)
 
+  _rx_decode_open = re.compile(r'(?<=\w){{', re.UNICODE)
+  _rx_decode_close = re.compile(r'}}(?=\w)', re.UNICODE)
   def decodeTranslation(self, text, to, fr, host='', mark=None):
     """
     @param  text  unicode
@@ -538,16 +540,16 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or not text: #or not ESCAPE_ALL and not config.is_kanji_language(language):
+    if not d.enabled or not text or '{{' not in text or '}}' not in text:
       return text
     # 9/25/2014: Qt 0.009 seconds
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler("apply escape"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
+    if config.is_latin_language(to):
+      ret = self._rx_decode_open.sub(" {{", text)
+      ret = self._rx_decode_close.sub("}} ", text)
     ret = d.applyTerms(text, 'decode', to, fr, host=host, mark=mark)
-    #if d.marked and to.startswith('zh'):
-    #  ret = ret.replace("> ", ">")
-    #  ret = ret.replace(" <", "<")
     return ret
 
   def delegateTranslation(self, text, to, fr, host='', proxies={}):

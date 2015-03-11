@@ -2650,6 +2650,8 @@ class _Term(object):
       return self.E_BAD_ROLE
     if self.role and self.type not in self.ROLE_TYPES:
       return self.E_BAD_ROLE
+    if not self.role and self.type == 'proxy':
+      return self.E_BAD_ROLE
 
     # E_BAD_HOST
     if self.host and self.type not in self.HOST_TYPES:
@@ -2657,7 +2659,7 @@ class _Term(object):
 
     # E_USELESS
     if self.sourceLanguage == 'ja' and self.pattern == self.text and (
-        self.type not in ('trans', 'suffix', 'prefix', 'name', 'yomi')):
+        self.type not in ('trans', 'suffix', 'prefix', 'name', 'yomi', 'proxy')):
       return self.E_USELESS
 
     # E_USELESS

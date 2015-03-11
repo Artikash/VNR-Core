@@ -421,7 +421,7 @@ class TermWriter:
     to2 = to[:2]
     return [TranslationProxy(td)
         for td in self.iterTermData('proxy', to, fr)
-        if td.pattern and td.text and td.role and td.language[:2] == to2] # force language
+        if td.pattern and td.text and td.role] #and td.language[:2] == to2] # force language
 
   def queryMacros(self, to, fr):
     """

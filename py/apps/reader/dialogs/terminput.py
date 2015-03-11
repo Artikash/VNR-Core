@@ -481,7 +481,7 @@ class _TermInput(object):
           language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
           special=special, regex=regex, phrase=phrase, icase=icase, #syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
-          pattern=pattern, text=text, comment=comment)
+          pattern=pattern, text=text, role=role, comment=comment)
 
       self.clear()
       self.q.hide()
