@@ -238,7 +238,7 @@ class _TermManager:
       return text
     category = _termman.host_category(host)
     unused_proxies = self.proxies.get((to, fr)) # [TranslationProxy]
-    used_proxies = set() # [TranslationProxy]
+    used_proxy_input = set() # [unicode]
 
     def fn(m): # re.match -> unicode
       matched_text = m.group()
@@ -246,8 +246,8 @@ class _TermManager:
       ret = None
       if unused_proxies:
         for proxy in unused_proxies:
-          if (proxy.category & category) and proxy.role == role and proxy not in used_proxies and proxy.input not in text and proxy.output not in text:
-            used_proxies.add(proxy)
+          if (proxy.category & category) and proxy.role == role and proxy.input not in used_proxy_input and proxy.input not in text and proxy.output not in text:
+            used_proxy_input.add(proxy.input)
             proxies[proxy.output] = matched_text
             return proxy.input
       index = len(proxies)
