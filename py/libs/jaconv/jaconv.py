@@ -185,7 +185,7 @@ _u_prefix = u"\
 ゅ\
 "
 _re_u = re.compile(ur"(?<=[%s])う" % _u_prefix)
-_o_prefix = u"とど"
+_o_prefix = u"おとど"
 _re_o = re.compile(ur"(?<=[%s])お" % _o_prefix)
 def simplify_kana_name(text):
   """
