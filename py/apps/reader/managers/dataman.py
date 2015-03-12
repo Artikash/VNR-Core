@@ -5019,7 +5019,7 @@ class _TermModel(object):
     @return  any tuple consistent with _equivalent()
     """
     td = t.d
-    return td.pattern, td.language[:2], td.type, td.special, t.gameSeries or td.gameItemId
+    return td.pattern, td.language[:2], td.special, t.gameSeries or td.gameItemId, td.type
 
   @staticmethod
   def _equivalent(x, y):
