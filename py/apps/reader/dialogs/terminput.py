@@ -394,7 +394,10 @@ class _TermInput(object):
     return ret
 
   def _canSave(self): # -> bool
-    return bool(self.patternEdit.text().strip()) and not self._isUseless() and not self._isIncompleted() and self._isAllowed()
+    return bool(self.patternEdit.text().strip()) and not self._isUseless() and not self._isIncompleted() and not self._isInvalid() and self._isAllowed()
+
+  def _isInvalid(self):
+    return not textutil.validate_term_role(self.roleEdit.text().strip())
 
   def _isIncompleted(self):
     if self._getType() == 'proxy' and (not self.roleEdit.text().strip() or not self.textEdit.text().strip()):
@@ -528,6 +531,9 @@ class _TermInput(object):
     elif self._isIncompleted():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Error"), my.tr("Missing translation or role.")))
+    elif self._isInvalid():
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s ([_a-yA-Y0-9])" % (tr_("Error"), my.tr("Invalid translation role.")))
     elif self._isUseless():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))

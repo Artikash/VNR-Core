@@ -2625,22 +2625,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="527"/>
+        <location filename="dialogs/terminput.py" line="530"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="547"/>
+        <location filename="dialogs/terminput.py" line="553"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文字太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="565"/>
+        <location filename="dialogs/terminput.py" line="571"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="613"/>
+        <location filename="dialogs/terminput.py" line="619"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -2654,7 +2654,7 @@ The dictionary will be installed to {1}.</source>
 完成後，辭書會被安裝到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="550"/>
+        <location filename="dialogs/terminput.py" line="556"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文字。</translation>
     </message>
@@ -2751,7 +2751,7 @@ VNR可以自動從臺灣大學下載並安裝pAppLocale。
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="493"/>
+        <location filename="dialogs/terminput.py" line="496"/>
         <source>Add new term</source>
         <translation>新增詞條</translation>
     </message>
@@ -3465,17 +3465,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆會產生重複的條目，管理起來會更加困難。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="533"/>
+        <location filename="dialogs/terminput.py" line="539"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文字和替換的文字相同，這樣子做沒有意義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="553"/>
+        <location filename="dialogs/terminput.py" line="559"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文字很短且只包含平假名，這樣很容易產生歧義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="556"/>
+        <location filename="dialogs/terminput.py" line="562"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>匹配的文字很長。請不要把人工字幕加入共享辭書。</translation>
     </message>
@@ -4065,7 +4065,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>日文姓名的平假名或片假名</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="559"/>
+        <location filename="dialogs/terminput.py" line="565"/>
         <source>Yomi type is useless for Chinese translation.</source>
         <translation>讀音類型對中文翻譯是沒有用的。</translation>
     </message>
@@ -4164,7 +4164,7 @@ Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation>韓文註音的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="544"/>
+        <location filename="dialogs/terminput.py" line="550"/>
         <source>Parentheses in the regular expression might not match.</source>
         <translation>正則表示式的括號可能不匹配。</translation>
     </message>
@@ -4391,17 +4391,17 @@ TransCAT是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;�
         <translation>代理翻譯的Role</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="530"/>
+        <location filename="dialogs/terminput.py" line="533"/>
         <source>Missing translation or role.</source>
         <translation>缺少翻譯或者Role。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="536"/>
+        <location filename="dialogs/terminput.py" line="542"/>
         <source>Guest user is not allowed to create rules in such type.</source>
         <translation>匿名賬戶不可以創建指定類型的詞條。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="562"/>
+        <location filename="dialogs/terminput.py" line="568"/>
         <source>Proxy term is private by default. Please debug it again and again before make it public.</source>
         <translation>代理詞條預設是非公開的。請在提交詞條後反覆偵錯再公開。</translation>
     </message>
@@ -4469,6 +4469,11 @@ TransCAT是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;�
         <location filename="dialogs/_prefs.py" line="3316"/>
         <source>Youdao.com Chinese translation service</source>
         <translation>有道中文翻譯服務</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="536"/>
+        <source>Invalid translation role.</source>
+        <translation>翻譯Role包含不允許的字元。</translation>
     </message>
 </context>
 </TS>

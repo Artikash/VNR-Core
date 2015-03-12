@@ -237,6 +237,14 @@ def validate_macro(text):
   """
   return not text or skstr.checkpair(text, pair=('{','}'))
 
+_rx_term_role = re.compile(r'^[_a-yA-Y0-9]+$')
+def validate_term_role(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return not text or bool(_rx_term_role.match(text))
+
 _s_punct = unichars.s_ascii_punct + jpchars.s_punct
 def ispunct(ch):
   """
