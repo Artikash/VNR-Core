@@ -35,7 +35,9 @@ void TranslationDecodeRule::init(const TranslationRule &param)
   category = param.category;
   target = param.target;
 
-  if (trsymbol::contains_raw_symbol(target)) {
+
+  //if (trsymbol::contains_raw_symbol(target)) { // target rule is not fully checked, because "[[#12]]" is not well checked
+  if (boost::contains(target, "[[")) {
     source_symbol_count = trsymbol::count_raw_symbols(param.source);
     if (source_symbol_count)
       trsymbol::iter_raw_symbols(param.source, [this](const std::string &symbol) {
@@ -55,16 +57,33 @@ std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring
 {
   std::wstring ret = target;
   if (!args.empty() && args.size() <= source_symbol_count) { // handle symbol here
-    if (source_symbol_count == 1) // optimize if there is only one symbol
+    if (source_symbol_count == 1) { // optimize if there is only one symbol
       boost::replace_all(ret, source_symbols, args.front());
-    else {
-      const auto symbol_splitter = boost::lambda::_1 == ',';
+
+      size_t pos = source_symbols.find('#');
+      if (pos != std::wstring::npos && ret.find('#') != std::wstring::npos) {
+        std::string pattern = "[[";
+        pattern += source_symbols.substr(pos);
+        boost::replace_all(ret, pattern, args.front());
+      }
+    } else {
+      const auto symbol_splitter = boost::lambda::_1 == source_symbol_sep;
       std::vector<std::string> symbols;
       symbols.reserve(source_symbol_count);
       boost::split(symbols, source_symbols, symbol_splitter);
       //assert(symbols.size() == source_symbol_count);
       for (size_t i = 0; i < args.size(); i++)
         boost::replace_all(ret, symbols[i], args[i]);
+
+      if (source_symbols.find('#') != std::wstring::npos && ret.find('#') != std::wstring::npos) // there might be unhandled '#'
+        for (size_t i = 0; i < args.size(); i++) {
+          size_t pos = symbols[i].find('#');
+          if (pos != std::wstring::npos) {
+            std::string pattern = "[[";
+            pattern += symbols[i].substr(pos);
+            boost::replace_all(ret, pattern, args[i]);
+          }
+        }
     }
   }
   if (mark)

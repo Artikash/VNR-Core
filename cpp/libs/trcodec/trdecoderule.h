@@ -14,7 +14,7 @@ class TranslationDecodeRule : private TranslationBaseRule
 {
   SK_EXTEND_CLASS(TranslationDecodeRule, TranslationBaseRule)
 
-  enum : char { source_symbol_sep = ',' };
+  enum : char { source_symbol_sep = '|' }; // any character that does not exist in token
 
   mutable bool valid; // whether the object is valid
   std::wstring target;
