@@ -80,19 +80,22 @@ class ProductApi(object):
       if desc:
         ret['date'] = self._parsedesctable(desc, u'発行日')
         ret['event'] = self._parsedesctable(desc, u'イベント')
-        ret['writers'] = self._parsecreator(h, u'シナリオ') or [] # [unicode]
 
-        artist = self._parsedesctable(desc, u'作家名')
-        artists = self._parsecreator(h, u'原画') or [] # [unicode]
+        writers = list(self._iterparsedesctable(desc, u'シナリオ'))
+        writer = self._parsecreator(h, u'シナリオ')
+        if writer and writer not in writers:
+          writers.insert(0, writer)
+        ret['writers'] = writers # [unicode]
+
+        artists = list(self._iterparsedesctable(desc, u'作家名'))
+        artist = self._parsecreator(h, u'原画')
         if artist and artist not in artists:
           artists.insert(0, artist)
         ret['artists'] = artists
 
-      imgid = self._parseimageid(h)
-      if imgid:
-        ret['image'] = self.QUERY_HOST +  "/resize_image.php?image=%s.jpg" % imgid
-        ret['sampleImages'] = list(self._iterparsesampleimages(h, imgid))
-        #'descriptions': list(self._iterparsedescriptions(h)), # [unicode]
+
+      ret['image'] = self._parseimage(h)
+      ret['sampleImages'] = list(self._iterparsesampleimages(h))
       return ret
 
   # Example: <br>原画:克/月杜尋<br>シナリオ:御影/溝淵涼<br>
@@ -107,27 +110,43 @@ class ProductApi(object):
       return unescapehtml(ret).split('/')
 
   # Example: ="/resize_image.php?image=214000005276.jpg&amp;width=450&amp;height=450"
-  def _parseimageid(self, h):
+  # Example: <a class="opacity pop" style="display:inline;" href="/resize_image.php?image=11261400_54755e534b1ce.jpg" title=""><img src="/resize_image.php?image=11261400_54755e534b1ce.jpg&amp;width=450&amp;height=450" alt="クロノクロック" /></a>
+  # Example: <a class="opacity pop" style="min-width:320px;max-width:320px;" href="/resize_image.php?image=213001007232.jpg" title=""><img src="/resize_image.php?image=213001007232.jpg&amp;width=320&amp;height=320" alt="魔理沙と6つのキノコ" /></a>
+  def _parseimage(self, h):
     """
     @param  h  unicode  html
-    @return  int
+    @return  string
     """
-    try: return skstr.rfindbetween(h, "/resize_image.php?image=", ".jpg&amp;width=450&amp;height=450")
-    except: pass
+    for width in (450, 320):
+      img = skstr.rfindbetween(h, "/resize_image.php?image=", ".jpg&amp;width=%s&amp;height=%s" % (width, width))
+      if img and '"' not in img:
+        return "%s/resize_image.php?image=%s.jpg" % (self.QUERY_HOST, img)
 
   # Example: <a class="opacity pop" href="/special/a/4/214000005276o.jpg" title=""><img src="/special/a/4/214000005276o.jpg" alt="サンプル" width="161" height="91" vspace="2"></a>
-  def _iterparsesampleimages(self, h, imgid):
+  # Example: <a class="opacity pop" href="https://www.melonbooks.co.jp/resize_image.php?image=213001007232a.jpg" title=""><img src="https://www.melonbooks.co.jp/resize_image.php?image=213001007232a.jpg&amp;width=144&amp;height=144" alt="魔理沙と6つのキノコ" /></a>
+  _rx_imgid_special = re.compile(r'/special/a/4/([0-9]+?)a\.jpg"')
+  _rx_imgid_resize = re.compile(r'/resize_image.php\?image=([0-9]+)a\.jpg"')
+  def _iterparsesampleimages(self, h):
     """
     @param  h  unicode  html
-    @param  imgid  int
     @yield  unicode
     """
-    rx = re.compile(r'src="(/special/a/4/%s[a-z0-9]+.jpg)"' % imgid) # only use special/a/4, which are large images
-    for m in rx.finditer(h):
-      url = m.group(1)
-      if url[0] == '/':
-        url = self.QUERY_HOST + url
-      yield url
+    try:
+      for rx,pattern in (
+          (self._rx_imgid_special, r'href="(/special/a/4/%s[a-z0-9]+?\.jpg)"'),
+          (self._rx_imgid_resize, r'href="[^"]+?(/resize_image\.php\?image=%s[a-z0-9]+\.jpg)"'),
+        ):
+        m = rx.search(h)
+        if m:
+          imgid = int(m.group(1))
+          pattern = pattern % imgid
+          rx = re.compile(pattern) # only use special/a/4, which are large images
+          for m in rx.finditer(h):
+            url = m.group(1)
+            if url[0] == '/':
+              url = self.QUERY_HOST + url
+            yield url
+    except: pass
 
   # Example description:
   # <!-- description -->
@@ -205,13 +224,67 @@ class ProductApi(object):
           if '>' not in ret:
             return unescapehtml(ret.strip())
 
+  # Example:
+  #
+  #  <th>作家名</th>
+  #  <td>
+  #   <a href="https://www.melonbooks.co.jp/search/search.php?name=%E3%81%82%E3%81%8D%E3%82%84%E3%81%BE%E3%81%86%E3%81%AB&text_type=author">あきやまうに</a>
+  #   &nbsp; &#44; &nbsp;
+  #                       <a href="https://www.melonbooks.co.jp/search/search.php?name=HALT&text_type=author">HALT</a>
+  #   &nbsp; &#44; &nbsp;
+  #                       <a href="https://www.melonbooks.co.jp/search/search.php?name=ziki_7&text_type=author">ziki_7</a>
+  #   &nbsp; &#44; &nbsp;
+  #                       <a href="https://www.melonbooks.co.jp/search/search.php?name=%E3%83%A2%E3%82%BF&text_type=author">モタ</a>
+  #  </td>
+  def _iterparsedesctable(self, h, th):
+    """
+    @param  h  unicode  html
+    @param  h  th  unicode
+    @return  unicode
+    """
+    tag = '<th>%s</th>' % th
+    start = h.find(tag)
+    if start != -1:
+      start += len(tag)
+      tag = '<td>'
+      start = h.find(tag, start)
+      if start != -1:
+        start += len(tag)
+        stop = h.find('</td>', start)
+        if stop != -1:
+          ret = h[start:stop]
+          if '>' not in ret:
+            yield unescapehtml(ret.strip())
+          elif '</a>' in ret:
+            for it in skstr.riterfindbetween(ret, '>', '</a>'):
+              if '>' not in it:
+                yield unescapehtml(it.strip())
+
   # Example: <title>姉小路直子と銀色の死神 初回限定版の通販・購入（みなとカーニバル）はメロンブックス | メロンブックス</title>
+  # Example:   <strong class="str" style="max-width:88%;margin-right:0;float:left;width:auto;">クロノクロック</strong>
   def _parsetitle(self, h):
     """
     @param  h  unicode  html
     @return  unicode
     """
-    r = skstr.findbetween(h, u'<title>', u'の通販・購入')
+    r = skstr.findbetween(h, 'width:auto;">', '</strong>')
+    if r and '<' not in r:
+      return unescapehtml(r)
+
+  # Example: <title>姉小路直子と銀色の死神 初回限定版の通販・購入（みなとカーニバル）はメロンブックス | メロンブックス</title>
+  # Example: <a href="https://www.melonbooks.co.jp/search/search.php?name=Purple%20Software&text_type=maker">Purple Software</a>
+  # Example: <td><a href="https://www.melonbooks.co.jp/circle/index.php?circle_id=17433">黄昏フロンティア</a>
+  _rx_brand_circle = re.compile(r'circle_id=[0-9]+">([^<>]+)</a>')
+  def _parsebrand(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode
+    """
+    r = skstr.findbetween(h, u'の通販・購入（', u'）')
+    if not r:
+      m = self._rx_brand_circle.search(h)
+      if m:
+        r = m.group(1)
     if r and '<' not in r:
       return unescapehtml(r)
 
@@ -224,16 +297,6 @@ class ProductApi(object):
     if ret:
       ret = ret.strip()
     return ret
-
-  # Example: <title>姉小路直子と銀色の死神 初回限定版の通販・購入（みなとカーニバル）はメロンブックス | メロンブックス</title>
-  def _parsebrand(self, h):
-    """
-    @param  h  unicode  html
-    @return  unicode
-    """
-    r = skstr.findbetween(h, u'の通販・購入（', u'）')
-    if r and '<' not in r:
-      return unescapehtml(r)
 
   # Example: <td class="price">¥1,080 <br>
   def _parseprice(self, h):
@@ -250,6 +313,7 @@ if __name__ == '__main__':
   k = 117934 # non-ecchi, event
   k = 113958 # 神のラプソディ
   k = 110968 # クロノクロック
+  #k = 32000 # 魔理沙と6つのキノコ
   print '-' * 10
   q = api.query(k)
   for k,v in q.iteritems():

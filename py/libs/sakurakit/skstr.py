@@ -61,6 +61,26 @@ def findbetween(text, begin, end):
     if stop != -1:
       return text[start:stop]
 
+def iterfindbetween(text, begin, end, limit=100):
+  """
+  @param  text  unicode
+  @param  begin  unicode
+  @param  end  unicode
+  @param* limit  int
+  @yield  unicode
+  """
+  start = text.find(begin)
+  stop = 0
+  count = 0
+  while start != -1 and stop != -1 and count < limit:
+    count += 1
+    start += len(begin)
+    stop = text.find(end, start)
+    if stop != -1:
+      yield text[start:stop]
+      stop += len(end)
+      start = text.find(begin, stop)
+
 def rfindbetween(text, begin, end):
   """
   @param  text  unicode
@@ -74,6 +94,24 @@ def rfindbetween(text, begin, end):
     if start != -1:
       start += len(begin)
       return text[start:stop]
+
+def riterfindbetween(text, begin, end, limit=100):
+  """
+  @param  text  unicode
+  @param  begin  unicode
+  @param  end  unicode
+  @param* limit int
+  @return  unicode or None
+  """
+  stop = text.rfind(end)
+  start = 0
+  count = 0
+  while stop != -1 and start != -1 and count < limit:
+    count += 1
+    start = text.rfind(begin, 0, stop)
+    if start != -1:
+      yield text[start + len(begin):stop]
+      stop = text.rfind(end, 0, start)
 
 def _multireplacer_lookup(table, match):
   """
