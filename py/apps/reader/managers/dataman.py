@@ -2646,7 +2646,7 @@ class _Term(object):
       return self.E_TAB
 
     # E_BAD_ROLE
-    if self.role and not unichars.isascii(self.role):
+    if self.role and not textutil.validate_term_role(self.role):
       return self.E_BAD_ROLE
     if self.role and self.type not in self.ROLE_TYPES:
       return self.E_BAD_ROLE
