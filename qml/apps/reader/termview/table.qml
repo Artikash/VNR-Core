@@ -756,7 +756,7 @@ Item { id: root_
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue) && (
-                             root_.userId == _SUPER_USER_ID || !!itemValue.role || root_.typeAllowsRole(itemValue.type))
+                                root_.userId == _SUPER_USER_ID || !!itemValue.role || root_.typeAllowsRole(itemValue.type))
         Text {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           textFormat: Text.PlainText
@@ -792,7 +792,7 @@ Item { id: root_
           function save() {
             if (editable) {
               var t = Util.trim(text)
-              if (t && t !== itemValue.role) {
+              if (t !== itemValue.role) {
                 itemValue.role = t
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
