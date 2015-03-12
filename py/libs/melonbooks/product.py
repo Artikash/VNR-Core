@@ -81,16 +81,16 @@ class ProductApi(object):
         ret['date'] = self._parsedesctable(desc, u'発行日')
         ret['event'] = self._parsedesctable(desc, u'イベント')
 
-        writers = list(self._iterparsedesctable(desc, u'シナリオ'))
-        writer = self._parsecreator(h, u'シナリオ')
-        if writer and writer not in writers:
-          writers.insert(0, writer)
+        writers = self._parsecreator(h, u'シナリオ')
+        for it in self._iterparsedesctable(desc, u'シナリオ'):
+          if it not in writers:
+            writers.append(it)
         ret['writers'] = writers # [unicode]
 
-        artists = list(self._iterparsedesctable(desc, u'作家名'))
-        artist = self._parsecreator(h, u'原画')
-        if artist and artist not in artists:
-          artists.insert(0, artist)
+        artists = self._parsecreator(h, u'原画')
+        for it in self._iterparsedesctable(desc, u'作家名'):
+          if it not in artists:
+            artists.append(it)
         ret['artists'] = artists
 
 
@@ -103,11 +103,12 @@ class ProductApi(object):
     """
     @param  h  unicode  html
     @param  key  unicode
-    @return  int
+    @return  [unicode] not None
     """
     ret = skstr.findbetween(h, '<br>%s:' % key, '<br>')
     if ret and '<' not in ret:
       return unescapehtml(ret).split('/')
+    return []
 
   # Example: ="/resize_image.php?image=214000005276.jpg&amp;width=450&amp;height=450"
   # Example: <a class="opacity pop" style="display:inline;" href="/resize_image.php?image=11261400_54755e534b1ce.jpg" title=""><img src="/resize_image.php?image=11261400_54755e534b1ce.jpg&amp;width=450&amp;height=450" alt="クロノクロック" /></a>

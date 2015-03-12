@@ -12,7 +12,7 @@ import 'refview' as RefView
 
 Share.View { id: root_
   //implicitWidth: 480; implicitHeight: 360
-  width: 640; height: 400
+  width: 680; height: 400
 
   // Window properties
   property string windowTitle: title() ///< window title
