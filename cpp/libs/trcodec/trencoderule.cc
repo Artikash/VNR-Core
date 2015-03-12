@@ -56,7 +56,7 @@ void TranslationEncodeRule::init_source()
       is_icase() ? boost::wregex::perl|boost::wregex::icase
                  : boost::wregex::perl
     );
-    source.clear(); // no longer needed any more
+    source.clear(); // source is no longer needed any more
   }
 }
 

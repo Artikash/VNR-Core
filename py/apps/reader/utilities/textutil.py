@@ -237,7 +237,7 @@ def validate_macro(text):
   """
   return not text or skstr.checkpair(text, pair=('{','}'))
 
-_rx_term_role = re.compile(r'^[_a-yA-Y0-9]+$')
+_rx_term_role = re.compile(r'^[a-yA-Y0-9_,]+$')
 def validate_term_role(text):
   """
   @param  text  unicode

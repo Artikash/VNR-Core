@@ -7,13 +7,13 @@ int main()
 {
   qDebug() << "enter";
 
-  //wchar_t ws[] = L"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」";
-  wchar_t ws[] = L"hello";
+  wchar_t ws[] = L"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」";
+  //wchar_t ws[] = L"hello";
   std::wstring text = ws;
 
   std::wstring path;
-  //path = L"/Users/jichi/opt/stream/Library/Frameworks/Sakura/cpp/libs/trcodec/example.txt";
-  path = L"/Users/jichi/opt/stream/Caches/tmp/reader/dict/ja-zhs/trans.txt";
+  path = L"/Users/jichi/opt/stream/Library/Frameworks/Sakura/cpp/libs/trcodec/example.txt";
+  //path = L"/Users/jichi/opt/stream/Caches/tmp/reader/dict/ja-zhs/trans.txt";
 
   TranslationCoder m;
   m.loadScript(path);

@@ -15,8 +15,8 @@ int main()
   std::wstring text = ws;
 
   std::wstring path;
-  //path = L"/Users/jichi/opt/stream/Library/Frameworks/Sakura/cpp/libs/trscript/example.txt";
-  path = L"/Users/jichi/opt/stream/Caches/tmp/reader/dict/ja-zhs/game.txt";
+  path = L"/Users/jichi/opt/stream/Library/Frameworks/Sakura/cpp/libs/trscript/example.txt";
+  //path = L"/Users/jichi/opt/stream/Caches/tmp/reader/dict/ja-zhs/game.txt";
 
   TranslationScriptPerformer m;
   m.loadScript(path);

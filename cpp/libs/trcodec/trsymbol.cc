@@ -123,12 +123,36 @@ static inline std::wstring _symbol_escape_re(const wchar_t *s)
 static inline std::wstring _symbol_escape_re(const std::wstring &s)
 { return _symbol_escape_re(s.c_str()); }
 
+#define _ENCODE_SYMBOL_MATCH    "{{" "$1" "\\(<[-0-9<>]+>\\)" "}}"
+static std::wstring _encode_symbol_match(const boost::wsmatch &m)
+{
+  std::wstring ret = L"{{";
+  std::wstring tokens = m[1];
+  if (tokens.find(',') == std::wstring::npos)
+    ret += tokens;
+  else {
+    std::replace(tokens.begin(), tokens.end(), L',', L'|');
+    ret += L"(?:";
+    ret += tokens;
+    ret += L')';
+  }
+  ret += L"([-0-9<>]+)" L"}}";
+  return ret;
+}
+
 std::wstring trsymbol::encode_symbol(const std::wstring &s, bool escape)
 {
-  if (escape && _symbol_needs_escape_re(s))
-    return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, "{{$1\\([-0-9<>]+\\)}}");
-  else
-    return boost::regex_replace(s, rx::raw_symbol_with_token_group, "{{$1\\([-0-9<>]+\\)}}");
+  if (s.find(',') == std::wstring::npos) {
+    if (escape && _symbol_needs_escape_re(s))
+      return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, _ENCODE_SYMBOL_MATCH);
+    else
+      return boost::regex_replace(s, rx::raw_symbol_with_token_group, _ENCODE_SYMBOL_MATCH);
+  } else {
+    if (escape && _symbol_needs_escape_re(s))
+      return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, _encode_symbol_match);
+    else
+      return boost::regex_replace(s, rx::raw_symbol_with_token_group, _encode_symbol_match);
+  }
 }
 
 void trsymbol::iter_raw_symbols(const std::wstring &target, const collect_string_f &fun)
