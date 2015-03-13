@@ -58,13 +58,17 @@ std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring
   std::wstring ret = target;
   if (!args.empty() && args.size() <= source_symbol_count) { // handle symbol here
     if (source_symbol_count == 1) { // optimize if there is only one symbol
-      boost::replace_all(ret, source_symbols, args.front());
+      if (boost::contains(ret, "[[]]"))
+        boost::replace_all(ret, "[[]]", args.front());
+      else {
+        boost::replace_all(ret, source_symbols, args.front());
 
-      size_t pos = source_symbols.find('#');
-      if (pos != std::wstring::npos && ret.find('#') != std::wstring::npos) {
-        std::string pattern = "[[";
-        pattern += source_symbols.substr(pos);
-        boost::replace_all(ret, pattern, args.front());
+        size_t pos = source_symbols.find('#');
+        if (pos != std::wstring::npos && ret.find('#') != std::wstring::npos) {
+          std::string pattern = "[[";
+          pattern += source_symbols.substr(pos);
+          boost::replace_all(ret, pattern, args.front());
+        }
       }
     } else {
       const auto symbol_splitter = boost::lambda::_1 == source_symbol_sep;
