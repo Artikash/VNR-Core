@@ -92,21 +92,25 @@ def _lang_sort_key(t, s):
   """
   return _lang_level(t) * 20 + _lang_level(s)
 
-def _role_priority(role, type):
+def _role_priority(role, type, has_symbol):
   """Larger applied first
   @param  role  str
   @param  type  str
+  @param  has_symbol  bool
   @return  int
   """
   if type == 'suffix':
-    return -3
+    return 1
   if type == 'prefix':
-    return -2
-  if role == defs.TERM_NAME_ROLE:
-    return -1
+    return 2
+  if role == defs.TERM_NAME_ROLE: # apply name rules first
+    return 3
   if role and role != defs.TERM_PHRASE_ROLE: # apply user-defined symbols at last
-    return -4
-  return 0 # zero is the base line for phrase
+    return -1
+  # Zero is the base line for phrase
+  # When no symbol, X has the higher priority (4)
+  # When there is symbol, M has the higher priority
+  return 0 if has_symbol else 4
 
 def _td_sort_key(td):
   """Sort term data reversely. Larger applied first, true is applied first
@@ -114,7 +118,10 @@ def _td_sort_key(td):
   @return  tuple
   """
   role = td.role or _td_default_role(td)
-  return (not _contains_syntax_symbol(td.pattern), _role_priority(role, td.type), len(td.pattern), td.private, td.special, not td.icase, _lang_sort_key(td.language, td.sourceLanguage), td.id) #, it.regex)
+  has_symbol = _contains_syntax_symbol(td.pattern) or td.type in ('prefix', 'suffix')
+  role_priority = _role_priority(role, td.type, has_symbol)
+  lang_priority = _lang_sort_key(td.language, td.sourceLanguage)
+  return (not has_symbol, role_priority, len(td.pattern), td.private, td.special, not td.icase, lang_priority, td.id) #, it.regex)
 
 def sort_terms(termdata):
   """
