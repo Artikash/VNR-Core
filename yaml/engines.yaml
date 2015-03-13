@@ -189,6 +189,7 @@ simple:
   - rUGP
   - rUGP2
   - ShinaRio
+  - ShinaRio2
   - SideB
   - SiglusEngine
   - SiglusEngine2
@@ -282,7 +283,9 @@ slow:
   - EmonEngine
   - RunrunEngine
   - RunrunEngine Old
+  - ShinaRio2
 
+# The game engines that require the game to have fast text speed
 fast:
   - AB2Try
   - MarineHeart
@@ -384,6 +387,7 @@ char:
   - rUGP2
   - ScenarioPlayerA
   - ShinaRio
+  - ShinaRio2
   - SideB
   - Silkys # renamed
   - SolfaSoft # renamed
