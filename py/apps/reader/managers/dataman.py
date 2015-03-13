@@ -2239,6 +2239,9 @@ class _Comment(object):
     else:
       manager().removeDirtyComment(self.q)
 
+  def getUserName(self): return _get_user_name(self.userId)
+  def getUpdateUserName(self): return _get_user_name(self.updateUserId)
+
   @property
   def gameMd5(self):
     if not self._gameMd5 and self.gameId:
@@ -2382,12 +2385,12 @@ class Comment(QObject):
 
   userNameChanged = Signal(unicode)
   userName = Property(unicode,
-      lambda self: _get_user_name(self.__d.userId),
+      lambda self: self.__d.getUserName(),
       notify=userNameChanged)
 
   updateUserNameChanged = Signal(unicode)
   updateUserName = Property(unicode,
-      lambda self: _get_user_name(self.__d.updateUserId),
+      lambda self: self.__d.getUpdateUserName(),
       notify=updateUserNameChanged)
 
   colorChanged = Signal(unicode)
@@ -5782,7 +5785,7 @@ class _CommentModel(object):
         if t[0] == '@':
           t = t[1:]
           rx = re.compile(t, re.IGNORECASE)
-          for it in c.userName, c.updateUserName:
+          for it in cd.getUserName(), cd.getUpdateUserName():
             if it and rx.match(it):
               return True
           return False
@@ -5794,7 +5797,7 @@ class _CommentModel(object):
           it = dm.queryGameName(id=cd.gameId)
           return bool(it and rx.search(it))
       rx = self.filterRe
-      for it in cd.text, cd.context, i18n.language_name(cd.language), c.userName, c.updateUserName, Comment.typeName(cd.type), cd.comment, cd.updateComment, dm.queryGameName(id=cd.gameId):
+      for it in cd.text, cd.context, i18n.language_name(cd.language), cd.getUserName(), cd.getUpdateUserName(), Comment.typeName(cd.type), cd.comment, cd.updateComment, dm.queryGameName(id=cd.gameId):
         if it and rx.search(it):
           return True
     except Exception, e:
@@ -5829,7 +5832,7 @@ class _CommentModel(object):
           cd.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + c.userName,
+            tr_("User") + ": " + cd.getUserName(),
             tr_("Text") + ": " + cd.text,
           )))
           continue
@@ -5880,7 +5883,7 @@ class _CommentModel(object):
           cd.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + c.userName,
+            tr_("User") + ": " + cd.getUserName(),
             tr_("Text") + ": " + cd.text,
           )))
           continue
@@ -5926,7 +5929,7 @@ class _CommentModel(object):
             cd.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + c.userName,
+              tr_("User") + ": " + cd.getUserName(),
               tr_("Text") + ": " + cd.text,
             )))
             continue
@@ -5944,7 +5947,7 @@ class _CommentModel(object):
             cd.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + c.userName,
+              tr_("User") + ": " + cd.getUserName(),
               tr_("Text") + ": " + cd.text,
             )))
             continue
@@ -10459,7 +10462,7 @@ class DataManager(QObject):
           td.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + t.userName,
+            tr_("User") + ": " + td.getUserName(),
             tr_("Pattern") + ": " + td.pattern,
             tr_("Text") + ": " + td.text,
           )))
@@ -10515,7 +10518,7 @@ class DataManager(QObject):
           td.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + t.userName,
+            tr_("User") + ": " + td.getUserName(),
             tr_("Pattern") + ": " + td.pattern,
             tr_("Text") + ": " + td.text,
           )))
@@ -10569,7 +10572,7 @@ class DataManager(QObject):
             td.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + t.userName,
+              tr_("User") + ": " + td.getUserName(),
               tr_("Pattern") + ": " + td.pattern,
               tr_("Text") + ": " + td.text,
             )))
@@ -10588,7 +10591,7 @@ class DataManager(QObject):
             td.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + t.userName,
+              tr_("User") + ": " + td.getUserName(),
               tr_("Pattern") + ": " + td.pattern,
               tr_("Text") + ": " + td.text,
             )))
