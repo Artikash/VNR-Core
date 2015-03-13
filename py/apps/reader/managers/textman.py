@@ -350,6 +350,8 @@ class _TextManager(object):
     """
     # Remove illegal characters before repetition removal.
     text = textutil.remove_illegal_text(text)
+    if not text:
+      return ''
     if self.removesRepeat:
       text = textutil.remove_repeat_text(text)
       #size = len(text)
@@ -573,12 +575,6 @@ class _TextManager(object):
 
     q = self.q
 
-    if FIX_OLD_SUBS:
-      self.oldHashes[1:CONTEXT_CAPACITY] = [
-          hashutil.strhash_old_vnr(rawData, h) if h else 0
-            for h in self.oldHashes[:CONTEXT_CAPACITY-1]]
-      self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
-
     # Profiler: 1e-5 seconds
 
     #with SkProfiler():
@@ -605,6 +601,12 @@ class _TextManager(object):
     if not text:
       #dprint("ignore text")
       return
+
+    if FIX_OLD_SUBS:
+      self.oldHashes[1:CONTEXT_CAPACITY] = [
+          hashutil.strhash_old_vnr(rawData, h) if h else 0
+            for h in self.oldHashes[:CONTEXT_CAPACITY-1]]
+      self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
 
     # Calculate hash1
     self.hashes[1:CONTEXT_CAPACITY] = [
