@@ -2599,6 +2599,9 @@ class _Term(object):
   @gameItemId.setter
   def gameItemId(self, val): self._gameItemId = val
 
+  def getUserName(self): return _get_user_name(self.userId)
+  def getUpdateUserName(self): return _get_user_name(self.updateUserId)
+
   def recheckError(self):
     v = self._getErrorType()
     if v != self._errorType:
@@ -2931,12 +2934,12 @@ class Term(QObject):
 
   userNameChanged = Signal(unicode)
   userName = Property(unicode,
-      lambda self: _get_user_name(self.__d.userId),
+      lambda self: self.__d.getUserName(),
       notify=userNameChanged)
 
   updateUserNameChanged = Signal(unicode)
   updateUserName = Property(unicode,
-      lambda self: _get_user_name(self.__d.updateUserId),
+      lambda self: self.__d.getUpdateUserName(),
       notify=updateUserNameChanged)
 
   proptectedChanged = Signal(bool)
@@ -4968,8 +4971,12 @@ class _TermModel(object):
   def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
 
   def get(self, row): # int -> QObject
-    try: return self.data[- # Revert the list
+    try:
+      ret = self.data[- # Revert the list
         (self.pageIndex() + row +1)]
+      if ret:
+        ret.init() # this is the only place that the object is initialized
+      return ret
     except IndexError: pass
 
   @property
@@ -5149,7 +5156,7 @@ class _TermModel(object):
         elif col == 'role':
           return t == td.role
         elif col == 'user':
-          q = term.userName,
+          q = td.getUserName(),
         elif col == 'game':
           try:
             tid = int(t)
@@ -5181,7 +5188,7 @@ class _TermModel(object):
           if t[0] == '@':
             t = t[1:]
             rx = re.compile(t, re.IGNORECASE)
-            for it in term.userName, term.updateUserName:
+            for it in td.getUserName(), td.getUpdateUserName():
               if it and rx.match(it):
                 return True
             return False
@@ -5198,7 +5205,7 @@ class _TermModel(object):
             rx = re.compile(t, re.IGNORECASE)
             it = term.gameSeries or term.gameName
             return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
-        q = td.pattern, td.text, td.language, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName
+        q = td.pattern, td.text, td.language, i18n.language_name(td.language), td.getUserName(), td.getUpdateUserName(), Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName
       if q:
         rx = self.filterRe
         for it in q:
@@ -6688,7 +6695,7 @@ class _DataManager(object):
     self.updateTermsLocked = False  # bool
 
     self.termsEditable = False # disable editable by default
-    self.termsInitialized = False # if the terms has initialized
+    #self.termsInitialized = False # if the terms has initialized
 
     #self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
     #self._termMacros = None  # {unicode pattern:unicode repl} or None   indexed macros
@@ -6782,6 +6789,7 @@ class _DataManager(object):
 
   def clearTerms(self):
     if self.terms:
+      self.terms = []                 # [Term], not None
       #if self.termsInitialized:
       #  for t in self.terms:
       #    if t.isInitialized():
@@ -6790,7 +6798,6 @@ class _DataManager(object):
       #          t.setParent(None) # might raise if QObject has been deleted
       #      except Exception, e:
       #        dwarn(e)
-      self.terms = []                 # [Term], not None
       #self.sortedTerms = None
 
   #def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
@@ -8725,7 +8732,7 @@ class _DataManager(object):
     try:
       #tree = etree.parse(xmlfile)
       #root = tree.getroot()
-      init = self.termsEditable # bool
+      #init = self.termsEditable # bool
 
       context = etree.iterparse(xmlfile, events=('start', 'end'))
 
@@ -8772,13 +8779,13 @@ class _DataManager(object):
             #if not kw.get('userHash'):
             #  kw['userHash'] = kw['userId']
             terms.append(Term(
-                init=init,
+                init=False,
                 parent=self.q, # FIXME: increase PySide reference count
                 **kw))
 
       if terms:
         self.terms = terms
-        self.termsInitialized = init
+        #self.termsInitialized = init
         #self.sortedTerms = None    # already cleared by clearTerms
 
         self.invalidateTerms()
@@ -9437,11 +9444,11 @@ class DataManager(QObject):
     d = self.__d
     if d.termsEditable != t:
       d.termsEditable = t
-      if t and d.terms and not d.termsInitialized:
-        dprint("initialize terms")
-        d.termsInitialized = True
-        for it in d.terms:
-          it.init(self)
+      #if t and d.terms and not d.termsInitialized:
+      #  dprint("initialize terms")
+      #  d.termsInitialized = True
+      #  for it in d.terms:
+      #    it.init(self)
       self.termsEditableChanged.emit(t)
 
   def updateTerms(self, reset=False):
@@ -9459,7 +9466,7 @@ class DataManager(QObject):
       else:
         growl.msg(my.tr("Update dictionary terms incrementally") + " ...")
 
-      editable = d.termsEditable
+      #editable = d.termsEditable
       ss = settings.global_()
       updateTime = ss.termsTime()
       now = skdatetime.current_unixtime()
@@ -9469,18 +9476,18 @@ class DataManager(QObject):
       incremental = not reset and updateTime and l # bool
       if incremental:
         l = nm.mergeTerms(l, updateTime,
-            d.user.name, d.user.password, init=editable) #, parent=self)
+            d.user.name, d.user.password, init=False) #, parent=self)
       else:
-        l = nm.getTerms(d.user.name, d.user.password, init=editable) #, parent=self)
+        l = nm.getTerms(d.user.name, d.user.password, init=False) #, parent=self)
       if l:
-        if not editable and editable != d.termsEditable:
-          for it in l:
-            it.init(self)
+        #if not editable and editable != d.termsEditable:
+        #  for it in l:
+        #    it.init(self)
 
         d.clearTerms()
 
         d.terms = l
-        d.termsInitialized = d.termsEditable
+        #d.termsInitialized = d.termsEditable
 
         dprint("term count = %i" % len(d.terms))
         d.touchTerms()
