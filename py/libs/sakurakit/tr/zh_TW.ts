@@ -2216,7 +2216,7 @@
     <message>
         <location filename="sktr.py" line="49"/>
         <source>Arabic</source>
-        <translation>阿拉伯語</translation>
+        <translation>阿拉伯文</translation>
     </message>
     <message>
         <location filename="sktr.py" line="67"/>
@@ -2501,7 +2501,7 @@
     <message>
         <location filename="sktr.py" line="54"/>
         <source>Traditional Chinese</source>
-        <translation>繁體中文</translation>
+        <translation>正體中文</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
