@@ -4045,12 +4045,12 @@ bool InsertShinaHook()
       ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47 dynamic split");
       hp.split = *(DWORD *)(s + 2) + 4;
        //RegisterEngineType(ENGINE_SHINA);
+      NewHook(hp, L"ShinaRio");
 
     } else {
       // jichi 3/13/2015: GetTextExtentPoint32A is not statically invoked in ＲＩＮ×ＳＥＮ　(PK)
-      //
-      // See:
-      // http://www.hongfire.com/forum/showthread.php/36807-AGTH-text-extraction-tool-for-games-translation/page347
+      // See: http://sakuradite.com/topic/671
+      // See: http://www.hongfire.com/forum/showthread.php/36807-AGTH-text-extraction-tool-for-games-translation/page347
       //
       // [Guilty+]Rin x Sen ～Hakudaku Onna Kyoushi to Yaroudomo～: /HB8*0:44@0:GDI32.dll:GetTextExtentPoint32A /Ftext@4339A2:0;choices@4339A2:ffffff
       //
@@ -4061,13 +4061,14 @@ bool InsertShinaHook()
       // Message speed needs to be set to something slower then fastest(instant) or text wont show up in agth.
       // Last edited by Freaka; 09-29-2009 at 11:48 AM.
 
-      // There are some issue with this split that the first character is split in another thread
+      // The text speed must NOT to be set to the fastest.
+      // Otherwise, the first character will be split in another thread
       ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47 static split");
       hp.split = 0x44;
-      hp.type |= FIXING_SPLIT|NO_CONTEXT; // merge all threads
-      hp.text_fun = SpecialHookShina1;
+      //hp.type |= FIXING_SPLIT|NO_CONTEXT; // merge all threads
+      //hp.text_fun = SpecialHookShina1;
+      NewHook(hp, L"ShinaRio2"); // jichi: mark as ShinaRio2 so that VNR is able to warn user about the text speed issue
     }
-    NewHook(hp, L"ShinaRio");
     return true;
   }
   ConsoleOutput("vnreng:ShinaRio: unknown version");
