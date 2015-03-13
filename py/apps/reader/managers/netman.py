@@ -2007,7 +2007,7 @@ class NetworkManager(QObject):
 
   ## Terms ##
 
-  def getTerms(self, userName='', password='', init=True, parent=None):
+  def getTerms(self, userName='', password='', init=False, parent=None):
     """
     @param* userName  str
     @param* password  str
@@ -2019,7 +2019,7 @@ class NetworkManager(QObject):
       return skthreads.runsync(partial(
           self.__d.getTerms, userName, password, init=init))
 
-  def mergeTerms(self, terms, time, userName='', password='', init=True, parent=None):
+  def mergeTerms(self, terms, time, userName='', password='', init=False, parent=None):
     """
     @param  terms  [dataman.Term]  current term
     @param  time  long  timestamp

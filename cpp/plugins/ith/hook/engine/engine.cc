@@ -4061,7 +4061,9 @@ bool InsertShinaHook()
       // Message speed needs to be set to something slower then fastest(instant) or text wont show up in agth.
       // Last edited by Freaka; 09-29-2009 at 11:48 AM.
 
-      // The text speed must NOT to be set to the fastest.
+      // Issues:
+      // 1. The text speed must NOT to be set to the fastest.
+      // 2. There might be a wrong text thread that is almost correct, except that its first character is chopped.
       // Otherwise, the first character will be split in another thread
       ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47 static split");
       hp.split = 0x44;
