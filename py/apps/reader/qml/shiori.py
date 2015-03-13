@@ -73,15 +73,12 @@ class _ShioriBean:
     @return  unicode or None
     """
     if type == 'term' and id:
-      dm = dataman.manager()
-      td = dm.queryTermData(id)
+      td = dataman.manager().queryTermData(id)
       if td:
-        userName = dm.queryUserName(td.userId)
-        updateUserName = dm.queryUserName(td.updateUserId) if td.updateUserId else None
         return rc.jinja_template('html/term').render({
           'td': td,
-          'userName': userName,
-          'updateUserName': updateUserName,
+          'userName': td.getUserName(),
+          'updateUserName': td.getUpdateUserName(),
           'source': source,
           'target': target,
           'i18n': i18n,
