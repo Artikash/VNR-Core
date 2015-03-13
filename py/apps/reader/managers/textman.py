@@ -383,6 +383,7 @@ class _TextManager(object):
     @param  c  datamanComment
     """
     if not self.blockedLanguages or c.d.language[:2] not in self.blockedLanguages:
+      c.init()
       self.q.commentReceived.emit(c)
 
   def _showSubtitle(self, s):
@@ -680,8 +681,10 @@ class _TextManager(object):
           if not cd.context and self.online: #and (cd.userId == userId or userId in SUPER_USER_IDS):
             context = dm.queryContext(h)
             if context:
+              c.init()
               c.context = context
             elif cur_sz and (cd.userId == userId or userId in SUPER_USER_IDS):
+              c.init()
               c.contextSize = cur_sz
               c.hash = cur_hash
               c.context = cur_ctx
@@ -718,6 +721,7 @@ class _TextManager(object):
           if h != self.hashes[h_index]:
             for c in dm.queryComments(hash=h):
               if (c.userId == userId or userId in SUPER_USER_IDS) and self.online:
+                c.init()
                 c.hash = self.hashes[h_index]
                 if not c.context:
                   context = dm.queryContext(c.hash)
@@ -728,7 +732,8 @@ class _TextManager(object):
         h = hashutil.strhash_old_ap(rawData)
         if h != self.oldHashes[0]:
           for c in dm.queryComments(hash=h):
-            if (c.userId == userId or userId in SUPER_USER_IDS) and self.online:
+            if (c.d.userId == userId or userId in SUPER_USER_IDS) and self.online:
+              c.init()
               c.hash = self.hashes[0]
               if not c.context:
                 c.context = text

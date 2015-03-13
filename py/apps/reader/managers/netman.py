@@ -1931,7 +1931,7 @@ class NetworkManager(QObject):
 
   ## Comments ##
 
-  def queryComments(self, gameId=0, md5=None, hash=True, init=True):
+  def queryComments(self, gameId=0, md5=None, hash=True, init=False):
     """Either gameid or digest should be specified
     @param  gameId  long or 0
     @param  md5  str or None
