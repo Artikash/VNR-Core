@@ -3376,6 +3376,7 @@ rUGP hook:
 ********************************************************************************************/
 void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(split);
   DWORD *stack = (DWORD *)esp_base;
   DWORD i,val;
   for (i = 0; i < 4; i++) {
@@ -3906,7 +3907,9 @@ ShinaRio hook:
 
   New ShinaRio engine (>=2.48) uses different approach.
 ********************************************************************************************/
-static void SpecialHookShina(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
+namespace { // unnamed
+// jichi 3/1/2015: hook for new ShinaRio games
+void SpecialHookShina2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD ptr = *(DWORD*)(esp_base-0x20);
   *split = ptr;
@@ -3941,6 +3944,26 @@ static void SpecialHookShina(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWO
     text_buffer_prev[skip] = 0;
     *data = (DWORD)text_buffer_prev;
     *len = skip;
+  }
+}
+
+// jichi 3/1/2015: hook for old ShinaRio games
+// Used to merge correct text thread.
+// 1. Only keep threads with 0 and -1 split
+// 2. Skip the thread withb 0 split and with minimum return address
+void SpecialHookShina1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  static DWORD min_retaddr = -1;
+  DWORD s = *(DWORD *)(esp_base + hp->split);
+  if (s == 0 || (s & 0xffff) == 0xffff) { // only keep threads with 0 and -1 split
+    if (s == 0 && retof(esp_base) <= min_retaddr) {
+      min_retaddr = retof(esp_base);
+      return;
+    }
+    *split = FIXED_SPLIT_VALUE;
+    // Follow the same logic as the hook.
+    *data = *(DWORD *)*data; // DATA_INDIRECT
+    *len = LeadByteTable[*data & 0xff];
   }
 }
 
@@ -3983,32 +4006,70 @@ int GetShinaRioVersion()
   return ret;
 }
 
+} // unnamed namespace
+
 // jichi 8/24/2013: Rewrite ShinaRio logic.
+// Test games: ＲＩＮ×ＳＥＮ　(PK), version ShinaRio 2.47
 bool InsertShinaHook()
 {
   int ver = GetShinaRioVersion();
   if (ver >= 48) { // v2.48, v2.49
     HookParam hp = {};
     hp.addr = (DWORD)::GetTextExtentPoint32A;
-    hp.text_fun = SpecialHookShina;
+    hp.text_fun = SpecialHookShina2;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: INSERT ShinaRio > 2.47");
     NewHook(hp, L"ShinaRio");
     //RegisterEngineType(ENGINE_SHINA);
     return true;
 
-  } else if (ver > 40) // <= v2.47. Older games like あやかしびと does not require hcode
-    if (DWORD s = Util::FindCallAndEntryBoth((DWORD)GetTextExtentPoint32A, module_limit_ - module_base_, module_base_, 0xec81)) {
-      HookParam hp = {};
-      hp.addr = (DWORD)::GetTextExtentPoint32A;
-      hp.off = 0x8;
+  } else if (ver > 40) { // <= v2.47. Older games like あやかしびと does not require hcode
+    // jichi 3/13/2015: GetGlyphOutlineA is not hooked, which might produce correct text
+    // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
+    enum stack { // current stack
+      arg0_retaddr = 0 // pseudo arg
+      , arg1_hdc = 4 * 1
+      , arg2_lpString = 4 * 2
+      , arg3_c = 4 * 3
+      , arg4_lpSize = 4 * 4
+    };
+
+    HookParam hp = {};
+    hp.addr = (DWORD)::GetTextExtentPoint32A;
+    hp.off = arg2_lpString; // 0x8
+    hp.length_offset = 1;
+    hp.type = DATA_INDIRECT|USING_SPLIT;
+
+    enum { sub_esp = 0xec81 }; // jichi: caller pattern: sub esp = 0x81,0xec
+    if (DWORD s = Util::FindCallAndEntryBoth((DWORD)GetTextExtentPoint32A, module_limit_ - module_base_, module_base_, sub_esp)) {
+      ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47 dynamic split");
       hp.split = *(DWORD *)(s + 2) + 4;
-      hp.length_offset = 1;
-      hp.type = DATA_INDIRECT|USING_SPLIT;
-      ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47");
-      NewHook(hp, L"ShinaRio");
-     //RegisterEngineType(ENGINE_SHINA);
+       //RegisterEngineType(ENGINE_SHINA);
+
+    } else {
+      // jichi 3/13/2015: GetTextExtentPoint32A is not statically invoked in ＲＩＮ×ＳＥＮ　(PK)
+      //
+      // See:
+      // http://www.hongfire.com/forum/showthread.php/36807-AGTH-text-extraction-tool-for-games-translation/page347
+      //
+      // [Guilty+]Rin x Sen ～Hakudaku Onna Kyoushi to Yaroudomo～: /HB8*0:44@0:GDI32.dll:GetTextExtentPoint32A /Ftext@4339A2:0;choices@4339A2:ffffff
+      //
+      // addr: 0 , text_fun: 0x0 , function: 135408591 , hook_len: 0 , ind: 0 , length_of
+      // fset: 1 , module: 1409538707 , off: 8 , recover_len: 0 , split: 68 , split_ind:
+      // 0 , type: 216
+      //
+      // Message speed needs to be set to something slower then fastest(instant) or text wont show up in agth.
+      // Last edited by Freaka; 09-29-2009 at 11:48 AM.
+
+      // There are some issue with this split that the first character is split in another thread
+      ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47 static split");
+      hp.split = 0x44;
+      hp.type |= FIXING_SPLIT|NO_CONTEXT; // merge all threads
+      hp.text_fun = SpecialHookShina1;
     }
+    NewHook(hp, L"ShinaRio");
+    return true;
+  }
   ConsoleOutput("vnreng:ShinaRio: unknown version");
   return false;
 }
@@ -4230,10 +4291,10 @@ bool InsertMBLHook()
  */
 bool InsertEaglsHook()
 {
-  // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
+  // DWORD GetGlyphOutline(HDC hdc, UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
   enum stack { // current stack
-    //s_retaddr = 0x0
-    arg1_hdc = 4 * 1
+    arg0_retaddr = 0 // pseudo arg
+    , arg1_hdc = 4 * 1
     , arg2_uChar = 4 * 2
     , arg3_uFormat = 4 * 3
     , arg4_lpgm = 4 * 4
@@ -4248,7 +4309,7 @@ bool InsertEaglsHook()
   hp.type = BIG_ENDIAN|USING_SPLIT; // the only difference is the split value
   hp.off = arg2_uChar;
   hp.split = arg4_lpgm;
-  //hp.split = arg4_lpmag2;
+  //hp.split = arg7_lpmat2;
   hp.length_offset = 1;
   ConsoleOutput("vnreng:INSERT EAGLS");
   NewHook(hp, L"EAGLS");
@@ -6117,7 +6178,8 @@ bool InsertWolfHook()
   // Step 1: find the address of GetTextMetricsA
   // Step 2: find where this function is called
   // Step 3: search "sub esp, XX" after where it is called
-  if (DWORD c1 = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA, module_limit_ - module_base_, module_base_, 0xec81))
+  enum { sub_esp = 0xec81 }; // jichi: caller pattern: sub esp = 0x81,0xec
+  if (DWORD c1 = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA, module_limit_ - module_base_, module_base_, sub_esp))
     if (DWORD c2 = Util::FindCallOrJmpRel(c1, module_limit_ - module_base_, module_base_, 0)) {
       union {
         DWORD i;
@@ -6466,7 +6528,7 @@ static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
   //ULONG addr = MemDbg::findCallerAddressAfterInt3((DWORD)::GetGlyphOutlineA, startAddress, stopAddress);
 
   // 00418210   81ec b4000000    sub esp,0xb4
-  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
+  enum { sub_esp = 0xec81 }; // jichi: caller pattern: sub esp = 0x81,0xec
   ULONG addr = MemDbg::findCallerAddress((ULONG)::GetGlyphOutlineA, sub_esp, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:WillPlus2: could not find caller of GetGlyphOutlineA");
@@ -6547,7 +6609,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
 bool InsertWillPlusHook()
 {
   //__debugbreak();
-  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec byte
+  enum { sub_esp = 0xec81 }; // jichi: caller pattern: sub esp = 0x81,0xec byte
   ULONG addr = MemDbg::findCallerAddress((ULONG)::GetGlyphOutlineA, sub_esp, module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:WillPlus: function call not found");
