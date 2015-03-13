@@ -5544,8 +5544,12 @@ class _CommentModel(object):
 
   # @Slot(int, result=QObject)
   def get(self, row):
-    try: return self.data[- # Revert the list
+    try:
+      ret = self.data[- # Revert the list
         (self.pageIndex() + row +1)]
+      if ret:
+        ret.init()
+      return ret
     except IndexError: pass
 
   def _addComment(self, c):
@@ -8451,7 +8455,7 @@ class _DataManager(object):
           elif path == 2 and kw['type'] in Comment.TYPES: # grimoire/comments
             #if not kw.get('userHash'):
             #  kw['userHash'] = kw['userId']
-            c = Comment(**kw)
+            c = Comment(init=False, **kw)
             if not hash:
               ret.append(c)
             else:
