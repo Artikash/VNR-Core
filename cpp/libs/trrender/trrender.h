@@ -7,7 +7,8 @@
 
 // Render a translation rule into a json href link.
 std::wstring tr_render_rule(const std::wstring &target,
+                            const std::wstring &source = std::wstring(),
                             int id = 0,
-                            const std::wstring &source = std::wstring());
+                            bool regex = false);
 
 #endif // TRRENDER_H
