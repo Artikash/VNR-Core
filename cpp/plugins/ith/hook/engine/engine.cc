@@ -4808,21 +4808,30 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
  *  Observations from Electro Arms:
  *  1. split = 0xC can handle most texts and its dwRetn is always zero
  *  2. The text containing furigana needed to split has non-zero dwRetn when split = 0
+ *
+ *  3/15/2015: logic modified as the plus operation would create so many threads
  */
 void SpecialHookMalie2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(data);
-  static DWORD last_split; // FIXME: This makes the special function stateful
-  DWORD s1 = *(DWORD *)esp_base; // current split at 0x0
-  if (!s1)
-    *split = last_split;
-  else {
-    DWORD s2 = *(DWORD *)(esp_base + 0xc); // second split
-    *split = last_split = s1 + s2; // not sure if plus is a good way
-  }
   //*len = GetHookDataLength(*hp, esp_base, (DWORD)data);
   *len = 2;
+
+  DWORD s1 = *(DWORD *)(esp_base + 0xc), // base split, which is stable
+        s2 = (*(DWORD *)esp_base); // used to split out furigana, but un stable
+  // http://www.binaryhexconverter.com/decimal-to-binary-converter
+  //enum : DWORD { mask = 0x14 };
+  *split = s1 + (s2 ? 1 : 0);
 }
+
+//  static DWORD last_split; // FIXME: This makes the special function stateful
+//  DWORD s1 = *(DWORD *)esp_base; // current split at 0x0
+//  if (!s1)
+//    *split = last_split;
+//  else {
+//    DWORD s2 = *(DWORD *)(esp_base + 0xc); // second split
+//    *split = last_split = s1 + s2; // not sure if plus is a good way
+//  }
 
 /**
  *  jichi 8/20/2013: Add hook for sweet light BRAVA!!
@@ -4930,11 +4939,13 @@ LPCWSTR _Malie3GetEOL(LPCWSTR p)
   if (p)
     for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
         p++)
-      switch (p[0]) {
-      case 0: // \0
-      case 0xa: // \n // the text after 0xa is furigana
+      if (*p <= 0xa) // for シルヴァリオ ヴェンデッタ
         return p;
-      }
+      //switch (p[0]) {
+      //case 0: // \0
+      //case 0xa: // \n // the text after 0xa is furigana
+      //  return p;
+      //}
   return nullptr;
 }
 
@@ -4960,6 +4971,14 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
   *split = FIXED_SPLIT_VALUE;
   //ITH_GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
 }
+
+// jichi 3/15/2015: Remove 0704 in シルヴァリオ ヴェンデッタ
+//bool Malie3Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
+//{
+//  WideCharFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L'\x07');
+//  WideCharFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L'\x04');
+//  return true;
+//}
 
 /**
  *  jichi 8/20/2013: Add hook for 相州戦神館學園 八命陣
@@ -4993,6 +5012,7 @@ bool InsertMalie3Hook()
   //hp.addr = 0x5b51f2;
   hp.text_fun = SpecialHookMalie3;
   hp.type = USING_UNICODE|NO_CONTEXT;
+  //hp.filter_fun = Malie3Filter;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, L"Malie3");
   ConsoleOutput("vnreng:Malie3: disable GDI hooks");
@@ -5000,18 +5020,42 @@ bool InsertMalie3Hook()
   return true;
 }
 
+// jichi 3/12/2015: Return guessed Malie engine year
+//int GetMalieYear()
+//{
+//  if (Util::SearchResourceString(L"2013 light"))
+//    return 2013;
+//  if (Util::SearchResourceString(L"2014 light"))
+//    return 2014;
+//  return 2015;
+//}
+
 } // unnamed Malie
 
 bool InsertMalieHook()
 {
   if (IthCheckFile(L"tools.dll"))
-    return InsertMalieHook1(); // For Dies irae, etc
-  else {
+    return InsertMalieHook1(); // jichi 3/5/2015: For old light games such as Dies irae.
+
+  else { // For old Malie games before 2015
     // jichi 8/20/2013: Add hook for sweet light engine
     // Insert both malie and malie2 hook.
-    bool ok = InsertMalieHook2();
-    ok = InsertMalie2Hook() || ok; // jichi 8/20/2013 TO BE RESTORED
+    bool ok = false;
+
+    // jichi 3/12/2015: Disable MalieHook2 which will crash シルヴァリオ ヴェンデッタ
+    //if (!IthCheckFile(L"gdiplus.dll"))
+    if (IthFindFile(L"System\\*")) { // Insert old Malie hook. There are usually System/cursor.cur
+      ok = InsertMalieHook2() || ok;
+      ok = InsertMalie2Hook() || ok; // jichi 8/20/2013
+    }
+
+    // The main disadvantage of Malie3 is that it cannot find character name
     ok = InsertMalie3Hook() || ok; // jichi 3/7/2014
+
+    if (ok) {
+      ConsoleOutput("vnreng:Malie: disable GDI hooks");
+      DisableGDIHooks();
+    }
     return ok;
   }
 }
