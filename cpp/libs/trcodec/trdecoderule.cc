@@ -20,7 +20,7 @@
 static inline std::wstring _render(const std::wstring &target, int id)
 {
 #ifdef WITH_LIB_TRRENDER
-  return ::tr_render_rule(target, std::wstring(), id);
+  return ::tr_render_rule(target, id, true); // complete = true
 #else
   return L"<u>" + target + L"</u>";
 #endif // WITH_LIB_TRRENDER

@@ -26,7 +26,7 @@
 std::wstring TranslationScriptRule::render_target() const
 {
 #ifdef WITH_LIB_TRRENDER
-  return ::tr_render_rule(target, source, id, is_regex());
+  return ::tr_render_rule(target, id, false); // complete = false, which is expensive and could break regex
 #else
   return L"<u>" + target + L"</u>";
 #endif // WITH_LIB_TRRENDER
