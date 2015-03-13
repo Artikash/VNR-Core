@@ -37,6 +37,8 @@ def _get_user_name(userId):
   @param  userId  int
   @return  unicode
   """
+  if not userId:
+    return ''
   u = manager().queryUser(userId)
   return u.name if u else str(userId)
 
