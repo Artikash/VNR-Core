@@ -5,10 +5,9 @@
 // 9/20/2014 jichi
 #include <string>
 
-// Render a translation rule into a json href link.
+// Render a translation rule into a json href link. Complete controls whether inline target as json.
 std::wstring tr_render_rule(const std::wstring &target,
-                            const std::wstring &source = std::wstring(),
                             int id = 0,
-                            bool regex = false);
+                            bool complete = true);
 
 #endif // TRRENDER_H
