@@ -6,7 +6,7 @@
 
 // A sample expected output without escape:
 // <a href='json://{"type":"term","id":12345,"source":"pattern","target":"text"}'>pattern</a>
-std::wstring tr_render_rule(const std::wstring &target, int id, const std::wstring &source)
+std::wstring tr_render_rule(const std::wstring &target, const std::wstring &source, int id, bool regex)
 {
   if (id <= 0) // do not encode if no valid id
     return L"<u>" + target + L"</u>";
@@ -15,19 +15,22 @@ std::wstring tr_render_rule(const std::wstring &target, int id, const std::wstri
   ret.append(L",\"id\":")
      .append(std::to_wstring((long long)id));
 
-  if (!source.empty()) {
-    std::string s = ::trescape(source);
-    ret.append(L",\"source\":\"")
-       .append(s.cbegin(), s.cend())
-       .push_back('"');
+  if (!regex) { // do not render regex source/target which is expensive and dangerous
+    if (!source.empty()) {
+      std::string s = ::trescape(source);
+      ret.append(L",\"source\":\"")
+         .append(s.cbegin(), s.cend())
+         .push_back('"');
+    }
+
+    if (!target.empty()) {
+      std::string s = ::trescape(target);
+      ret.append(L",\"target\":\"")
+         .append(s.cbegin(), s.cend())
+         .push_back('"');
+    }
   }
 
-  if (!target.empty()) {
-    std::string s = ::trescape(target);
-    ret.append(L",\"target\":\"")
-       .append(s.cbegin(), s.cend())
-       .push_back('"');
-  }
   ret.push_back('}');
 
   ret.insert(0, L"<a href='json://");

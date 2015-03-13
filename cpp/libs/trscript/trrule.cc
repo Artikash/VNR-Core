@@ -23,11 +23,10 @@
 # include "trrender/trrender.h"
 #endif // TRRENDER_ENABLED
 
-std::wstring TranslationScriptRule::render_target(const std::wstring &matched_text) const
+std::wstring TranslationScriptRule::render_target() const
 {
 #ifdef WITH_LIB_TRRENDER
-  const std::wstring &s = matched_text.empty() && !is_regex() ? source : matched_text;
-  return ::tr_render_rule(target, id, s);
+  return ::tr_render_rule(target, source, id, is_regex());
 #else
   return L"<u>" + target + L"</u>";
 #endif // WITH_LIB_TRRENDER
@@ -62,30 +61,34 @@ void TranslationScriptRule::string_replace(std::wstring &ret, bool mark) const
     else
       boost::erase_all(ret, source);
   } else {
-    std::wstring repl = mark ? render_target() : target;
+    if (mark)
+      cache_target();
     if (is_icase())
-      boost::ireplace_all(ret, source, repl);
+      boost::ireplace_all(ret, source,
+                          mark ? cached_target : target);
     else
-      boost::replace_all(ret, source, repl);
+      boost::replace_all(ret, source,
+                         mark ? cached_target : target);
   }
 }
 
 void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
 {
+  if (mark)
+    cache_target();
   WITH (
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
     cache_re();
     if (target.empty() || !mark)
-      ret = boost::regex_replace(ret, *source_re, target,
+      ret = boost::regex_replace(ret,*source_re, target,
           boost::match_default|boost::format_all);
-    else {
-      auto repl = [this](const boost::wsmatch &m) {
-        return render_target(m[0]);
-      };
-      ret = boost::regex_replace(ret, *source_re, repl,
+    else
+      //auto repl = [this](const boost::wsmatch &m) {
+      //  return render_target(m[0]);
+      //};
+      ret = boost::regex_replace(ret, *source_re, mark ? cached_target : target,
           boost::match_default|boost::format_all);
-    }
   )
 }
 
