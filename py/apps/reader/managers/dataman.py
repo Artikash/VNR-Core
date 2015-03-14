@@ -2239,9 +2239,12 @@ class _Comment(object):
     else:
       manager().removeDirtyComment(self.q)
 
-  def getUserName(self): return _get_user_name(self.userId)
-  def getUpdateUserName(self): return _get_user_name(self.updateUserId)
-  def isProtected(self): return _is_protected_data(self)
+  @property
+  def userName(self): return _get_user_name(self.userId)
+  @property
+  def updateUserName(self): return _get_user_name(self.updateUserId)
+  @property
+  def protected(self): return _is_protected_data(self)
 
   @property
   def gameMd5(self):
@@ -2386,12 +2389,12 @@ class Comment(QObject):
 
   userNameChanged = Signal(unicode)
   userName = Property(unicode,
-      lambda self: self.__d.getUserName(),
+      lambda self: self.__d.userName,
       notify=userNameChanged)
 
   updateUserNameChanged = Signal(unicode)
   updateUserName = Property(unicode,
-      lambda self: self.__d.getUpdateUserName(),
+      lambda self: self.__d.updateUserName,
       notify=updateUserNameChanged)
 
   colorChanged = Signal(unicode)
@@ -2401,7 +2404,7 @@ class Comment(QObject):
 
   proptectedChanged = Signal(bool)
   protected = Property(bool,
-      lambda self: self.__d.isProtected(),
+      lambda self: self.__d.protected,
       notify=proptectedChanged)
 
   @property
@@ -2605,10 +2608,13 @@ class _Term(object):
   @gameItemId.setter
   def gameItemId(self, val): self._gameItemId = val
 
-  def getUserName(self): return _get_user_name(self.userId)
-  def getUpdateUserName(self): return _get_user_name(self.updateUserId)
+  @property
+  def userName(self): return _get_user_name(self.userId)
+  @property
+  def updateUserName(self): return _get_user_name(self.updateUserId)
 
-  def isProtected(self): return _is_protected_data(self)
+  @property
+  def protected(self): return _is_protected_data(self)
 
   def recheckError(self):
     v = self._getErrorType()
@@ -2942,17 +2948,17 @@ class Term(QObject):
 
   userNameChanged = Signal(unicode)
   userName = Property(unicode,
-      lambda self: self.__d.getUserName(),
+      lambda self: self.__d.userName,
       notify=userNameChanged)
 
   updateUserNameChanged = Signal(unicode)
   updateUserName = Property(unicode,
-      lambda self: self.__d.getUpdateUserName(),
+      lambda self: self.__d.updateUserName,
       notify=updateUserNameChanged)
 
   proptectedChanged = Signal(bool)
   protected = Property(bool,
-      lambda self: self.__d.isProtected(),
+      lambda self: self.__d.protected,
       notify=proptectedChanged)
 
   errorTypeChanged = Signal(int)
@@ -3350,9 +3356,12 @@ class _Reference(object):
   @gameMd5.setter
   def gameMd5(self, val): self._gameMd5 = val
 
-  def getUserName(self): return _get_user_name(self.userId)
-  def getUpdateUserName(self): return _get_user_name(self.updateUserId)
-  def isProtected(self): return _is_protected_data(self)
+  @property
+  def userName(self): return _get_user_name(self.userId)
+  @property
+  def updateUserName(self): return _get_user_name(self.updateUserId)
+  @property
+  def protected(self): return _is_protected_data(self)
 
   @staticmethod
   def synthesize(name, type, sync=False):
@@ -3517,17 +3526,17 @@ class Reference(QObject):
 
   userNameChanged = Signal(unicode)
   userName = Property(unicode,
-      lambda self: self.___d.getUserName(),
+      lambda self: self.___d.userName,
       notify=userNameChanged)
 
   updateUserNameChanged = Signal(unicode)
   updateUserName = Property(unicode,
-      lambda self: self.__d.getUpdateUserName(),
+      lambda self: self.__d.updateUserName,
       notify=updateUserNameChanged)
 
   proptectedChanged = Signal(bool)
   protected = Property(bool,
-      lambda self: self.__d.isProtected(),
+      lambda self: self.__d.protected,
       notify=proptectedChanged)
 
   @property
@@ -5085,7 +5094,7 @@ class _TermModel(object):
       else:
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
-            key=operator.attrgetter(col),
+            key=lambda it:getattr(it.d, col),
             reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
@@ -5168,7 +5177,7 @@ class _TermModel(object):
         elif col == 'role':
           return t == td.role
         elif col == 'user':
-          q = td.getUserName(),
+          q = td.userName,
         elif col == 'game':
           try:
             tid = int(t)
@@ -5200,7 +5209,7 @@ class _TermModel(object):
           if t[0] == '@':
             t = t[1:]
             rx = re.compile(t, re.IGNORECASE)
-            for it in td.getUserName(), td.getUpdateUserName():
+            for it in td.userName, td.updateUserName:
               if it and rx.match(it):
                 return True
             return False
@@ -5217,7 +5226,7 @@ class _TermModel(object):
             rx = re.compile(t, re.IGNORECASE)
             it = term.gameSeries or term.gameName
             return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
-        q = td.pattern, td.text, td.language, i18n.language_name(td.language), td.getUserName(), td.getUpdateUserName(), Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName
+        q = td.pattern, td.text, td.language, i18n.language_name(td.language), td.userName, td.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName
       if q:
         rx = self.filterRe
         for it in q:
@@ -5661,7 +5670,7 @@ class _CommentModel(object):
       else:
         col = self.COLUMNS[self.sortingColumn]
         self._sortedData = sorted(data,
-            key=operator.attrgetter(col),
+            key=lambda it:getattr(it.d, col),
             reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
@@ -5796,7 +5805,7 @@ class _CommentModel(object):
         if t[0] == '@':
           t = t[1:]
           rx = re.compile(t, re.IGNORECASE)
-          for it in cd.getUserName(), cd.getUpdateUserName():
+          for it in cd.userName, cd.updateUserName:
             if it and rx.match(it):
               return True
           return False
@@ -5808,7 +5817,7 @@ class _CommentModel(object):
           it = dm.queryGameName(id=cd.gameId)
           return bool(it and rx.search(it))
       rx = self.filterRe
-      for it in cd.text, cd.context, i18n.language_name(cd.language), cd.getUserName(), cd.getUpdateUserName(), Comment.typeName(cd.type), cd.comment, cd.updateComment, dm.queryGameName(id=cd.gameId):
+      for it in cd.text, cd.context, i18n.language_name(cd.language), cd.userName, cd.updateUserName, Comment.typeName(cd.type), cd.comment, cd.updateComment, dm.queryGameName(id=cd.gameId):
         if it and rx.search(it):
           return True
     except Exception, e:
@@ -5839,11 +5848,11 @@ class _CommentModel(object):
       if cd.selected and not cd.deleted:
         if not ( # the same as canEdit permission in qml
           userId == ADMIN_USER_ID or
-          cd.userId == userId and not cd.isProtected() or
+          cd.userId == userId and not cd.protected or
           cd.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + cd.getUserName(),
+            tr_("User") + ": " + cd.userName,
             tr_("Text") + ": " + cd.text,
           )))
           continue
@@ -5890,11 +5899,11 @@ class _CommentModel(object):
       if cd.selected and cd.disabled == value:
         if not ( # the same as canImprove permission in qml
           userId != GUEST_USER_ID and not cd.locked or
-          cd.userId == userId and not cd.isProtected() or
+          cd.userId == userId and not cd.protected or
           cd.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + cd.getUserName(),
+            tr_("User") + ": " + cd.userName,
             tr_("Text") + ": " + cd.text,
           )))
           continue
@@ -5936,11 +5945,11 @@ class _CommentModel(object):
         if type == 'comment':
           if not ( # the same as canEdit permission in qml
             userId == ADMIN_USER_ID or
-            cd.userId == userId and not cd.isProtected() or
+            cd.userId == userId and not cd.protected or
             cd.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + cd.getUserName(),
+              tr_("User") + ": " + cd.userName,
               tr_("Text") + ": " + cd.text,
             )))
             continue
@@ -5954,11 +5963,11 @@ class _CommentModel(object):
         elif type == 'updateComment':
           if not ( # the same as canImprove permission in qml
             userId != GUEST_USER_ID and not cd.locked or
-            cd.userId == userId and not cd.isProtected() or
+            cd.userId == userId and not cd.protected or
             cd.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + cd.getUserName(),
+              tr_("User") + ": " + cd.userName,
               tr_("Text") + ": " + cd.text,
             )))
             continue
@@ -10469,11 +10478,11 @@ class DataManager(QObject):
       if td.selected and not td.deleted:
         if not ( # the same as canEdit permission in qml
           userId == ADMIN_USER_ID or
-          td.userId == userId and not td.isProtected() or
+          td.userId == userId and not td.protected or
           td.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + td.getUserName(),
+            tr_("User") + ": " + td.userName,
             tr_("Pattern") + ": " + td.pattern,
             tr_("Text") + ": " + td.text,
           )))
@@ -10525,11 +10534,11 @@ class DataManager(QObject):
       if td.selected and td.disabled == value:
         if not ( # the same as canImprove permission in qml
           userId != GUEST_USER_ID or
-          td.userId == userId and not td.isProtected() or
+          td.userId == userId and not td.protected or
           td.userId == GUEST_USER_ID and userLevel > 0):
           growl.warn('<br/>'.join((
             my.tr("Editing other's entry is not allowed"),
-            tr_("User") + ": " + td.getUserName(),
+            tr_("User") + ": " + td.userName,
             tr_("Pattern") + ": " + td.pattern,
             tr_("Text") + ": " + td.text,
           )))
@@ -10579,11 +10588,11 @@ class DataManager(QObject):
         if type == 'comment':
           if not ( # the same as canEdit permission in qml
             userId == ADMIN_USER_ID or
-            td.userId == userId and not td.isProtected() or
+            td.userId == userId and not td.protected or
             td.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + td.getUserName(),
+              tr_("User") + ": " + td.userName,
               tr_("Pattern") + ": " + td.pattern,
               tr_("Text") + ": " + td.text,
             )))
@@ -10598,11 +10607,11 @@ class DataManager(QObject):
         elif type == 'updateComment':
           if not ( # the same as canImprove permission in qml
             userId != GUEST_USER_ID or
-            td.userId == userId and not td.isProtected() or
+            td.userId == userId and not td.protected or
             td.userId == GUEST_USER_ID and userLevel > 0):
             growl.warn('<br/>'.join((
               my.tr("Editing other's entry is not allowed"),
-              tr_("User") + ": " + td.getUserName(),
+              tr_("User") + ": " + td.userName,
               tr_("Pattern") + ": " + td.pattern,
               tr_("Text") + ": " + td.text,
             )))

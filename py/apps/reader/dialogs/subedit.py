@@ -257,7 +257,7 @@ class _SubtitleEditor(object):
     return ret
 
   def _canEdit(self):
-    return netman.manager().isOnline() and bool(self.comment) and self.comment.userId == dataman.manager().user().id and not self.comment.d.isProtected()
+    return netman.manager().isOnline() and bool(self.comment) and self.comment.userId == dataman.manager().user().id and not self.comment.d.protected
 
   def refresh(self):
     comment = self.comment

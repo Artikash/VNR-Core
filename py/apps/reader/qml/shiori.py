@@ -77,8 +77,8 @@ class _ShioriBean:
       if td:
         return rc.jinja_template('html/term').render({
           'td': td,
-          'userName': td.getUserName(),
-          'updateUserName': td.getUpdateUserName(),
+          'userName': td.userName,
+          'updateUserName': td.updateUserName,
           'source': source,
           'target': target,
           'i18n': i18n,
