@@ -447,7 +447,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
 
 bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
 {
-  bool k1 = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0),  // KiriKiri1
+  bool k1 = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0), // KiriKiri1
        k2 = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1); // KiriKiri2
   //RegisterEngineType(ENGINE_KIRIKIRI);
   if (k1 && k2) {
