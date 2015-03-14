@@ -363,7 +363,7 @@ class GrimoireController(QObject):
     @param  c  dataman.Comment
     """
     if (settings.global_().isGrimoireSubtitleVisible() and
-        c.type == 'subtitle' and not c.disabled and not c.deleted):
+        c.d.type == 'subtitle' and not c.d.disabled and not c.d.deleted):
       self.__d.append(partial(GrimoireBean.instance.showComment.emit,
           c))
 
@@ -439,7 +439,7 @@ class GospelController:
   @staticmethod
   def showComment(c):
     if (features.USER_COMMENT and settings.global_().isGrimoireCommentVisible() and
-        c.type == 'popup' and not c.disabled and not c.deleted):
+        c.d.type == 'popup' and not c.d.disabled and not c.d.deleted):
       GospelBean.instance.showComment.emit(c)
 
 ## Gossip ##
@@ -468,7 +468,7 @@ class GossipController:
   @staticmethod
   def showComment(c):
     if (features.USER_COMMENT and settings.global_().isGrimoireCommentVisible() and
-        c.type == 'comment' and not c.disabled and not c.deleted):
+        c.d.type == 'comment' and not c.d.disabled and not c.d.deleted):
       GossipBean.instance.showComment.emit(c)
 
 ## Omajinai ##
@@ -526,7 +526,7 @@ class OmajinaiController(QObject):
 
   def showComment(self, c):
     if (features.USER_COMMENT and settings.global_().isGrimoireDanmakuVisible() and
-        c.type == 'danmaku' and not c.disabled and not c.deleted):
+        c.d.type == 'danmaku' and not c.d.disabled and not c.d.deleted):
       self.__d.append(c)
 
 ## Mirage ##
