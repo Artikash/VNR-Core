@@ -42,7 +42,11 @@ void TranslationEncodeRule::init(const TranslationRule &param)
 // Initialization
 
 void TranslationEncodeRule::init_target()
-{ target = trsymbol::create_symbol_target(target_token, id, source_symbol_count); }
+{
+  target = new std::string(
+    trsymbol::create_symbol_target(target_token, id, source_symbol_count)
+  );
+}
 
 void TranslationEncodeRule::init_source()
 {
@@ -72,9 +76,9 @@ void TranslationEncodeRule::string_replace(std::wstring &ret) const
   } else {
     cache_target();
     if (is_icase())
-      boost::ireplace_all(ret, source, target);
+      boost::ireplace_all(ret, source, *target);
     else
-      boost::replace_all(ret, source, target);
+      boost::replace_all(ret, source, *target);
   }
 }
 
@@ -84,7 +88,7 @@ void TranslationEncodeRule::regex_replace(std::wstring &ret) const
     // match_default is the default value
     // format_all is needed to enable all features, but it is sligntly slower
     cache_target();
-    ret = boost::regex_replace(ret, *source_re, target,
+    ret = boost::regex_replace(ret, *source_re, *target,
         boost::match_default|boost::format_all);
   )
 }

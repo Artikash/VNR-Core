@@ -133,6 +133,7 @@ processes:
   - KMPlayer.exe        # KMPlayer
   - kmplayer.exe        # KMPlayer
   - KSafeTray.exe       # Kingsoft
+  - kxetray             # Kingsoft
   - liebao.exe          # LieBao Browser
   - LIEBAO.EXE          # LieBao Browser
   - LEGUI.exe           # Locale Emulator

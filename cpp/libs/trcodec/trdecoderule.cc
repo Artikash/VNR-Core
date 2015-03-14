@@ -35,7 +35,6 @@ void TranslationDecodeRule::init(const TranslationRule &param)
   category = param.category;
   target = param.target;
 
-
   //if (trsymbol::contains_raw_symbol(target)) { // target rule is not fully checked, because "[[#12]]" is not well checked
   if (boost::contains(target, "[[")) {
     source_symbol_count = trsymbol::count_raw_symbols(param.source);
