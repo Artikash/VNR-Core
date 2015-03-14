@@ -15,7 +15,7 @@ import json
 import requests
 #from time import time
 from sakurakit.skdebug import dwarn, derror
-#from sakurakit.sknetio import GZIP_HEADERS
+#from sakurakit.sknetdef import GZIP_HEADERS
 import baidudef
 
 from sakurakit import skdatetime

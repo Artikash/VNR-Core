@@ -15,7 +15,7 @@ import requests
 from collections import OrderedDict
 #from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
-from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.sknetdef import GZIP_HEADERS
 import infoseekdef
 
 session = requests # global session

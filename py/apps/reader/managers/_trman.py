@@ -24,7 +24,7 @@ from sakurakit.skdebug import dwarn
 from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
-from unitraits import unichars, jpmacros
+from unitraits import unichars, jpchars, jpmacros
 from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
 import config, defs, growl, mecabman, termman, textutil, trman, tahscript
 
@@ -48,6 +48,7 @@ _PARAGRAPH_RE = re.compile(r"(%s|[%s])" %
 _SENTENCE_RE = re.compile(ur"([。？！…」\n])(?![。！？…）」\n]|$)")
 
 _re_escape = re.compile(ur"^[0-9. 、。？！…]+$")
+_re_escape = re.compile(ur"(?:Z[A-Y]+Z|[0-9 .,?!%s])+$" % jpchars.s_punct)
 def is_escaped_text(text): # unicode -> bool
   return bool(_re_escape.match(text))
 
@@ -1790,18 +1791,20 @@ class BaiduTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override  enable translation alignment
 
+  ICIBA_ENABLED = False # disable ICIBA, which does not always work
+
   def __init__(self, session=None, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
-
-    from kingsoft import iciba, icibadef
-    iciba.session = session or requests.Session()
-    self.iciba = iciba
-
-    self.ICIBA_LANGUAGES = icibadef.MT_LANGUAGES
 
     from baidu import baidufanyi
     baidufanyi.session = session or requests.Session()
     self.baidufanyi = baidufanyi
+
+    if self.ICIBA_ENABLED:
+      from kingsoft import iciba, icibadef
+      iciba.session = session or requests.Session()
+      self.iciba = iciba
+      self.ICIBA_LANGUAGES = icibadef.MT_LANGUAGES
 
   def getEngine(self, fr, to):
     """
@@ -1809,7 +1812,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param  to  str
     @return baidu.baidufanyi or kingsoft.iciba
     """
-    if fr in self.ICIBA_LANGUAGES and to in self.ICIBA_LANGUAGES:
+    if self.ICIBA_ENABLED and fr in self.ICIBA_LANGUAGES and to in self.ICIBA_LANGUAGES:
       return self.iciba
     else:
       return self.baidufanyi

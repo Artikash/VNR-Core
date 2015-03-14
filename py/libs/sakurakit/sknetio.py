@@ -5,8 +5,8 @@ import os, re, urllib
 import requests
 from skdebug import dwarn, derror
 import skcontainer, skfileio
+from sknetdef import *
 
-GZIP_HEADERS = {'Accept-Encoding':'gzip'}
 IMAGE_MIME_FILTER = r'^image/'
 
 ## Parsing URL ##
@@ -80,11 +80,12 @@ def _mimematch(r, pattern):
   try: return re.search(pattern, r.headers['Content-Type'], re.IGNORECASE)
   except: pass
 
-def postdata(url, headers=None, gzip=True, mimefilter=None, session=None, **kwargs):
+def postdata(url, headers=None, gzip=True, useragent=False, mimefilter=None, session=None, **kwargs):
   """
   @param  url  str
   @param* headers  kw
   @param* gzip  bool
+  @param* useragent  bool
   @param* path  str
   @param* mode  str  'w' or 'wb'
   @param  session  requests.Session
@@ -93,6 +94,8 @@ def postdata(url, headers=None, gzip=True, mimefilter=None, session=None, **kwar
   try:
     if gzip:
       headers = skcontainer.mergedicts(headers,  GZIP_HEADERS) if headers else GZIP_HEADERS
+    if useragent:
+      headers = skcontainer.mergedicts(headers,  USERAGENT_HEADERS) if headers else USERAGENT_HEADERS
     r = (session or requests).post(url, headers=headers, **kwargs)
     if r.ok and (not mimefilter or _mimematch(r, mimefilter)):
       return r.content
@@ -109,11 +112,12 @@ def postdata(url, headers=None, gzip=True, mimefilter=None, session=None, **kwar
   #try: dwarn(r.url)
   #except: pass
 
-def _getres(url, headers=None, gzip=True, mimefilter=None, session=None, **kwargs):
+def _getres(url, headers=None, gzip=True, useragent=False, mimefilter=None, session=None, **kwargs):
   """
   @param  url  str
   @param* headers  kw
   @param* gzip  bool
+  @param* useragent  bool
   @param* path  str
   @param* mode  str  'w' or 'wb'
   @param* session  requests.Session
@@ -122,6 +126,8 @@ def _getres(url, headers=None, gzip=True, mimefilter=None, session=None, **kwarg
   """
   if gzip:
     headers = skcontainer.mergedicts(headers,  GZIP_HEADERS) if headers else GZIP_HEADERS
+  if useragent:
+    headers = skcontainer.mergedicts(headers,  USERAGENT_HEADERS) if headers else USERAGENT_HEADERS
   r = (session or requests).get(url, headers=headers, **kwargs)
   if r.ok and (not mimefilter or _mimematch(r, mimefilter)):
     return r
