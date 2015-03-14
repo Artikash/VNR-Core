@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
 import json, re, requests
 from sakurakit.skdebug import dprint, dwarn, derror
-from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.sknetdef import GZIP_HEADERS
 #from sakurakit.skstr import unescapehtml
 import bingdef
 

@@ -19,7 +19,7 @@ import json
 import requests
 from collections import OrderedDict
 from sakurakit.skdebug import dwarn, derror
-from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.sknetdef import GZIP_HEADERS
 
 session = requests # global session
 

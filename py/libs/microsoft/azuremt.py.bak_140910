@@ -31,7 +31,7 @@ BT_AUTH_PASSWORD = AZURE_MARKET_ID
 
 import re, requests
 from sakurakit.skdebug import dwarn, error
-from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.sknetdef import GZIP_HEADERS
 from sakurakit.skstr import unescapehtml
 
 session = requests # global session

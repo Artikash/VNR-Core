@@ -28,12 +28,10 @@ __all__ = 'GoogleTranslator', 'GoogleHtmlTranslator', 'GoogleJsonTranslator'
 
 import re, json
 import requests
+from sakurakit import sknetdef
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.skstr import unescapehtml
 import googledef
-
-
-USER_AGENT = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)"
 
 # Remove repetive comma only before "or[ and after "or].
 _re_gson_comma = re.compile(r'(?<=[\]"],),+(?=[\["])')
@@ -61,7 +59,7 @@ class GoogleHtmlTranslator(GoogleTranslator):
   api = API
   session = requests
 
-  headers = {'User-Agent':USER_AGENT, 'Accept-Encoding':'gzip'} #, 'Referer':API}
+  headers = {'User-Agent':sknetdef.USERAGENT, 'Accept-Encoding':'gzip'} #, 'Referer':API}
 
   #__rx = re.compile(r'class="t0"\>(.*?)\<') #, re.DOTALL|re.IGNORECASE)
   _TEXT_BEGIN = 'class="t0">' # faster than re
@@ -119,7 +117,7 @@ class GoogleJsonTranslator(GoogleTranslator):
 
   session = requests
 
-  headers = {'User-Agent':USER_AGENT}
+  headers = sknetdef.USERAGENT_HEADERS
 
   def translate(self, t, to='auto', fr='auto', align=None):
     """

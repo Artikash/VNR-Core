@@ -25,7 +25,7 @@ from PySide.QtNetwork import QNetworkAccessManager, QNetworkConfigurationManager
 from sakurakit import skthreads, skstr
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty, memoizedmethod_filter
 from sakurakit.skdebug import dprint, dwarn, derror
-from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.sknetdef import GZIP_HEADERS
 from qtrequests import qtrequests
 from mytr import my
 from sysinfo import timestamp2jst

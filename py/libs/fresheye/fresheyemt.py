@@ -10,7 +10,7 @@ if __name__ == '__main__':
 import requests
 from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
-#from sakurakit.sknetio import GZIP_HEADERS
+#from sakurakit.sknetdef import GZIP_HEADERS
 from unitraits.uniconv import wide2thin
 
 session = requests # global session
