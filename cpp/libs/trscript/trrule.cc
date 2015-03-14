@@ -65,10 +65,10 @@ void TranslationScriptRule::string_replace(std::wstring &ret, bool mark) const
       cache_target();
     if (is_icase())
       boost::ireplace_all(ret, source,
-                          mark ? cached_target : target);
+                          mark ? *rendered_target : target);
     else
       boost::replace_all(ret, source,
-                         mark ? cached_target : target);
+                         mark ? *rendered_target : target);
   }
 }
 
@@ -87,7 +87,7 @@ void TranslationScriptRule::regex_replace(std::wstring &ret, bool mark) const
       //auto repl = [this](const boost::wsmatch &m) {
       //  return render_target(m[0]);
       //};
-      ret = boost::regex_replace(ret, *source_re, mark ? cached_target : target,
+      ret = boost::regex_replace(ret, *source_re, mark ? *rendered_target : target,
           boost::match_default|boost::format_all);
   )
 }
