@@ -53,7 +53,7 @@ def langtype(to, fr):
   to = YD_LANGUAGES.get(to)
   fr = YD_LANGUAGES.get(fr)
   if to and fr and 'ZH_CN' in (fr, to):
-    return fr + to
+    return fr + '2' + to
   else:
     return 'AUTO'
 
