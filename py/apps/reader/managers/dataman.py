@@ -3526,7 +3526,7 @@ class Reference(QObject):
 
   userNameChanged = Signal(unicode)
   userName = Property(unicode,
-      lambda self: self.___d.userName,
+      lambda self: self.__d.userName,
       notify=userNameChanged)
 
   updateUserNameChanged = Signal(unicode)
