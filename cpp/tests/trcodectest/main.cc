@@ -7,7 +7,8 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"【爽】「悠真くんを攻略すれば２１０円か。なるほどなぁ…」";
+  //wchar_t ws[] = L"【爽】「悠真女校くんを攻略すれば２１０円か。なるほどなぁ…」";
+  wchar_t ws[] = L"【爽】「悠真女学くんを攻略すれば２１０円か。なるほどなぁ…」";
   //wchar_t ws[] = L"hello";
   std::wstring text = ws;
 
