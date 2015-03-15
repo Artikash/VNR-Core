@@ -320,6 +320,11 @@ def main():
 
   dprint("config python site-packages")
 
+  # Disable requests SSL certificate warning
+  # https://github.com/kennethreitz/requests/issues/2214
+  import requests
+  requests.packages.urllib3.disable_warnings()
+
   # Disable HTTP request session
   # See: http://docs.python-requests.org/en/latest/user/advanced/#keep-alive
   # See: http://stackoverflow.com/questions/10115126/python-requests-close-http-connection
