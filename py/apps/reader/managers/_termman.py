@@ -274,7 +274,7 @@ class TermWriter:
               if not _contains_syntax_symbol(pattern):
                 pattern = "[[%s]]%s" % (defs.TERM_NAME_ROLE, pattern)
               if not _contains_syntax_symbol(repl):
-                repl = "[[%s]]%s" % (defs.TERM_NAME_ROLE, repl)
+                repl = "[[]]%s" % repl
             elif td.type == 'prefix':
               if not _contains_syntax_symbol(pattern):
                 if frLatinLanguage:
@@ -283,9 +283,9 @@ class TermWriter:
                   pattern = "%s[[%s]]" % (pattern, defs.TERM_NAME_ROLE)
               if not _contains_syntax_symbol(repl):
                 if toLatinLanguage:
-                  repl = "%s [[%s]]" % (repl, defs.TERM_NAME_ROLE)
+                  repl = "%s [[]]" % repl
                 else:
-                  repl = "%s[[%s]]" % (repl, defs.TERM_NAME_ROLE)
+                  repl = "%s[[]]" % repl
 
           if trans_type:
             self._writeCodecLine(f, td.id, pattern, repl, regex, td.icase, td.host, role)

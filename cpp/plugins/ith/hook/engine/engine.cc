@@ -5227,7 +5227,7 @@ AbelSoftware hook:
 bool InsertAbelHook()
 {
   const DWORD character[] = {0xc981d48a, 0xffffff00};
-  if (DWORD j = SearchPattern(module_base_,module_limit_-module_base_, character, sizeof(character))) {
+  if (DWORD j = SearchPattern(module_base_, module_limit_ - module_base_, character, sizeof(character))) {
     j += module_base_;
     for (DWORD i = j - 0x100; j > i; j--)
       if (*(WORD *)j == 0xff6a) {
