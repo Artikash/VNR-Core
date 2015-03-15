@@ -80,7 +80,7 @@ def _mimematch(r, pattern):
   try: return re.search(pattern, r.headers['Content-Type'], re.IGNORECASE)
   except: pass
 
-def postdata(url, headers=None, gzip=True, useragent=False, mimefilter=None, session=None, **kwargs):
+def postdata(url, headers=None, gzip=True, useragent=False, mimefilter=None, session=None, verify=False, **kwargs):
   """
   @param  url  str
   @param* headers  kw
@@ -88,6 +88,7 @@ def postdata(url, headers=None, gzip=True, useragent=False, mimefilter=None, ses
   @param* useragent  bool
   @param* path  str
   @param* mode  str  'w' or 'wb'
+  @param* verify  bool  disable SSH certificate verification by default
   @param  session  requests.Session
   @return  data or None
   """
@@ -96,7 +97,7 @@ def postdata(url, headers=None, gzip=True, useragent=False, mimefilter=None, ses
       headers = skcontainer.mergedicts(headers,  GZIP_HEADERS) if headers else GZIP_HEADERS
     if useragent:
       headers = skcontainer.mergedicts(headers,  USERAGENT_HEADERS) if headers else USERAGENT_HEADERS
-    r = (session or requests).post(url, headers=headers, **kwargs)
+    r = (session or requests).post(url, headers=headers, verify=verify, **kwargs)
     if r.ok and (not mimefilter or _mimematch(r, mimefilter)):
       return r.content
   except Exception, e: derror(e)
@@ -112,7 +113,7 @@ def postdata(url, headers=None, gzip=True, useragent=False, mimefilter=None, ses
   #try: dwarn(r.url)
   #except: pass
 
-def _getres(url, headers=None, gzip=True, useragent=False, mimefilter=None, session=None, **kwargs):
+def _getres(url, headers=None, gzip=True, useragent=False, mimefilter=None, session=None, verify=False, **kwargs):
   """
   @param  url  str
   @param* headers  kw
@@ -120,6 +121,7 @@ def _getres(url, headers=None, gzip=True, useragent=False, mimefilter=None, sess
   @param* useragent  bool
   @param* path  str
   @param* mode  str  'w' or 'wb'
+  @param* verify  bool  disable SSH certificate verification by default
   @param* session  requests.Session
   @return  response or None
   @raise
@@ -128,7 +130,7 @@ def _getres(url, headers=None, gzip=True, useragent=False, mimefilter=None, sess
     headers = skcontainer.mergedicts(headers,  GZIP_HEADERS) if headers else GZIP_HEADERS
   if useragent:
     headers = skcontainer.mergedicts(headers,  USERAGENT_HEADERS) if headers else USERAGENT_HEADERS
-  r = (session or requests).get(url, headers=headers, **kwargs)
+  r = (session or requests).get(url, headers=headers, verify=verify, **kwargs)
   if r.ok and (not mimefilter or _mimematch(r, mimefilter)):
     return r
 
