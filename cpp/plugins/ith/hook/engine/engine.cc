@@ -261,6 +261,32 @@ void WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
   *size = len * 2;
 }
 
+void CharsFilter(char *str, size_t *size, const char *chars)
+{
+  size_t len = *size,
+         curlen;
+  char *cur = cpp_strnpbrk(str, chars, len);
+  while (cur && --len &&
+      (curlen = len - (cur - str))) {
+    ::memmove(cur, cur + 1, curlen);
+    cur = cpp_strnpbrk(cur, chars, curlen);
+  }
+  *size = len;
+}
+
+void WideCharsFilter(wchar_t *str, size_t *size, const wchar_t *chars)
+{
+  size_t len = *size / 2,
+         curlen;
+  wchar_t *cur = cpp_wcsnpbrk(str, chars, len);
+  while (cur && --len &&
+      (curlen = len - (cur - str))) {
+    ::memmove(cur, cur + 1, 2 * curlen);
+    cur = cpp_wcsnpbrk(cur, chars, curlen);
+  }
+  *size = len * 2;
+}
+
 void StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
 {
   size_t len = *size,
@@ -317,6 +343,21 @@ bool NewLineWideCharToSpaceFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
   WideCharReplacer(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L'\n', L' ');
   return true;
 }
+
+// Remove every characters <= 0x1f (i.e. before space ' ') except 0xa and 0xd.
+bool IllegalCharsFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  CharsFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
+      "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0b\x0c\x0e\x0f\x10\x11\x12\x12\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f");
+  return true;
+}
+bool IllegalWideCharsFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  WideCharsFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
+      L"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0b\x0c\x0e\x0f\x10\x11\x12\x12\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f");
+  return true;
+}
+
 } // unnamed namespace
 
 namespace Engine {
@@ -4979,7 +5020,7 @@ LPCWSTR _Malie3LTrim(LPCWSTR p)
       if (p[0] == L'v' && p[1] == L'_') { // ex. v_akr0001, v_mzk0001
         p += 9;
         return p; // must return otherwise trimming more will break the ITH repetition elimination
-      } else if (p[0] > 9) // ltrim illegal characers
+      } else if (p[0] >= 0xa) // ltrim illegal characters less than 0xa
         return p;
   return nullptr;
 }
@@ -4989,7 +5030,7 @@ LPCWSTR _Malie3RTrim(LPCWSTR p)
   if (p)
     for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
          p--)
-      if (p[-1] > 9) {
+      if (p[-1] >= 0xa) { // trim illegal characters less than 0xa
         if (p[-1] >= L'0' && p[-1] <= L'9'&& p[-1-7] == L'_')
           p -= 9;
         else
@@ -5003,13 +5044,8 @@ LPCWSTR _Malie3GetEOL(LPCWSTR p)
   if (p)
     for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
         p++)
-      if (*p <= 0xa) // for シルヴァリオ ヴェンデッタ
+      if (p[0] == 0 || p[0] == 0xa) // stop at \0, or \n where the text after 0xa is furigana
         return p;
-      //switch (p[0]) {
-      //case 0: // \0
-      //case 0xa: // \n // the text after 0xa is furigana
-      //  return p;
-      //}
   return nullptr;
 }
 
@@ -5035,14 +5071,6 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
   *split = FIXED_SPLIT_VALUE;
   //ITH_GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
 }
-
-// jichi 3/15/2015: Remove 0704 in シルヴァリオ ヴェンデッタ
-//bool Malie3Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
-//{
-//  WideCharFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L'\x07');
-//  WideCharFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L'\x04');
-//  return true;
-//}
 
 /**
  *  jichi 8/20/2013: Add hook for 相州戦神館學園 八命陣
@@ -5074,6 +5102,8 @@ bool InsertMalie3Hook()
   //hp.addr = 0x5b51ed;
   //hp.addr = 0x5b51f1;
   //hp.addr = 0x5b51f2;
+  // jichi 3/15/2015: Remove 0704 in シルヴァリオ ヴェンデッタ
+  hp.filter_fun = IllegalWideCharsFilter;
   hp.text_fun = SpecialHookMalie3;
   hp.type = USING_UNICODE|NO_CONTEXT;
   //hp.filter_fun = Malie3Filter;
