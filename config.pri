@@ -66,7 +66,7 @@ win32 {
   # Disable CRT posix warnings
   #DEFINES += _CRT_NONSTDC_NO_DEPRECATE
 
-  QMAKE_CXXFLAGS += -wd4819 # ignore warning on Japanese characters
+  QMAKE_CXXFLAGS += -wd4819 # ignore the warning on Japanese characters
 }
 
 ## External Libraries
