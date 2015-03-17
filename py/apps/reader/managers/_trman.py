@@ -773,6 +773,8 @@ class EzTranslator(OfflineMachineTranslator):
   __ez_repl_after = staticmethod(skstr.multireplacer({
     u'「"「': u'『',
     u'」"」': u'』',
+    u'『"『': u'『',
+    u'』"』': u'』',
   }))
   # Example: GPS97351.678 => GPS97351. 678
   #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
