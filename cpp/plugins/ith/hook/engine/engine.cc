@@ -5067,7 +5067,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
   LPCWSTR start = _Malie3LTrim((LPCWSTR)(ecx + edx*2)),
           stop = _Malie3RTrim(_Malie3GetEOL(start));
   *data = (DWORD)start;
-  *len = max(0, stop - start) << 1;
+  *len = max(0, stop - start) * 2;
   *split = FIXED_SPLIT_VALUE;
   //ITH_GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
 }

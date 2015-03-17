@@ -213,7 +213,6 @@ BYTE except_routine[0xe0] = {
   0x00,0x83,0xc8,0xff,0xeb,0xbe
 };
 
-
 // jichi 8/24/2013: Could be initialized using NtMapViewOfSection/ZwMapViewOfSection
 // This class cannot have constructor / destructor
 struct _ThreadView {
