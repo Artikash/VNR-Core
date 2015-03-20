@@ -77,6 +77,11 @@ bool DeterminePCEngine()
   //}
   if (::GetModuleHandleA("mono.dll")) {
     InsertMonoHooks();
+
+    // 3/20/2015 jichi
+    // Always insert GDI hooks even for Mono games
+    // For example: 新世黙示録 need GetGlyphOutlineA
+    PcHooks::hookGDIFunctions();
     return true;
   }
 
