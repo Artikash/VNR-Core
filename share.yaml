@@ -62,8 +62,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   bootstrap2: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js
   bootstrap2.css: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css
 
-  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js
-  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css
+  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js
+  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css
 
   #font-awesome.css: http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
   font-awesome3.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
