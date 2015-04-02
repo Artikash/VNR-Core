@@ -89,6 +89,13 @@ class RestApi(JsonFileParser):
         t = item[k]
         if t:
           item[k] = unescapehtml(t).rstrip() # remove right most space
+
+      t = item.get('releaseDayNumber')
+      if t and isinstance(t, int):
+        s = "%s" % t
+        if s.endswith('44'): # date number should not ends with > 31
+          t -= 44 - 28 # change to 28
+          item['releaseDayNumber'] = t
     return items
 
 if __name__ == '__main__':
@@ -98,6 +105,7 @@ if __name__ == '__main__':
   t = "2309" # カスタム隷奴III
   t = '415' # ::inedited::
   t = 8458
+  t = 12436 # 箱庭の学園
   q = api.query(t, type=api.EROGETRAILERS_TYPE)
   print q
 
