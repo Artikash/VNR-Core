@@ -465,7 +465,7 @@ class _UiTab(object):
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.fontGroup)
+    #layout.addWidget(self.fontGroup)
     if not features.WINE:
       layout.addWidget(self.mouseGroup)
     layout.addWidget(self.springBoardGroup)
