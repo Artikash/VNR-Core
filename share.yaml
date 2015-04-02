@@ -309,6 +309,8 @@ proxies:
     #witchflame: www.witchflame.jp      # Do not need proxy
     sun-magazine: www.sun-magazine.jp
 
+    muzintou: muzintou.sakura.ne.jp # only needed by Mainland China
+
     # Example:
     # http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1715apc10593/
     # http://sakuradite.org/proxy/dmm/mono/pcgame/-/detail/=/cid=1715apc10593/

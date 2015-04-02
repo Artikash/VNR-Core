@@ -633,7 +633,7 @@ bool DetermineNoEngine()
   }
 
   if (IthCheckFile(L"AdvHD.exe") || IthCheckFile(L"AdvHD.dll")) {
-    ConsoleOutput("vnreng: IGNORE Adv Player HD");
+    ConsoleOutput("vnreng: IGNORE Adv Player HD"); // supposed to be WillPlus
     return true;
   }
 

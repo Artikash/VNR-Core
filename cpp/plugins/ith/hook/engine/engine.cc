@@ -2927,7 +2927,7 @@ bool InsertSiglus1Hook()
       HookParam hp = {};
       hp.addr = addr;
       hp.text_fun = SpecialHookSiglus1;
-      hp.type = USING_UNICODE;
+      //hp.type = USING_UNICODE; // string type not needed
       ConsoleOutput("vnreng: INSERT Siglus");
       NewHook(hp, L"SiglusEngine");
       //RegisterEngineType(ENGINE_SIGLUS);
@@ -3422,7 +3422,8 @@ void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *s
   DWORD i,val;
   for (i = 0; i < 4; i++) {
     val = *stack++;
-    if ((val>>16) == 0) break;
+    if ((val >> 16) == 0)
+      break;
 
   }
   if (i < 4) {
@@ -4058,7 +4059,7 @@ bool InsertShinaHook()
     HookParam hp = {};
     hp.addr = (DWORD)::GetTextExtentPoint32A;
     hp.text_fun = SpecialHookShina2;
-    hp.type = USING_STRING;
+    hp.type = USING_STRING; // string type not needed though
     ConsoleOutput("vnreng: INSERT ShinaRio > 2.47");
     NewHook(hp, L"ShinaRio");
     //RegisterEngineType(ENGINE_SHINA);
@@ -4751,15 +4752,15 @@ bool InsertCatSystemHook()
   hp.addr = addr + hook_offset; // skip 1 push?
   hp.off = 4 * 2; // text character is in arg2
   hp.length_offset = 1; // only 1 character
-  hp.type = BIG_ENDIAN|USING_SPLIT;
 
   // jichi 12/23/2014: Modify split for new catsystem
   bool newEngine = IthCheckFile(L"cs2conf.dll");
   if (newEngine) {
-    hp.text_fun = SpecialHookCatSystem3;
+    hp.text_fun = SpecialHookCatSystem3; // type not needed
     NewHook(hp, L"CatSystem3");
     ConsoleOutput("vnreng: INSERT CatSystem3");
   } else {
+    hp.type = BIG_ENDIAN|USING_SPLIT;
     hp.split = pusha_edx_off - 4; // -0x10
     NewHook(hp, L"CatSystem2");
     ConsoleOutput("vnreng: INSERT CatSystem2");
@@ -4899,7 +4900,8 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
   hp.off = -8;
   hp.length_offset = 1;
   hp.text_fun = SpecialHookMalie;
-  hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT;
+  //hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT; // full type not needed
+  hp.type = NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT MalieHook2");
   NewHook(hp, L"Malie");
   //RegisterEngineType(ENGINE_MALIE);
@@ -4999,7 +5001,7 @@ bool InsertMalie2Hook()
   //hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT;
   // jichi 12/17/2013: Need extern func for Electro Arms
   // Though the hook parameter is quit similar to Malie, the original extern function does not work
-  hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT;
+  hp.type = USING_SPLIT|NO_CONTEXT; // |USING_UNICODE string type not needed
   hp.text_fun = SpecialHookMalie2;
   ConsoleOutput("vnreng: INSERT Malie2");
   NewHook(hp, L"Malie2");
@@ -5105,7 +5107,7 @@ bool InsertMalie3Hook()
   // jichi 3/15/2015: Remove 0704 in シルヴァリオ ヴェンデッタ
   hp.filter_fun = IllegalWideCharsFilter;
   hp.text_fun = SpecialHookMalie3;
-  hp.type = USING_UNICODE|NO_CONTEXT;
+  hp.type = NO_CONTEXT; //|USING_UNICODE string type not needed
   //hp.filter_fun = Malie3Filter;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, L"Malie3");
@@ -5480,7 +5482,7 @@ bool InsertQLIE1Hook()
             hp.off = 0x18;
             hp.split = -0x18;
             hp.length_offset = 1;
-            hp.type = DATA_INDIRECT | USING_SPLIT;
+            hp.type = DATA_INDIRECT|USING_SPLIT;
             ConsoleOutput("vnreng: INSERT QLIE1");
             NewHook(hp, L"QLIE");
             //RegisterEngineType(ENGINE_FRONTWING);
@@ -5739,7 +5741,7 @@ bool InsertApricoTHook()
           HookParam hp = {};
           hp.addr = j + 3;
           hp.text_fun = SpecialHookApricoT;
-          hp.type = USING_STRING|USING_UNICODE|NO_CONTEXT;
+          hp.type = USING_STRING|NO_CONTEXT; // |USING_UNICODE string type not needed
           ConsoleOutput("vnreng: INSERT ApricoT");
           //ITH_GROWL_DWORD3(hp.addr, module_base_, module_limit_);
           NewHook(hp, L"ApRicoT");
@@ -6132,7 +6134,7 @@ bool InsertCaramelBoxHook()
           HookParam hp = {};
           hp.addr = j & ~0xf;
           hp.text_fun = SpecialHookCaramelBox;
-          hp.type = USING_STRING ;
+          hp.type = USING_STRING;
           for (i &= ~0xffff; i < module_limit_ - 4; i++)
             if (pb[0] == 0xe8) {
               pb++;
@@ -6378,7 +6380,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
                 HookParam hp = {};
                 hp.addr = j;
                 hp.text_fun = SpecialHookAB2Try;
-                hp.type = USING_STRING|USING_UNICODE|NO_CONTEXT;
+                hp.type = USING_STRING|NO_CONTEXT; //|USING_UNICODE string type not needed
                 ConsoleOutput("vnreng: INSERT AB2Try");
                 NewHook(hp, L"AB2Try");
                 //ConsoleOutput("Please adjust text speed to fastest/immediate.");
