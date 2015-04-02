@@ -179,11 +179,11 @@ def main():
         else:
           dwarn("failed to load font %s" % f)
 
-  ff = ss.applicationFontFamily()
-  if ff:
-    dprint("font family = %s" % ff)
-    a.setFontFamily(ff)
-  ss.applicationFontFamilyChanged.connect(a.setFontFamily)
+  #ff = ss.applicationFontFamily()
+  #if ff:
+  #  dprint("font family = %s" % ff)
+  #  a.setFontFamily(ff)
+  #ss.applicationFontFamilyChanged.connect(a.setFontFamily)
 
   dprint("load translation")
   a.loadTranslations()
