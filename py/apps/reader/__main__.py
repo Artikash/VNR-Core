@@ -436,7 +436,7 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
-    if ss_version <= 1426048313: # clear old terms by default
+    if ss_version <= 1428015070: # clear old terms by default
       xmlfile = rc.xml_path('terms')
       if xmlfile and os.path.exists(xmlfile):
         skfileio.removefile(xmlfile)

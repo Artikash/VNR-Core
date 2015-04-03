@@ -3,6 +3,7 @@
 # 10/19/2014 jichi
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
+from kanjiconv import jazh
 from opencc import opencc
 
 @memoized
@@ -33,7 +34,7 @@ class ChineseConversionManager:
         d.variantConvert = None
 
   def convertTraditionalChinese(self, text):
-    """
+    """zht2zhx
     @param  text  unicode
     @return  unicode
     """
@@ -43,19 +44,19 @@ class ChineseConversionManager:
       text = self.__d.variantConvert(text)
     return text
 
-  def convertSimplifiedChinese(self, text):
-    """
-    @param  text  unicode
-    @return  unicode
-    """
-    if not text:
-      return text
-    text = opencc.zhs2zht(text)
-    if self.__d.variantConvert:
-      text = self.__d.variantConvert(text)
-    return text
+def zht2zhx(text): # unicode -> unicode
+  return manager().convertTraditionalChinese(text)
 
-def zht2zhx(text): return manager().convertTraditionalChinese(text)
-def zhs2zht(text): return manager().convertSimplifiedChinese(text)
+def zhs2zhx(text): # unicode -> unicode
+  return zht2zhx(opencc.zhs2zht(text))
+
+def ja2zhx(text): # unicode -> unicode
+  return zht2zhx(opencc.ja2zht(text))
+
+def ja2zhs_name(text): # unicode -> unicode
+  return opencc.ja2zhs(jazh.ja2zh_name(text))
+
+def ja2zhx_name(text): # unicode -> unicode
+  return jazh.ja2zht_name_fix(ja2zhx(jazh.ja2zh_name(text)))
 
 # EOF

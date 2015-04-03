@@ -192,6 +192,7 @@ class ReviewTableApi(TableApi):
 if __name__ == '__main__':
   api = GameTableApi()
   t = 20042
+  t = 11825
   def test_game():
     q = api.query(t)
     #print q
@@ -224,7 +225,7 @@ if __name__ == '__main__':
     s = proxyrequests.Session(site, session=s, allows_caching=True)
     GameTableApi.session = s
 
-  #enable_proxy()
+  enable_proxy()
   test_game()
 
 # EOF

@@ -60,4 +60,16 @@ class JlpUtil(QObject):
   def toroman(self, text, lang):
     return convutil.toroman(text, lang)
 
+  @Slot(unicode, result=unicode)
+  def ja2zhs_name(self, text):
+    return convutil.ja2zhs_name(text)
+
+  @Slot(unicode, result=unicode)
+  def ja2zht_name(self, text):
+    return convutil.ja2zht_name(text)
+
+  @Slot(unicode, result=bool)
+  def ja2zh_name_test(self, text):
+    return convutil.ja2zh_name_test(text)
+
 # EOF
