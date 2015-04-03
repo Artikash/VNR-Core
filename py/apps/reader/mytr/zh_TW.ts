@@ -691,7 +691,7 @@
     <message>
         <location filename="mytr.py" line="188"/>
         <source>Name</source>
-        <translation>人名</translation>
+        <translation>名字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="192"/>
@@ -721,7 +721,7 @@
     <message>
         <location filename="mytr.py" line="188"/>
         <source>name</source>
-        <translation>人名</translation>
+        <translation>名字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="51"/>
@@ -866,12 +866,12 @@
     <message>
         <location filename="mytr.py" line="189"/>
         <source>Names</source>
-        <translation>人名</translation>
+        <translation>名字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="189"/>
         <source>names</source>
-        <translation>人名</translation>
+        <translation>名字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="42"/>
