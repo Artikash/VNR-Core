@@ -47,12 +47,12 @@ class TableApi(object):
     if h:
       ret = self._parse(h)
       if ret:
-        for i,it in enumerate(ret):
+        for it in list(ret):
           if 'gamename' in it:
             self._format(it)
             self._finalize(it)
           else:
-            del ret[i]
+            ret.remove(it)
         return ret
 
   def _fetch(self, **kwargs):
@@ -191,12 +191,7 @@ class ReviewTableApi(TableApi):
 
 if __name__ == '__main__':
   api = GameTableApi()
-  t = 18942
-  t = 17716
-  t = 2294
-  t = 15986
-  t = 7868
-  t = 11825
+  t = 20042
   def test_game():
     q = api.query(t)
     #print q
