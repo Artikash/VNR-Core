@@ -4059,7 +4059,7 @@ bool InsertShinaHook()
     HookParam hp = {};
     hp.addr = (DWORD)::GetTextExtentPoint32A;
     hp.text_fun = SpecialHookShina2;
-    hp.type = USING_STRING; // string type not needed though
+    hp.type = USING_STRING;
     ConsoleOutput("vnreng: INSERT ShinaRio > 2.47");
     NewHook(hp, L"ShinaRio");
     //RegisterEngineType(ENGINE_SHINA);

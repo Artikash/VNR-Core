@@ -47,9 +47,12 @@ class TableApi(object):
     if h:
       ret = self._parse(h)
       if ret:
-        for it in ret:
-          self._format(it)
-          self._finalize(it)
+        for it in list(ret):
+          if 'gamename' in it:
+            self._format(it)
+            self._finalize(it)
+          else:
+            ret.remove(it)
         return ret
 
   def _fetch(self, **kwargs):
@@ -188,11 +191,7 @@ class ReviewTableApi(TableApi):
 
 if __name__ == '__main__':
   api = GameTableApi()
-  t = 18942
-  t = 17716
-  t = 2294
-  t = 15986
-  t = 7868
+  t = 20042
   def test_game():
     q = api.query(t)
     #print q
@@ -216,16 +215,16 @@ if __name__ == '__main__':
       print it['memo']
       print it['timestamp']
 
-  def test_proxy():
+  def enable_proxy():
     import requests
     s = requests.Session()
     from proxyrequests import proxyconfig, proxyrequests
-    site = proxyconfig.USWEBPROXY_CONFIG
+    site = proxyconfig.JPWEBPROXY_CONFIG
     #site = proxyconfig.WEBSERVER_CONFIG
     s = proxyrequests.Session(site, session=s, allows_caching=True)
     GameTableApi.session = s
 
-  #test_proxy()
+  #enable_proxy()
   test_game()
 
 # EOF

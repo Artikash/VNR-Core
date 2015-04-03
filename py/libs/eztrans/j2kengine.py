@@ -70,9 +70,14 @@ class _Loader(object):
 
     Guessed:
     BOOL __stdcall J2K_InitializeEx(LPCSTR user_name, LPCSTR dat_path)
+
     """
     path = os.path.join(self.dllDirectory, 'Dat')
     return 1 == self.dll.J2K_InitializeEx(EZTR_INIT_STR, path)
+    #if not ok:
+    #  return False
+    #self.dll.J2K_ReloadUserDict()
+    #return True
 
   def translate(self, text):
     """
@@ -132,12 +137,13 @@ class Loader(object):
 
 if __name__ == '__main__': # DEBUG
   import os
-  os.environ['PATH'] += os.pathsep + r"S:\Applications\ezTrans XP"
+  os.environ['PATH'] += os.pathsep + r"Z:\Local\Windows\Applications\ezTrans XP"
   l = Loader()
   l.init()
 
   #ret = l.translate(u"お花の匂い☆")
-  ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
+  #ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
+  ret = l.translate(u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪")
 
   from PySide.QtGui import QApplication, QTextEdit
   a = QApplication(sys.argv)
