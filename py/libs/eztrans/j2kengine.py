@@ -142,7 +142,8 @@ if __name__ == '__main__': # DEBUG
   l.init()
 
   #ret = l.translate(u"お花の匂い☆")
-  ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
+  #ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
+  ret = l.translate(u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪")
 
   from PySide.QtGui import QApplication, QTextEdit
   a = QApplication(sys.argv)
