@@ -46,10 +46,13 @@ class TableApi(object):
     h = self._fetch(**req)
     if h:
       ret = self._parse(h)
-      if ret and 'gamename' in ret:
-        for it in ret:
-          self._format(it)
-          self._finalize(it)
+      if ret:
+        for i,it in enumerate(ret):
+          if 'gamename' in it:
+            self._format(it)
+            self._finalize(it)
+          else:
+            del ret[i]
         return ret
 
   def _fetch(self, **kwargs):
@@ -226,7 +229,7 @@ if __name__ == '__main__':
     s = proxyrequests.Session(site, session=s, allows_caching=True)
     GameTableApi.session = s
 
-  enable_proxy()
+  #enable_proxy()
   test_game()
 
 # EOF
