@@ -68,10 +68,10 @@ def convert(text, fr, to):
   @param  to  str
   @return  unicode
   """
-  try: return getconverter(fr, to).convert(text)
-  except Exception, e:
-    dwarn(e)
-    return text
+  if text:
+    try: return getconverter(fr, to).convert(text)
+    except Exception, e: dwarn(e)
+  return text
 
 def zht2zhs(text): return convert(text, 't', 's')
 def zht2tw(text): return convert(text, 't', 'tw')
@@ -102,8 +102,10 @@ def contains(text, fr, to='t'):
   @param  to  str  dummy
   @return  bool
   """
-  try: return getconverter(fr, to).needsConvert(text)
-  except: return False
+  if text:
+    try: return getconverter(fr, to).needsConvert(text)
+    except Exception, e: dwarn(e)
+  return False
 
 def containszhs(text): return contains(text, 's')
 def containszht(text): return contains(text, 't', 's')

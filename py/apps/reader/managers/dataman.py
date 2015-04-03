@@ -23,7 +23,7 @@ from sakurakit.skdebug import dprint, dwarn, derror
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
-from convutil import wide2thin, zhs2zht
+from convutil import wide2thin, zhs2zht, ja2zh_name_test
 from unitraits import jpchars, unichars
 from opencc import opencc
 from mytr import my, mytr_
@@ -5068,8 +5068,8 @@ class _TermModel(object):
         xd.type == yd.type
         or xd.type in ('name', 'yomi', 'trans', 'input') and yd.type in ('name', 'yomi', 'trans', 'input')
       )
-      and not (xd.type == 'yomi' and yd.type == 'name' and yd.language.startswith('zh'))
-      and not (yd.type == 'yomi' and xd.type == 'name' and xd.language.startswith('zh'))
+      and not (xd.type == 'yomi' and yd.type == 'name' and yd.language.startswith('zh') and not ja2zh_name_test(xd.pattern))
+      and not (yd.type == 'yomi' and xd.type == 'name' and xd.language.startswith('zh') and not ja2zh_name_test(xd.pattern))
       #and xd.text == yd.text
       and (
         not xd.special

@@ -560,9 +560,9 @@ class _TermInput(object):
     elif len(pattern) > 10 and not self.regexButton.isChecked(): # and not self.syntaxButton.isChecked():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
-    elif type == 'yomi' and self._getTargetLanguage().startswith('zh'):
-      skqss.class_(w, 'text-error')
-      w.setText("%s: %s" % (tr_("Warning"), my.tr("Yomi type is useless for Chinese translation.")))
+    #elif type == 'yomi' and self._getTargetLanguage().startswith('zh'):
+    #  skqss.class_(w, 'text-error')
+    #  w.setText("%s: %s" % (tr_("Warning"), my.tr("Yomi type is useless for Chinese translation.")))
     elif type == 'proxy':
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Proxy term is private by default. Please debug it again and again before make it public.")))
@@ -581,6 +581,15 @@ class _TermInput(object):
           "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
           for lang in ('romaji', 'ru', 'ko', 'th')
         ))
+        text = self.patternEdit.text().strip()
+        if text and convutil.ja2zh_name_test(text):
+          zhs = convutil.ja2zhs_name(text)
+          zht = convutil.ja2zht_name(text)
+          t += ', %s (%s)' % (zht, tr_('zh'))
+          if zhs != zht:
+            t += ', %s (%s)' % (zhs, tr_('zhs'))
+        else:
+          t += ', %s (%s)' % (tr_("none"), tr_('zh'))
         w.setText(t)
         return
 

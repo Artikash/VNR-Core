@@ -7,8 +7,11 @@ from unidecode import unidecode
 from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th \
                         , kana2name, kana2reading, capitalizeromaji
 from opencc.opencc import zht2zhs #, ja2zht
-from ccman import zhs2zht, zht2zhx
+from ccman import zht2zhx, ja2zhs_name
+from ccman import zhs2zhx as zhs2zht
+from ccman import ja2zhx_name as ja2zht_name
 from hangulconv.hangulconv import to_hanja as hangul2hanja
+from kanjiconv.jazh import ja2zh_name_test, ja2zht_name_fix
 #from pinyinconv import pinyinconv
 
 kana2yomi = kana2reading
@@ -19,6 +22,9 @@ kata2th = hira2th = kana2th
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached
+
+#def ja2zh_name(text, simplified=False): # unicode, bool -> unicode
+#  return ja2zhs_name(text) if simplified else ja2zht_name(text)
 
 def yomi2kanji(text):
   """

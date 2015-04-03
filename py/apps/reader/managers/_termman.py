@@ -16,7 +16,8 @@ from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
 from unitraits import jpchars, jpmacros
-from convutil import kana2name, zhs2zht
+from convutil import kana2name, zhs2zht, \
+                     ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
 import config, dataman, defs, i18n
 
 ## Translation proxy
@@ -104,13 +105,16 @@ def _role_priority(role, type, has_symbol):
   if type == 'prefix':
     return 2
   if role == defs.TERM_NAME_ROLE: # apply name rules first
-    return 3
+    if type == 'yomi': # apply yomi after individual name definition
+      return 3
+    else:
+      return 4
   if role and role != defs.TERM_PHRASE_ROLE: # apply user-defined symbols at last
     return -1
   # Zero is the base line for phrase
-  # When no symbol, X has the higher priority (4)
+  # When no symbol, X has the higher priority (5)
   # When there is symbol, M has the higher priority
-  return 0 if has_symbol else 4
+  return 0 if has_symbol else 5
 
 def _td_sort_key(td):
   """Sort term data reversely. Larger applied first, true is applied first
@@ -218,6 +222,7 @@ class TermWriter:
     trans_type = type == 'trans'
 
     fr2 = fr[:2]
+    to2 = to[:2]
 
     frKanjiLanguage = config.is_kanji_language(fr)
     frLatinLanguage = not frKanjiLanguage
@@ -247,6 +252,8 @@ class TermWriter:
           pattern = self._applyMacros(pattern, macros)
           if z:
             pattern = zhs2zht(pattern)
+            #if role == defs.TERM_NAME_ROLE:
+            #  pattern = jazh.ja2zht_name_fix(pattern)
 
           if trans_type and role == defs.TERM_NAME_ROLE and fr2 == 'zh':
             if fr == 'zhs':
@@ -254,12 +261,17 @@ class TermWriter:
             elif fr == 'zht':
               pattern = opencc.ja2zht(pattern)
 
-          repl = _unescape_term_text(td.text)
-          repl = self._applyMacros(repl, macros)
-          if z:
-            repl = zhs2zht(repl)
-          if td.type == 'yomi':
-            repl = kana2name(repl, to) or repl
+          if td.type == 'yomi' and to2 == 'zh':
+            repl = ja2zhs_name(pattern) if to == 'zhs' else ja2zht_name(pattern)
+          else:
+            repl = _unescape_term_text(td.text)
+            repl = self._applyMacros(repl, macros)
+            if z:
+              repl = zhs2zht(repl)
+              if role == defs.TERM_NAME_ROLE:
+                repl = ja2zht_name_fix(repl)
+            if td.type == 'yomi':
+              repl = kana2name(repl, to) or repl
 
           if td.phrase:
             left = pattern[0]
@@ -389,9 +401,9 @@ class TermWriter:
     @yield  _Term
     """
     if type == 'trans':
-      types = ['trans', 'name', 'suffix', 'prefix']
-      if not to.startswith('zh'):
-        types.append('yomi')
+      types = 'trans', 'name', 'yomi', 'suffix', 'prefix'
+      #if not to.startswith('zh'):
+      #  types.append('yomi')
     else:
       types = type,
 
@@ -399,6 +411,7 @@ class TermWriter:
     jatypes = 'macro', 'game', 'ocr' # Japanese types applied to all languages
     zhtypes = 'name', 'yomi' # Japanese types applied to all Chinese languages
     fr2 = fr[:2]
+    to2 = to[:2]
     fr_is_latin = config.is_latin_language(fr)
     #items = set() # skip duplicate names
     types = frozenset(types)
@@ -408,6 +421,7 @@ class TermWriter:
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
+          and not (td.type == 'yomi' and to2 == 'zh' and not ja2zh_name_test(td.pattern)) # skip yomi for Chinese if not pass name test
           and (td.sourceLanguage.startswith(fr2)
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
             or td.sourceLanguage == 'ja' and (
