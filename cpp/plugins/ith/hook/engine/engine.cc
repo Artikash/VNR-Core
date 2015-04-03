@@ -5040,14 +5040,55 @@ LPCWSTR _Malie3RTrim(LPCWSTR p)
       }
   return nullptr;
 }
+
+// Example section in memory:
+// 0D7D7E00  07 00 08 00 76 00 5F 00 7A 00 65 00 70 00 30 00  v_zep0
+// 0D7D7E10  30 00 37 00 35 00 00 00 0C 30 42 30 41 30 01 30  075.「あぁ、
+// 0D7D7E20  41 30 26 20 26 20 07 00 09 00 07 00 06 00 07 00  ぁ…….
+// 0D7D7E30  08 00 76 00 5F 00 7A 00 65 00 70 00 30 00 30 00  v_zep00
+// 0D7D7E40  37 00 36 00 00 00 46 30 01 30 42 30 01 30 41 30  76.う、あ、ぁ
+// 0D7D7E50  41 30 41 30 26 20 26 20 26 20 26 20 01 30 63 30  ぁぁ…………、っ
+// 0D7D7E60  07 00 09 00 0D 30 07 00 06 00 0A 00 0A 00 00 30  .」..　
+// 0D7D7E70  16 60 44 30 01 30 16 60 44 30 01 30 4A 30 5E 30  怖い、怖い、おぞ
+// 0D7D7E80  7E 30 57 30 44 30 02 30 55 4F 4C 30 16 60 44 30  ましい。何が怖い
+// 0D7D7E90  6E 30 4B 30 55 30 48 30 01 30 06 52 4B 30 89 30  のかさえ、分から
+// 0D7D7EA0  6A 30 44 30 02 30 07 00 06 00 0A 00 00 30 8B 89  ない。.　見
+// 0D7D7EB0  8B 30 6A 30 88 30 02 30 8B 89 8B 30 6A 30 02 30  るなよ。見るな。
+// 0D7D7EC0  07 00 06 00 8B 89 8B 30 6A 30 01 30 8B 89 8B 30  見るな、見る
+// 0D7D7ED0  6A 30 8B 89 8B 30 6A 30 8B 89 8B 30 6A 30 01 30  な見るな見るな、
+// 0D7D7EE0  1F 75 4D 30 66 30 66 30 AA 60 44 30 4B 30 88 30  生きてて悪いかよ
+// 0D7D7EF0  02 30 C5 60 51 30 6A 30 44 30 63 30 66 30 07 00  。情けないって
+// 0D7D7F00  01 00 E4 55 0A 00 8F 30 89 30 00 00 46 30 6A 30  嗤.わら.うな
+// 0D7D7F10  88 30 02 30 07 00 06 00 BE 7C 00 4E 6F 67 6A 30  よ。精一杯な
+// 0D7D7F20  93 30 60 30 8B 89 03 90 57 30 66 30 4F 30 8C 30  んだ見逃してくれ
+// 0D7D7F30  02 30 4A 30 58 98 44 30 57 30 7E 30 59 30 01 30  。お願いします、
+// 0D7D7F40  60 30 4B 30 89 30 69 30 46 30 4B 30 5D 30 6E 30  だからどうかその
+// 0D7D7F50  EE 76 92 30 84 30 81 30 66 30 01 30 4F 30 60 30  目をやめて、くだ
+// 0D7D7F60  55 30 44 30 01 30 5D 30 93 30 6A 30 02 30 07 00  さい、そんな。
+// 0D7D7F70  06 00 0A 00 00 30 07 00 01 00 BA 87 50 5B 0A 00  .　螺子.
+// 0D7D7F80  59 30 4C 30 00 00 8B 30 88 30 46 30 6A 30 EE 76  すが.るような目
+// 0D7D7F90  67 30 00 25 00 25 07 00 06 00 BF 30 01 30 B9 30  で──タ、ス
+// 0D7D7FA0  01 30 B1 30 01 30 C6 30 01 30 6A 30 93 30 66 30  、ケ、テ、なんて
+// 0D7D7FB0  02 30 07 00 06 00 00 00 00 00 00 00 00 00 00 00  。.....
+// 0D7D7FC0  FC D8 C0 22 00 00 00 80 74 00 00 00 00 00 00 00  .耀t...
+//
 // Return the end of the line
 LPCWSTR _Malie3GetEOL(LPCWSTR p)
 {
   if (p)
     for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
         p++)
-      if (p[0] == 0 || p[0] == 0xa) // stop at \0, or \n where the text after 0xa is furigana
+      switch (*p) {
+      case 0:
+      case 0xa: // stop at \0, or \n where the text after 0xa is furigana
         return p;
+      case 0x7:
+        // \x07\x00\x01\x00 is used to split furigana, which we want to keep
+        // \x07\x00\x04\x00 is used to split sentences, observed in シルヴァリオ ヴェンデッタ
+        // \x07\x00\x06\x00 is used to split paragraph, observed in シルヴァリオ ヴェンデッタ
+        if (p[1] < 0xa && p[1] != 0x1)
+          return p;
+      }
   return nullptr;
 }
 
@@ -5081,6 +5122,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
  */
 bool InsertMalie3Hook()
 {
+  // i.e. 8b44240456578b50088b0833f6668b345142
   const BYTE bytes[] = {
     // 0x90 nop
     0x8b,0x44,0x24, 0x04,   // 5b51e0  mov eax,dword ptr ss:[esp+0x4]
@@ -5105,7 +5147,7 @@ bool InsertMalie3Hook()
   //hp.addr = 0x5b51f1;
   //hp.addr = 0x5b51f2;
   // jichi 3/15/2015: Remove 0704 in シルヴァリオ ヴェンデッタ
-  hp.filter_fun = IllegalWideCharsFilter;
+  hp.filter_fun = IllegalWideCharsFilter; // remove illegal control chars such as 0x07,0x01
   hp.text_fun = SpecialHookMalie3;
   hp.type = NO_CONTEXT; //|USING_UNICODE string type not needed
   //hp.filter_fun = Malie3Filter;
