@@ -323,8 +323,7 @@ class _Loader(object):
       try:
         self._dll = ctypes.WinDLL(ENGINE_DLL)
         dprint("pars engine dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
+      except Exception, e:
         dwarn("failed to load pars", e)
     return self._dll
 

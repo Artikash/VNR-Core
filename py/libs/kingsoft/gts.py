@@ -121,8 +121,7 @@ class _Loader(object):
       try:
         self._dll = ctypes.WinDLL(self.dllPath)
         dprint("gts sdk dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
+      except Exception, e:
         dwarn("failed to load gts sdk dll", e)
     return self._dll
 

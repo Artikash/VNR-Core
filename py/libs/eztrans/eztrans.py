@@ -75,9 +75,10 @@ class Engine(object):
       d.loadDll()
     return self.isLoaded()
 
-  def translate(self, text):
+  def translate(self, text, ehnd=True):
     """
     @param  text  unicode
+    @param* ehnd  whenther enable ehnd
     @return   unicode
     @throw  RuntimeError
     """
@@ -85,7 +86,7 @@ class Engine(object):
       self.load()
       if not self.isLoaded():
         raise RuntimeError("Failed to load ezTrans dll")
-    return self.__d.loader.translate(text)
+    return self.__d.loader.translate(text, ehnd=ehnd)
 
   def warmup(self):
     #try: self.translate(u" ")

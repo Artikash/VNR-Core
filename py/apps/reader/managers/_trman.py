@@ -99,7 +99,7 @@ class Translator(object):
 
   def warmup(self, to='', fr=''): pass
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """
     @param  text  unicode
     @param  to  str
@@ -591,7 +591,7 @@ class AtlasTranslator(OfflineMachineTranslator):
     """@reimp"""
     self.engine.warmup()
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
@@ -670,7 +670,7 @@ class LecTranslator(OfflineMachineTranslator):
     else:
       self.engine.warmup()
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
@@ -754,17 +754,18 @@ class EzTranslator(OfflineMachineTranslator):
     """@reimp"""
     self.engine.warmup()
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def _translateApi(self, ehndEnabled=False): # bool -> function
+    return lambda text, *args, **kwargs: self.engine.translate(text, ehnd=ehndEnabled)
+
+  def translateTest(self, text, to='en', fr='ja', ehndEnabled=False, async=False, **kwargs):
     """@reimp"""
-    try: return self._translateTest(self.engine.translate, text, async=async)
+    api = self._translateApi(ehndEnabled)
+    try: return self._translateTest(api, text, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")),
           async=async)
       return ''
-
-  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
-    return self.engine.translate(text)
 
   __ez_repl_before = staticmethod(skstr.multireplacer({
     u'『': u'『"『', # a double quote in the middle
@@ -778,7 +779,7 @@ class EzTranslator(OfflineMachineTranslator):
   }))
   # Example: GPS97351.678 => GPS97351. 678
   #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, ehndEnabled=False, **kwargs):
     """@reimp"""
     to = 'ko'
     if emit:
@@ -792,11 +793,10 @@ class EzTranslator(OfflineMachineTranslator):
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
     if repl:
+      api = self._translateApi(ehndEnabled)
       try:
         repl = self.__ez_repl_before(repl)
-        repl = self._translate(emit, repl,
-            self._translateApi,
-            to, fr, async)
+        repl = self._translate(emit, repl, api, to, fr, async)
         if repl:
           repl = self.__ez_repl_after(repl)
           #repl = self.__re_term_fix.sub('', repl)
@@ -838,7 +838,7 @@ class TransCATTranslator(OfflineMachineTranslator):
     """@reimp"""
     self.engine.warmup()
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
@@ -1014,7 +1014,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
     """@reimp"""
     self.engine.warmup()
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     simplified = to == 'zhs'
     try: return self._translateTest(self.engine.translate, text, async=async, simplified=simplified)
@@ -1181,7 +1181,7 @@ class FastAITTranslator(OfflineMachineTranslator):
         to = 'zht'
     return to, fr
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try:
@@ -1287,7 +1287,7 @@ class DreyeTranslator(OfflineMachineTranslator):
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("Dr.eye")))
     return ret
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     try:
       engine = self.jcEngine if fr == 'ja' else self.ecEngine
@@ -1399,7 +1399,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
@@ -1454,7 +1454,7 @@ class ExciteTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
@@ -1506,7 +1506,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
@@ -1558,7 +1558,7 @@ class TransruTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
@@ -1604,7 +1604,7 @@ class VTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
     try: return self._translateTest(self.engine.translate,
@@ -1657,7 +1657,7 @@ class GoogleTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
     try: return self._translateTest(self.engine.translate,
@@ -1706,7 +1706,7 @@ class BingTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1781,7 +1781,7 @@ class NaverTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
@@ -1870,7 +1870,7 @@ class BaiduTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     engine = self.getEngine(fr=fr, to=to)
     try: return self._translateTest(engine.translate,
@@ -1935,7 +1935,7 @@ class YoudaoTranslator(OnlineMachineTranslator):
         self.cache.update(text, repl)
     return repl, to, self.key
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)

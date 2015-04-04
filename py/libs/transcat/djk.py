@@ -123,8 +123,7 @@ class _Loader(object):
       try:
         self._dll = ctypes.WinDLL(self.DLL_MODULE)
         dprint("D_JK dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
+      except Exception, e:
         dwarn("failed to load D_JK", e)
     return self._dll
 
