@@ -14,6 +14,20 @@
 # int (__stdcall *K2J_FreeMem)(char *jpStr);
 # int (__stdcall *K2J_StopTranslation)(int data0);
 # int (__stdcall *K2J_Terminate)(void);
+#
+# About Ehnd
+# - Source: https://github.com/sokcuri/ehnd
+# - Dictionary 2015/04: http://sokcuri.neko.kr/220301117949
+# - Binary v3: http://blog.naver.com/waltherp38/220267098421
+# - Tutorial: http://blog.naver.com/waltherp38/220286266694
+#
+# Test Ehnd
+# - Input: まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪
+# - ezTrans without ehnd: 그냥♪스커트와는 안녕히이고. 하프 팬츠는 오래간만♪
+# - With ehnd 3.1 and 201504 script: 글쎄♪스커트와는 안녕히이고. 하프 팬츠 같은거 오래간만♪
+#
+# FIXME: "♞" has to be removed in UserDict_@꿀도르#1.txt
+# 男女七歳にしてお席を同じうせず	남녀칠세부동석	0	//♞
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -29,6 +43,7 @@ EZTR_INIT_STR = 'CSUSER123455'
 class _Loader(object):
 
   DLL_MODULE = 'J2KEngine'
+  #DLL_MODULE = 'ehnd'
 
   def __init__(self):
     self.initialized = False
@@ -144,6 +159,9 @@ if __name__ == '__main__': # DEBUG
   #ret = l.translate(u"お花の匂い☆")
   #ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
   ret = l.translate(u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪")
+
+  # Without ehnd: 그냥♪스커트와는 안녕히이고. 하프 팬츠는 오래간만♪
+  # With ehnd 3.1: 글쎄♪스커트와는 안녕히이고. 하프 팬츠 같은거 오래간만♪
 
   from PySide.QtGui import QApplication, QTextEdit
   a = QApplication(sys.argv)

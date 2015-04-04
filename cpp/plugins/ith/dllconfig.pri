@@ -1,7 +1,7 @@
 # dllconfig.pri
 # 8/9/2013 jichi
 # For linking ITH injectable dlls.
-# The dll is self-containd and Windows-independent.
+# The dll is self-contained and Windows-independent.
 
 CONFIG += dll noqt #noeh nosafeseh
 CONFIG -= embed_manifest_dll # dynamically load dlls
