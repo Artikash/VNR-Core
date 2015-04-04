@@ -25,9 +25,6 @@
 # - Input: まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪
 # - ezTrans without ehnd: 그냥♪스커트와는 안녕히이고. 하프 팬츠는 오래간만♪
 # - With ehnd 3.1 and 201504 script: 글쎄♪스커트와는 안녕히이고. 하프 팬츠 같은거 오래간만♪
-#
-# FIXME: "♞" has to be removed in UserDict_@꿀도르#1.txt
-# 男女七歳にしてお席を同じうせず	남녀칠세부동석	0	//♞
 
 if __name__ == '__main__': # DEBUG
   import sys
