@@ -66,8 +66,7 @@ class _Loader(object):
         #self._dll = ctypes.cdll.LoadLibrary(ATLE_DLL)
         self._dll = ctypes.CDLL(ATLE_DLL)
         dprint("atle dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
+      except Exception, e:
         dwarn("failed to load atle", e)
     return self._dll
 

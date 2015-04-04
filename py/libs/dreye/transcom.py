@@ -56,7 +56,6 @@ class _JCLoader(object):
         self._dll = ctypes.CDLL(self.DLL)
         dprint("transcom dll is loaded")
       except (WindowsError, AttributeError), e:
-        self._dll = None
         dwarn("failed to load transcom dll", e)
     return self._dll
 
@@ -196,7 +195,7 @@ class _ECLoader(object):
       try:
         self._dll = ctypes.CDLL(self.DLL)
         dprint("transcomec dll is loaded")
-      except (WindowsError, AttributeError), e:
+      except Exception, e:
         self._dll = None
         dwarn("failed to load transcomec dll", e)
     return self._dll

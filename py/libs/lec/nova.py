@@ -49,8 +49,7 @@ class _Loader(object):
       try:
         self._dll = ctypes.CDLL(ENGINE_DLL)
         dprint("nova engine dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
+      except Exception, e:
         dwarn("failed to load nova", e)
     return self._dll
 

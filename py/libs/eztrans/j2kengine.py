@@ -35,64 +35,65 @@ import win32api
 #from sakurakit import msvcrt
 from sakurakit.skdebug import dprint, dwarn
 
-EZTR_INIT_STR = 'CSUSER123455'
+EZTR_LICENSE = 'CSUSER123455'
+
+EZTR_DLL_MODULE = 'J2KEngine'
+EHND_DLL_MODULE = 'ehnd'
 
 class _Loader(object):
 
-  DLL_MODULE = 'J2KEngine'
-  #DLL_MODULE = 'ehnd'
-
   def __init__(self):
     self.initialized = False
-    self._dll = None
-    self._dllDirectory = None
+    self._ehndDll = None
+    self._eztrDll = None
 
   @property
-  def dll(self):
-    if not self._dll:
+  def ehndDll(self):
+    if not self._ehndDll:
       try:
-        self._dll = ctypes.WinDLL(self.DLL_MODULE)
-        dprint("j2kengine dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
-        dwarn("failed to load j2kengine", e)
-    return self._dll
-
-  def _dllLocation(self):
-    """
-    @return  str not unicode
-    @throw  WindowsError, AttributeError
-    """
-    return win32api.GetModuleFileName(self.dll._handle)
+        self._ehndDll = ctypes.WinDLL(EHND_DLL_MODULE)
+        dprint("ehnd dll is loaded")
+      except Exception, e:
+        dwarn("failed to load ehnd", e)
+    return self._ehndDll
 
   @property
-  def dllDirectory(self):
+  def eztrDll(self):
+    if not self._eztrDll:
+      try:
+        for suffix in ('.dlx', '.dll'):
+          try:
+            self._eztrDll = ctypes.WinDLL(EZTR_DLL_MODULE + suffix)
+            dprint("%s is loaded" % (EZTR_DLL_MODULE + suffix))
+            break
+          except WindowsError: pass
+      except Exception, e:
+        dwarn("failed to load j2kengine", e)
+    return self._eztrDll
+
+  def getEztrDirectory(self):
     """
     @return  str not unicode
+    @raise
     """
-    if not self._dllDirectory:
-      try: self._dllDirectory = os.path.dirname(self._dllLocation())
-      except (WindowsError, AttributeError, TypeError, os.error), e: dwarn(e)
-    return self._dllDirectory
+    return os.path.dirname(
+        win32api.GetModuleFileName(self.eztrDll._handle))
 
   def init(self):
     """
     @return  bool
-    @raise  WindowsError, AttributeError, TypeError
+    @raise
 
     Guessed:
     BOOL __stdcall J2K_InitializeEx(LPCSTR user_name, LPCSTR dat_path)
 
     """
-    path = os.path.join(self.dllDirectory, 'Dat')
-    return 1 == self.dll.J2K_InitializeEx(EZTR_INIT_STR, path)
-    #if not ok:
-    #  return False
-    #self.dll.J2K_ReloadUserDict()
-    #return True
+    path = self.getEztrDirectory()
+    path = os.path.join(path, 'Dat') # dic data path
+    return 1 == self.ehndDll.J2K_InitializeEx(EZTR_LICENSE, path)
 
   def translateA(self, text):
-    """
+    """Translate through Eztr
     @param  text  str not unicode
     @return  str not unicode
     @raise  WindowsError, AttributeError
@@ -101,26 +102,26 @@ class _Loader(object):
     char *  __stdcall J2K_TranslateMMNT(int data0, const char *jpStr)
     int  __stdcall J2K_FreeMem(char *krStr)
     """
-    addr = self.dll.J2K_TranslateMMNT(0, text)
+    addr = self.eztrDll.J2K_TranslateMMNT(0, text)
     if not addr: # int here
       dwarn("null translation address")
       return ""
     ret = ctypes.c_char_p(addr).value
-    self.dll.J2K_FreeMem(addr)
+    self.eztrDll.J2K_FreeMem(addr)
     return ret
 
   def translateW(self, text):
-    """Only for Ehnd
+    """Translate through Ehnd
     @param  text  unicode not str
     @return  unicode not str
     @raise  WindowsError, AttributeError
     """
-    addr = self.dll.J2K_TranslateMMNTW(0, text)
+    addr = self.ehndDll.J2K_TranslateMMNTW(0, text)
     if not addr: # int here
       dwarn("null translation address")
       return ""
     ret = ctypes.c_wchar_p(addr).value
-    self.dll.J2K_FreeMem(addr)
+    self.ehndDll.J2K_FreeMem(addr)
     return ret
 
 class Loader(object):
@@ -137,23 +138,29 @@ class Loader(object):
 
   def init(self):
     d = self.__d
-    if d.initialized:
-      return
-    try: d.initialized = d.init()
-    except (WindowsError, AttributeError, TypeError): pass
+    if not d.initialized:
+      try: d.initialized = d.init()
+      except Exception, e: dwarn(e)
 
   def isInitialized(self): return self.__d.initialized
 
   def destroy(self): pass
 
-  def translate(self, text):
+  def translate(self, text, ehnd=True):
     """
     @param  text  unicode
+    @param* ehnd  whenther enable ehnd
     @return   unicode
     @throw  RuntimeError
     """
-    try: return self.__d.translateA(
-        text.encode(self.INPUT_ENCODING, errors='ignore')).decode(self.OUTPUT_ENCODING, errors='ignore')
+    try:
+      if ehnd:
+        return self.__d.translateW(text)
+      else:
+        text = text.encode(self.INPUT_ENCODING, errors='ignore')
+        text = self.__d.translateA(text)
+        text = text.decode(self.OUTPUT_ENCODING, errors='ignore')
+        return text
     except (WindowsError, AttributeError), e:
       dwarn("failed to load j2kengine dll, raise runtime error", e)
       raise RuntimeError("failed to access j2kengine dll")
@@ -162,13 +169,17 @@ class Loader(object):
 
 if __name__ == '__main__': # DEBUG
   import os
+  import sys
   os.environ['PATH'] += os.pathsep + r"Z:\Local\Windows\Applications\ezTrans XP"
+  os.environ['PATH'] += os.pathsep + r"../../../../Boost/bin"
+  os.environ['PATH'] += os.pathsep + r"../../../../Ehnd/bin"
   l = Loader()
   l.init()
 
   #ret = l.translate(u"お花の匂い☆")
   #ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
-  ret = l.translate(u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪")
+  ehnd = True
+  ret = l.translate(u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪", ehnd=ehnd)
 
   # Without ehnd: 그냥♪스커트와는 안녕히이고. 하프 팬츠는 오래간만♪
   # With ehnd 3.1: 글쎄♪스커트와는 안녕히이고. 하프 팬츠 같은거 오래간만♪

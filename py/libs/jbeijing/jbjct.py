@@ -99,8 +99,7 @@ class _Loader(object):
       try:
         self._dll = ctypes.CDLL(self.DLL_MODULE)
         dprint("jbjct dll is loaded")
-      except (WindowsError, AttributeError), e:
-        self._dll = None
+      except Exception, e:
         dwarn("failed to load jbjct", e)
     return self._dll
 

@@ -57,6 +57,8 @@ class _TranslatorManager(object):
     self.lecEnabled = \
     False # bool
 
+    self.ehndEnabled = True
+
     self.alignEnabled = {} # {str key:bool t}
     self.scriptEnabled = {} # {str key:bool t}
 
@@ -517,6 +519,8 @@ class TranslatorManager(QObject):
 
   def isEzTransEnabled(self): return self.__d.ezTransEnabled
   def setEzTransEnabled(self, value): self.__d.ezTransEnabled = value
+  def isEhndEnabled(self): return self.__d.ehndEnabled
+  def setEhndEnabled(self, value): self.__d.ehndEnabled = value
 
   def isTranscatEnabled(self): return self.__d.transcatEnabled
   def setTranscatEnabled(self, value): self.__d.transcatEnabled = value
@@ -700,7 +704,7 @@ class TranslatorManager(QObject):
     """
     return self.translateOne(*args, **kwargs)[0]
 
-  def translateTest(self, text, fr='ja', engine='', async=False):
+  def translateTest(self, text, fr='ja', engine='', ehndEnabled=None, async=False):
     """
     @param  text  unicode
     @param* fr  unicode  language
@@ -722,9 +726,11 @@ class TranslatorManager(QObject):
         'async': async,
       }
       it = d.findRetranslator(it, to=to, fr=fr) or it
+      if it.key == 'eztrans':
+        kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
       return it.translateTest(text, **kw)
 
-  def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None):
+  def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None, ehndEnabled=None):
     """Translate using any translator
     @param  text  unicode
     @param* fr  unicode  language
@@ -759,6 +765,8 @@ class TranslatorManager(QObject):
         else:
           kw['scriptEnabled'] = scriptEnabled or d.getScriptEnabled(it.key)
       if emit or not it.onlineRequired or not it.asyncSupported:
+        if it.key == 'eztrans':
+          kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
         return it.translate(text, **kw)
       else: # not emit and asyncSupported
         kw['async'] = False # force using single thread
@@ -767,7 +775,7 @@ class TranslatorManager(QObject):
         ) or (None, None, None)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja', mark=None, scriptEnabled=None, **kwargs):
+  def translateApply(self, func, text, fr='ja', mark=None, scriptEnabled=None, ehndEnabled=None, **kwargs):
     """Specialized for textman
     @param  func  function(unicode sub, unicode lang, unicode provider)
     @param  text  unicode
@@ -809,6 +817,8 @@ class TranslatorManager(QObject):
         skevents.runlater(partial(d.translateAndApply,
             func, kwargs, it.translate, text, **kw))
       else:
+        if it.key == 'eztrans':
+          kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
         r = it.translate(text, **kw)
         if r and r[0]:
           func(r[0], r[1], r[2], align, **kwargs)

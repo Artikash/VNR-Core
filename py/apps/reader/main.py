@@ -772,6 +772,8 @@ class _MainObject(object):
 
     ret.setEzTransEnabled(ss.isEzTransEnabled())
     ss.ezTransEnabledChanged.connect(ret.setEzTransEnabled)
+    ret.setEhndEnabled(ss.isEhndEnabled())
+    ss.ehndEnabledChanged.connect(ret.setEhndEnabled)
 
     ret.setAtlasEnabled(ss.isAtlasEnabled())
     ss.atlasEnabledChanged.connect(ret.setAtlasEnabled)

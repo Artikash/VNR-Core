@@ -3032,6 +3032,9 @@ class _MachineTranslationTab(object):
       grid.addWidget(self.ezTransButton, r, 1)
 
       r += 1
+      grid.addWidget(self.ezTransEhndButton, r, 1)
+
+      r += 1
       grid.addWidget(self.transcatBrowseButton, r, 0)
       grid.addWidget(self.transcatButton, r, 1)
 
@@ -3431,6 +3434,18 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def ezTransBrowseButton(self):
     return self._createBrowseButton(libman.eztrans().location)
+
+  @memoizedproperty
+  def ezTransEhndButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @sokcuri, %s)" % (
+        my.tr("Enable built-in Ehnd translation script"),
+        tr_("recommended")))
+    ss = settings.global_()
+    ret.setChecked(ss.isEhndEnabled())
+    ret.toggled.connect(ss.setEhndEnabled)
+    ret.setEnabled(ss.isEzTransEnabled())
+    ss.ezTransEnabledChanged.connect(ret.setEnabled)
+    return ret
 
   @memoizedproperty
   def transcatButton(self):

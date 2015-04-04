@@ -14,6 +14,7 @@ env:
   - $PWD/../MeCab/bin
   - $PWD/../CaboCha/bin
   - $PWD/../Boost/bin
+  - $PWD/../Ehnd/bin
   #- $PWD/../EB/site-packages
 
   pythonpath:
@@ -42,8 +43,9 @@ env:
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
   - $PWD/../CaboCha/bin/cabocha.dll
-  - $PWD/../EB/site-packages/eb.pyd
   - $PWD/../Boost/bin/boost_regex.dll
+  - $PWD/../Ehnd/bin/ehnd.dll
+  - $PWD/../EB/site-packages/eb.pyd
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
   - $PWD/../../Fonts/msgothic.ttf
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2

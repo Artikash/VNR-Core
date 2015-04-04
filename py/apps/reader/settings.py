@@ -1454,6 +1454,14 @@ class Settings(QSettings):
       self.ezTransEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
+  ehndEnabledChanged = Signal(bool)
+  def isEhndEnabled(self):
+    return to_bool(self.value('EhndEnabled'))
+  def setEhndEnabled(self, value):
+    if value != self.isEhndEnabled():
+      self.setValue('EhndEnabled', value)
+      self.ehndEnabledChanged.emit(value)
+
   transcatEnabledChanged = Signal(bool)
   def isTranscatEnabled(self):
     return to_bool(self.value('TransCATEnabled'))
