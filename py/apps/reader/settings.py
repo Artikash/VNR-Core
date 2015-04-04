@@ -1456,7 +1456,7 @@ class Settings(QSettings):
 
   ehndEnabledChanged = Signal(bool)
   def isEhndEnabled(self):
-    return to_bool(self.value('EhndEnabled'))
+    return to_bool(self.value('EhndEnabled', True))
   def setEhndEnabled(self, value):
     if value != self.isEhndEnabled():
       self.setValue('EhndEnabled', value)

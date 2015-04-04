@@ -3443,8 +3443,8 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isEhndEnabled())
     ret.toggled.connect(ss.setEhndEnabled)
-    ret.setEnabled(ss.isEzTransEnabled())
-    ss.ezTransEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isEzTransEnabled())
+    #ss.ezTransEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
