@@ -12,9 +12,16 @@ _J2C_NAME = {
   u'の': u'之',
   u'ヶ': '',
 }
+_rx_name_repeat = re.compile(
+  jpmacros.applymacros(
+    ur"({{kanji}})々"
+  )
+)
 def ja2zh_name(text): # unicode -> unicode
   for k,v in _J2C_NAME.iteritems():
     text = text.replace(k, v)
+  if u'々' in text:
+    text = _rx_name_repeat.sub(r'\1\1', text)
   return text
 
 _rx_name_sep = re.compile(
@@ -26,7 +33,7 @@ _rx_name_sep = re.compile(
 )
 
 def ja2zh_name_test(text): # unicode -> bool
-  text = _rx_name_sep.sub('', text)
+  text = _rx_name_sep.sub('', text).replace(u'々', '')
   return bool(text) and jpchars.allkanji(text)
 
 def ja2zht_name_fix(text): # unicode -> unicode
@@ -34,7 +41,9 @@ def ja2zht_name_fix(text): # unicode -> unicode
 
 if __name__ == '__main__':
   t = u'佐藤'
-  t = u'佐藤'
+  t = u'乃々華'
   print ja2zh_name_test(t)
+  t = u'乃々華'
+  print ja2zh_name(t)
 
 # EOF
