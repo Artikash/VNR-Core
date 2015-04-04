@@ -91,7 +91,7 @@ class _Loader(object):
     #self.dll.J2K_ReloadUserDict()
     #return True
 
-  def translate(self, text):
+  def translateA(self, text):
     """
     @param  text  str not unicode
     @return  str not unicode
@@ -101,13 +101,26 @@ class _Loader(object):
     char *  __stdcall J2K_TranslateMMNT(int data0, const char *jpStr)
     int  __stdcall J2K_FreeMem(char *krStr)
     """
-    #dword = self.dll.J2K_TranslateMMNT(len(text), text)
-    dword = self.dll.J2K_TranslateMMNT(0, text)
-    if not dword: # int here
+    addr = self.dll.J2K_TranslateMMNT(0, text)
+    if not addr: # int here
       dwarn("null translation address")
       return ""
-    ret = ctypes.c_char_p(dword).value
-    self.dll.J2K_FreeMem(dword)
+    ret = ctypes.c_char_p(addr).value
+    self.dll.J2K_FreeMem(addr)
+    return ret
+
+  def translateW(self, text):
+    """Only for Ehnd
+    @param  text  unicode not str
+    @return  unicode not str
+    @raise  WindowsError, AttributeError
+    """
+    addr = self.dll.J2K_TranslateMMNTW(0, text)
+    if not addr: # int here
+      dwarn("null translation address")
+      return ""
+    ret = ctypes.c_wchar_p(addr).value
+    self.dll.J2K_FreeMem(addr)
     return ret
 
 class Loader(object):
@@ -139,7 +152,7 @@ class Loader(object):
     @return   unicode
     @throw  RuntimeError
     """
-    try: return self.__d.translate(
+    try: return self.__d.translateA(
         text.encode(self.INPUT_ENCODING, errors='ignore')).decode(self.OUTPUT_ENCODING, errors='ignore')
     except (WindowsError, AttributeError), e:
       dwarn("failed to load j2kengine dll, raise runtime error", e)
