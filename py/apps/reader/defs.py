@@ -159,6 +159,7 @@ TERM_CLASS_NAME = "[[N]]"
 TERM_ESCAPE_EOS = u"…eos…"
 
 TERM_NAME_ROLE = 'm'
+TERM_NOUN_ROLE = 'n'
 TERM_PHRASE_ROLE = 'x'
 
 MAX_NAME_LENGTH = 16 # maximum number of characters in text
@@ -175,13 +176,17 @@ MAX_NAME_LENGTH = 16 # maximum number of characters in text
 #JITTER_ESCAPE_LATIN = "SJ341"
 JITTER_PROXY = 'ZJZ'
 
+TERM_ROLE_PROXIES = {
+  TERM_NAME_ROLE: 'M',
+  TERM_NOUN_ROLE: 'N',
+}
 def term_role_proxy(role, index):
   """
   @param  role  str
   @param  index  int
   @return str
   """
-  role = 'M' if role == TERM_NAME_ROLE else 'X'
+  role = TERM_ROLE_PROXIES.get(role) or 'X'
   if index <= 25:
     esc = chr(ord('A') + (index % 25))
   else:
