@@ -205,7 +205,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="415"/>
         <source>Trans</source>
-        <translation type="unfinished">번역</translation>
+        <translation>번역</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="428"/>
@@ -502,12 +502,12 @@
     <message>
         <location filename="../termview/filtertoolbar.qml" line="30"/>
         <source>Title before a Japanese name</source>
-        <translation type="unfinished"></translation>
+        <translation>일본어 이름 앞에 붙이는 호칭</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="33"/>
         <source>Delegate translation roles</source>
-        <translation type="unfinished"></translation>
+        <translation>번역 역할을 대표합니다</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="37"/>
@@ -824,7 +824,7 @@
     <message>
         <location filename="../termview/inspector.qml" line="219"/>
         <source>Translation should not contain Japanese</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문에 일본어가 있으면 안됩니다</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="220"/>
@@ -869,7 +869,7 @@
     <message>
         <location filename="../termview/inspector.qml" line="226"/>
         <source>Please use only ASCII characters for translation role</source>
-        <translation type="unfinished"></translation>
+        <translation>부탁합니다 번역역할에는 ASCII문자만 사용해 주세요</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="227"/>
@@ -879,12 +879,12 @@
     <message>
         <location filename="../termview/inspector.qml" line="228"/>
         <source>Tab characters are not allowed in text</source>
-        <translation type="unfinished"></translation>
+        <translation>탭 문자는 텍스트에 사용할 수 없습니다</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="229"/>
         <source>Missing translation</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문을 찾을 수 없음</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="230"/>
@@ -982,18 +982,18 @@
         <location filename="../subview/maintoolbar.qml" line="137"/>
         <location filename="../termview/maintoolbar.qml" line="164"/>
         <source>Save entries in Excel CSV format to the Desktop</source>
-        <translation>항목을 바탕화면에 Excel CSV포맷으로 저장</translation>
+        <translation>항목들을 바탕화면에 Excel CSV포맷으로 저장</translation>
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="144"/>
         <location filename="../termview/maintoolbar.qml" line="178"/>
         <source>Update entries online</source>
-        <translation>온라인으로 항목 업데이트</translation>
+        <translation>항목 온라인 업데이트</translation>
     </message>
     <message>
         <location filename="../termview/maintoolbar.qml" line="48"/>
         <source>Add a new entry</source>
-        <translation>새로운 항목 추기</translation>
+        <translation>새로운 용어 추기</translation>
     </message>
     <message>
         <location filename="../termview/maintoolbar.qml" line="125"/>
@@ -1269,7 +1269,7 @@
         <location filename="../subview/searchtoolbar.qml" line="68"/>
         <location filename="../termview/searchtoolbar.qml" line="74"/>
         <source>Display duplicate rows which should be avoided</source>
-        <translation>반복개행을 표시합니다</translation>
+        <translation>반복하는 열을 표시합니다</translation>
     </message>
     <message>
         <location filename="../termview/searchtoolbar.qml" line="46"/>
@@ -1311,7 +1311,7 @@
         <location filename="../subview/selecttoolbar.qml" line="68"/>
         <location filename="../termview/selecttoolbar.qml" line="68"/>
         <source>Edit comment for the selected entries</source>
-        <translation>선택한 항목의 댓글 수정</translation>
+        <translation>선택한 항목의 메모 수정</translation>
     </message>
 </context>
 <context>
@@ -1410,12 +1410,12 @@
         <location filename="../termview/table.qml" line="154"/>
         <location filename="../termview/table.qml" line="549"/>
         <source>Regex</source>
-        <translation>정규표현식</translation>
+        <translation>정규식</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="585"/>
         <source>Case-insensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>대소문자 구분</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="639"/>
@@ -1452,7 +1452,7 @@
     <message>
         <location filename="../refview/toolbar.qml" line="151"/>
         <source>Update entries online</source>
-        <translation>온라인 데이터 업데이트</translation>
+        <translation>항목 온라인 업데이트</translation>
     </message>
     <message>
         <location filename="../voiceview/toolbar.qml" line="68"/>

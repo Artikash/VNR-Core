@@ -758,6 +758,8 @@ class TranslatorManager(QObject):
         'emit': emit,
       }
       it = d.findRetranslator(it, to=to, fr=fr) or it
+      if it.key == 'eztrans':
+        kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
       if scriptEnabled != False:
         if it.key == 'retr':
           kw['scriptEnabled1'] = scriptEnabled or d.getScriptEnabled(it.first.key)
@@ -765,8 +767,6 @@ class TranslatorManager(QObject):
         else:
           kw['scriptEnabled'] = scriptEnabled or d.getScriptEnabled(it.key)
       if emit or not it.onlineRequired or not it.asyncSupported:
-        if it.key == 'eztrans':
-          kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
         return it.translate(text, **kw)
       else: # not emit and asyncSupported
         kw['async'] = False # force using single thread

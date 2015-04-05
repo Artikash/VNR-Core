@@ -41,12 +41,12 @@
     <message>
         <location filename="sktr.py" line="36"/>
         <source>German</source>
-        <translation>Duitse</translation>
+        <translation>Het Duits</translation>
     </message>
     <message>
         <location filename="sktr.py" line="37"/>
         <source>French</source>
-        <translation>Frans</translation>
+        <translation>Het Frans</translation>
     </message>
     <message>
         <location filename="sktr.py" line="38"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="sktr.py" line="96"/>
         <source>About</source>
-        <translation>Over</translation>
+        <translation>Wat Betreft</translation>
     </message>
     <message>
         <location filename="sktr.py" line="102"/>
@@ -136,17 +136,17 @@
     <message>
         <location filename="sktr.py" line="127"/>
         <source>Enable</source>
-        <translation>In staat stellen</translation>
+        <translation>Mogelijk Maken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="127"/>
         <source>enable</source>
-        <translation>in staat stellen</translation>
+        <translation>mogelijk maken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="136"/>
         <source>Finish</source>
-        <translation>Afwerking</translation>
+        <translation>Af Hebben</translation>
     </message>
     <message>
         <location filename="sktr.py" line="137"/>
@@ -196,12 +196,12 @@
     <message>
         <location filename="sktr.py" line="184"/>
         <source>Show</source>
-        <translation>Tonen</translation>
+        <translation>Laten Zien</translation>
     </message>
     <message>
         <location filename="sktr.py" line="182"/>
         <source>Search</source>
-        <translation>Zoeken</translation>
+        <translation>Zoek Op</translation>
     </message>
     <message>
         <location filename="sktr.py" line="193"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="sktr.py" line="198"/>
         <source>Update</source>
-        <translation>-Update</translation>
+        <translation>Bij Te Werken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="410"/>
@@ -286,12 +286,12 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>Error</source>
-        <translation>Fout</translation>
+        <translation>Fout, Storing</translation>
     </message>
     <message>
         <location filename="sktr.py" line="297"/>
         <source>Feature</source>
-        <translation>Kenmerken</translation>
+        <translation>Beschikken Over</translation>
     </message>
     <message>
         <location filename="sktr.py" line="298"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="sktr.py" line="309"/>
         <source>Help</source>
-        <translation>Helpen</translation>
+        <translation>Verder Helpen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="311"/>
@@ -446,12 +446,12 @@
     <message>
         <location filename="sktr.py" line="416"/>
         <source>Yes</source>
-        <translation>Ja</translation>
+        <translation>Ja Well</translation>
     </message>
     <message>
         <location filename="sktr.py" line="416"/>
         <source>yes</source>
-        <translation>ja</translation>
+        <translation>ja well</translation>
     </message>
     <message>
         <location filename="sktr.py" line="417"/>
@@ -511,7 +511,7 @@
     <message>
         <location filename="sktr.py" line="351"/>
         <source>Property</source>
-        <translation>Eigenschap</translation>
+        <translation>Onroerend Goed</translation>
     </message>
     <message>
         <location filename="sktr.py" line="352"/>
@@ -521,7 +521,7 @@
     <message>
         <location filename="sktr.py" line="98"/>
         <source>Add</source>
-        <translation>Toevoegen</translation>
+        <translation>Voeg Toe</translation>
     </message>
     <message>
         <location filename="sktr.py" line="112"/>
@@ -581,22 +581,22 @@
     <message>
         <location filename="sktr.py" line="146"/>
         <source>Lock</source>
-        <translation>Slot</translation>
+        <translation>Op Slot Doen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="146"/>
         <source>lock</source>
-        <translation>slot</translation>
+        <translation>op slot doen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="147"/>
         <source>Locked</source>
-        <translation>Afgesloten</translation>
+        <translation>Op Slot</translation>
     </message>
     <message>
         <location filename="sktr.py" line="147"/>
         <source>locked</source>
-        <translation>afgesloten</translation>
+        <translation>op slot</translation>
     </message>
     <message>
         <location filename="sktr.py" line="158"/>
@@ -626,7 +626,7 @@
     <message>
         <location filename="sktr.py" line="184"/>
         <source>show</source>
-        <translation>tonen</translation>
+        <translation>laten zien</translation>
     </message>
     <message>
         <location filename="sktr.py" line="181"/>
@@ -646,7 +646,7 @@
     <message>
         <location filename="sktr.py" line="381"/>
         <source>Target</source>
-        <translation>Doelwit</translation>
+        <translation>Richten Op</translation>
     </message>
     <message>
         <location filename="sktr.py" line="275"/>
@@ -766,17 +766,17 @@
     <message>
         <location filename="sktr.py" line="183"/>
         <source>Searching</source>
-        <translation>Zoeken</translation>
+        <translation>Aan Het Zoeken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="188"/>
         <source>Spell Check</source>
-        <translation>Spellingcontrole</translation>
+        <translation>Spellingscontrole</translation>
     </message>
     <message>
         <location filename="sktr.py" line="188"/>
         <source>Spell check</source>
-        <translation>Spellingcontrole</translation>
+        <translation>Spellingscontrole</translation>
     </message>
     <message>
         <location filename="sktr.py" line="190"/>
@@ -796,17 +796,17 @@
     <message>
         <location filename="sktr.py" line="191"/>
         <source>Stop</source>
-        <translation>Stoppen</translation>
+        <translation>Stoppen Met</translation>
     </message>
     <message>
         <location filename="sktr.py" line="191"/>
         <source>stop</source>
-        <translation>stoppen</translation>
+        <translation>stoppen met</translation>
     </message>
     <message>
         <location filename="sktr.py" line="191"/>
         <source>STOP</source>
-        <translation>STOP</translation>
+        <translation>STOPPEN MET</translation>
     </message>
     <message>
         <location filename="sktr.py" line="383"/>
@@ -921,7 +921,7 @@
     <message>
         <location filename="sktr.py" line="174"/>
         <source>Restart</source>
-        <translation>Herstarten</translation>
+        <translation>Opnieuw Opstarten</translation>
     </message>
     <message>
         <location filename="sktr.py" line="465"/>
@@ -941,22 +941,22 @@
     <message>
         <location filename="sktr.py" line="166"/>
         <source>Recommend</source>
-        <translation>Adviseren</translation>
+        <translation>Beveel Aan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="166"/>
         <source>recommend</source>
-        <translation>adviseren</translation>
+        <translation>beveel aan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="167"/>
         <source>Recommended</source>
-        <translation>Aanbevolen</translation>
+        <translation>Een Aanrader</translation>
     </message>
     <message>
         <location filename="sktr.py" line="167"/>
         <source>recommended</source>
-        <translation>aanbevolen</translation>
+        <translation>een aanrader</translation>
     </message>
     <message>
         <location filename="sktr.py" line="284"/>
@@ -966,7 +966,7 @@
     <message>
         <location filename="sktr.py" line="291"/>
         <source>Dictionary</source>
-        <translation>Woordenboek</translation>
+        <translation>Van Dale</translation>
     </message>
     <message>
         <location filename="sktr.py" line="292"/>
@@ -1206,7 +1206,7 @@
     <message>
         <location filename="sktr.py" line="285"/>
         <source>Content</source>
-        <translation>Inhoud</translation>
+        <translation>De Inhoud</translation>
     </message>
     <message>
         <location filename="sktr.py" line="286"/>
@@ -1466,7 +1466,7 @@
     <message>
         <location filename="sktr.py" line="264"/>
         <source>Visit</source>
-        <translation>Bezoek</translation>
+        <translation>Op Bezoek</translation>
     </message>
     <message>
         <location filename="sktr.py" line="143"/>
@@ -1501,12 +1501,12 @@
     <message>
         <location filename="sktr.py" line="151"/>
         <source>None</source>
-        <translation>Geen</translation>
+        <translation>Geen Een</translation>
     </message>
     <message>
         <location filename="sktr.py" line="151"/>
         <source>none</source>
-        <translation>geen</translation>
+        <translation>geen enkel</translation>
     </message>
     <message>
         <location filename="sktr.py" line="276"/>
@@ -1596,7 +1596,7 @@
     <message>
         <location filename="sktr.py" line="364"/>
         <source>Release</source>
-        <translation>Vrijlating</translation>
+        <translation>Laat Los</translation>
     </message>
     <message>
         <location filename="sktr.py" line="103"/>
@@ -1706,7 +1706,7 @@
     <message>
         <location filename="sktr.py" line="269"/>
         <source>Day</source>
-        <translation>Dag</translation>
+        <translation>De Dag</translation>
     </message>
     <message>
         <location filename="sktr.py" line="120"/>
@@ -1911,7 +1911,7 @@
     <message>
         <location filename="sktr.py" line="299"/>
         <source>File</source>
-        <translation>Bestand</translation>
+        <translation>Het Dossier</translation>
     </message>
     <message>
         <location filename="sktr.py" line="159"/>
@@ -1986,7 +1986,7 @@
     <message>
         <location filename="sktr.py" line="436"/>
         <source>Public</source>
-        <translation>Openbaar</translation>
+        <translation>Het Publiek</translation>
     </message>
     <message>
         <location filename="sktr.py" line="437"/>
@@ -2041,7 +2041,7 @@
     <message>
         <location filename="sktr.py" line="94"/>
         <source>Space</source>
-        <translation>Ruimte</translation>
+        <translation>De Ruimte</translation>
     </message>
     <message>
         <location filename="sktr.py" line="319"/>
@@ -2056,7 +2056,7 @@
     <message>
         <location filename="sktr.py" line="242"/>
         <source>Down</source>
-        <translation>Neer</translation>
+        <translation>Naar Beneden</translation>
     </message>
     <message>
         <location filename="sktr.py" line="243"/>
@@ -2081,7 +2081,7 @@
     <message>
         <location filename="sktr.py" line="134"/>
         <source>Forward</source>
-        <translation>Vooruit</translation>
+        <translation>Stuur Door</translation>
     </message>
     <message>
         <location filename="sktr.py" line="434"/>
@@ -2101,7 +2101,7 @@
     <message>
         <location filename="sktr.py" line="314"/>
         <source>Information</source>
-        <translation>Informatie</translation>
+        <translation>Een Informatie</translation>
     </message>
     <message>
         <location filename="sktr.py" line="179"/>
@@ -2181,7 +2181,7 @@
     <message>
         <location filename="sktr.py" line="366"/>
         <source>Review</source>
-        <translation>Recensie</translation>
+        <translation>Opnieuw Bekijken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="362"/>
@@ -2206,7 +2206,7 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>error</source>
-        <translation>fout</translation>
+        <translation>fout, storing</translation>
     </message>
     <message>
         <location filename="sktr.py" line="201"/>
@@ -2236,12 +2236,12 @@
     <message>
         <location filename="sktr.py" line="412"/>
         <source>Zoom In</source>
-        <translation>In Zoomen</translation>
+        <translation>Zoom In</translation>
     </message>
     <message>
         <location filename="sktr.py" line="412"/>
         <source>Zoom in</source>
-        <translation>In zoomen</translation>
+        <translation>Zoom in</translation>
     </message>
     <message>
         <location filename="sktr.py" line="413"/>
@@ -2381,7 +2381,7 @@
     <message>
         <location filename="sktr.py" line="366"/>
         <source>review</source>
-        <translation>recensie</translation>
+        <translation>opnieuw bekijken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="427"/>
@@ -2391,7 +2391,7 @@
     <message>
         <location filename="sktr.py" line="428"/>
         <source>Like</source>
-        <translation>Zoals</translation>
+        <translation>Net Als</translation>
     </message>
     <message>
         <location filename="sktr.py" line="353"/>
@@ -2501,7 +2501,7 @@
     <message>
         <location filename="sktr.py" line="54"/>
         <source>Traditional Chinese</source>
-        <translation>Traditionele Chinese</translation>
+        <translation>Traditioneel Chinees</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
@@ -2511,7 +2511,7 @@
     <message>
         <location filename="sktr.py" line="431"/>
         <source>Agree</source>
-        <translation>Het eens zijn</translation>
+        <translation>Mee Eens</translation>
     </message>
     <message>
         <location filename="sktr.py" line="432"/>
@@ -2536,7 +2536,7 @@
     <message>
         <location filename="sktr.py" line="453"/>
         <source>Invalid</source>
-        <translation>Ongeldig</translation>
+        <translation>Niet Geldig</translation>
     </message>
     <message>
         <location filename="sktr.py" line="338"/>
