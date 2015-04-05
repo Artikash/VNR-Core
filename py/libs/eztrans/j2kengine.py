@@ -92,8 +92,10 @@ class _Loader(object):
     path = os.path.join(path, 'Dat') # dic data path
     return 1 == self.ehndDll.J2K_InitializeEx(EZTR_LICENSE, path)
 
-  def translateA(self, text):
+  @staticmethod
+  def translateA(dll, text):
     """Translate through Eztr
+    @param  dll  ctypes.DLL
     @param  text  str not unicode
     @return  str not unicode
     @raise  WindowsError, AttributeError
@@ -102,26 +104,28 @@ class _Loader(object):
     char *  __stdcall J2K_TranslateMMNT(int data0, const char *jpStr)
     int  __stdcall J2K_FreeMem(char *krStr)
     """
-    addr = self.eztrDll.J2K_TranslateMMNT(0, text)
+    addr = dll.J2K_TranslateMMNT(0, text)
     if not addr: # int here
       dwarn("null translation address")
       return ""
     ret = ctypes.c_char_p(addr).value
-    self.eztrDll.J2K_FreeMem(addr)
+    dll.J2K_FreeMem(addr)
     return ret
 
-  def translateW(self, text):
+  @staticmethod
+  def translateW(dll, text):
     """Translate through Ehnd
+    @param  dll  ctypes.DLL
     @param  text  unicode not str
     @return  unicode not str
     @raise  WindowsError, AttributeError
     """
-    addr = self.ehndDll.J2K_TranslateMMNTW(0, text)
+    addr = dll.J2K_TranslateMMNTW(0, text)
     if not addr: # int here
       dwarn("null translation address")
       return ""
     ret = ctypes.c_wchar_p(addr).value
-    self.ehndDll.J2K_FreeMem(addr)
+    dll.J2K_FreeMem(addr)
     return ret
 
 class Loader(object):
@@ -153,12 +157,13 @@ class Loader(object):
     @return   unicode
     @throw  RuntimeError
     """
+    d = self.__d
     try:
       if ehnd:
-        return self.__d.translateW(text)
+        return d.translateW(d.ehndDll, text)
       else:
         text = text.encode(self.INPUT_ENCODING, errors='ignore')
-        text = self.__d.translateA(text)
+        text = d.translateA(d.eztrDll, text)
         text = text.decode(self.OUTPUT_ENCODING, errors='ignore')
         return text
     except (WindowsError, AttributeError), e:

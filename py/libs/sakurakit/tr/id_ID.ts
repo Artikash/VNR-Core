@@ -231,7 +231,7 @@
     <message>
         <location filename="sktr.py" line="209"/>
         <source>All files</source>
-        <translation>Semua file</translation>
+        <translation>Semua data</translation>
     </message>
     <message>
         <location filename="sktr.py" line="210"/>
@@ -841,7 +841,7 @@
     <message>
         <location filename="sktr.py" line="185"/>
         <source>Software Update</source>
-        <translation>Software Update</translation>
+        <translation>Pembaruan Perangkat Lunak</translation>
     </message>
     <message>
         <location filename="sktr.py" line="359"/>
@@ -981,12 +981,12 @@
     <message>
         <location filename="sktr.py" line="85"/>
         <source>Double Click</source>
-        <translation>Klik ganda</translation>
+        <translation>Klik Dua Kali</translation>
     </message>
     <message>
         <location filename="sktr.py" line="85"/>
         <source>Double click</source>
-        <translation>Klik ganda</translation>
+        <translation>Klik dua kali</translation>
     </message>
     <message>
         <location filename="sktr.py" line="85"/>
@@ -1041,7 +1041,7 @@
     <message>
         <location filename="sktr.py" line="467"/>
         <source>Check for updates</source>
-        <translation>Periksa pembaruan</translation>
+        <translation>Memeriksa pembaharuan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="84"/>
@@ -2236,7 +2236,7 @@
     <message>
         <location filename="sktr.py" line="412"/>
         <source>Zoom In</source>
-        <translation>Zoom In</translation>
+        <translation>Perbesar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="412"/>

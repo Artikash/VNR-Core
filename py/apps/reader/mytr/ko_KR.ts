@@ -210,7 +210,7 @@
     <message>
         <location filename="mytr.py" line="128"/>
         <source>Youdao</source>
-        <translation type="unfinished">Youdao</translation>
+        <translation>Youdao</translation>
     </message>
     <message>
         <location filename="mytr.py" line="143"/>
@@ -235,12 +235,12 @@
     <message>
         <location filename="mytr.py" line="251"/>
         <source>Update Shared Dictionary</source>
-        <translation>공유된 사전 업데이트</translation>
+        <translation>공유사전 업데이트</translation>
     </message>
     <message>
         <location filename="mytr.py" line="235"/>
         <source>Update Shared Subtitles</source>
-        <translation type="obsolete">공유된 자막 업데이트</translation>
+        <translation type="obsolete">공유자막 업데이트</translation>
     </message>
     <message>
         <location filename="mytr.py" line="254"/>
@@ -890,22 +890,22 @@
     <message>
         <location filename="mytr.py" line="71"/>
         <source>with tone</source>
-        <translation>음색있음</translation>
+        <translation>성조 표시</translation>
     </message>
     <message>
         <location filename="mytr.py" line="72"/>
         <source>without tone</source>
-        <translation>음색없음</translation>
+        <translation>성조 표시안함</translation>
     </message>
     <message>
         <location filename="mytr.py" line="193"/>
         <source>Prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>접두어</translation>
     </message>
     <message>
         <location filename="mytr.py" line="194"/>
         <source>Boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>경계선</translation>
     </message>
     <message>
         <location filename="mytr.py" line="102"/>

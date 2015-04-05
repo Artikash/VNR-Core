@@ -166,7 +166,7 @@
     <message>
         <location filename="sktr.py" line="153"/>
         <source>OK</source>
-        <translation>Tốt</translation>
+        <translation>ĐƯỢC</translation>
     </message>
     <message>
         <location filename="sktr.py" line="154"/>
@@ -356,7 +356,7 @@
     <message>
         <location filename="sktr.py" line="354"/>
         <source>Plug-in</source>
-        <translation>Plug-in</translation>
+        <translation>Cắm vào</translation>
     </message>
     <message>
         <location filename="sktr.py" line="355"/>
@@ -631,7 +631,7 @@
     <message>
         <location filename="sktr.py" line="181"/>
         <source>Select All</source>
-        <translation>Chọn tất cả</translation>
+        <translation>Chọn Tất Cả</translation>
     </message>
     <message>
         <location filename="sktr.py" line="186"/>
@@ -771,7 +771,7 @@
     <message>
         <location filename="sktr.py" line="188"/>
         <source>Spell Check</source>
-        <translation>Kiểm tra chính tả</translation>
+        <translation>Kiểm Tra Chính Tả</translation>
     </message>
     <message>
         <location filename="sktr.py" line="188"/>
@@ -921,7 +921,7 @@
     <message>
         <location filename="sktr.py" line="174"/>
         <source>Restart</source>
-        <translation>Khởi động lại</translation>
+        <translation>Khởi Động Lại</translation>
     </message>
     <message>
         <location filename="sktr.py" line="465"/>
@@ -931,7 +931,7 @@
     <message>
         <location filename="sktr.py" line="465"/>
         <source>for example</source>
-        <translation>cho ví dụ</translation>
+        <translation>ví dụ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="162"/>
@@ -981,12 +981,12 @@
     <message>
         <location filename="sktr.py" line="85"/>
         <source>Double Click</source>
-        <translation>Double Click</translation>
+        <translation>Nhấn Đúp Chuột</translation>
     </message>
     <message>
         <location filename="sktr.py" line="85"/>
         <source>Double click</source>
-        <translation>Double click</translation>
+        <translation>Nhấn đúp chuột</translation>
     </message>
     <message>
         <location filename="sktr.py" line="85"/>
@@ -996,12 +996,12 @@
     <message>
         <location filename="sktr.py" line="86"/>
         <source>Double-click</source>
-        <translation>Double-click</translation>
+        <translation>Nhấn đúp chuột</translation>
     </message>
     <message>
         <location filename="sktr.py" line="86"/>
         <source>double-click</source>
-        <translation>double-click</translation>
+        <translation>nhấn đúp chuột</translation>
     </message>
     <message>
         <location filename="sktr.py" line="113"/>
@@ -1041,7 +1041,7 @@
     <message>
         <location filename="sktr.py" line="467"/>
         <source>Check for updates</source>
-        <translation>Kiểm tra các bản cập nhật</translation>
+        <translation>Kiểm tra cập nhật</translation>
     </message>
     <message>
         <location filename="sktr.py" line="84"/>
@@ -1061,7 +1061,7 @@
     <message>
         <location filename="sktr.py" line="175"/>
         <source>Resume</source>
-        <translation>Sơ yếu lý lịch</translation>
+        <translation>Tiếp Tục</translation>
     </message>
     <message>
         <location filename="sktr.py" line="478"/>
@@ -1486,7 +1486,7 @@
     <message>
         <location filename="sktr.py" line="135"/>
         <source>Full screen</source>
-        <translation>Full màn hình</translation>
+        <translation>Toàn màn hình</translation>
     </message>
     <message>
         <location filename="sktr.py" line="371"/>
@@ -1946,7 +1946,7 @@
     <message>
         <location filename="sktr.py" line="152"/>
         <source>Note</source>
-        <translation>Chú ý</translation>
+        <translation>Chú Ý</translation>
     </message>
     <message>
         <location filename="sktr.py" line="296"/>
@@ -2021,7 +2021,7 @@
     <message>
         <location filename="sktr.py" line="148"/>
         <source>Lookup</source>
-        <translation>Lookup</translation>
+        <translation>Tra Cứu</translation>
     </message>
     <message>
         <location filename="sktr.py" line="106"/>
@@ -2236,7 +2236,7 @@
     <message>
         <location filename="sktr.py" line="412"/>
         <source>Zoom In</source>
-        <translation>Zoom In</translation>
+        <translation>Phóng To</translation>
     </message>
     <message>
         <location filename="sktr.py" line="412"/>
@@ -2246,12 +2246,12 @@
     <message>
         <location filename="sktr.py" line="413"/>
         <source>Zoom Out</source>
-        <translation>Thu nhỏ</translation>
+        <translation>Thu Nhỏ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="413"/>
         <source>Zoom out</source>
-        <translation>Thu nhỏ</translation>
+        <translation>Phóng to</translation>
     </message>
     <message>
         <location filename="sktr.py" line="176"/>

@@ -309,21 +309,21 @@ if the target game is launched with &lt;b&gt;admin privilege&lt;/b&gt;
 &lt;br/&gt;&lt;br/&gt;
 
 Here&apos;s a &lt;a href=&quot;%s&quot;&gt;demo on youtube&lt;/a&gt; that might be helpful.</source>
-        <translation>이 마법사가 새로운 비쥬얼 노벨을 추가하는 것을 차근차근 도와줄겁니다.
+        <translation>이 마법사가 새로운 비주얼 노벨을 추가하는 것을 차근차근 도와줄 겁니다.
 &lt;br/&gt;&lt;br/&gt;
 
 인터넷을 연결이 필수는 아니지만, 연결을 권장합니다.
-인터넷을 연결하면, 마법사는 온라인 데이터베이스을 이용할 수 있기에 게임설정에 걸리는 시간을 단축해줍니다.
+인터넷을 연결하면, 마법사는 온라인 데이터베이스를 이용할 수 있기에 게임설정에 걸리는 시간을 단축해줍니다. 
 &lt;br/&gt;&lt;br/&gt;
 
 주의：
-UAC가 켜진 Windows Vista나 Windows 7에선,
-게임이 &lt;b&gt;관리자권한&lt;/b&gt;으로 실행될 경우,
-(즉, 게임을 실행할 때, 윈도우 화면이 깜깜해지면서 계속하려면 예, 아니오가 뜰 때),
+UAC가 켜진 Windows Vista나 Windows 7에선, 
+게임이 &lt;b&gt;관리자 권한&lt;/b&gt;으로 실행될 경우,
+(게임을 실행할 때, 화면이 어두워지면서 계속하려면 [예/아니오]가 뜨면),
 &lt;b&gt;VNR도 관리자 권한으로 실행해 주세요&lt;/b&gt;!
 &lt;br/&gt;&lt;br/&gt;
 
-&lt;a href=&quot;%s&quot;&gt;YouTube&lt;/a&gt;시현 동영상이 도움이 될겁니다.</translation>
+&lt;a href=&quot;%s&quot;&gt;YouTube&lt;/a&gt;시연 동영상이 도움이 될겁니다.</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="76"/>
@@ -343,7 +343,7 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="119"/>
         <source>How would you like to select the game?</source>
-        <translation>게임을 어떻게 선택하실건가요?</translation>
+        <translation>게임을 어떻게 찾으실 건가요?</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="126"/>
@@ -353,12 +353,12 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="130"/>
         <source>Select the game executable file on the hard drive</source>
-        <translation>하드디스크에 게임 실행파일을 선택</translation>
+        <translation>하드디스크에서 게임 실행파일을 선택</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="140"/>
         <source>By the way, you can also drag the game&apos;s exe/lnk to the SpringBoard, which is equivalent to #3 (select by file).</source>
-        <translation>덧붙여서, #3(파일 선택)과 마찬가지로 직접 SpringBoard로 게임의 exe/lnk 파일을 드래그 할 수 있습니다.</translation>
+        <translation>덧붙여서, #3번(파일 선택)과 마찬가지로 직접 SpringBoard로 게임의 exe/lnk 파일을 드래그 할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="177"/>
@@ -508,7 +508,7 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="122"/>
         <source>Select the window of the running game</source>
-        <translation>실행중 게임 윈도우 선택</translation>
+        <translation>실행중인 게임 윈도우 선택</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="1043"/>
@@ -972,7 +972,7 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="main.py" line="1819"/>
         <source>Found running game</source>
-        <translation>실행중 게임 찾음</translation>
+        <translation>실행중인 게임 찾음</translation>
     </message>
     <message>
         <location filename="main.py" line="1829"/>
@@ -1616,7 +1616,7 @@ User privilege describes what you can do to other users&apos; efforts (like subs
 * 기계번역 언어&lt;br/&gt;
 * 등록할 번역문/댓글의 언어&lt;br/&gt;
 * 맞춤법 검사 사전(영, 프, 독)&lt;br/&gt;
-* 공유 사전용어의 언어
+* 공유사전 항목의 언어 필터링
 
 &lt;h4&gt;색상에 대해서&lt;/h4&gt;
 색상은 다른사람에게 공유 번역문에 대해서 표시할 때 사용됩니다.
@@ -1697,7 +1697,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
 4. Add the game using Game Wizard</source>
         <translation>알 수 없는 게임을 실행하면, 다음을 순서대로 시도해 보세요:
 1. 게임 데이터베이스 업데이트
-2. Spring Board로 Ink/exe를 끌어놓기
+2. Spring Board로 게임 Ink/exe를 끌어놓기
 3. VNR을 관리자 권한으로 재실행
 4. 게임 마법사를 사용하여 게임 추가</translation>
     </message>
@@ -1807,7 +1807,7 @@ than turning on global repetition filters here.</source>
 
 게임의 어떤 부분은 그러지 않는데, 어떤 부분에서는 반복되면,
 글로벌 반복 필터를 여기서 켜는거 보다
-공유사전에 일반 확장식을 추가하는게 좋을겁니다.</translation>
+공유사전에 정규표현식을 추가하는게 좋을겁니다.</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="394"/>
@@ -2266,7 +2266,7 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
     <message>
         <location filename="dialogs/mttest.py" line="583"/>
         <source>Direct translation without modifications by VNR</source>
-        <translation>VNR에 의한 변경사항없이 바로 번역</translation>
+        <translation>VNR에 의한 변경없이 바로 번역</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="592"/>
@@ -2276,7 +2276,7 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
     <message>
         <location filename="dialogs/mttest.py" line="596"/>
         <source>Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages</source>
-        <translation type="obsolete">공유사전/게임정보의 캐릭터 이름은 라틴어 언어로만 적용됩니다</translation>
+        <translation type="obsolete">공유사전/게임정보의 캐릭터 이름은 라틴계 언어로만 적용됩니다</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="611"/>
@@ -2421,7 +2421,7 @@ But you can also press &quot;Refresh&quot; to run the update manually.</source>
         <translation>&lt;h3&gt;소개&lt;/h3&gt;
 공유사전은 게임원문과 윈도우 텍스트에 기계번역 향상을 도와줍니다.
 이는 사용자 자막에 영향을 주지 않습니다.
-사전에 정의된 용어는 기계번역 전후에 텍스트를 교체할겁니다.
+사전에 정의된 항목은 기계번역 전후에 텍스트를 교체할겁니다.
 사전을 이해하지 못할 경우, 양날의 검이 될 수 있으니 조심하세요&amp;gt;_&amp;lt;
 
 더 많은 정보는 Wiki에서 찾을 수 있습니다:
@@ -3362,7 +3362,7 @@ If VNR is launched from &quot;Debug VNR.cmd&quot;, VNR&apos;s text hook will sav
 If the game crashes because of VNR, you might be able to find the reason of the crash in that log file.</source>
         <translation>&lt;h3&gt;소개&lt;/h3&gt;
 【텍스트 설정】에서는, 표시하고 번역할 텍스트를 선택할 수 있습니다.
-게임과 동기화한뒤, VNR에서 텍스트가 보이지 않을 경우, 일반적으로 텍스트 설정이 적절하지 않기때문이다.
+게임과 동기화한뒤, VNR에서 텍스트가 보이지 않을 경우, 대게 텍스트 설정이 적절하지 않기 때문입니다.
 &lt;br/&gt;&lt;br/&gt;
 
 이 기능은 ITH대신 VNR의 실험적 기능인 내장 텍스트 후킹으로 내장 번역을 하는 기능입니다.
@@ -3589,7 +3589,7 @@ The entry has already been enabled even without you cloning it.
 Instead, cloning will result in duplicate entries that makes it more difficult to manage.</source>
         <translation>다른 사람의 항목을 복사하길 원하십니까?
 복제하지 않아도 이 항목을 이용할 수 있습니다.
-같은 항목을 복제하는것은 더욱 관리가 힘들어 질 수 있습니다.</translation>
+같은 항목을 복제하는 것은 관리가 힘들어 질 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="539"/>
@@ -4484,220 +4484,223 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
     <message>
         <location filename="i18n.py" line="75"/>
         <source>Central and Eastern Europe</source>
-        <translation type="unfinished"></translation>
+        <translation>중부/동부 유럽</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3518"/>
         <source>Enable Japanese-English translation script</source>
-        <translation type="unfinished"></translation>
+        <translation>일ㆍ영 번역 스크립트 활성화</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="610"/>
         <source>Apply translation script</source>
-        <translation type="unfinished"></translation>
+        <translation>번역 스크립트 적용</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3097"/>
         <source>Secondary translator</source>
-        <translation type="unfinished"></translation>
+        <translation>보조 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3113"/>
         <source>Intermediate language to connect two translators</source>
-        <translation type="unfinished"></translation>
+        <translation>두 번역기를 중재할 언어</translation>
     </message>
     <message>
         <location filename="managers/termman.py" line="207"/>
         <source>Processing Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전 처리중</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="281"/>
         <source>Match phrase boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>구문 경계에 일치</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="226"/>
         <source>a title before names</source>
-        <translation type="unfinished"></translation>
+        <translation>이름 앞에 붙이는 칭호</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="490"/>
         <source>Global UI font</source>
-        <translation type="unfinished"></translation>
+        <translation>글로벌 UI 글꼴</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="488"/>
         <source>Changing font might require restarting VNR</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴을 바꾸면, VNR을 다시 시작하셔야합니다</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3349"/>
         <source>Japanese-Chinese only</source>
-        <translation type="unfinished"></translation>
+        <translation>일ㆍ중 번역전용</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3350"/>
         <source>experimental</source>
-        <translation type="unfinished"></translation>
+        <translation>실험적기능</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3348"/>
         <source>VNR&apos;s online translator trained by user-contributed subtitles for VNs</source>
-        <translation type="unfinished"></translation>
+        <translation>비쥬얼노벨 자막을 기반의 VNR 온라인 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3390"/>
         <source>Dr.eye Japanese/Chinese/English translator</source>
-        <translation type="unfinished"></translation>
+        <translation>Dr.eye 일/중/영 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3402"/>
         <source>JBeijing Japanese-Chinese translator</source>
-        <translation type="unfinished"></translation>
+        <translation>JBeijing 일ㆍ중 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3428"/>
         <source>ezTrans XP Japanese-Korean translator</source>
-        <translation type="unfinished"></translation>
+        <translation>ezTrans XP 일ㆍ한 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3452"/>
         <source>TransCAT Japanese-Korean translator</source>
-        <translation type="unfinished"></translation>
+        <translation>TransCAT 일ㆍ한 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3483"/>
         <source>ATLAS Japanese-English translator</source>
-        <translation type="unfinished"></translation>
+        <translation>ATLAS 일ㆍ영 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3506"/>
         <source>LEC Japanese/English/Russian translator</source>
-        <translation type="unfinished"></translation>
+        <translation>LEC 일/영/러 번역기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6359"/>
         <source>ClickQ TransCAT is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 TransCAT is detected on your system at the above location.</source>
-        <translation type="unfinished"></translation>
+        <translation>ClickQ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;오프라인 일ㆍ한&lt;/span&gt;번역에 사용됩니다.&lt;br/&gt;
+TransCAT이 다음 위치에서 탐색되었습니다</translation>
     </message>
     <message>
         <location filename="managers/_trman.py" line="832"/>
         <source>TransCAT JK is loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>TransCAT JK 로드됨</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6362"/>
         <source>ClickQ TransCAT JK is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 TransCAT is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and seems not for sale any more.
 You might get one from your friends who purchased it in the past.</source>
-        <translation type="unfinished"></translation>
+        <translation>ClickQ TransCAT JK은 &lt;span style=&quot;color:purple&quot;&gt;오프라인 일ㆍ한&lt;/span&gt;번역을 하는데 필요합니다.&lt;br/&gt;
+TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며, 더 이상 판매되지 않는 것으로 보입니다.
+과거에 구입한 친구에게서 구할 수 있을겁니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6366"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;TransCAT must be put in a directory with &lt;b&gt;write-permission&lt;/b&gt;.&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;span style=&quot;color:red&quot;&gt;TransCAT은 &lt;b&gt;쓰기권한&lt;/b&gt;이 있는 폴더에 넣어야합니다.&lt;/span&gt;</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="236"/>
         <source>delegate translation for specific role</source>
-        <translation type="unfinished"></translation>
+        <translation>지정된 역할이 위임된 번역문</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="533"/>
         <source>Missing translation or role.</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문이나 역할을 찾을 수 없음.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="542"/>
         <source>Guest user is not allowed to create rules in such type.</source>
-        <translation type="unfinished"></translation>
+        <translation>손님계정은 해당 종류의 규칙을 생성할 수 없습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="568"/>
         <source>Proxy term is private by default. Please debug it again and again before make it public.</source>
-        <translation type="unfinished"></translation>
+        <translation>기본값으로 프록시 용어는 비공개 설정되었습니다. 부디 공개로 하기전에 여러번 오류를 검토해주세요.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="333"/>
         <source>Such as x (Phrase) or m (Name)</source>
-        <translation type="unfinished"></translation>
+        <translation>x(문장)이나 m(이름)같이</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="617"/>
         <source>Apply input terms</source>
-        <translation type="unfinished"></translation>
+        <translation>입력용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="620"/>
         <source>Apply input terms in the Shared Dictionary to correct input text</source>
-        <translation type="unfinished"></translation>
+        <translation>입력할 텍스트를 교정하기위해서 공유 사전에서 입력용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="624"/>
         <source>Encode translations</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문 인코딩</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="627"/>
         <source>Apply name and translation terms in Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전의 이름과 번역문 용어를 적용합니다</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="631"/>
         <source>Delegate translation roles</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문 역할을 지정합니다</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="634"/>
         <source>Apply proxy terms in the Shared Dictionary to hide translation replacement</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전의 프록시 용어는 번역문이 교체되는 것을 숨기는데 사용됩니다.</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="638"/>
         <source>Undelegate translation roles</source>
-        <translation type="unfinished"></translation>
+        <translation>지정할 수 없는 번역문 역할</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="641"/>
         <source>Recover applied proxy terms in the Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전에서 적용된 프록시 용어 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="645"/>
         <source>Decode translations</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문 디코딩</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="648"/>
         <source>Recover applied name and translation terms in the Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>적용된 공유사전의 이름과 번역 용어를 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="656"/>
         <source>Apply output terms in the Shared Dictionary to correct output translations</source>
-        <translation type="unfinished"></translation>
+        <translation>출력할 번역문에 출력용어를 적용해 교정합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3319"/>
         <source>Youdao.com Chinese translation service</source>
-        <translation type="unfinished"></translation>
+        <translation>Youdao.com 중국어 번역 서비스</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="536"/>
         <source>Invalid translation role.</source>
-        <translation type="unfinished"></translation>
+        <translation>올바르지 않은 번역문 역할.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3441"/>
         <source>Enable built-in Ehnd translation script</source>
-        <translation type="unfinished"></translation>
+        <translation>내장 Ehnd 번역 스크립트를 활성화</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="613"/>
         <source>Rewrite Japanese according to the rules in TAH/Ehnd script</source>
-        <translation type="unfinished"></translation>
+        <translation>TAH/Ehnd 스크립트의 규칙으로 일본어를 다시쓰기</translation>
     </message>
 </context>
 </TS>
