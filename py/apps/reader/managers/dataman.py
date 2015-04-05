@@ -3387,7 +3387,7 @@ class _Reference(object):
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
   TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'melon', 'gyutto', 'amazon', 'dmm', 'digiket', 'dlsite', 'freem', 'steam'
-  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'MelonBooks', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite', 'FreeM', 'Steam'
+  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Melon', 'Gyutto', 'Amazon', 'DMM', 'DiGiket', 'DLsite', 'FreeM', 'Steam'
 
 class Reference(QObject):
   __D = _Reference
