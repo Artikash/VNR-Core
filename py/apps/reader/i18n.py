@@ -141,7 +141,7 @@ SITE_NAMES = {
   'freem': "FreeM",
   'steam': "Steam",
   'getchu': "Getchu", #u"げっちゅ屋",
-  'melon': "MelonBooks", #u"めろん",
+  'melon': "Melon", #u"めろん",
   'gyutto': "Gyutto", #u"ギュット!",
   'dlsite': "DLsite",
   'trailers': "Trailers",

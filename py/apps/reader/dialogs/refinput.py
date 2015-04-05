@@ -220,7 +220,7 @@ class _ReferenceInput(object):
 
   @memoizedproperty
   def melonButton(self):
-    ret = QtWidgets.QRadioButton("MelonBooks")
+    ret = QtWidgets.QRadioButton("Melon")
     ret.setToolTip("melonbooks.co.jp (Alt+6)")
     ret.toggled.connect(self._searchLater)
     return ret

@@ -128,7 +128,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: root_.openUrl(link)
-      text: root_.formatText('MelonBooks', 'melonbooks.co.jp', model.melonItem)
+      text: root_.formatText('Melon', 'melonbooks.co.jp', model.melonItem)
     }
 
     Text {
