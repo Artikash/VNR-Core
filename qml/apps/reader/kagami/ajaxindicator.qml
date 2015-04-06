@@ -19,16 +19,14 @@ Share.GradientSpinner { // ajax indicator
   //backgroundColor: '#46b1d28f'
   //foregroundColor: '#ff77b753'
 
+  property int maximumCount: 16
+
   function increase(c) { // param  c  float, return float
-    return Math.min(Math.max(c + count * 40 - 40,
-        0), 255)
+    return Math.max(0, Math.min(255, Math.round(c + 255 * (count - 1) / maximumCount)))
   }
   function decrease(c) { // param  c  float, return float
-    return Math.min(Math.max(c - count * 40 + 40,
-        0), 255)
+    return Math.max(0, Math.min(255, Math.round(c - 255 * (count - 1) / maximumCount)))
   }
-
-  property int delta: 40
 
   // From green to red
   backgroundColor: Qt.rgba(
@@ -43,7 +41,7 @@ Share.GradientSpinner { // ajax indicator
       1.0)
 
   //outerRadius: 1.0
-  innerRadius: Math.max(0.5, 0.9 - count * 0.1)
+  innerRadius: Math.max(0.5, 0.9 * (1 - count / maximumCount))
 
   Behavior on backgroundColor { ColorAnimation {} }
   Behavior on foregroundColor { ColorAnimation {} }
