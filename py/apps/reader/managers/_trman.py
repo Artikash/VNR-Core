@@ -627,7 +627,7 @@ class OnlineMachineTranslator(MachineTranslator):
 # But there are no trailing spaces for LEC.
 class AtlasTranslator(OfflineMachineTranslator):
   key = 'atlas' # override
-  splitsSentences = True
+  splitsSentences = True # override
   #parallelEnabled = True # override  disabled since ATLAS is not thread-safe
   #_DELIM_SET = _SENTENCE_SET # override
   #_DELIM_RE = _SENTENCE_RE # override
@@ -704,7 +704,7 @@ class AtlasTranslator(OfflineMachineTranslator):
 
 class LecTranslator(OfflineMachineTranslator):
   key = 'lec' # override
-  splitsSentences = True
+  splitsSentences = True # override
   #parallelEnabled = True # override  disabled since LEC is not thread-safe
   #_DELIM_SET = _SENTENCE_SET # override
   #_DELIM_RE = _SENTENCE_RE # override
