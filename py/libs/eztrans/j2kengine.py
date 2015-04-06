@@ -39,6 +39,7 @@ EZTR_LICENSE = 'CSUSER123455'
 
 EZTR_DLL_MODULE = 'J2KEngine'
 EHND_DLL_MODULE = 'ehnd'
+#EHND_DLL_MODULE = EZTR_DLL_MODULE # use native DLL
 
 class _Loader(object):
 
