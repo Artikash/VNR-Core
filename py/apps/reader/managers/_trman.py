@@ -382,7 +382,8 @@ class MachineTranslator(Translator):
     if texts:
       run = lambda text: self.__tr(text, tr, to, fr, async)
       if len(texts) == 1:
-        t = run(texts[0])
+        t = skthreads.runsync(partial( # always do async
+            run, texts[0]))
         for i,it in enumerate(ret):
           if it is None:
             ret[i] = t
@@ -391,7 +392,7 @@ class MachineTranslator(Translator):
         from qtpar import qtparloop
         nthreads = max(nthreads, len(texts))
         tasks = (partial(run, it) for it in texts)
-        texts = qtparloop.runsync(tasks, nthreads=nthreads, master=True, abortSignal=self.abortSignal)
+        texts = qtparloop.runsync(tasks, nthreads=nthreads, abortSignal=self.abortSignal)
         j = 0
         for i,it in enumerate(ret):
           if it is None:
@@ -403,7 +404,7 @@ class MachineTranslator(Translator):
         return []
     return ret
 
-  def _translate(self, emit, text, tr, to, fr, async, par=False, align=None):
+  def _translate(self, emit, text, tr, to, fr, async, align=None):
     """
     @param  emit  bool
     @param  text  unicode
@@ -416,11 +417,13 @@ class MachineTranslator(Translator):
     @return  unicode
     """
     tr = self.__partialTranslate(tr, to, fr, align)
+
     #with SkProfiler("par"): # this is nthreads faster than the sequential version
     #  l = self._splitTranslate_par(text, tr, to, fr, async)
     #with SkProfiler("seq"): #
     #  l = self._splitTranslate(text, tr, to, fr, async)
-    split = self._splitTranslate_par if par else self._splitTranslate
+
+    split = self._splitTranslate_par if self.parallelEnabled else self._splitTranslate
     l = split(text, tr, to, fr, async)
     if emit:
       self.emitSplitTranslations(l)
@@ -625,6 +628,7 @@ class OnlineMachineTranslator(MachineTranslator):
 class AtlasTranslator(OfflineMachineTranslator):
   key = 'atlas' # override
   splitsSentences = True
+  #parallelEnabled = True # override  disabled since ATLAS is not thread-safe
   #_DELIM_SET = _SENTENCE_SET # override
   #_DELIM_RE = _SENTENCE_RE # override
 
@@ -701,6 +705,7 @@ class AtlasTranslator(OfflineMachineTranslator):
 class LecTranslator(OfflineMachineTranslator):
   key = 'lec' # override
   splitsSentences = True
+  #parallelEnabled = True # override  disabled since LEC is not thread-safe
   #_DELIM_SET = _SENTENCE_SET # override
   #_DELIM_RE = _SENTENCE_RE # override
 
@@ -791,6 +796,7 @@ class LecTranslator(OfflineMachineTranslator):
 
 class EzTranslator(OfflineMachineTranslator):
   key = 'eztrans' # override
+  parallelEnabled = True # override
 
   def __init__(self, **kwargs):
     super(EzTranslator, self).__init__(**kwargs)
@@ -1115,7 +1121,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
       try:
         repl = self._translate(emit, repl,
             partial(self._translateApi, simplified=simplified),
-            to, fr, async, par=self.parallelEnabled) # 0.1 seconds
+            to, fr, async) # 0.1 seconds
         if repl:
           #with SkProfiler():
           #repl = wide2thin_digit(repl) # convert wide digits to thin digits
