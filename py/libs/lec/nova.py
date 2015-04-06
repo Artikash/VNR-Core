@@ -19,7 +19,7 @@ ENGINE_ENCODING = 'sjis'
 
 class _Loader(object):
 
-  BUFFER_THREAD_SAFE = True # whether the translation buffers should be thread-safe
+  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe
 
   def __init__(self):
     self.initialized = False

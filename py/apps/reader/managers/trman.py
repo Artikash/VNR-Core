@@ -792,7 +792,12 @@ class TranslatorManager(QObject):
     if mark is None:
       mark = d.marked
 
-    for it in d.iterTranslators(reverseOnline=True):
+    #translators = itertools.chain(
+    #  d.iterOnlineTranslators(reverse=True),
+    #  d.iterOfflineTranslators(),
+    #)
+    translators = d.iterTranslators(reverseOnline=True)
+    for it in translators:
       kw = {'fr':fr, 'to':to, 'mark':mark, 'async':False}
       it = d.findRetranslator(it, to=to, fr=fr) or it
 

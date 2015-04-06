@@ -31,7 +31,7 @@ USERDIC_BUFFER_SIZE = USERDIC_PATH_SIZE * MAX_USERDIC_COUNT # 1548, sizeof(wchar
 class _Loader(object):
 
   DLL_MODULE = 'JBJCT'
-  BUFFER_THREAD_SAFE = True # whether the translation buffers should be thread-safe
+  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe
 
   def __init__(self):
     self.initialized = False
@@ -311,8 +311,8 @@ if __name__ == '__main__': # DEBUG
   l = Loader()
 
   l.setUserDic((
-    u"../../../../../Dictionaries/JBeijing/@Zhugeqiu/JcUserdic/Jcuser",
-    u"../../../../../Dictionaries/JBeijing/@Goodboyye/JcUserdic/Jcuser",
+    u"../../../../../Dictionaries/jb/@jichi/JcUserdic/Jcuser",
+    u"../../../../../Dictionaries/jb/@djz020815/JcUserdic/Jcuser",
   ))
   ret = l.translate(u"魑魅魍魎")
   print ret
@@ -322,6 +322,7 @@ if __name__ == '__main__': # DEBUG
 
   ret = l.translate(u"せんせい")
   print ret
+
   sys.exit(0)
 
   ret = Loader().translate(u"脱オタク気分", simplified=True)

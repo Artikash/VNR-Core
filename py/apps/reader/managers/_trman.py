@@ -348,6 +348,50 @@ class MachineTranslator(Translator):
           ret.append(text)
     return ret
 
+  # 4/5/2015: Error: cannot pickle function objects ...
+  #def _splitTranslate_par(self, text, tr, to, fr, async):
+  #  """
+  #  @param  text  unicode
+  #  @param  tr  function(text, to, fr)
+  #  @param  async  bool
+  #  @return  [unicode] not None
+  #  """
+  #  # See: https://pythonhosted.org/joblib/parallel.html
+  #  ret = []
+  #  texts = []
+  #  for text in self._itertexts(text):
+  #    if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
+  #      ret.append(text)
+  #    else:
+  #      ret.append(None) # place holder
+  #      texts.append(text)
+  #  if texts:
+  #    run = lambda text: self.__tr(text, tr, to, fr, async)
+  #    if len(texts) == 1:
+  #      t = run(texts[0])
+  #      for i,it in enumerate(ret):
+  #        if it is None:
+  #          ret[i] = t
+  #          break
+  #    else:
+  #      from joblib import Parallel, delayed
+  #      # Get number of processors
+  #      # http://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python
+  #      #MAX_NTHREADS = psutil.NUM_CPUS or 1
+  #      MAX_NTHREADS = 4
+  #      nthreads = max(MAX_NTHREADS, len(texts))
+  #      texts = Parallel(n_jobs=nthreads)(delayed(run)(it) for it in texts)
+  #      j = 0
+  #      for i,it in enumerate(ret):
+  #        if it is None:
+  #          ret[i] = texts[j]
+  #          j += 1
+  #  for it in ret:
+  #    if it is None:
+  #      dwarn("translation failed or aborted using '%s'" % self.key)
+  #      return []
+  #  return ret
+
   def _translate(self, emit, text, tr, to, fr, async, align=None):
     """
     @param  emit  bool

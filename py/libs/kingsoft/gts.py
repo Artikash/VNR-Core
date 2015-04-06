@@ -75,7 +75,7 @@ PROF_DIC_ENABLED = False # disable prof dict by default that is slow
 
 class _Loader(object):
 
-  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe, disabled
+  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe
 
   def __init__(self, dllPath, bufferSize):
     self.dllPath = dllPath # unicode
