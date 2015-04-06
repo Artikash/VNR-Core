@@ -31,7 +31,7 @@ USERDIC_BUFFER_SIZE = USERDIC_PATH_SIZE * MAX_USERDIC_COUNT # 1548, sizeof(wchar
 class _Loader(object):
 
   DLL_MODULE = 'JBJCT'
-  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe
+  BUFFER_THREAD_SAFE = True # whether the translation buffers should be thread-safe
 
   def __init__(self):
     self.initialized = False
@@ -223,7 +223,8 @@ class _Loader(object):
     """
     size = BUFFER_SIZE
     if self.BUFFER_THREAD_SAFE:
-      size = min(size, len(text) * 10) # the translation should be no more larger than 10 times of Japanese
+      # Limit buffer size would result in crash ... no idea why
+      #size = min(size, len(text) * 10) # the translation should be no more larger than 10 times of Japanese
       out = ctypes.create_unicode_buffer(size)
       buf = ctypes.create_unicode_buffer(size)
     else:

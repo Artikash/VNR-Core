@@ -123,7 +123,8 @@ class _Loader(object):
     """
     bufsize = BUFFER_SIZE
     if self.BUFFER_THREAD_SAFE:
-      bufsize = min(bufsize, len(text) * 100) # the translation should be no more larger than 100 times of Japanese
+      # Limit buffer size would result in crash ... no idea why
+      #bufsize = min(bufsize, len(text) * 100) # the translation should be no more larger than 100 times of Japanese
       buf = ctypes.create_string_buffer(bufsize)
     else:
       buf = self.buffer

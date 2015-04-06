@@ -8,8 +8,6 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-#from sakurakit.skprof import SkProfiler
-
 # TODO: Alignments are not cached to reduce memory usage
 
 import os, re
@@ -21,6 +19,7 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
+from sakurakit.skprof import SkProfiler
 from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
@@ -297,11 +296,16 @@ class MachineTranslator(Translator):
     #    self._cache.update(text, ret)
     #    return ret
 
-    #with SkProfiler():
+    if config.APP_DEBUG:
+      prof = SkProfiler(self.key)
+      prof.start()
     ret = skthreads.runsync(partial(
       tr, text, to=to, fr=fr),
       abortSignal=self.abortSignal,
     ) if async and self.asyncSupported else tr(text, to=to, fr=fr)
+
+    if config.APP_DEBUG:
+      prof.stop()
 
     if ret:
       if isinstance(ret, str):
@@ -312,6 +316,7 @@ class MachineTranslator(Translator):
         #if self.persistentCaching:
         #  #with SkProfiler(): # takes about 0.003
         #  trcache.add(key=self.key, fr=fr, to=to, text=text, translation=ret)
+    #dprint("%s pass" % self.key)
     return ret
 
   def _itertexts(self, text):
@@ -386,7 +391,7 @@ class MachineTranslator(Translator):
         from qtpar import qtparloop
         nthreads = max(nthreads, len(texts))
         tasks = (partial(run, it) for it in texts)
-        texts = qtparloop.runsync(tasks, nthreads=nthreads, abortSignal=self.abortSignal)
+        texts = qtparloop.runsync(tasks, nthreads=nthreads, master=True, abortSignal=self.abortSignal)
         j = 0
         for i,it in enumerate(ret):
           if it is None:
@@ -1021,7 +1026,7 @@ class HanVietTranslator(OfflineMachineTranslator):
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override
-  #parallelEnabled = True # override
+  parallelEnabled = True # override
 
   def __init__(self, **kwargs):
     super(JBeijingTranslator, self).__init__(**kwargs)

@@ -187,8 +187,8 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(
+      abortSignal=self.abortSignal,
       postprocess=self.postprocess))
-      #abortSignal=self.abortSignal
 
   @memoizedproperty
   def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())

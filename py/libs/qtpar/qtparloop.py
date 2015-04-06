@@ -20,10 +20,13 @@ class Task(QtCore.QObject, QtCore.QRunnable):
 
   finished = QtCore.Signal() # QObject is needed to support Signal
 
+  def eval(self):
+    try: return self.trigger()
+    except Exception, e: derror(e)
+
   def run(self):
     """@reimp @public"""
-    try: self.value = self.trigger()
-    except Exception, e: derror(e)
+    self.value = self.eval()
     self.finished.emit()
     self.completed = True
 
@@ -89,11 +92,12 @@ def _runlater(slot, interval=0):
   """
   QtCore.QTimer.singleShot(interval, slot)
 
-def runsync(funcs, nthreads=0, abortSignal=None, timeout=0):
+def runsync(funcs, nthreads=0, master=False, abortSignal=None, timeout=0):
   """
   @param  funcs  [function]
-  @param* nthreads  maximum number of threads  not used!
+  @param* nthreads  maximum number of threads  currently ignored
   @param* timeout  int
+  @param* master  bool whether the master thread should help
   @param* abortSignal  Signal or None  signal with auto type
   @return  [result of each task function] not None
   """
@@ -101,13 +105,23 @@ def runsync(funcs, nthreads=0, abortSignal=None, timeout=0):
   if not tasks:
     return []
 
+  if master:
+    if len(tasks) == 1:
+      return tasks[0].eval()
+    mastertask = tasks.pop()
+
   def runtasks(tasks):
     for it in tasks:
       QtCore.QThreadPool.globalInstance().start(it)
-
   _runlater(partial(runtasks, tasks))
+
+  if master:
+    masterval = mastertask.eval()
   waittasks(tasks, abortSignal=abortSignal, timeout=timeout)
-  return [it.value for it in tasks]
+  ret = [it.value for it in tasks]
+  if master:
+    ret.append(masterval)
+  return ret
 
 if __name__ == '__main__':
   def main():
