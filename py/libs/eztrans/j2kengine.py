@@ -181,10 +181,13 @@ if __name__ == '__main__': # DEBUG
   l = Loader()
   l.init()
 
-  #ret = l.translate(u"お花の匂い☆")
-  #ret = l.translate(u"「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」")
+  #t = u"お花の匂い"
+  #t = 「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」
+  #t = u"『まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪』"
+  t = u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪"
   ehnd = True
-  ret = l.translate(u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪", ehnd=ehnd)
+  #ehnd = False
+  ret = l.translate(t, ehnd=ehnd)
 
   # Without ehnd: 그냥♪스커트와는 안녕히이고. 하프 팬츠는 오래간만♪
   # With ehnd 3.1: 글쎄♪스커트와는 안녕히이고. 하프 팬츠 같은거 오래간만♪

@@ -767,16 +767,17 @@ class EzTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  __ez_repl_before = staticmethod(skstr.multireplacer({
-    u'『': u'『"『', # a double quote in the middle
-    u'』': u'』"』',
-  }))
-  __ez_repl_after = staticmethod(skstr.multireplacer({
-    u'「"「': u'『',
-    u'」"」': u'』',
-    u'『"『': u'『',
-    u'』"』': u'』',
-  }))
+  # No longer needed when ehnd is enabled
+  #__ez_repl_before = staticmethod(skstr.multireplacer({
+  #  u'『': u'『"『', # a double quote in the middle
+  #  u'』': u'』"』',
+  #}))
+  #__ez_repl_after = staticmethod(skstr.multireplacer({
+  #  u'「"「': u'『',
+  #  u'」"」': u'』',
+  #  u'『"『': u'『',
+  #  u'』"』': u'』',
+  #}))
   # Example: GPS97351.678 => GPS97351. 678
   #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, ehndEnabled=False, **kwargs):
@@ -795,10 +796,10 @@ class EzTranslator(OfflineMachineTranslator):
     if repl:
       api = self._translateApi(ehndEnabled)
       try:
-        repl = self.__ez_repl_before(repl)
+        #repl = self.__ez_repl_before(repl)
         repl = self._translate(emit, repl, api, to, fr, async)
         if repl:
-          repl = self.__ez_repl_after(repl)
+          #repl = self.__ez_repl_after(repl)
           #repl = self.__re_term_fix.sub('', repl)
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
