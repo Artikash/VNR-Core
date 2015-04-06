@@ -381,9 +381,10 @@ class MachineTranslator(Translator):
           texts.append(text)
     if texts:
       run = lambda text: self.__tr(text, tr, to, fr, async)
+      #timeout = 0 # timeout is always 0, i.e. no timeout
       if len(texts) == 1:
-        t = skthreads.runsync(partial( # always do async
-            run, texts[0]))
+        task = partial(run, texts[0])
+        t = skthreads.runsync(task, abortSignal=self.abortSignal) # always do async
         for i,it in enumerate(ret):
           if it is None:
             ret[i] = t
