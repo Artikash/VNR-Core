@@ -39,6 +39,7 @@ EZTR_LICENSE = 'CSUSER123455'
 
 EZTR_DLL_MODULE = 'J2KEngine'
 EHND_DLL_MODULE = 'ehnd'
+#EHND_DLL_MODULE = EZTR_DLL_MODULE # use native DLL
 
 class _Loader(object):
 
@@ -184,7 +185,9 @@ if __name__ == '__main__': # DEBUG
   #t = u"お花の匂い"
   #t = 「まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪」
   #t = u"『まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪』"
-  t = u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪"
+  #t = u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪"
+  #t = u"蜜ドル辞典" # supposed to be 꿀도르 150328 : "전처리필터-사용자사전-후처리필터" OK.
+  t = u"久乃" # supposed to be 히사노
   ehnd = True
   #ehnd = False
   ret = l.translate(t, ehnd=ehnd)
