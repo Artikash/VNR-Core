@@ -160,10 +160,10 @@ class _TranslatorManager(object):
           language=language)
     return ret
 
-  @memoizedproperty
-  def yueTranslator(self): # no an independent machine translator
-    return _trman.YueTranslator(
-          abortSignal=self.abortSignal, session=self.session)
+  @memoizedproperty # no an independent machine translator
+  def yueTranslator(self): return _trman.YueTranslator(
+      abortSignal=self.abortSignal,
+      session=self.session)
 
   @memoizedproperty
   def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator())
@@ -172,7 +172,8 @@ class _TranslatorManager(object):
   def lecTranslator(self): return self._newtr(_trman.LecTranslator())
 
   @memoizedproperty
-  def ezTranslator(self): return self._newtr(_trman.EzTranslator())
+  def ezTranslator(self): return self._newtr(_trman.EzTranslator(
+      abortSignal=self.abortSignal))
 
   @memoizedproperty
   def transcatTranslator(self): return self._newtr(_trman.TransCATTranslator())
@@ -187,6 +188,7 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(
+      abortSignal=self.abortSignal,
       postprocess=self.postprocess))
 
   @memoizedproperty
@@ -365,12 +367,11 @@ class _TranslatorManager(object):
         if self.exciteEnabled: yield self.exciteTranslator
         if self.infoseekEnabled: yield self.infoseekTranslator
 
-  def iterTranslators(self, reverseOnline=False):
-    """
-    @param* reverseOnline  bool
-    @yield  Translator
-    """
-    return itertools.chain(self.iterOfflineTranslators(), self.iterOnlineTranslators(reverse=reverseOnline))
+  def iterTranslators(self):
+    """@yield  Translator"""
+    return itertools.chain(
+        self.iterOfflineTranslators(),
+        self.iterOnlineTranslators())
 
   def findTranslator(self, engine=''):
     """
@@ -425,13 +426,13 @@ class TranslatorManager(QObject):
 
   def __init__(self, parent=None):
     super(TranslatorManager, self).__init__(parent)
-    self.__d = _TranslatorManager(abortSignal=self.onlineAbortionRequested)
+    self.__d = _TranslatorManager(abortSignal=self.abortionRequested)
 
     self.clearCacheRequested.connect(self.clearCache, Qt.QueuedConnection)
 
   ## Signals ##
 
-  onlineAbortionRequested = Signal()
+  abortionRequested = Signal()
   #infoseekAbortionRequested = Signal()
   #bingAbortionRequested = Signal()
   #baiduAbortionRequested = Signal()
@@ -451,8 +452,8 @@ class TranslatorManager(QObject):
 
   clearCacheRequested = Signal() # async
 
-  def abortOnline(self):
-    self.onlineAbortionRequested.emit()
+  def abort(self):
+    self.abortionRequested.emit()
     #for sig in self.infoseekAbortionRequested, self.bingAbortionRequested, self.baiduAbortionRequested:
     #  sig.emit()
 
@@ -771,7 +772,7 @@ class TranslatorManager(QObject):
       else: # not emit and asyncSupported
         kw['async'] = False # force using single thread
         return skthreads.runsync(partial(it.translate, text, **kw),
-          abortSignal=self.onlineAbortionRequested,
+          abortSignal=self.abortionRequested,
         ) or (None, None, None)
     return None, None, None
 
@@ -792,7 +793,12 @@ class TranslatorManager(QObject):
     if mark is None:
       mark = d.marked
 
-    for it in d.iterTranslators(reverseOnline=True):
+    #translators = d.iterTranslators(reverseOnline=True)
+    translators = itertools.chain(
+      d.iterOnlineTranslators(reverse=True),
+      d.iterOfflineTranslators(),
+    )
+    for it in translators:
       kw = {'fr':fr, 'to':to, 'mark':mark, 'async':False}
       it = d.findRetranslator(it, to=to, fr=fr) or it
 
@@ -813,12 +819,12 @@ class TranslatorManager(QObject):
         else:
           kw['scriptEnabled'] = scriptEnabled or d.getScriptEnabled(it.key)
 
-      if it.onlineRequired:
+      if it.key == 'eztrans':
+        kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
+      if it.onlineRequired or it.parallelEnabled:
         skevents.runlater(partial(d.translateAndApply,
             func, kwargs, it.translate, text, **kw))
       else:
-        if it.key == 'eztrans':
-          kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
         r = it.translate(text, **kw)
         if r and r[0]:
           func(r[0], r[1], r[2], align, **kwargs)

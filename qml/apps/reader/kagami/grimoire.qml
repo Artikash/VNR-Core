@@ -362,12 +362,19 @@ Item { id: root_
     //width: root_.width; height: root_.heigh
     Component.onCompleted: {
       bean_.clear.connect(root_.clear)
-      bean_.pageBreak.connect(root_.pageBreak)
+      bean_.pageBreak.connect(root_.pageBreakLater)
+
+      //bean_.showText.connect(root_.pageBreakCheck)
+      //bean_.showTranslation.connect(root_.pageBreakCheck)
+      //bean_.showComment.connect(root_.pageBreakCheck)
+      //bean_.showSubtitle.connect(root_.pageBreakCheck)
+      //bean_.showNameText.connect(root_.pageBreakCheck)
+      //bean_.showNameTranslation.connect(root_.pageBreakCheck)
+
       bean_.showText.connect(root_.showText)
       bean_.showTranslation.connect(root_.showTranslation)
       bean_.showComment.connect(root_.showComment)
       bean_.showSubtitle.connect(root_.showSubtitle)
-
       bean_.showNameText.connect(root_.showNameText)
       bean_.showNameTranslation.connect(root_.showNameTranslation)
     }
@@ -1367,8 +1374,10 @@ Item { id: root_
 
     _timestamp = timestamp
 
-    if  (root_.textVisible)
+    if  (root_.textVisible) {
+      pageBreakCheck()
       addText(text, lang, 'text')
+    }
   }
 
   function showNameText(text, lang) {
@@ -1378,6 +1387,7 @@ Item { id: root_
       return
     if (modelLocked)
       return
+    pageBreakCheck()
     modelLocked = true
 
     text = "【" + text + "】"
@@ -1401,6 +1411,7 @@ Item { id: root_
       return
     if (modelLocked)
       return
+    pageBreakCheck()
     modelLocked = true
 
     //if (!listModel_.count)
@@ -1425,6 +1436,7 @@ Item { id: root_
     //  pageBreak()
     if (modelLocked)
       return
+    pageBreakCheck()
     modelLocked = true
 
     var alignObject = null // TODO: mapping is not implemented for name
@@ -1442,17 +1454,19 @@ Item { id: root_
   function showComment(c) { // actually subtitle rather than comment
     //if (!listModel_.count)
     //  pageBreak()
-
+    pageBreakCheck()
     addText(c.text, c.language, 'comment', undefined, c)
   }
 
   function showSubtitle(s) {
+    pageBreakCheck()
     addText(s.text, s.language, 'sub', undefined, s)
   }
 
   // Insert a page break
   function pageBreak() {
     if (listModel_.count) { // only add pagebreak if there are texts
+
       slimList()
       _pageIndex = listModel_.count
       addText()
@@ -1460,6 +1474,18 @@ Item { id: root_
       //highlight_.visible = true // no idea why this does not work
       root_.highlightVisible = true
     }
+  }
+
+  property bool pageBreakChecked: true
+
+  function pageBreakCheck() {
+    if (pageBreakChecked) {
+      pageBreakChecked = false
+      pageBreak()
+    }
+  }
+  function pageBreakLater() {
+    pageBreakChecked = true
   }
 
   // Limit total number of items in the list by removing extra items in the beginning
@@ -1493,6 +1519,7 @@ Item { id: root_
     if (modelLocked)
       return
     modelLocked = true
+    pageBreakChecked = false
     _pageIndex = 0
     listModel_.clear()
     //highlight_.visible = false

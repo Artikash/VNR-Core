@@ -19,6 +19,9 @@ ENGINE_ENCODING = 'sjis'
 
 class _Loader(object):
 
+  # Crash even the safe buffering is enabled
+  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe
+
   def __init__(self):
     self.initialized = False
     self._dll = None
@@ -119,9 +122,15 @@ class _Loader(object):
       int unknown)  // always 0
     return 0 if succeeded.
     """
-    buf = self.buffer
+    bufsize = BUFFER_SIZE
+    if self.BUFFER_THREAD_SAFE:
+      # Limit buffer size would result in crash ... no idea why
+      #bufsize = min(bufsize, len(text) * 100) # the translation should be no more larger than 100 times of Japanese
+      buf = ctypes.create_string_buffer(bufsize)
+    else:
+      buf = self.buffer
     ok = 0 == self.dll.eg_translate_one(
-        0, text, 0, BUFFER_SIZE, buf, 0, 0)
+        0, text, 0, bufsize, buf, 0, 0)
     return buf.value if ok else ""
 
 class Loader(object):
@@ -179,8 +188,12 @@ if __name__ == '__main__': # DEBUG
   t = u"お花の匂い♪"
   ret = l.translate(t)
   print ret
-  t = u"「「寝る「「１つ次の時間帯へ「「どれもやめとく"
+  #t = u"「「寝る「「１つ次の時間帯へ「「どれもやめとく"
+  #ret = l.translate(t)
+
+  t = u"まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪"
   ret = l.translate(t)
+
   print type(ret)
   print ret
   l.destroy()

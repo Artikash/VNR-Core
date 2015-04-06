@@ -800,7 +800,7 @@ class _MainObject(object):
 
     tm = self.textManager
     for sig in tm.cleared, tm.pageBreakReceived, qApp.aboutToQuit:
-      sig.connect(ret.abortOnline)
+      sig.connect(ret.abort)
     return ret
 
   @memoizedproperty
@@ -1043,8 +1043,8 @@ class _MainObject(object):
 
     m = self.mirage
 
-    #ret.cleared.connect(self.translatorManager.abortOnline)
-    ret.pageBreakReceived.connect(self.translatorManager.abortOnline)
+    #ret.cleared.connect(self.translatorManager.abort)
+    ret.pageBreakReceived.connect(self.translatorManager.abort)
 
     ret.pageBreakReceived.connect(m.pageBreak)
     ret.textReceived.connect(m.showText)

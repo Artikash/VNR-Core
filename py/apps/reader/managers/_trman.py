@@ -8,8 +8,6 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-#from sakurakit.skprof import SkProfiler
-
 # TODO: Alignments are not cached to reduce memory usage
 
 import os, re
@@ -21,6 +19,7 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
+from sakurakit.skprof import SkProfiler
 from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
@@ -94,6 +93,7 @@ class Translator(object):
   asyncSupported = True # bool  whether threading is supported
   alignSupported = False # bool  whether support translation alignment
   onlineRequired = False # bool  whether translation requires Internet access
+  parallelEnabled = False # bool  whether the translation is thread-safe
 
   def clearCache(self): pass
 
@@ -284,9 +284,9 @@ class MachineTranslator(Translator):
     #    tr, text, **kwargs),
     #    abortSignal=self.abortSignal,
     #  ) if async else tr(text, **kwargs)
-    ret = self._cache.get(text)
-    if ret:
-      return ret
+    #ret = self._cache.get(text)
+    #if ret:
+    #  return ret
 
     # Persistent caching is always disabled now
     #if self.persistentCaching:
@@ -296,11 +296,16 @@ class MachineTranslator(Translator):
     #    self._cache.update(text, ret)
     #    return ret
 
-    #with SkProfiler():
+    if config.APP_DEBUG:
+      prof = SkProfiler(self.key)
+      prof.start()
     ret = skthreads.runsync(partial(
       tr, text, to=to, fr=fr),
       abortSignal=self.abortSignal,
     ) if async and self.asyncSupported else tr(text, to=to, fr=fr)
+
+    if config.APP_DEBUG:
+      prof.stop()
 
     if ret:
       if isinstance(ret, str):
@@ -311,6 +316,7 @@ class MachineTranslator(Translator):
         #if self.persistentCaching:
         #  #with SkProfiler(): # takes about 0.003
         #  trcache.add(key=self.key, fr=fr, to=to, text=text, translation=ret)
+    #dprint("%s pass" % self.key)
     return ret
 
   def _itertexts(self, text):
@@ -340,12 +346,62 @@ class MachineTranslator(Translator):
       if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
         ret.append(text)
       else:
-        text = self.__tr(text, tr, to, fr, async)
+        text = self._cache.get(text) or self.__tr(text, tr, to, fr, async)
         if text is None:
           dwarn("translation failed or aborted using '%s'" % self.key)
           return []
         if text:
           ret.append(text)
+    return ret
+
+  def _splitTranslate_par(self, text, tr, to, fr, async, nthreads=0):
+    """Parallelized version
+    @param  text  unicode
+    @param  tr  function(text, to, fr)
+    @param  async  bool
+    @param* nthreads  maximum number of threads to use
+    @return  [unicode] not None
+    """
+    # Get number of processors
+    # http://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python
+    # See: https://pythonhosted.org/joblib/parallel.html
+    #if not nthreads:
+    #  nthreads = psutil.NUM_CPUS or 1
+    ret = []
+    texts = []
+    for text in self._itertexts(text):
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
+        ret.append(text)
+      else:
+        t = self._cache.get(text)
+        if t:
+          ret.append(t)
+        else:
+          ret.append(None) # place holder
+          texts.append(text)
+    if texts:
+      run = lambda text: self.__tr(text, tr, to, fr, async)
+      if len(texts) == 1:
+        t = skthreads.runsync(partial( # always do async
+            run, texts[0]))
+        for i,it in enumerate(ret):
+          if it is None:
+            ret[i] = t
+            break
+      else:
+        from qtpar import qtparloop
+        nthreads = max(nthreads, len(texts))
+        tasks = (partial(run, it) for it in texts)
+        texts = qtparloop.runsync(tasks, nthreads=nthreads, abortSignal=self.abortSignal)
+        j = 0
+        for i,it in enumerate(ret):
+          if it is None:
+            ret[i] = texts[j]
+            j += 1
+    for it in ret:
+      if it is None:
+        dwarn("translation failed or aborted using '%s'" % self.key)
+        return []
     return ret
 
   def _translate(self, emit, text, tr, to, fr, async, align=None):
@@ -356,12 +412,19 @@ class MachineTranslator(Translator):
     @param  to  str
     @param  fr  str
     @param  async  bool
+    @param* par  bool  parallel
     @param* align  list or None
-    @param  kwargs  arguments passed to tr
     @return  unicode
     """
     tr = self.__partialTranslate(tr, to, fr, align)
-    l = self._splitTranslate(text, tr, to, fr, async)
+
+    #with SkProfiler("par"): # this is nthreads faster than the sequential version
+    #  l = self._splitTranslate_par(text, tr, to, fr, async)
+    #with SkProfiler("seq"): #
+    #  l = self._splitTranslate(text, tr, to, fr, async)
+
+    split = self._splitTranslate_par if self.parallelEnabled else self._splitTranslate
+    l = split(text, tr, to, fr, async)
     if emit:
       self.emitSplitTranslations(l)
     #delim = ' ' if self.splitsSentences else ''
@@ -564,7 +627,8 @@ class OnlineMachineTranslator(MachineTranslator):
 # But there are no trailing spaces for LEC.
 class AtlasTranslator(OfflineMachineTranslator):
   key = 'atlas' # override
-  splitsSentences = True
+  splitsSentences = True # override
+  #parallelEnabled = True # override  disabled since ATLAS is not thread-safe
   #_DELIM_SET = _SENTENCE_SET # override
   #_DELIM_RE = _SENTENCE_RE # override
 
@@ -640,7 +704,8 @@ class AtlasTranslator(OfflineMachineTranslator):
 
 class LecTranslator(OfflineMachineTranslator):
   key = 'lec' # override
-  splitsSentences = True
+  splitsSentences = True # override
+  #parallelEnabled = True # override  disabled since LEC is not thread-safe
   #_DELIM_SET = _SENTENCE_SET # override
   #_DELIM_RE = _SENTENCE_RE # override
 
@@ -731,6 +796,7 @@ class LecTranslator(OfflineMachineTranslator):
 
 class EzTranslator(OfflineMachineTranslator):
   key = 'eztrans' # override
+  parallelEnabled = True # override
 
   def __init__(self, **kwargs):
     super(EzTranslator, self).__init__(**kwargs)
@@ -906,19 +972,23 @@ class HanVietTranslator(OfflineMachineTranslator):
     from hanviet import hanviet
     self.engine = hanviet
 
+  __fix_punct = (
+    (u'，', ", "),
+    (u'。', ". "),
+    (u'、', ", "),
+    (u'？', "? "),
+    (u'！', "! "),
+    (u'（', " ("),
+    (u'）', ") "),
+    (u'”', ' "'),
+    (u'”', '" '),
+    (u'‘', " '"),
+    (u'’', "' "),
+  )
   def _translateApi(self, text, fr='', to='', mark=False, align=None): # unicode, bol -> unicode
     # Wide to thin and padding space as well
-    text = text.replace(u'，', ", ")
-    text = text.replace(u'。', ". ")
-    text = text.replace(u'、', ", ")
-    text = text.replace(u'？', "? ")
-    text = text.replace(u'！', "! ")
-    text = text.replace(u'（', " (")
-    text = text.replace(u'）', ") ")
-    text = text.replace(u'”', ' "')
-    text = text.replace(u'”', '" ')
-    text = text.replace(u'‘', " '")
-    text = text.replace(u'’', "' ")
+    for k,v in self.__fix_punct:
+      text = text.replace(k, v)
     text = self.engine.translate(text, mark=bool(mark), align=align)
     #text = wide2thin(text) # not needed
     return text
@@ -962,6 +1032,7 @@ class HanVietTranslator(OfflineMachineTranslator):
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override
+  parallelEnabled = True # override
 
   def __init__(self, **kwargs):
     super(JBeijingTranslator, self).__init__(**kwargs)

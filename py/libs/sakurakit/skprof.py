@@ -13,17 +13,24 @@ class SkProfiler(object):
     self.text = text # str, or anything that can be printed
 
   def __enter__(self):
-    self.start = time.clock()
+    self.start()
     return self
 
   def __exit__(self, *args):
-    self.end = time.clock()
-    self.interval = self.end - self.start
+    self.stop()
+
+  def start(self):
+    self.starttime = time.clock()
+
+  def stop(self):
+    self.endtime = time.clock()
+    self.interval = self.endtime - self.starttime
     if self.verbose:
       if self.text is not None:
-        print self.text, ":time:", self.interval
+        msg = "prof time: %s = %s sec" % (self.text, self.interval)
       else:
-        print "time:", self.interval
+        msg = "prof time: %s sec" % self.interval
+      skdebug.dprint(msg)
 
 if __name__ == '__main__':
   count = 1

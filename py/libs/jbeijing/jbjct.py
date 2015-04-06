@@ -31,6 +31,7 @@ USERDIC_BUFFER_SIZE = USERDIC_PATH_SIZE * MAX_USERDIC_COUNT # 1548, sizeof(wchar
 class _Loader(object):
 
   DLL_MODULE = 'JBJCT'
+  BUFFER_THREAD_SAFE = True # whether the translation buffers should be thread-safe
 
   def __init__(self):
     self.initialized = False
@@ -220,10 +221,17 @@ class _Loader(object):
     Note: This function is not thread-safe!
     Using persistent buffers is faster, but not thread-safe!
     """
-    out = self.buffer1
-    buf = self.buffer2
-    outsz = ctypes.c_int(BUFFER_SIZE)
-    bufsz = ctypes.c_int(BUFFER_SIZE)
+    size = BUFFER_SIZE
+    if self.BUFFER_THREAD_SAFE:
+      # Limit buffer size would result in crash ... no idea why
+      #size = min(size, len(text) * 10) # the translation should be no more larger than 10 times of Japanese
+      out = ctypes.create_unicode_buffer(size)
+      buf = ctypes.create_unicode_buffer(size)
+    else:
+      out = self.buffer1
+      buf = self.buffer2
+    outsz = ctypes.c_int(size)
+    bufsz = ctypes.c_int(size)
     #self.dll.JC_Transfer_Unicode(
     self.JC_Transfer_Unicode(
       0,    # int, unknown
@@ -295,7 +303,7 @@ class Loader(object):
 
 if __name__ == '__main__': # DEBUG
   import os
-  os.environ['PATH'] += os.pathsep + r"D:\Applications\JBeijing7"
+  os.environ['PATH'] += os.pathsep + r"Z:\Local\Windows\Applications\JBeijing7"
   ret = Loader().translate(u"お花の匂い")
   print ret
 
@@ -304,8 +312,8 @@ if __name__ == '__main__': # DEBUG
   l = Loader()
 
   l.setUserDic((
-    u"../../../../../Dictionaries/JBeijing/@Zhugeqiu/JcUserdic/Jcuser",
-    u"../../../../../Dictionaries/JBeijing/@Goodboyye/JcUserdic/Jcuser",
+    u"../../../../../Dictionaries/jb/@jichi/JcUserdic/Jcuser",
+    u"../../../../../Dictionaries/jb/@djz020815/JcUserdic/Jcuser",
   ))
   ret = l.translate(u"魑魅魍魎")
   print ret
@@ -315,6 +323,7 @@ if __name__ == '__main__': # DEBUG
 
   ret = l.translate(u"せんせい")
   print ret
+
   sys.exit(0)
 
   ret = Loader().translate(u"脱オタク気分", simplified=True)
