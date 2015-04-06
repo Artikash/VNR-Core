@@ -188,6 +188,7 @@ class _TranslatorManager(object):
   @memoizedproperty
   def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(
       postprocess=self.postprocess))
+      #abortSignal=self.abortSignal
 
   @memoizedproperty
   def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
@@ -425,13 +426,13 @@ class TranslatorManager(QObject):
 
   def __init__(self, parent=None):
     super(TranslatorManager, self).__init__(parent)
-    self.__d = _TranslatorManager(abortSignal=self.onlineAbortionRequested)
+    self.__d = _TranslatorManager(abortSignal=self.abortionRequested)
 
     self.clearCacheRequested.connect(self.clearCache, Qt.QueuedConnection)
 
   ## Signals ##
 
-  onlineAbortionRequested = Signal()
+  abortionRequested = Signal()
   #infoseekAbortionRequested = Signal()
   #bingAbortionRequested = Signal()
   #baiduAbortionRequested = Signal()
@@ -451,8 +452,8 @@ class TranslatorManager(QObject):
 
   clearCacheRequested = Signal() # async
 
-  def abortOnline(self):
-    self.onlineAbortionRequested.emit()
+  def abort(self):
+    self.abortionRequested.emit()
     #for sig in self.infoseekAbortionRequested, self.bingAbortionRequested, self.baiduAbortionRequested:
     #  sig.emit()
 
@@ -771,7 +772,7 @@ class TranslatorManager(QObject):
       else: # not emit and asyncSupported
         kw['async'] = False # force using single thread
         return skthreads.runsync(partial(it.translate, text, **kw),
-          abortSignal=self.onlineAbortionRequested,
+          abortSignal=self.abortionRequested,
         ) or (None, None, None)
     return None, None, None
 
