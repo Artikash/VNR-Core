@@ -75,6 +75,8 @@ PROF_DIC_ENABLED = False # disable prof dict by default that is slow
 
 class _Loader(object):
 
+  BUFFER_THREAD_SAFE = False # whether the translation buffers should be thread-safe, disabled
+
   def __init__(self, dllPath, bufferSize):
     self.dllPath = dllPath # unicode
     self.bufferSize = bufferSize # int
@@ -318,8 +320,13 @@ class _Loader(object):
 
     The value of unknown is get by debugging JPNSCHSDK.dll in SeniorTranslate.exe
     """
-    out = self.outputBuffer
-    ok = 0 == self.dll.SimpleTransSentM(self.key, text, out, self.bufferSize, 0x4) # 0x4 is magic number
+    bufsize = self.bufferSize
+    if self.BUFFER_THREAD_SAFE:
+      bufsize = min(bufsize, len(text) * 10) # the translation should be no more larger than 10 times of Japanese
+      buf = ctypes.create_string_buffer(bufsize)
+    else:
+      out = self.outputBuffer
+    ok = 0 == self.dll.SimpleTransSentM(self.key, text, out, bufsize, 0x4) # 0x4 is magic number
     return out.value if ok else u''
 
 class Loader(object):
