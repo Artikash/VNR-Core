@@ -11,8 +11,22 @@ if __name__ == '__main__':
 #try: from pysqlite2 import dbapi2 as sqlite3
 #except ImportError: import sqlite3
 import sqlite3
-
 from sakurakit.skdebug import dwarn
+
+# http://stackoverflow.com/questions/3785294/best-way-to-iterate-through-all-rows-in-a-db-table
+def fetchsome(cursor, some):
+  """
+  @param  cursor
+  @param  some  int
+  @raise
+  """
+  fetch = cursor.fetchmany
+  while True:
+    rows = fetch(some)
+    if not rows:
+      break
+    for row in rows:
+      yield row
 
 #TABLE_NAME = 'entry'
 
@@ -62,30 +76,40 @@ def queryentries(cur, word='', wordlike='', limit=0):
   cur.execute(sql, params)
   return cur.fetchall()
 
-def iterentries(cur, *args, **kwargs):
+# http://stackoverflow.com/questions/3785294/best-way-to-iterate-through-all-rows-in-a-db-table
+def iterentries(cur, chunk=100):
   """
   @param  cursor
   @return  [unicode word, unicode content]
   @raise
   """
-  return queryentries(cur, *args, **kwargs)
+  sql = "SELECT word,content FROM entry"
+  cur.execute(sql)
+  return fetchsome(cur, chunk)
 
-def insertentry(cur, entry): # cursor, entry; raise
+def insertentry(cur, entry, ignore_errors=False): # cursor, entry; raise
   """
   @param  cursor
   @param  entry  (uincode word, unicode content)
+  @param* ignore_errors  whether ignore exceptions
   @raise
   """
-  cur.execute("INSERT INTO entry(word,content) VALUES(?,?)", entry)
+  sql = "INSERT INTO entry(word,content) VALUES(?,?)"
+  if ignore_errors:
+    try: cur.execute(sql, entry)
+    except Exception, e: dwarn(e)
+  else:
+    cur.execute(sql, entry)
 
-def insertentries(cur, entries): # cursor, [entry]; raise
+def insertentries(cur, entries, ignore_errors=False): # cursor, [entry]; raise
   """
   @param  cursor
   @param  entries  [uincode word, unicode content]
+  @param* ignore_errors  whether ignore exceptions
   @raise
   """
   for it in entries:
-    insertentry(it)
+    insertentry(cur, it, ignore_errors=ignore_errors)
 
 def createtables(cur): # cursor -> bool
   """
