@@ -18,7 +18,7 @@ void test()
   bool ok = ai->isValid();
   std::cerr << "init: " << ok << std::endl;
 
-  auto r = ai->play(text);
+  auto r = ai->speak(text);
   std::cerr << "tts: " << (int)r << std::endl;
 
   std::cerr << "leave" << std::endl;
