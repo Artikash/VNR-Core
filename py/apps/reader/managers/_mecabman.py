@@ -90,6 +90,7 @@ class MeCabParser:
       ret = self.taggers.get(self.rcfile)
       if not ret and os.path.exists(self.rcfile):
         dprint("create new tagger: rcfile =", self.rcfile)
+        #args = mecabtag.maketaggerargs(userdic=r"Z:\Users\jichi\opt\stream\Library\Frameworks\Sakura\py\libs\mecabdic\edict.dic")
         args = mecabtag.maketaggerargs()
         ret = self.taggers[self.rcfile] = mecabtag.createtagger(args)
         if not ret:

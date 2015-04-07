@@ -21,13 +21,19 @@ from unitraits.uniconv import hira2kata, kata2hira
 def costof(size):
   """
   @param  size  int  surface size
+  @return  int  negative  the smaller the more important
   """
-  # http://tseiya.hatenablog.com/entry/2012/09/19/191114
-  # http://yukihir0.hatenablog.jp/entry/20110201/1296565687
-  return min(36000, int(400*size**1.5))
+  # Ruby: http://qiita.com/ynakayama/items/388c82cbe14c65827769
+  # Python:
+  # - http://tseiya.hatenablog.com/entry/2012/09/19/191114
+  # - http://yukihir0.hatenablog.jp/entry/20110201/1296565687
+  return -min(36000, int(400*size**1.5))
 
 # Example  きす,5131,5131,887,名詞,普通名詞,サ変可能,*,*,*,キス,キス-kiss,キス,キス,キス,キス,外,*,*,*,*
-UNIDIC_FMT = '{surf},0,0,{cost},*,*,*,*,*,*,{kata},{content},*,*,*,*,*,*,*,{id},{type}\n'
+UNIDIC_FMT = '{surf},0,0,{cost},*,*,*,*,*,*,{kata},{kanji},{surf},*,*,*,{content},*,*,{id},{type}\n'
+
+# 名詞,普通名詞,一般,*,*,*,ゴメン,御免,御免,ゴメン,御免,ゴメン,漢,*,*,*,*,ゴメン,ゴメン,ゴメン,ゴメン,*,*,0,C2,*
+# 動詞,非自立可能,*,*,五段-ラ行,命令形,ナサル,為さる,なさい,ナサイ,なさる,ナサル,和,*,*,*,*,ナサイ,ナサル,ナサイ,ナサル,*,*,2,C1,*
 def assemble(entries, fmt=UNIDIC_FMT, id='*', type='*'):
   """
   @param  id  long  sql role id
@@ -41,14 +47,15 @@ def assemble(entries, fmt=UNIDIC_FMT, id='*', type='*'):
       surfaces.add(surf)
       hira = kata2hira(yomi) if yomi else ''
       kata = hira2kata(yomi) if yomi else ''
-      content = '*'
+      kanji = '*' # not implemened
+      content = surf
       cost = costof(len(surf))
-      yield fmt.format(surf=surf, kata=kata, content=content, cost=cost, type=type, id=id)
+      yield fmt.format(surf=surf, kata=kata, kanji=kanji, content=content, cost=cost, type=type, id=id)
       for kana in (yomi, hira, kata):
         if kana and kana not in surfaces:
           surfaces.add(kana)
           cost = costof(len(kana))
-          yield fmt.format(surf=kana, kata=kata, content=surf, cost=cost, type=type, id=id)
+          yield fmt.format(surf=kana, kata=kata, kanji=kanji, content=content, cost=cost, type=type, id=id)
 
 MIN_CSV_SIZE = 10 # minimum CSV file size
 def compile(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):
@@ -78,6 +85,7 @@ def compile(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):
   return call(args) in (0, True) and os.path.exists(dic)
 
 if __name__ == '__main__':
+  os.environ['PATH'] += os.path.pathsep + '../../../../MeCab/bin'
 
   csvpath = 'edict.csv'
 
@@ -98,8 +106,10 @@ if __name__ == '__main__':
            f.writelines(lines)
 
   def test_compile():
-    dicdir = "/Users/jichi/opt/stream/Caches/Dictionaries/UniDic"
+    dicdir = "../../../../../../Caches/Dictionaries/UniDic"
+    #dicdir = "/opt/local/lib/mecab/dic/unidic-utf8"
     print compile('edict.dic', csvpath, dicdir=dicdir)
+    #print compile('test.dic', 'test.csv', dicdir=dicdir)
 
   test_assemble()
   test_compile()
