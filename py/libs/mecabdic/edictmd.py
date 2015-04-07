@@ -8,14 +8,15 @@ if __name__ == '__main__': # DEBUG
 
 from sakurakit.skdebug import dwarn
 
-def parse(id, word, define):
+def assemble(id, word, define):
   """
-  @param  id  long
+  @param  id  long  sql role id
   @param  word  unicode
   @param  define  unicode
   @return  unicode
   """
-  return
+  ret = "%s,%s,%s" % (id, word, define)
+  return ret
 
 if __name__ == '__main__':
   dbpath = '../dictp/edict.db'
@@ -25,7 +26,8 @@ if __name__ == '__main__':
     cur = conn.cursor()
     q = dictdb.iterentries(cur)
     for i,it in enumerate(q):
-      print i+1, it[0], it[1]
+      define = assemble(i+1, *it)
+      print define
       break
 
 # EOF
