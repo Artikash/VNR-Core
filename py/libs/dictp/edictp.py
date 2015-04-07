@@ -84,14 +84,14 @@ def _parseword(word):
       right = right[:-1]
       if ')' in right:
         for group in right.split(';'):
-          left, sep, right = group.partition('(')
-          if right and right[-1] == ')':
-            right = right[:-1]
-            if ',' not in right:
-              yield right, left
+          ll, sep, rr = group.partition('(')
+          if rr and rr[-1] == ')':
+            rr = rr[:-1]
+            if ',' not in rr:
+              yield rr, ll
             else:
-              for it in right.split(','):
-                yield it, left
+              for it in rr.split(','):
+                yield it, ll
       yomi = None
       if ';' not in right:
         yomi = right
