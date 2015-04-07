@@ -80,12 +80,23 @@ def queryentries(cur, word='', wordlike='', limit=0):
 def iterentries(cur, chunk=100):
   """
   @param  cursor
-  @return  [unicode word, unicode content]
+  @yield  unicode word, unicode content
   @raise
   """
   sql = "SELECT word,content FROM entry"
   cur.execute(sql)
   return fetchsome(cur, chunk)
+
+def iterwords(cur, chunk=100):
+  """
+  @param  cursor
+  @yield  unicode
+  @raise
+  """
+  sql = "SELECT word FROM entry order by id" # order by id is needed since there is index on word
+  cur.execute(sql)
+  for it, in fetchsome(cur, chunk):
+    yield it
 
 def insertentry(cur, entry, ignore_errors=False): # cursor, entry; raise
   """

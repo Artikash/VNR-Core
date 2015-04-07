@@ -15,20 +15,52 @@ if __name__ == '__main__': # DEBUG
 
 import os, subprocess
 from sakurakit.skdebug import dwarn
+from sakurakit import skfileio
+from unitraits.uniconv import hira2kata, kata2hira
+
+def costof(size):
+  """
+  @param  size  int  surface size
+  """
+  # http://tseiya.hatenablog.com/entry/2012/09/19/191114
+  # http://yukihir0.hatenablog.jp/entry/20110201/1296565687
+  return min(36000, int(400*size**1.5))
+
+# Example  きす,5131,5131,887,名詞,普通名詞,サ変可能,*,*,*,キス,キス-kiss,キス,キス,キス,キス,外,*,*,*,*
+UNIDIC_FMT = '{surf},0,0,{cost},*,*,*,*,*,*,{kata},{content},*,*,*,*,*,*,*,{id},{type}\n'
+def assemble(entries, fmt=UNIDIC_FMT, id='*', type='*'):
+  """
+  @param  id  long  sql role id
+  @param  entries  [unicode surface, unicode reading]
+  @param* fmt  unicode
+  @yield  unicode
+  """
+  surfaces = set()
+  for surf, yomi in entries:
+    if surf not in surfaces:
+      surfaces.add(surf)
+      hira = kata2hira(yomi) if yomi else ''
+      kata = hira2kata(yomi) if yomi else ''
+      content = '*'
+      cost = costof(len(surf))
+      yield fmt.format(surf=surf, kata=kata, content=content, cost=cost, type=type, id=id)
+      for kana in (yomi, hira, kata):
+        if kana and kana not in surfaces:
+          surfaces.add(kana)
+          cost = costof(len(kana))
+          yield fmt.format(surf=kana, kata=kata, content=surf, cost=cost, type=type, id=id)
 
 MIN_CSV_SIZE = 10 # minimum CSV file size
-
-def csv2dic(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):
-  """Note: this process would take at least 10 seconds
-  @param  dic  unicode
-  @param  csv  unicode
-  @param* exe  unicode
+def compile(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):
+  """csv2dic. This process would take several seconds
+  @param  dic  unicode  path
+  @param  csv  unicode  path
+  @param* exe  unicode  path
   @param* dicdir  unicode
   @param* call  launcher function
   @return  bool
   """
   # MeCab would crash for empty sized csv
-  from sakurakit import skfileio
   if skfileio.filesize(csv) < MIN_CSV_SIZE:
     dwarn("insufficient input csv size", csv)
     return False
@@ -46,7 +78,30 @@ def csv2dic(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):
   return call(args) in (0, True) and os.path.exists(dic)
 
 if __name__ == '__main__':
-  dicdir = "/Users/jichi/opt/stream/Caches/Dictionaries/UniDic"
-  print csv2dic('test.dic', 'test.csv', dicdir=dicdir)
+
+  csvpath = 'edict.csv'
+
+  def test_assemble():
+    dbpath = '../dictp/edict.db'
+    import sqlite3
+    from dictdb import dictdb
+    from dictp import edictp
+
+    with sqlite3.connect(dbpath) as conn:
+      cur = conn.cursor()
+      q = dictdb.iterwords(cur)
+      with open(csvpath, 'w') as f:
+        for i,word in enumerate(q):
+           id = i + 1
+           entries = edictp.parseword(word)
+           lines = assemble(entries, id=id, type='edict')
+           f.writelines(lines)
+
+  def test_compile():
+    dicdir = "/Users/jichi/opt/stream/Caches/Dictionaries/UniDic"
+    print compile('edict.dic', csvpath, dicdir=dicdir)
+
+  test_assemble()
+  test_compile()
 
 # EOF

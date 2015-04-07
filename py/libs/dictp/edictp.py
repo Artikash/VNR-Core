@@ -43,6 +43,67 @@ def parsefile(path, encoding='utf8'):
     dwarn(e)
     raise
 
+def _remove_word_parenthesis(text):
+  """Remove parenthesis
+  @param  text  unicode  surface
+  @return  unicode
+  """
+  i = text.find('(')
+  if i == -1:
+    return text
+  else:
+    return text[:i]
+
+# Example: 噯;噯気;噫気;噯木(iK) [おくび(噯,噯気);あいき(噯気,噫気,噯木)]
+def parseword(word):
+  """
+  @param  path  str
+  @yield  unicode surface, unicode reading
+  """
+  # Remove duplicate keys
+  s = set()
+  for k,v in _parseword(word):
+    if ord(k[0]) > 255 and k not in s: # skip ascii keys
+      s.add(k)
+      yield k,v
+
+def _parseword(word):
+  """
+  @param  path  str
+  @yield  unicode surface, unicode reading
+  """
+  if '[' not in word: # no yomi
+    if ';' not in word:
+      yield _remove_word_parenthesis(word), ''
+    else:
+      for it in word.split(';'):
+        yield _remove_word_parenthesis(it), ''
+  else:
+    left, sep, right = word.partition(' [')
+    if right[-1] == ']':
+      right = right[:-1]
+      if ')' in right:
+        for group in right.split(';'):
+          left, sep, right = group.partition('(')
+          if right and right[-1] == ')':
+            right = right[:-1]
+            if ',' not in right:
+              yield right, left
+            else:
+              for it in right.split(','):
+                yield it, left
+      yomi = None
+      if ';' not in right:
+        yomi = right
+      else:
+        yomi = right.partition(';')[0]
+        yomi = _remove_word_parenthesis(yomi)
+      if ';' not in left:
+        yield _remove_word_parenthesis(left), yomi
+      else:
+        for it in left.split(';'):
+          yield _remove_word_parenthesis(it), yomi
+
 if __name__ == '__main__':
   path = 'edict2u'
   try:
