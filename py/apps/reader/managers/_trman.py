@@ -354,12 +354,16 @@ class MachineTranslator(Translator):
           ret.append(text)
     return ret
 
-  def _splitTranslate_par(self, text, tr, to, fr, async, nthreads=0):
+  def _splitTranslate_par(self, text, tr, to, fr, async,
+      nthreads=0, timeout=0, master_threshold=0):
     """Parallelized version
     @param  text  unicode
     @param  tr  function(text, to, fr)
     @param  async  bool
     @param* nthreads  maximum number of threads to use
+    @param* master  bool  whether the master thread should paticipate  should disable this for tablet
+    @param* timeout  int
+    @param* master_threshold  int  minimum number of texts that need to be parallelized
     @return  [unicode] not None
     """
     # Get number of processors
@@ -381,28 +385,30 @@ class MachineTranslator(Translator):
           texts.append(text)
     if texts:
       run = lambda text: self.__tr(text, tr, to, fr, async)
-      #timeout = 0 # timeout is always 0, i.e. no timeout
       if len(texts) == 1:
-        task = partial(run, texts[0])
-        t = skthreads.runsync(task, abortSignal=self.abortSignal) # always do async
-        for i,it in enumerate(ret):
-          if it is None:
-            ret[i] = t
-            break
+        if master_threshold:
+          t = run(texts[0])
+        else:
+          task = partial(run, texts[0])
+          t = skthreads.runsync(task, timeout=timeout, abortSignal=self.abortSignal) # always do async
+        texts = [t]
+      elif master_threshold and len(texts) < master_threshold:
+        texts = map(run, texts)
       else:
         from qtpar import qtparloop
         nthreads = max(nthreads, len(texts))
         tasks = (partial(run, it) for it in texts)
-        texts = qtparloop.runsync(tasks, nthreads=nthreads, abortSignal=self.abortSignal)
-        j = 0
-        for i,it in enumerate(ret):
-          if it is None:
-            ret[i] = texts[j]
-            j += 1
-    for it in ret:
-      if it is None:
-        dwarn("translation failed or aborted using '%s'" % self.key)
-        return []
+        texts = qtparloop.runsync(tasks,
+            master=master_threshold, nthreads=nthreads, timeout=timeout, abortSignal=self.abortSignal)
+      for i,it in enumerate(ret):
+        if it is None:
+          t = texts.pop(0)
+          if t is None:
+            dwarn("translation failed or aborted using '%s'" % self.key)
+            return []
+          ret[i] = t
+          if not texts:
+            break
     return ret
 
   def _translate(self, emit, text, tr, to, fr, async, align=None):
@@ -797,7 +803,7 @@ class LecTranslator(OfflineMachineTranslator):
 
 class EzTranslator(OfflineMachineTranslator):
   key = 'eztrans' # override
-  parallelEnabled = True # override
+  #parallelEnabled = True # override  disabled since eztrans is already very fast
 
   def __init__(self, **kwargs):
     super(EzTranslator, self).__init__(**kwargs)
