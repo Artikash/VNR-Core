@@ -13,6 +13,26 @@ from unitraits.uniconv import hira2kata, kata2hira
 from dictp import edictp
 import dictdb, dbutil
 
+# Queries
+
+def queryentries(cur, surface, limit=0, select=dictdb.SELECT_WORD_CONTENT):
+  """
+  @param  cursor
+  @param* surface  unicode
+  @param* limit  int
+  @return  (unicode word, unicode content)
+  @raise
+  """
+  params = [surface]
+  sql = "SELECT %s FROM entry e, surface f where e.id = f.entry_id and f.text = ?" % select
+  if limit:
+    sql += ' limit ?'
+    params.append(limit)
+  cur.execute(sql, params)
+  return cur.fetchall()
+
+# Construction
+
 def makedb(dbpath, dictpath): # unicode path -> bool
   """
   @param  dbpath  unicode  target db path
@@ -118,9 +138,21 @@ if __name__ == '__main__':
   from sakurakit.skprof import SkProfiler
   dictpath = '../dictp/edict2u'
   dbpath = 'edict.db'
-  with SkProfiler("make db"):
-    print makedb(dbpath, dictpath)
-  with SkProfiler("make surface"):
-    print makesurface(dbpath)
+
+  def test_create():
+    with SkProfiler("make db"):
+      print makedb(dbpath, dictpath)
+    with SkProfiler("make surface"):
+      print makesurface(dbpath)
+
+  def test_query():
+    t = u'ごめんなさい'
+    with sqlite3.connect(dbpath) as conn:
+      cur = conn.cursor()
+      for it in queryentries(cur, surface=t):
+        print it
+
+  #test_create()
+  test_query()
 
 # EOF

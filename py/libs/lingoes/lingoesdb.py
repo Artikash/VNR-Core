@@ -52,7 +52,6 @@ class LingoesDb(object):
       with sqlite3.connect(self.dbpath) as conn:
         cur = conn.cursor()
         return dictdb.queryentry(cur, limit=1, word=t)
-      return
     except Exception, e:
       dwarn(e)
 
@@ -69,7 +68,6 @@ class LingoesDb(object):
       with sqlite3.connect(self.dbpath) as conn:
         cur = conn.cursor()
         return dictdb.queryentries(cur, limit=limit, wordlike=t + '%')
-      return
     except Exception, e:
       dwarn(e)
 

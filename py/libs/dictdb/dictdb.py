@@ -16,38 +16,39 @@ import dbutil
 
 #TABLE_NAME = 'entry'
 
-def makedb(dbpath, entries): # unicode path -> bool
-  """
-  @param  dbpath  unicode  target db path
-  @param  entries  source entries
-  @return  bool
-  """
-  try:
-    if os.path.exists(dbpath):
-      os.remove(dbpath)
-    with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      dictdb.createtables(cur)
-      conn.commit()
+# Queries
 
-      insertentries(cur, entries)
-      conn.commit()
-      return True
-  except Exception, e:
-    dwarn(e)
-  return False
+SELECT_ID = 'id'
+SELECT_CONTENT = 'content'
+SELECT_WORD = 'word'
+SELECT_WORD_CONTENT = 'word,content'
+SELECT_ID_WORD_CONTENT = 'word,content'
+SELECT_ALL = SELECT_ID_WORD_CONTENT
 
-def queryentry(cur, word='', wordlike='', limit=0):
+def getentry(cur, id, select=SELECT_WORD_CONTENT):
+  """
+  @param  cursor
+  @param* select  str
+  @return  (unicode word, unicode content)
+  @raise
+  """
+  sql = "SELECT %s FROM entry where id = ?" % select
+  params = id,
+  cur.execute(sql, params)
+  return cur.fetchone()
+
+def queryentry(cur, word='', wordlike='', limit=1, select=SELECT_WORD_CONTENT):
   """
   @param  cursor
   @param* word  unicode
   @param* wordlike  unicode
+  @param* select  str
   @param* limit  int
   @return  (unicode word, unicode content)
   @raise
   """
   params = []
-  sql = "SELECT word,content FROM entry"
+  sql = "SELECT %s FROM entry" % select
   if word:
     sql += ' where word = ?'
     params.append(word)
@@ -60,17 +61,18 @@ def queryentry(cur, word='', wordlike='', limit=0):
   cur.execute(sql, params)
   return cur.fetchone()
 
-def queryentries(cur, word='', wordlike='', limit=0):
+def queryentries(cur, word='', wordlike='', limit=0, select=SELECT_WORD_CONTENT):
   """
   @param  cursor
   @param* word  unicode
   @param* wordlike  unicode
+  @param* select  str
   @param* limit  int
   @return  [unicode word, unicode content]
   @raise
   """
   params = []
-  sql = "SELECT word,content FROM entry"
+  sql = "SELECT %s FROM entry" % select
   if word:
     sql += ' where word = ?'
     params.append(word)
@@ -106,6 +108,8 @@ def iterwords(cur, chunk=100, order=True):
   cur.execute(sql)
   for it, in dbutil.fetchsome(cur, chunk):
     yield it
+
+# Construction
 
 def insertentry(cur, entry, ignore_errors=False): # cursor, entry; raise
   """
@@ -155,6 +159,27 @@ def createdb(dbpath): # unicode path -> bool
   try:
     with sqlite3.connect(dbpath) as conn:
       createtables(conn.cursor())
+      conn.commit()
+      return True
+  except Exception, e:
+    dwarn(e)
+  return False
+
+def makedb(dbpath, entries): # unicode path -> bool
+  """
+  @param  dbpath  unicode  target db path
+  @param  entries  source entries
+  @return  bool
+  """
+  try:
+    if os.path.exists(dbpath):
+      os.remove(dbpath)
+    with sqlite3.connect(dbpath) as conn:
+      cur = conn.cursor()
+      dictdb.createtables(cur)
+      conn.commit()
+
+      insertentries(cur, entries)
       conn.commit()
       return True
   except Exception, e:
