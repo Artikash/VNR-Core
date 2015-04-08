@@ -12,21 +12,7 @@ if __name__ == '__main__':
 #except ImportError: import sqlite3
 import sqlite3
 from sakurakit.skdebug import dwarn
-
-# http://stackoverflow.com/questions/3785294/best-way-to-iterate-through-all-rows-in-a-db-table
-def fetchsome(cursor, some):
-  """
-  @param  cursor
-  @param  some  int
-  @raise
-  """
-  fetch = cursor.fetchmany
-  while True:
-    rows = fetch(some)
-    if not rows:
-      break
-    for row in rows:
-      yield row
+import dbutil
 
 #TABLE_NAME = 'entry'
 
@@ -85,7 +71,7 @@ def iterentries(cur, chunk=100):
   """
   sql = "SELECT word,content FROM entry"
   cur.execute(sql)
-  return fetchsome(cur, chunk)
+  return dbutil.fetchsome(cur, chunk)
 
 def iterwords(cur, chunk=100):
   """
@@ -95,7 +81,7 @@ def iterwords(cur, chunk=100):
   """
   sql = "SELECT word FROM entry order by id" # order by id is needed since there is index on word
   cur.execute(sql)
-  for it, in fetchsome(cur, chunk):
+  for it, in dbutil.fetchsome(cur, chunk):
     yield it
 
 def insertentry(cur, entry, ignore_errors=False): # cursor, entry; raise
