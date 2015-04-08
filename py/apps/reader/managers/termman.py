@@ -552,7 +552,7 @@ class TermManager(QObject):
     d = self.__d
     if not d.enabled or not text or '{{' not in text or '}}' not in text:
       return text
-    if config.is_latin_language(to):
+    if config.language_word_has_space(to): # insert spaces after replacement
       ret = self._rx_decode_open.sub(" {{", text)
       ret = self._rx_decode_close.sub("}} ", text)
     # 9/25/2014: Qt 0.009 seconds

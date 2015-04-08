@@ -141,6 +141,7 @@ class MeCabParser:
                  convutil.kana2ru if furiType == defs.FURI_ROMAJI_RU else
                  convutil.kana2ko if furiType == defs.FURI_HANGUL else
                  convutil.kana2th if furiType == defs.FURI_THAI else
+                 convutil.kana2ar if furiType == defs.FURI_AR else
                  #convutil.kana2kanji if furiType == defs.FURI_KANJI else
                  convutil.kata2hira)
     # Add space between words
@@ -186,6 +187,7 @@ class MeCabParser:
       katatrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
                    convutil.kata2ko if furiType == defs.FURI_HANGUL else
                    convutil.kata2th if furiType == defs.FURI_THAI else
+                   convutil.kata2ar if furiType == defs.FURI_AR else
                    #convutil.kata2kanji if furiType == defs.FURI_KANJI else
                    convutil.kata2ru if furiType == defs.FURI_ROMAJI_RU else
                    convutil.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR, defs.FURI_VI) else
@@ -195,9 +197,10 @@ class MeCabParser:
       #               convutil.hira2kata if furiType == defs.FURI_KATA else
       #               convutil.kana2ko if furiType == defs.FURI_HANGUL else
       #               convutil.kana2th if furiType == defs.FURI_THAI else
+      #               convutil.kana2ar if furiType == defs.FURI_AR else
       #               convutil.kana2ru if furiType == defs.FURI_ROMAJI_RU else
       #               convutil.kana2romaji)
-      if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_VI, defs.FURI_HANGUL, defs.FURI_THAI): # , defs.FURI_KANJI
+      if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_VI, defs.FURI_HANGUL, defs.FURI_AR, defs.FURI_THAI): # , defs.FURI_KANJI
         readingTypes = None
     encoding = mecabdef.DICT_ENCODING
     feature2kata = fmt.getkata

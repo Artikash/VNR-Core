@@ -2591,7 +2591,7 @@ class _TextTab(object):
       ('excite',    None, None,  None),
       ('transru',   None, None,  None),
       ('naver',     None, None,  'ko'),
-      ('baidu',     None, None,  'zh'),
+      ('baidu',     None, None,  None),
       ('youdao',    None, None,  'zh'),
       ('jbeijing',  'JBeijing', None, 'zh'),
       ('fastait',   None, None, 'zh'),
@@ -2902,16 +2902,17 @@ class _MachineTranslationTab(object):
     r = 0
     grid.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"), r, 0, 1, 2)
 
-    if 'zh' not in blans:
-      r += 1
-      grid.addWidget(self._createBrowseButton("http://fanyi.baidu.com"), r, 0)
-      grid.addWidget(self.baiduButton, r, 1)
-      r += 1
-      grid.addWidget(self.baiduRubyButton, r, 1)
-      r += 1
-      row = create_retrans_row('baidu', self.baiduButton)
-      grid.addLayout(row, r, 1, 1, 2)
+    #if 'zh' not in blans:
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://fanyi.baidu.com"), r, 0)
+    grid.addWidget(self.baiduButton, r, 1)
+    r += 1
+    grid.addWidget(self.baiduRubyButton, r, 1)
+    r += 1
+    row = create_retrans_row('baidu', self.baiduButton)
+    grid.addLayout(row, r, 1, 1, 2)
 
+    if 'zh' not in blans:
       r += 1
       grid.addWidget(self._createBrowseButton("http://fanyi.youdao.com"), r, 0)
       grid.addWidget(self.youdaoButton, r, 1)
@@ -4110,6 +4111,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.viButton)
     if 'th' not in blans:
       layout.addWidget(self.thaiButton)
+    if 'ar' not in blans:
+      layout.addWidget(self.arButton)
     #if 'zh' not in blans:
     #  layout.addWidget(self.kanjiButton)
     ret = QtWidgets.QGroupBox("%s (%s)" % (
@@ -4174,6 +4177,14 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def arButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (tr_("Arabic"), my.tr("like this"), u"可愛い（كاوايي）"))
+    ret.toggled.connect(self._saveFurigana)
+    return ret
+
+  @memoizedproperty
   def viButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
@@ -4204,6 +4215,7 @@ class _DictionaryTranslationTab(object):
          self.romajiRuButton if t == defs.FURI_ROMAJI_RU else
          self.hangulButton if t == defs.FURI_HANGUL else
          self.thaiButton if t == defs.FURI_THAI else
+         self.arButton if t == defs.FURI_AR else
          self.viButton if t == defs.FURI_VI else
          self.trButton if t == defs.FURI_TR else
          #self.kanjiButton if t == defs.FURI_KANJI else
@@ -4217,6 +4229,7 @@ class _DictionaryTranslationTab(object):
          defs.FURI_ROMAJI_RU if self.romajiRuButton.isChecked() else
          defs.FURI_HANGUL if self.hangulButton.isChecked() else
          defs.FURI_THAI if self.thaiButton.isChecked() else
+         defs.FURI_AR if self.arButton.isChecked() else
          defs.FURI_VI if self.viButton.isChecked() else
          defs.FURI_TR if self.trButton.isChecked() else
          #defs.FURI_KANJI if self.kanjiButton.isChecked() else

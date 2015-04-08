@@ -22,7 +22,7 @@ EN = u"""
 		ゐ:wyi				ゑ:wye
 ん:n
 
-が:ga		ぎ:gi		ぐ:gu		げ:ge		ご:go
+が:ga		ぎ:gi		ぐ:غو		げ:ge		ご:go
 ざ:za		じ:ji		ず:zu		ぜ:ze		ぞ:zo
 だ:da		ぢ:ji		づ:zu		で:de		ど:do
 ば:ba		び:bi		ぶ:bu		べ:be		ぼ:bo
@@ -372,67 +372,50 @@ TH = u"""
 # http://ar.wikipedia.org/wiki/كاتاكانا (片仮名)
 # http://ar.wikipedia.org/wiki/نظام_كتابة_ياباني
 #
-# It seems that Arabic has different representeation for Katagana/Hiragana?
+# It seems that Arabic has different representation for Katagana/Hiragana?
 AR = u"""
 #Single
-あ:أَ		い:ي		う:أُ		え:إيه		お:أُو
+あ:ا		い:ي		う:و		え:ي		お:و
 か:كا		き:كي		く:كو		け:كي		こ:كو
 さ:سا		し:شي		す:سو		せ:سي		そ:سو
 た:تا		ち:تشي		つ:تسو		て:تي		と:تو
 な:نا		に:ني		ぬ:نو		ね:ني		の:نو
 は:ها		ひ:هي		ふ:فو		へ:هي		ほ:هو
 ま:ما		み:مي		む:مو		め:مي		も:مو
-や:يو				ゆ:يو				よ:يو
+や:يا				ゆ:يو				よ:يو
 ら:را		り:ري		る:رو		れ:ري		ろ:رو
 わ:وا								を:وو
 		ゐ:وي				ゑ:وي
-ん:n
+ん:ن
 
-が:غا		ぎ:gi		ぐ:gu		げ:ge		ご:go
-ざ:za		じ:ji		ず:زو		ぜ:ze		ぞ:zo
-だ:da		ぢ:ji		づ:zu		で:de		ど:do
-ば:ba		び:bi		ぶ:bu		べ:be		ぼ:bo
-ぱ:pa		ぴ:pi		ぷ:pu		ぺ:pe		ぽ:po
+が:غا		ぎ:غي		ぐ:غو		げ:غي		ご:غو
+ざ:زا		じ:زي		ず:زو		ぜ:زي		ぞ:زو
+だ:دا		ぢ:دي		づ:دو		で:دي		ど:دو
+ば:با		び:بي		ぶ:بو		べ:بي		ぼ:بو
+ぱ:با		ぴ:بي		ぷ:بو		ぺ:بي		ぽ:بو
 
 #Small
-ぁ:a		ぃ:i		ぅ:u		ぇ:e		ぉ:o
-ゃ:ya				ゅ:yu				ょ:yo
-ゎ:wa
+ぁ:أَ		ぃ:ي		ぅ:أُ		ぇ:إيه		ぉ:و
+ゃ:يا				ゅ:يو				ょ:يو
+ゎ:وا
 ゕ:كا						ゖ:كي
 
-
 #Composite
-						いぇ:ye
-うぁ:wha	うぃ:whi			うぇ:whe	うぉ:who
-すぁ:swa	すぃ:swi	すぅ:swu	すぇ:swe	すぉ:swo
-つぁ:tsa	つぃ:tsi	つぅ:tsu	つぇ:the	つぉ:tho
-とぁ:twa	とぃ:twi	とぅ:twu	とぇ:twe	とぉ:two
-ふぁ:fa		ふぃ:fi		ふぅ:fuu	ふぇ:fe		ふぉ:fo
 くぁ:كوا
 くゎ:كوا
 
-ゔぁ:va		ゔぃ:vi		ゔ:vu		ゔぇ:ve		ゔぉ:vo
-どぁ:dwa	どぃ:dwi	どぅ:dwu	どぇ:dwe	どぉ:dwo
-ぐぁ:gwa
-ぐゎ:gwa
+きゃ:كيا			きゅ:كيو			きょ:كيو
+しゃ:شا				しゅ:شو				しょ:شو
+ちゃ:تشا			ちゅ:تشو			ちょ:تشو
+#てゃ:tha			#てゅ:thu			#てょ:tho
+にゃ:نيا			にゅ:نيو			にょ:نيو
+ひゃ:هيا			ひゅ:هيو			ひょ:هيو
+#ふゃ:fya			#ふゅ:fyu			#ふょ:fyo
+みゃ:ميا			みゅ:ميو			みょ:ميو
+りゃ:ريا			りゅ:ريو			りょ:ريو
 
-きゃ:كيا	きぃ:kyi	きゅ:كيو	きぇ:kye	きょ:كيو
-しゃ:شا		しぃ:shi	しゅ:شو		しぇ:she	しょ:شو
-ちゃ:تشا	ちぃ:chi	ちゅ:تشو	ちぇ:che	ちょ:تشو
-てゃ:tha	てぃ:thi	てゅ:thu	てぇ:the	てょ:tho
-にゃ:نيا	にぃ:nyi	にゅ:نيو	にぇ:nye	にょ:نيو
-ひゃ:هيا	ひぃ:hyi	ひゅ:هيو	ひぇ:hye	ひょ:هيو
-ふゃ:fya			ふゅ:fyu			ふょ:fyo
-みゃ:ميا	みぃ:myi	みゅ:ميو	みぇ:mye	みょ:ميو
-りゃ:ريا	りぃ:ryi	りゅ:ريو	りぇ:rye	りょ:ريو
-
-ゔゃ:vya			ゔゅ:vyu			ゔょ:vyo
-ぎゃ:gya	ぎぃ:gyi	ぎゅ:gyu	ぎぇ:gye	ぎょ:gyo
-じゃ:ja		じぃ:ji		じゅ:ju		じぇ:je		じょ:jo
-ぢゃ:dya	ぢぃ:dyi	ぢゅ:dyu	ぢぇ:dye	ぢょ:dyo
-でゃ:dha	でぃ:dhi	でゅ:dhu	でぇ:dhe	でょ:dho
-びゃ:bya	びぃ:byi	びゅ:byu	びぇ:bye	びょ:byo
-ぴゃ:pya	ぴぃ:pyi	ぴゅ:pyu	ぴぇ:pye	ぴょ:pyo
+#Eng
+						#ぜん:زن
 """
 
 TABLES = {

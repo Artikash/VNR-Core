@@ -375,6 +375,14 @@ LATIN_LANGUAGES = SHARE_YAML['languages']['latin']  # [str lang]
 LATIN_LANGUAGE_SET = frozenset(LATIN_LANGUAGES)
 def is_latin_language(lang): return lang in LATIN_LANGUAGE_SET
 
+SPACE_LANGUAGE_SET = frozenset(LATIN_LANGUAGES +
+    SHARE_YAML['languages']['space']) # [str lang]
+def language_has_space(lang): return lang in SPACE_LANGUAGE_SET
+
+WORD_SPACE_LANGUAGE_SET = frozenset(LATIN_LANGUAGES +
+    SHARE_YAML['languages']['wordspace']) # [str lang]
+def language_word_has_space(lang): return lang in SPACE_LANGUAGE_SET
+
 # Never used
 ASIAN_LANGUAGES = SHARE_YAML['languages']['asian']  # [str lang]
 ASIAN_LANGUAGE_SET = frozenset(ASIAN_LANGUAGES)
@@ -383,9 +391,6 @@ def is_asian_language(lang): return lang in ASIAN_LANGUAGE_SET
 KANJI_LANGUAGES = SHARE_YAML['languages']['kanji']  # [str lang]
 KANJI_LANGUAGE_SET = frozenset(KANJI_LANGUAGES)
 def is_kanji_language(lang): return lang in KANJI_LANGUAGE_SET
-
-SJIS_LANGUAGES = SHARE_YAML['languages']['sjis']  # [str lang]
-SJIS_LANGUAGE_SET = frozenset(SJIS_LANGUAGES)
 
 OCR_LANGUAGES = SHARE_YAML['languages']['ocr']  # [str lang]
 

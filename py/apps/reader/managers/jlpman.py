@@ -20,6 +20,7 @@ _MECABRUBY = {
   defs.FURI_HANGUL: mecabdef.RB_HANGUL,
   defs.FURI_THAI: mecabdef.RB_THAI,
   defs.FURI_TR: mecabdef.RB_TR,
+  defs.FURI_AR: mecabdef.RB_AR,
 }
 def _tomecabruby(t): # str -> str
   return _MECABRUBY.get(t) or mecabdef.RB_HIRA

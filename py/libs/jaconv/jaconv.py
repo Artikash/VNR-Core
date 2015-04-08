@@ -149,8 +149,11 @@ def kana2reading(text, lang):
   elif lang == 'th':
     text = text.replace(u'おお', u'お')
     return kana2th(text)
-  #elif lang == 'ar':
-  #  return kana2ar(text)
+  elif lang == 'ar':
+    if u'ゆ' in text:
+      text = text.replace(u'ゆう', u'ゆ')
+      text = text.replace(u'ゆぅ', u'ゆ')
+    return kana2ar(text)
   elif lang == 'ru':
     return capitalizeromaji(kana2ru(text))
   else:
@@ -334,12 +337,47 @@ if __name__ == '__main__':
     (u'さくら', u'ساكورا'),
     (u'さと', u'ساتو'),
     (u'かがみ', u'كاغامي'),
+    (u'かおる', u'كاورو'),
     (u'さい', u'ساي'),
-    #(u'あべ', u'ابي'), # fail since I don't know how to say be
+    (u'さいと', u'سايتو'),
+    (u'やまだ', u'يامادا'),
+    (u'やまもと', u'ياماموتو'),
+    (u'なかむら', u'ناكامورا'),
+    (u'ふくだ', u'فوكودا'),
+    (u'さと', u'ساتو'),
+    (u'まつもと', u'ماتسوموتو'),
+    (u'かよ', u'كايو'),
+    (u'ぐれん', u'غورين'),
+    (u'しんご', u'شينغو'),
+    (u'すざく', u'سوزاكو'),
+    (u'となり の ととろ', u'توناري نو توتورو'),
+    (u'さおり', u'ساوري'),
+    (u'ゆうま', u'يوما'),
+    (u'かわいい', u'كاوايي'),
+    (u'ちゃん', u'تشان'),
+    (u'さま', u'ساما'),
+    (u'シャナ', u'شانا'),
+    (u'ぴこ', u'بيكو'),
+    (u'ぺこ', u'بيكو'),
+    (u'べこ', u'بيكو'),
+    (u'ボコ', u'بوكو'),
+    (u'さど', u'سادو'),
+    (u'ぱぴ', u'بابي'),
+    (u'かぶと', u'كابوتو'),
+    (u'つばさ', u'تسوباسا'),
+    (u'さすけ', u'ساسوكي'),
+    (u'あゆみ', u'ايومي'),
+    (u'めぐみ', u'ميغومي'),
+    (u'かおる', u'كاورو'),
+    (u'わだ', u'وادا'),
+    (u'あべ', u'ابي'),
+    #(u'えいじ', u'إيجي'), # failed, totally wrong
+    #(u'ぜん', u'زن'), # failed because zen is not handled
+    #(u'かな', u'قانا'), # failed because of wrong ka
   ]
   for k,v in l:
-    print k, kana2ar(k), v
-    assert kana2ar(k) == v
+    print k, kana2name(k, 'ar'), v
+    assert kana2name(k, 'ar') == v
 
 # EOF
 

@@ -57,10 +57,11 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
     katatrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  jaconv.kata2ko if ruby == mecabdef.RB_HANGUL else
                  jaconv.kata2th if ruby == mecabdef.RB_THAI else
+                 jaconv.kata2ar if ruby == mecabdef.RB_AR else
                  #jaconv.kata2kanji if ruby == mecabdef.RB_KANJI else
                  jaconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_TR) else
                  None)
-    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
+    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_ROMAJI_RU, mecabdef.RB_HANGUL, mecabdef.RB_THAI, mecabdef.RB_AR): # , mecabdef.RB_KANJI
       readingTypes = None
   encoding = mecabdef.DICT_ENCODING
   feature2kata = fmt.getkata
@@ -159,6 +160,7 @@ def toyomi(text, ruby=mecabdef.RB_HIRA, sep='', **kwargs):
                jaconv.kana2romaji if ruby == mecabdef.RB_ROMAJI else
                jaconv.kana2ko if ruby == mecabdef.RB_HANGUL else
                jaconv.kana2th if ruby == mecabdef.RB_THAI else
+               jaconv.kana2ar if ruby == mecabdef.RB_AR else
                #jaconv.kana2kanji if ruby == mecabdef.RB_KANJI else
                uniconv.kata2hira)
   # Add space between words

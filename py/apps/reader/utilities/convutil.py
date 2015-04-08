@@ -4,7 +4,7 @@
 
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin
 from unidecode import unidecode
-from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th \
+from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th, kana2ar \
                         , kana2name, kana2reading, capitalizeromaji
 from opencc.opencc import zht2zhs #, ja2zht
 from ccman import zht2zhx, ja2zhs_name
@@ -19,6 +19,7 @@ kata2romaji = hira2romaji = kana2romaji
 kata2ru = hira2ru = kana2ru
 kata2ko = hira2ko = kana2ko
 kata2th = hira2th = kana2th
+kata2ar = hira2ar = kana2ar
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached

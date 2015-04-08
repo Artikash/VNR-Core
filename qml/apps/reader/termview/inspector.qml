@@ -178,6 +178,7 @@ Item { id: root_
          + jlp_.kana2name(text, 'ru') + ' (' + Sk.tr('ru') +  '), '
          + jlp_.kana2name(text, 'ko') + ' (' + Sk.tr('ko') +  '), '
          + jlp_.kana2name(text, 'th') + ' (' + Sk.tr('th') +  '), '
+         + jlp_.kana2name(text, 'ar') + ' (' + Sk.tr('ar') +  '), '
     if (pattern && jlp_.ja2zh_name_test(pattern)) {
       var s = jlp_.ja2zhs_name(pattern)
       var t = jlp_.ja2zht_name(pattern)
