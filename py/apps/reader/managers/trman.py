@@ -795,8 +795,8 @@ class TranslatorManager(QObject):
 
     #translators = d.iterTranslators(reverseOnline=True)
     translators = itertools.chain(
-      d.iterOnlineTranslators(reverse=True),
       d.iterOfflineTranslators(),
+      d.iterOnlineTranslators(reverse=True),
     )
     for it in translators:
       kw = {'fr':fr, 'to':to, 'mark':mark, 'async':False}
@@ -821,7 +821,7 @@ class TranslatorManager(QObject):
 
       if it.key == 'eztrans':
         kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
-      if it.onlineRequired or it.parallelEnabled:
+      if it.onlineRequired: #or it.parallelEnabled: # rush offline translation speed
         skevents.runlater(partial(d.translateAndApply,
             func, kwargs, it.translate, text, **kw))
       else:

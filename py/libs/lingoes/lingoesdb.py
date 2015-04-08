@@ -28,9 +28,10 @@ class LingoesDb(object):
     import lingoesparse
     try:
       with sqlite3.connect(self.dbpath) as conn:
-        cur = conn.cursor()
-        dictdb.createtables(cur)
+        dictdb.createtables(conn.cursor())
         conn.commit()
+
+        cur = conn.cursor()
         l = lingoesparse.parsefile(ldpath, inenc=inenc, outenc=outenc or inenc,
             callback=lambda word, xmls: dictdb.insertentry(cur, (
               word,
@@ -51,8 +52,8 @@ class LingoesDb(object):
     try:
       with sqlite3.connect(self.dbpath) as conn:
         cur = conn.cursor()
-        return dictdb.queryentry(cur, limit=1, word=t)
-      return
+        return dictdb.queryentry(cur, limit=1, word=t,
+            select=dictdb.SELECT_WORD_CONTENT)
     except Exception, e:
       dwarn(e)
 
@@ -68,8 +69,8 @@ class LingoesDb(object):
     try:
       with sqlite3.connect(self.dbpath) as conn:
         cur = conn.cursor()
-        return dictdb.queryentries(cur, limit=limit, wordlike=t + '%')
-      return
+        return dictdb.queryentries(cur, limit=limit, wordlike=t + '%',
+            select=dictdb.SELECT_WORD_CONTENT)
     except Exception, e:
       dwarn(e)
 
