@@ -10,11 +10,32 @@ if __name__ == '__main__':
 # For better performance
 #try: from pysqlite2 import dbapi2 as sqlite3
 #except ImportError: import sqlite3
-import sqlite3
+import os, sqlite3
 from sakurakit.skdebug import dwarn
 import dbutil
 
 #TABLE_NAME = 'entry'
+
+def makedb(dbpath, entries): # unicode path -> bool
+  """
+  @param  dbpath  unicode  target db path
+  @param  entries  source entries
+  @return  bool
+  """
+  try:
+    if os.path.exists(dbpath):
+      os.remove(dbpath)
+    with sqlite3.connect(dbpath) as conn:
+      cur = conn.cursor()
+      dictdb.createtables(cur)
+      conn.commit()
+
+      insertentries(cur, entries)
+      conn.commit()
+      return True
+  except Exception, e:
+    dwarn(e)
+  return False
 
 def queryentry(cur, word='', wordlike='', limit=0):
   """
@@ -73,13 +94,15 @@ def iterentries(cur, chunk=100):
   cur.execute(sql)
   return dbutil.fetchsome(cur, chunk)
 
-def iterwords(cur, chunk=100):
+def iterwords(cur, chunk=100, order=True):
   """
   @param  cursor
   @yield  unicode
   @raise
   """
-  sql = "SELECT word FROM entry order by id" # order by id is needed since there is index on word
+  sql = "SELECT word FROM entry" # order by id is needed since there is index on word
+  if order:
+    sql += " order by id"
   cur.execute(sql)
   for it, in dbutil.fetchsome(cur, chunk):
     yield it
@@ -87,7 +110,7 @@ def iterwords(cur, chunk=100):
 def insertentry(cur, entry, ignore_errors=False): # cursor, entry; raise
   """
   @param  cursor
-  @param  entry  (uincode word, unicode content)
+  @param  entry  (unicode word, unicode content)
   @param* ignore_errors  whether ignore exceptions
   @raise
   """
@@ -101,7 +124,7 @@ def insertentry(cur, entry, ignore_errors=False): # cursor, entry; raise
 def insertentries(cur, entries, ignore_errors=False): # cursor, [entry]; raise
   """
   @param  cursor
-  @param  entries  [uincode word, unicode content]
+  @param  entries  [unicode word, unicode content]
   @param* ignore_errors  whether ignore exceptions
   @raise
   """
@@ -131,8 +154,7 @@ def createdb(dbpath): # unicode path -> bool
   """
   try:
     with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      createtables(cur)
+      createtables(conn.cursor())
       conn.commit()
       return True
   except Exception, e:
@@ -140,7 +162,6 @@ def createdb(dbpath): # unicode path -> bool
   return False
 
 if __name__ == '__main__':
-  import os
   path = 'test.db'
   if os.path.exists(path):
     os.remove(path)
