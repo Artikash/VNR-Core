@@ -257,9 +257,9 @@ class _NameInput(object):
       infoEdit = self._createInfoEdit()
 
       c = 0
-      self.grid.addWidget(nameButton, rowCount, c)
-      c += 1
       self.grid.addWidget(yomiButton, rowCount, c)
+      c += 1
+      self.grid.addWidget(nameButton, rowCount, c)
       c += 1
       self.grid.addWidget(nameTtsButton, rowCount, c)
       c += 1
