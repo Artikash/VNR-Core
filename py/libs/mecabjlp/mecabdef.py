@@ -24,6 +24,7 @@ RB_ROMAJI_RU = 'romaji.ru'
 #RB_KANJI = 'kanji'
 RB_HANGUL = 'ko'
 RB_THAI = 'th'
+RB_AR = 'ar'
 RB_TR = 'tr'
 
 # EOF

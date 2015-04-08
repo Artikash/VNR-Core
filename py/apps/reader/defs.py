@@ -112,6 +112,7 @@ FURI_ROMAJI_RU = 'romaji.ru'
 #FURI_KANJI = 'kanji'
 FURI_HANGUL = 'hangul'
 FURI_THAI = 'thai'
+FURI_AR = 'ar'
 FURI_VI = 'vi'
 FURI_TR = 'tr'
 

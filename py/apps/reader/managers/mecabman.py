@@ -105,7 +105,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
   LATIN_YOMI_WIDTH = 0.33 # = 2/6
   KANJI_YOMI_WIDTH = 0.55 # = 1/2
   # yomi size / surface size
-  yomiWidth = LATIN_YOMI_WIDTH if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_THAI, defs.FURI_TR) else KANJI_YOMI_WIDTH
+  yomiWidth = LATIN_YOMI_WIDTH if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU, defs.FURI_THAI, defs.FURI_AR, defs.FURI_TR) else KANJI_YOMI_WIDTH
 
   roundRubySize = int(round(rubySize)) or 1
   paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0

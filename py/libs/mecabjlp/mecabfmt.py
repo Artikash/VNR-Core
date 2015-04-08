@@ -55,7 +55,8 @@ class UNIDIC(DEFAULT):
   COL_KANJI = DEFAULT.COL_BASIC + 2
   COL_SURFACE = COL_KANJI + 1
   COL_ORIG = 12 # Columns starts from 0
-  COL_KATA = 17 # override
+  #COL_KATA = 17 # override
+  COL_KATA = DEFAULT.COL_BASIC + 1 # override
 
   @classmethod
   def getkanji(cls, f): # unicode feature -> unicode or None

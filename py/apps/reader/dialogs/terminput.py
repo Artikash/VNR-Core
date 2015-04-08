@@ -579,7 +579,7 @@ class _TermInput(object):
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
-          for lang in ('romaji', 'ru', 'ko', 'th')
+          for lang in ('romaji', 'ru', 'ko', 'th', 'ar')
         ))
         text = self.patternEdit.text().strip()
         if text and convutil.ja2zh_name_test(text):

@@ -225,10 +225,10 @@ class TermWriter:
     to2 = to[:2]
 
     frKanjiLanguage = config.is_kanji_language(fr)
-    frLatinLanguage = not frKanjiLanguage
+    frSpaceLanguage = config.language_word_has_space(fr)
 
     toKanjiLanguage = config.is_kanji_language(to)
-    toLatinLanguage = not toKanjiLanguage
+    toSpaceLanguage = config.language_word_has_space(to)
 
     empty = True
 
@@ -289,12 +289,12 @@ class TermWriter:
                 repl = "[[]]%s" % repl
             elif td.type == 'prefix':
               if not _contains_syntax_symbol(pattern):
-                if frLatinLanguage:
+                if frSpaceLanguage:
                   pattern = "%s [[%s]]" % (pattern, defs.TERM_NAME_ROLE)
                 else:
                   pattern = "%s[[%s]]" % (pattern, defs.TERM_NAME_ROLE)
               if not _contains_syntax_symbol(repl):
-                if toLatinLanguage:
+                if toSpaceLanguage:
                   repl = "%s [[]]" % repl
                 else:
                   repl = "%s[[]]" % repl
