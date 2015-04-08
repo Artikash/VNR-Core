@@ -22,10 +22,10 @@ SELECT_ID = 'id'
 SELECT_CONTENT = 'content'
 SELECT_WORD = 'word'
 SELECT_WORD_CONTENT = 'word,content'
-SELECT_ID_WORD_CONTENT = 'word,content'
-SELECT_ALL = SELECT_ID_WORD_CONTENT
+SELECT_ID_WORD_CONTENT = 'id,word,content'
+SELECT_ALL = '*'
 
-def getentry(cur, id, select=SELECT_WORD_CONTENT):
+def getentry(cur, id, select=SELECT_ALL):
   """
   @param  cursor
   @param* select  str
@@ -37,7 +37,7 @@ def getentry(cur, id, select=SELECT_WORD_CONTENT):
   cur.execute(sql, params)
   return cur.fetchone()
 
-def queryentry(cur, word='', wordlike='', limit=1, select=SELECT_WORD_CONTENT):
+def queryentry(cur, word='', wordlike='', limit=1, select=SELECT_ALL):
   """
   @param  cursor
   @param* word  unicode

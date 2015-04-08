@@ -15,7 +15,9 @@ import dictdb, dbutil
 
 # Queries
 
-def queryentries(cur, surface, limit=0, select=dictdb.SELECT_WORD_CONTENT):
+SELECT_ALL = 'entry.*'
+
+def queryentries(cur, surface, limit=0, select=SELECT_ALL):
   """
   @param  cursor
   @param* surface  unicode
@@ -24,7 +26,7 @@ def queryentries(cur, surface, limit=0, select=dictdb.SELECT_WORD_CONTENT):
   @raise
   """
   params = [surface]
-  sql = "SELECT %s FROM entry e, surface f where e.id = f.entry_id and f.text = ?" % select
+  sql = "SELECT %s FROM entry, surface f where entry.id = f.entry_id and f.text = ?" % select
   if limit:
     sql += ' limit ?'
     params.append(limit)
@@ -145,11 +147,12 @@ if __name__ == '__main__':
 
   def test_query():
     #t = u'あしきり'
-    t = u'ごめんなさい'
+    #t = u'ごめんなさい'
+    t = u'ご'
     with sqlite3.connect(dbpath) as conn:
       cur = conn.cursor()
       for it in queryentries(cur, surface=t):
-        print it
+        print it[0], it[1], it[2]
 
   #test_create()
   test_query()
