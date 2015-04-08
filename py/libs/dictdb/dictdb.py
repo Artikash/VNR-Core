@@ -175,11 +175,10 @@ def makedb(dbpath, entries): # unicode path -> bool
     if os.path.exists(dbpath):
       os.remove(dbpath)
     with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      dictdb.createtables(cur)
+      dictdb.createtables(conn.cursor())
       conn.commit()
 
-      insertentries(cur, entries)
+      insertentries(conn.cursor(), entries)
       conn.commit()
       return True
   except Exception, e:

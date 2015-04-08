@@ -43,12 +43,11 @@ def makedb(dbpath, dictpath): # unicode path -> bool
     if os.path.exists(dbpath):
       os.remove(dbpath)
     with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      dictdb.createtables(cur)
+      dictdb.createtables(conn.cursor())
       conn.commit()
 
       q = edictp.parsefile(dictpath)
-      dictdb.insertentries(cur, q, ignore_errors=True)
+      dictdb.insertentries(conn.cursor(), q, ignore_errors=True)
       conn.commit()
       return True
   except Exception, e:
@@ -63,12 +62,11 @@ def makesurface(dbpath): # unicode path -> bool
   """
   try:
     with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      q = create_surface_tables(cur)
+      q = create_surface_tables(conn.cursor())
       conn.commit()
 
-      q = iter_entry_surfaces(cur)
-      insertsurfaces(cur, q)
+      q = iter_entry_surfaces(conn.cursor())
+      insertsurfaces(conn.cursor(), q)
       conn.commit()
       return True
   except Exception, e:
@@ -146,6 +144,7 @@ if __name__ == '__main__':
       print makesurface(dbpath)
 
   def test_query():
+    #t = u'あしきり'
     t = u'ごめんなさい'
     with sqlite3.connect(dbpath) as conn:
       cur = conn.cursor()

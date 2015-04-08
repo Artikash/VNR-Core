@@ -100,10 +100,10 @@ if __name__ == '__main__':
       q = dictdb.iterwords(cur)
       with open(csvpath, 'w') as f:
         for i,word in enumerate(q):
-           id = i + 1
-           entries = edictp.parseword(word)
-           lines = assemble(entries, id=id, type='edict')
-           f.writelines(lines)
+          id = i + 1
+          entries = edictp.parseword(word)
+          lines = assemble(entries, id=id, type='edict')
+          f.writelines(lines)
 
   def test_compile():
     dicdir = "../../../../../../Caches/Dictionaries/UniDic"

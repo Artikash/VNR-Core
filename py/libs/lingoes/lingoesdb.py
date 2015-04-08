@@ -28,9 +28,10 @@ class LingoesDb(object):
     import lingoesparse
     try:
       with sqlite3.connect(self.dbpath) as conn:
-        cur = conn.cursor()
-        dictdb.createtables(cur)
+        dictdb.createtables(conn.cursor())
         conn.commit()
+
+        cur = conn.cursor()
         l = lingoesparse.parsefile(ldpath, inenc=inenc, outenc=outenc or inenc,
             callback=lambda word, xmls: dictdb.insertentry(cur, (
               word,

@@ -66,8 +66,7 @@ def createdb(dbpath): # unicode path -> bool
   """
   try:
     with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      createtables(cur)
+      createtables(conn.cursor())
       conn.commit()
       return True
   except Exception, e:
@@ -88,8 +87,7 @@ if __name__ == '__main__':
       pass
 
   with sqlite3.connect(path) as conn:
-    with SkProfiler():
-      cur = conn.cursor()
+    cur = conn.cursor()
     with SkProfiler():
       insertentry(cur, u'こんにちは', 'hello')
       conn.commit()
