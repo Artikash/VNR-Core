@@ -19,8 +19,8 @@ import dbutil
 # Queries
 
 SELECT_ID = 'id'
-SELECT_CONTENT = 'content'
 SELECT_WORD = 'word'
+SELECT_CONTENT = 'content'
 SELECT_WORD_CONTENT = 'word,content'
 SELECT_ID_WORD_CONTENT = 'id,word,content'
 SELECT_ALL = '*'

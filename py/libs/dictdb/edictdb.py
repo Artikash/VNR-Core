@@ -15,9 +15,18 @@ import dictdb, dbutil
 
 # Queries
 
-SELECT_ALL = 'entry.*'
+SELECT_ENTRY_ID = 'entry.id'
+SELECT_ENTRY_WORD = 'entry.word'
+SELECT_ENTRY_CONTENT = 'entry.content'
+SELECT_ENTRY_WORD_CONTENT = 'entry.word,entry.content'
+SELECT_ENTRY_ID_WORD_CONTENT = 'entry.id,entry.word,entry.content'
+SELECT_ENTRY_ALL = 'entry.*'
 
-def queryentries(cur, surface, limit=0, select=SELECT_ALL):
+SELECT_SURFACE_ID = 'surface.id'
+SELECT_SURFACE_TEXT = 'surface.text'
+SELECT_SURFACE_ALL = 'surface.*'
+
+def queryentries(cur, surface, limit=0, select=SELECT_ENTRY_ALL):
   """
   @param  cursor
   @param* surface  unicode
