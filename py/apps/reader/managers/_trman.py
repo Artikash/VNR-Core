@@ -51,6 +51,11 @@ _re_escape = re.compile(ur"(?:Z[A-Y]+Z|[0-9 .,?!%s])+$" % jpchars.s_punct)
 def is_escaped_text(text): # unicode -> bool
   return bool(_re_escape.match(text))
 
+_re_lower_proxy = re.compile(r"z[a-y]+z") # fix proxy token take become lower-case
+_sub_lower_proxy = lambda m:m.group().upper()
+def fix_lower_proxy(text): #  unicode -> unicode
+  return _re_lower_proxy.sub(_sub_lower_proxy, text)
+
 # All methods in this class are supposed to be thread-safe
 # Though they are not orz
 class TranslationCache:
@@ -1937,6 +1942,8 @@ class BaiduTranslator(OnlineMachineTranslator):
           engine.translate,
           to, fr, async, align=align)
       if repl:
+        if not fr.startswith('zh') and not to.startswith('zh'): # not translate chinese
+          repl = fix_lower_proxy(repl)
         if to == 'zht':
           #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
           repl = zhs2zht(repl)
@@ -1985,7 +1992,6 @@ class YoudaoTranslator(OnlineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  __youdao_proxy_fix = re.compile(r"z[a-y]+z")
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
@@ -2006,7 +2012,7 @@ class YoudaoTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        repl = self.__youdao_proxy_fix.sub(lambda m:m.group().upper(), repl)
+        repl = fix_lower_proxy(repl)
         if to == 'zht':
           repl = zhs2zht(repl)
         repl = self.__youdao_repl_after(repl)
