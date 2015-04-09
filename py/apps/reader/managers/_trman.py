@@ -51,7 +51,7 @@ _re_escape = re.compile(ur"(?:Z[A-Y]+Z|[0-9 .,?!%s])+$" % jpchars.s_punct)
 def is_escaped_text(text): # unicode -> bool
   return bool(_re_escape.match(text))
 
-_re_lower_proxy = re.compile(r"z[a-y]+z") # fix proxy token take become lower-case
+_re_lower_proxy = re.compile(r"[Zz][a-y]+z") # fix proxy token take become lower-case
 _sub_lower_proxy = lambda m:m.group().upper()
 def fix_lower_proxy(text): #  unicode -> unicode
   return _re_lower_proxy.sub(_sub_lower_proxy, text)
@@ -471,13 +471,14 @@ class MachineTranslator(Translator):
     """
     return skthreads.runsync(partial(fn, text, **kwargs)) if async and self.asyncSupported else fn(text, **kwargs)
 
-  def _encodeTranslation(self, text, to, fr, emit, proxies=None, scriptEnabled=False):
+  def _encodeTranslation(self, text, to, fr, emit, proxies=None, proxyDigit=False, scriptEnabled=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param  emit  bool
     @param* proxies  {unicode:unicode} or None
+    @param* proxyDigit  bool
     @param* scriptEnabled  bool
     @return  unicode
     """
@@ -518,7 +519,7 @@ class MachineTranslator(Translator):
 
     if proxies is not None:
       t = text
-      text = tm.delegateTranslation(text, to=to, fr=fr, host=self.key, proxies=proxies)
+      text = tm.delegateTranslation(text, to=to, fr=fr, host=self.key, proxies=proxies, proxyDigit=proxyDigit)
       if emit and text != t:
         self.emitDelegateText(text)
 
@@ -527,7 +528,7 @@ class MachineTranslator(Translator):
       self.emitSplitTexts(l)
     return text
 
-  def _decodeTranslation(self, text, to, fr, mark, emit, proxies=None):
+  def _decodeTranslation(self, text, to, fr, mark, emit, proxies=None, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
@@ -535,6 +536,7 @@ class MachineTranslator(Translator):
     @param  mark  bool or None
     @param  emit  bool
     @param* proxies  {unicode:unicode} or None
+    @param* proxyDigit  bool
     @return  unicode
     """
     tm = termman.manager()
@@ -543,7 +545,7 @@ class MachineTranslator(Translator):
 
     if proxies is not None:
       t = text
-      text = tm.undelegateTranslation(text, to=to, fr=fr, host=self.key, proxies=proxies)
+      text = tm.undelegateTranslation(text, to=to, fr=fr, host=self.key, proxies=proxies, proxyDigit=proxyDigit)
       if emit and text != t:
         self.emitDelegateTranslation(text)
 
@@ -1779,14 +1781,15 @@ class BingTranslator(OnlineMachineTranslator):
       if repl:
         return repl, to, self.key
     proxies = {}
-    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    proxyDigit = to == 'ar' # bing tends to translate latin letters to arabic
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, scriptEnabled=scriptEnabled, proxies=proxies, proxyDigit=proxyDigit)
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
           to, fr, async, align=align)
       if repl:
         #repl = self.__fix_escape.sub('.', repl)
-        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies, proxyDigit=proxyDigit)
         self.cache.update(text, repl)
     return repl, to, self.key
 

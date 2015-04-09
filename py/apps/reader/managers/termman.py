@@ -225,13 +225,14 @@ class _TermManager:
       r"<[-0-9<>]+>"
     r"}}"
   )
-  def delegateTranslation(self, text, to, fr, host, proxies):
+  def delegateTranslation(self, text, to, fr, host, proxies, proxyDigit):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param  host  str
-    @param* proxies  {unicode input:unicode output}
+    @param  proxies  {unicode input:unicode output}
+    @param  proxyDigit  proxy using letters or digits
     @return  unicode
     """
     if '{{' not in text or '}}' not in text:
@@ -255,44 +256,41 @@ class _TermManager:
             proxies[proxy.output] = matched_text
             return proxy.input
       index = len(proxies)
-      ret = defs.term_role_proxy(role, index)
+      ret = defs.term_role_proxy(role, index, proxyDigit=proxyDigit)
       proxies[ret] = matched_text
       return ret
     return self._rx_delegate.sub(fn, text)
 
-  _rx_undelegate = re.compile(r"Z[A-Y]+Z")
-  #_rx_undelegate_latin = re.compile(r"\b(Z[A-X]+Z)\b")
-  def undelegateTranslation(self, text, to, fr, host, proxies):
+  _rx_undelegate_latin = re.compile(r"Z[A-Y]+Z")
+  _rx_undelegate_digit = re.compile(r"9[0-8]+9")
+  def undelegateTranslation(self, text, to, fr, host, proxies, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param  host  str
     @param* proxies  {unicode input:unicode output}
+    @param* proxyDigit  proxy using letters or digits
     @return  unicode
     """
     if not proxies:
       return text
-    if 'Z' in text:
+    rx = None
+    if proxyDigit:
+      if '9' in text:
+        rx = self._rx_undelegate_digit
+    else:
+      if 'Z' in text:
+        rx = self._rx_undelegate_latin
+    if rx:
       def fn(m): # re.match -> unicode
         matched_text = m.group()
         try: return proxies.pop(matched_text)
         except KeyError: return matched_text
-      text = self._rx_undelegate.sub(fn, text)
+      text = rx.sub(fn, text)
     if proxies:
       #to_latin = config.is_latin_language(to)
       for k,v in proxies.iteritems():
-        #if to_latin:
-        #  try:
-        #    if k.istitle():
-        #      pattern = r"%s\b" % re.escape(k)
-        #    else:
-        #      pattern = r"\b%s\b" % re.escape(k)
-        #    rx = re.compile(pattern, re.UNICODE)
-        #    text = rx.sub(v, text)
-        #  except Exception, e:
-        #    dwarn(e)
-        #else:
         text = text.replace(k, v)
     return text
 
@@ -339,6 +337,7 @@ class TermManager(QObject):
       # Reset translation scripts
       d.scripts = {}
       d.scriptTimes = {}
+      d.proxies = {}
       # Reset rule-based translator
       #d.rbmt = {}
       #d.rbmtTimes = {}
@@ -562,13 +561,14 @@ class TermManager(QObject):
     #with SkProfiler("decode trans"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
     return d.applyTerms(text, 'decode', to, fr, host=host, mark=mark)
 
-  def delegateTranslation(self, text, to, fr, host='', proxies={}):
+  def delegateTranslation(self, text, to, fr, host='', proxies={}, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param* host  str
     @param* proxies  {unicode input:unicode output}
+    @param* proxyDigit  proxy using letters or digits
     @return  unicode
     """
     d = self.__d
@@ -576,15 +576,16 @@ class TermManager(QObject):
       return text
     # 3/11/2015: 5e-5 seconds with codec
     #with SkProfiler("delegate term"):
-    return d.delegateTranslation(text, to, fr, host, proxies)
+    return d.delegateTranslation(text, to, fr, host, proxies, proxyDigit=proxyDigit)
 
-  def undelegateTranslation(self, text, to, fr, host='', proxies={}):
+  def undelegateTranslation(self, text, to, fr, host='', proxies={}, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
     @param* host  str
     @param* proxies  {unicode input:unicode output}
+    @param* proxyDigit  proxy using letters or digits
     @return  unicode
     """
     d = self.__d
@@ -592,6 +593,6 @@ class TermManager(QObject):
       return text
     # 3/11/2015: 4e-5 seconds with codec
     #with SkProfiler("undelegate term"):
-    return d.undelegateTranslation(text, to, fr, host, proxies)
+    return d.undelegateTranslation(text, to, fr, host, proxies, proxyDigit=proxyDigit)
 
 # EOF
