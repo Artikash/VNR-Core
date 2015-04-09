@@ -257,9 +257,9 @@ class _NameInput(object):
       infoEdit = self._createInfoEdit()
 
       c = 0
-      self.grid.addWidget(yomiButton, rowCount, c)
-      c += 1
       self.grid.addWidget(nameButton, rowCount, c)
+      c += 1
+      self.grid.addWidget(yomiButton, rowCount, c)
       c += 1
       self.grid.addWidget(nameTtsButton, rowCount, c)
       c += 1
@@ -301,10 +301,10 @@ class _NameInput(object):
     import ttsman
     ttsman.speak(name)
 
-  def _createYomiEdit(self):
-    return self._createLabel('text-info', mytr_("Yomi"), NAME_EDIT_MIN_WIDTH)
   def _createNameEdit(self):
-    return self._createLabel('text-success', tr_("Kanji"), NAME_EDIT_MIN_WIDTH)
+    return self._createLabel('text-info', tr_("Kanji"), NAME_EDIT_MIN_WIDTH)
+  def _createYomiEdit(self):
+    return self._createLabel('text-success', mytr_("Yomi"), NAME_EDIT_MIN_WIDTH)
   def _createInfoEdit(self):
     return self._createLabel('text-error', tr_("Comment"), INFO_EDIT_MIN_WIDTH)
   def _createLabel(self, styleclass, tip, minwidth):
