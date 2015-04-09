@@ -339,6 +339,7 @@ class TermManager(QObject):
       # Reset translation scripts
       d.scripts = {}
       d.scriptTimes = {}
+      d.proxies = {}
       # Reset rule-based translator
       #d.rbmt = {}
       #d.rbmtTimes = {}
