@@ -22,7 +22,7 @@ EN = u"""
 		ゐ:wyi				ゑ:wye
 ん:n
 
-が:ga		ぎ:gi		ぐ:غو		げ:ge		ご:go
+が:ga		ぎ:gi		ぐ:gu		げ:ge		ご:go
 ざ:za		じ:ji		ず:zu		ぜ:ze		ぞ:zo
 だ:da		ぢ:ji		づ:zu		で:de		ど:do
 ば:ba		び:bi		ぶ:bu		べ:be		ぼ:bo

@@ -240,6 +240,7 @@ if __name__ == '__main__':
     (u'せんせい', u'sensei'),
     (u'ちゃん', u'chan'),
     (u'ちょうきょう', u'choukyou'),
+    (u'ぐりぐり', u'guriguri'),
   ]
   for k,v in l:
     print k, kana2romaji(k), v

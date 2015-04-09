@@ -11,6 +11,7 @@ _J2C_NAME = {
   u'ノ': u'之',
   u'の': u'之',
   u'ヶ': '',
+  u'し': '', # example: 串刺し公
 }
 _rx_name_repeat = re.compile(
   jpmacros.applymacros(
@@ -40,10 +41,9 @@ def ja2zht_name_fix(text): # unicode -> unicode
   return text.replace(u'裡', u'里').replace(u'裏', u'里')
 
 if __name__ == '__main__':
-  t = u'佐藤'
-  t = u'乃々華'
-  print ja2zh_name_test(t)
-  t = u'乃々華'
-  print ja2zh_name(t)
+  s = u'乃々華'
+  #s = u'串刺し公'
+  print ja2zh_name_test(s)
+  print ja2zh_name(s)
 
 # EOF
