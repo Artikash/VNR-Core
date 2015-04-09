@@ -177,25 +177,40 @@ MAX_NAME_LENGTH = 16 # maximum number of characters in text
 #JITTER_ESCAPE_LATIN = "SJ341"
 JITTER_PROXY = 'ZJZ'
 
-TERM_ROLE_PROXIES = {
+TERM_PROXY_LATIN_TOKENS = 'BCDFGHJKLMNPQRSTVWXY' # no AEIOUZ
+TERM_PROXY_DIGIT_TOKENS = '012345678' # no 9
+TERM_ROLE_LATIN_PROXIES = {
   TERM_NAME_ROLE: 'M',
   TERM_NOUN_ROLE: 'N',
 }
-def term_role_proxy(role, index):
+TERM_ROLE_DIGIT_PROXIES = {
+  TERM_NAME_ROLE: '1',
+  TERM_NOUN_ROLE: '2',
+}
+def term_role_proxy(role, index, proxyDigit=False):
   """
   @param  role  str
   @param  index  int
+  @param* proxyDigit  bool
   @return str
   """
-  role = TERM_ROLE_PROXIES.get(role) or 'X'
-  if index <= 25:
-    esc = chr(ord('A') + (index % 25))
+  if proxyDigit:
+    role = TERM_ROLE_DIGIT_PROXIES.get(role) or '0'
+    tokens = TERM_PROXY_DIGIT_TOKENS
+    padding = '9'
+  else:
+    role = TERM_ROLE_LATIN_PROXIES.get(role) or 'X'
+    tokens = TERM_PROXY_LATIN_TOKENS
+    padding = 'Z'
+  n = len(tokens)
+  if index <= n:
+    esc = tokens[index % n]
   else:
     esc = ''
     while index:
-      esc += chr(ord('A') + (index % 25))
-      index = index / 25
-  return 'Z%s%sZ' % (role, esc)
+      esc += tokens[index % n]
+      index = index / n
+  return padding + role + esc + padding
 
 # Game info
 OKAZU_TAGS = [
