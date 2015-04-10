@@ -44,7 +44,7 @@ def get(): # -> bool
 
   from sakurakit import sknetio
   ok = False
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, tmppath, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(tmppath) == size
       if ok:

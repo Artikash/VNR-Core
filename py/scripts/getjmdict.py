@@ -49,7 +49,7 @@ def extract(lang): # str -> bool
 
   import shutil
   from sakurakit import skfileio
-  with SkProfiler():
+  with SkProfiler("extract"):
     ok = skfileio.extracttar(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
@@ -77,7 +77,7 @@ def get(lang): # str -> bool
 
   ok = False
   from sakurakit import skfileio, sknetio
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) > MIN_FILESIZE
   if not ok and os.path.exists(path):

@@ -12,9 +12,9 @@ env:
   - $PWD/../Python
   - $PWD/../Qt/PySide
   - $PWD/../MeCab/bin
-  - $PWD/../CaboCha/bin
   - $PWD/../Boost/bin
   - $PWD/../Ehnd/bin
+  #- $PWD/../CaboCha/bin
   #- $PWD/../EB/site-packages
 
   pythonpath:
@@ -25,8 +25,8 @@ env:
   - $PWD/../Qt
   - $PWD/../Qt/PySide   # for shiboken
   - $PWD/../MeCab/py
-  - $PWD/../CaboCha/py
   - $PWD/../EB/site-packages
+  #- $PWD/../CaboCha/py
   #- $PWD/../Qt/site-packages
 
   #mecabrc: $PWD/../../Dictionaries/mecabrc
@@ -42,12 +42,12 @@ env:
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
-  - $PWD/../CaboCha/bin/cabocha.dll
   - $PWD/../Boost/bin/boost_regex.dll
   - $PWD/../Ehnd/bin/ehnd.dll
   - $PWD/../EB/site-packages/eb.pyd
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
   - $PWD/../../Fonts/msgothic.ttf
+  #- $PWD/../CaboCha/bin/cabocha.dll
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2
   #- $PWD/../NTLEA/ntleac.exe # do not work on Code Ultra
 

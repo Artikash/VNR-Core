@@ -18,7 +18,7 @@ class Dict(res.Resource):
 class Edict(Dict):
   def __init__(self):
     super(Edict, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "EDICT/edict.db"),
+      path=os.path.join(rc.EDICT_PATH),
       lockpath=os.path.join(rc.DIR_TMP, "edict.lock"),
     )
     self._mutex = QMutex()

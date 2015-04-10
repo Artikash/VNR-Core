@@ -84,6 +84,10 @@ DIR_CACHE_SUB = DIR_APP_CACHE + '/Subtitles'    # $app/Caches/Subtitles
 DIR_XML_COMMENT = DIR_CACHE_SUB + '/xml'        # $app/Caches/Subtitles/xml
 DIR_YAML_SUB = DIR_CACHE_SUB + '/yaml'          # $app/Caches/Subtitles/yaml
 
+# Dictionaries
+
+EDICT_PATH = DIR_CACHE_DICT + "/EDICT/edict.db"
+
 # Apps
 
 def app_path(name):

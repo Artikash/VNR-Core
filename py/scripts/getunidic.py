@@ -35,7 +35,7 @@ UNIDIC_FILENAME = 'unidic'
 UNIDIC_SUFFIX = '.tbz2'
 
 def init():
-  for it in TMP_DIR:
+  for it in TMP_DIR,:
     if not os.path.exists(it):
       os.makedirs(it)
 
@@ -53,7 +53,7 @@ def get(): # return bool
 
   from sakurakit import sknetio
   ok = False
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) > size
   if not ok and os.path.exists(path):
@@ -70,7 +70,7 @@ def extract():
 
   import shutil
   from sakurakit import skfileio
-  with SkProfiler():
+  with SkProfiler("extract"):
     ok = skfileio.extracttar(srcpath, tmppath, mode='r:bz2')
   if ok:
     if os.path.exists(targetpath):

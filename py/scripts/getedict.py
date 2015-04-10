@@ -1,6 +1,7 @@
 # coding: utf8
 # getedict.py
-# 11/3/2013 jichi
+# Get the latest lingoes dictionaries
+# 2/9/2014 jichi
 
 if __name__ == '__main__':
   import initrc
@@ -16,55 +17,81 @@ TARGET_DIR = initdefs.CACHE_EDICT_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 FILENAME = 'edict.db'
 
-MIN_EDICT_SIZE = 20 * 1024 * 1024 # 20MB
+EDICT_URL = 'http://ftp.monash.edu.au/pub/nihongo/edict2u.gz'
+MIN_EDICT_SIZE = 15 * 1024 * 1024 # 15MB, actually 15 ~ 16 MB
+EDICT_FILENAME = 'edict2u'
+DB_FILENAME = 'edict.db'
 
-def init():
-  for it in TMP_DIR,: #TARGET_DIR
+import initdefs
+DB_DIR = initdefs.CACHE_LINGOES_RELPATH
+TMP_DIR = initdefs.TMP_RELPATH
+LD_DIR = TMP_DIR
+
+# Tasks
+
+def init(): # raise
+  for it in TARGET_DIR, TMP_DIR: # DB_DIR,
     if not os.path.exists(it):
       os.makedirs(it)
 
-def get(): # return bool
-  dprint("enter")
-  targetpath = TARGET_DIR + '/' + FILENAME
-  tmppath = TMP_DIR + '/' + FILENAME
+def get(): # -> bool
+  url = EDICT_URL
+  minsize = MIN_EDICT_SIZE
+  tmppath = TMP_DIR + '/' + EDICT_FILENAME
+  targetpath = TARGET_DIR + '/' + EDICT_FILENAME
 
-  from sakurakit import skfileio
-  for it in targetpath, tmppath:
-    if os.path.exists(it):
-      skfileio.removefile(it)
+  dprint("enter: url = %s, minsize = %s" % (url, minsize))
 
-  import sys
-  #prefix = os.path.abspath(TMP_DIR) # relative path is OK for sqlitedb
-  sys.argv.append('--prefix=' + TMP_DIR)
-  #sys.argv.append('--targetPath=' + TMP_DIR) # not working
-  sys.argv.append('EDICT')
+  #from sakurakit import skfileio
+  #if os.path.exists(path) and skfileio.filesize(path) == size:
+  #  dprint("leave: already downloaded")
+  #  return True
 
   ok = False
-
-  #from cjklib.dictionary.install import CommandLineInstaller
-  from cjklibinstall import CommandLineInstaller
-  inst = CommandLineInstaller()
-  with SkProfiler():
-    if inst.run() and skfileio.filesize(tmppath) > MIN_EDICT_SIZE:
-      os.renames(tmppath, targetpath) # renames to create target directory
-      ok = True
-    elif os.path.exists(tmppath):
-      skfileio.removefile(tmppath)
+  from sakurakit import skfileio, sknetio
+  with SkProfiler("fetch"):
+    # gzip=True to automatically extract gzip
+    # flush=false to use more memory to reduce disk access
+    if sknetio.getfile(url, tmppath, flush=False, gzip=True):
+      ok = skfileio.filesize(tmppath) > minsize
+  if ok:
+    os.rename(tmppath, targetpath)
+  if not ok:
+    for it in tmppath, targetpath:
+      if os.path.exists(it):
+        skfileio.removefile(it)
   dprint("leave: ok = %s" % ok)
   return ok
 
-## Main ##
+def makedb(): # -> bool
+  dprint("enter")
+  src = TARGET_DIR + '/' + EDICT_FILENAME
+  target = TARGET_DIR + '/' + DB_FILENAME
+
+  from dictdb import edictdb
+  with SkProfiler("create db"):
+    ok = edictdb.makedb(target, src)
+  if ok:
+    with SkProfiler("create index"):
+      ok = edictdb.makesurface(target)
+
+  if not ok and os.path.exists(target):
+    from sakurakit import skfileio
+    skfileio.removefile(target)
+  dprint("leave: ok = %s" % ok)
+  return ok
+
+# Main process
 
 def main():
   """
-  @param  argv  [unicode]
   @return  int
   """
   dprint("enter")
   ok = False
   try:
     init()
-    ok = get()
+    ok = get() and makedb()
     if ok:
       from sakurakit import skos
       skos.open_location(os.path.abspath(TARGET_DIR))
@@ -74,46 +101,13 @@ def main():
   dprint("leave: ret = %s" % ret)
   return ret
 
-#UPDATE_INTERVAL = 86400 * 30 # a month
-#def needsupdate():
-#  """
-#  @return  bool  whether perform update
-#  """
-#  import os
-#  from sakurakit import skdatetime, skfileio
-#  HOME = os.path.expanduser('~')
-#  APPDATA = os.environ['appdata'] if 'appdata' in os.environ else os.path.join(HOME, r"AppData\Roaming")
-#  edict = os.path.join(APPDATA,  'cjklib/edict.db')
-#  ts = skfileio.fileupdatetime(edict)
-#  now = skdatetime.current_unixtime()
-#  ret = now > ts + UPDATE_INTERVAL
-#  #dprint("ret = %s" % ret)
-#  return ret
-
-UPDATE_INTERVAL = 86400 * 30 # a month
-def needsupdate():
-  """
-  @return  bool  whether perform update
-  """
-  #HOME = os.path.expanduser('~')
-  #APPDATA = os.environ['appdata'] if 'appdata' in os.environ else os.path.join(HOME, r"AppData\Roaming")
-  #edict = os.path.join(APPDATA,  'cjklib/edict.db')
-  from sakurakit import skdatetime, skfileio
-  targetpath = TARGET_DIR + '/' + FILENAME
-  ts = skfileio.fileupdatetime(targetpath)
-  now = skdatetime.current_unixtime()
-  ret = now > ts + UPDATE_INTERVAL
-  #dprint("ret = %s" % ret)
-  return ret
-
 if __name__ == '__main__':
   import sys
   if not initrc.lock('edict.lock'):
     dwarn("multiple instances")
     sys.exit(1)
-  if needsupdate():
-    #ret = main(sys.argv[1:])
-    ret = main()
-    sys.exit(ret)
+  ret = main()
+  sys.exit(ret)
+
 
 # EOF

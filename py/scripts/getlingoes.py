@@ -69,7 +69,7 @@ def getld(lang): # str -> bool
 
   ok = False
   from sakurakit import sknetio
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) == size
   if not ok and os.path.exists(path):
@@ -96,7 +96,7 @@ def makedb(lang): # str -> bool
 
   ok = False
   from lingoes.lingoesdb import LingoesDb
-  with SkProfiler():
+  with SkProfiler("extract"):
     if LingoesDb(tmppath).create(ldpath, dic['inenc'], dic['outenc']):
       os.renames(tmppath, dbpath) # renames to create DB_DIR
       ok = True
