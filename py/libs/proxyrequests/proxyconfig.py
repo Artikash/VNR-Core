@@ -4,8 +4,8 @@
 # See: https://twitter.com/bypassproxy
 
 JPWEBPROXY_CONFIG = { # faster, but jittered
-  'host': 'http://japanwebproxy.nu',
-  'referer': 'http://japanwebproxy.nu',
+  'host': 'http://anonymity.nu',
+  'referer': 'http://anonymity.nu',
   'postkey': 'x',
   'region': 'ja',
 }

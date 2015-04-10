@@ -669,8 +669,8 @@ jmdict: # language
   - nl
 
 jcuserdic: # The preferences will be from top to down
-  - $PWD/../../Dictionaries/jb/@jichi/JcUserdic/Jcuser
   - $PWD/../../Dictionaries/jb/@djz020815/JcUserdic/Jcuser
+  #- $PWD/../../Dictionaries/jb/@jichi/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/JBeijing/@Hdgdyl/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/JBeijing/@Zhugeqiu/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/JBeijing/@Goodboyye/JcUserdic/Jcuser
