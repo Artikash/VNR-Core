@@ -14,11 +14,12 @@ from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_, notr_
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
-from msime import msime
 from share.mt import mtinfo
 from mytr import my, mytr_
 from dataman import GUEST
 import audioinfo, config, cacheman, dataman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, trman, ttsman
+
+MSIME_ENABLED = False # MSIME preferences are disabled
 
 def parent_window(): # replace self.q to make sure windows is always visible
   import windows
@@ -6599,7 +6600,8 @@ class _DictionaryLibraryTab(object):
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.msimeGroup)
+    if MSIME_ENABLED:
+      layout.addWidget(self.msimeGroup)
     blans = settings.global_().blockedLanguages()
     #if 'ja' not in blans:
     layout.addWidget(self.daijirinGroup)
@@ -6641,6 +6643,7 @@ class _DictionaryLibraryTab(object):
 
   _MSIME_LOCATION = None # cached
   def _refreshMsime(self):
+    from msime import msime
     ok = msime.ja_valid()
     path = None
     if ok:
@@ -7029,9 +7032,10 @@ Zhongri is <span style="color:purple">not free</span>, and you can purchase one 
 )
 
   def refresh(self):
-    blans = settings.global_().blockedLanguages()
+    if MSIME_ENABLED:
+      self._refreshMsime()
 
-    self._refreshMsime()
+    blans = settings.global_().blockedLanguages()
     self._refreshDaijirin()
     self._refreshKojien()
 

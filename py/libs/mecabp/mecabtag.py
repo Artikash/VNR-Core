@@ -24,7 +24,7 @@ def normalizepath(path):
     path = path.replace('/', os.path.sep) #.lower()
     import win32api
     path = win32api.GetShortPathName(path) # eliminate spaces on the path
-  return '' if ' ' in path else path # the path cannont contain spaces
+  return '' if ' ' in path else path # the path cannot contain spaces
 
 def maketaggerargs(**kwargs):
   if not kwargs:
@@ -48,23 +48,23 @@ def createtagger(args=None):
   import MeCab
   try:
     ret = MeCab.Tagger() if args is None else MeCab.Tagger(args)
-    ret.parse("") # critical
+    ret.parse("") # it is critical to warm up tagger
     return ret
   except Exception, e:
     dwarn(e)
 
-TAGGERS = {} # never delete
-def gettagger(**kwargs):
-  """Taggers are cached
-  @param* dicdir  unicode  path
-  @param* userdic  unicode  path
-  @return  MeCab.Tagger or None
-  """
-  args = maketaggerargs(**kwargs)
-  ret = TAGGERS.get(args)
-  if not ret:
-    ret = TAGGERS[args] = createtagger(args)
-  return ret
+#TAGGERS = {} # never delete
+#def gettagger(**kwargs):
+#  """Taggers are cached
+#  @param* dicdir  unicode  path
+#  @param* userdic  unicode  path
+#  @return  MeCab.Tagger or None
+#  """
+#  args = maketaggerargs(**kwargs)
+#  ret = TAGGERS.get(args)
+#  if not ret:
+#    ret = TAGGERS[args] = createtagger(args)
+#  return ret
 
 # Environment variables
 

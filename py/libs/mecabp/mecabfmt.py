@@ -9,9 +9,9 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-class DEFAULT(object):
+class UNIDIC(object):
 
-  SPLIT = ','
+  SEP = ','
 
   # Columns starts from 0
 
@@ -23,7 +23,7 @@ class DEFAULT(object):
 
   @classmethod
   def getcol(cls, f, col): # unicode, int -> unicode
-    l = f.split(cls.SPLIT)
+    l = f.split(cls.SEP)
     if len(l) >= col + 1:
       return l[col]
 
@@ -35,23 +35,6 @@ class DEFAULT(object):
   def getsurface(cls, f): # unicode feature -> unicode or None
     return cls.getcol(f, cls.COL_SURFACE)
 
-  @classmethod
-  def csv(cls, surf, cost, hira, kata): # unicode* -> unicode
-    #u"工藤,1223,1223,6058,名詞,固有名詞,人名,名,*,*,くどう,クドウ,クドウ"
-    return u"%s,,,%s,名詞,固有名詞,人名,名,*,*,%s,%s,%s" % (surf, cost, hira, kata, kata)
-
-# Example: 名詞,一般,*,*,*,*,憎しみ,ニクシミ,ニクシミ
-class IPADIC(DEFAULT):
-
-  @classmethod
-  def getkata(cls, f): # override, more efficient
-    i = f.rfind(',')
-    if i > 0:
-      j = f.rfind(',', 0, i)
-      if j > 0:
-        return f[j+1:i]
-
-class UNIDIC(DEFAULT):
   COL_KANJI = DEFAULT.COL_BASIC + 2
   COL_SURFACE = COL_KANJI + 1
   COL_ORIG = 12 # Columns starts from 0
@@ -76,14 +59,25 @@ class UNIDIC(DEFAULT):
 
 # ジョジョの奇妙な冒険,,,0,名詞,固有名詞,一般,*,*,*,ジョジョノキミョウナボウケン,ジョジョの奇妙な冒険,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,*,*,*,*
 
-FORMATS = {
-  'ipadic': IPADIC,
-  'unidic': UNIDIC,
-  'unidic-mlj': UNIDIC,
-}
-def getfmt(name):
-  return FORMATS.get(name) or DEFAULT
-
 DEFAULT = UNIDIC
 
 # EOF
+
+# Example: 名詞,一般,*,*,*,*,憎しみ,ニクシミ,ニクシミ
+#class IPADIC(DEFAULT):
+#
+#  @classmethod
+#  def getkata(cls, f): # override, more efficient
+#    i = f.rfind(',')
+#    if i > 0:
+#      j = f.rfind(',', 0, i)
+#      if j > 0:
+#        return f[j+1:i]
+#
+#FORMATS = {
+#  'ipadic': IPADIC,
+#  'unidic': UNIDIC,
+#  'unidic-mlj': UNIDIC,
+#}
+#def getfmt(name):
+#  return FORMATS.get(name) or DEFAULT

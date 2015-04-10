@@ -29,11 +29,10 @@ import mecabdef, mecabfmt
 #  """
 #  return _rx_cypher.sub(u'ウ', text)
 
-def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+def parse(tagger, text, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, ruby=mecabdef.RB_HIRA):
   """
-  @param  text  unicode
   @param  tagger  MeCabTagger
-  @param  fmt  mecabfmt
+  @param  text  unicode
   @param* wordtr  (unicode)->unicode
   @param* type  bool  whether return type
   @param* reading  bool   whether return yomigana
@@ -42,9 +41,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
   @param* readingTypes  (int type) or [int type]
   @yield  (unicode surface, int type, unicode yomigana or None, unicode feature or None)
   """
-  if not tagger:
-    import mecabtag
-    tagger = mecabtag.gettagger()
+  readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)
   if reading:
     #if ruby == mecabdef.RB_TR:
     #  wordtr = None
