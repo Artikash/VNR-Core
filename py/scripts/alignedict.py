@@ -51,8 +51,8 @@ def compile(): # -> bool
     os.rename(tmpdicpath, dicpath)
   elif os.path.exists(tmpdicpath):
     skfileio.removefile(tmpdicpath)
-  #if os.path.exists(csvpath):
-  #  skfileio.removefile(csvpath)
+  if os.path.exists(csvpath):
+    skfileio.removefile(csvpath)
   dprint("leave: ok = %s" % ok)
   return ok
 
