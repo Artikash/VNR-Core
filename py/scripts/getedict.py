@@ -1,6 +1,6 @@
 # coding: utf8
 # getedict.py
-# Get the latest lingoes dictionaries
+# Get the latest EDICT dictionary.
 # 2/9/2014 jichi
 
 if __name__ == '__main__':
@@ -23,22 +23,19 @@ EDICT_FILENAME = 'edict2u'
 DB_FILENAME = 'edict.db'
 
 import initdefs
-DB_DIR = initdefs.CACHE_LINGOES_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
-LD_DIR = TMP_DIR
 
 # Tasks
 
 def init(): # raise
-  for it in TARGET_DIR, TMP_DIR: # DB_DIR,
+  for it in TARGET_DIR, TMP_DIR:
     if not os.path.exists(it):
       os.makedirs(it)
 
 def get(): # -> bool
   url = EDICT_URL
   minsize = MIN_EDICT_SIZE
-  tmppath = TMP_DIR + '/' + EDICT_FILENAME
-  targetpath = TARGET_DIR + '/' + EDICT_FILENAME
+  path = TMP_DIR + '/' + EDICT_FILENAME
 
   dprint("enter: url = %s, minsize = %s" % (url, minsize))
 
@@ -52,32 +49,38 @@ def get(): # -> bool
   with SkProfiler("fetch"):
     # gzip=True to automatically extract gzip
     # flush=false to use more memory to reduce disk access
-    if sknetio.getfile(url, tmppath, flush=False, gzip=True):
-      ok = skfileio.filesize(tmppath) > minsize
-  if ok:
-    os.rename(tmppath, targetpath)
-  if not ok:
-    for it in tmppath, targetpath:
-      if os.path.exists(it):
-        skfileio.removefile(it)
+    if sknetio.getfile(url, path, flush=False, gzip=True):
+      ok = skfileio.filesize(path) > minsize
+  if not ok and os.path.exists(path):
+    skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
   return ok
 
 def makedb(): # -> bool
   dprint("enter")
-  src = TARGET_DIR + '/' + EDICT_FILENAME
-  target = TARGET_DIR + '/' + DB_FILENAME
+  tmpdic = TMP_DIR + '/' + EDICT_FILENAME
+  tmpdb = TMP_DIR + '/' + DB_FILENAME
+
+  targetdic = TARGET_DIR + '/' + EDICT_FILENAME
+  targetdb = TARGET_DIR + '/' + DB_FILENAME
 
   from dictdb import edictdb
   with SkProfiler("create db"):
-    ok = edictdb.makedb(target, src)
+    ok = edictdb.makedb(tmpdb, tmpdic)
   if ok:
     with SkProfiler("create index"):
-      ok = edictdb.makesurface(target)
+      ok = edictdb.makesurface(tmpdb)
 
-  if not ok and os.path.exists(target):
-    from sakurakit import skfileio
-    skfileio.removefile(target)
+  from sakurakit import skfileio
+  if ok:
+    skfileio.removefile(targetdb)
+    skfileio.removefile(targetdic)
+    os.rename(tmpdb, targetdb)
+    os.rename(tmpdic, targetdic)
+  else:
+    for it in tmpdb, tmpdic:
+      if os.path.exists(it):
+        skfileio.removefile(it)
   dprint("leave: ok = %s" % ok)
   return ok
 
