@@ -25,7 +25,7 @@ from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
 from unitraits import unichars, jpchars, jpmacros
 from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
-import config, defs, growl, mecabman, termman, textutil, trman, tahscript
+import config, defs, growl, termman, textutil, trman, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
     ur'{{boc}}({{kana}})[っッ]?(?=[、…]\1)'))

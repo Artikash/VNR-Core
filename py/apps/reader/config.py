@@ -218,7 +218,7 @@ ENV_PYTHONPATH = map(parse_path, SHARE_YAML['env']['pythonpath']) # [unicode abs
 
 ENV_INTEGRITYPATH = map(parse_path, SHARE_YAML['env']['integritypath']) # [unicode abspath]
 
-#ENV_MECABRC = parse_path(SHARE_YAML['env']['mecabrc'])   # unicode abspath
+ENV_MECABRC = parse_path(SHARE_YAML['env']['mecabrc']) # unicode abspath
 
 #APP_PATH = map(parse_path, APP_YAML['env']['path']) # [unicode abspath]
 APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
@@ -478,17 +478,14 @@ HANVIET_DICS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['hanviet'].iteritems()}
 HANVIET_DIC_LOCATION = os.path.dirname(HANVIET_DICS.itervalues().next())
 
-MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
-    for k,v in SHARE_YAML['mecab']['dicdir'].iteritems()}
+#MECAB_DIC_LOCATION = SHARE_YAML['mecab']['dicdir']
+#MECAB_RCFILE_LOCATION = SHARE_YAML['mecab']['rcfile']
 
-MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
-    for k,v in SHARE_YAML['mecab']['rcfile'].iteritems()}
-
-CABOCHA_DICS = {k: parse_path(v) # {str name:unicode relpath}
-    for k,v in SHARE_YAML['cabocha']['dicdir'].iteritems()}
-
-CABOCHA_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
-    for k,v in SHARE_YAML['cabocha']['rcfile'].iteritems()}
+#CABOCHA_DICS = {k: parse_path(v) # {str name:unicode relpath}
+#    for k,v in SHARE_YAML['cabocha']['dicdir'].iteritems()}
+#
+#CABOCHA_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
+#    for k,v in SHARE_YAML['cabocha']['rcfile'].iteritems()}
 
 GAIJI_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
     for k,v in SHARE_YAML['gaiji'].iteritems()}

@@ -29,7 +29,7 @@ env:
   #- $PWD/../CaboCha/py
   #- $PWD/../Qt/site-packages
 
-  #mecabrc: $PWD/../../Dictionaries/mecabrc
+  mecabrc: $PWD/../../Dictionaries/mecabrc/unidic.rc
 
   #xp: # only for Windows XP
   #  pythonpath:
@@ -642,25 +642,19 @@ tahscript:
 #  transru:          $PWD/../../../Caches/Translations/PROMT
 
 # Must be consistent with python scripts and dicts.py
-mecab:
-  dicdir:
-    ipadic:         $PWD/../../../Caches/Dictionaries/IPAdic
-    unidic:         $PWD/../../../Caches/Dictionaries/UniDic
-    #unidic-mlj:     $PWD/../../../Caches/Dictionaries/UniDicMLJ
-  rcfile:
-    ipadic:         $PWD/../../Dictionaries/mecabrc/ipadic.rc
-    unidic:         $PWD/../../Dictionaries/mecabrc/unidic.rc
-    #unidic-mlj:     $PWD/../../Dictionaries/mecabrc/unidic-mlj.rc
+#mecab:
+#  dicdir:           $PWD/../../../Caches/Dictionaries/UniDic
+#  rcfile:           $PWD/../../Dictionaries/mecabrc/unidic.rc
 
-cabocha:
-  dicdir:
-    ipadic:         $PWD/../../../Caches/Dictionaries/CaboCha/ipadic
-    unidic:         $PWD/../../../Caches/Dictionaries/CaboCha/unidic
-    #juman:          $PWD/../../../Caches/Dictionaries/CaboCha/juman
-  rcfile:
-    ipadic:         $PWD/../../Dictionaries/cabocharc/ipadic.rc
-    unidic:         $PWD/../../Dictionaries/cabocharc/unidic.rc
-    #juman:          $PWD/../../Dictionaries/cabocharc/juman.rc
+#cabocha:
+#  dicdir:
+#    ipadic:         $PWD/../../../Caches/Dictionaries/CaboCha/ipadic
+#    unidic:         $PWD/../../../Caches/Dictionaries/CaboCha/unidic
+#    #juman:          $PWD/../../../Caches/Dictionaries/CaboCha/juman
+#  rcfile:
+#    ipadic:         $PWD/../../Dictionaries/cabocharc/ipadic.rc
+#    unidic:         $PWD/../../Dictionaries/cabocharc/unidic.rc
+#    #juman:          $PWD/../../Dictionaries/cabocharc/juman.rc
 
 lingoes: # language
   - zh
