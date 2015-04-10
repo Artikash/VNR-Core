@@ -5,6 +5,10 @@
 # ipadic encoding, either SHIFT-JIS or UTF-8
 DICT_ENCODING = 'utf8'
 
+# MeCab definitions
+MECAB_BOS_NODE = 2 # MeCab.MECAB_BOS_NODE
+MECAB_EOS_NODE = 3 # MeCab.MECAB_EOS_NODE
+
 # CHAR_TYPE
 
 CH_VERB = 2
