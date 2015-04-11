@@ -537,10 +537,10 @@ def migrate(ss_version): # long ->
 
     if ss_version <= 1403890414: # remove existing references directory
 
-      path = rc.DIR_DICT_MECAB # delete old mecab
-      if os.path.exists(path):
-        skfileio.removetree(path)
-        skfileio.makedirs(path)
+      #path = rc.DIR_DICT_MECAB # delete old mecab
+      #if os.path.exists(path):
+      #  skfileio.removetree(path)
+      #  skfileio.makedirs(path)
 
       #for it in ( # delete all existing references
       #    rc.DIR_CACHE_DMM,

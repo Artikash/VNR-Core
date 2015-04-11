@@ -235,25 +235,31 @@ class Settings(QSettings):
       self.setValue('BlockedLanguages', value)
       self.blockedLanguagesChanged.emit(value)
 
-  ## Romanize ##
+  ## Romanization for Japanese ##
 
-  rubyTypeChanged = Signal(str)
-  def rubyType(self):
-    return self.value('FuriganaType', 'hiragana')
-  def setRubyType(self, value):
-    if value != self.rubyType():
-      self.setValue('FuriganaType', value)
-      self.rubyTypeChanged.emit(value)
+  japaneseRubyTypeChanged = Signal(unicode)
+  def japaneseRubyType(self): return self.value('JapaneseRubyType', 'hira')
+  def setJapaneseRubyType(self, value):
+    if value != self.japaneseRubyType():
+      self.setValue('JapaneseRubyType', value)
+      self.japaneseRubyTypeChanged.emit(value)
 
-  rubyJaInvertedChanged = Signal(bool)
-  def isRubyJaInverted(self):
-    return to_bool(self.value('InvertRubyJa'))
-  def setRubyJaInverted(self, t):
-    if t != self.isRubyJaInverted():
-      self.setValue('InvertRubyJa', t)
-      self.rubyJaInvertedChanged.emit(t)
+  japaneseRubyEnabledChanged = Signal(bool)
+  def isJapaneseRubyEnabled(self): return to_bool(self.value('JapaneseRuby'))
+  def setJapaneseRubyEnabled(self, value):
+    if value != self.isJapaneseRubyEnabled():
+      self.setValue('JapaneseRuby', value)
+      self.japaneseRubyEnabledChanged.emit(value)
 
-  rubyLanguagesChanged = Signal(str)
+  japaneseRubyKanaEnabledChanged = Signal(bool)
+  def isJapaneseRubyKanaEnabled(self): return to_bool(self.value('JapaneseRubyKana'))
+  def setJapaneseRubyKanaEnabled(self, value):
+    if value != self.isJapaneseRubyKanaEnabled():
+      self.setValue('JapaneseRubyKana', value)
+      self.japaneseRubyKanaEnabledChanged.emit(value)
+
+  ## Romanization for non-Japaense ##
+
   rubyTextEnabledChanged = Signal(bool)
   def isRubyTextEnabled(self): return to_bool(self.value('RubyText', True))
   def setRubyTextEnabled(self, value):
@@ -1002,24 +1008,31 @@ class Settings(QSettings):
 
   ## Dictionaries ##
 
-  caboChaEnabledChanged = Signal(bool)
-  def isCaboChaEnabled(self): return to_bool(self.value('CaboChaEnabled')) # Disable cabocha by default as it need dictionary
-  def setCaboChaEnabled(self, v):
-    if v != self.isCaboChaEnabled():
-      self.setValue('CaboChaEnabled', v)
-      self.caboChaEnabledChanged.emit(v)
+  #caboChaEnabledChanged = Signal(bool)
+  #def isCaboChaEnabled(self): return to_bool(self.value('CaboChaEnabled')) # Disable cabocha by default as it need dictionary
+  #def setCaboChaEnabled(self, v):
+  #  if v != self.isCaboChaEnabled():
+  #    self.setValue('CaboChaEnabled', v)
+  #    self.caboChaEnabledChanged.emit(v)
 
-  meCabEnabledChanged = Signal(bool)
-  def isMeCabEnabled(self): return bool(self.meCabDictionary())
+  #meCabEnabledChanged = Signal(bool)
+  #def isMeCabEnabled(self): return bool(self.meCabDictionary())
 
   # {ipadic, unidic, unidic-mlj}
-  meCabDictionaryChanged = Signal(str)
-  def meCabDictionary(self): return self.value('MeCabDictionary', '')
-  def setMeCabDictionary(self, v):
-    if v != self.meCabDictionary():
-      self.setValue('MeCabDictionary', v)
-      self.meCabEnabledChanged.emit(bool(v)) # This must before mecab dictionary is set
-      self.meCabDictionaryChanged.emit(v)
+  #meCabDictionaryChanged = Signal(str)
+  #def meCabDictionary(self): return self.value('MeCabDictionary', '')
+  #def setMeCabDictionary(self, v):
+  #  if v != self.meCabDictionary():
+  #    self.setValue('MeCabDictionary', v)
+  #    self.meCabEnabledChanged.emit(bool(v)) # This must before mecab dictionary is set
+  #    self.meCabDictionaryChanged.emit(v)
+
+  meCabEdictEnabledChanged = Signal(bool)
+  def isMeCabEdictEnabled(self): return to_bool(self.value('MeCabEdict'))
+  def setMeCabEdictEnabled(self, v):
+    if v != self.isMeCabEdictEnabled():
+      self.setValue('MeCabEdict', v)
+      self.meCabEdictEnabledChanged.emit(v)
 
   def isEdictEnabled(self): return to_bool(self.value('EdictEnabled'))
   def setEdictEnabled(self, v):
@@ -2006,8 +2019,9 @@ class SettingsProxy(QObject):
     g.atlasColorChanged.connect(self.atlasColorChanged)
     g.lecColorChanged.connect(self.lecColorChanged)
 
-    g.rubyTypeChanged.connect(self.rubyTypeChanged)
-    g.rubyJaInvertedChanged.connect(self.rubyJaInvertedChanged)
+    #g.rubyTypeChanged.connect(self.rubyTypeChanged)
+    #g.rubyJaInvertedChanged.connect(self.rubyJaInvertedChanged)
+
     g.convertsChineseChanged.connect(self.convertsChineseChanged)
 
     #g.baiduRubyEnabledChanged.connect(self.baiduRubyEnabledChanged)
@@ -2015,8 +2029,8 @@ class SettingsProxy(QObject):
 
     #g.msimeParserEnabledChanged.connect(self.msimeParserEnabledChanged)
     #g.meCabEnabledChanged.connect(self.meCabEnabledChanged)
-    g.meCabDictionaryChanged.connect(self.meCabDictionaryChanged)
-    g.caboChaEnabledChanged.connect(self.caboChaEnabledChanged)
+    #g.meCabDictionaryChanged.connect(self.meCabDictionaryChanged)
+    #g.caboChaEnabledChanged.connect(self.caboChaEnabledChanged)
 
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
@@ -2066,6 +2080,10 @@ class SettingsProxy(QObject):
 
     g.chineseRubyEnabledChanged.connect(self.chineseRubyEnabledChanged)
     g.chineseRubyTypeChanged.connect(self.chineseRubyTypeChanged)
+
+    g.japaneseRubyEnabledChanged.connect(self.japaneseRubyEnabledChanged)
+    g.japaneseRubyKanaEnabledChanged.connect(self.japaneseRubyKanaEnabledChanged)
+    g.japaneseRubyTypeChanged.connect(self.japaneseRubyTypeChanged)
 
     g.koreanRubyEnabledChanged.connect(self.koreanRubyEnabledChanged)
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
@@ -2194,17 +2212,17 @@ class SettingsProxy(QObject):
 
   #meCabEnabledChanged = Signal(bool)
   #meCabEnabled = bool_property('MeCabEnabled', False, notify=meCabEnabledChanged)
-  meCabDictionaryChanged = Signal(unicode)
-  meCabDictionary = unicode_property('MeCabDictionary', '', notify=meCabDictionaryChanged)
+  #meCabDictionaryChanged = Signal(unicode)
+  #meCabDictionary = unicode_property('MeCabDictionary', '', notify=meCabDictionaryChanged)
 
-  caboChaEnabledChanged = Signal(bool)
-  caboChaEnabled = bool_property('CaboChaEnabled', '', notify=caboChaEnabledChanged)
+  #caboChaEnabledChanged = Signal(bool)
+  #caboChaEnabled = bool_property('CaboChaEnabled', '', notify=caboChaEnabledChanged)
 
-  rubyTypeChanged = Signal(unicode)
-  rubyType = unicode_property('FuriganaType', 'hiragana', notify=rubyTypeChanged)
+  #rubyTypeChanged = Signal(unicode)
+  #rubyType = unicode_property('FuriganaType', 'hiragana', notify=rubyTypeChanged)
 
-  rubyJaInvertedChanged = Signal(bool)
-  rubyJaInverted = bool_property('InvertRubyJa', False, notify=rubyJaInvertedChanged)
+  #rubyJaInvertedChanged = Signal(bool)
+  #rubyJaInverted = bool_property('InvertRubyJa', False, notify=rubyJaInvertedChanged)
 
   #baiduRubyEnabledChanged = Signal(bool)
   #baiduRubyEnabled = bool_property('BaiduRubyEnabled', True, notify=baiduRubyEnabledChanged)
@@ -2246,6 +2264,15 @@ class SettingsProxy(QObject):
 
   chineseRubyTypeChanged = Signal(unicode)
   chineseRubyType = unicode_property('ChineseRubyType', 'pinyin', notify=chineseRubyTypeChanged)
+
+  japaneseRubyEnabledChanged = Signal(bool)
+  japaneseRubyEnabled = bool_property('JapaneseRuby', False, notify=japaneseRubyEnabledChanged)
+
+  japaneseRubyKanaEnabledChanged = Signal(bool)
+  japaneseRubyKanaEnabled = bool_property('JapaneseRubyKana', False, notify=japaneseRubyKanaEnabledChanged)
+
+  japaneseRubyTypeChanged = Signal(unicode)
+  japaneseRubyType = unicode_property('JapaneseRubyType', 'hira', notify=japaneseRubyTypeChanged)
 
   grimoireNormalizedXChanged = Signal(float)
   grimoireNormalizedX = float_property('GrimoireNormalizedX', 0.0, notify=grimoireNormalizedXChanged)

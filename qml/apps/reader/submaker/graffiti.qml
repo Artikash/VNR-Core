@@ -386,12 +386,13 @@ Item { id: root_
           }
         }
 
-        Plugin.MeCabHighlighter {
-          document: textEdit_.getTextDocument()
-          enabled: textItem_.visible
-                && textItem_.hover
-                && model.type === 'text' && model.language === 'ja'
-        }
+        // 4/10/2015: Temporarily disabled
+        //Plugin.MeCabHighlighter {
+        //  document: textEdit_.getTextDocument()
+        //  enabled: textItem_.visible
+        //        && textItem_.hover
+        //        && model.type === 'text' && model.language === 'ja'
+        //}
 
         Plugin.SpellChecker {
           document: textEdit_.getTextDocument()

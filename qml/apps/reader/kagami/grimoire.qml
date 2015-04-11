@@ -148,25 +148,22 @@ Item { id: root_
 
   property string rubyType: 'hiragana'
   property bool rubyInverted
-  property bool rubyJaInverted // only for Japanese language
-  property string rubyDic
-  property bool caboChaEnabled
 
   property bool convertsChinese // convert Simplified Chinese to Chinese
 
   property bool rubyTextEnabled
   property bool rubyTranslationEnabled
 
+  property bool chineseRubyEnabled
   property string chineseRubyType
 
-  property bool chineseRubyEnabled
   property bool koreanRubyEnabled
-
   property bool hanjaRubyEnabled
   property bool romajaRubyEnabled
 
-  //property bool msimeParserEnabled: false // whether use msime or mecab
-  property bool furiganaEnabled: true
+  property bool japaneseRubyEnabled
+  property bool japaneseRubyKanaEnabled
+  property string japaneseRubyType
 
   function scrollBeginning() {
     listView_.positionViewAtBeginning()
@@ -212,13 +209,11 @@ Item { id: root_
 
   function renderJapanese(text, colorize) { // string, bool -> string
     return bean_.renderJapanese(text
-      , root_.caboChaEnabled
-      //,root_.msimeParserEnabled
-      , root_.rubyType
-      , root_.rubyDic
-      , Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyJaInverted ? 0.85 : 1)) // char per line
+      , root_.japaneseRubyType
+      , root_.japaneseRubyKanaEnabled
+      //, Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyJaInverted ? 0.85 : 1)) // char per line
+      , Math.round(root_.width / (22 * root_._zoomFactor)) // char per line
       , 10 * root_._zoomFactor // ruby size of furigana
-      , root_.rubyJaInverted
       , colorize // colorize
       , root_.alignCenter
     )
@@ -1045,7 +1040,7 @@ Item { id: root_
       property bool hover: toolTip_.containsMouse || textCursor_.containsMouse
 
       property bool canPopup:
-        model.language === 'ja' && root_.furiganaEnabled ||
+        model.language === 'ja' && root_.japaneseRubyEnabled ||
         model.language === 'ko' && (
           (model.type === 'text' || model.type === 'name') ?
             root_.rubyTextEnabled : root_.rubyTranslationEnabled)
@@ -1270,7 +1265,7 @@ Item { id: root_
         focus: false
         //smooth: false // readonly, no translation
 
-        wrapMode: model.language === 'ja' && root_.furiganaEnabled &&
+        wrapMode: model.language === 'ja' && root_.japaneseRubyEnabled &&
             (model.type === 'text' || model.type === 'name') ?
             TextEdit.NoWrap : TextEdit.Wrap
         verticalAlignment: TextEdit.AlignVCenter
@@ -1309,7 +1304,7 @@ Item { id: root_
             if (model.language === 'ja' && (model.type === 'text' || model.type === 'name')) {
               if (root_.removesTextNewLine && ~t.indexOf("\n"))
                 t = t.replace(/\n/g, '')
-              if (root_.furiganaEnabled)
+              if (root_.japaneseRubyEnabled)
                 t = root_.renderJapanese(t, textItem_.hover)
               return t
             }

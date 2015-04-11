@@ -104,23 +104,23 @@ class Wadoku(Dict):
 
 # MeCab
 
-class IPADIC(Dict):
+#class IPADIC(Dict):
+#  def __init__(self):
+#    super(IPADIC, self).__init__(
+#      path=os.path.join(rc.DIR_CACHE_DICT, "IPAdic"),
+#      lockpath=os.path.join(rc.DIR_TMP, "ipadic.lock"),
+#    )
+#
+#  def get(self): # override
+#    from scripts import ipadic
+#    return ipadic.get()
+#
+#  def remove(self): # override
+#    return self.removetree()
+
+class UniDic(Dict):
   def __init__(self):
-    super(IPADIC, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "IPAdic"),
-      lockpath=os.path.join(rc.DIR_TMP, "ipadic.lock"),
-    )
-
-  def get(self): # override
-    from scripts import ipadic
-    return ipadic.get()
-
-  def remove(self): # override
-    return self.removetree()
-
-class UNIDIC(Dict):
-  def __init__(self):
-    super(UNIDIC, self).__init__(
+    super(UniDic, self).__init__(
       path=os.path.join(rc.DIR_CACHE_DICT, "UniDic"),
       lockpath=os.path.join(rc.DIR_TMP, "unidic.lock"),
     )
@@ -132,53 +132,27 @@ class UNIDIC(Dict):
   def remove(self): # override
     return self.removetree()
 
-class UNIDICMLJ(Dict):
-  def __init__(self):
-    super(UNIDICMLJ, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "UniDicMLJ"),
-      lockpath=os.path.join(rc.DIR_TMP, "unidicmlj.lock"),
-    )
-
-  def get(self): # override
-    from scripts import unidicmlj
-    return unidicmlj.get()
-
-  def remove(self): # override
-    return self.removetree()
-
-# CaboCha
-
-class CaboChaModel(Dict):
-  def __init__(self, dic):
-    self.dic = dic # str, one of ipadic, unidic, and juman
-    super(CaboChaModel, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "CaboCha/%s" % dic),
-      lockpath=os.path.join(rc.DIR_TMP, "cabocha.%s.lock" % dic),
-    )
-
-  def get(self): # override
-    from scripts import cabocha
-    return cabocha.get(self.dic)
-
-  def remove(self): # override
-    return self.removetree()
-
-class IPADICCaboChaModel(CaboChaModel):
-  def __init__(self,):
-    super(IPADICCaboChaModel, self).__init__('ipadic')
-
-class UNIDICCaboChaModel(CaboChaModel):
-  def __init__(self,):
-    super(UNIDICCaboChaModel, self).__init__('unidic')
-
-#class JUMANCaboChaModel(CaboChaModel):
-#  def __init__(self,):
-#    super(JUMANCaboChaModel, self).__init__('juman')
+#class UNIDICMLJ(Dict):
+#  def __init__(self):
+#    super(UNIDICMLJ, self).__init__(
+#      path=os.path.join(rc.DIR_CACHE_DICT, "UniDicMLJ"),
+#      lockpath=os.path.join(rc.DIR_TMP, "unidicmlj.lock"),
+#    )
+#
+#  def get(self): # override
+#    from scripts import unidicmlj
+#    return unidicmlj.get()
+#
+#  def remove(self): # override
+#    return self.removetree()
 
 # Global objects
 
 @memoized
 def edict(): return Edict()
+
+@memoized
+def unidic(): return UniDic()
 
 @memoized
 def wadoku(): return Wadoku()
@@ -205,39 +179,39 @@ def jmdict(lang):
     JMDICT[lang] = ret = JMDict(lang)
   return ret
 
-MECAB_CLASS = {
-  'ipadic': IPADIC,
-  'unidic': UNIDIC,
-  'unidic-mlj': UNIDICMLJ,
-}
-MECAB = {} # {str name:Dict}
-def mecab(name):
-  """
-  @param  name  str  such as 'ipadic'
-  @return  Dict
-  """
-  ret = MECAB.get(name)
-  if not ret:
-    MECAB[name] = ret = MECAB_CLASS[name]()
-  return ret
-
-CABOCHA_CLASS = {
-  'ipadic': IPADICCaboChaModel,
-  'unidic': UNIDICCaboChaModel,
-  #'juman': JUMANCaboChaModel,
-}
-CABOCHA = {} # {str name:Dict}
-def cabocha(name):
-  """
-  @param  name  str  such as 'ipadic'
-  @return  CaboChaModel
-  """
-  ret = CABOCHA.get(name)
-  if not ret:
-    CABOCHA[name] = ret = CABOCHA_CLASS[name]()
-  return ret
-
 # EOF
+
+#MECAB_CLASS = {
+#  'ipadic': IPADIC,
+#  'unidic': UNIDIC,
+#  'unidic-mlj': UNIDICMLJ,
+#}
+#MECAB = {} # {str name:Dict}
+#def mecab(name):
+#  """
+#  @param  name  str  such as 'ipadic'
+#  @return  Dict
+#  """
+#  ret = MECAB.get(name)
+#  if not ret:
+#    MECAB[name] = ret = MECAB_CLASS[name]()
+#  return ret
+#
+#CABOCHA_CLASS = {
+#  'ipadic': IPADICCaboChaModel,
+#  'unidic': UNIDICCaboChaModel,
+#  #'juman': JUMANCaboChaModel,
+#}
+#CABOCHA = {} # {str name:Dict}
+#def cabocha(name):
+#  """
+#  @param  name  str  such as 'ipadic'
+#  @return  CaboChaModel
+#  """
+#  ret = CABOCHA.get(name)
+#  if not ret:
+#    CABOCHA[name] = ret = CABOCHA_CLASS[name]()
+#  return ret
 
 #@memoized
 #def edict():
@@ -254,3 +228,33 @@ def cabocha(name):
 #def enamdict():
 #  from edict import edict
 #  return edict.Edict(config.ENAMDICT_LOCATION)
+
+# CaboCha
+
+#class CaboChaModel(Dict):
+#  def __init__(self, dic):
+#    self.dic = dic # str, one of ipadic, unidic, and juman
+#    super(CaboChaModel, self).__init__(
+#      path=os.path.join(rc.DIR_CACHE_DICT, "CaboCha/%s" % dic),
+#      lockpath=os.path.join(rc.DIR_TMP, "cabocha.%s.lock" % dic),
+#    )
+#
+#  def get(self): # override
+#    from scripts import cabocha
+#    return cabocha.get(self.dic)
+#
+#  def remove(self): # override
+#    return self.removetree()
+#
+#class IPADICCaboChaModel(CaboChaModel):
+#  def __init__(self,):
+#    super(IPADICCaboChaModel, self).__init__('ipadic')
+#
+#class UNIDICCaboChaModel(CaboChaModel):
+#  def __init__(self,):
+#    super(UNIDICCaboChaModel, self).__init__('unidic')
+
+#class JUMANCaboChaModel(CaboChaModel):
+#  def __init__(self,):
+#    super(JUMANCaboChaModel, self).__init__('juman')
+

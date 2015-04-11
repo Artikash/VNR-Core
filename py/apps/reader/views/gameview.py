@@ -16,7 +16,7 @@ from sakurakit.skwebkit import SkWebView, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import cacheman, config, dataman, defs, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
+import cacheman, config, dataman, defs, features, growl, i18n, jsonutil, main, netman, osutil, prompt, proxy, py, rc
 
 def _getimage(url, path):
   """
@@ -217,7 +217,7 @@ class _GameView(object):
       ('clipBean', m.clipBean),
       ('i18nBean', m.i18nBean),
       ('mainBean', m.mainBean),
-      ('jlpBean', m.jlpBean),
+      #('jlpBean', m.jlpBean), # temporarily disabled
       ('trBean', m.trBean),
       ('ttsBean', m.ttsBean),
       ('viewBean', self._viewBean),
@@ -337,7 +337,7 @@ class _GameView(object):
       'py': py,
       'tr': tr_,
       'i18n': i18n,
-      'jlp': mecabman.manager(),
+      #'jlp': mecabman.manager(), # temporarily disabled
       #'settings', settings.global_(),
       'online': online,
       'proxy': proxy.manager(),

@@ -133,67 +133,67 @@ class _MainObject(object):
   #  ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
   #  return ret
 
-  @memoizedproperty
-  def jlpManager(self):
-    dprint("create jlp manager") # Move this upward before kagami
-    import jlpman
-    ret = jlpman.manager()
+  #@memoizedproperty
+  #def jlpManager(self):
+  #  dprint("create jlp manager") # Move this upward before kagami
+  #  import jlpman
+  #  ret = jlpman.manager()
 
-    import settings
-    ss = settings.global_()
-    def refresh():
-      ret.setParserType(
-          '' if not ss.isMeCabEnabled() else
-          'cabocha' if ss.isCaboChaEnabled() else
-          'mecab')
-    refresh()
-    for sig in ss.meCabEnabledChanged, ss.caboChaEnabledChanged:
-      sig.connect(refresh)
-    return ret
+  #  import settings
+  #  ss = settings.global_()
+  #  def refresh():
+  #    ret.setParserType(
+  #        '' if not ss.isMeCabEnabled() else
+  #        'cabocha' if ss.isCaboChaEnabled() else
+  #        'mecab')
+  #  refresh()
+  #  for sig in ss.meCabEnabledChanged, ss.caboChaEnabledChanged:
+  #    sig.connect(refresh)
+  #  return ret
 
-  @memoizedproperty
-  def meCabManager(self):
-    dprint("create mecab manager") # Move this upward before kagami
-    import mecabman
-    ret = mecabman.manager()
+  #@memoizedproperty
+  #def meCabManager(self):
+  #  dprint("create mecab manager") # Move this upward before kagami
+  #  import mecabman
+  #  ret = mecabman.manager()
 
-    # Already connected in gameman
-    #self.gameManager.processChanged.connect(ret.clearUserDictionary)
+  #  # Already connected in gameman
+  #  #self.gameManager.processChanged.connect(ret.clearUserDictionary)
 
-    import settings
-    ss = settings.global_()
+  #  import settings
+  #  ss = settings.global_()
 
-    ret.setEnabled(ss.isMeCabEnabled())
-    ss.meCabEnabledChanged.connect(ret.setEnabled)
+  #  ret.setEnabled(ss.isMeCabEnabled())
+  #  ss.meCabEnabledChanged.connect(ret.setEnabled)
 
-    ret.setRubyType(ss.rubyType())
-    ss.rubyTypeChanged.connect(ret.setRubyType)
+  #  ret.setRubyType(ss.rubyType())
+  #  ss.rubyTypeChanged.connect(ret.setRubyType)
 
-    ret.setDictionaryName(ss.meCabDictionary())
-    ss.meCabDictionaryChanged.connect(ret.setDictionaryName)
-    return ret
+  #  ret.setDictionaryName(ss.meCabDictionary())
+  #  ss.meCabDictionaryChanged.connect(ret.setDictionaryName)
+  #  return ret
 
-  @memoizedproperty
-  def caboChaManager(self):
-    dprint("create cabocha manager") # Move this upward before kagami
-    import cabochaman
-    ret = cabochaman.manager()
+  #@memoizedproperty
+  #def caboChaManager(self):
+  #  dprint("create cabocha manager") # Move this upward before kagami
+  #  import cabochaman
+  #  ret = cabochaman.manager()
 
-    import settings
-    ss = settings.global_()
+  #  import settings
+  #  ss = settings.global_()
 
-    ret.setEnabled(ss.isMeCabEnabled())
-    ss.meCabEnabledChanged.connect(ret.setEnabled)
+  #  ret.setEnabled(ss.isMeCabEnabled())
+  #  ss.meCabEnabledChanged.connect(ret.setEnabled)
 
-    ret.setRubyType(ss.rubyType())
-    ss.rubyTypeChanged.connect(ret.setRubyType)
+  #  ret.setRubyType(ss.rubyType())
+  #  ss.rubyTypeChanged.connect(ret.setRubyType)
 
-    ret.setDictionaryName(ss.meCabDictionary())
-    ss.meCabDictionaryChanged.connect(ret.setDictionaryName)
+  #  ret.setDictionaryName(ss.meCabDictionary())
+  #  ss.meCabDictionaryChanged.connect(ret.setDictionaryName)
 
-    #import _cabochaman
-    #_cabochaman.CaboChaParser().parser()
-    return ret
+  #  #import _cabochaman
+  #  #_cabochaman.CaboChaParser().parser()
+  #  return ret
 
   @memoizedproperty
   def proxyManager(self):
@@ -327,7 +327,7 @@ class _MainObject(object):
     ret.processChanged.connect(tm.clearTranslationCache)
     #ret.processChanged.connect(partial(tm.setEnabled, True))
 
-    ret.processChanged.connect(self.meCabManager.clearUserDictionary)
+    #ret.processChanged.connect(self.meCabManager.clearUserDictionary)
 
     ret.threadKeptChanged.connect(tm.setKeepsThreads)
 
@@ -1674,9 +1674,9 @@ class MainObject(QObject):
     d.translatorManager
     #d.translationCacheManager
     d.dictionaryManager
-    d.meCabManager
-    d.caboChaManager
-    d.jlpManager
+    #d.meCabManager
+    #d.caboChaManager
+    #d.jlpManager
     #d.nameManager
     d.referenceManager
     d.trailersManager

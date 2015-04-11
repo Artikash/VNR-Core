@@ -75,7 +75,7 @@ DIR_CACHE_IMAGE = DIR_APP_CACHE + '/Images'     # $app/Caches/Images
 
 DIR_CACHE_DICT = DIR_APP_CACHE + '/Dictionaries'# $app/Caches/Dictionaries
 DIR_CACHE_INST = DIR_APP_CACHE + '/Installers'# $app/Caches/Installers
-DIR_DICT_MECAB = DIR_CACHE_DICT + '/MeCab'      # $app/Caches/Dictionaries/MeCab
+#DIR_DICT_MECAB = DIR_CACHE_DICT + '/MeCab'      # $app/Caches/Dictionaries/MeCab
 
 #DIR_XML_COMMENT = DIR_USER_XML + '/comments'   # $user/xml/1/comments, unicode
 
@@ -203,52 +203,6 @@ def tts_path(url):
   """
   name = hashutil.urlsum(url)
   return "%s/%s.mp3" % (DIR_TMP_TTS, name)
-
-# MeCab
-
-def mecab_usercsv_path(itemId, dicname):
-  """
-  @param  itemId  long
-  @param  dicname  unicode
-  @return  unicode  path
-  @nothrow
-  """
-  return "%s/%s/%s.csv" % (DIR_DICT_MECAB, dicname, itemId)
-
-def mecab_userdic_path(itemId, dicname):
-  """
-  @param  itemId  long
-  @param  dicname  unicode
-  @return  unicode  path
-  @nothrow
-  """
-  return "%s/%s/%s.dic" % (DIR_DICT_MECAB, dicname, itemId)
-
-def mecab_dic_path(name):
-  """
-  @param  str  name
-  @return  unicode  path
-  @throw  KeyError
-  """
-  # Use relative path to eliminate intermediate spaces
-  #return config.get_rel_path(DIR_CACHE_DICT) + '/' + config.MECAB_DICS[name] if name else ''
-  return config.MECAB_DICS[name] if name else ''
-
-def mecab_rc_path(name):
-  """
-  @param  str  name
-  @return  unicode  path
-  @throw  KeyError
-  """
-  return config.MECAB_RCFILES[name] if name else ''
-
-def cabocha_rc_path(name):
-  """
-  @param  str  name
-  @return  unicode  path
-  @throw  KeyError
-  """
-  return config.CABOCHA_RCFILES[name] if name else ''
 
 # CDN
 
@@ -561,3 +515,49 @@ def wiki_url(name, language=''):
 #          inenc=yaml['inenc'],
 #          outenc=yaml['outenc'])
 #  return r
+
+# MeCab
+
+#def mecab_usercsv_path(itemId, dicname):
+#  """
+#  @param  itemId  long
+#  @param  dicname  unicode
+#  @return  unicode  path
+#  @nothrow
+#  """
+#  return "%s/%s/%s.csv" % (DIR_DICT_MECAB, dicname, itemId)
+
+#def mecab_userdic_path(itemId, dicname):
+#  """
+#  @param  itemId  long
+#  @param  dicname  unicode
+#  @return  unicode  path
+#  @nothrow
+#  """
+#  return "%s/%s/%s.dic" % (DIR_DICT_MECAB, dicname, itemId)
+
+#def mecab_dic_path(name):
+#  """
+#  @param  str  name
+#  @return  unicode  path
+#  @throw  KeyError
+#  """
+#  # Use relative path to eliminate intermediate spaces
+#  #return config.get_rel_path(DIR_CACHE_DICT) + '/' + config.MECAB_DICS[name] if name else ''
+#  return config.MECAB_DICS[name] if name else ''
+
+#def mecab_rc_path(name):
+#  """
+#  @param  str  name
+#  @return  unicode  path
+#  @throw  KeyError
+#  """
+#  return config.MECAB_RCFILES[name] if name else ''
+
+#def cabocha_rc_path(name):
+#  """
+#  @param  str  name
+#  @return  unicode  path
+#  @throw  KeyError
+#  """
+#  return config.CABOCHA_RCFILES[name] if name else ''

@@ -24,7 +24,6 @@ SOURCES = \
   dialogs/refinput.py \
   dialogs/srtest.py \
   dialogs/subedit.py \
-  dialogs/syntaxtest.py \
   dialogs/terminput.py \
   dialogs/textprefs.py \
   dialogs/topicedit.py \
