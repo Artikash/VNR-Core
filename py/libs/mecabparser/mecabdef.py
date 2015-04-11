@@ -28,7 +28,9 @@ RB_RU = 'ru'
 RB_KO = 'ko'
 RB_TH = 'th'
 RB_AR = 'ar'
-RB_TR = 'tr' # not handled though
+
+RB_VI = 'vi' # not implemented yet
+RB_TR = 'tr' # not implemented yet
 
 # Surface type
 

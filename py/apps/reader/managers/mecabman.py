@@ -118,7 +118,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     LATIN_YOMI_WIDTH = 0.33 # = 2/6
     KANJI_YOMI_WIDTH = 0.55 # = 1/2
     # yomi size / surface size
-    yomiWidth = LATIN_YOMI_WIDTH if rubyType in (mecabdef.RB_ROMAJI, mecabdef.RB_RU, mecabdef.RB_TH, mecabdef.RB_AR, mecabdef.RB_TR) else KANJI_YOMI_WIDTH
+    yomiWidth = KANJI_YOMI_WIDTH if rubyType in (mecabdef.RB_KATA, mecabdef.RB_HIRA, mecabdef.RB_KO) else LATIN_YOMI_WIDTH
 
     invertRuby = False # always disable inverting
     roundRubySize = int(round(rubySize)) or 1

@@ -4138,7 +4138,7 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(ss.setMeCabEdictEnabled)
 
     ret.setEnabled(self.isRubyEdictEnabled())
-    ss.isJapaneseRubyEnabledChanged.connect(lambda: ret.setEnabled(self.isRubyEdictEnabled()))
+    ss.japaneseRubyEnabledChanged.connect(lambda: ret.setEnabled(self.isRubyEdictEnabled()))
     return ret
 
   @staticmethod
@@ -4281,22 +4281,22 @@ class _DictionaryTranslationTab(object):
         self.koButton if t == mecabdef.RB_KO else
         self.thButton if t == mecabdef.RB_TH else
         self.arButton if t == mecabdef.RB_AR else
-        self.viButton if t == mecabdef.RB_VI else
-        self.kataButton if t == defs.RB_KATA else
-        #self.trButton if t == mecabdef.RB_TR else
+        self.kataButton if t == mecabdef.RB_KATA else
+        #self.viButton if t == mecabdef.RB_VI else # not implemented
+        #self.trButton if t == mecabdef.RB_TR else # not implemented
         self.hiraButton)
     if not b.isChecked():
       b.setChecked(True)
 
   def _saveRubyType(self):
     t = (mecabdef.RB_ROMAJI if self.romajiButton.isChecked() else
-        mecabdef.RB_RU if self.romajiRuButton.isChecked() else
+        mecabdef.RB_RU if self.ruButton.isChecked() else
         mecabdef.RB_KO if self.koButton.isChecked() else
         mecabdef.RB_TH if self.thButton.isChecked() else
         mecabdef.RB_AR if self.arButton.isChecked() else
-        mecabdef.RB_VI if self.viButton.isChecked() else
         mecabdef.RB_KATA if self.kataButton.isChecked() else
-        #mecabdef.RB_TR if self.trButton.isChecked() else
+        #mecabdef.RB_VI if self.viButton.isChecked() else # not implemented
+        #mecabdef.RB_TR if self.trButton.isChecked() else # not implemented
         mecabdef.RB_HIRA)
     settings.global_().setJapaneseRubyType(t)
 
@@ -4900,8 +4900,8 @@ class _DictionaryDownloadsTab(object):
     return ret
 
   @memoizedproperty
-  def unidicButton(self, name):
-    ret = self.meCabButtons[name] = QtWidgets.QPushButton()
+  def unidicButton(self):
+    ret = QtWidgets.QPushButton()
     ret.role = ''
     ret.clicked.connect(lambda:
       self._getUnidic if ret.role == 'get' else
@@ -4912,7 +4912,7 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def unidicStatusLabel(self):
-    ret = self.meCabStatusLabels[name] = QtWidgets.QLabel()
+    ret = QtWidgets.QLabel()
     dic = dicts.unidic()
     ret.linkActivated.connect(dic.open)
     path = QtCore.QDir.toNativeSeparators(dic.path)
@@ -4940,7 +4940,7 @@ class _DictionaryDownloadsTab(object):
       #settings.global_().setMeCabDictionaryEnabled(name, False)
       self.refreshUnidic()
 
-  def refreshUniDic(self): # -> bool exists
+  def refreshUnidic(self): # -> bool exists
     b = self.unidicButton
     status = self.unidicStatusLabel
     dic = dicts.unidic()
@@ -5430,9 +5430,11 @@ class _DictionaryDownloadsTab(object):
   def refresh(self):
     self.refreshEdict()
     self.refreshWadoku()
+    self.refreshUnidic()
 
-    map(self.refreshMeCab, config.MECAB_DICS)
-    map(self.refreshCaboCha, config.CABOCHA_DICS)
+    #map(self.refreshMeCab, config.MECAB_DICS)
+    #map(self.refreshCaboCha, config.CABOCHA_DICS)
+
     map(self.refreshJMDict, config.JMDICT_LANGS)
 
     for lang in config.LINGOES_LANGS:
