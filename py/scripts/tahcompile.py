@@ -8,6 +8,10 @@ if __name__ == '__main__':
   #initrc.chcwd()
   initrc.initenv()
 
+  import os
+  title = os.path.basename(__file__)
+  initrc.settitle(title)
+
 import os, sys
 from sakurakit.skdebug import dwarn
 import initdefs

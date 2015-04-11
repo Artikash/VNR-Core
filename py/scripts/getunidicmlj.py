@@ -7,6 +7,10 @@ if __name__ == '__main__':
   initrc.chcwd()
   initrc.initenv()
 
+  import os
+  title = os.path.basename(__file__)
+  initrc.settitle(title)
+
 import os
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler

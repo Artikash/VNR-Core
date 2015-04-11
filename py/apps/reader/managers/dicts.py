@@ -3,7 +3,7 @@
 # 11/25/2012 jichi
 
 import os
-from PySide.QtCore import QMutex
+#from PySide.QtCore import QMutex
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skthreads import SkMutexLocker
 from sakurakit.sktr import tr_
@@ -21,7 +21,6 @@ class Edict(Dict):
       path=os.path.join(rc.EDICT_PATH),
       lockpath=os.path.join(rc.DIR_TMP, "edict.lock"),
     )
-    self._mutex = QMutex()
 
   def get(self): # override
     from scripts import edict
@@ -36,10 +35,9 @@ class Edict(Dict):
     return self.d.valid()
 
   def lookup(self, *args, **kwargs): # override
-    d = self.d
-    if d.valid():
-      with SkMutexLocker(self._mutex):
-        return list(d.lookup(*args, **kwargs)) # use list to finish the lock
+    if self.valid():
+      #with SkMutexLocker(self._mutex):
+      return self.d.lookup(*args, **kwargs) # use list to finish the lock
     else:
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('EDICT'))
 
@@ -49,6 +47,19 @@ class Edict(Dict):
       return d.translate(*args, **kwargs)
     else:
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('EDICT'))
+
+class MeCabEdict(res.Resource):
+
+  def __init__(self):
+    from sakurakit import skpaths
+    super(MeCabEdict, self).__init__(
+      path=os.path.join(rc.MECAB_EDICT_PATH),
+      lockpath=os.path.join(rc.DIR_TMP, "mecab-edict.lock"),
+    )
+
+  def get(self): # override
+    from scripts import edict
+    return edict.align()
 
 class LingoesDict(Dict):
   def __init__(self, lang): # string, ex. 'ja-en'
@@ -150,6 +161,9 @@ class UniDic(Dict):
 
 @memoized
 def edict(): return Edict()
+
+@memoized
+def mecabedict(): return MeCabEdict()
 
 @memoized
 def unidic(): return UniDic()

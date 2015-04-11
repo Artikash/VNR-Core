@@ -657,8 +657,8 @@ tahscript:
 #    #juman:          $PWD/../../Dictionaries/cabocharc/juman.rc
 
 lingoes: # language
-  - zh
   - zh-gbk # not really a language, though
+  - zh
   - ko
   - vi
   - en

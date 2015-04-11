@@ -394,7 +394,7 @@
         <translation>탭</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="480"/>
+        <location filename="sktr.py" line="482"/>
         <source>Text</source>
         <translation>텍스트</translation>
     </message>
@@ -414,7 +414,7 @@
         <translation>날짜 및 시간</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="479"/>
+        <location filename="sktr.py" line="481"/>
         <source>Translation</source>
         <translation>번역</translation>
     </message>
@@ -494,12 +494,12 @@
         <translation>편집가능</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="449"/>
+        <location filename="sktr.py" line="451"/>
         <source>Found</source>
         <translation>발견</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="450"/>
+        <location filename="sktr.py" line="452"/>
         <source>Not found</source>
         <translation>찾을 수 없음</translation>
     </message>
@@ -704,12 +704,12 @@
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="473"/>
+        <location filename="sktr.py" line="475"/>
         <source>Subtitle</source>
         <translation>자막</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="476"/>
+        <location filename="sktr.py" line="478"/>
         <source>Comment</source>
         <translation>주석</translation>
     </message>
@@ -819,17 +819,17 @@
         <translation>창 제목</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="451"/>
+        <location filename="sktr.py" line="453"/>
         <source>Not specified</source>
         <translation>지정되지 않음</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="462"/>
+        <location filename="sktr.py" line="464"/>
         <source>Administrator</source>
         <translation>관리자</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="463"/>
+        <location filename="sktr.py" line="465"/>
         <source>Not administrator</source>
         <translation>관리자 권한이 없음</translation>
     </message>
@@ -859,32 +859,32 @@
         <translation>정규 표현식</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="443"/>
+        <location filename="sktr.py" line="445"/>
         <source>Ignore Case</source>
         <translation>경우 무시</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="443"/>
+        <location filename="sktr.py" line="445"/>
         <source>Ignore case</source>
         <translation>경우 무시</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="442"/>
+        <location filename="sktr.py" line="444"/>
         <source>Case-insensitive</source>
         <translation>대소문자 구분하지 않음</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="442"/>
+        <location filename="sktr.py" line="444"/>
         <source>case-insensitive</source>
         <translation>대소문자 구분하지 않음</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="441"/>
+        <location filename="sktr.py" line="443"/>
         <source>Case-sensitive</source>
         <translation>대소문자 구분함</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="441"/>
+        <location filename="sktr.py" line="443"/>
         <source>case-sensitive</source>
         <translation>대소문자 구분함</translation>
     </message>
@@ -924,12 +924,12 @@
         <translation>다시 시작</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="465"/>
+        <location filename="sktr.py" line="467"/>
         <source>For example</source>
         <translation>예컨대</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="465"/>
+        <location filename="sktr.py" line="467"/>
         <source>for example</source>
         <translation>예컨대</translation>
     </message>
@@ -1039,7 +1039,7 @@
         <translation>국제화</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="467"/>
+        <location filename="sktr.py" line="469"/>
         <source>Check for updates</source>
         <translation>업데이트 확인</translation>
     </message>
@@ -1064,7 +1064,7 @@
         <translation>계속하기</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="478"/>
+        <location filename="sktr.py" line="480"/>
         <source>Danmaku</source>
         <translation>탄막</translation>
     </message>
@@ -1184,12 +1184,12 @@
         <translation>인터넷 상태</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="474"/>
+        <location filename="sktr.py" line="476"/>
         <source>Subtitles</source>
         <translation>자막</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="477"/>
+        <location filename="sktr.py" line="479"/>
         <source>Comments</source>
         <translation>주석</translation>
     </message>
@@ -1234,37 +1234,37 @@
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="473"/>
+        <location filename="sktr.py" line="475"/>
         <source>subtitle</source>
         <translation>자막</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="474"/>
+        <location filename="sktr.py" line="476"/>
         <source>subtitles</source>
         <translation>자막</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="476"/>
+        <location filename="sktr.py" line="478"/>
         <source>comment</source>
         <translation>주석</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="477"/>
+        <location filename="sktr.py" line="479"/>
         <source>comments</source>
         <translation>주석</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="478"/>
+        <location filename="sktr.py" line="480"/>
         <source>danmaku</source>
         <translation>탄막</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="479"/>
+        <location filename="sktr.py" line="481"/>
         <source>translation</source>
         <translation>번역</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="480"/>
+        <location filename="sktr.py" line="482"/>
         <source>text</source>
         <translation>텍스트</translation>
     </message>
@@ -1419,7 +1419,7 @@
         <translation>타이틀</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="451"/>
+        <location filename="sktr.py" line="453"/>
         <source>not specified</source>
         <translation>지정되지 않음</translation>
     </message>
@@ -1429,12 +1429,12 @@
         <translation>필터</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="457"/>
+        <location filename="sktr.py" line="459"/>
         <source>Unknown</source>
         <translation>알 수 없음</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="457"/>
+        <location filename="sktr.py" line="459"/>
         <source>unknown</source>
         <translation>알 수 없음</translation>
     </message>
@@ -1564,12 +1564,12 @@
         <translation>순서</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="475"/>
+        <location filename="sktr.py" line="477"/>
         <source>Subs</source>
         <translation>자막</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="475"/>
+        <location filename="sktr.py" line="477"/>
         <source>subs</source>
         <translation>자막</translation>
     </message>
@@ -1619,7 +1619,7 @@
         <translation>지역</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="455"/>
+        <location filename="sktr.py" line="457"/>
         <source>Press Enter to submit</source>
         <translation>Enter키로 입력</translation>
     </message>
@@ -1939,7 +1939,7 @@
         <translation>기계번역</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="439"/>
+        <location filename="sktr.py" line="441"/>
         <source>Not changed</source>
         <translation>변경되지 않음</translation>
     </message>
@@ -1984,12 +1984,12 @@
         <translation>한글</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="436"/>
+        <location filename="sktr.py" line="438"/>
         <source>Public</source>
         <translation>공개</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="437"/>
+        <location filename="sktr.py" line="439"/>
         <source>Private</source>
         <translation>비공개</translation>
     </message>
@@ -2069,7 +2069,7 @@
         <translation>오른쪽</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="446"/>
+        <location filename="sktr.py" line="448"/>
         <source>Network Error</source>
         <translation>네트워크 오류</translation>
     </message>
@@ -2084,7 +2084,7 @@
         <translation>앞으로</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="434"/>
+        <location filename="sktr.py" line="436"/>
         <source>Slow</source>
         <translation>느림</translation>
     </message>
@@ -2094,7 +2094,7 @@
         <translation>코드 변환</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="434"/>
+        <location filename="sktr.py" line="436"/>
         <source>slow</source>
         <translation>느림</translation>
     </message>
@@ -2169,7 +2169,7 @@
         <translation>음악</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="423"/>
+        <location filename="sktr.py" line="425"/>
         <source>Draggable</source>
         <translation>드래그 가능</translation>
     </message>
@@ -2384,12 +2384,12 @@
         <translation>리뷰</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="427"/>
+        <location filename="sktr.py" line="429"/>
         <source>Recent</source>
         <translation>최근</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="428"/>
+        <location filename="sktr.py" line="430"/>
         <source>Like</source>
         <translation>좋아요</translation>
     </message>
@@ -2404,7 +2404,7 @@
         <translation>같음</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="439"/>
+        <location filename="sktr.py" line="441"/>
         <source>not changed</source>
         <translation>변경되지 않음</translation>
     </message>
@@ -2434,12 +2434,12 @@
         <translation>정규 표현식</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="425"/>
+        <location filename="sktr.py" line="427"/>
         <source>Unsaved</source>
         <translation>저장되지 않음</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="425"/>
+        <location filename="sktr.py" line="427"/>
         <source>unsaved</source>
         <translation>저장되지 않음</translation>
     </message>
@@ -2469,12 +2469,12 @@
         <translation>경고</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="459"/>
+        <location filename="sktr.py" line="461"/>
         <source>Unknown error</source>
         <translation>알 수 없는 오류</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="460"/>
+        <location filename="sktr.py" line="462"/>
         <source>Unknown warning</source>
         <translation>알 수 없는 경고</translation>
     </message>
@@ -2504,17 +2504,17 @@
         <translation>중국어(번체)</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="429"/>
+        <location filename="sktr.py" line="431"/>
         <source>Dislike</source>
         <translation>싫어요</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="431"/>
+        <location filename="sktr.py" line="433"/>
         <source>Agree</source>
         <translation>동의</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="432"/>
+        <location filename="sktr.py" line="434"/>
         <source>Disagree</source>
         <translation>동의하지 않음</translation>
     </message>
@@ -2534,7 +2534,7 @@
         <translation>역할</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="453"/>
+        <location filename="sktr.py" line="455"/>
         <source>Invalid</source>
         <translation>잘못된</translation>
     </message>
@@ -2542,6 +2542,16 @@
         <location filename="sktr.py" line="338"/>
         <source>Optional</source>
         <translation>선택</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="423"/>
+        <source>Required</source>
+        <translation>필수</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="423"/>
+        <source>required</source>
+        <translation>필요</translation>
     </message>
 </context>
 </TS>

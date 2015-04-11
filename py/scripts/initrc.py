@@ -34,4 +34,16 @@ def lock(name): # unicode  file naem
     APP_MUTEX = lockfile.LockFile(path)
   return APP_MUTEX.tryLock()
 
+# http://stackoverflow.com/questions/7387276/set-window-name-in-python
+def settitle(title): # str ->
+  import os
+  if os.name == 'nt':
+    if isinstance(title, unicode):
+      title = title.encode('utf8', errors='ignore')
+    import ctypes
+    try: ctypes.windll.kernel32.SetConsoleTitleA(title)
+    except Exception, e:
+      from sakurakit.skdebug import dwarn
+      dwarn(e)
+
 # EOF

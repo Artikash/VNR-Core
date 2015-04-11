@@ -70,16 +70,16 @@ DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 #}
 
 LINGOES_DICT_NAMES = {
-  'ja-zh': my.tr("New Japanese-Chinese dictionary"),
   'ja-zh-gbk': my.tr("GBK Japanese-Chinese dictionary"),
+  'ja-zh': my.tr("New Japanese-Chinese dictionary"),
   'ja-en': my.tr("Vicon Japanese-English dictionary"),
   'ja-ko': my.tr("Naver Japanese-Korean dictionary"),
   'ja-vi': my.tr("OVDP Japanese-Vietnamese dictionary"),
 }
 
 LINGOES_DICT_SIZES = {
-  'ja-zh': '129MB',
   'ja-zh-gbk': '2MB',
+  'ja-zh': '129MB',
   'ja-ko': '206MB',
   'ja-vi': '945MB',
   'ja-en': '248MB',
@@ -4112,7 +4112,7 @@ class _DictionaryTranslationTab(object):
 
     ret = QtWidgets.QGroupBox("%s (%s)" % (
         my.tr("Japanese furigana"),
-        my.tr("require MeCab")))
+        my.tr("require {0}").format("MeCab")))
     ret.setLayout(layout)
     return ret
 
@@ -4131,7 +4131,7 @@ class _DictionaryTranslationTab(object):
   def rubyEdictButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
       my.tr("Align MeCab with EDICT"),
-      my.tr("require {0}").format("EDICT"),
+      my.tr("require {0}").format("UniDic, EDICT"),
     ))
     ss = settings.global_()
     ret.setChecked(ss.isMeCabEdictEnabled())
@@ -4144,7 +4144,7 @@ class _DictionaryTranslationTab(object):
   @staticmethod
   def isRubyEdictEnabled():
     return (settings.global_().isJapaneseRubyEnabled()
-       and (settings.global_().isMeCabEdictEnabled() or dicts.edict().exists()))
+       and (settings.global_().isMeCabEdictEnabled() or dicts.mecabedict().exists()))
 
   # Ruby type
 
@@ -4309,6 +4309,9 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
+    #if 'en' not in blans: # always enable edict
+    if True:
+      layout.addWidget(self.edictButton)
     if 'zh' not in blans:
       layout.addWidget(self.lingoesJaZhButton)
       layout.addWidget(self.lingoesJaZhGbkButton)
@@ -4320,8 +4323,6 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.lingoesJaEnButton)
     if 'de' not in blans:
       layout.addWidget(self.wadokuButton)
-    if 'en' not in blans:
-      layout.addWidget(self.edictButton)
     if 'fr' not in blans:
       layout.addWidget(self.jmdictFrButton)
     if 'ru' not in blans:
@@ -4404,16 +4405,16 @@ class _DictionaryTranslationTab(object):
 
   @memoizedproperty
   def lingoesJaZhButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        LINGOES_DICT_NAMES['ja-zh'],
-        my.tr("recommended for Chinese")))
+    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-zh'])
     ret.setChecked(settings.global_().isLingoesJaZhEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaZhEnabled)
     return ret
 
   @memoizedproperty
   def lingoesJaZhGbkButton(self):
-    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-zh-gbk'])
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        LINGOES_DICT_NAMES['ja-zh-gbk'],
+        my.tr("recommended for Chinese")))
     ret.setChecked(settings.global_().isLingoesJaZhGbkEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaZhGbkEnabled)
     return ret
@@ -4448,12 +4449,12 @@ class _DictionaryTranslationTab(object):
 
     # Dictionaries
     if 'zh' not in blans:
-      name = 'ja-zh'
-      b = self.lingoesJaZhButton
-      b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
-
       name = 'ja-zh-gbk'
       b = self.lingoesJaZhGbkButton
+      b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+
+      name = 'ja-zh'
+      b = self.lingoesJaZhButton
       b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
 
     if 'ko' not in blans:
@@ -4483,15 +4484,17 @@ class _DictionaryTranslationTab(object):
       b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
 
     if 'de' not in blans:
-      b = ss.isWadokuEnabled() or dicts.wadoku().exists()
-      self.wadokuButton.setEnabled(b)
+      t = ss.isWadokuEnabled() or dicts.wadoku().exists()
+      self.wadokuButton.setEnabled(t)
 
-    if 'en' not in blans:
-      b = ss.isEdictEnabled() or dicts.edict().exists()
-      self.edictButton.setEnabled(b)
-      #self.trButton.setEnabled(b)
+    # Always enable edict
+    #if 'en' not in blans:
+    if True:
+      t = ss.isEdictEnabled() or dicts.edict().exists()
+      self.edictButton.setEnabled(t)
 
-    self.trButton.setEnabled(self.trButton.isChecked() or ss.isEdictEnabled() or dicts.edict().exists())
+      t = self.trButton.isChecked() or ss.isEdictEnabled() or dicts.edict().exists()
+      self.trButton.setEnabled(t)
 
     # EPWING
     if 'ja' not in blans:
@@ -4892,10 +4895,20 @@ class _DictionaryDownloadsTab(object):
     grid.addWidget(self.unidicButton, r, 0)
     grid.addWidget(self.unidicStatusLabel, r, 1)
     grid.addWidget(self.unidicIntroLabel, r, 2)
-    grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
+    #grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
     r += 1
 
-    ret = QtWidgets.QGroupBox(my.tr("MeCab dictionaries for parsing Japanese"))
+    grid.addWidget(self.edictButton, r, 0)
+    grid.addWidget(self.edictStatusLabel, r, 1)
+    grid.addWidget(self.edictIntroLabel, r, 2)
+    r += 1
+
+    grid.addWidget(self.mecabEdictButton, r, 0)
+    grid.addWidget(self.mecabEdictStatusLabel, r, 1)
+    grid.addWidget(self.mecabEdictIntroLabel, r, 2)
+    r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("Dictionaries for parsing Japanese"))
     ret.setLayout(grid)
     return ret
 
@@ -4921,7 +4934,10 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def unidicIntroLabel(self):
-    ret = QtWidgets.QLabel("%s (247MB)" % my.tr("UniDic modern Japanese dictionary"))
+    ret = QtWidgets.QLabel("%s (%s, 247MB)" % (
+      my.tr("MeCab UniDic modern Japanese dictionary"),
+      tr_("required"),
+    ))
     ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
@@ -5096,12 +5112,6 @@ class _DictionaryDownloadsTab(object):
       grid.addWidget(self.wadokuIntroLabel, r, 2)
       r += 1
 
-    if 'en' not in blans:
-      grid.addWidget(self.edictButton, r, 0)
-      grid.addWidget(self.edictStatusLabel, r, 1)
-      grid.addWidget(self.edictIntroLabel, r, 2)
-      r += 1
-
     for lang in config.JMDICT_LANGS:
       if lang not in blans:
         grid.addWidget(self.getJMDictButton(lang), r, 0)
@@ -5218,13 +5228,12 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def edictIntroLabel(self):
-    return QtWidgets.QLabel("%s (16MB, %s" % (
+    return QtWidgets.QLabel("%s (16MB, %s)" % (
         my.tr("EDICT Japanese-English dictionary"),
         my.tr("recommended for English")))
 
   def _getEdict(self):
-    #if prompt.confirmDownloadDictionary('EDICT'):
-    if prompt.confirmDownloadEDICT():
+    if prompt.confirmDownloadDictionary('EDICT'):
       dic = dicts.edict()
       if not dic.exists(): #and not dic.locked():
         dic.get()
@@ -5232,8 +5241,7 @@ class _DictionaryDownloadsTab(object):
         self.startRefresh(dic, self.refreshEdict)
 
   def _removeEdict(self):
-    #if prompt.confirmRemoveDictionary('EDICT'):
-    if prompt.confirmRemoveEDICT():
+    if prompt.confirmRemoveDictionary('EDICT'):
       dicts.edict().remove()
       settings.global_().setEdictEnabled(False)
       self.refreshEdict()
@@ -5242,6 +5250,83 @@ class _DictionaryDownloadsTab(object):
     b = self.edictButton
     status = self.edictStatusLabel
     dic = dicts.edict()
+    if dic.exists():
+      #status.setText(mytr_("Installed"))
+      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
+      skqss.class_(status, 'text-success')
+      b.role = 'remove'
+      b.setEnabled(True)
+      b.setText(tr_("Remove"))
+      skqss.class_(b, 'btn btn-default')
+      return True
+    elif dic.locked():
+      status.setText(mytr_("Installing"))
+      skqss.class_(status, 'text-info')
+      b.role = ''
+      b.setEnabled(False)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    else:
+      online = netman.manager().isOnline()
+      status.setText(mytr_("Not installed"))
+      skqss.class_(status, 'text-error')
+      b.role = 'get'
+      b.setEnabled(online)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    return False
+
+  ## EDICT for MeCab
+
+  @memoizedproperty
+  def mecabEdictButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.role = ''
+    ret.clicked.connect(lambda:
+        self._getMeCabEdict() if ret.role == 'get' else
+        self._removeMeCabEdict() if ret.role == 'remove' else
+        None)
+    return ret
+
+  @memoizedproperty
+  def mecabEdictStatusLabel(self):
+    ret = QtWidgets.QLabel()
+    dic = dicts.mecabedict()
+    ret.linkActivated.connect(dic.open)
+    path = QtCore.QDir.toNativeSeparators(dic.path)
+    ret.setToolTip(path)
+    return ret
+
+  @memoizedproperty
+  def mecabEdictIntroLabel(self):
+    return QtWidgets.QLabel("%s (75MB, %s)" % (
+        my.tr("Align MeCab with EDICT"),
+        my.tr("require {0}").format("UniDic, EDICT")))
+
+  def _getMeCabEdict(self):
+    if not dicts.edict().exists():
+      growl.notify(my.tr("Missing {0}").format("EDICT"))
+      return
+    if not dicts.unidic().exists():
+      growl.notify(my.tr("Missing {0}").format("UniDic"))
+      return
+    if prompt.confirmCompileDictionary('MeCab EDICT'):
+      dic = dicts.mecabedict()
+      if not dic.exists(): #and not dic.locked():
+        dic.get()
+      if not self.refreshMeCabEdict():
+        self.startRefresh(dic, self.refreshMeCabEdict)
+
+  def _removeMeCabEdict(self):
+    if prompt.confirmRemoveDictionary('MeCab EDICT'):
+      dicts.mecabedict().remove()
+      settings.global_().setMeCabEdictEnabled(False)
+      self.refreshMeCabEdict()
+
+  def refreshMeCabEdict(self): # -> bool exists
+    b = self.mecabEdictButton
+    status = self.mecabEdictStatusLabel
+    dic = dicts.mecabedict()
     if dic.exists():
       #status.setText(mytr_("Installed"))
       status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
@@ -5295,7 +5380,7 @@ class _DictionaryDownloadsTab(object):
   def getLingoesIntroLabel(self, name):
     ret = self.lingoesIntroLabels.get(name)
     if not ret:
-      if name.startswith('ja-zh'):
+      if name == 'ja-zh-gbk':
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for Chinese"))
       elif name == 'ja-en':
         t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name]) #my.tr("recommended for English")
@@ -5428,9 +5513,15 @@ class _DictionaryDownloadsTab(object):
     return False
 
   def refresh(self):
+    blans = settings.global_().blockedLanguages()
+    # always enable edict
+    #if 'en' not in blans:
     self.refreshEdict()
-    self.refreshWadoku()
     self.refreshUnidic()
+    self.refreshMeCabEdict()
+
+    if 'de' not in blans:
+      self.refreshWadoku()
 
     #map(self.refreshMeCab, config.MECAB_DICS)
     #map(self.refreshCaboCha, config.CABOCHA_DICS)

@@ -3,7 +3,9 @@
 # 10/12/2012 jichi
 import os
 from sakurakit.skclass import memoized
-from mecabparser import mecabdef
+from sakurakit.skdebug import dprint, dwarn
+from mecabparser import mecabdef, mecabformat
+from convutil import kata2hira, kata2romaji
 from mytr import my
 import growl, rc
 
@@ -28,26 +30,30 @@ class _MeCabManager:
     return bool(self._parserWithUserdic or self._parserWithoutUserdic)
 
   def _getParserWithoutUserdic(self):
-    if not self._parserWithUserdic:
+    if not self._parserWithoutUserdic:
       if not os.path.exists(rc.DIR_UNIDIC):
         dwarn("missing unidic")
         growl.warn(my.tr("MeCab UniDic dictionary not found"))
         return
       from mecabparser import mecabparser
-      self._parserWithUserdic = mecabparser.MeCabParser()
-    return self._parserWithUserdic
+      self._parserWithoutUserdic = mecabparser.MeCabParser()
+      dprint("create mecab without userdic")
+    return self._parserWithoutUserdic
 
   def _getParserWithUserdic(self):
     if not self._parserWithUserdic:
-      userdic = rc.MECAB_EDICT_RELPATH
+      userdic = rc.MECAB_EDICT_PATH
+      userdic = os.path.relpath(userdic, os.getcwd())
+      # use relative path to avoid spaces and illegal unicode characters
       if not os.path.exists(userdic):
-        dwarn("missing edict")
+        dwarn("missing edict: %s" % userdic)
         growl.warn(my.tr("MeCab EDICT dictionary not found"))
         return self._getParserWithoutUserdic()
       from mecabparser import mecabparser
       ret = mecabparser.MeCabParser()
-      ret.setUseric(userdic)
+      ret.tagger().setUserdic(userdic)
       self._parserWithUserdic = ret
+      dprint("create mecab with userdic")
     return self._parserWithUserdic
 
 class MeCabManager:
@@ -58,7 +64,9 @@ class MeCabManager:
   def isLoaded(self): return self.__d.isParserLoaded()
 
   def isEdictEnabled(self, t): return self.__d.userdicEnabled
-  def setEdictEnabled(self, t): self.__d.userdicEnabled = t
+  def setEdictEnabled(self, t):
+    dprint(t)
+    self.__d.userdicEnabled = t
 
   def parse(self, text, rubyType, rubyKana=False):
     """
@@ -66,9 +74,9 @@ class MeCabManager:
     @param* rubyKana  bool
     @yield  (unicode surface, unicode ruby, unicode feature) or return None
     """
-    return self.__d.getParser().iterparseToRuby(text, rubyType, show_ruby_kana=rubyKana)
-    #try: return self.__d.getParser().iterparseToRuby(self, text, rubyType, show_ruby_kana=rubyKana)
-    #except Exception, e: dwarn(e)
+    #return self.__d.getParser().iterparseToRuby(text, rubyType, show_ruby_kana=rubyKana)
+    try: return self.__d.getParser().iterparseToRuby(text, rubyType, show_ruby_kana=rubyKana)
+    except Exception, e: dwarn(e)
 
   def toRomaji(self, capital=True):
     """
@@ -82,13 +90,55 @@ class MeCabManager:
 
 ## Render feature
 
-def renderfeature(feature):
+def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
   """
   @param  feature  unicode
   @return  unicode
+
+  Example feature: 名詞,サ変接続,*,*,*,*,感謝,カンシャ,カンシャ
+  Input feature:
+    品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
+  Rendered feature:
+    原形,発音,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形
   """
-  # TODO: Unimplemented
-  return feature
+  if not feature:
+    return ''
+  feature = feature.replace('*', '').split(',')
+  ret = filter(bool, feature[:fmt.COL_BASIC]) # keep all first role columns
+  try:
+    surface = fmt.getsurface(feature)
+    kata = fmt.getkata(feature)
+    hira = kata2hira(kata)
+
+    kanji = fmt.getkanji(feature)
+    if kanji:
+      if '-' in kanji:
+        kanji = kanji.partition('-')[2]
+      if kanji and kanji not in (surface, kata, hira):
+        ret.insert(0, kanji)
+
+    v = fmt.getorigin(feature)
+    if v and v not in (surface, kata, hira):
+      ret.append(v)
+
+    v = fmt.gettype(feature)
+    if v:
+      ret.append(v.upper())
+    else:
+      ret.append('UNIDIC')
+
+    if kata:
+      romaji = kata2romaji(kata)
+      if romaji != surface:
+        ret.insert(0, romaji)
+      if hira and hira not in (surface, romaji):
+        ret.insert(0, hira)
+
+    if surface:
+      ret.insert(0, surface)
+  except IndexError: pass
+
+  return ','.join(ret)
 
 ## Render table
 

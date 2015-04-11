@@ -161,7 +161,7 @@ class _MainObject(object):
     ss = settings.global_()
 
     ret.setEdictEnabled(ss.isMeCabEdictEnabled())
-    ss.meCabEdictEnabledChanged.connect(ss.setEdictEnabled)
+    ss.meCabEdictEnabledChanged.connect(ret.setEdictEnabled)
     return ret
 
     # Already connected in gameman
@@ -1674,7 +1674,7 @@ class MainObject(QObject):
     d.translatorManager
     #d.translationCacheManager
     d.dictionaryManager
-    #d.meCabManager
+    d.meCabManager
     #d.caboChaManager
     #d.jlpManager
     #d.nameManager

@@ -1027,41 +1027,41 @@ class Settings(QSettings):
   #    self.meCabEnabledChanged.emit(bool(v)) # This must before mecab dictionary is set
   #    self.meCabDictionaryChanged.emit(v)
 
-  meCabEdictEnabledChanged = Signal(bool)
-  def isMeCabEdictEnabled(self): return to_bool(self.value('MeCabEdict'))
-  def setMeCabEdictEnabled(self, v):
-    if v != self.isMeCabEdictEnabled():
-      self.setValue('MeCabEdict', v)
-      self.meCabEdictEnabledChanged.emit(v)
-
   def isEdictEnabled(self): return to_bool(self.value('EdictEnabled'))
-  def setEdictEnabled(self, v):
-    if v != self.isEdictEnabled():
-      self.setValue('EdictEnabled', v)
+  def setEdictEnabled(self, t):
+    if t != self.isEdictEnabled():
+      self.setValue('EdictEnabled', t)
       self._updateDictionaryEnabled()
 
+  meCabEdictEnabledChanged = Signal(bool)
+  def isMeCabEdictEnabled(self): return to_bool(self.value('MeCabEdict'))
+  def setMeCabEdictEnabled(self, t):
+    if t != self.isMeCabEdictEnabled():
+      self.setValue('MeCabEdict', t)
+      self.meCabEdictEnabledChanged.emit(t)
+
   def isKojienEnabled(self): return to_bool(self.value('KojienEnabled'))
-  def setKojienEnabled(self, v):
-    if v != self.isKojienEnabled():
-      self.setValue('KojienEnabled', v)
+  def setKojienEnabled(self, t):
+    if t != self.isKojienEnabled():
+      self.setValue('KojienEnabled', t)
       self._updateDictionaryEnabled()
 
   def isDaijirinEnabled(self): return to_bool(self.value('DaijirinEnabled'))
-  def setDaijirinEnabled(self, v):
-    if v != self.isDaijirinEnabled():
-      self.setValue('DaijirinEnabled', v)
+  def setDaijirinEnabled(self, t):
+    if t != self.isDaijirinEnabled():
+      self.setValue('DaijirinEnabled', t)
       self._updateDictionaryEnabled()
 
   def isWadokuEnabled(self): return to_bool(self.value('WadokuEnabled'))
-  def setWadokuEnabled(self, v):
-    if v != self.isWadokuEnabled():
-      self.setValue('WadokuEnabled', v)
+  def setWadokuEnabled(self, t):
+    if t != self.isWadokuEnabled():
+      self.setValue('WadokuEnabled', t)
       self._updateDictionaryEnabled()
 
   def isZhongriEnabled(self): return to_bool(self.value('ZhongriEnabled'))
-  def setZhongriEnabled(self, v):
-    if v != self.isZhongriEnabled():
-      self.setValue('ZhongriEnabled', v)
+  def setZhongriEnabled(self, t):
+    if t != self.isZhongriEnabled():
+      self.setValue('ZhongriEnabled', t)
       self._updateDictionaryEnabled()
 
   dictionaryEnabledChanged = Signal(bool)

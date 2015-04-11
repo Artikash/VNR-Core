@@ -22,28 +22,25 @@ class UniDicFormatter(object):
   COL_KATA = COL_BASIC + 1
   COL_KANJI = COL_BASIC + 2 # converted kanji
   COL_SURFACE = COL_KANJI + 1
-  COL_PROTO = 12 # the original prototype  of the phrase
+  COL_ORIGIN = 12 # the origination of the phrase
 
   COL_ID = -2 # the type such as edict
   COL_TYPE = -1 # the type such as edict
 
   def getcol(self, f, col):
     """
-    @param  f  unicode  feature
+    @param  f  unicode or list feature
     @param  col  int  column
     @return  unicode not none
     """
-    l = f.split(self.SEP)
-    if col < len(l):
-      ret = l[col]
-      if ret != self.EMPTY_COL:
-        return ret
-    return ret
+    if isinstance(f, basestring):
+      f = f.replace(self.EMPTY_COL, '').split(self.SEP)
+    return f[col] if col < len(f) else ''
 
   def getkata(self, f): return self.getcol(f, self.COL_KATA)
   def getsurface(self, f): return self.getcol(f, self.COL_SURFACE)
   def getkanji(self, f): return self.getcol(f, self.COL_KANJI)
-  def getproto(self, f): return self.getcol(f, self.COL_ORIG)
+  def getorigin(self, f): return self.getcol(f, self.COL_ORIGIN)
 
   def gettype(self, f): return self.getcol(f, self.COL_TYPE)
   def getid(self, f): # unicode -> int or 0
