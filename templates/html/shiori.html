@@ -2,8 +2,7 @@
  # @param  language  unicode  not used
  # @param  text  unicode not None  The orignal text to translate
  # @param  feature  unicode or None
- # @param  edict_tuples  (unicode word, unicode yomi, unicode tr)]
- # @param  ld_tuples  [unicode word, unicode xmls]
+ # @param  tuples  [unicode word, unicode html]
  # @param  eb_strings  [unicode]
  #
  # Escaping is disabled to improve performance.
@@ -36,31 +35,15 @@ u,.edict .role{background-color:rgba(128,0,128,60%)}
 			<a href="{{gg}}{{text}}">+google</a>
 			{{' '}}<a href="{{bd}}{{text}}">+baidu</a>
 		</p>
-%if ld_tuples
-%	for word, xml in ld_tuples
+%if tuples
+%	for word, html in tuples
 		<p class="t">
 			<div class="q">
 				<span class="th">【{{word}}】</span>
 				{{' '}}<a href="{{gg}}{{word}}">+gg</a>
 				{{' '}}<a href="{{bd}}{{word}}">+bd</a>
 			</div>
-			<div class="tt">{{xml}}</div>
-		</p>
-%	endfor
-%endif
-%if edict_tuples
-		<hr/>
-%	for word,reading,trans in edict_tuples
-		<p class="t">
-			<div class="q">
-				<span class="th">【{{word}}】</span>
-%		if reading
-				<span class="tr">（{{reading}}）</span>
-%		endif
-				{{' '}}<a href="{{gg}}{{word}}">+gg</a>
-				{{' '}}<a href="{{bd}}{{word}}">+bd</a>
-			</div>
-			<div class="tt edict">{{trans}}</div>
+			<div class="tt">{{html}}</div>
 		</p>
 %	endfor
 %endif

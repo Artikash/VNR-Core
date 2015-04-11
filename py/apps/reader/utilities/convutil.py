@@ -21,8 +21,11 @@ kata2ko = hira2ko = kana2ko
 kata2th = hira2th = kana2th
 kata2ar = hira2ar = kana2ar
 
-from msime import msime
-MSIME_VALID = msime.ja_valid() # cached
+MSIME_VALID = False
+from sakurakit import skos
+if skos.WIN:
+  from msime import msime
+  MSIME_VALID = msime.ja_valid() # cached
 
 #def ja2zh_name(text, simplified=False): # unicode, bool -> unicode
 #  return ja2zhs_name(text) if simplified else ja2zht_name(text)

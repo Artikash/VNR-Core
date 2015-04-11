@@ -34,7 +34,7 @@ def init(): pass # not defined
 #      os.makedirs(it)
 
 def compile(): # -> bool
-  dprint("enter: enter")
+  dprint("enter")
   dbpath = TARGET_DIR + '/' + DB_FILENAME
   dicpath = TARGET_DIR + '/' + DIC_FILENAME
   csvpath = TARGET_DIR + '/' + CSV_FILENAME

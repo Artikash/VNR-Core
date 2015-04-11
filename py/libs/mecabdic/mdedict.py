@@ -3,9 +3,17 @@
 # 11/9/2013 jichi
 
 from sakurakit.skdebug import dwarn
+from unitraits import jpchars
 import mdcompile
 
 csv2dic = mdcompile.compile
+
+def surfacefilter(text):
+  """Skip short kana phrases
+  @param  text  unicode  surface
+  @return  bool
+  """
+  return len(text) > 2 or len(text) > 1 and jpchars.anykanji(text)
 
 def db2csv(csvpath, dbpath):
   """
@@ -24,7 +32,7 @@ def db2csv(csvpath, dbpath):
         for i,word in enumerate(q):
           id = i + 1
           entries = edictp.parseword(word)
-          lines = mdcompile.assemble(entries, id=id, type='edict')
+          lines = mdcompile.assemble(entries, id=id, type='edict', surfacefilter=surfacefilter)
           f.writelines(lines)
         return True
   except Exception, e:

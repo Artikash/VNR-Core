@@ -13,6 +13,20 @@ from unitraits.uniconv import hira2kata, kata2hira
 from dictp import edictp
 import dictdb, dbutil
 
+# Classes
+
+class Edict(object): # a wrapper class
+  def __init__(self, path):
+    self.path = path # unicode  dbpath
+
+  def lookup(self, *args, **kwargs):
+    try:
+      with sqlite3.connect(self.path) as conn:
+        for it in queryentries(conn.cursor(), *args, **kwargs):
+          yield it
+    except Exception, e:
+      dwarn(e)
+
 # Queries
 
 SELECT_ENTRY_ID = 'entry.id'
@@ -26,16 +40,39 @@ SELECT_SURFACE_ID = 'surface.id'
 SELECT_SURFACE_TEXT = 'surface.text'
 SELECT_SURFACE_ALL = 'surface.*'
 
-def queryentries(cur, surface, limit=0, select=SELECT_ENTRY_ALL):
+def queryentries(cur, id=None, surface=None, surfaces=None, limit=0, select=SELECT_ENTRY_ALL):
   """
   @param  cursor
   @param* surface  unicode
+  @param* surfaces  [unicode]:
   @param* limit  int
   @return  (unicode word, unicode content)
   @raise
   """
-  params = [surface]
-  sql = "SELECT %s FROM entry, surface f where entry.id = f.entry_id and f.text = ?" % select
+  if not surface and not surfaces:
+    ret = dictdb.getentry(cur, id, select=select)
+    return [ret] if ret else []
+
+  # Make surface and surfaces exclusive
+  if surface and surfaces:
+    if surface not in surfaces:
+      surfaces = list(surfaces)
+      surfaces.append(surface)
+    surface = None
+  if surfaces and len(surfaces) == 1:
+    surface = surfaces[0]
+
+  sql = "SELECT %s FROM entry, surface f where entry.id = f.entry_id" % select
+  if surface:
+    params = [surface]
+    sql += " and f.text = ?"
+
+  else:
+    params = list(surfaces)
+    sql += " and (%s)" % ' or '.join(['f.text = ?'] * len(params))
+  if id:
+    sql += ' or entry.id = ?'
+    params.append(id)
   if limit:
     sql += ' limit ?'
     params.append(limit)
@@ -158,9 +195,8 @@ if __name__ == '__main__':
     #t = u'あしきり'
     #t = u'ごめんなさい'
     t = u'ご'
-    with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      for it in queryentries(cur, surface=t):
+    d = Edict(dbpath)
+    for it in d.lookup(surfaces=[t,t]):
         print it[0], it[1], it[2]
 
   #test_create()

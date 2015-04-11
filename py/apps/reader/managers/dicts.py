@@ -28,16 +28,13 @@ class Edict(Dict):
 
   @memoizedproperty
   def d(self):
-    from edict import edict
-    return edict.Edict(self.path)
-
-  def valid(self): # override
-    return self.d.valid()
+    from dictdb import edictdb
+    return edictdb.Edict(self.path)
 
   def lookup(self, *args, **kwargs): # override
     if self.valid():
-      #with SkMutexLocker(self._mutex):
-      return self.d.lookup(*args, **kwargs) # use list to finish the lock
+      for it in self.d.lookup(*args, **kwargs):
+        yield it
     else:
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('EDICT'))
 

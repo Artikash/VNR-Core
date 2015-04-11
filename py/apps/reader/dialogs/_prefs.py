@@ -4313,8 +4313,8 @@ class _DictionaryTranslationTab(object):
     if True:
       layout.addWidget(self.edictButton)
     if 'zh' not in blans:
-      layout.addWidget(self.lingoesJaZhButton)
       layout.addWidget(self.lingoesJaZhGbkButton)
+      layout.addWidget(self.lingoesJaZhButton)
     if 'ko' not in blans:
       layout.addWidget(self.lingoesJaKoButton)
     if 'vi' not in blans:

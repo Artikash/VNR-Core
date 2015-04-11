@@ -40,7 +40,7 @@ class _ShioriBean:
     feature = GrimoireBean.instance.lookupFeature(text)
     if self._renderMutex.tryLock():
       ret = skthreads.runsync(partial(
-          dictman.manager().renderJapanese, text, feature=feature))
+          dictman.manager().renderJapanese, text, exact=True,feature=feature)) # do exact match for speed
       self._renderMutex.unlock()
     else:
       dwarn("ignore thread contention")
