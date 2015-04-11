@@ -18,7 +18,8 @@ import cacheman, config, defs, hashutil
 #DIR_SAKURA      = '../../..'           # /Library/Frameworks/Sakura
 
 #ROOT_LOCATION = os.path.join(os.path.dirname(__file__), '../../..')
-DIR_APP = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../..'))
+RELDIR_APP = '../../../../../..'
+DIR_APP = os.path.abspath(os.path.join(os.path.dirname(__file__), RELDIR_APP))
 DIR_APP_LIBRARY = DIR_APP + '/Library'
 DIR_APP_CACHE = DIR_APP + '/Caches'
 
@@ -87,6 +88,8 @@ DIR_YAML_SUB = DIR_CACHE_SUB + '/yaml'          # $app/Caches/Subtitles/yaml
 # Dictionaries
 
 EDICT_PATH = DIR_CACHE_DICT + "/EDICT/edict.db"
+MECAB_EDICT_PATH = DIR_CACHE_DICT + "/EDICT/edict.dic"
+MECAB_EDICT_RELPATH = RELDIR_APP + "Caches/EDICT/edict.dic"
 
 # Apps
 

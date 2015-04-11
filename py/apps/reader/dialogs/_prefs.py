@@ -4097,7 +4097,7 @@ class _DictionaryTranslationTab(object):
   # Ruby option
 
   @memoizedproperty
-  def optionButton(self):
+  def optionGroup(self):
     blans = settings.global_().blockedLanguages()
 
     layout = QtWidgets.QVBoxLayout()
@@ -4137,10 +4137,7 @@ class _DictionaryTranslationTab(object):
     ret.setChecked(ss.isMeCabEdictEnabled())
     ret.toggled.connect(ss.setMeCabEdictEnabled)
 
-    ret.setEnabled(ss.isMeCabEdictEnabled() or t and dicts.edict().exists())
-    self.rubyEdictButton.setEnabled(
-    ss.japaneseRubyEnabledChanged.connect(w.setEnabled)
-    ret.setEnabled(isRubyEdictEnabled())
+    ret.setEnabled(self.isRubyEdictEnabled())
     ss.isJapaneseRubyEnabledChanged.connect(lambda: ret.setEnabled(self.isRubyEdictEnabled()))
     return ret
 

@@ -28,6 +28,14 @@ RB_RU = 'ru'
 RB_KO = 'ko'
 RB_TH = 'th'
 RB_AR = 'ar'
-RB_TR = 'tr'
+RB_TR = 'tr' # not handled though
+
+# Surface type
+
+SURFACE_UNKNOWN = 0
+SURFACE_PUNCT = 1
+SURFACE_KANJI = 2
+SURFACE_NUMBER = 3
+SURFACE_KANA = 4
 
 # EOF

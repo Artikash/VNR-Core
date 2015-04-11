@@ -4,6 +4,7 @@
 
 import re
 from unitraits import jpchars
+import mecabdef
 
 ORD_THIN_DIGIT_FIRST = ord('0')
 ORD_THIN_DIGIT_LAST = ord('9')
@@ -22,22 +23,16 @@ def alldigit(text):
       return False
   return True
 
-SURFACE_ANY = 0
-SURFACE_PUNCT = 1
-SURFACE_KANJI = 2
-SURFACE_NUMBER = 3
-SURFACE_KANA = 4
-
 def getsurfacetype(text): # unicode -> int
   if jpchars.allpunct(text):
-    return SURFACE_PUNCT
+    return mecabdef.SURFACE_PUNCT
   if jpchars.anykanji(text):
-    return SURFACE_KANJI
+    return mecabdef.SURFACE_KANJI
   if alldigit(text):
-    return SURFACE_NUMBER
+    return mecabdef.SURFACE_NUMBER
   if jpchars.anykana(text):
-    return SURFACE_KANA
-  return SURFACE_ANY
+    return mecabdef.SURFACE_KANA
+  return mecabdef.SURFACE_UNKNOWN
 
 # EOF
 

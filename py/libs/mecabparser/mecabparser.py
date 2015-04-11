@@ -10,9 +10,8 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 from itertools import imap
-import MeCab
 from jaconv import jaconv
-from unitraits import jpchars, uniconv
+from unitraits import uniconv
 import mecabdef, mecabformat, mecablex
 
 # Helper functions
@@ -87,21 +86,21 @@ class _MeCabParser:
     @param  text  unicode
     @param  kataconv  unicode -> unicode
     @param  show_ruby_kana  bool
-    @yield  (unicode surface, unicode ruby or None, unicode feature)
+    @yield  (unicode surface, unicode ruby or None, unicode feature, unicode surface_type)
     """
     for surface, feature in self.tagger.iterparse(text):
       ruby = None
       type = mecablex.getsurfacetype(surface)
-      show_ruby = type == mecablex.SURFACE_KANJI or show_ruby_kana and type == mecablex.SURFACE_KANA
+      show_ruby = type == mecabdef.SURFACE_KANJI or show_ruby_kana and type == mecabdef.SURFACE_KANA
       if show_ruby:
         kata = self.formatter.getkata(feature)
         if kata and kata != ruby:
           ruby = kataconv(kata)
           if ruby == surface:
             ruby = None
-        if not ruby and type == mecablex.SURFACE_KANJI:
+        if not ruby and type == mecabdef.SURFACE_KANJI:
           ruby = self.UNKNOWN_RUBY
-      yield surface, ruby, feature
+      yield surface, ruby, feature, type
 
 class MeCabParser(object):
   def __init__(self, tagger=None):
@@ -134,14 +133,14 @@ class MeCabParser(object):
       conv = lambda x: wide2thin(f(x))
     return sep.join(imap(conv,  self.__d.iterparseToKata(text)))
 
-  def toRomaji(self, text, capitalize=True):
+  def toRomaji(self, text, capital=True):
     """
     @param  text  unicode
     @param* space  bool
     @return  unicode  plain text
     """
     ret = self.toRuby(text, sep=' ', ruby=mecabdef.RB_ROMAJI)
-    if capitalize:
+    if capital:
       ret = capitalizeromaji(ret)
     return ret
 

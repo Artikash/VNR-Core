@@ -37,6 +37,7 @@ SOURCES = \
   managers/forumapi.py \
   managers/gameagent.py \
   managers/gameman.py \
+  managers/mecabman.py \
   managers/netman.py \
   managers/ocrman.py \
   managers/rpcman.py \

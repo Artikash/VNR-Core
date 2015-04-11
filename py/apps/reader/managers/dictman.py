@@ -194,7 +194,7 @@ class DictionaryManager:
       'feature': feature,
     })
 
-  def renderJapanese(self, text, feature='', fmt=None): # unicode => unicode
+  def renderJapanese(self, text, feature=''): # unicode => unicode
     """
     @param  text  Japanese phrase
     @return  unicode not None  html
@@ -205,11 +205,7 @@ class DictionaryManager:
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
     if feature:
-      if fmt:
-        surf = fmt.getsurface(feature)
-        if surf:
-          text = surf
-        feature = mecabman.renderfeature(feature, fmt)
+      feature = mecabman.renderfeature(feature)
     try:
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({

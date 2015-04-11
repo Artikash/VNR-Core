@@ -37,10 +37,10 @@ class _ShioriBean:
     @return  unicode
     """
     ret = ""
-    args = GrimoireBean.instance.lookupFeature(text) or []
+    feature = GrimoireBean.instance.lookupFeature(text)
     if self._renderMutex.tryLock():
       ret = skthreads.runsync(partial(
-          dictman.manager().renderJapanese, text, *args))
+          dictman.manager().renderJapanese, text, feature=feature))
       self._renderMutex.unlock()
     else:
       dwarn("ignore thread contention")

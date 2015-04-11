@@ -151,27 +151,27 @@ class _MainObject(object):
   #    sig.connect(refresh)
   #  return ret
 
-  #@memoizedproperty
-  #def meCabManager(self):
-  #  dprint("create mecab manager") # Move this upward before kagami
-  #  import mecabman
-  #  ret = mecabman.manager()
+  @memoizedproperty
+  def meCabManager(self):
+    dprint("create mecab manager") # Move this upward before kagami
+    import mecabman
+    ret = mecabman.manager()
 
-  #  # Already connected in gameman
-  #  #self.gameManager.processChanged.connect(ret.clearUserDictionary)
+    import settings
+    ss = settings.global_()
 
-  #  import settings
-  #  ss = settings.global_()
+    ret.setEdictEnabled(ss.isMeCabEdictEnabled())
+    ss.meCabEdictEnabledChanged.connect(ss.setEdictEnabled)
+    return ret
 
-  #  ret.setEnabled(ss.isMeCabEnabled())
-  #  ss.meCabEnabledChanged.connect(ret.setEnabled)
+    # Already connected in gameman
+    #self.gameManager.processChanged.connect(ret.clearUserDictionary)
 
-  #  ret.setRubyType(ss.rubyType())
-  #  ss.rubyTypeChanged.connect(ret.setRubyType)
+    #ret.setEnabled(ss.isMeCabEnabled())
+    #ss.meCabEnabledChanged.connect(ret.setEnabled)
 
-  #  ret.setDictionaryName(ss.meCabDictionary())
-  #  ss.meCabDictionaryChanged.connect(ret.setDictionaryName)
-  #  return ret
+    #ret.setRubyType(ss.rubyType())
+    #ss.rubyTypeChanged.connect(ret.setRubyType)
 
   #@memoizedproperty
   #def caboChaManager(self):
