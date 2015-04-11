@@ -7,6 +7,7 @@
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
+from mecabparser import mecabformat
 from mytr import my
 #from kagami import GrimoireBean
 import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
@@ -24,24 +25,37 @@ class _DictionaryManager:
   def __init__(self):
     self.enabled = True # bool
 
-  def lookupEdict(self, text, limit=5):
+  def lookupEdict(self, text, feature=None, limit=5, fmt=mecabformat.UNIDIC_FORMATTER):
     """
     @param  text  unicode
+    @param  feature  unicode
     @param  limit  int
     @yield  (unicode word, unicode reading, unicode translation)
     """
-    #if settings.global_().isEdictEnabled():
-    for it in dicts.edict().lookup(text, limit=limit):
-      trans = _dictman.render_edict(it.Translation)
-      surface = it.Headword
-      reading = it.Reading
-      if reading == surface:
-        reading = None
-      if reading:
-        roman = convutil.kana2romaji(reading)
-        if roman and roman != reading:
-          reading = "%s, %s" % (reading, roman)
-      yield surface, reading, trans
+    kwargs = {'surfaces':[text]}
+    v = convutil.kata2hira(text)
+    if v != text:
+      kwargs['surfaces'].append(v)
+    reading = None
+    if feature:
+      v = fmt.getorigin(feature)
+      if v and '-' not in v and v != text:
+        kwargs['surfaces'].append(v)
+      if fmt.gettype(feature) == 'edict':
+        id = fmt.getid(feature)
+        if id:
+          kwargs['id'] = id
+
+      #kata = fmt.getkata(feature)
+      #if kata:
+      #  reading = conv.kata2hira(kata)
+      #  romaji = convutil.kata2romaji(kata)
+      #  if romaji and romaji != reading:
+      #    reading = "%s, %s" % (reading, roman)
+
+    for id, word, content in dicts.edict().lookup(limit=limit, **kwargs):
+      html = _dictman.render_edict(content)
+      yield word, html
 
   def _iterEB(self):
     """
@@ -152,16 +166,30 @@ class _DictionaryManager:
     if ss.isLingoesJaEnEnabled():
       yield dicts.lingoes('ja-en'), 'ja-en', 'vicon'
 
-  def lookupLD(self, text, limit=3): # LD seems contains lots of wrong word, use smaller size
+  def lookupLD(self, text, exact=True, limit=3): # LD seems contains lots of wrong word, use smaller size
     """
     @param  text  unicode
-    @param  limit  int
-    @yield  unicode source, [unicode xml]
+    @param* exact  bool
+    @param* limit  int
+    @yield  unicode source, unicode html
     """
     for db, lang, cat in self._iterLD():
-      for word, xml in db.lookup(text, limit=limit):
+      for word, xml in db.lookup(text, exact=exact, limit=limit):
         xml = _dictman.render_lingoes(xml, cat)
         yield word, xml
+
+  def lookupDB(self, text, exact=True, feature=None): # LD seems contains lots of wrong word, use smaller size
+    """
+    @param  text  unicode
+    @param* exact  bool
+    @param* feature  unicode
+    @yield  unicode source, unicode html
+    """
+    if settings.global_().isEdictEnabled():
+      for it in self.lookupEdict(text, feature=feature):
+        yield it
+    for it in self.lookupLD(text, exact=exact):
+      yield it
 
 class DictionaryManager:
 
@@ -194,9 +222,11 @@ class DictionaryManager:
       'feature': feature,
     })
 
-  def renderJapanese(self, text, feature='', fmt=None): # unicode => unicode
+  def renderJapanese(self, text, exact=True, feature=''): #
     """
-    @param  text  Japanese phrase
+    @param  text  unicode  Japanese phrase
+    @param  exact  bool  wheher do exact match  exact match faster but return less phrases
+    @param* feature  unicode  MeCab feature
     @return  unicode not None  html
     """
     d = self.__d
@@ -205,20 +235,15 @@ class DictionaryManager:
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
     if feature:
-      if fmt:
-        surf = fmt.getsurface(feature)
-        if surf:
-          text = surf
-        feature = mecabman.renderfeature(feature, fmt)
+      feature = mecabman.renderfeature(feature)
     try:
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
         'feature': feature,
-        'edict_tuples': d.lookupEdict(text) if settings.global_().isEdictEnabled() else None,
-        'ld_tuples': d.lookupLD(text),
-        'eb_strings': d.lookupEB(text),
+        'tuples': d.lookupDB(text, exact=exact, feature=feature),
+        'eb_strings': d.lookupEB(text), # exact not used, since it is already very fast
         #'google': google,
         #'locale': d.locale,
       })

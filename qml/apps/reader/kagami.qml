@@ -61,8 +61,6 @@ Item { id: root_
 
   // cached
 
-  property bool rubyEnabled: !!settings_.meCabDictionary
-
   property real globalZoomFactor: 1.0
   function updateGlobalZoomFactor() {
     var factor = Math.max(0.6, Math.sqrt( // Reduce zoom factor
@@ -612,13 +610,11 @@ Item { id: root_
         convertsChinese: settings_.convertsChinese
         //msimeParserEnabled: settings_.msimeParserEnabled
 
-        furiganaEnabled: root_.rubyEnabled
-
         //outlineEnabled: dock_.outlineChecked && !shadowEnabled
         //outlineEnabled: !shadowEnabled
         //outlineEnabled: false
 
-        rubyJaInverted: settings_.rubyJaInverted
+        //rubyJaInverted: settings_.rubyJaInverted
         rubyInverted: settings_.rubyInverted
 
         chineseRubyEnabled: settings_.chineseRubyEnabled
@@ -629,9 +625,13 @@ Item { id: root_
 
         chineseRubyType: settings_.chineseRubyType
 
-        rubyType: settings_.rubyType
-        rubyDic: settings_.meCabDictionary
-        caboChaEnabled: settings_.caboChaEnabled
+        japaneseRubyEnabled: settings_.japaneseRubyEnabled
+        japaneseRubyKanaEnabled: settings_.japaneseRubyKanaEnabled
+        japaneseRubyType: settings_.japaneseRubyType
+
+        //rubyType: settings_.rubyType
+        //rubyDic: settings_.meCabDictionary
+        //caboChaEnabled: settings_.caboChaEnabled
 
         removesTextNewLine: !dock_.splitsTextChecked
         splitsTranslation: dock_.splitsTranslationChecked

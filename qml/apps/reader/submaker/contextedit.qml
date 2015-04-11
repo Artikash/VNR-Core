@@ -67,10 +67,11 @@ Item { id: root_
 
       onCursorRectangleChanged: scrollArea_.ensureVisible(cursorRectangle)
 
-      Plugin.MeCabHighlighter {
-        document: textEdit_.getTextDocument()
-        enabled: root_.visible && toolTip_.containsMouse
-      }
+      // 4/10/2015: Temporarily disabled
+      //Plugin.MeCabHighlighter {
+      //  document: textEdit_.getTextDocument()
+      //  enabled: root_.visible && toolTip_.containsMouse
+      //}
 
       //anchors.fill: parent
       // height = paintedHeight

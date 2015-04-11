@@ -8,6 +8,10 @@ if __name__ == '__main__':
   initrc.chcwd()
   initrc.initenv()
 
+  import os
+  title = os.path.basename(__file__)
+  initrc.settitle(title)
+
 import os
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
@@ -35,7 +39,7 @@ DICS = {
   # GBK和汉字典
   # zh: GBK Japanese-Chinese Dictionary.ld2
   # http://www.lingoes.net/en/dictionary/dict_down.php?id=212A6B5BC3D5634FB00E9BCC30F08C62
-  'ja-zh-gbk': {'inenc':'utf8', 'outenc':'utf8', 'size':412280, 'url':'http://www.lingoes.cn/download/dict/GBK%20Japanese-Chinese%20Dictionary.ld2'},
+  'ja-zh-gbk': {'inenc':'utf8', 'outenc':'utf8', 'size':412280},
 }
 
 LANGS = frozenset(DICS.iterkeys())
@@ -69,7 +73,7 @@ def getld(lang): # str -> bool
 
   ok = False
   from sakurakit import sknetio
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) == size
   if not ok and os.path.exists(path):
@@ -96,7 +100,7 @@ def makedb(lang): # str -> bool
 
   ok = False
   from lingoes.lingoesdb import LingoesDb
-  with SkProfiler():
+  with SkProfiler("extract"):
     if LingoesDb(tmppath).create(ldpath, dic['inenc'], dic['outenc']):
       os.renames(tmppath, dbpath) # renames to create DB_DIR
       ok = True

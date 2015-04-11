@@ -72,8 +72,9 @@ reg(qmlutil.BBCodeParser, 'BBCodeParser')
 import spell
 reg(spell.SpellChecker, 'SpellChecker')
 
-import mecabman
-reg(mecabman.QmlMeCabHighlighter, 'MeCabHighlighter')
+# Temporarily disabled
+#import mecabman
+#reg(mecabman.QmlMeCabHighlighter, 'MeCabHighlighter')
 
 import status
 reg(status.SystemStatus, 'SystemStatus')

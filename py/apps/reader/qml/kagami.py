@@ -7,7 +7,6 @@
 #import textwrap
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
-from mecabjlp import mecabfmt
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
 from sakurakit.skdebug import dprint, dwarn
@@ -17,7 +16,7 @@ from sakurakit.skqml import SkValueObject
 #from msime import msime
 from convutil import zhs2zht
 from mytr import my
-import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings, textutil
+import bbcode, config, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings, textutil
 
 ## Kagami ##
 
@@ -130,7 +129,7 @@ class OcrPopupController:
 class _GrimoireBean:
 
   def __init__(self):
-    self.features = {} # {unicode text:(unicode feature, fmt)}, recent mecab features
+    self.features = {} # {unicode text:unicode feature}
 
   #def renderJapanese(self, text, feature, **kwargs):
   #  return mecabman.rendertable(text, features=self.features if feature else None, **kwargs);
@@ -195,20 +194,18 @@ class GrimoireBean(QObject):
   @Slot(unicode, result=unicode)
   def convertChinese(self, text): return zhs2zht(text)
 
-  @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
-  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
+  @Slot(unicode, unicode, bool, int, float, bool, bool, result=unicode)
+  def renderJapanese(self, text, rubyType, rubyKana, charPerLine, rubySize, colorize, center):
     """
     @return  unicode  html
     """
     d = self.__d
-    feature = colorize # keep features when colorized
-    if feature and d.features:
+    if d.features:
       d.features = {}
-    fmt = mecabfmt.getfmt(meCabDic)
-    render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
+    features = d.features if colorize else None
+    render = mecabman.rendertable
     return ''.join(
-        render(t, features=d.features if feature else None,
-            fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
+        render(t, features=features, rubyType=rubyType, rubyKana=rubyKana, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
   @Slot(unicode, int, float, bool, bool, bool, bool, bool, result=unicode)
@@ -534,7 +531,7 @@ class OmajinaiController(QObject):
 class _MirageBean:
 
   def __init__(self):
-    self.features = {} # {unicode text:(unicode feature, fmt)}, recent mecab features
+    self.features = {} # {unicode text:unicode feature}
 
   #def renderJapanese(self, text, feature, **kwargs):
   #  return mecabman.rendertable(text, features=self.features if feature else None, **kwargs);
@@ -583,21 +580,19 @@ class MirageBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
 
-  @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
-  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
+  @Slot(unicode, unicode, bool, int, float, bool, bool, result=unicode)
+  def renderJapanese(self, text, rubyType, rubyKana, charPerLine, rubySize, colorize, center):
     """
     @return  unicode  html
     """
     d = self.__d
-    feature = colorize
-    if feature and d.features:
+    if d.features:
       d.features = {}
-    render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
-    fmt = mecabfmt.getfmt(meCabDic)
-    return ''.join( # disable term by default
-        render(t, features=d.features if feature else None,
-            furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
-        for t in text.split('\n') if t) or text # return the original text if failed
+    features = d.features if colorize else None
+    render = mecabman.rendertable
+    return ''.join(
+        render(t, features=features, rubyType=rubyType, rubyKana=rubyKana, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+        for t in text.split('\n') if t)
 
   @Slot(unicode, result=unicode)
   def convertChinese(self, text): return zhs2zht(text)

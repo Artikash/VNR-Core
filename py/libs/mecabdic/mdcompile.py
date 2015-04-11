@@ -34,28 +34,31 @@ UNIDIC_FMT = '{surf},0,0,{cost},*,*,*,*,*,*,{kata},{kanji},{surf},*,*,*,{content
 
 # 名詞,普通名詞,一般,*,*,*,ゴメン,御免,御免,ゴメン,御免,ゴメン,漢,*,*,*,*,ゴメン,ゴメン,ゴメン,ゴメン,*,*,0,C2,*
 # 動詞,非自立可能,*,*,五段-ラ行,命令形,ナサル,為さる,なさい,ナサイ,なさる,ナサル,和,*,*,*,*,ナサイ,ナサル,ナサイ,ナサル,*,*,2,C1,*
-def assemble(entries, fmt=UNIDIC_FMT, id='*', type='*'):
+def assemble(entries, fmt=UNIDIC_FMT, id='*', type='*', surfacefilter=None):
   """
   @param  id  long  sql role id
   @param  entries  [unicode surface, unicode reading]
   @param* fmt  unicode
+  @param* surfacefilter  unicode -> bool  whether keep certain surface
   @yield  unicode
   """
   surfaces = set()
   for surf, yomi in entries:
     if surf not in surfaces:
       surfaces.add(surf)
-      hira = kata2hira(yomi) if yomi else ''
-      kata = hira2kata(yomi) if yomi else ''
-      kanji = '*' # not implemened
-      content = surf
-      cost = costof(len(surf))
-      yield fmt.format(surf=surf, kata=kata, kanji=kanji, content=content, cost=cost, type=type, id=id)
-      for kana in (yomi, hira, kata):
-        if kana and kana not in surfaces:
-          surfaces.add(kana)
-          cost = costof(len(kana))
-          yield fmt.format(surf=kana, kata=kata, kanji=kanji, content=content, cost=cost, type=type, id=id)
+      if not surfacefilter or surfacefilter(surf):
+        hira = kata2hira(yomi) if yomi else ''
+        kata = hira2kata(yomi) if yomi else ''
+        kanji = '*' # not implemened
+        content = surf
+        cost = costof(len(surf))
+        yield fmt.format(surf=surf, kata=kata, kanji=kanji, content=content, cost=cost, type=type, id=id)
+        for kana in (yomi, hira, kata):
+          if kana and kana not in surfaces:
+            surfaces.add(kana)
+            if not surfacefilter or surfacefilter(kana):
+              cost = costof(len(kana))
+              yield fmt.format(surf=kana, kata=kata, kanji=kanji, content=content, cost=cost, type=type, id=id)
 
 MIN_CSV_SIZE = 10 # minimum CSV file size
 def compile(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):

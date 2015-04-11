@@ -178,11 +178,12 @@ def initenv():
   except KeyError: # PATH does not exists?!
     os.environ['PATH'] = paths
 
-  #if os.name == 'nt' and hasattr(config, 'ENV_MECABRC'):
-  #  assert os.path.exists(config.ENV_MECABRC), "mecabrc does not exist"
-  #  os.putenv('MECABRC', config.ENV_MECABRC.replace('/', os.path.sep))
-  #else:
-  #  print "initrc:initenv: ignore mecabrc"
+  if os.name == 'nt' and hasattr(config, 'ENV_MECABRC'):
+    assert os.path.exists(config.ENV_MECABRC), "mecabrc does not exist"
+    os.putenv('MECABRC',
+        config.ENV_MECABRC.replace('/', os.path.sep))
+  else:
+    print "initrc:initenv: ignore mecabrc"
 
   #from distutils.sysconfig import get_python_lib
   #sitedir = get_python_lib()

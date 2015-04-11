@@ -69,6 +69,8 @@ ENV_PYTHONPATH = map(parse_path, SHARE_YAML['env']['pythonpath']) # [str path]
 
 APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
 
+ENV_MECABRC = parse_path(SHARE_YAML['env']['mecabrc']) # unicode abspath
+
 ## Settings ##
 
 QT_THREAD_COUNT = parse_int(APP_YAML['qt']['threadCount'])
@@ -151,8 +153,8 @@ CDN = SHARE_YAML['cdn']
 #CDN_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
 #    for k,v in SHARE_YAML['cdn'].iteritems()}
 
-MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
-    for k,v in SHARE_YAML['mecab']['rcfile'].iteritems()}
+#MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
+#    for k,v in SHARE_YAML['mecab']['rcfile'].iteritems()}
 
 ## Jinja ##
 

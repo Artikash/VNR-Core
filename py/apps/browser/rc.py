@@ -63,14 +63,6 @@ def wallpaper_url():
   import settings
   return settings.reader().wallpaperUrl() or image_url('wallpaper')
 
-def mecab_rc_path(name):
-  """
-  @param  str  name
-  @return  unicode  path
-  @throw  KeyError
-  """
-  return config.MECAB_RCFILES[name] if name else ''
-
 def qss_path(name):
   """
   @param  name  str  id

@@ -2,7 +2,6 @@
 # initmsg.py
 # 3/26/2014 jichi
 
-
 def info(name='', location='', urls=[], size=0):
   urls = '\n         '.join(urls)
   print """\

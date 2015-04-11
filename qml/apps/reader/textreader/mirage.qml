@@ -53,11 +53,10 @@ Item { id: root_
 
   //property bool revertsColor: false
 
-  property bool rubyInverted: settings_.rubyJaInverted
-  property string rubyType: settings_.rubyType
-  property string rubyDic: settings_.meCabDictionary
-  property bool rubyEnabled: !!settings_.meCabDictionary
-  property bool caboChaEnabled: settings_.caboChaEnabled
+  property string rubyType: settings_.japaneseRubyType
+  property bool rubyEnabled: settings_.japaneseRubyEnabled
+  property bool rubyKanaEnabled: settings_.japaneseRubyKanaEnabled
+  //property bool caboChaEnabled: settings_.caboChaEnabled
 
   property bool convertsChinese: false // convert Simplified Chinese to Chinese
 
@@ -939,13 +938,11 @@ Item { id: root_
           root_.rubyEnabled && model.type === 'text' && model.language === 'ja' ?
             bean_.renderJapanese(
               model.text,
-              root_.caboChaEnabled,
-              //root_.msimeParserEnabled,
               root_.rubyType,
-              root_.rubyDic,
-              Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
+              root_.rubyKanaEnabled,
+              //Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
+              Math.round(root_.width / (22 * zoomFactor)), // char per line
               10 * zoomFactor, // ruby size of furigana
-              root_.rubyInverted,
               toolTip_.containsMouse || textCursor_.containsMouse, // colorize
               root_.alignCenter
             ) :

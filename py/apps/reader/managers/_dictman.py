@@ -2,6 +2,12 @@
 # _dictman.py
 # 10/10/2012 jichi
 
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+  import debug
+  debug.initenv()
+
 import re
 from sakurakit import skstr
 import convutil
@@ -9,6 +15,8 @@ import convutil
 #RIGHT_ARROW = u"→" # みぎ
 RIGHT_ARROW = u"⇒" # みぎ
 
+# Example: /EntL1390270X/
+_rx_edict_ref = re.compile(r'/[0-9a-zA-Z]+/$')
 def render_edict(text):
   """
   @param  text  unicode
@@ -16,6 +24,7 @@ def render_edict(text):
 
   Example: /(n,adj-no) (1) center/centre/middle/heart/core/focus/pivot/emphasis/balance/(suf) (2) -centered/-centred/-focussed/-oriented/centered on/focussed on/(P)/
   """
+  text = _rx_edict_ref.sub('/', text) # remove trailing ref
   if text.startswith('/'):
     text = text[1:]
   if text.endswith('/'):
@@ -131,5 +140,10 @@ def render_lingoes(text, dic=None):
   @return  unicode  html
   """
   return _render_lingoes(text, dic)
+
+
+if __name__ == '__main__':
+  t = u'/(n) tank (military vehicle)/(P)/EntL1390270X/'
+  print render_edict(t)
 
 # EOF

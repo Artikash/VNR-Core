@@ -9,6 +9,10 @@ if __name__ == '__main__':
   import initrc
   initrc.initenv()
 
+  import os
+  title = os.path.basename(__file__)
+  initrc.settitle(title)
+
 import os
 from sakurakit.skdebug import dprint, dwarn
 from google import googletrans

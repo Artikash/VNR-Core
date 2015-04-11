@@ -105,16 +105,16 @@ GAME_SCORE_TYPES = 'overall', 'ecchi'
 
 # Furigana
 
-FURI_KATA = 'katagana'
-FURI_HIRA = 'hiragana'
-FURI_ROMAJI = 'romaji'
-FURI_ROMAJI_RU = 'romaji.ru'
-#FURI_KANJI = 'kanji'
-FURI_HANGUL = 'hangul'
-FURI_THAI = 'thai'
-FURI_AR = 'ar'
-FURI_VI = 'vi'
-FURI_TR = 'tr'
+#FURI_KATA = 'katagana'
+#FURI_HIRA = 'hiragana'
+#FURI_ROMAJI = 'romaji'
+#FURI_ROMAJI_RU = 'romaji.ru'
+##FURI_KANJI = 'kanji'
+#FURI_HANGUL = 'hangul'
+#FURI_THAI = 'thai'
+#FURI_AR = 'ar'
+#FURI_VI = 'vi'
+#FURI_TR = 'tr'
 
 PINYIN_TONE = 'pinyin' # pinyin with tone
 PINYIN_ROMAJI = 'romaji' # pinyin without tone

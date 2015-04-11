@@ -57,10 +57,11 @@ class LingoesDb(object):
     except Exception, e:
       dwarn(e)
 
-  def _search(self, t, limit=0):
+  def _search(self, t, exact=False, limit=0):
     """
     @param  t  unicode
-    @param  limit  int
+    @param* exact  bool
+    @param* limit  int
     @return  iter(unicode word, unicode xml) or None
     """
     #if self.trie:
@@ -69,8 +70,11 @@ class LingoesDb(object):
     try:
       with sqlite3.connect(self.dbpath) as conn:
         cur = conn.cursor()
-        return dictdb.queryentries(cur, limit=limit, wordlike=t + '%',
-            select=dictdb.SELECT_WORD_CONTENT)
+        if exact:
+          kwargs = {'word':t}
+        else:
+          kwargs = {'wordlike':t+'%'}
+        return dictdb.queryentries(cur, limit=limit, select=dictdb.SELECT_WORD_CONTENT, **kwargs)
     except Exception, e:
       dwarn(e)
 
@@ -94,16 +98,17 @@ class LingoesDb(object):
           break
     return t
 
-  def search(self, t, limit=0, complete=True):
+  def search(self, t, limit=0, exact=False, complete=True):
     """Lookup dictionary prefix while eliminate duplicate definitions
     @param  t  unicode
+    @param* exact  bool  whether do exact match
     @param* complete  bool  whether complete the word
     @param* limit  int
     @yield  (unicode word, unicode xml)
     """
     lastxml = None
     count = 0
-    q = self._search(t, limit=limit)
+    q = self._search(t, exact=exact, limit=limit)
     if q:
       for key, xml in q:
         if lastxml != xml:
@@ -115,7 +120,7 @@ class LingoesDb(object):
     if complete and not count:
       s = self._complete(t)
       if s and s != t:
-        for it in self.search(s, limit=limit):
+        for it in self.search(s, exact=exact, limit=limit):
           yield it
 
   lookup = search # for backward compatibility

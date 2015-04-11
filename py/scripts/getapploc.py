@@ -8,6 +8,10 @@ if __name__ == '__main__':
   initrc.chcwd()
   initrc.initenv()
 
+  import os
+  title = os.path.basename(__file__)
+  initrc.settitle(title)
+
 import os
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
@@ -44,7 +48,7 @@ def get(): # -> bool
 
   from sakurakit import sknetio
   ok = False
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, tmppath, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(tmppath) == size
       if ok:

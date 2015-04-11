@@ -564,7 +564,7 @@ def confirmRemoveDictionary(name): # unicode
   return Yes == QMessageBox.question(_parent(),
       my.tr("Remove dictionary"),
       my.tr("""Do you want to remove the {0} dictionary?
-You can redownload it later if you have Internet access.""").format(name),
+You can reinstall it later if you want.""").format(name),
       Yes|No, No)
 
 def confirmDownloadDictionary(name): # unicode
@@ -579,32 +579,16 @@ It requires Internet access and might take a couple of minutes.
 The dictionary will be installed to {1}.""").format(name, location),
       Yes|No, No)
 
-def confirmRemoveEDICT():
+def confirmCompileDictionary(name): # unicode
   """
   @return  bool
   """
-  name = 'EDICT'
-  return Yes == QMessageBox.question(_parent(),
-      my.tr("Remove dictionary"),
-      my.tr("""Do you want to remove the {0} dictionary?
-You can redownload it later if you have Internet access.""").format(name)
-+ '\n\n' +
-my.tr("If EDICT is installed, VNR's Updater will also update EDICT monthly."),
-      Yes|No, No)
-
-def confirmDownloadEDICT():
-  """
-  @return  bool
-  """
-  name = 'EDICT'
   location = "Caches/Dictionaries"
   return Yes == QMessageBox.question(_parent(),
-      my.tr("Download dictionary"),
-      my.tr("""Do you want to download the {0} dictionary?
-It requires Internet access and might take a couple of minutes.
-The dictionary will be installed to {1}.""").format(name, location)
-+ '\n\n' +
-my.tr("If EDICT is installed, VNR's Updater will also update EDICT monthly."),
+      my.tr("Compile dictionary"),
+      my.tr("""Do you want to compile the {0} dictionary?
+It does not require Internet access and might take a couple of seconds.
+The dictionary will be installed to {1}.""").format(name, location),
       Yes|No, No)
 
 def confirmRemoveApploc():

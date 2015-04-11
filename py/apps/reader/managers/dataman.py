@@ -628,8 +628,9 @@ class GameInfo(object):
     r = self.trailers
     if r and r.romanTitle:
       return r.romanTitle
-    if mecabman.isEnabled():
-      return mecabman.toromaji(self.title, capital=True)
+    m = mecabman.manager()
+    if m.isLoaded():
+      return m.toRomaji(self.title, capital=True)
     return ''
 
   @property

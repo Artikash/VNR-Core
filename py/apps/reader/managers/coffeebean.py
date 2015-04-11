@@ -95,21 +95,22 @@ class I18nBean(QObject):
     import i18n
     return i18n.topic_type_name(type)
 
-class JlpBean(QObject):
-  def __init__(self, parent):
-    super(JlpBean, self).__init__(parent)
-
-  @Slot(result=bool)
-  def isEnabled(self):
-    import jlpman
-    return jlpman.manager().isEnabled()
-
-  @Slot(unicode, result=unicode)
-  def parse(self, text):
-    import json
-    import jlpman
-    ret = jlpman.manager().parseToRuby(text)
-    return json.dumps(ret) if ret else ''
+# Temporarily disabled
+#class JlpBean(QObject):
+#  def __init__(self, parent):
+#    super(JlpBean, self).__init__(parent)
+#
+#  @Slot(result=bool)
+#  def isEnabled(self):
+#    import jlpman
+#    return jlpman.manager().isEnabled()
+#
+#  @Slot(unicode, result=unicode)
+#  def parse(self, text):
+#    import json
+#    import jlpman
+#    ret = jlpman.manager().parseToRuby(text)
+#    return json.dumps(ret) if ret else ''
 
 @memoized
 def manager(): return CoffeeBeanManager()

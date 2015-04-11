@@ -8,6 +8,10 @@ if __name__ == '__main__':
   initrc.chcwd()
   initrc.initenv()
 
+  import os
+  title = os.path.basename(__file__)
+  initrc.settitle(title)
+
 import os
 from sakurakit import skos
 from sakurakit.skdebug import dprint, dwarn
@@ -48,10 +52,9 @@ def extract(dic): # str -> bool
   tmppath = TMP_DIR + '/cabocha.' + dic
   targetpath = DIC_DIR + '/' + dic
 
-
   import shutil
   from sakurakit import skfileio
-  with SkProfiler():
+  with SkProfiler("extract"):
     ok = skfileio.extracttar(srcpath, tmppath, mode='r:bz2')
   if ok:
     dickey = 'ipa' if dic == 'ipadic' else dic
@@ -97,7 +100,7 @@ def get(dic): # str -> bool
   minsize = MIN_FILESIZE
   path = TMP_DIR + '/' + FILENAME_TPL % dic
 
-  dprint("enter: url = %s" % url)
+  dprint("enter: url = %s, minsize = %s" % (url, minsize))
 
   #from sakurakit import skfileio
   #if os.path.exists(path) and skfileio.filesize(path) == size:
@@ -106,7 +109,7 @@ def get(dic): # str -> bool
 
   ok = False
   from sakurakit import skfileio, sknetio
-  with SkProfiler():
+  with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) > minsize
   if not ok and os.path.exists(path):

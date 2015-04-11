@@ -12,9 +12,9 @@ env:
   - $PWD/../Python
   - $PWD/../Qt/PySide
   - $PWD/../MeCab/bin
-  - $PWD/../CaboCha/bin
   - $PWD/../Boost/bin
   - $PWD/../Ehnd/bin
+  #- $PWD/../CaboCha/bin
   #- $PWD/../EB/site-packages
 
   pythonpath:
@@ -25,11 +25,11 @@ env:
   - $PWD/../Qt
   - $PWD/../Qt/PySide   # for shiboken
   - $PWD/../MeCab/py
-  - $PWD/../CaboCha/py
   - $PWD/../EB/site-packages
+  #- $PWD/../CaboCha/py
   #- $PWD/../Qt/site-packages
 
-  #mecabrc: $PWD/../../Dictionaries/mecabrc
+  mecabrc: $PWD/../../Dictionaries/mecabrc/unidic.rc
 
   #xp: # only for Windows XP
   #  pythonpath:
@@ -42,12 +42,12 @@ env:
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
-  - $PWD/../CaboCha/bin/cabocha.dll
   - $PWD/../Boost/bin/boost_regex.dll
   - $PWD/../Ehnd/bin/ehnd.dll
   - $PWD/../EB/site-packages/eb.pyd
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
   - $PWD/../../Fonts/msgothic.ttf
+  #- $PWD/../CaboCha/bin/cabocha.dll
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2
   #- $PWD/../NTLEA/ntleac.exe # do not work on Code Ultra
 
@@ -642,25 +642,19 @@ tahscript:
 #  transru:          $PWD/../../../Caches/Translations/PROMT
 
 # Must be consistent with python scripts and dicts.py
-mecab:
-  dicdir:
-    ipadic:         $PWD/../../../Caches/Dictionaries/IPAdic
-    unidic:         $PWD/../../../Caches/Dictionaries/UniDic
-    #unidic-mlj:     $PWD/../../../Caches/Dictionaries/UniDicMLJ
-  rcfile:
-    ipadic:         $PWD/../../Dictionaries/mecabrc/ipadic.rc
-    unidic:         $PWD/../../Dictionaries/mecabrc/unidic.rc
-    #unidic-mlj:     $PWD/../../Dictionaries/mecabrc/unidic-mlj.rc
+#mecab:
+#  dicdir:           $PWD/../../../Caches/Dictionaries/UniDic
+#  rcfile:           $PWD/../../Dictionaries/mecabrc/unidic.rc
 
-cabocha:
-  dicdir:
-    ipadic:         $PWD/../../../Caches/Dictionaries/CaboCha/ipadic
-    unidic:         $PWD/../../../Caches/Dictionaries/CaboCha/unidic
-    #juman:          $PWD/../../../Caches/Dictionaries/CaboCha/juman
-  rcfile:
-    ipadic:         $PWD/../../Dictionaries/cabocharc/ipadic.rc
-    unidic:         $PWD/../../Dictionaries/cabocharc/unidic.rc
-    #juman:          $PWD/../../Dictionaries/cabocharc/juman.rc
+#cabocha:
+#  dicdir:
+#    ipadic:         $PWD/../../../Caches/Dictionaries/CaboCha/ipadic
+#    unidic:         $PWD/../../../Caches/Dictionaries/CaboCha/unidic
+#    #juman:          $PWD/../../../Caches/Dictionaries/CaboCha/juman
+#  rcfile:
+#    ipadic:         $PWD/../../Dictionaries/cabocharc/ipadic.rc
+#    unidic:         $PWD/../../Dictionaries/cabocharc/unidic.rc
+#    #juman:          $PWD/../../Dictionaries/cabocharc/juman.rc
 
 lingoes: # language
   - zh
@@ -675,8 +669,8 @@ jmdict: # language
   - nl
 
 jcuserdic: # The preferences will be from top to down
-  - $PWD/../../Dictionaries/jb/@jichi/JcUserdic/Jcuser
   - $PWD/../../Dictionaries/jb/@djz020815/JcUserdic/Jcuser
+  #- $PWD/../../Dictionaries/jb/@jichi/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/JBeijing/@Hdgdyl/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/JBeijing/@Zhugeqiu/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/JBeijing/@Goodboyye/JcUserdic/Jcuser
