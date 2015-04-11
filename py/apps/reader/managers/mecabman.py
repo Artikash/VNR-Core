@@ -122,8 +122,8 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
       ret.append(v)
 
     v = fmt.gettype(feature)
-    if v:
-      ret.append(v.upper())
+    if v == 'edict':
+      ret.append('EDICT')
     else:
       ret.append('UNIDIC')
 

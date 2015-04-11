@@ -16,7 +16,7 @@ import convutil
 RIGHT_ARROW = u"⇒" # みぎ
 
 # Example: /EntL1390270X/
-_rx_edict_ref = '/[0-9a-zA-Z]+/$'
+_rx_edict_ref = re.compile(r'/[0-9a-zA-Z]+/$')
 def render_edict(text):
   """
   @param  text  unicode

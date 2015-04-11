@@ -38,7 +38,7 @@ class _DictionaryManager:
       kwargs['surfaces'].append(v)
     reading = None
     if feature:
-      v = fmt.getkanji(feature)
+      v = fmt.getorigin(feature)
       if v and '-' not in v and v != text:
         kwargs['surfaces'].append(v)
       if fmt.gettype(feature) == 'edict':
@@ -166,7 +166,7 @@ class _DictionaryManager:
     if ss.isLingoesJaEnEnabled():
       yield dicts.lingoes('ja-en'), 'ja-en', 'vicon'
 
-  def lookupLD(self, text, exact=False, limit=3): # LD seems contains lots of wrong word, use smaller size
+  def lookupLD(self, text, exact=True, limit=3): # LD seems contains lots of wrong word, use smaller size
     """
     @param  text  unicode
     @param* exact  bool
@@ -178,7 +178,7 @@ class _DictionaryManager:
         xml = _dictman.render_lingoes(xml, cat)
         yield word, xml
 
-  def lookupDB(self, text, exact=False, feature=None): # LD seems contains lots of wrong word, use smaller size
+  def lookupDB(self, text, exact=True, feature=None): # LD seems contains lots of wrong word, use smaller size
     """
     @param  text  unicode
     @param* exact  bool
@@ -222,7 +222,7 @@ class DictionaryManager:
       'feature': feature,
     })
 
-  def renderJapanese(self, text, exact=False, feature=''): #
+  def renderJapanese(self, text, exact=True, feature=''): #
     """
     @param  text  unicode  Japanese phrase
     @param  exact  bool  wheher do exact match  exact match faster but return less phrases
