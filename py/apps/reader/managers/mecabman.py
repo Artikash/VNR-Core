@@ -1,6 +1,7 @@
 # coding: utf8
 # mecabman.py
 # 10/12/2012 jichi
+import os
 from sakurakit.skclass import memoized
 from mecabparser import mecabdef
 from mytr import my
@@ -21,15 +22,14 @@ class _MeCabManager:
     """
     @return mecabparser.MeCabParser or None
     """
-    return self._getParserWithUnidic() if self.userdicEnabled else self._getParserWithoutUserdic()
+    return self._getParserWithUserdic() if self.userdicEnabled else self._getParserWithoutUserdic()
 
   def isParserLoaded(self):
     return bool(self._parserWithUserdic or self._parserWithoutUserdic)
 
-  def _getParserWithoutUnidic(self):
+  def _getParserWithoutUserdic(self):
     if not self._parserWithUserdic:
-      import dicts
-      if not dicts.unidic().exists():
+      if not os.path.exists(rc.DIR_UNIDIC):
         dwarn("missing unidic")
         growl.warn(my.tr("MeCab UniDic dictionary not found"))
         return
@@ -37,9 +37,8 @@ class _MeCabManager:
       self._parserWithUserdic = mecabparser.MeCabParser()
     return self._parserWithUserdic
 
-  def _getParserWithUnidic(self):
+  def _getParserWithUserdic(self):
     if not self._parserWithUserdic:
-      import os
       userdic = rc.MECAB_EDICT_RELPATH
       if not os.path.exists(userdic):
         dwarn("missing edict")
@@ -67,8 +66,9 @@ class MeCabManager:
     @param* rubyKana  bool
     @yield  (unicode surface, unicode ruby, unicode feature) or return None
     """
-    try: return self.__d.getParser().iterparseToRuby(self, text, rubyType, show_ruby_kana=rubyKana)
-    except Exception, e: dwawrn(e)
+    return self.__d.getParser().iterparseToRuby(text, rubyType, show_ruby_kana=rubyKana)
+    #try: return self.__d.getParser().iterparseToRuby(self, text, rubyType, show_ruby_kana=rubyKana)
+    #except Exception, e: dwarn(e)
 
   def toRomaji(self, capital=True):
     """

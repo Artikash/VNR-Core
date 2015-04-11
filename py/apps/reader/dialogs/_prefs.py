@@ -4143,8 +4143,8 @@ class _DictionaryTranslationTab(object):
 
   @staticmethod
   def isRubyEdictEnabled():
-    return ((settings.global_().isJapaneseRubyEnabled() or dicts.unidic().exists())
-        and (settings.global_().isMeCabEdictEnabled() or dicts.edict().exists()))
+    return (settings.global_().isJapaneseRubyEnabled()
+       and (settings.global_().isMeCabEdictEnabled() or dicts.edict().exists()))
 
   # Ruby type
 
@@ -5218,7 +5218,7 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def edictIntroLabel(self):
-    return QtWidgets.QLabel("%s (30MB, %s" % (
+    return QtWidgets.QLabel("%s (16MB, %s" % (
         my.tr("EDICT Japanese-English dictionary"),
         my.tr("recommended for English")))
 

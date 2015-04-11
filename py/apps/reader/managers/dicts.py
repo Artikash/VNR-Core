@@ -121,7 +121,7 @@ class Wadoku(Dict):
 class UniDic(Dict):
   def __init__(self):
     super(UniDic, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "UniDic"),
+      path=os.path.join(rc.DIR_UNIDIC),
       lockpath=os.path.join(rc.DIR_TMP, "unidic.lock"),
     )
 

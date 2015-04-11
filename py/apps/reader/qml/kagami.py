@@ -16,7 +16,7 @@ from sakurakit.skqml import SkValueObject
 #from msime import msime
 from convutil import zhs2zht
 from mytr import my
-import bbcode, config, dataman, ebdict, features, growl, ocrman, qmldialog, rc, settings, textutil
+import bbcode, config, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings, textutil
 
 ## Kagami ##
 
