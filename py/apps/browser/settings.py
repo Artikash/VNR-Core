@@ -207,15 +207,8 @@ class ReaderSettings(QSettings):
 
   ## MeCab
 
-  def rubyType(self):
-    ret = self.value('FuriganaType', 'hira')
-    if ret == 'hiragana':
-      ret = 'hira'
-    elif ret == 'katagana':
-      ret = 'kata'
-    return ret
-
-  def meCabDictionary(self): return self.value('MeCabDictionary', '') # str
+  def rubyType(self): return self.value('JapaneseRubyType', 'hira')
+  def isMeCabEnabled(self): return to_bool(self.value('JapaneseRuby'))
 
   ## TTS
 

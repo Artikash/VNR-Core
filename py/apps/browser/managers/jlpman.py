@@ -45,9 +45,9 @@ class _JlpManager:
     if self._tagger is None and self.mecabdic:
       try:
         from mecabjlp import mecabfmt, mecabtag
-        import rc
-        rcfile = rc.mecab_rc_path(self.mecabdic)
-        mecabtag.setenvrc(rcfile)
+        #import rc
+        #rcfile = rc.mecab_rc_path(self.mecabdic)
+        #mecabtag.setenvrc(rcfile)
         self.mecabfmt = mecabfmt.getfmt(self.mecabdic)
         self._tagger = mecabtag.createtagger()
       except Exception, e:

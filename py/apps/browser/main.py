@@ -146,7 +146,9 @@ class _MainObject(object):
 
     reader = settings.reader()
     ret.setRubyType(reader.rubyType())
-    ret.setMeCabDicType(reader.meCabDictionary())
+
+    dic = 'unidic' if reader.isMeCabEnabled() else '' # always unidic
+    ret.setMeCabDicType(dic)
     return ret
 
   @memoizedproperty
