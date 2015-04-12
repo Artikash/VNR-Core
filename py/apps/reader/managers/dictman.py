@@ -38,13 +38,14 @@ class _DictionaryManager:
       kwargs['surfaces'].append(v)
     reading = None
     if feature:
-      v = fmt.getorigin(feature)
+      v = fmt.getkanji(feature)
       if v and '-' not in v and v != text:
         kwargs['surfaces'].append(v)
-      if fmt.gettype(feature) == 'edict':
-        id = fmt.getid(feature)
-        if id:
-          kwargs['id'] = id
+      # id is ignored and not needed
+      #if fmt.gettype(feature) == 'edict':
+      #  id = fmt.getid(feature)
+      #  if id:
+      #    kwargs['id'] = id
 
       #kata = fmt.getkata(feature)
       #if kata:
@@ -234,14 +235,12 @@ class DictionaryManager:
       return EMPTY_HTML
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
-    if feature:
-      feature = mecabman.renderfeature(feature)
     try:
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
-        'feature': feature,
+        'feature': mecabman.renderfeature(feature),
         'tuples': d.lookupDB(text, exact=exact, feature=feature),
         'eb_strings': d.lookupEB(text), # exact not used, since it is already very fast
         #'google': google,
