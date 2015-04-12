@@ -11,6 +11,7 @@ import requests
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetdef import GZIP_HEADERS
 from sakurakit.skstr import escapehtml, unescapehtml
+import systrandef
 
 session = requests # global session
 
@@ -20,11 +21,11 @@ session = requests # global session
 # Response: body= <html><body><span class="systran_seg" id="Sp1.s2_o"><span class="systran_token_word" value="1010/noun:common" id="token_1">こんにち</span><span class="systran_token_word" value="500d/prep" id="token_2">は</span></span></body></html>;<html> <meta http-equiv="Content-Type" content="text/html\; charset=UTF-8"> <body><span class="systran_seg" id="Sp1.s2_o"><span class="systran_token_word" value="1010/noun:common" id="token_1">Today</span></span></body></html>;
 
 # http://www.systranet.com/sai?gui=WebUI&lp=ja_en&sessionid=14287950017275746&service=systranettranslate
-
 SYSTRAN_API = "http://www.systranet.com/sai"
+#SYSTRAN_API = "http://www.systranet.com/sai?lp=ja_en&service=translate"
 
-SYSTRAN_TEXT_START = '<body>'
-def translate(text, to='en', fr='ja', align=None):
+SYSTRAN_TEXT_START = 'body=\n'
+def translate(text, to='en', fr='ja'):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param* fr  unicode not None, must be valid language code
@@ -35,33 +36,26 @@ def translate(text, to='en', fr='ja', align=None):
   Returned text is not decoded, as its encoding can be guessed.
   """
   try:
-    html = "<html><body>%s</body></html>" % escapehtml(text).replace('\n', '<br>')
-    lang = fr + '_' + to
+    align = None # alignment is too 面倒くさい to implement and hence ignored
+    if align is not None:
+      text = "<html><body>%s</body></html>" % escapehtml(text).replace('\n', '<br>')
     r = session.post(SYSTRAN_API, # both post and get work
       headers=GZIP_HEADERS,
       params={
         #'gui': 'WebUI', # not really needed
-        'lp': lang,
+        #'gui': 'text',
+        'lp': systrandef.langpair(to=to, fr=fr),
         'service': 'translate' if align is None else 'systranettranslate',
         #'service': 'urlmarkuptranslate',
       },
-      data=html,
+      data=text.encode('utf8', errors='ignore'),
     )
 
     ret = r.content
-
-    if r.ok and ret.startswith('body='):
-      i = ret.find(SYSTRAN_TEXT_START)
-      if i != -1:
-        i += len(SYSTRAN_TEXT_START)
-        ret = ret[i:]
-        ret = ret.decode('utf8', errors='ignore')
-        print ord(ret[6])
-        ret = ret.replace('<br>', '\n')
-        # get rid of replacement character
-        ret = ret.replace(u'\ufffd', '')
-        ret = unescapehtml(ret)
-        return ret
+    if r.ok and ret.startswith(SYSTRAN_TEXT_START):
+      ret = ret[len(SYSTRAN_TEXT_START):]
+      ret = ret.decode('utf8', errors='ignore')
+      return ret
 
   #except socket.error, e:
   #  dwarn("socket error", e.args)
@@ -87,7 +81,8 @@ if __name__ == '__main__':
     #s = u"オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく"
     #s = "test"
     s = u"悠真くんを攻略すれば２１０円か。"
-    #s = u"なるほどなぁ…"
+    s += u"なるほどなぁ…"
+    #s = u"こんにちは"
     fr = "ja"
     to = "en"
 
@@ -104,8 +99,8 @@ if __name__ == '__main__':
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    #m = []
-    m = None
+    m = []
+    #m = None
 
     session = requests.Session()
     with SkProfiler():
