@@ -435,8 +435,8 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
-    if ss_version <= 1428816315:
-      ss.setValue('GrimoireHover', True) # enable automatic popup by default
+    #if ss_version <= 1428816315:
+    #  ss.setValue('GrimoireHover', True) # enable automatic popup by default
 
     if ss_version <= 1428623451: # reset edict
       ss.setValue('EdictEnabled', False)
