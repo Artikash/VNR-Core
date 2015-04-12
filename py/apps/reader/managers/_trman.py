@@ -812,15 +812,16 @@ class EzTranslator(OfflineMachineTranslator):
   key = 'eztrans' # override
   #parallelEnabled = True # override  disabled since eztrans is already very fast
 
-  def __init__(self, **kwargs):
+  def __init__(self, ehndEnabled=False, **kwargs):
     super(EzTranslator, self).__init__(**kwargs)
-    self.engine = self.createengine()
+    self.engine = self.createengine(ehndEnabled=ehndEnabled) # this value is not saved
     self._warned = False # bool
 
   @staticmethod
-  def createengine():
+  def createengine(ehndEnabled=False):
     from eztrans import eztrans
     ret = eztrans.create_engine()
+    ret.setEhndEnabled(ehndEnabled)
     ok = ret.load()
     #import atexit
     #atexit.register(ret.destroy) # not needed by eztrans
@@ -834,13 +835,12 @@ class EzTranslator(OfflineMachineTranslator):
     """@reimp"""
     self.engine.warmup()
 
-  def _translateApi(self, ehndEnabled=False): # bool -> function
-    return lambda text, *args, **kwargs: self.engine.translate(text, ehnd=ehndEnabled)
+  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
+    return self.engine.translate(text)
 
   def translateTest(self, text, to='en', fr='ja', ehndEnabled=False, async=False, **kwargs):
     """@reimp"""
-    api = self._translateApi(ehndEnabled)
-    try: return self._translateTest(api, text, async=async)
+    try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")),
@@ -871,13 +871,15 @@ class EzTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
+    self.engine.setEhndEnabled(ehndEnabled)
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
     if repl:
-      api = self._translateApi(ehndEnabled)
       try:
         #repl = self.__ez_repl_before(repl)
-        repl = self._translate(emit, repl, api, to, fr, async)
+        repl = self._translate(emit, repl,
+            self._translateApi,
+            to, fr, async)
         if repl:
           #repl = self.__ez_repl_after(repl)
           #repl = self.__re_term_fix.sub('', repl)

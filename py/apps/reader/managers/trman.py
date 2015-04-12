@@ -176,6 +176,7 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def ezTranslator(self): return self._newtr(_trman.EzTranslator(
+      ehndEnabled=self.ehndEnabled,
       abortSignal=self.abortSignal))
 
   @memoizedproperty

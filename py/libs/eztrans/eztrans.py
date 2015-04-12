@@ -13,6 +13,7 @@ from sakurakit.skdebug import dprint, dwarn
 
 class _Engine(object):
   def __init__(self):
+    self.locked = False # true when initializing or reloading dll
     self.dllLoaded = False
     self.pathLoaded = False
 
@@ -25,6 +26,9 @@ class _Engine(object):
     self.loader.init()
     self.dllLoaded = self.loader.isInitialized()
     dprint("ok = %s" % self.dllLoaded)
+
+  def reloadDlls(self):
+    self.loader.reload()
 
   def loadPath(self):
     path = self.registryLocation()
@@ -66,27 +70,42 @@ class Engine(object):
 
   def load(self):
     """
+    @param  ehnd  bool
     @return  bool
     """
     d = self.__d
     if not d.pathLoaded:
       d.loadPath()
     if not d.dllLoaded:
+      d.locked = True
       d.loadDll()
+      d.locked = False
     return self.isLoaded()
 
-  def translate(self, text, ehnd=True):
+  def isEhndEnabled(self): return self.__d.loader.isEhndEnabled()
+  def setEhndEnabled(self, t):
+    d = self.__d
+    if d.load.isEhndEnabled() != t and not d.locked:
+      d.locked = True
+      d.loader.setEhndEnabled(t)
+      if d.dllLoaded:
+        d.reloadDlls()
+      d.locked = False
+
+  def translate(self, text):
     """
     @param  text  unicode
-    @param* ehnd  whenther enable ehnd
-    @return   unicode
+    @return   unicode or None
     @throw  RuntimeError
     """
+    if self.__d.locked:
+      dwarn("locked")
+      return None
     if not self.isLoaded():
       self.load()
       if not self.isLoaded():
         raise RuntimeError("Failed to load ezTrans dll")
-    return self.__d.loader.translate(text, ehnd=ehnd)
+    return self.__d.loader.translate(text)
 
   def warmup(self):
     #try: self.translate(u" ")
