@@ -19,10 +19,12 @@ class UniDicFormatter(object):
   COL_BASIC = 5 # The basic columns that are shared by are dict holding the roles of the word
 
   COL_SURFACE = COL_BASIC + 1
-  COL_KATA = COL_BASIC + 1
   COL_KANJI = COL_BASIC + 2 # converted kanji
   COL_SURFACE = COL_KANJI + 1
   COL_ORIGIN = 12 # the origination of the phrase
+
+  COL_KATA = COL_BASIC + 1
+  COL_KATA0 = 17 # the original kata column without EDICT that should be checked first
 
   COL_ID = -2 # the type such as edict
   COL_TYPE = -1 # the type such as edict
@@ -37,7 +39,9 @@ class UniDicFormatter(object):
       f = f.replace(self.EMPTY_COL, '').split(self.SEP)
     return f[col] if col < len(f) else ''
 
-  def getkata(self, f): return self.getcol(f, self.COL_KATA)
+  def getkata(self, f):
+    return self.getcol(f, self.COL_KATA0) or self.getcol(f, self.COL_KATA)
+
   def getsurface(self, f): return self.getcol(f, self.COL_SURFACE)
   def getkanji(self, f): return self.getcol(f, self.COL_KANJI)
   def getorigin(self, f): return self.getcol(f, self.COL_ORIGIN)
