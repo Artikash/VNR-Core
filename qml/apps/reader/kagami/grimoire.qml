@@ -60,8 +60,11 @@ Item { id: root_
 
   property color bingColor
   property color googleColor
+  property color babylonColor
   property color infoseekColor
   property color exciteColor
+  property color systranColor
+  property color niftyColor
   property color naverColor
   property color baiduColor
   property color youdaoColor
@@ -271,6 +274,9 @@ Item { id: root_
     case 'transru': return root_.transruColor
     case 'infoseek': return root_.infoseekColor
     case 'excite': return root_.exciteColor
+    case 'babylon': return root_.babylonColor
+    case 'systran': return root_.systranColor
+    case 'nifty': return root_.niftyColor
     case 'bing': return root_.bingColor
     case 'google': return root_.googleColor
     case 'naver': return root_.naverColor

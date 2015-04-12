@@ -1269,6 +1269,7 @@ class FastAITTranslator(OfflineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
     try:
       engine = self.getEngine(fr=fr, to=to)
@@ -1298,8 +1299,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   }))
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""
-    #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
-    async = True
+    async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
     engine = self.getEngine(to=to, fr=fr)
     if engine:
@@ -1494,12 +1494,14 @@ class InfoseekTranslator(OnlineMachineTranslator):
 
 class ExciteTranslator(OnlineMachineTranslator):
   key = 'excite' # override
-  asyncSupported = False # override  disable async
+
+  #asyncSupported = False # override  disable async
+  asyncSupported = True # disable request session or excite will get blocked
 
   def __init__(self, session=None, **kwargs):
     super(ExciteTranslator, self).__init__(**kwargs)
     from excite import worldtrans
-    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
+    #worldtrans.session = session or requests.Session() # disable session or excite could get blocked
     self.engine = worldtrans
 
   NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'))
@@ -1522,6 +1524,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   #}))
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
+    async = True # force async or excite could get blocked using qt session
     to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
@@ -1542,6 +1545,148 @@ class ExciteTranslator(OnlineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    async = True # force async or excite could get blocked using qt session
+    to, fr = self._checkLanguages(to, fr)
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class NiftyTranslator(OnlineMachineTranslator):
+  key = 'nifty' # override
+  asyncSupported = False # override  disable async
+
+  def __init__(self, session=None, **kwargs):
+    super(NiftyTranslator, self).__init__(**kwargs)
+    from nifty import niftyhonyaku
+    niftyhonyaku.session = session or requests.Session()
+    self.engine = niftyhonyaku
+
+  SUPPORTED_LANGUAGES = frozenset(('en', 'ja', 'ko', 'zhs', 'zht'))
+
+  def _checkLanguages(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to not in self.SUPPORTED_LANGUAGES:
+      to = 'en'
+    if fr not in self.SUPPORTED_LANGUAGES:
+      fr = 'en'
+    return to, fr
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class BabylonTranslator(OnlineMachineTranslator):
+  key = 'babylon' # override
+  asyncSupported = False # override  disable async
+
+  def __init__(self, session=None, **kwargs):
+    super(BabylonTranslator, self).__init__(**kwargs)
+    from babylon import babylon
+    babylon.session = session or requests.Session()
+    self.engine = babylon
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+    """@reimp"""
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        if to == 'ar':
+          repl = fix_lower_proxy(repl)
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
+    """@reimp"""
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class SystranTranslator(OnlineMachineTranslator):
+  key = 'systran' # override
+  #asyncSupported = False # override  disable async
+  asyncSupported = True # override  disable request session or it will get blocked
+
+  def __init__(self, session=None, **kwargs):
+    super(SystranTranslator, self).__init__(**kwargs)
+    from systran import systran
+    #systran.session = session or requests.Session() # disable session or Systran could get hanged
+    self.engine = systran
+
+  def _checkLanguages(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    from systran import systrandef
+    if not systrandef.mt_test_lang(to=to, fr=fr):
+      to = 'en'
+    return to, fr
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+    """@reimp"""
+    async = True # force async or systran could get hanged
+    to, fr = self._checkLanguages(to, fr)
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        if to == 'zht':
+          repl = zhs2zht(repl)
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
+    """@reimp"""
+    async = True # force async or systran could get hanged
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1653,7 +1798,6 @@ class TransruTranslator(OnlineMachineTranslator):
 
 class VTranslator(OnlineMachineTranslator):
   key = 'vtrans' # override
-  #asyncSupported = True # override  enable async
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
@@ -1699,7 +1843,6 @@ class VTranslator(OnlineMachineTranslator):
 
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
-  #asyncSupported = True # override  enable async
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
@@ -1708,9 +1851,6 @@ class GoogleTranslator(OnlineMachineTranslator):
 
     import googleman
     googleman.setsession(session or requests.Session())
-
-    # Session is not used, or it could get blocked by Google
-    #googletrans.session = requests.Session()
     self.engine = googleman.manager()
 
   #__google_repl_after = staticmethod(skstr.multireplacer({

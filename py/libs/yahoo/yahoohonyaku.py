@@ -1,5 +1,5 @@
 # coding: utf8
-# honyaku.py
+# yahoohonyaku.py
 # 8/21/2012 jichi
 #
 # See: http://d.hatena.ne.jp/syonbori_tech/?of=5

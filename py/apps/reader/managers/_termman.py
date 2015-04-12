@@ -42,6 +42,7 @@ class TranslationProxy(object):
 
 ## Helper functions used by termman
 
+# http://sakuradite.com/wiki/en/Machine_Translators
 def host_category(host):
   """
   @param  host  str  single host
@@ -52,6 +53,8 @@ def host_category(host):
       host = 'lec'
     elif host == 'excite':
       host = 'jbeijing'
+    elif host == 'nifty':
+      host = 'atlas'
     try: return 1 << dataman.Term.HOSTS.index(host)
     except: pass
   return -1
@@ -67,10 +70,8 @@ def host_categories(host): # str -> int
   if sep not in host:
     return host_category(host)
   ret = 0
-  l = host.split(sep)
-  for i,h in enumerate(dataman.Term.HOSTS):
-    if h in l:
-      ret |= 1 << i
+  for h in host.split(sep):
+    ret |= 1 << host_category(h)
   return ret or -1 # if no match, apply to all hosts
 
 def _lang_level(lang):

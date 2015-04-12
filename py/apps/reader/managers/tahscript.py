@@ -47,7 +47,9 @@ class TahScriptManager:
     @param  text  unicode
     @return  unicode
     """
-    if key != 'atlas':
+    if key in ('atlas', 'nifty'):
+      key = 'atlas'
+    else:
       key = 'lec'
     tah = self.__d.getTah(key)
     if not tah:
