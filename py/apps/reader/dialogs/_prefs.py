@@ -4422,7 +4422,7 @@ class _DictionaryTranslationTab(object):
         self.thButton if t == mecabdef.RB_TH else
         self.arButton if t == mecabdef.RB_AR else
         self.kataButton if t == mecabdef.RB_KATA else
-        #self.viButton if t == mecabdef.RB_VI else # not implemented
+        self.viButton if t == mecabdef.RB_VI else # not implemented
         #self.trButton if t == mecabdef.RB_TR else # not implemented
         self.hiraButton)
     if not b.isChecked():
@@ -4435,7 +4435,7 @@ class _DictionaryTranslationTab(object):
         mecabdef.RB_TH if self.thButton.isChecked() else
         mecabdef.RB_AR if self.arButton.isChecked() else
         mecabdef.RB_KATA if self.kataButton.isChecked() else
-        #mecabdef.RB_VI if self.viButton.isChecked() else # not implemented
+        mecabdef.RB_VI if self.viButton.isChecked() else # not implemented
         #mecabdef.RB_TR if self.trButton.isChecked() else # not implemented
         mecabdef.RB_HIRA)
     settings.global_().setJapaneseRubyType(t)
