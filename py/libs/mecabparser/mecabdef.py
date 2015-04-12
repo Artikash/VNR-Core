@@ -32,6 +32,24 @@ RB_AR = 'ar'
 RB_VI = 'vi' # not implemented yet
 RB_TR = 'tr' # not implemented yet
 
+def rb_lang(ruby): # str -> str
+  if ruby in (RB_KATA, RB_HIRA):
+    return 'ja'
+  if ruby in (RB_ROMAJI, RB_TR):
+    return 'en'
+  return ruby
+
+def rb_has_space(ruby): # str -> bool
+  return ruby not in (RB_HIRA, RB_KATA)
+def rb_is_wide(ruby): # str -> bool
+  return ruby in (RB_HIRA, RB_KATA, RB_KO)
+def rb_is_thin(ruby): # str -> bool
+  return not rb_is_wide(ruby)
+def rb_is_wide_punct(ruby): # str -> bool
+  return ruby in (RB_HIRA, RB_KATA)
+def rb_is_thin_punct(ruby): # str -> bool
+  return not rb_is_wide_punct(ruby)
+
 # Surface type
 
 SURFACE_UNKNOWN = 0

@@ -150,6 +150,7 @@ Item { id: root_
   property color baiduColor: settings_.baiduColor
   property color youdaoColor: settings_.youdaoColor
   property color hanVietColor: settings_.hanVietColor
+  property color romajiColor: settings_.romajiColor
   property color jbeijingColor: settings_.jbeijingColor
   property color vtransColor: settings_.vtransColor
   property color fastaitColor: settings_.fastaitColor
@@ -183,6 +184,7 @@ Item { id: root_
   function translatorColor(host) { // string -> color
     switch(host) {
     case 'hanviet': return root_.hanVietColor
+    case 'romaji': return root_.romajiColor
     case 'jbeijing': return root_.jbeijingColor
     case 'fastait': return root_.fastaitColor
     case 'dreye': return root_.dreyeColor

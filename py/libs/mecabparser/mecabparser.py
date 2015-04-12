@@ -11,7 +11,7 @@ if __name__ == '__main__': # DEBUG
 
 from itertools import imap
 from jaconv import jaconv
-from unitraits import uniconv
+from unitraits import uniconv, jpchars
 import mecabdef, mecabformat, mecablex
 
 # Helper functions
@@ -77,8 +77,7 @@ class _MeCabParser:
     """
     for surface,feature in self.tagger.iterparse(text):
       kata = self.formatter.getkata(feature)
-      if kata:
-        yield kata
+      yield kata or surface
 
   UNKNOWN_RUBY = '?'
   def iterparseToRuby(self, text, kataconv, show_ruby_kana):
@@ -119,19 +118,24 @@ class MeCabParser(object):
     conv = getkataconv(ruby)
     return self.__d.iterparseToRuby(text, conv, show_ruby_kana=show_ruby_kana)
 
-  def toRuby(self, text, ruby=mecabdef.RB_HIRA, sep=''):
+  def toRuby(self, text, ruby=mecabdef.RB_HIRA, sep=None):
     """
     @param  text  unicode
     @param* ruby  unicode
-    @param* sep  unicode
+    @param* sep  unicode or None
     @return  unicode
     """
+    if sep is None:
+      sep = ' ' if mecabdef.rb_has_space(ruby) else ''
     conv = getkataconv(ruby)
-    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_RU):
+    if mecabdef.rb_is_thin(ruby):
       wide2thin = uniconv.wide2thin
       f = conv
       conv = lambda x: wide2thin(f(x))
-    return sep.join(imap(conv,  self.__d.iterparseToKata(text)))
+    ret = sep.join(imap(conv,  self.__d.iterparseToKata(text)))
+    if mecabdef.rb_is_thin(ruby):
+      ret = jpchars.wide2thin_punct(ret)
+    return ret
 
   def toRomaji(self, text, capital=True):
     """
@@ -158,12 +162,13 @@ if __name__ == '__main__':
 
   mp = MeCabParser()
 
-  t = u"可愛いよ"
-  t = u'今日はいい天気ですね'
-  t = u'すもももももももものうち'
-  t = u'しようぜ'
-  t = u'思ってる'
+  #t = u"可愛いよ"
+  #t = u'今日はいい天気ですね'
+  #t = u'すもももももももものうち'
+  #t = u'しようぜ'
+  #t = u'思ってる'
   t = u'巨乳'
+  t += u"。"
   print mp.toRuby(t)
   print mp.toRomaji(t)
 

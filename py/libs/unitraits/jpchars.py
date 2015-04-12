@@ -138,4 +138,23 @@ def allanp(text): return bool(re_all_anp.match(text))
 def anyanps(text): return bool(re_any_anps.search(text))
 def allanps(text): return bool(re_all_anps.match(text))
 
+
+from sakurakit import skstr
+WIDE2THIN_PUNCT = {
+  u'‘': " '",
+  u'’': "' ",
+  u'“': ' "',
+  u'”': '" ',
+  u'。': '. ',
+  u'、': ', ',
+  u'？': '? ',
+  u'！': '! ',
+  u'〜': '~',
+  u'／': '/',
+  u'＝': '=',
+  u'ー': '-',
+  u'　': ' ',
+}
+wide2thin_punct = skstr.multireplacer(WIDE2THIN_PUNCT) # unicode -> unicode
+
 # EOF

@@ -37,6 +37,7 @@ class _TranslatorManager(object):
     self.allTranslators = [] # all created translators
     self.marked = False
 
+    self.romajiEnabled = \
     self.infoseekEnabled = \
     self.exciteEnabled = \
     self.niftyEnabled = \
@@ -61,6 +62,8 @@ class _TranslatorManager(object):
     False # bool
 
     self.ehndEnabled = True
+
+    self.romajiType = 'romaji'
 
     self.alignEnabled = {} # {str key:bool t}
     self.scriptEnabled = {} # {str key:bool t}
@@ -167,6 +170,9 @@ class _TranslatorManager(object):
   def yueTranslator(self): return _trman.YueTranslator(
       abortSignal=self.abortSignal,
       session=self.session)
+
+  @memoizedproperty
+  def romajiTranslator(self): return self._newtr(_trman.RomajiTranslator(rubyType=self.romajiType))
 
   @memoizedproperty
   def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator())
@@ -348,7 +354,9 @@ class _TranslatorManager(object):
       if self.dreyeEnabled: yield self.dreyeTranslator
       if self.fastaitEnabled: yield self.fastaitTranslator
       if self.jbeijingEnabled: yield self.jbeijingTranslator
+      if self.romajiEnabled: yield self.romajiTranslator
     else:
+      if self.romajiEnabled: yield self.romajiTranslator
       if self.jbeijingEnabled: yield self.jbeijingTranslator
       if self.fastaitEnabled: yield self.fastaitTranslator
       if self.dreyeEnabled: yield self.dreyeTranslator
@@ -544,6 +552,17 @@ class TranslatorManager(QObject):
   def isHanVietEnabled(self): return self.__d.hanVietEnabled
   def setHanVietEnabled(self, value): self.__d.hanVietEnabled = value
 
+  def isRomajiEnabled(self): return self.__d.romajiEnabled
+  def setRomajiEnabled(self, value): self.__d.romajiEnabled = value
+
+  def isRomajiType(self): return self.__d.romajiType
+  def setRomajiType(self, value):
+    d = self.__d
+    if d.romajiType != value:
+      d.romajiType = value
+      if d.hasTranslator('romaji'):
+        d.romajiTranslator.setRubyType(value)
+
   def isJBeijingEnabled(self): return self.__d.jbeijingEnabled
   def setJBeijingEnabled(self, value): self.__d.jbeijingEnabled = value
 
@@ -676,6 +695,7 @@ class TranslatorManager(QObject):
     """
     d = self.__d
     return any((
+      d.romajiEnabled,
       d.hanVietEnabled,
       d.jbeijingEnabled,
       d.fastaitEnabled,
@@ -720,6 +740,8 @@ class TranslatorManager(QObject):
     if d.transruEnabled: r.append('transru')
     if d.infoseekEnabled: r.append('infoseek')
     if d.exciteEnabled: r.append('excite')
+
+    if d.romajiEnabled: r.append('romaji')
     return r
 
   def isEnabled(self):

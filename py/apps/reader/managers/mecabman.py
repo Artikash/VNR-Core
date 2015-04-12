@@ -9,6 +9,18 @@ from convutil import kata2hira, kata2romaji
 from mytr import my
 import growl, rc
 
+ROMAJI_RUBY_TYPES = (
+  #mecabdef.RB_KATA,
+  #mecabdef.RB_HIRA,
+  mecabdef.RB_ROMAJI,
+  mecabdef.RB_RU,
+  mecabdef.RB_KO,
+  mecabdef.RB_TH,
+  mecabdef.RB_AR,
+  #mecabdef.RB_VI, # not implemented yet
+  #mecabdef.RB_TR, # not implemented yet
+)
+
 @memoized
 def manager(): return MeCabManager()
 
@@ -85,6 +97,16 @@ class MeCabManager:
     @return  unicode
     """
     try: return self.__d.getParser().toRomaji(text, capital=capital)
+    except Exception, e: dwarn(e)
+    return ''
+
+  def toRuby(self, text, rubyType):
+    """
+    @param  text  unicode
+    @param  rubyType  str
+    @return  unicode
+    """
+    try: return self.__d.getParser().toRuby(text, rubyType)
     except Exception, e: dwarn(e)
     return ''
 
@@ -168,7 +190,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     LATIN_YOMI_WIDTH = 0.33 # = 2/6
     KANJI_YOMI_WIDTH = 0.55 # = 1/2
     # yomi size / surface size
-    yomiWidth = KANJI_YOMI_WIDTH if rubyType in (mecabdef.RB_KATA, mecabdef.RB_HIRA, mecabdef.RB_KO) else LATIN_YOMI_WIDTH
+    yomiWidth = KANJI_YOMI_WIDTH if mecabdef.rb_is_wide(rubyType) else LATIN_YOMI_WIDTH
 
     invertRuby = False # always disable inverting
     roundRubySize = int(round(rubySize)) or 1

@@ -661,6 +661,15 @@ class Settings(QSettings):
       self.setValue('VTransColor', value)
       self.vtransColorChanged.emit(value)
 
+  romajiColorChanged = Signal(str)
+  def romajiColor(self):
+    return self.value('RomajiColor', config.SETTINGS_ROMAJI_COLOR)
+  def setRomajiColor(self, value):
+    value = value or config.SETTINGS_ROMAJI_COLOR
+    if value != self.romajiColor():
+      self.setValue('RomajiColor', value)
+      self.romajiColorChanged.emit(value)
+
   jbeijingColorChanged = Signal(str)
   def jbeijingColor(self):
     return self.value('JBeijingColor', config.SETTINGS_JBEIJING_COLOR)
@@ -1482,6 +1491,22 @@ class Settings(QSettings):
       self.vtransEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
+  romajiEnabledChanged = Signal(bool)
+  def isRomajiEnabled(self):
+    return to_bool(self.value('RomajiEnabled'))
+  def setRomajiEnabled(self, value):
+    if value != self.isRomajiEnabled():
+      self.setValue('RomajiEnabled', value)
+      self.romajiEnabledChanged.emit(value)
+      self.machineTranslatorChanged.emit()
+
+  romajiRubyTypeChanged = Signal(unicode)
+  def romajiRubyType(self): return self.value('RomajiRubyType', 'romaji')
+  def setRomajiRubyType(self, value):
+    if value != self.romajiRubyType():
+      self.setValue('RomajiRubyType', value)
+      self.romajiRubyTypeChanged.emit(value)
+
   jbeijingEnabledChanged = Signal(bool)
   def isJBeijingEnabled(self):
     return to_bool(self.value('JBeijingEnabled'))
@@ -2085,6 +2110,7 @@ class SettingsProxy(QObject):
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.transruColorChanged.connect(self.transruColorChanged)
     g.hanVietColorChanged.connect(self.hanVietColorChanged)
+    g.romajiColorChanged.connect(self.romajiColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
     g.vtransColorChanged.connect(self.vtransColorChanged)
     g.fastaitColorChanged.connect(self.fastaitColorChanged)
@@ -2411,6 +2437,8 @@ class SettingsProxy(QObject):
   hanVietColor = unicode_property('HanVietColor', config.SETTINGS_HANVIET_COLOR, notify=hanVietColorChanged)
   vtransColorChanged = Signal(unicode)
   vtransColor = unicode_property('VTransColor', config.SETTINGS_VTRANS_COLOR, notify=vtransColorChanged)
+  romajiColorChanged = Signal(unicode)
+  romajiColor = unicode_property('RomajiColor', config.SETTINGS_ROMAJI_COLOR, notify=romajiColorChanged)
   jbeijingColorChanged = Signal(unicode)
   jbeijingColor = unicode_property('JBeijingColor', config.SETTINGS_JBEIJING_COLOR, notify=jbeijingColorChanged)
   fastaitColorChanged = Signal(unicode)
