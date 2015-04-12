@@ -2585,7 +2585,7 @@ You can select only the resources you need to download here.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="3244"/>
         <source>Infoseek.ne.jp multilingual translation service</source>
-        <translation>Infoseek.ne.jp的多国语言翻译服务</translation>
+        <translation>Infoseek.ne.jp多国语言翻译服务</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3281"/>

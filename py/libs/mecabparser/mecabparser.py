@@ -119,15 +119,17 @@ class MeCabParser(object):
     conv = getkataconv(ruby)
     return self.__d.iterparseToRuby(text, conv, show_ruby_kana=show_ruby_kana)
 
-  def toRuby(self, text, ruby=mecabdef.RB_HIRA, sep=''):
+  def toRuby(self, text, ruby=mecabdef.RB_HIRA, sep=None):
     """
     @param  text  unicode
     @param* ruby  unicode
-    @param* sep  unicode
+    @param* sep  unicode or None
     @return  unicode
     """
+    if sep is None:
+      sep = ' ' if mecabdef.rb_has_space(ruby) else ''
     conv = getkataconv(ruby)
-    if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_RU):
+    if mecabdef.rb_is_thin(ruby):
       wide2thin = uniconv.wide2thin
       f = conv
       conv = lambda x: wide2thin(f(x))

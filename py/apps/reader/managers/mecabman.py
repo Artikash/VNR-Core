@@ -88,6 +88,16 @@ class MeCabManager:
     except Exception, e: dwarn(e)
     return ''
 
+  def toRuby(self, text, rubyType):
+    """
+    @param  text  unicode
+    @param  rubyType  str
+    @return  unicode
+    """
+    try: return self.__d.getParser().toRuby(text, rubyType)
+    except Exception, e: dwarn(e)
+    return ''
+
 ## Render feature
 
 def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
@@ -168,7 +178,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     LATIN_YOMI_WIDTH = 0.33 # = 2/6
     KANJI_YOMI_WIDTH = 0.55 # = 1/2
     # yomi size / surface size
-    yomiWidth = KANJI_YOMI_WIDTH if rubyType in (mecabdef.RB_KATA, mecabdef.RB_HIRA, mecabdef.RB_KO) else LATIN_YOMI_WIDTH
+    yomiWidth = KANJI_YOMI_WIDTH if mecabdef.rb_is_wide(rubyType) else LATIN_YOMI_WIDTH
 
     invertRuby = False # always disable inverting
     roundRubySize = int(round(rubySize)) or 1

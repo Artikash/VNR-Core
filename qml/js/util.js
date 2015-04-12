@@ -205,6 +205,7 @@ var TRANSLATOR_NAME = {
   //, lou: "ルー語"
   , hanviet: "Hán Việt"
   , vtrans: "vTrans"
+  , romaji: "読み方"
 };
 function translatorName(tr) {
   var ret = TRANSLATOR_NAME[tr];

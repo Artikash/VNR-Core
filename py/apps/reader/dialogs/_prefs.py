@@ -2586,6 +2586,7 @@ class _TextTab(object):
     # 8 Total
     blans = settings.global_().blockedLanguages()
     conf = ( # key, Name, name, lang
+      ('romaji',    None, None,  None),
       ('bing',      None, None,  None),
       ('google',    None, None,  None),
       ('babylon',   None, None,  None),
@@ -2660,7 +2661,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Babylon', 'Excite', 'Nifty', 'Systran', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
+                 'Romaji', 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Babylon', 'Excite', 'Nifty', 'Systran', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -3103,6 +3104,10 @@ class _MachineTranslationTab(object):
       #r += 1
       #row = create_retrans_row('hanviet', self.hanVietButton)
       #grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
+    grid.addWidget(self.romajiBrowseButton, r, 0)
+    grid.addWidget(self.romajiButton, r, 1)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     ret.setLayout(grid)
@@ -3553,6 +3558,21 @@ class _MachineTranslationTab(object):
     return self._createBrowseButton(libman.transcat().location)
 
   @memoizedproperty
+  def romajiButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("Translate Japanese to its yomigana"),
+      my.tr("require {0}").format("MeCab"),
+    ))
+    ret.setStyleSheet("QCheckBox{color:purple}")
+    ret.setChecked(settings.global_().isRomajiEnabled())
+    ret.toggled.connect(settings.global_().setRomajiEnabled)
+    return ret
+  @memoizedproperty
+  def romajiBrowseButton(self):
+    url = "http://en.wikipedia.org/wiki/Romanization_of_Japanese"
+    return self._createBrowseButton(url)
+
+  @memoizedproperty
   def hanVietButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
     ret.setStyleSheet("QCheckBox{color:purple}")
@@ -3626,6 +3646,10 @@ class _MachineTranslationTab(object):
   def refresh(self):
     ss = settings.global_()
     blans = ss.blockedLanguages()
+
+    t = dicts().unidic().exists()
+    self.romajiButton.setEnabled(t)
+    self.romajiBrowseButton.setEnabled(t)
 
     # Translators
     if 'zh' not in blans:
