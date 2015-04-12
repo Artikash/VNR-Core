@@ -115,6 +115,6 @@ if __name__ == '__main__':
     #print compile('test.dic', 'test.csv', dicdir=dicdir)
 
   test_assemble()
-  test_compile()
+  #test_compile()
 
 # EOF

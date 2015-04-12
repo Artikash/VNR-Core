@@ -17,6 +17,7 @@ if __name__ == '__main__':
 #try: from pysqlite2 import dbapi2 as sqlite3
 #except ImportError: import sqlite3
 import sqlite3
+from unitraits import jpchars
 from sakurakit.skdebug import dwarn
 
 #TABLE_NAME = 'entry'
@@ -63,8 +64,10 @@ def parseword(word):
   # Remove duplicate keys
   s = set()
   for k,v in _parseword(word):
-    if ord(k[0]) > 255 and k not in s: # skip ascii keys
+    if k and ord(k[0]) > 255 and k not in s: # skip ascii keys
       s.add(k)
+      if not v and jpchars.allkana(k):
+        v = k
       yield k,v
 
 def _parseword(word):
