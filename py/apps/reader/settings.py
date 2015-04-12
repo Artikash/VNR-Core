@@ -553,6 +553,24 @@ class Settings(QSettings):
       self.setValue('ExciteColor', value)
       self.exciteColorChanged.emit(value)
 
+  babylonColorChanged = Signal(str)
+  def babylonColor(self):
+    return self.value('BabylonColor', config.SETTINGS_BABYLON_COLOR)
+  def setBabylonColor(self, value):
+    value = value or config.SETTINGS_BABYLON_COLOR
+    if value != self.babylonColor():
+      self.setValue('BabylonColor', value)
+      self.babylonColorChanged.emit(value)
+
+  systranColorChanged = Signal(str)
+  def systranColor(self):
+    return self.value('SystranColor', config.SETTINGS_SYSTRAN_COLOR)
+  def setSystranColor(self, value):
+    value = value or config.SETTINGS_SYSTRAN_COLOR
+    if value != self.systranColor():
+      self.setValue('SystranColor', value)
+      self.systranColorChanged.emit(value)
+
   googleColorChanged = Signal(str)
   def googleColor(self):
     return self.value('GoogleColor', config.SETTINGS_GOOGLE_COLOR)
@@ -1297,6 +1315,22 @@ class Settings(QSettings):
       self.setValue('ExciteEnabled', value)
       self.exciteEnabledChanged.emit(value)
 
+  babylonEnabledChanged = Signal(bool)
+  def isBabylonEnabled(self):
+    return to_bool(self.value('BabylonEnabled'))
+  def setBabylonEnabled(self, value):
+    if value != self.isBabylonEnabled():
+      self.setValue('BabylonEnabled', value)
+      self.babylonEnabledChanged.emit(value)
+
+  systranEnabledChanged = Signal(bool)
+  def isSystranEnabled(self):
+    return to_bool(self.value('SystranEnabled'))
+  def setSystranEnabled(self, value):
+    if value != self.isSystranEnabled():
+      self.setValue('SystranEnabled', value)
+      self.systranEnabledChanged.emit(value)
+
   googleEnabledChanged = Signal(bool)
   def isGoogleEnabled(self):
     return to_bool(self.value('GoogleEnabled'))
@@ -1534,6 +1568,20 @@ class Settings(QSettings):
     if value != self.isExciteScriptEnabled():
       self.setValue('ExciteScriptEnabled', value)
       self.exciteScriptEnabledChanged.emit(value)
+
+  babylonScriptEnabledChanged = Signal(bool)
+  def isBabylonScriptEnabled(self): return to_bool(self.value('BabylonScriptEnabled', True))
+  def setBabylonScriptEnabled(self, value):
+    if value != self.isBabylonScriptEnabled():
+      self.setValue('BabylonScriptEnabled', value)
+      self.babylonScriptEnabledChanged.emit(value)
+
+  systranScriptEnabledChanged = Signal(bool)
+  def isSystranScriptEnabled(self): return to_bool(self.value('SystranScriptEnabled', True))
+  def setSystranScriptEnabled(self, value):
+    if value != self.isSystranScriptEnabled():
+      self.setValue('SystranScriptEnabled', value)
+      self.systranScriptEnabledChanged.emit(value)
 
   transruScriptEnabledChanged = Signal(bool)
   def isTransruScriptEnabled(self): return to_bool(self.value('TransruScriptEnabled', True))
@@ -2002,6 +2050,8 @@ class SettingsProxy(QObject):
 
     g.infoseekColorChanged.connect(self.infoseekColorChanged)
     g.exciteColorChanged.connect(self.exciteColorChanged)
+    g.babylonColorChanged.connect(self.babylonColorChanged)
+    g.systranColorChanged.connect(self.systranColorChanged)
     g.bingColorChanged.connect(self.bingColorChanged)
     g.googleColorChanged.connect(self.googleColorChanged)
     g.naverColorChanged.connect(self.naverColorChanged)
@@ -2312,6 +2362,10 @@ class SettingsProxy(QObject):
   infoseekColor = unicode_property('InfoseekColor', config.SETTINGS_INFOSEEK_COLOR, notify=infoseekColorChanged)
   exciteColorChanged = Signal(unicode)
   exciteColor = unicode_property('ExciteColor', config.SETTINGS_EXCITE_COLOR, notify=exciteColorChanged)
+  babylonColorChanged = Signal(unicode)
+  babylonColor = unicode_property('BabylonColor', config.SETTINGS_BABYLON_COLOR, notify=babylonColorChanged)
+  systranColorChanged = Signal(unicode)
+  systranColor = unicode_property('SystranColor', config.SETTINGS_SYSTRAN_COLOR, notify=systranColorChanged)
   googleColorChanged = Signal(unicode)
   googleColor = unicode_property('GoogleColor', config.SETTINGS_GOOGLE_COLOR, notify=googleColorChanged)
   bingColorChanged = Signal(unicode)

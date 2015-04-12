@@ -141,6 +141,8 @@ Item { id: root_
   // Cached
   property color infoseekColor: settings_.infoseekColor
   property color exciteColor: settings_.exciteColor
+  property color babylonColor: settings_.babylonColor
+  property color systranColor: settings_.systranColor
   property color bingColor: settings_.bingColor
   property color googleColor: settings_.googleColor
   property color naverColor: settings_.naverColor
@@ -191,6 +193,8 @@ Item { id: root_
     case 'transru': return root_.transruColor
     case 'infoseek': return root_.infoseekColor
     case 'excite': return root_.exciteColor
+    case 'babylon': return root_.babylonColor
+    case 'systran': return root_.systranColor
     case 'bing': return root_.bingColor
     case 'google': return root_.googleColor
     case 'naver': return root_.naverColor

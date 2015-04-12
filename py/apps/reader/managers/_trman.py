@@ -1547,6 +1547,91 @@ class ExciteTranslator(OnlineMachineTranslator):
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
+class BabylonTranslator(OnlineMachineTranslator):
+  key = 'babylon' # override
+  asyncSupported = False # override  disable async
+
+  def __init__(self, session=None, **kwargs):
+    super(BabylonTranslator, self).__init__(**kwargs)
+    from babylon import babylon
+    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
+    self.engine = babylon
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+    """@reimp"""
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
+    """@reimp"""
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class SystranTranslator(OnlineMachineTranslator):
+  key = 'systran' # override
+  asyncSupported = False # override  disable async
+
+  def __init__(self, session=None, **kwargs):
+    super(SystranTranslator, self).__init__(**kwargs)
+    from systran import systran
+    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
+    self.engine = systran
+
+  def _checkLanguages(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    from systran import systrandef
+    if not systrandef.mt_test_lang(to=to, fr=fr):
+      to = 'en'
+    return to, fr
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        if to == 'zht':
+          repl = zhs2zht(repl)
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
 class LecOnlineTranslator(OnlineMachineTranslator):
   key = 'lecol' # override
   asyncSupported = False # override  disable async

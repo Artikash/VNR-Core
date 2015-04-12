@@ -4,9 +4,11 @@
 MT_INFO = {
   'bing':       {'online':True,  'align':True,   'script':True,  },
   'google':     {'online':True,  'align':True,   'script':True,  },
+  'babylon':    {'online':True,  'align':False,  'script':True,  },
   'lecol':      {'online':True,  'align':False,  'script':True,  },
   'infoseek':   {'online':True,  'align':True,   'script':True,  },
   'excite':     {'online':True,  'align':False,  'script':True,  },
+  'systran':    {'online':True,  'align':False,  'script':True,  },
   'transru':    {'online':True,  'align':False,  'script':True,  },
   'naver':      {'online':True,  'align':True,   'script':False, },
   'baidu':      {'online':True,  'align':True,   'script':False, },
@@ -53,7 +55,7 @@ def test_lang(key, to=None, fr=None):
   @param* fr  str  language
   @return  bool
   """
-  if key in ('google', 'bing'):
+  if key in ('google', 'bing', 'babylon'):
     return True
   f = get_mod_def(key)
   if f:
@@ -66,7 +68,7 @@ def get_s_langs(key):
   @param  key  str
   @return  [str] or None
   """
-  if key not in ('google', 'bing'):
+  if key not in ('google', 'bing', 'babylon', 'systran'):
     f = get_mod_def(key)
     if f:
       online = test_online(key)
@@ -77,7 +79,7 @@ def get_t_langs(key):
   @param  key  str
   @return  [str] or None
   """
-  if key not in ('google', 'bing'):
+  if key not in ('google', 'bing', 'babylon', 'systran'):
     f = get_mod_def(key)
     if f:
       online = test_online(key)
@@ -124,6 +126,12 @@ def get_mod_def(key):
   if key == 'excite':
     from excite import excitedef
     return excitedef
+  if key == 'babylon':
+    from babylon import babylondef
+    return babylondef
+  if key == 'systran':
+    from systran import systrandef
+    return systrandef
   if key == 'transru':
     from promt import transdef
     return transdef

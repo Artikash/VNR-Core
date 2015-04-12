@@ -108,6 +108,8 @@ TRANSLATOR_NAMES = { # [TranslatorTraits]
   'lecol': mytr_("LEC Online"),
   'infoseek': "Infoseek.co.jp",
   'excite': "Excite.co.jp",
+  'systran': "SYSTRANet.com",
+  'babylon': "Babylon.com",
   'transru': "Translate.Ru",
   'naver': "Naver.com",
   'baidu': mytr_("Baidu") + ".com",

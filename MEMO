@@ -35,7 +35,7 @@ Info
 - Google Code
 
 # Translator related files
-qml/util.js: jbeijing: & make
+qml/js/util.js: jbeijing: & make
 kagami.qml: jbeijingColor
 grimoire.qml: ..
 mirage.qml: ..

@@ -99,13 +99,13 @@ if __name__ == '__main__':
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    m = []
+    #m = []
     #m = None
 
     session = requests.Session()
     with SkProfiler():
       for i in range(1):
-        t = translate(s, to=to, fr=fr, align=m)
+        t = translate(s, to=to, fr=fr)
     print t
     print type(t)
 

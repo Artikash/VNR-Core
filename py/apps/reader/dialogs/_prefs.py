@@ -2588,9 +2588,11 @@ class _TextTab(object):
     conf = ( # key, Name, name, lang
       ('bing',      None, None,  None),
       ('google',    None, None,  None),
+      ('babylon',   None, None,  None),
       ('lec',       'LecOnline', 'lecOnline',  None),
       ('infoseek',  None, None,  None),
       ('excite',    None, None,  None),
+      ('systran',   None, None,  'en'),
       ('transru',   None, None,  None),
       ('naver',     None, None,  'ko'),
       ('baidu',     None, None,  None),
@@ -2657,7 +2659,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Babylon', 'Excite', 'SYSTRAN', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -2957,6 +2959,16 @@ class _MachineTranslationTab(object):
     #grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
+    grid.addWidget(self._createBrowseButton("http://translate.babylon.com"), r, 0)
+    grid.addWidget(self.babylonButton, r, 1)
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self.babylonScriptButton, r, 1)
+    r += 1
+    row = create_retrans_row('babylon', self.babylonButton)
+    grid.addLayout(row, r, 1, 1, 2)
+
+    r += 1
     grid.addWidget(self._createBrowseButton("http://translation.infoseek.ne.jp"), r, 0)
     grid.addWidget(self.infoseekButton, r, 1)
     r += 1
@@ -2987,6 +2999,16 @@ class _MachineTranslationTab(object):
     r += 1
     row = create_retrans_row('excite', self.exciteButton)
     grid.addLayout(row, r, 1, 1, 2)
+
+    if 'en' not in blans:
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://www.systran.com/translate"), r, 0)
+      grid.addWidget(self.systranButton, r, 1)
+      r += 1
+      grid.addWidget(self.systranScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('systran', self.systranButton)
+      grid.addLayout(row, r, 1, 1, 2)
 
     if 'ru' not in blans:
       r += 1
@@ -3269,6 +3291,44 @@ class _MachineTranslationTab(object):
     ret.toggled.connect(ss.setExciteScriptEnabled)
     #ret.setEnabled(ss.isExciteEnabled())
     #ss.exciteEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def babylonButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Babylon.com multilingual translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
+    ret.setChecked(settings.global_().isBabylonEnabled())
+    ret.toggled.connect(settings.global_().setBabylonEnabled)
+    return ret
+
+  @memoizedproperty
+  def babylonScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isBabylonScriptEnabled())
+    ret.toggled.connect(ss.setBabylonScriptEnabled)
+    #ret.setEnabled(ss.isBabylonEnabled())
+    #ss.babylonEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def systranButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("SYSTRANet.com English translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
+    ret.setChecked(settings.global_().isSystranEnabled())
+    ret.toggled.connect(settings.global_().setSystranEnabled)
+    return ret
+
+  @memoizedproperty
+  def systranScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isSystranScriptEnabled())
+    ret.toggled.connect(ss.setSystranScriptEnabled)
+    #ret.setEnabled(ss.isSystranEnabled())
+    #ss.systranEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty

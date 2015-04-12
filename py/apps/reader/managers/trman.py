@@ -39,6 +39,8 @@ class _TranslatorManager(object):
 
     self.infoseekEnabled = \
     self.exciteEnabled = \
+    self.systranEnabled = \
+    self.babylonEnabled = \
     self.bingEnabled = \
     self.googleEnabled = \
     self.naverEnabled = \
@@ -260,6 +262,18 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session))
 
+  @memoizedproperty
+  def babylonTranslator(self):
+    return self._newtr(_trman.BabylonTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
+
+  @memoizedproperty
+  def systranTranslator(self):
+    return self._newtr(_trman.SystranTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
+
   @staticmethod
   def translateAndApply(func, kw, tr, text, align=None, **kwargs):
     """
@@ -349,8 +363,10 @@ class _TranslatorManager(object):
         if self.exciteEnabled: yield self.exciteTranslator
         if self.lecOnlineEnabled: yield self.lecOnlineTranslator
         if self.transruEnabled: yield self.transruTranslator
+        if self.systranEnabled: yield self.systranTranslator
         if self.googleEnabled: yield self.googleTranslator
         if self.bingEnabled: yield self.bingTranslator
+        if self.babylonEnabled: yield self.babylonTranslator
         if self.naverEnabled: yield self.naverTranslator
         if self.vtransEnabled: yield self.vTranslator
         if self.youdaoEnabled: yield self.youdaoTranslator
@@ -360,8 +376,10 @@ class _TranslatorManager(object):
         if self.youdaoEnabled: yield self.youdaoTranslator
         if self.vtransEnabled: yield self.vTranslator
         if self.naverEnabled: yield self.naverTranslator
+        if self.babylonEnabled: yield self.babylonTranslator
         if self.bingEnabled: yield self.bingTranslator
         if self.googleEnabled: yield self.googleTranslator
+        if self.systranEnabled: yield self.systranTranslator
         if self.transruEnabled: yield self.transruTranslator
         if self.lecOnlineEnabled: yield self.lecOnlineTranslator
         if self.exciteEnabled: yield self.exciteTranslator
@@ -482,6 +500,12 @@ class TranslatorManager(QObject):
   def isExciteEnabled(self): return self.__d.exciteEnabled
   def setExciteEnabled(self, value): self.__d.exciteEnabled = value
 
+  def isSystranEnabled(self): return self.__d.systranEnabled
+  def setSystranEnabled(self, value): self.__d.systranEnabled = value
+
+  def isBabylonEnabled(self): return self.__d.babylonEnabled
+  def setBabylonEnabled(self, value): self.__d.babylonEnabled = value
+
   def isGoogleEnabled(self): return self.__d.googleEnabled
   def setGoogleEnabled(self, value): self.__d.googleEnabled = value
 
@@ -555,6 +579,12 @@ class TranslatorManager(QObject):
   def isExciteScriptEnabled(self): return self.__d.getScriptEnabled('excite')
   def setExciteScriptEnabled(self, t): self.__d.setScriptEnabled('excite', t)
 
+  def isSystranScriptEnabled(self): return self.__d.getScriptEnabled('systran')
+  def setSystranScriptEnabled(self, t): self.__d.setScriptEnabled('systran', t)
+
+  def isBabylonScriptEnabled(self): return self.__d.getScriptEnabled('babylon')
+  def setBabylonScriptEnabled(self, t): self.__d.setScriptEnabled('babylon', t)
+
   def isTransruScriptEnabled(self): return self.__d.getScriptEnabled('transru')
   def setTransruScriptEnabled(self, t): self.__d.setScriptEnabled('transru', t)
 
@@ -615,8 +645,10 @@ class TranslatorManager(QObject):
       d.youdaoEnabled,
       d.vtransEnabled,
       d.naverEnabled,
+      d.babylon,
       d.googleEnabled,
       d.bingEnabled,
+      d.systran,
       d.lecOnlineEnabled,
       d.transruEnabled,
       d.infoseekEnabled,
@@ -664,8 +696,10 @@ class TranslatorManager(QObject):
     if d.youdaoEnabled: r.append('youdao')
     if d.vtransEnabled: r.append('vtrans')
     if d.naverEnabled: r.append('naver')
+    if d.babylon: r.append('babylon')
     if d.googleEnabled: r.append('google')
     if d.bingEnabled: r.append('bing')
+    if d.systranEnabled: r.append('systran')
     if d.lecOnlineEnabled: r.append('lecol')
     if d.transruEnabled: r.append('transru')
     if d.infoseekEnabled: r.append('infoseek')

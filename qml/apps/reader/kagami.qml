@@ -650,6 +650,8 @@ Item { id: root_
 
         infoseekColor: settings_.infoseekColor
         exciteColor: settings_.exciteColor
+        babylonColor: settings_.babylonColor
+        systranColor: settings_.systranColor
         bingColor: settings_.bingColor
         googleColor: settings_.googleColor
         naverColor: settings_.naverColor

@@ -161,9 +161,11 @@ function fontFamilyForLanguage(lang) { return LANGUAGE_FONT[lang] || ''; }
 var TRANSLATOR_HOST_KEYS = [
   'bing'
   , 'google'
+  , 'babylon'
   , 'lecol'
   , 'infoseek'
   , 'excite'
+  , 'systran'
   , 'transru'
   , 'naver'
   , 'baidu'
@@ -182,6 +184,8 @@ var TRANSLATOR_HOST_KEYS = [
 var TRANSLATOR_NAME = {
   infoseek: "Infoseek.co.jp"
   , excite: "Excite.co.jp"
+  , systran: "SYSTRANet.com"
+  , babylon: "Babylon.com"
   , bing: "Bing.com"
   , google: "Google.com"
   , naver: "Naver.com"
