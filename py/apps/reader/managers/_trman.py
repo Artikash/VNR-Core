@@ -18,7 +18,7 @@ from time import time
 from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
-from sakurakit.skdebug import dwarn
+from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
 from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
@@ -659,7 +659,7 @@ class AtlasTranslator(OfflineMachineTranslator):
     #import atexit
     #atexit.register(ret.destroy)
     if ok:
-      growl.msg(my.tr("ATLAS translator is loaded"))
+      growl.msg(my.tr("{0} is loaded").format("ATLAS"))
     else:
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ATLAS")))
     return ret
@@ -736,7 +736,7 @@ class LecTranslator(OfflineMachineTranslator):
     #import atexit
     #atexit.register(ret.destroy)
     if ok:
-      growl.msg(my.tr("LEC translator is loaded"))
+      growl.msg(my.tr("{0} is loaded").format("LEC"))
     else:
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("LEC")))
     return ret
@@ -819,6 +819,7 @@ class EzTranslator(OfflineMachineTranslator):
 
   @staticmethod
   def createengine(ehndEnabled=False):
+    dprint("ehnd = %s" % ehndEnabled)
     from eztrans import eztrans
     ret = eztrans.create_engine()
     ret.setEhndEnabled(ehndEnabled)
@@ -826,7 +827,10 @@ class EzTranslator(OfflineMachineTranslator):
     #import atexit
     #atexit.register(ret.destroy) # not needed by eztrans
     if ok:
-      growl.msg(my.tr("ezTrans XP is loaded"))
+      if ehndEnabled:
+        growl.msg(my.tr("{0} is loaded").format("ezTrans XP + Ehnd"))
+      else:
+        growl.msg(my.tr("{0} is loaded").format("ezTrans XP"))
     else:
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")))
     return ret
@@ -840,6 +844,7 @@ class EzTranslator(OfflineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', ehndEnabled=False, async=False, **kwargs):
     """@reimp"""
+    self.engine.setEhndEnabled(ehndEnabled)
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
@@ -912,7 +917,7 @@ class TransCATTranslator(OfflineMachineTranslator):
     #import atexit
     #atexit.register(ret.destroy) # not needed by transcat
     if ok:
-      growl.msg(my.tr("TransCAT JK is loaded"))
+      growl.msg(my.tr("{0} is loaded").format("TransCAT JK"))
     else:
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("TransCAT")))
     return ret
@@ -1063,7 +1068,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
     #import atexit
     #atexit.register(ret.destroy)
     if ok:
-      growl.msg(my.tr("JBeijing translator is loaded"))
+      growl.msg(my.tr("{0} is loaded").format(mytr_("JBeijing")))
 
       def _filter(path): return bool(path) and os.path.exists(path + '.dic')
       paths = jbeijing.userdic()

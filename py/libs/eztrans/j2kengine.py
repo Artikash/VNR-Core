@@ -25,6 +25,10 @@
 # - Input: まあね♪スカートとはおさらばだし。ハーフパンツなんて久しぶり♪
 # - ezTrans without ehnd: 그냥♪스커트와는 안녕히이고. 하프 팬츠는 오래간만♪
 # - With ehnd 3.1 and 201504 script: 글쎄♪스커트와는 안녕히이고. 하프 팬츠 같은거 오래간만♪
+#
+# About unloading DLL:
+# - Use FreeLibrary to unload: http://stackoverflow.com/questions/13128995/ctypes-unload-dll
+# - Use GetModuleHandleA to check: http://stackoverflow.com/questions/11939290/how-do-i-find-out-if-my-program-has-a-certain-dll-already-loaded
 
 if __name__ == '__main__': # DEBUG
   import sys

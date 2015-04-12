@@ -175,9 +175,7 @@ class _TranslatorManager(object):
   def lecTranslator(self): return self._newtr(_trman.LecTranslator())
 
   @memoizedproperty
-  def ezTranslator(self): return self._newtr(_trman.EzTranslator(
-      ehndEnabled=self.ehndEnabled,
-      abortSignal=self.abortSignal))
+  def ezTranslator(self): return self._newtr(_trman.EzTranslator(ehndEnabled=self.ehndEnabled))
 
   @memoizedproperty
   def transcatTranslator(self): return self._newtr(_trman.TransCATTranslator())

@@ -28,7 +28,8 @@ class _Engine(object):
     dprint("ok = %s" % self.dllLoaded)
 
   def reloadDlls(self):
-    self.loader.reload()
+    try: self.loader.reload()
+    except Exception, e: dwarn(e)
 
   def loadPath(self):
     path = self.registryLocation()
@@ -85,7 +86,7 @@ class Engine(object):
   def isEhndEnabled(self): return self.__d.loader.isEhndEnabled()
   def setEhndEnabled(self, t):
     d = self.__d
-    if d.load.isEhndEnabled() != t and not d.locked:
+    if not d.locked and d.loader.isEhndEnabled() != t:
       d.locked = True
       d.loader.setEhndEnabled(t)
       if d.dllLoaded:
