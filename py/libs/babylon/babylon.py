@@ -34,7 +34,6 @@ def translate(text, to='en', fr='ja'):
       data={
         'q': text,
         'langpair': babylondef.langpair(to=to, fr=fr),
-        #'v': '1.0',
         'callback': JSONP_CALLBACK,
       },
     )

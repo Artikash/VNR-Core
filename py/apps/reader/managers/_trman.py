@@ -1298,8 +1298,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   }))
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""
-    #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
-    async = True
+    async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
     engine = self.getEngine(to=to, fr=fr)
     if engine:
@@ -1494,12 +1493,14 @@ class InfoseekTranslator(OnlineMachineTranslator):
 
 class ExciteTranslator(OnlineMachineTranslator):
   key = 'excite' # override
-  asyncSupported = False # override  disable async
+
+  #asyncSupported = False # override  disable async
+  asyncSupported = True # disable request session or excite will get blocked
 
   def __init__(self, session=None, **kwargs):
     super(ExciteTranslator, self).__init__(**kwargs)
     from excite import worldtrans
-    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
+    #worldtrans.session = session or requests.Session() # disable session or excite could get blocked
     self.engine = worldtrans
 
   NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'))
@@ -1522,6 +1523,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   #}))
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
+    async = True # force async or excite could get blocked using qt session
     to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
@@ -1554,7 +1556,7 @@ class BabylonTranslator(OnlineMachineTranslator):
   def __init__(self, session=None, **kwargs):
     super(BabylonTranslator, self).__init__(**kwargs)
     from babylon import babylon
-    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
+    babylon.session = session or requests.Session()
     self.engine = babylon
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
@@ -1584,12 +1586,13 @@ class BabylonTranslator(OnlineMachineTranslator):
 
 class SystranTranslator(OnlineMachineTranslator):
   key = 'systran' # override
-  asyncSupported = False # override  disable async
+  #asyncSupported = False # override  disable async
+  asyncSupported = True # override  disable request session or it will get blocked
 
   def __init__(self, session=None, **kwargs):
     super(SystranTranslator, self).__init__(**kwargs)
     from systran import systran
-    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
+    #systran.session = session or requests.Session() # disable session or Systran could get hanged
     self.engine = systran
 
   def _checkLanguages(self, to, fr):
@@ -1738,7 +1741,6 @@ class TransruTranslator(OnlineMachineTranslator):
 
 class VTranslator(OnlineMachineTranslator):
   key = 'vtrans' # override
-  #asyncSupported = True # override  enable async
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
@@ -1784,7 +1786,6 @@ class VTranslator(OnlineMachineTranslator):
 
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
-  #asyncSupported = True # override  enable async
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
@@ -1793,9 +1794,6 @@ class GoogleTranslator(OnlineMachineTranslator):
 
     import googleman
     googleman.setsession(session or requests.Session())
-
-    # Session is not used, or it could get blocked by Google
-    #googletrans.session = requests.Session()
     self.engine = googleman.manager()
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
