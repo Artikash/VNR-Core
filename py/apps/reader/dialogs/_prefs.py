@@ -3530,9 +3530,10 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def ezTransEhndButton(self):
-    ret = QtWidgets.QCheckBox("%s (by @sokcuri, %s)" % (
+    ret = QtWidgets.QCheckBox("%s (by @sokcuri, %s, %s)" % (
         my.tr("Enable built-in Ehnd translation script"),
-        tr_("recommended")))
+        tr_("recommended"),
+        my.tr("need restart VNR")))
     ss = settings.global_()
     ret.setChecked(ss.isEhndEnabled())
     ret.toggled.connect(ss.setEhndEnabled)
