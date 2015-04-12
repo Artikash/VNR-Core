@@ -314,7 +314,7 @@ class _MTTester(object):
       params = {
         'fr': fr,
         'engine': self._currentTranslator(),
-        'ehndEnabled': scriptEnabled,
+        #'ehndEnabled': scriptEnabled, # no longer change ehndEnabled
       }
       raw = trman.manager().translateTest(t, **params)
       if raw:
@@ -404,10 +404,10 @@ class _MTTester(object):
 
   def _onTranslatorChanged(self):
     key = self._currentTranslator()
-    ehnd = key == 'eztrans'
+    #ehnd = key == 'eztrans'
     tah = mtinfo.test_script(key)
-    self.normalizedTextButton.setEnabled(tah or ehnd)
-    self.normalizedTextLabel.setEnabled(tah or ehnd)
+    self.normalizedTextButton.setEnabled(tah) # or ehnd
+    self.normalizedTextLabel.setEnabled(tah) # or ehnd
     self.normalizedTextEdit.setEnabled(tah)
 
   @memoizedproperty
@@ -610,7 +610,7 @@ class _MTTester(object):
     return self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation script"))
   @memoizedproperty
   def normalizedTextEdit(self):
-    return self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH/Ehnd script"))
+    return self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
 
   @memoizedproperty
   def inputTextLabel(self):

@@ -844,7 +844,7 @@ class EzTranslator(OfflineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', ehndEnabled=False, async=False, **kwargs):
     """@reimp"""
-    self.engine.setEhndEnabled(ehndEnabled)
+    #self.engine.setEhndEnabled(ehndEnabled) # never change it any more
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
@@ -876,7 +876,7 @@ class EzTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    self.engine.setEhndEnabled(ehndEnabled)
+    #self.engine.setEhndEnabled(ehndEnabled) # never change it any more
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
     if repl:

@@ -118,12 +118,22 @@ class _Loader(object):
 
     Guessed:
     BOOL __stdcall J2K_InitializeEx(LPCSTR user_name, LPCSTR dat_path)
-
     """
     dll = self.getEhndDll() if self.ehndEnabled else self.getEztrDll()
     path = self.getEztrDirectory()
     path = os.path.join(path, 'Dat') # dic data path
     return 1 == dll.J2K_InitializeEx(EZTR_LICENSE, path)
+
+  def terminate(self):
+    """
+    @raise
+
+    Guessed:
+    BOOL __stdcall J2K_Terminate()
+    """
+    dll = self._ehndDll if self.ehndEnabled else self._eztrDll
+    if dll:
+      dll.J2K_Terminate()
 
   def unloadDlls(self):
     self._ehndDll = self._eztrDll = self._nativeEztrDll = None
@@ -203,7 +213,11 @@ class Loader(object):
   def __del__(self):
     self.destroy()
 
-  def destroy(self): pass
+  def destroy(self):
+    d = self.__d
+    if d.initialized:
+      try: d.terminate()
+      except Exception, e: dwarn(e)
 
   def init(self):
     d = self.__d
@@ -218,6 +232,7 @@ class Loader(object):
 
   def unload(self):
     d = self.__d
+    d.terminate()
     d.initialized = False
     d.unloadDlls()
 
