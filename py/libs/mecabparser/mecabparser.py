@@ -111,7 +111,7 @@ class _MeCabParser:
       yield yomi or surface
 
   UNKNOWN_RUBY = '?'
-  def iterparseToRuby(self, text, kataconv, surfconv, show_ruby_kana):
+  def iterparseToRuby(self, text, kataconv=None, surfconv=None, show_ruby_kana=False):
     """
     @param  text  unicode
     @param  kataconv  unicode -> unicode or None
