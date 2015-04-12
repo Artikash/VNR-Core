@@ -858,7 +858,7 @@ class EzTranslator(OfflineMachineTranslator):
     #atexit.register(ret.destroy) # not needed by eztrans
     if ok:
       if ehndEnabled:
-        growl.msg(my.tr("{0} is loaded").format("ezTrans XP + Ehnd"))
+        growl.msg(my.tr("{0} is loaded").format("ezTrans+Ehnd"))
       else:
         growl.msg(my.tr("{0} is loaded").format("ezTrans XP"))
     else:
