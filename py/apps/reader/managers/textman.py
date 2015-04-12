@@ -584,6 +584,7 @@ class _TextManager(object):
     #text = u"ゴメン"
     #text = u"オリジナル"
     #text = u"御免なさい"
+    #text = u"「ともかく、不信の目は避けねばならん。出来るな？」"
     #text = u"サディステック"
     #text = u"「なにこれ」"
     #text = u"めばえちゃん"
