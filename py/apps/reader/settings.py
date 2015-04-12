@@ -2433,7 +2433,7 @@ class SettingsProxy(QObject):
 
   #grimoireRevertsColor = bool_property('GrimoireRevertsColor', False)
   grimoireShadowEnabled = bool_property('GrimoireShadow', True)
-  grimoireHoverEnabled = bool_property('GrimoireHover', True) # enable hover popup by default
+  grimoireHoverEnabled = bool_property('GrimoireHover', False)
   #grimoireReadEnabled = bool_property('GrimoireRead', True)
   #grimoirePopupEnabled = bool_property('GrimoirePopup', True)
   #grimoireCopyEnabled = bool_property('GrimoireCopy', False)
