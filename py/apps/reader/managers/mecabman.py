@@ -9,6 +9,18 @@ from convutil import kata2hira, kata2romaji
 from mytr import my
 import growl, rc
 
+ROMAJI_RUBY_TYPES = (
+  #mecabdef.RB_KATA,
+  #mecabdef.RB_HIRA,
+  mecabdef.RB_ROMAJI,
+  mecabdef.RB_RU,
+  mecabdef.RB_KO,
+  mecabdef.RB_TH,
+  mecabdef.RB_AR,
+  #mecabdef.RB_VI, # not implemented yet
+  #mecabdef.RB_TR, # not implemented yet
+)
+
 @memoized
 def manager(): return MeCabManager()
 

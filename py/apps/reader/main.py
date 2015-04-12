@@ -776,6 +776,9 @@ class _MainObject(object):
     ret.setRomajiEnabled(ss.isRomajiEnabled())
     ss.romajiEnabledChanged.connect(ret.setRomajiEnabled)
 
+    ret.setRomajiType(ss.romajiRubyType())
+    ss.romajiRubyTypeChanged.connect(ret.setRomajiType)
+
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
 
@@ -1723,10 +1726,10 @@ class MainObject(QObject):
     #dprint("warm up tts")
     #d.ttsManager.warmup() # warm up zunko on the startup
 
-    if settings.global_().isEdictEnabled():
-      dprint("warm up edict")
-      import dicts
-      dicts.edict()
+    #if settings.global_().isEdictEnabled():
+    #  dprint("warm up edict")
+    #  import dicts
+    #  dicts.edict()
 
     # Lingoes dictionaries
     #if settings.global_().isLingoesJaZhEnabled():

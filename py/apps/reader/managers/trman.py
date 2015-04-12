@@ -63,6 +63,8 @@ class _TranslatorManager(object):
 
     self.ehndEnabled = True
 
+    self.romajiType = 'romaji'
+
     self.alignEnabled = {} # {str key:bool t}
     self.scriptEnabled = {} # {str key:bool t}
 
@@ -170,7 +172,7 @@ class _TranslatorManager(object):
       session=self.session)
 
   @memoizedproperty
-  def romajiTranslator(self): return self._newtr(_trman.RomajiTranslator())
+  def romajiTranslator(self): return self._newtr(_trman.RomajiTranslator(rubyType=self.romajiType))
 
   @memoizedproperty
   def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator())
@@ -352,9 +354,9 @@ class _TranslatorManager(object):
       if self.dreyeEnabled: yield self.dreyeTranslator
       if self.fastaitEnabled: yield self.fastaitTranslator
       if self.jbeijingEnabled: yield self.jbeijingTranslator
-      if self.romajiEnabled: yield self.romajiEnabled
+      if self.romajiEnabled: yield self.romajiTranslator
     else:
-      if self.romajiEnabled: yield self.romajiEnabled
+      if self.romajiEnabled: yield self.romajiTranslator
       if self.jbeijingEnabled: yield self.jbeijingTranslator
       if self.fastaitEnabled: yield self.fastaitTranslator
       if self.dreyeEnabled: yield self.dreyeTranslator
@@ -552,6 +554,14 @@ class TranslatorManager(QObject):
 
   def isRomajiEnabled(self): return self.__d.romajiEnabled
   def setRomajiEnabled(self, value): self.__d.romajiEnabled = value
+
+  def isRomajiType(self): return self.__d.romajiType
+  def setRomajiType(self, value):
+    d = self.__d
+    if d.romajiType != value:
+      d.romajiType = value
+      if d.hasTranslator('romaji'):
+        d.romajiTranslator.setRubyType(value)
 
   def isJBeijingEnabled(self): return self.__d.jbeijingEnabled
   def setJBeijingEnabled(self, value): self.__d.jbeijingEnabled = value

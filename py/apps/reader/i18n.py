@@ -4,6 +4,7 @@
 
 from datetime import datetime
 from sakurakit.sktr import tr_, utr_
+from mecabparser import mecabdef
 from mytr import my, mytr_
 import config, defs
 
@@ -50,6 +51,16 @@ def language_name(lang):
   @return  unicode
   """
   return LANGUAGE_NAMES.get(lang) or tr_("English")
+
+def ruby_type_name(rb):
+  """
+  @param  rb  str
+  @return  unicode
+  """
+  if rb in (mecabdef.RB_ROMAJI, mecabdef.RB_HIRA, mecabdef.RB_KATA):
+    return utr_(rb.capitalize())
+  else:
+    return language_name(rb)
 
 def language_name2(lang):
   """
@@ -103,6 +114,7 @@ def term_type_name(type):
   return dataman.Term.typeName(type)
 
 TRANSLATOR_NAMES = { # [TranslatorTraits]
+  'romaji': tr_("Yomigana"),
   'bing': "Bing.com",
   'google': "Google.com",
   'lecol': mytr_("LEC Online"),

@@ -179,6 +179,14 @@ def capitalize_sentence(text):
   text = __capitalize_period_re.sub(__capitalize_sentence_s, text)
   return text
 
+__space_punct_re = re.compile(r"\s+(?=[%s])" % (jpchars.s_punct + ',.?!'))
+def remove_space_before_punct(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return __space_punct_re.sub('', text)
+
 # Example sentence to test for LEC
 # ひとまずいつものように今月の雑誌に目を通そう
 def __capitalize_html_sentence_s(m): # with space

@@ -1500,6 +1500,13 @@ class Settings(QSettings):
       self.romajiEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
+  romajiRubyTypeChanged = Signal(unicode)
+  def romajiRubyType(self): return self.value('RomajiRubyType', 'romaji')
+  def setRomajiRubyType(self, value):
+    if value != self.romajiRubyType():
+      self.setValue('RomajiRubyType', value)
+      self.romajiRubyTypeChanged.emit(value)
+
   jbeijingEnabledChanged = Signal(bool)
   def isJBeijingEnabled(self):
     return to_bool(self.value('JBeijingEnabled'))

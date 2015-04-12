@@ -825,9 +825,8 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ret.setEditable(False)
     ret.addItems(map(i18n.language_name, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
-    try: langIndex = config.LANGUAGES.index(settings.global_().gameLaunchLanguage())
-    except ValueError: langIndex = 0 # 'ja'
-    ret.setCurrentIndex(langIndex)
+    try: ret.setCurrentIndex(config.LANGUAGES.index(settings.global_().gameLaunchLanguage()))
+    except ValueError: pass
     ret.currentIndexChanged.connect(lambda index:
         settings.global_().setGameLaunchLanguage(config.LANGUAGES[index]))
     return ret
@@ -2182,9 +2181,8 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
 
-    try: langIndex = config.LANGUAGES.index(settings.global_().speechRecognitionLanguage())
-    except ValueError: langIndex = 0 # 'ja'
-    ret.setCurrentIndex(langIndex)
+    try: ret.setCurrentIndex(config.LANGUAGES.index(settings.global_().speechRecognitionLanguage()))
+    except ValueError: pass
 
     ret.currentIndexChanged.connect(self._saveLanguage)
     return ret
@@ -3108,6 +3106,8 @@ class _MachineTranslationTab(object):
     r += 1
     grid.addWidget(self.romajiBrowseButton, r, 0)
     grid.addWidget(self.romajiButton, r, 1)
+    r += 1
+    grid.addWidget(self.romajiTypeEdit, r, 1)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     ret.setLayout(grid)
@@ -3560,7 +3560,7 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def romajiButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-      my.tr("Translate Japanese to its yomigana"),
+      my.tr("Convert Japanese to yomigana"),
       my.tr("require {0}").format("MeCab"),
     ))
     ret.setStyleSheet("QCheckBox{color:purple}")
@@ -3571,6 +3571,30 @@ class _MachineTranslationTab(object):
   def romajiBrowseButton(self):
     url = "http://en.wikipedia.org/wiki/Romanization_of_Japanese"
     return self._createBrowseButton(url)
+
+  @memoizedproperty
+  def romajiTypeEdit(self):
+    import mecabman
+    romajiTypes = mecabman.ROMAJI_RUBY_TYPES
+
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.ruby_type_name, romajiTypes))
+    ret.setMaxVisibleItems(ret.count())
+    ret.setMaximumWidth(80)
+    # Size policy not working ...
+    #ret.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred) # limit width
+
+    ss = settings.global_()
+    try: ret.setCurrentIndex(romajiTypes.index(ss.romajiRubyType()))
+    except ValueError: pass
+    ret.currentIndexChanged[int].connect(lambda index: ss.setRomajiRubyType(romajiTypes[index]))
+
+    self.romajiButton.toggled.connect(self._refreshRomajiType)
+    return ret
+
+  def _refreshRomajiType(self):
+    self.romajiTypeEdit.setEnabled(self.romajiButton.isEnabled() and self.romajiButton.isChecked())
 
   @memoizedproperty
   def hanVietButton(self):
@@ -3647,9 +3671,10 @@ class _MachineTranslationTab(object):
     ss = settings.global_()
     blans = ss.blockedLanguages()
 
-    t = dicts().unidic().exists()
+    t = dicts.unidic().exists()
     self.romajiButton.setEnabled(t)
     self.romajiBrowseButton.setEnabled(t)
+    self._refreshRomajiType()
 
     # Translators
     if 'zh' not in blans:

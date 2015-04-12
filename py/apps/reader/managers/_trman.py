@@ -254,25 +254,30 @@ class YueTranslator(Translator):
 class RomajiTranslator(Translator):
   key = 'romaji' # override
 
-  def __init__(self):
+  def __init__(self, rubyType='romaji'):
     super(RomajiTranslator, self).__init__()
+    self.setRubyType(rubyType)
+
     import mecabman
     self.convert = mecabman.manager().toRuby
 
+  def setRubyType(self, v):
+    self.rubyType = v # str ->
+
     from mecabparser import mecabdef
-    self.rubyType = mecabdef.RB_ROMAJI
+    self.rubyLanguage = mecabdef.rb_lang(v)
 
   def translate(self, text, fr='ja', to='en', async=False, **kwargs):
     """@reimp"""
     if not text or fr != 'ja':
       return None, None, None
-    to = mecabdef.rb_lang(self.rubyType)
+    to = self.rubyLanguage
     ret = skthreads.runsync(partial(
       self.convert, text, self.rubyType),
     ) if async else self.convert(text, self.rubyType)
     if ret:
+      ret = textutil.remove_space_before_punct(ret)
       ret = textutil.capitalize_sentence(ret)
-      return ret
     return ret, to, self.key
 
 # Basic machine translators
