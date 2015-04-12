@@ -435,6 +435,9 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1428816315:
+      ss.setValue('GrimoireHover', True) # enable automatic popup by default
+
     if ss_version <= 1428623451: # reset edict
       ss.setValue('EdictEnabled', False)
       path = rc.EDICT_PATH
@@ -664,10 +667,6 @@ def migrate(ss_version): # long ->
         l.remove('ja')
         ss.setBlockedLanguages(l)
       except: pass
-
-    #if ss_version <= 1365658762:
-    #  ss.setValue('GrimoireHoverEnabled', False) # disable mouse hover
-    #  ss.setValue('GameBorderVisible', False) # disable outlining game window
 
     if ss_version <= 1365691951: # enable user-defined hook by default
       ss.setValue('HookCodeEnabled', True) # enable user-defined hook code
