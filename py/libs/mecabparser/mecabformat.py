@@ -23,8 +23,8 @@ class UniDicFormatter(object):
   COL_SURFACE = COL_KANJI + 1
   COL_ORIGIN = 12 # the origination of the phrase
 
-  COL_KATA = COL_BASIC + 1
-  COL_KATA0 = 17 # the original kata column without EDICT that should be checked first
+  COL_KATA = 17 # the original kata column without EDICT that should be checked first
+  COL_KATA_EDICT = COL_BASIC + 1 # kata column for EDICT
 
   COL_ID = -2 # the type such as edict
   COL_TYPE = -1 # the type such as edict
@@ -40,7 +40,7 @@ class UniDicFormatter(object):
     return f[col] if col < len(f) else ''
 
   def getkata(self, f):
-    return self.getcol(f, self.COL_KATA0) or self.getcol(f, self.COL_KATA)
+    return self.getcol(f, self.COL_KATA) or self.getcol(f, self.COL_KATA_EDICT)
 
   def getsurface(self, f): return self.getcol(f, self.COL_SURFACE)
   def getkanji(self, f): return self.getcol(f, self.COL_KANJI)
