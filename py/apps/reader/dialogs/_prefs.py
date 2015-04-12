@@ -2584,7 +2584,6 @@ class _TextTab(object):
     # 8 Total
     blans = settings.global_().blockedLanguages()
     conf = ( # key, Name, name, lang
-      ('romaji',    None, None,  None),
       ('bing',      None, None,  None),
       ('google',    None, None,  None),
       ('babylon',   None, None,  None),
@@ -2606,6 +2605,7 @@ class _TextTab(object):
       ('atlas',     None, None, 'en'),
       ('hanviet',  'HanViet',  'hanViet', 'vi'),
       ('vtrans',   'VTrans', None, 'zh'),
+      ('romaji',    None, None,  None),
     )
     i = 0
     for key, Name, name, lang in conf:

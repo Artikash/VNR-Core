@@ -114,7 +114,7 @@ def term_type_name(type):
   return dataman.Term.typeName(type)
 
 TRANSLATOR_NAMES = { # [TranslatorTraits]
-  'romaji': tr_("Yomigana"),
+  'romaji': mytr_("Yomigana"),
   'bing': "Bing.com",
   'google': "Google.com",
   'lecol': mytr_("LEC Online"),
