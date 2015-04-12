@@ -652,6 +652,7 @@ Item { id: root_
         exciteColor: settings_.exciteColor
         babylonColor: settings_.babylonColor
         systranColor: settings_.systranColor
+        niftyColor: settings_.niftyColor
         bingColor: settings_.bingColor
         googleColor: settings_.googleColor
         naverColor: settings_.naverColor

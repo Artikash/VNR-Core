@@ -128,6 +128,7 @@ class reader(QObject):
       self.tr("Youdao"),
       self.tr("Infoseek"),
       self.tr("Excite"),
+      #self.tr("nifty"),
       #self.tr("SYSTRAN"),
       #self.tr("Babylon"),
       self.tr("Yahoo!"),

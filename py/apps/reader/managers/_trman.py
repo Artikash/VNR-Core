@@ -1269,6 +1269,7 @@ class FastAITTranslator(OfflineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
     try:
       engine = self.getEngine(fr=fr, to=to)
@@ -1544,6 +1545,58 @@ class ExciteTranslator(OnlineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    async = True # force async or excite could get blocked using qt session
+    to, fr = self._checkLanguages(to, fr)
+    try: return self._translateTest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class NiftyTranslator(OnlineMachineTranslator):
+  key = 'nifty' # override
+  asyncSupported = False # override  disable async
+
+  def __init__(self, session=None, **kwargs):
+    super(NiftyTranslator, self).__init__(**kwargs)
+    from nifty import niftyhonyaku
+    niftyhonyaku.session = session or requests.Session()
+    self.engine = niftyhonyaku
+
+  SUPPORTED_LANGUAGES = frozenset(('en', 'ja', 'ko', 'zhs', 'zht'))
+
+  def _checkLanguages(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if to not in self.SUPPORTED_LANGUAGES:
+      to = 'en'
+    if fr not in self.SUPPORTED_LANGUAGES:
+      fr = 'en'
+    return to, fr
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+    """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    proxies = {}
+    repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
+    if repl:
+      repl = self._translate(emit, repl,
+          self.engine.translate,
+          to, fr, async)
+      if repl:
+        repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
+        self.cache.update(text, repl)
+    return repl, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
+    """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1574,6 +1627,8 @@ class BabylonTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
+        if to == 'ar':
+          repl = fix_lower_proxy(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
     return repl, to, self.key
@@ -1608,6 +1663,7 @@ class SystranTranslator(OnlineMachineTranslator):
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
+    async = True # force async or systran could get hanged
     to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
@@ -1630,6 +1686,7 @@ class SystranTranslator(OnlineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    async = True # force async or systran could get hanged
     to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)

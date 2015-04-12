@@ -2592,6 +2592,7 @@ class _TextTab(object):
       ('lec',       'LecOnline', 'lecOnline',  None),
       ('infoseek',  None, None,  None),
       ('excite',    None, None,  None),
+      ('nifty',     None, None,  None),
       ('systran',   None, None,  'en'),
       ('transru',   None, None,  None),
       ('naver',     None, None,  'ko'),
@@ -2659,7 +2660,7 @@ class _TextTab(object):
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Babylon', 'Excite', 'SYSTRAN', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Babylon', 'Excite', 'Nifty', 'Systran', 'Transru', 'Naver', 'Baidu', 'Youdao', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'Transcat', 'Atlas', 'Lec', 'HanViet', 'VTrans'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -3000,6 +3001,16 @@ class _MachineTranslationTab(object):
     row = create_retrans_row('excite', self.exciteButton)
     grid.addLayout(row, r, 1, 1, 2)
 
+    if 'en' not in blans and 'ko' not in blans and 'zh' not in blans:
+      r += 1
+      grid.addWidget(self._createBrowseButton("http://honyaku.nifty.com"), r, 0)
+      grid.addWidget(self.niftyButton, r, 1)
+      r += 1
+      grid.addWidget(self.niftyScriptButton, r, 1)
+      r += 1
+      row = create_retrans_row('nifty', self.niftyButton)
+      grid.addLayout(row, r, 1, 1, 2)
+
     if 'en' not in blans:
       r += 1
       grid.addWidget(self._createBrowseButton("http://www.systran.com/translate"), r, 0)
@@ -3310,6 +3321,25 @@ class _MachineTranslationTab(object):
     ret.toggled.connect(ss.setBabylonScriptEnabled)
     #ret.setEnabled(ss.isBabylonEnabled())
     #ss.babylonEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def niftyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("@nifty.com CJK+E translation service"))
+    ret.setStyleSheet("QCheckBox{color:blue}")
+    ret.setChecked(settings.global_().isNiftyEnabled())
+    ret.toggled.connect(settings.global_().setNiftyEnabled)
+    return ret
+
+  @memoizedproperty
+  def niftyScriptButton(self):
+    ret = QtWidgets.QCheckBox("%s (by @riz)" %
+        my.tr("Enable Japanese-English translation script"))
+    ss = settings.global_()
+    ret.setChecked(ss.isNiftyScriptEnabled())
+    ret.toggled.connect(ss.setNiftyScriptEnabled)
+    #ret.setEnabled(ss.isNiftyEnabled())
+    #ss.niftyEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty

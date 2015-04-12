@@ -143,6 +143,7 @@ Item { id: root_
   property color exciteColor: settings_.exciteColor
   property color babylonColor: settings_.babylonColor
   property color systranColor: settings_.systranColor
+  property color niftyColor: settings_.niftyColor
   property color bingColor: settings_.bingColor
   property color googleColor: settings_.googleColor
   property color naverColor: settings_.naverColor
@@ -195,6 +196,7 @@ Item { id: root_
     case 'excite': return root_.exciteColor
     case 'babylon': return root_.babylonColor
     case 'systran': return root_.systranColor
+    case 'nifty': return root_.niftyColor
     case 'bing': return root_.bingColor
     case 'google': return root_.googleColor
     case 'naver': return root_.naverColor

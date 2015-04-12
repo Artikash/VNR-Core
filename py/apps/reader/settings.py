@@ -571,6 +571,15 @@ class Settings(QSettings):
       self.setValue('SystranColor', value)
       self.systranColorChanged.emit(value)
 
+  niftyColorChanged = Signal(str)
+  def niftyColor(self):
+    return self.value('NiftyColor', config.SETTINGS_NIFTY_COLOR)
+  def setNiftyColor(self, value):
+    value = value or config.SETTINGS_NIFTY_COLOR
+    if value != self.niftyColor():
+      self.setValue('NiftyColor', value)
+      self.niftyColorChanged.emit(value)
+
   googleColorChanged = Signal(str)
   def googleColor(self):
     return self.value('GoogleColor', config.SETTINGS_GOOGLE_COLOR)
@@ -1331,6 +1340,14 @@ class Settings(QSettings):
       self.setValue('SystranEnabled', value)
       self.systranEnabledChanged.emit(value)
 
+  niftyEnabledChanged = Signal(bool)
+  def isNiftyEnabled(self):
+    return to_bool(self.value('NiftyEnabled'))
+  def setNiftyEnabled(self, value):
+    if value != self.isNiftyEnabled():
+      self.setValue('NiftyEnabled', value)
+      self.niftyEnabledChanged.emit(value)
+
   googleEnabledChanged = Signal(bool)
   def isGoogleEnabled(self):
     return to_bool(self.value('GoogleEnabled'))
@@ -1582,6 +1599,13 @@ class Settings(QSettings):
     if value != self.isSystranScriptEnabled():
       self.setValue('SystranScriptEnabled', value)
       self.systranScriptEnabledChanged.emit(value)
+
+  niftyScriptEnabledChanged = Signal(bool)
+  def isNiftyScriptEnabled(self): return to_bool(self.value('NiftyScriptEnabled', True))
+  def setNiftyScriptEnabled(self, value):
+    if value != self.isNiftyScriptEnabled():
+      self.setValue('NiftyScriptEnabled', value)
+      self.niftyScriptEnabledChanged.emit(value)
 
   transruScriptEnabledChanged = Signal(bool)
   def isTransruScriptEnabled(self): return to_bool(self.value('TransruScriptEnabled', True))
@@ -2052,6 +2076,7 @@ class SettingsProxy(QObject):
     g.exciteColorChanged.connect(self.exciteColorChanged)
     g.babylonColorChanged.connect(self.babylonColorChanged)
     g.systranColorChanged.connect(self.systranColorChanged)
+    g.niftyColorChanged.connect(self.niftyColorChanged)
     g.bingColorChanged.connect(self.bingColorChanged)
     g.googleColorChanged.connect(self.googleColorChanged)
     g.naverColorChanged.connect(self.naverColorChanged)
@@ -2366,6 +2391,8 @@ class SettingsProxy(QObject):
   babylonColor = unicode_property('BabylonColor', config.SETTINGS_BABYLON_COLOR, notify=babylonColorChanged)
   systranColorChanged = Signal(unicode)
   systranColor = unicode_property('SystranColor', config.SETTINGS_SYSTRAN_COLOR, notify=systranColorChanged)
+  niftyColorChanged = Signal(unicode)
+  niftyColor = unicode_property('NiftyColor', config.SETTINGS_NIFTY_COLOR, notify=niftyColorChanged)
   googleColorChanged = Signal(unicode)
   googleColor = unicode_property('GoogleColor', config.SETTINGS_GOOGLE_COLOR, notify=googleColorChanged)
   bingColorChanged = Signal(unicode)

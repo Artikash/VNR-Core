@@ -39,6 +39,7 @@ class _TranslatorManager(object):
 
     self.infoseekEnabled = \
     self.exciteEnabled = \
+    self.niftyEnabled = \
     self.systranEnabled = \
     self.babylonEnabled = \
     self.bingEnabled = \
@@ -274,6 +275,12 @@ class _TranslatorManager(object):
         abortSignal=self.abortSignal,
         session=self.session))
 
+  @memoizedproperty
+  def niftyTranslator(self):
+    return self._newtr(_trman.NiftyTranslator(
+        abortSignal=self.abortSignal,
+        session=self.session))
+
   @staticmethod
   def translateAndApply(func, kw, tr, text, align=None, **kwargs):
     """
@@ -367,6 +374,7 @@ class _TranslatorManager(object):
         if self.googleEnabled: yield self.googleTranslator
         if self.bingEnabled: yield self.bingTranslator
         if self.babylonEnabled: yield self.babylonTranslator
+        if self.niftyEnabled: yield self.niftyTranslator
         if self.naverEnabled: yield self.naverTranslator
         if self.vtransEnabled: yield self.vTranslator
         if self.youdaoEnabled: yield self.youdaoTranslator
@@ -376,6 +384,7 @@ class _TranslatorManager(object):
         if self.youdaoEnabled: yield self.youdaoTranslator
         if self.vtransEnabled: yield self.vTranslator
         if self.naverEnabled: yield self.naverTranslator
+        if self.niftyEnabled: yield self.niftyTranslator
         if self.babylonEnabled: yield self.babylonTranslator
         if self.bingEnabled: yield self.bingTranslator
         if self.googleEnabled: yield self.googleTranslator
@@ -503,6 +512,9 @@ class TranslatorManager(QObject):
   def isSystranEnabled(self): return self.__d.systranEnabled
   def setSystranEnabled(self, value): self.__d.systranEnabled = value
 
+  def isNiftyEnabled(self): return self.__d.niftyEnabled
+  def setNiftyEnabled(self, value): self.__d.niftyEnabled = value
+
   def isBabylonEnabled(self): return self.__d.babylonEnabled
   def setBabylonEnabled(self, value): self.__d.babylonEnabled = value
 
@@ -582,6 +594,9 @@ class TranslatorManager(QObject):
   def isSystranScriptEnabled(self): return self.__d.getScriptEnabled('systran')
   def setSystranScriptEnabled(self, t): self.__d.setScriptEnabled('systran', t)
 
+  def isNiftyScriptEnabled(self): return self.__d.getScriptEnabled('nifty')
+  def setNiftyScriptEnabled(self, t): self.__d.setScriptEnabled('nifty', t)
+
   def isBabylonScriptEnabled(self): return self.__d.getScriptEnabled('babylon')
   def setBabylonScriptEnabled(self, t): self.__d.setScriptEnabled('babylon', t)
 
@@ -648,7 +663,8 @@ class TranslatorManager(QObject):
       d.babylon,
       d.googleEnabled,
       d.bingEnabled,
-      d.systran,
+      d.systranEnabled,
+      d.niftyEnabled,
       d.lecOnlineEnabled,
       d.transruEnabled,
       d.infoseekEnabled,
@@ -699,6 +715,7 @@ class TranslatorManager(QObject):
     if d.babylon: r.append('babylon')
     if d.googleEnabled: r.append('google')
     if d.bingEnabled: r.append('bing')
+    if d.niftyEnabled: r.append('nifty')
     if d.systranEnabled: r.append('systran')
     if d.lecOnlineEnabled: r.append('lecol')
     if d.transruEnabled: r.append('transru')

@@ -8,6 +8,7 @@ MT_INFO = {
   'lecol':      {'online':True,  'align':False,  'script':True,  },
   'infoseek':   {'online':True,  'align':True,   'script':True,  },
   'excite':     {'online':True,  'align':False,  'script':True,  },
+  'nifty':      {'online':True,  'align':False,  'script':True,  },
   'systran':    {'online':True,  'align':False,  'script':True,  },
   'transru':    {'online':True,  'align':False,  'script':True,  },
   'naver':      {'online':True,  'align':True,   'script':False, },
@@ -132,6 +133,9 @@ def get_mod_def(key):
   if key == 'systran':
     from systran import systrandef
     return systrandef
+  if key == 'nifty':
+    from nifty import niftydef
+    return niftydef
   if key == 'transru':
     from promt import transdef
     return transdef

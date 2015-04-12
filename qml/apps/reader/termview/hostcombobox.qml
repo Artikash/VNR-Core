@@ -17,22 +17,23 @@ DesktopEx.MultiComboBox { id: root_
   TermView.HostMenuItem { id: i4; value: 'lecol' }
   TermView.HostMenuItem { id: i5; value: 'infoseek' }
   TermView.HostMenuItem { id: i6; value: 'excite' }
-  TermView.HostMenuItem { id: i7; value: 'systran' }
-  TermView.HostMenuItem { id: i8; value: 'transru' }
-  TermView.HostMenuItem { id: i9; value: 'naver' }
-  TermView.HostMenuItem { id: i10; value: 'baidu' }
-  TermView.HostMenuItem { id: i11; value: 'youdao' }
-  TermView.HostMenuItem { id: i12; value: 'jbeijing' }
-  TermView.HostMenuItem { id: i13; value: 'fastait' }
-  TermView.HostMenuItem { id: i14; value: 'dreye' }
-  TermView.HostMenuItem { id: i15; value: 'eztrans' }
-  TermView.HostMenuItem { id: i16; value: 'transcat' }
-  TermView.HostMenuItem { id: i17; value: 'atlas' }
-  TermView.HostMenuItem { id: i18; value: 'lec' }
-  TermView.HostMenuItem { id: i19; value: 'hanviet' }
-  TermView.HostMenuItem { id: i20; value: 'vtrans' }
+  TermView.HostMenuItem { id: i7; value: 'nifty' }
+  TermView.HostMenuItem { id: i8; value: 'systran' }
+  TermView.HostMenuItem { id: i9; value: 'transru' }
+  TermView.HostMenuItem { id: i10; value: 'naver' }
+  TermView.HostMenuItem { id: i11; value: 'baidu' }
+  TermView.HostMenuItem { id: i12; value: 'youdao' }
+  TermView.HostMenuItem { id: i13; value: 'jbeijing' }
+  TermView.HostMenuItem { id: i14; value: 'fastait' }
+  TermView.HostMenuItem { id: i15; value: 'dreye' }
+  TermView.HostMenuItem { id: i16; value: 'eztrans' }
+  TermView.HostMenuItem { id: i17; value: 'transcat' }
+  TermView.HostMenuItem { id: i18; value: 'atlas' }
+  TermView.HostMenuItem { id: i19; value: 'lec' }
+  TermView.HostMenuItem { id: i20; value: 'hanviet' }
+  TermView.HostMenuItem { id: i21; value: 'vtrans' }
 
-  menuItems: [i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16, i17, i18, i19, i20]
+  menuItems: [i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16, i17, i18, i19, i20, i21]
 
   property string valueSep: ','
 

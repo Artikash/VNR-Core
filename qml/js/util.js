@@ -165,6 +165,7 @@ var TRANSLATOR_HOST_KEYS = [
   , 'lecol'
   , 'infoseek'
   , 'excite'
+  , 'nifty'
   , 'systran'
   , 'transru'
   , 'naver'
@@ -189,6 +190,7 @@ var TRANSLATOR_NAME = {
   , bing: "Bing.com"
   , google: "Google.com"
   , naver: "Naver.com"
+  , nifty: "@nifty.com"
   , baidu: "百度.com"
   , youdao: "有道.com"
   , jbeijing: "J北京"

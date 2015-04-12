@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1428790064
+  timestamp: 1428812102
 
 app:
   #debug: true
@@ -88,6 +88,7 @@ settings:
   infoseekColor: '#55aa00' # deep green
   exciteColor: '#555500' # yellow
   babylonColor: '#32807c' # cyan
+  niftyColor: '#55ee00' # orange with less red and more
   systranColor: '#ee5500' # orange
   transruColor: '#0055ff' # blue
   naverColor: '#800080' # purple

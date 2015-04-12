@@ -713,6 +713,12 @@ class _MainObject(object):
     ret.setSystranScriptEnabled(ss.isSystranScriptEnabled())
     ss.systranScriptEnabledChanged.connect(ret.setSystranScriptEnabled)
 
+    ret.setNiftyEnabled(ss.isNiftyEnabled())
+    ss.niftyEnabledChanged.connect(ret.setNiftyEnabled)
+
+    ret.setNiftyScriptEnabled(ss.isNiftyScriptEnabled())
+    ss.niftyScriptEnabledChanged.connect(ret.setNiftyScriptEnabled)
+
     ret.setBingEnabled(ss.isBingEnabled())
     ss.bingEnabledChanged.connect(ret.setBingEnabled)
 

@@ -70,10 +70,8 @@ def host_categories(host): # str -> int
   if sep not in host:
     return host_category(host)
   ret = 0
-  l = host.split(sep)
-  for i,h in enumerate(dataman.Term.HOSTS):
-    if h in l:
-      ret |= 1 << i
+  for h in host.split(sep):
+    ret |= 1 << host_category(h)
   return ret or -1 # if no match, apply to all hosts
 
 def _lang_level(lang):
