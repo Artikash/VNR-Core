@@ -21,21 +21,21 @@ kata2ko = hira2ko = kana2ko
 kata2th = hira2th = kana2th
 kata2ar = hira2ar = kana2ar
 
-MSIME_VALID = False
-from sakurakit import skos
-if skos.WIN:
-  from msime import msime
-  MSIME_VALID = msime.ja_valid() # cached
-
+#MSIME_VALID = False
 #def ja2zh_name(text, simplified=False): # unicode, bool -> unicode
 #  return ja2zhs_name(text) if simplified else ja2zht_name(text)
-
+MSIME_VALID = None
 def yomi2kanji(text):
   """
   @param  text  unicode
   @return  unicode or None
   """
+  global MSIME_VALID
+  if MSIME_VALID is None:
+    from msime import msime
+    MSIME_VALID = msime.ja_valid() # cached
   if MSIME_VALID:
+    from msime import msime
     return msime.to_kanji(text)
 
 def toroman(text, language=''): # unicode, str -> unicode
