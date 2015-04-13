@@ -71,7 +71,9 @@ def host_categories(host): # str -> int
     return host_category(host)
   ret = 0
   for h in host.split(sep):
-    ret |= 1 << host_category(h)
+    h = host_category(h)
+    if h > 0:
+      ret |= h
   return ret or -1 # if no match, apply to all hosts
 
 def _lang_level(lang):
