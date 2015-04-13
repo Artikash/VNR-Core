@@ -2959,7 +2959,7 @@ class _MachineTranslationTab(object):
     #grid.addLayout(row, r, 1, 1, 2)
 
     r += 1
-    grid.addWidget(self._createBrowseButton("http://translate.babylon.com"), r, 0)
+    grid.addWidget(self._createBrowseButton("http://translation.babylon.com"), r, 0)
     grid.addWidget(self.babylonButton, r, 1)
     if 'en' not in blans:
       r += 1
@@ -3012,7 +3012,7 @@ class _MachineTranslationTab(object):
 
     if 'en' not in blans:
       r += 1
-      grid.addWidget(self._createBrowseButton("http://www.systran.com/translate"), r, 0)
+      grid.addWidget(self._createBrowseButton("http://www.systranet.com/translate"), r, 0)
       grid.addWidget(self.systranButton, r, 1)
       r += 1
       grid.addWidget(self.systranScriptButton, r, 1)
