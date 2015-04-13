@@ -116,7 +116,7 @@ junaiimage:
 
 seminuki:
   # Supposed to be nuki but junai at server side
-  #- Astronauts
+  - Astronauts
   - bootUP!
   - BaseSon Light
   - Digital Cute
@@ -130,6 +130,7 @@ seminuki:
   - エルフ
   - エウシュリー
   - エレンシア
+  - はむはむソフト
   - 脳内彼女
 
 nuki:
