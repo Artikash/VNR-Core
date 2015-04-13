@@ -88,33 +88,37 @@ def compile(dic, csv, exe='mecab-dict-index', dicdir='', call=subprocess.call):
   return call(args) in (0, True) and os.path.exists(dic)
 
 if __name__ == '__main__':
+  from sakurakit.skprof import SkProfiler
+
   os.environ['PATH'] += os.path.pathsep + '../../../../MeCab/bin'
 
   csvpath = 'edict.csv'
 
   def test_assemble():
-    dbpath = '../dictp/edict.db'
-    import sqlite3
-    from dictdb import dictdb
-    from dictp import edictp
+    with SkProfiler("assemble"):
+      dbpath = '../dictp/edict.db'
+      import sqlite3
+      from dictdb import dictdb
+      from dictp import edictp
 
-    with sqlite3.connect(dbpath) as conn:
-      cur = conn.cursor()
-      q = dictdb.iterwords(cur)
-      with open(csvpath, 'w') as f:
-        for i,word in enumerate(q):
-          id = i + 1
-          entries = edictp.parseword(word)
-          lines = assemble(entries, id=id, type='edict')
-          f.writelines(lines)
+      with sqlite3.connect(dbpath) as conn:
+        cur = conn.cursor()
+        q = dictdb.iterwords(cur)
+        with open(csvpath, 'w') as f:
+          for i,word in enumerate(q):
+            id = i + 1
+            entries = edictp.parseword(word)
+            lines = assemble(entries, id=id, type='edict')
+            f.writelines(lines)
 
   def test_compile():
-    dicdir = "../../../../../../Caches/Dictionaries/UniDic"
-    #dicdir = "/opt/local/lib/mecab/dic/unidic-utf8"
-    print compile('edict.dic', csvpath, dicdir=dicdir)
-    #print compile('test.dic', 'test.csv', dicdir=dicdir)
+    with SkProfiler("compile"):
+      dicdir = "../../../../../../Caches/Dictionaries/UniDic"
+      #dicdir = "/opt/local/lib/mecab/dic/unidic-utf8"
+      print compile('edict.dic', csvpath, dicdir=dicdir)
+      #print compile('test.dic', 'test.csv', dicdir=dicdir)
 
   test_assemble()
-  #test_compile()
+  test_compile()
 
 # EOF
