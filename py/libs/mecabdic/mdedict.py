@@ -34,7 +34,7 @@ def db2csv(csvpath, dbpath):
           entries = edictp.parseword(word)
           roles = edictp.parsetransrole(content).split(',')
           trans = edictp.parsetransdef(content).replace(',', ' ') # ',' not allowed
-          lines = mdcompile.assemble(entries, roles=roles, id=id, type='edict', trans=trans)
+          lines = mdcompile.assemble(entries, roles=roles, id=id, type='edict', trans=trans, surfacefilter=surfacefilter)
           f.writelines(lines)
         return True
   except Exception, e:
