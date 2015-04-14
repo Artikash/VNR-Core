@@ -304,6 +304,27 @@ class ZhongriDic(EBook):
     if self.exists():
       self.eb().zht = value
 
+# 講談社 日中辞典
+class KoudanjcDic(EBook):
+  NAME = 'KOUDANJC' # gaiji not defined though
+  URL = "http://bookclub.kodansha.co.jp/product?isbn=9784062653329"
+  #URL = "http://www.shogakukan.co.jp/"
+
+  def __init__(self):
+    super(ZhongriDic, self).__init__(
+        eb=EBChineseShiori)
+        #gaiji=rc.gaiji_dict(self.NAME))
+
+  def convertsToTraditional(self):
+    """ren
+    @return  bool
+    """
+    return self.exists() and self.eb().zht
+
+  def setConvertsToTraditional(self, value):
+    if self.exists():
+      self.eb().zht = value
+
 # Downloadable FPW
 
 class FreePWING(EBook): # Free EPWING
@@ -445,22 +466,26 @@ if __name__ == '__main__':
   #DIC_ENC = 'euc_jp'
   #DIC_DEC = 'euc_jp'
 
+  gaiji = {}
+
   #relpath = 'JMDict/fr.fpw'
   #dic_path = '../../../../../../Caches/Dictionaries/' + relpath
   #dic_path = os.path.abspath(dic_path)
   #print dic_path
-  dic_path = '/Local/Windows/Applications/EB/DAIJIRIN'
+  #dic_path = '/Local/Windows/Applications/EB/DAIJIRIN'
+  dic_path = '/Local/Windows/Applications/EB/KOUDANJC'
+  #dic_path = '/Local/Windows/Applications/EB/ZHONG_RI'
+
+  gaiji = rc.gaiji_dict('ZHONG_RI')
 
   #dic_path = 'S:/Applications/EB/WADOKU/wadoku_epwing_jan2012'
   if len(sys.argv) == 2:
     dic_path = sys.argv[1]
 
   #eblib.eb_initialize_library()
-  #gaiji = rc.gaiji_dict(DIC_NAME)
-  gaiji = {}
-  #eb = EBChineseShiori(dic_path, gaiji=gaiji)
+  eb = EBChineseShiori(dic_path, gaiji=gaiji)
   #eb = EBShiori(dic_path, gaiji=gaiji)
-  eb = EBShiori(dic_path, gaiji=gaiji)
+  #eb = EBShiori(dic_path, gaiji=gaiji)
   #eb.zht = True
   #eb = EBTest(dic_path)
   #for subbook in eb.subbook_list():
@@ -481,8 +506,8 @@ if __name__ == '__main__':
   #  w.show()
   #  a.exec_()
 
-  #t = u'綺麗'
-  t = u'万歳'
+  t = u'綺麗'
+  #t = u'万歳'
   hits = eb.render(t)
   for it in hits:
     print it
