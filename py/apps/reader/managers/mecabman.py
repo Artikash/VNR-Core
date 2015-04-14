@@ -127,22 +127,11 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
     return ''
   feature = feature.replace('*', '').split(',')
   ret = filter(bool, feature[:fmt.COL_BASIC]) # keep all first role columns
+  suffix = ''
   try:
     surface = fmt.getsurface(feature)
     kata = fmt.getkata(feature)
     hira = kata2hira(kata)
-
-    if fmt.isdic(feature):
-      v = fmt.getdictrans(feature)
-      if v:
-        ret.append(v)
-    else:
-      v = fmt.getsource(feature)
-      if v:
-        if '-' in v:
-          v = v.partition('-')[2]
-        if v and v not in (surface, kata, hira):
-          ret.insert(0, v)
 
     v = fmt.getorigin(feature)
     if v and v not in (surface, kata, hira):
@@ -153,6 +142,18 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
       ret.append('EDICT')
     else:
       ret.append('UNIDIC')
+
+    if fmt.isdic(feature):
+      v = fmt.getdictrans(feature)
+      if v:
+        suffix = "<br/>" + v # change to the second line
+    else:
+      v = fmt.getsource(feature)
+      if v:
+        if '-' in v:
+          v = v.partition('-')[2]
+        if v and v not in (surface, kata, hira):
+          ret.insert(0, v)
 
     if kata:
       romaji = kata2romaji(kata)
@@ -165,7 +166,7 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
       ret.insert(0, surface)
   except IndexError: pass
 
-  return ','.join(ret)
+  return ','.join(ret) + suffix
 
 ## Render table
 

@@ -258,15 +258,16 @@ if __name__ == '__main__':
   #t = u'すもももももももものうち'
   #t = u'しようぜ'
   #t = u'思ってる'
-  t = u'オリジナル'
+  #t = u'オリジナル'
   #t += u'巨乳'
   #t += u"。"
   #t = '勝てば官軍'
-  print mp.toRuby(t, mecabdef.RB_TR)
-  print mp.toRomaji(t)
+  t = u'僕話わたし顔ちらりと流し目、含み笑い、呆れた顔。しょんぼり肩をすくめた。'
+  #print mp.toRuby(t, mecabdef.RB_TR)
+  #print mp.toRomaji(t)
 
   for it in mp.iterparseToRuby(t, mecabdef.RB_TR):
-    print it[0], it[1], it[2]
+    print it[0], it[1] #, it[2]
 
 # EOF
 

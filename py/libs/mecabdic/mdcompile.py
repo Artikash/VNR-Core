@@ -18,7 +18,7 @@ from sakurakit.skdebug import dwarn
 from sakurakit import skfileio
 from unitraits.uniconv import hira2kata, kata2hira
 
-def costof(size):
+def costofsize(size):
   """
   @param  size  int  surface size
   @return  int  negative  the smaller the more important
@@ -28,6 +28,15 @@ def costof(size):
   # - http://tseiya.hatenablog.com/entry/2012/09/19/191114
   # - http://yukihir0.hatenablog.jp/entry/20110201/1296565687
   return -min(36000, int(400*size**1.5))
+
+def costofrole(role):
+  """
+  @param  role  unicode
+  @return  int  negative  the smaller the more important
+  """
+  if 'pn' in role: # pronoun is more important
+    return -1
+  return 0
 
 # Example  きす,5131,5131,887,名詞,普通名詞,サ変可能,*,*,*,キス,キス-kiss,キス,キス,キス,キス,外,*,*,*,*
 UNIDIC_FMT = '{surf},0,0,{cost},{roles},{kata},{source},{surf},*,*,*,{content},*,{trans},{id},{type}\n'
@@ -62,6 +71,7 @@ def assemble(entries, fmt=UNIDIC_FMT, id=None, roles=None, type=None, trans=None
     'roles': roles,
   }
   surfaces = set()
+  rolecost = costofrole(roles)
   for surf, yomi in entries:
     if ',' not in surf and surf not in surfaces:
       surfaces.add(surf)
@@ -69,13 +79,13 @@ def assemble(entries, fmt=UNIDIC_FMT, id=None, roles=None, type=None, trans=None
         hira = kata2hira(yomi) if yomi else ''
         kata = hira2kata(yomi) if yomi else ''
         content = surf
-        cost = costof(len(surf))
+        cost = costofsize(len(surf)) + rolecost
         yield fmt.format(surf=surf, kata=kata, cost=cost, content=content, **kwargs)
         for kana in (yomi, hira, kata):
           if kana and kana not in surfaces:
             surfaces.add(kana)
             if not surfacefilter or surfacefilter(kana):
-              cost = costof(len(kana))
+              cost = costofsize(len(kana)) + rolecost
               yield fmt.format(surf=kana, kata=kata, cost=cost, content=content, **kwargs)
 
 MIN_CSV_SIZE = 10 # minimum CSV file size
@@ -114,7 +124,8 @@ if __name__ == '__main__':
 
   def test_assemble():
     with SkProfiler("assemble"):
-      dbpath = '../dictp/edict.db'
+      #dbpath = '../dictp/edict.db'
+      dbpath = '/Users/jichi/stream/Caches/Dictionaries/EDICT/edict.db'
       import mdedict
       mdedict.db2csv(csvpath, dbpath)
 

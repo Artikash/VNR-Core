@@ -66,7 +66,9 @@ def parseword(word):
   # Remove duplicate keys
   s = set()
   for k,v in _parseword(word):
-    if k and ord(k[0]) > 255 and k not in s: # skip ascii keys
+    if (k and k not in s
+        and ord(k[0]) > 255 # skip ascii keys
+        and '(' not in k and ')' not in k): # skip illegal characters
       s.add(k)
       if not v and jpchars.allkana(k):
         v = k
@@ -153,9 +155,12 @@ def parsetransdef(trans):
       ret = ret.partition('}')[-1].lstrip()
     if '/' in ret:
       ret = ret.partition('/')[0]
-    if ret.endswith(')'):
+    while ret.endswith(')'):
       ret = ret.rpartition('(')[0].rstrip()
-    return ret
+    if ret.startswith('to '): # skip verb prefix 'to'
+      ret = ret[3:]
+    if '(' not in ret and ')' not in ret and '.' not in ret: # skip bad definition
+      return ret
   return ''
 
 if __name__ == '__main__':
@@ -191,6 +196,11 @@ if __name__ == '__main__':
           conn.commit()
       except Exception, e:
         dwarn(e)
+
+  def test_word():
+    w = u'顔(P);貌;顏(oK) [かお(P);がん(顔)(ok)]'
+    for it in parseword(w):
+      print it[0], it[1]
 
   def test_parse():
     #t = u"殺す"
@@ -246,7 +256,10 @@ if __name__ == '__main__':
     #t = u'私'
 
     # adj
-    t = u'可愛い'
+    #t = u'可愛い'
+    #t = u'ルージュ'
+    t = u'応える'
+    #t = u'話'
 
     # name
     #t = u"安倍"
@@ -262,6 +275,7 @@ if __name__ == '__main__':
           break
 
   #test_create()
+  #test_word()
   test_parse()
 
 # EOF

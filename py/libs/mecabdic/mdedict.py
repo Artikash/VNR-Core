@@ -13,7 +13,7 @@ def surfacefilter(text):
   @param  text  unicode  surface
   @return  bool
   """
-  return len(text) > 2 or len(text) > 1 and jpchars.anykanji(text)
+  return len(text) > 2 or jpchars.anykanji(text)
 
 def db2csv(csvpath, dbpath):
   """
