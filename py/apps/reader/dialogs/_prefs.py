@@ -5058,8 +5058,8 @@ class _DictionaryDownloadsTab(object):
     ret = QtWidgets.QPushButton()
     ret.role = ''
     ret.clicked.connect(lambda:
-      self._getUnidic if ret.role == 'get' else
-      self._removeUnidic if ret.role == 'remove' else
+      self._getUnidic() if ret.role == 'get' else
+      self._removeUnidic() if ret.role == 'remove' else
       None,
     )
     return ret
