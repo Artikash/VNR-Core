@@ -71,6 +71,13 @@ def _ja2vi(text):
     #ret = unidecode(ret) # in case there are untranslated words
     return ret
 
+def _capitalize(t):
+  """Only capitalize the first letter
+  @param  t  unicode
+  @return  unicode
+  """
+  return t[0].upper() + t[1:] if t else ''
+
 # Classes
 
 class _MeCabParser:
@@ -91,7 +98,7 @@ class _MeCabParser:
     @param  feature  unicode
     @return  unicode
     """
-    return self.formatter.getdictrans(feature) if self.formatter.isdic(feature) else ''
+    return _capitalize(self.formatter.getdictrans(feature)) if self.formatter.isdic(feature) else ''
 
   def iterparseToKata(self, text):
     """
@@ -127,7 +134,7 @@ class _MeCabParser:
     fmt = self.formatter
     for surface,feature in self.tagger.iterparse(text):
       if fmt.isdic(feature):
-        ruby = fmt.getdictrans(feature) # always show latin translation
+        ruby = _capitalize(fmt.getdictrans(feature)) # always show latin translation
       else:
         ruby = fmt.getlatin(feature)
       if not ruby:

@@ -438,7 +438,15 @@ def migrate(ss_version): # long ->
     #if ss_version <= 1428816315:
     #  ss.setValue('GrimoireHover', True) # enable automatic popup by default
 
-    #if ss_version > 1428623451 and ss_version <= 1428972809:
+    if ss_version > 1428623451 and ss_version <= 1428994266: # re-align EDICT with UniDic
+      path = rc.MECAB_EDICT_PATH
+      if os.path.exists(path):
+        skfileio.removefile(path)
+        if os.path.exists(rc.EDICT_PATH) and os.path.exists(rc.DIR_UNIDIC):
+          from scripts import edict
+          edict.align()
+        else:
+          ss.setValue('EdictEnabled', False)
 
     if ss_version <= 1428623451: # reset edict
       ss.setValue('EdictEnabled', False)

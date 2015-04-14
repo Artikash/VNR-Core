@@ -13,12 +13,12 @@ ROMAJI_RUBY_TYPES = (
   #mecabdef.RB_KATA,
   #mecabdef.RB_HIRA,
   mecabdef.RB_ROMAJI,
+  mecabdef.RB_TR,
   mecabdef.RB_RU,
   mecabdef.RB_KO,
   mecabdef.RB_VI,
   mecabdef.RB_TH,
   mecabdef.RB_AR,
-  mecabdef.RB_TR,
 )
 
 @memoized
