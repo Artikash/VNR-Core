@@ -164,7 +164,7 @@ def parsetransdef(trans):
     for it in _REMOVE_TRANS_SUFFICES:
       if ret.startswith(it): # skip verb prefix 'to'
         ret = ret[len(it):]
-    if '(' not in ret and ')' not in ret and '.' not in ret: # skip bad definition
+    if '(' not in ret and ')' not in ret and '.' not in ret and '"' not in ret: # skip bad definition
       return ret
   return ''
 
