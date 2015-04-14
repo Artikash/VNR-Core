@@ -98,7 +98,7 @@ class _MeCabParser:
     @param  feature  unicode
     @return  unicode
     """
-    return _capitalize(self.formatter.getdictrans(feature)) if self.formatter.isdic(feature) else ''
+    return self.formatter.getdictrans(feature) if self.formatter.isdic(feature) else ''
 
   def iterparseToKata(self, text):
     """
@@ -134,7 +134,7 @@ class _MeCabParser:
     fmt = self.formatter
     for surface,feature in self.tagger.iterparse(text):
       if fmt.isdic(feature):
-        ruby = _capitalize(fmt.getdictrans(feature)) # always show latin translation
+        ruby = fmt.getdictrans(feature) # always show latin translation
       else:
         ruby = fmt.getlatin(feature)
       if not ruby:
