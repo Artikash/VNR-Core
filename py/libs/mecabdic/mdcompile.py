@@ -36,6 +36,10 @@ def costofrole(role):
   """
   if 'pn' in role: # pronoun is more important
     return -1
+  if 'ctr' in role: # counter, less happen
+    return 2
+  if 'suf' in role: # suffix, less happen
+    return 1
   return 0
 
 # Example  きす,5131,5131,887,名詞,普通名詞,サ変可能,*,*,*,キス,キス-kiss,キス,キス,キス,キス,外,*,*,*,*
