@@ -133,12 +133,12 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
     kata = fmt.getkata(feature)
     hira = kata2hira(kata)
 
-    kanji = fmt.getkanji(feature)
-    if kanji:
-      if '-' in kanji:
-        kanji = kanji.partition('-')[2]
-      if kanji and kanji not in (surface, kata, hira):
-        ret.insert(0, kanji)
+    v = fmt.getsource(feature)
+    if v:
+      if '-' in v:
+        v = v.partition('-')[2]
+      if v and v not in (surface, kata, hira):
+        ret.insert(0, v)
 
     v = fmt.getorigin(feature)
     if v and v not in (surface, kata, hira):

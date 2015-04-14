@@ -75,4 +75,14 @@ def isspace(ch):
   """
   return ch in u" \u3000\t\n"
 
+def isalpha(ch):
+  """
+  @param  s  unicode
+  @return  bool
+  """
+  if len(ch) == 1:
+    ch = ord(ch)
+    return ORD_IALPHA_FIRST <= ch and ch <= ORD_IALPHA_LAST or ORD_UALPHA_FIRST <= ch and ch <= ORD_UALPHA_LAST
+  return False
+
 # EOF
