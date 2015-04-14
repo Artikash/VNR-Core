@@ -86,13 +86,13 @@ def queryentries(cur, word='', wordlike='', limit=0, select=SELECT_WORD_CONTENT)
   return cur.fetchall()
 
 # http://stackoverflow.com/questions/3785294/best-way-to-iterate-through-all-rows-in-a-db-table
-def iterentries(cur, chunk=100):
+def iterentries(cur, select=SELECT_WORD_CONTENT, chunk=100):
   """
   @param  cursor
   @yield  unicode word, unicode content
   @raise
   """
-  sql = "SELECT word,content FROM entry"
+  sql = "SELECT %s FROM entry" % select
   cur.execute(sql)
   return dbutil.fetchsome(cur, chunk)
 

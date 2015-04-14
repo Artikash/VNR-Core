@@ -13,6 +13,7 @@ if __name__ == '__main__':
   initrc.settitle(title)
 
 import os
+from sakurakit import skos
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
 
@@ -24,7 +25,11 @@ CSV_FILENAME = 'edict.csv'
 
 UNIDIC_DICPATH = initdefs.CACHE_UNIDIC_RELPATH
 MECAB_BINPATH = initdefs.MECAB_RELPATH + '/bin'
-MECAB_EXEPATH = MECAB_BINPATH + '/mecab-dict-index.exe'
+
+if skos.WIN:
+  MECAB_EXEPATH = MECAB_BINPATH + '/mecab-dict-index.exe'
+else:
+  MECAB_EXEPATH = 'mecab-dict-index'
 
 # Tasks
 

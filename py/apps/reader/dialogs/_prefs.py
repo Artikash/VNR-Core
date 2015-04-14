@@ -4296,10 +4296,11 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.hiraButton)
     layout.addWidget(self.kataButton)
     layout.addWidget(self.romajiButton)
+    #if 'en' not in blans: # always enabled
+    if True:
+      layout.addWidget(self.trButton)
     if 'ru' not in blans:
       layout.addWidget(self.ruButton)
-    #if 'en' not in blans:
-    #  layout.addWidget(self.trButton)
     if 'ko' not in blans:
       layout.addWidget(self.koButton)
     if 'vi' not in blans:
@@ -4410,7 +4411,7 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s (%s)" %
       (tr_("English"), my.tr("like this"), u"可愛い（cute）",
-        my.tr("require {0}").format("EDICT")))
+        my.tr("require {0}").format(my.tr("EDICT alignment"))))
     ret.toggled.connect(self._saveRubyType)
     return ret
 
@@ -4422,8 +4423,8 @@ class _DictionaryTranslationTab(object):
         self.thButton if t == mecabdef.RB_TH else
         self.arButton if t == mecabdef.RB_AR else
         self.kataButton if t == mecabdef.RB_KATA else
-        self.viButton if t == mecabdef.RB_VI else # not implemented
-        #self.trButton if t == mecabdef.RB_TR else # not implemented
+        self.viButton if t == mecabdef.RB_VI else
+        self.trButton if t == mecabdef.RB_TR else
         self.hiraButton)
     if not b.isChecked():
       b.setChecked(True)
@@ -4435,8 +4436,8 @@ class _DictionaryTranslationTab(object):
         mecabdef.RB_TH if self.thButton.isChecked() else
         mecabdef.RB_AR if self.arButton.isChecked() else
         mecabdef.RB_KATA if self.kataButton.isChecked() else
-        mecabdef.RB_VI if self.viButton.isChecked() else # not implemented
-        #mecabdef.RB_TR if self.trButton.isChecked() else # not implemented
+        mecabdef.RB_VI if self.viButton.isChecked() else
+        mecabdef.RB_TR if self.trButton.isChecked() else
         mecabdef.RB_HIRA)
     settings.global_().setJapaneseRubyType(t)
 
@@ -5439,7 +5440,7 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def mecabEdictIntroLabel(self):
-    return QtWidgets.QLabel("%s (75MB, %s)" % (
+    return QtWidgets.QLabel("%s (85MB, %s)" % (
         my.tr("Align MeCab with EDICT"),
         my.tr("require {0}").format("UniDic, EDICT")))
 

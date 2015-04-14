@@ -13,7 +13,7 @@ def surfacefilter(text):
   @param  text  unicode  surface
   @return  bool
   """
-  return len(text) > 2 or len(text) > 1 and jpchars.anykanji(text)
+  return len(text) > 2 or jpchars.anykanji(text)
 
 def db2csv(csvpath, dbpath):
   """
@@ -27,12 +27,14 @@ def db2csv(csvpath, dbpath):
   try:
     with sqlite3.connect(dbpath) as conn:
       cur = conn.cursor()
-      q = dictdb.iterwords(cur)
+      q = dictdb.iterentries(cur)
       with open(csvpath, 'w') as f:
-        for i,word in enumerate(q):
+        for i,(word,content) in enumerate(q):
           id = i + 1
           entries = edictp.parseword(word)
-          lines = mdcompile.assemble(entries, id=id, type='edict', surfacefilter=surfacefilter)
+          roles = edictp.parsetransrole(content).split(',')
+          trans = edictp.parsetransdef(content).replace(',', ' ') # ',' not allowed
+          lines = mdcompile.assemble(entries, roles=roles, id=id, type='edict', trans=trans, surfacefilter=surfacefilter)
           f.writelines(lines)
         return True
   except Exception, e:
