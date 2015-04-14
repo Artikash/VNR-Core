@@ -17,6 +17,7 @@ if __name__ == '__main__':
 #try: from pysqlite2 import dbapi2 as sqlite3
 #except ImportError: import sqlite3
 import sqlite3
+import re
 from unitraits import jpchars
 from sakurakit.skdebug import dwarn
 
@@ -43,6 +44,8 @@ def parsefile(path, encoding='utf8'):
   except Exception, e:
     dwarn(e)
     raise
+
+# Parse word and yomigana
 
 def _remove_word_parenthesis(text):
   """Remove parenthesis
@@ -107,36 +110,78 @@ def _parseword(word):
         for it in left.split(';'):
           yield _remove_word_parenthesis(it), yomi
 
+# Parse translation
+
+# Example:
+# /(n) (1) (uk) curry/(2) (abbr) (uk) (See カレーライス) rice and curry/(P)/EntL1039140X/
+# /(n,vs) (obsc) (嘈囃 is sometimes read むねやけ) (See 胸焼け) heartburn/sour stomach/EntL2542040/
+def parsetransrole(trans, sep=None):
+  """Get role out of translation
+  @param  trans  unicode
+  @param* sep  unicode  separator for multiple rules
+  @return  unicode  separated by ','
+  """
+  if trans.startswith('/('):
+    i = trans.find(')')
+    if i != -1:
+      ret = trans[2:i]
+      if sep is not None:
+        ret = ret.replace(',', sep)
+      return ret
+  return ''
+
+def parsetransdef(trans):
+  """Get short definition out of translation
+  @param  trans  unicode
+  @return  unicode
+  """
+  pass
+
 if __name__ == '__main__':
-  path = 'edict2u'
-  try:
-    for i,(k,v) in enumerate(iterparse(path)):
-      print '|%s|' % i
-      print '|%s|' % k
-      print '|%s|' % v
-      break
-  except:
-    pass
-
   dbpath = 'edict.db'
-  import os
-  if os.path.exists(dbpath):
-    os.remove(dbpath)
 
-  from sakurakit.skprof import SkProfiler
-
-  from dictdb import dictdb
-
-  with SkProfiler("create db"):
-    print dictdb.createdb(dbpath)
-
-  with SkProfiler("insert db"):
+  def test_create():
+    path = 'edict2u'
     try:
-      with sqlite3.connect(dbpath) as conn:
-        q = parsefile(path)
-        dictdb.insertentries(conn.cursor(), q, ignore_errors=True)
-        conn.commit()
-    except Exception, e:
-      dwarn(e)
+      for i,(k,v) in enumerate(iterparse(path)):
+        print '|%s|' % i
+        print '|%s|' % k
+        print '|%s|' % v
+        break
+    except:
+      pass
+
+    import os
+    if os.path.exists(dbpath):
+      os.remove(dbpath)
+
+    from sakurakit.skprof import SkProfiler
+
+    from dictdb import dictdb
+
+    with SkProfiler("create db"):
+      print dictdb.createdb(dbpath)
+
+    with SkProfiler("insert db"):
+      try:
+        with sqlite3.connect(dbpath) as conn:
+          q = parsefile(path)
+          dictdb.insertentries(conn.cursor(), q, ignore_errors=True)
+          conn.commit()
+      except Exception, e:
+        dwarn(e)
+
+  def test_parse():
+    from dictdb import dictdb
+    with sqlite3.connect(dbpath) as conn:
+      for i, it in enumerate(dictdb.queryentries(conn.cursor())):
+        content = it[1]
+        print it[0], content
+        print "role:", parsetransrole(content)
+        if i > 10:
+          break
+
+  #test_create()
+  test_parse()
 
 # EOF
