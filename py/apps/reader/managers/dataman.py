@@ -2708,8 +2708,8 @@ class _Term(object):
 
     # W_SHORT
     if (self.type not in ('suffix', 'prefix', 'ocr', 'macro') and (
-        len(self.pattern) == 1 and jpchars.iskanachar(self.pattern) or
-        not self.special and len(self.pattern) == 2 and jpchars.iskanachar(self.pattern[0]) and jpchars.iskanachar(self.pattern[1]))):
+        len(self.pattern) == 1 and jpchars.iskana(self.pattern) or
+        not self.special and len(self.pattern) == 2 and jpchars.iskana(self.pattern[0]) and jpchars.iskana(self.pattern[1]))):
       return self.W_SHORT
 
     # W_LONG

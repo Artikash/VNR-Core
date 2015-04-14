@@ -92,7 +92,7 @@ class _MeCabParser:
     @yield  unicode  ruby
     """
     for surface,feature in self.tagger.iterparse(text):
-      yield self.formatter.getkata(feature) or surface
+      yield self.formatter.getlatin(feature) or self.formatter.getkata(feature) or surface
 
   def iterparseToVi(self, text):
     """
@@ -100,15 +100,16 @@ class _MeCabParser:
     @yield  unicode  ruby or vi
     """
     for surface,feature in self.tagger.iterparse(text):
-      yomi = None
-      type = mecablex.getsurfacetype(surface)
-      if type == mecabdef.SURFACE_KANJI:
-        yomi = _ja2vi(surface)
-      if not yomi:
-        yomi = self.formatter.getkata(feature)
-        if yomi:
-          yomi = jaconv.kata2romaji(yomi)
-      yield yomi or surface
+      ruby = self.formatter.getlatin(feature) # always show latin translation
+      if not ruby:
+        type = mecablex.getsurfacetype(surface)
+        if type == mecabdef.SURFACE_KANJI:
+          ruby = _ja2vi(surface)
+      if not ruby:
+        ruby = self.formatter.getkata(feature)
+        if ruby:
+          ruby = jaconv.kata2romaji(ruby)
+      yield ruby or surface
 
   UNKNOWN_RUBY = '?'
   def iterparseToRuby(self, text, kataconv=None, surfconv=None, show_ruby_kana=False):
@@ -122,16 +123,18 @@ class _MeCabParser:
     for surface, feature in self.tagger.iterparse(text):
       ruby = None
       type = mecablex.getsurfacetype(surface)
-      show_ruby = type == mecabdef.SURFACE_KANJI or show_ruby_kana and type == mecabdef.SURFACE_KANA
-      if show_ruby:
-        if surfconv:
-          ruby = surfconv(surface)
-        if not ruby:
-          kata = self.formatter.getkata(feature)
-          if kata and kataconv:
-            ruby = kataconv(kata)
-            if ruby == surface:
-              ruby = None
+      if type in (mecabdef.SURFACE_KANJI, mecabdef.SURFACE_KANA):
+        ruby = self.formatter.getlatin(feature) # always show latin translation
+        if not ruby and (show_ruby_kana or type == mecabdef.SURFACE_KANJI):
+          if surfconv:
+            ruby = surfconv(surface)
+          if not ruby:
+            if not ruby:
+              kata = self.formatter.getkata(feature)
+              if kata and kataconv:
+                ruby = kataconv(kata)
+                if ruby == surface:
+                  ruby = None
         if not ruby and type == mecabdef.SURFACE_KANJI:
           ruby = self.UNKNOWN_RUBY
       yield surface, ruby, feature, type
@@ -211,7 +214,8 @@ if __name__ == '__main__':
   #t = u'すもももももももものうち'
   #t = u'しようぜ'
   #t = u'思ってる'
-  t = u'巨乳'
+  t = u'オリジナル'
+  t += u'巨乳'
   t += u"。"
   print mp.toRuby(t)
   print mp.toRomaji(t)
@@ -232,4 +236,3 @@ if __name__ == '__main__':
 #  # Add space between words
 #  return ' '.join(furigana or surface for surface,furigana in
 #      self.parse(text, termEnabled=termEnabled, reading=True, lougo=True, ruby=ruby))
-

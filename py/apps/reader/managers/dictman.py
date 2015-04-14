@@ -38,7 +38,7 @@ class _DictionaryManager:
       kwargs['surfaces'].append(v)
     reading = None
     if feature:
-      v = fmt.getkanji(feature)
+      v = fmt.getsource(feature)
       if v and '-' not in v and v != text:
         kwargs['surfaces'].append(v)
       # id is ignored and not needed

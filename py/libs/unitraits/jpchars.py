@@ -50,6 +50,11 @@ def iskanachar(ch): return len(ch) == 1 and (
     unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST or
     unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST)
 
+iskana = iskanachar
+ishira = ishirachar
+iskata = iskatachar
+iskanji = iskanjichar
+
 #re_not_hira = re.compile(r"[^%s]" % s_hira)
 #re_not_kata = re.compile(r"[^%s]" % s_kata)
 

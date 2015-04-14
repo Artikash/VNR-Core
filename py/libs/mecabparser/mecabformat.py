@@ -9,6 +9,8 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
+from unitraits import unichars, jpchars
+
 class UniDicFormatter(object):
 
   SEP = ',' # column separator
@@ -19,8 +21,8 @@ class UniDicFormatter(object):
   COL_BASIC = 5 # The basic columns that are shared by are dict holding the roles of the word
 
   COL_SURFACE = COL_BASIC + 1
-  COL_KANJI = COL_BASIC + 2 # converted kanji
-  COL_SURFACE = COL_KANJI + 1
+  COL_SOURCE = COL_BASIC + 2 # converted kanji
+  COL_SURFACE = COL_SOURCE + 1
   COL_ORIGIN = 12 # the origination of the phrase
 
   COL_KATA = 17 # the original kata column without EDICT that should be checked first
@@ -33,7 +35,7 @@ class UniDicFormatter(object):
     """
     @param  f  unicode or list feature
     @param  col  int  column
-    @return  unicode not none
+    @return  unicode not None
     """
     if isinstance(f, basestring):
       f = f.replace(self.EMPTY_COL, '').split(self.SEP)
@@ -43,13 +45,30 @@ class UniDicFormatter(object):
     return self.getcol(f, self.COL_KATA) or self.getcol(f, self.COL_KATA_EDICT)
 
   def getsurface(self, f): return self.getcol(f, self.COL_SURFACE)
-  def getkanji(self, f): return self.getcol(f, self.COL_KANJI)
+  def getsource(self, f): return self.getcol(f, self.COL_SOURCE)
   def getorigin(self, f): return self.getcol(f, self.COL_ORIGIN)
 
   def gettype(self, f): return self.getcol(f, self.COL_TYPE)
   def getid(self, f): # unicode -> int or 0
     try: return int(self.getcol(f, self.COL_ID))
     except: return 0
+
+  def getlatin(self, f): # get English translation
+    s = self.getsource(f)
+    if s and '-' in s:
+      s = s.partition('-')[-1]
+      if s and unichars.isalpha(s[0]) and unichars.isalpha(s[-1]):
+        return s
+    return ''
+
+  def getkanji(self, f): # get Chinese translation
+    s = self.getsource(f)
+    if s:
+      if '-' in s:
+        s = s.partition('-')[0]
+      if s and jpchars.iskanji(s[0]) and jpchars.iskanji(s[-1]):
+        return s
+    return ''
 
 UNIDIC_FORMATTER = UniDicFormatter()
 
