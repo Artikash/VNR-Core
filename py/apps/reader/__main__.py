@@ -438,6 +438,8 @@ def migrate(ss_version): # long ->
     #if ss_version <= 1428816315:
     #  ss.setValue('GrimoireHover', True) # enable automatic popup by default
 
+    #if ss_version > 1428623451 and ss_version <= 1428972809:
+
     if ss_version <= 1428623451: # reset edict
       ss.setValue('EdictEnabled', False)
       path = rc.EDICT_PATH

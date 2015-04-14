@@ -12,6 +12,9 @@ if __name__ == '__main__': # DEBUG
 from unitraits import unichars, jpchars
 
 class UniDicFormatter(object):
+  # Dict type
+  DIC_UNIDIC = 'unidic'
+  DIC_EDICT = 'edict'
 
   SEP = ',' # column separator
   EMPTY_COL = '*' # empty column
@@ -26,10 +29,11 @@ class UniDicFormatter(object):
   COL_ORIGIN = 12 # the origination of the phrase
 
   COL_KATA = 17 # the original kata column without EDICT that should be checked first
-  COL_KATA_EDICT = COL_BASIC + 1 # kata column for EDICT
+  COL_DIC_KATA = COL_BASIC + 1 # kata column for EDICT
 
-  COL_ID = -2 # the type such as edict
-  COL_TYPE = -1 # the type such as edict
+  COL_DIC_TYPE = -1 # the type such as edict
+  COL_DIC_ID = -2 # the type such as edict
+  COL_DIC_TRANS = -3 # translation of the entry
 
   def getcol(self, f, col):
     """
@@ -42,16 +46,19 @@ class UniDicFormatter(object):
     return f[col] if col < len(f) else ''
 
   def getkata(self, f):
-    return self.getcol(f, self.COL_KATA) or self.getcol(f, self.COL_KATA_EDICT)
+    return self.getcol(f, self.COL_KATA) or self.getcol(f, self.COL_DIC_KATA)
 
   def getsurface(self, f): return self.getcol(f, self.COL_SURFACE)
   def getsource(self, f): return self.getcol(f, self.COL_SOURCE)
   def getorigin(self, f): return self.getcol(f, self.COL_ORIGIN)
 
-  def gettype(self, f): return self.getcol(f, self.COL_TYPE)
-  def getid(self, f): # unicode -> int or 0
-    try: return int(self.getcol(f, self.COL_ID))
+  def getdictype(self, f): return self.getcol(f, self.COL_DIC_TYPE)
+  def getdictrans(self, f): return self.getcol(f, self.COL_DIC_TRANS)
+  def getdicid(self, f): # unicode -> int or 0
+    try: return int(self.getcol(f, self.COL_DIC_ID))
     except: return 0
+
+  def isdic(self, f): return bool(self.getdictype(f)) # -> bool
 
   def getlatin(self, f): # get English translation
     s = self.getsource(f)

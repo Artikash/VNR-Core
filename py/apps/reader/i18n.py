@@ -59,6 +59,8 @@ def ruby_type_name(rb):
   """
   if rb in (mecabdef.RB_ROMAJI, mecabdef.RB_HIRA, mecabdef.RB_KATA):
     return utr_(rb.capitalize())
+  if rb == mecabdef.RB_TR:
+    return tr_("English")
   else:
     return language_name(rb)
 

@@ -17,7 +17,6 @@ if __name__ == '__main__':
 #try: from pysqlite2 import dbapi2 as sqlite3
 #except ImportError: import sqlite3
 import sqlite3
-import re
 from unitraits import jpchars
 from sakurakit.skdebug import dwarn
 
@@ -130,12 +129,34 @@ def parsetransrole(trans, sep=None):
       return ret
   return ''
 
+def parsetransrole1(trans):
+  """Get only the first role out of translation
+  @param  trans  unicode
+  @return  unicode
+  """
+  ret = parsetransrole(trans)
+  if ',' in ret:
+    ret = ret.partition(',')[0]
+  return ret
+
+# Get only the first translation
 def parsetransdef(trans):
   """Get short definition out of translation
   @param  trans  unicode
   @return  unicode
   """
-  pass
+  if trans.startswith('/'):
+    ret = trans[1:]
+    while ret.startswith('('):
+      ret = ret.partition(')')[-1].lstrip()
+    if ret.startswith('{'):
+      ret = ret.partition('}')[-1].lstrip()
+    if '/' in ret:
+      ret = ret.partition('/')[0]
+    if ret.endswith(')'):
+      ret = ret.rpartition('(')[0].rstrip()
+    return ret
+  return ''
 
 if __name__ == '__main__':
   dbpath = 'edict.db'
@@ -172,12 +193,71 @@ if __name__ == '__main__':
         dwarn(e)
 
   def test_parse():
+    #t = u"殺す"
+    #t = u"政治"
+    #t = u"声"
+    #t = u"出身"
+    #t = u"裁判"
+    #t = u"可愛い"
+    #t = u"大柴"
+    #t = u"身長"
+    #t = u"体重"
+    #t = u"茶道"
+    #t = u"結婚"
+    #t = u"採集"
+    #t = u"どこ"
+    #t = u"佐藤"
+    #t = u"雫"
+    #t = u"街"
+    #t = u"晴明"
+    #t = u"エミリ"
+    #t = u"春日"
+    #t = u"石浦"
+    #t = u"能力"
+    #t = u"人気"
+    #t = u"任せ"
+    #t = u"幸せ"
+    #t = u"忘れる"
+    #t = u"忘れ"
+    #t = u"止めっ"
+    #t = u'移り住ん'
+    #t = u'移り住む'
+    #t = u'頼ま'
+    #t = u'頼む'
+    #t = u'聞く'
+    #t = u'聞か'
+    #t = u'討ち'
+    #t = u'討つ'
+    #t = u'動い'
+    #t = u'動く'
+    #t = u'知って'
+    #t = u'言わ'
+    #t = u'行きぁ'
+
+    # prep/conj
+    #t = u'しかし'
+
+    # verb
+    #t = u'行きぁ'
+
+    # noun
+    #t = u"友達"
+    #t = u"ヤング"
+    #t = u'私'
+
+    # adj
+    t = u'可愛い'
+
+    # name
+    #t = u"安倍"
     from dictdb import dictdb
+    t = '%' + t + '%'
     with sqlite3.connect(dbpath) as conn:
-      for i, it in enumerate(dictdb.queryentries(conn.cursor())):
+      for i, it in enumerate(dictdb.queryentries(conn.cursor(), wordlike=t)):
         content = it[1]
         print it[0], content
         print "role:", parsetransrole(content)
+        print "def:", parsetransdef(content)
         if i > 10:
           break
 
@@ -185,3 +265,30 @@ if __name__ == '__main__':
   test_parse()
 
 # EOF
+
+#import re
+#_rx_tr1 = re.compile('|'.join((
+#  r'^/\(.+?\) (?=[a-zA-Z0-9.])',
+#  r'^/',
+#  r'[/(].*',
+#)))
+#_rx_tr2 = re.compile('|'.join((
+#  r'^(?:to|\.+) ', # remove leading "to" and ".."
+#  r'from which.*', # remove trailing clause
+#  r'[.]+$', # remove trailing dots
+#)))
+#def translate(text, wc=5, limit=3, complete=True):
+#  """Translate Japanese word to English
+#  @param  text  unicode
+#  @param* wc  int  count of word -1
+#  @param* limit  int  maximum tuples to look up
+#  @param* complete  bool  enabled by default
+#  @return  unicode or None
+#
+#  Return the first hitted word in the dictionary.
+#  """
+#  ret = _rx_tr2.sub('',
+#    _rx_tr1.sub('', text).strip()
+#  ).strip()
+#  if ret and (not wc or ret.count(' ') <= wc):
+#    return ret

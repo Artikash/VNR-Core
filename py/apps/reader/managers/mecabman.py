@@ -18,8 +18,7 @@ ROMAJI_RUBY_TYPES = (
   mecabdef.RB_VI,
   mecabdef.RB_TH,
   mecabdef.RB_AR,
-  #mecabdef.RB_VI, # not implemented yet
-  #mecabdef.RB_TR, # not implemented yet
+  mecabdef.RB_TR,
 )
 
 @memoized
@@ -133,19 +132,24 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
     kata = fmt.getkata(feature)
     hira = kata2hira(kata)
 
-    v = fmt.getsource(feature)
-    if v:
-      if '-' in v:
-        v = v.partition('-')[2]
-      if v and v not in (surface, kata, hira):
-        ret.insert(0, v)
+    if fmt.isdic(feature):
+      v = fmt.getdictrans(feature)
+      if v:
+        ret.append(v)
+    else:
+      v = fmt.getsource(feature)
+      if v:
+        if '-' in v:
+          v = v.partition('-')[2]
+        if v and v not in (surface, kata, hira):
+          ret.insert(0, v)
 
     v = fmt.getorigin(feature)
     if v and v not in (surface, kata, hira):
       ret.append(v)
 
-    v = fmt.gettype(feature)
-    if v == 'edict':
+    v = fmt.getdictype(feature)
+    if v == fmt.DIC_EDICT:
       ret.append('EDICT')
     else:
       ret.append('UNIDIC')

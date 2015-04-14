@@ -42,8 +42,8 @@ class _DictionaryManager:
       if v and '-' not in v and v != text:
         kwargs['surfaces'].append(v)
       # id is ignored and not needed
-      #if fmt.gettype(feature) == 'edict':
-      #  id = fmt.getid(feature)
+      #if fmt.getdictype(feature) == 'edict':
+      #  id = fmt.getdicid(feature)
       #  if id:
       #    kwargs['id'] = id
 

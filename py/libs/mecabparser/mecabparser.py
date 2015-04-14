@@ -86,6 +86,13 @@ class _MeCabParser:
       self._tagger = mecabtagger.MeCabTagger()
     return self._tagger
 
+  def featureTrans(self, feature):
+    """
+    @param  feature  unicode
+    @return  unicode
+    """
+    return self.formatter.getdictrans(feature) if self.formatter.isdic(feature) else ''
+
   def iterparseToKata(self, text):
     """
     @param  text  unicode
@@ -97,44 +104,65 @@ class _MeCabParser:
   def iterparseToVi(self, text):
     """
     @param  text  unicode
-    @yield  unicode  ruby or vi
+    @yield  unicode  vi or ruby
     """
+    fmt = self.formatter
     for surface,feature in self.tagger.iterparse(text):
-      ruby = self.formatter.getlatin(feature) # always show latin translation
+      ruby = fmt.getlatin(feature) # always show latin translation
       if not ruby:
         type = mecablex.getsurfacetype(surface)
         if type == mecabdef.SURFACE_KANJI:
           ruby = _ja2vi(surface)
       if not ruby:
-        ruby = self.formatter.getkata(feature)
+        ruby = fmt.getkata(feature)
+        if ruby:
+          ruby = jaconv.kata2romaji(ruby)
+      yield ruby or surface
+
+  def iterparseToTrans(self, text):
+    """
+    @param  text  unicode
+    @yield  unicode  trans or ruby
+    """
+    fmt = self.formatter
+    for surface,feature in self.tagger.iterparse(text):
+      if fmt.isdic(feature):
+        ruby = fmt.getdictrans(feature) # always show latin translation
+      else:
+        ruby = fmt.getlatin(feature)
+      if not ruby:
+        ruby = fmt.getkata(feature)
         if ruby:
           ruby = jaconv.kata2romaji(ruby)
       yield ruby or surface
 
   UNKNOWN_RUBY = '?'
-  def iterparseToRuby(self, text, kataconv=None, surfconv=None, show_ruby_kana=False):
+  def iterparseToRuby(self, text, kataconv=None, surfconv=None, featureconv=None, show_ruby_kana=False):
     """
     @param  text  unicode
-    @param  kataconv  unicode -> unicode or None
-    @param  surfconv  unicode -> unicode or None
-    @param  show_ruby_kana  bool
+    @param* kataconv  unicode -> unicode or None
+    @param* surfconv  unicode -> unicode or None
+    @param* featureconv  unicode -> unicode or None
+    @param* show_ruby_kana  bool
     @yield  (unicode surface, unicode ruby or None, unicode feature, unicode surface_type)
     """
+    fmt = self.formatter
     for surface, feature in self.tagger.iterparse(text):
       ruby = None
       type = mecablex.getsurfacetype(surface)
       if type in (mecabdef.SURFACE_KANJI, mecabdef.SURFACE_KANA):
-        ruby = self.formatter.getlatin(feature) # always show latin translation
+        ruby = fmt.getlatin(feature) # always show latin translation
+        if not ruby and featureconv:
+          ruby = featureconv(feature)
         if not ruby and (show_ruby_kana or type == mecabdef.SURFACE_KANJI):
-          if surfconv:
+          if not ruby and surfconv:
             ruby = surfconv(surface)
           if not ruby:
-            if not ruby:
-              kata = self.formatter.getkata(feature)
-              if kata and kataconv:
-                ruby = kataconv(kata)
-                if ruby == surface:
-                  ruby = None
+            kata = fmt.getkata(feature)
+            if kata and kataconv:
+              ruby = kataconv(kata)
+              if ruby == surface:
+                ruby = None
         if not ruby and type == mecabdef.SURFACE_KANJI:
           ruby = self.UNKNOWN_RUBY
       yield surface, ruby, feature, type
@@ -157,6 +185,9 @@ class MeCabParser(object):
     if ruby == mecabdef.RB_VI:
       kwargs['surfconv'] = _ja2vi
       kwargs['kataconv'] = jaconv.kata2romaji
+    elif ruby == mecabdef.RB_TR:
+      kwargs['featureconv'] = self.__d.featureTrans
+      kwargs['kataconv'] = jaconv.kata2romaji
     else:
       kwargs['kataconv'] = getkataconv(ruby)
     return self.__d.iterparseToRuby(text, show_ruby_kana=show_ruby_kana, **kwargs)
@@ -170,16 +201,17 @@ class MeCabParser(object):
     """
     if sep is None:
       sep = ' ' if mecabdef.rb_has_space(ruby) else ''
-    conv = getkataconv(ruby)
-    if mecabdef.rb_is_thin(ruby):
-      wide2thin = uniconv.wide2thin
-      f = conv
-      conv = lambda x: wide2thin(f(x))
     if ruby == mecabdef.RB_VI:
       q = self.__d.iterparseToVi(text)
+    elif ruby == mecabdef.RB_TR:
+      q = self.__d.iterparseToTrans(text)
     else:
       q = self.__d.iterparseToKata(text)
-    ret = sep.join(imap(conv,  q))
+      conv = getkataconv(ruby)
+      q = imap(conv, q)
+    ret = sep.join(q)
+    if mecabdef.rb_is_thin(ruby):
+      ret = uniconv.wide2thin(ret)
     if mecabdef.rb_is_thin(ruby):
       ret = jpchars.wide2thin_punct(ret)
     return ret
@@ -204,10 +236,15 @@ if __name__ == '__main__':
   #rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/ipadic.rc'
   rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/unidic.rc'
 
+  #userdic = '/Users/jichi/stream/Caches/Dictionaries/EDICT/edict.dic'
+  userdic = '/Users/jichi/stream/Library/Frameworks/Sakura/py/libs/mecabdic/edict.dic'
+
   import mecabtagger
   mecabtagger.setenvrc(rcfile)
 
   mp = MeCabParser()
+  if userdic:
+    mp.tagger().setUserdic(userdic)
 
   #t = u"可愛いよ"
   #t = u'今日はいい天気ですね'
@@ -215,12 +252,13 @@ if __name__ == '__main__':
   #t = u'しようぜ'
   #t = u'思ってる'
   t = u'オリジナル'
-  t += u'巨乳'
-  t += u"。"
-  print mp.toRuby(t)
+  #t += u'巨乳'
+  #t += u"。"
+  #t = '勝てば官軍'
+  print mp.toRuby(t, mecabdef.RB_TR)
   print mp.toRomaji(t)
 
-  for it in mp.iterparseToRuby(t):
+  for it in mp.iterparseToRuby(t, mecabdef.RB_TR):
     print it[0], it[1], it[2]
 
 # EOF
