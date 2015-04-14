@@ -142,6 +142,10 @@ def parsetransrole1(trans):
   return ret
 
 # Get only the first translation
+_REMOVE_TRANS_SUFFICES = ( # suffices to remove
+  "to ", # verb prefix
+  "one's ", # such One's Line of Sight (視線)
+)
 def parsetransdef(trans):
   """Get short definition out of translation
   @param  trans  unicode
@@ -157,8 +161,9 @@ def parsetransdef(trans):
       ret = ret.partition('/')[0]
     while ret.endswith(')'):
       ret = ret.rpartition('(')[0].rstrip()
-    if ret.startswith('to '): # skip verb prefix 'to'
-      ret = ret[3:]
+    for it in _REMOVE_TRANS_SUFFICES:
+      if ret.startswith(it): # skip verb prefix 'to'
+        ret = ret[len(it):]
     if '(' not in ret and ')' not in ret and '.' not in ret: # skip bad definition
       return ret
   return ''
@@ -258,7 +263,8 @@ if __name__ == '__main__':
     # adj
     #t = u'可愛い'
     #t = u'ルージュ'
-    t = u'応える'
+    #t = u'応える'
+    t = u'視線'
     #t = u'話'
 
     # name
