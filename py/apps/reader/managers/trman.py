@@ -731,7 +731,7 @@ class TranslatorManager(QObject):
     if d.youdaoEnabled: r.append('youdao')
     if d.vtransEnabled: r.append('vtrans')
     if d.naverEnabled: r.append('naver')
-    if d.babylon: r.append('babylon')
+    if d.babylonEnabled: r.append('babylon')
     if d.googleEnabled: r.append('google')
     if d.bingEnabled: r.append('bing')
     if d.niftyEnabled: r.append('nifty')
