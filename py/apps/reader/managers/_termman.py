@@ -16,7 +16,7 @@ from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
 from unitraits import jpchars, jpmacros
-from convutil import kana2name, zhs2zht, \
+from convutil import kana2name, zhs2zht, zht2zhs, \
                      ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
 import config, dataman, defs, i18n
 
@@ -218,7 +218,8 @@ class TermWriter:
     @return  bool
     """
     #marksChanges = self.marked and type in ('output', 'trans_output')
-    convertsChinese = to == 'zht' and type in ('output', 'trans')
+    convertsSimplifiedChinese = to == 'zhs' and type in ('output', 'trans')
+    convertsTraditionalChinese = to == 'zht' and type in ('output', 'trans')
     #if type not in ('input', 'trans_input', 'trans_output'):
     #  titles = None
 
@@ -244,7 +245,8 @@ class TermWriter:
         for td in self.iterTermData(type, to, fr):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
-          z = convertsChinese and td.language == 'zhs'
+          zs = convertsSimplifiedChinese and td.language == 'zht'
+          zt = convertsTraditionalChinese and td.language == 'zhs'
           # no padding space for Chinese names
 
           regex = td.regex
@@ -253,7 +255,9 @@ class TermWriter:
 
           pattern = _unescape_term_text(td.pattern)
           pattern = self._applyMacros(pattern, macros)
-          if z:
+          if zs:
+            pattern = zht2zhs(pattern)
+          elif zt:
             pattern = zhs2zht(pattern)
             #if role == defs.TERM_NAME_ROLE:
             #  pattern = jazh.ja2zht_name_fix(pattern)
@@ -269,7 +273,9 @@ class TermWriter:
           else:
             repl = _unescape_term_text(td.text)
             repl = self._applyMacros(repl, macros)
-            if z:
+            if zs:
+              repl = zht2zhs(repl)
+            elif zt:
               repl = zhs2zht(repl)
               if role == defs.TERM_NAME_ROLE:
                 repl = ja2zht_name_fix(repl)

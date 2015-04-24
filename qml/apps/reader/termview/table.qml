@@ -80,7 +80,7 @@ Item { id: root_
   }
 
   function shouldHighlight(term) { // object -> bool
-    return term.private_ || (term.language === 'ja' && term.type !== 'yomi') || term.type === 'game' || term.type === 'macro' || term.type === 'proxy'
+    return term.private_ || (term.language === 'ja' && term.type !== 'yomi' && term.type !== 'tts') || term.type === 'game' || term.type === 'macro' || term.type === 'proxy'
   }
 
   function itemColor(term) { // object -> string
