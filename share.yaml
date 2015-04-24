@@ -108,11 +108,11 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   sprintf: $PWD/../AJAX/github/sprintf.min.js
 
-  masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
+  masonry: http://cdn.jsdelivr.net/masonry/3.3.0/masonry.pkgd.min.js
 
-  moment: http://cdn.jsdelivr.net/momentjs/2.9.0/moment-with-locales.min.js
+  moment: http://cdn.jsdelivr.net/momentjs/2.10.2/moment-with-locales.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
-  underscore: http://cdn.jsdelivr.net/lodash/3.5.0/lodash.min.js
+  underscore: http://cdn.jsdelivr.net/lodash/3.7.0/lodash.min.js
   # Underscore.string has been outdated
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
 
