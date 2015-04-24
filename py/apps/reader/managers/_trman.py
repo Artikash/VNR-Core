@@ -591,7 +591,11 @@ class MachineTranslator(Translator):
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
-    text = text.replace(defs.TERM_ESCAPE_EOS, '')
+
+    if defs.TERM_ESCAPE_EOS in text:
+      sep = '' if to in ('ja', 'zhs', 'zht') else ' '
+      text = text.replace(defs.TERM_ESCAPE_EOS, sep)
+
     #if self._needsJitter(to, fr):
     if fr == 'ja':
       text = self._unescapeJitter(text, to, fr)
