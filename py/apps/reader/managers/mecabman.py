@@ -28,6 +28,7 @@ def manager(): return MeCabManager()
 
 class _MeCabManager:
   def __init__(self):
+    self.translateEnabled = False
     self.userdicEnabled = False
     self._parserWithUserdic = None
     self._parserWithoutUserdic = None
@@ -80,14 +81,18 @@ class MeCabManager:
     dprint(t)
     self.__d.userdicEnabled = t
 
-  def parse(self, text, rubyType, translate=False, rubyKana=False):
+  def isTranslateEnabled(self, t): return self.__d.translateEnabled
+  def setTranslateEnabled(self, t):
+    dprint(t)
+    self.__d.translateEnabled = t
+
+  def parse(self, text, rubyType, rubyKana=False):
     """
     @param  rubyType  str
-    @param* translate  bool
     @param* rubyKana  bool
     @yield  (unicode surface, unicode ruby, unicode feature) or return None
     """
-    tr = dictman.manager().translateJapanese if translate and dictman.manager().japaneseTranslateLanguages() else None
+    tr = dictman.manager().translateJapanese if self.__d.translateEnabled and dictman.manager().japaneseTranslateLanguages() else None
     try: return self.__d.getParser().iterparseToRuby(text, rubyType, tr=tr, show_ruby_kana=rubyKana)
     except Exception, e: dwarn(e)
 

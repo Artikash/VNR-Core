@@ -1,5 +1,5 @@
 # coding: utf8
-# gbkdictp.py
+# jazhdictp.py
 # 4/27/2015 jichi
 
 if __name__ == '__main__':
@@ -15,47 +15,49 @@ from sakurakit import skstr
 # Example:
 # /(n) (1) (uk) curry/(2) (abbr) (uk) (See カレーライス) rice and curry/(P)/EntL1039140X/
 # /(n,vs) (obsc) (嘈囃 is sometimes read むねやけ) (See 胸焼け) heartburn/sour stomach/EntL2542040/
-def parserole(t, sep=None):
-  """Get first role out of translation
-  @param  t  unicode
-  @param* sep  unicode  separator for multiple rules
-  @return  unicode  separated by ','
-  """
-  return skstr.findbetween(t, '[', ']') or '' # sep is not implemented
+#def parserole(t, sep=None):
+#  """Get first role out of translation
+#  @param  t  unicode
+#  @param* sep  unicode  separator for multiple rules
+#  @return  unicode  separated by ','
+#  """
+#  return skstr.findbetween(t, '[', ']') or '' # sep is not implemented
 
-def parseyomi(t, sep=None):
-  """Get first yomigana out of translation
-  @param  t  unicode
-  @param* sep  unicode  separator for multiple rules
-  @return  unicode  separated by ','
-  """
-  return skstr.findbetween(t, u'【', u'】') or '' # sep is not implemented
+#def parseyomi(t, sep=None):
+#  """Get first yomigana out of translation
+#  @param  t  unicode
+#  @param* sep  unicode  separator for multiple rules
+#  @return  unicode  separated by ','
+#  """
+#  return skstr.findbetween(t, u'【', u'】') or '' # sep is not implemented
 
-def parsedef(t):
+def parsedef(text):
   """Get short definition out of translation
   @param  t  unicode
   @return  unicode
   """
-  t = skstr.findbetween(t, '<N>', '</N>')
+  t = skstr.findbetween(text, '</P><Q>', '<')
+  if not t or jpchars.anykana(t):
+    t = skstr.findbetween(text, '<N><Q>', '<') or skstr.findbetween(text, '</Q><Q>', '<')
   if t:
-    for c in u'，；(':
+    for c in u'·、，。':
       i = t.find(c)
       if i != -1:
         t = t[:i]
-    for c in u']>)】~':
+    for c in u')〉]':
       i = t.find(c)
       if i != -1:
         t = t[i+1:]
-    if '...' in t or u'“' in t:
+    if '[' in t or u'「'in t:
       return ''
     t = t.strip()
   return t or ''
 
 if __name__ == '__main__':
-  dbpath = '../../../../../../Caches/Dictionaries/Lingoes/ja-zh-gbk.db'
+  dbpath = '../../../../../../Caches/Dictionaries/Lingoes/ja-zh.db'
 
   def test_parse():
-    #t = u"殺す"
+    t = u"殺す"
     #t = u"政治"
     #t = u"声"
     #t = u"出身"
@@ -106,30 +108,34 @@ if __name__ == '__main__':
     #t = u"友達"
     #t = u"ヤング"
     #t = u'私'
+    #t = u'ふとん'
+    #t = u'目'
+    #t = u'中'
+    #t = u'合う'
+    #t = u'意図'
+    #t = u'足'
 
     # adj
     #t = u'可愛い'
+    #t = u'かわいい'
     #t = u'ルージュ'
     #t = u'応える'
     #t = u'視線'
     #t = u'話'
 
-    #t = u'ふとん'
-    #t = u'目'
-    #t = u'中'
-    #t = u'合う'
-    t = u'意図'
-
     # name
     #t = u"安倍"
+    #t = u'でしょう'
+    #t = u'です'
+    t = u'ついぞ'
     import sqlite3
     from dictdb import dictdb
     with sqlite3.connect(dbpath) as conn:
       for i, it in enumerate(dictdb.queryentries(conn.cursor(), word=t)):
         content = it[1]
         print it[0], content
-        print "role:", parserole(content)
-        print "yomi:", parseyomi(content)
+        #print "role:", parserole(content)
+        #print "yomi:", parseyomi(content)
         print "def:", parsedef(content)
         if i > 10:
           break

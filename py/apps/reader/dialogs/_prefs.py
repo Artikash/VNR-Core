@@ -4066,6 +4066,7 @@ class _DictionaryTranslationTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.optionGroup)
     layout.addWidget(self.rubyTypeGroup)
+    layout.addWidget(self.rubyLanguageGroup)
     layout.addWidget(self.dictGroup)
     layout.addStretch()
     q.setLayout(layout)
@@ -4242,13 +4243,14 @@ class _DictionaryTranslationTab(object):
 
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.rubyEnabledButton)
-    layout.addWidget(self.rubyEdictButton)
 
-    infoLabel = QtWidgets.QLabel(my.tr(
-      "Align MeCab with other dictionary such as EDICT will improve word segmentation and lookup using that dictionary."
-    ))
-    infoLabel.setWordWrap(True)
-    layout.addWidget(infoLabel)
+    if 'en' not in blans:
+      layout.addWidget(self.rubyEdictButton)
+      infoLabel = QtWidgets.QLabel(my.tr(
+        "Align MeCab with other dictionary such as EDICT will improve word segmentation and lookup using that dictionary."
+      ))
+      infoLabel.setWordWrap(True)
+      layout.addWidget(infoLabel)
 
     ret = QtWidgets.QGroupBox("%s (%s)" % (
         my.tr("Japanese furigana"),
@@ -4296,8 +4298,7 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.hiraButton)
     layout.addWidget(self.kataButton)
     layout.addWidget(self.romajiButton)
-    #if 'en' not in blans: # always enabled
-    if True:
+    if 'en' not in blans:
       layout.addWidget(self.trButton)
     if 'ru' not in blans:
       layout.addWidget(self.ruButton)
@@ -4441,6 +4442,41 @@ class _DictionaryTranslationTab(object):
         mecabdef.RB_HIRA)
     settings.global_().setJapaneseRubyType(t)
 
+  # Ruby translation
+
+  @memoizedproperty
+  def rubyLanguageGroup(self):
+    blans = settings.global_().blockedLanguages()
+    layout = QtWidgets.QVBoxLayout()
+    if 'zh' not in blans:
+      layout.addWidget(self.rubyZhButton)
+
+    ret = QtWidgets.QGroupBox(my.tr(
+      "Preferred languages to display translation in ruby for Japanese"
+    ))
+    ret.setLayout(layout)
+
+    ss = settings.global_()
+    ret.setEnabled(ss.isJapaneseRubyEnabled())
+    ss.japaneseRubyEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def rubyZhButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        tr_("Chinese"), my.tr("like this"), u"可愛い（可爱）",
+        my.tr("require {0}").format(u"Japanese-Chinese dictionary")))
+    ret.language = 'zh'
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
+  def _saveRubyLanguage(self):
+    v = [b.language for b in
+        (self.rubyZhButton,)
+        if b.isChecked()]
+    settings.global_().setJapaneseRubyLanguages(v)
+
   # Dictionaries
 
   @memoizedproperty
@@ -4450,8 +4486,7 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
-    #if 'en' not in blans: # always enable edict
-    if True:
+    if 'en' not in blans:
       layout.addWidget(self.edictButton)
     if 'zh' not in blans:
       layout.addWidget(self.lingoesJaZhButton)
@@ -4586,7 +4621,6 @@ class _DictionaryTranslationTab(object):
     blans = ss.blockedLanguages()
 
     self.rubyEnabledButton.setEnabled(ss.isJapaneseRubyEnabled() or dicts.unidic().exists())
-    self.rubyEdictButton.setEnabled(self.isRubyEdictEnabled())
 
     # Dictionaries
     if 'zh' not in blans:
@@ -4597,6 +4631,9 @@ class _DictionaryTranslationTab(object):
       name = 'ja-zh-gbk'
       b = self.lingoesJaZhGbkButton
       b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+
+      b = self.rubyZhButton
+      b.setEnabled(b.isChecked() or dicts.lingoes('ja-zh').exists() or dicts.lingoes('ja-zh-gbk').exists())
 
     if 'ko' not in blans:
       name = 'ja-ko'
@@ -4628,9 +4665,9 @@ class _DictionaryTranslationTab(object):
       t = ss.isWadokuEnabled() or dicts.wadoku().exists()
       self.wadokuButton.setEnabled(t)
 
-    # Always enable edict
-    #if 'en' not in blans:
-    if True:
+    if 'en' not in blans:
+      self.rubyEdictButton.setEnabled(self.isRubyEdictEnabled())
+
       t = ss.isEdictEnabled() or dicts.edict().exists()
       self.edictButton.setEnabled(t)
 
@@ -5027,6 +5064,9 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def meCabGroup(self): # MeCab dictionaries
+    ss = settings.global_()
+    blans = ss.blockedLanguages()
+
     grid = QtWidgets.QGridLayout()
 
     #for lang in config.MECAB_DICS:
@@ -5039,15 +5079,16 @@ class _DictionaryDownloadsTab(object):
     #grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
     r += 1
 
-    grid.addWidget(self.edictButton, r, 0)
-    grid.addWidget(self.edictStatusLabel, r, 1)
-    grid.addWidget(self.edictIntroLabel, r, 2)
-    r += 1
+    if 'en' not in blans:
+      grid.addWidget(self.edictButton, r, 0)
+      grid.addWidget(self.edictStatusLabel, r, 1)
+      grid.addWidget(self.edictIntroLabel, r, 2)
+      r += 1
 
-    grid.addWidget(self.mecabEdictButton, r, 0)
-    grid.addWidget(self.mecabEdictStatusLabel, r, 1)
-    grid.addWidget(self.mecabEdictIntroLabel, r, 2)
-    r += 1
+      grid.addWidget(self.mecabEdictButton, r, 0)
+      grid.addWidget(self.mecabEdictStatusLabel, r, 1)
+      grid.addWidget(self.mecabEdictIntroLabel, r, 2)
+      r += 1
 
     ret = QtWidgets.QGroupBox(my.tr("Dictionaries for parsing Japanese"))
     ret.setLayout(grid)
@@ -5655,11 +5696,11 @@ class _DictionaryDownloadsTab(object):
 
   def refresh(self):
     blans = settings.global_().blockedLanguages()
-    # always enable edict
-    #if 'en' not in blans:
-    self.refreshEdict()
+
     self.refreshUnidic()
-    self.refreshMeCabEdict()
+    if 'en' not in blans:
+      self.refreshEdict()
+      self.refreshMeCabEdict()
 
     if 'de' not in blans:
       self.refreshWadoku()

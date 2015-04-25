@@ -152,6 +152,8 @@ class _MeCabParser:
     """
     ret = tr(surface)
     if ret:
+      if ret == surface:
+        return
       return ret
     s = self.formatter.getsource(feature)
     if s and s != surface:
@@ -175,7 +177,7 @@ class _MeCabParser:
       ruby = None
       type = mecablex.getsurfacetype(surface)
       if type in (mecabdef.SURFACE_KANJI, mecabdef.SURFACE_KANA):
-        if tr:
+        if tr and not (len(surface) == 1 and type == mecabdef.SURFACE_KANA): # do not translate single kana
           ruby = self.translate(tr, surface, feature)
         if not ruby:
           ruby = fmt.getlatin(feature) # always show latin translation

@@ -163,10 +163,10 @@ class _MainObject(object):
     ret.setEdictEnabled(ss.isMeCabEdictEnabled())
     ss.meCabEdictEnabledChanged.connect(ret.setEdictEnabled)
 
-    #ret.setTranslateEnabled(bool(ss.japaneseRubyLanguages()))
-    #ss.japaneseRubyLanguagesChanged.connect(partial(
-    #    lambda ret, l: ret.setTranslateEnabled(bool(l)),
-    #    ret))
+    ret.setTranslateEnabled(bool(ss.japaneseRubyLanguages()))
+    ss.japaneseRubyLanguagesChanged.connect(partial(
+        lambda ret, l: ret.setTranslateEnabled(bool(l)),
+        ret))
     return ret
 
     # Already connected in gameman
