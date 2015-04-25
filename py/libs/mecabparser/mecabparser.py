@@ -287,6 +287,8 @@ if __name__ == '__main__':
   #print mp.toRuby(t, mecabdef.RB_TR)
   #print mp.toRomaji(t)
 
+  #tr = lambda t: t
+
   for it in mp.iterparseToRuby(t, mecabdef.RB_TR):
     print it[0], it[1] #, it[2]
 

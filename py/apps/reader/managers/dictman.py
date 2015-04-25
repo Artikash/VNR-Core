@@ -23,7 +23,8 @@ MIN_HTML_LEN = 290 # empty html length
 class _DictionaryManager:
 
   def __init__(self):
-    self.enabled = True # bool
+    self.japaneseLookupEnabled = True # bool
+    self.japaneseTranslateLanguages = [] # [str]
 
   def lookupEdict(self, text, feature=None, limit=5, fmt=mecabformat.UNIDIC_FORMATTER):
     """
@@ -192,6 +193,16 @@ class _DictionaryManager:
     for it in self.lookupLD(text, exact=exact):
       yield it
 
+  def translateGBK(self, t):
+    """
+    @param  unicode
+    @return  unicode or None
+    """
+    ret = dicts.lingoes('ja-zh-gbk').translate(t)
+    if ret and self.language == 'zht':
+      ret = convutil.zhs2zht(ret)
+    return ret
+
 class DictionaryManager:
 
   def __init__(self):
@@ -201,8 +212,23 @@ class DictionaryManager:
     #self.enabled = ss.isDictionaryEnabled()
     #ss.dictionaryEnabledChanged.connect(self.setEnabled)
 
-  def isEnabled(self): return self.__d.enabled
-  def setEnabled(self, v): self.__d.enabled = v
+  def setUserLanguage(self, v): self.__d.userLanguage = v
+  def userLanguage(self): return self.__d.userLanguage
+
+  def translateJapanese(self, t):
+    """
+    @param  text
+    @return  unicode or None
+    """
+    d = self.__d
+    if 'zh' in d.japaneseTranslateLanguages:
+      return d.translateGBK(t)
+
+  def japaneseTranslateLanguages(self): return self.__d.japaneseTranslateLanguages
+  def setJapaneseTranslateLanguages(self, v): self.__d.japaneseTranslateLanguages = v
+
+  def isJapaneseLookupEnabled(self): return self.__d.japaneseLookupEnabled
+  def setJapaneseLookupEnabled(self, t): self.__d.japaneseLookupEnabled = t
 
   def renderKorean(self, text):
     """
@@ -230,12 +256,12 @@ class DictionaryManager:
     @param* feature  unicode  MeCab feature
     @return  unicode not None  html
     """
-    d = self.__d
-    if not d.enabled:
-      return EMPTY_HTML
+    #if not d.japaneseLookupEnabled:
+    #  return EMPTY_HTML
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
     try:
+      d = self.__d
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
