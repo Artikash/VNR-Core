@@ -143,13 +143,32 @@ class _MeCabParser:
           ruby = jaconv.kata2romaji(ruby)
       yield ruby or surface
 
+  def translate(self, tr, surface, feature):
+    """
+    @param  tr  unicode -> unicode
+    @param  surface  unicode
+    @param  feature  unicode
+    @return  unicode or None
+    """
+    ret = tr(surface)
+    if ret:
+      if ret == surface:
+        return
+      return ret
+    s = self.formatter.getsource(feature)
+    if s and s != surface:
+      ret = tr(s)
+      if ret:
+        return ret
+
   UNKNOWN_RUBY = '?'
-  def iterparseToRuby(self, text, kataconv=None, surfconv=None, featureconv=None, show_ruby_kana=False):
+  def iterparseToRuby(self, text, kataconv=None, surfconv=None, featureconv=None, tr=None, show_ruby_kana=False):
     """
     @param  text  unicode
     @param* kataconv  unicode -> unicode or None
     @param* surfconv  unicode -> unicode or None
     @param* featureconv  unicode -> unicode or None
+    @param* tr  unicode -> unicode or None
     @param* show_ruby_kana  bool
     @yield  (unicode surface, unicode ruby or None, unicode feature, unicode surface_type)
     """
@@ -158,7 +177,10 @@ class _MeCabParser:
       ruby = None
       type = mecablex.getsurfacetype(surface)
       if type in (mecabdef.SURFACE_KANJI, mecabdef.SURFACE_KANA):
-        ruby = fmt.getlatin(feature) # always show latin translation
+        if tr and not (len(surface) == 1 and type == mecabdef.SURFACE_KANA): # do not translate single kana
+          ruby = self.translate(tr, surface, feature)
+        if not ruby:
+          ruby = fmt.getlatin(feature) # always show latin translation
         if not ruby and featureconv:
           ruby = featureconv(feature)
         if not ruby and (show_ruby_kana or type == mecabdef.SURFACE_KANJI):
@@ -181,10 +203,11 @@ class MeCabParser(object):
   def tagger(self): return self.__d.tagger # -> MeCabTagger
   def setTagger(self, v): self.__d.tagger = v
 
-  def iterparseToRuby(self, text, ruby=mecabdef.RB_HIRA, show_ruby_kana=False):
+  def iterparseToRuby(self, text, ruby=mecabdef.RB_HIRA, tr=None, show_ruby_kana=False):
     """
     @param  text  unicode
     @param  ruby  str  type
+    @param* tr  unicode -> unicode  translate function
     @param* show_ruby_kana  bool  show ruby for kana as well  by default, only for kanji
     @yield  (unicode surface, unicode ruby, unicode surface)
     """
@@ -197,7 +220,7 @@ class MeCabParser(object):
       kwargs['kataconv'] = jaconv.kata2romaji
     else:
       kwargs['kataconv'] = getkataconv(ruby)
-    return self.__d.iterparseToRuby(text, show_ruby_kana=show_ruby_kana, **kwargs)
+    return self.__d.iterparseToRuby(text, tr=tr, show_ruby_kana=show_ruby_kana, **kwargs)
 
   def toRuby(self, text, ruby=mecabdef.RB_HIRA, sep=None):
     """
@@ -265,6 +288,8 @@ if __name__ == '__main__':
   t = u'足僕話わたし顔ちらりと流し目、含み笑い、呆れた顔。しょんぼり肩をすくめた。'
   #print mp.toRuby(t, mecabdef.RB_TR)
   #print mp.toRomaji(t)
+
+  #tr = lambda t: t
 
   for it in mp.iterparseToRuby(t, mecabdef.RB_TR):
     print it[0], it[1] #, it[2]

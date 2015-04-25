@@ -7,7 +7,7 @@ from sakurakit.skdebug import dprint, dwarn
 from mecabparser import mecabdef, mecabformat
 from convutil import kata2hira, kata2romaji
 from mytr import my
-import growl, rc
+import dictman, growl, rc
 
 ROMAJI_RUBY_TYPES = (
   #mecabdef.RB_KATA,
@@ -28,6 +28,7 @@ def manager(): return MeCabManager()
 
 class _MeCabManager:
   def __init__(self):
+    self.translateEnabled = False
     self.userdicEnabled = False
     self._parserWithUserdic = None
     self._parserWithoutUserdic = None
@@ -80,14 +81,19 @@ class MeCabManager:
     dprint(t)
     self.__d.userdicEnabled = t
 
+  def isTranslateEnabled(self, t): return self.__d.translateEnabled
+  def setTranslateEnabled(self, t):
+    dprint(t)
+    self.__d.translateEnabled = t
+
   def parse(self, text, rubyType, rubyKana=False):
     """
     @param  rubyType  str
     @param* rubyKana  bool
     @yield  (unicode surface, unicode ruby, unicode feature) or return None
     """
-    #return self.__d.getParser().iterparseToRuby(text, rubyType, show_ruby_kana=rubyKana)
-    try: return self.__d.getParser().iterparseToRuby(text, rubyType, show_ruby_kana=rubyKana)
+    tr = dictman.manager().translateJapanese if self.__d.translateEnabled and dictman.manager().japaneseTranslateLanguages() else None
+    try: return self.__d.getParser().iterparseToRuby(text, rubyType, tr=tr, show_ruby_kana=rubyKana)
     except Exception, e: dwarn(e)
 
   def toRomaji(self, capital=True):

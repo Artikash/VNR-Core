@@ -98,7 +98,7 @@ class LingoesDb(object):
           break
     return t
 
-  def search(self, t, limit=0, exact=False, complete=True):
+  def search(self, t, limit=0, exact=False, complete=False):
     """Lookup dictionary prefix while eliminate duplicate definitions
     @param  t  unicode
     @param* exact  bool  whether do exact match

@@ -5,6 +5,7 @@
 import os
 #from PySide.QtCore import QMutex
 from sakurakit.skclass import memoized, memoizedproperty
+from sakurakit.skdebug import dwarn
 from sakurakit.skthreads import SkMutexLocker
 from sakurakit.sktr import tr_
 from mytr import my
@@ -75,11 +76,37 @@ class LingoesDict(Dict):
     if self.valid():
       return self.d.lookup(*args, **kwargs)
     else:
-      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + tr_("Dictionary")))
+      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.lang))
 
   def get(self): # override
     from scripts import lingoes
     return lingoes.get(self.lang)
+
+  def translate(self, t):
+    """
+    @param  unicode
+    @return  unicode or None
+    """
+    if not self.valid():
+      #growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.lang))
+      return
+
+    parse = None
+    if self.lang  == 'ja-zh':
+      from dictp import jazhdictp
+      parse = jazhdictp.parsedef
+    elif self.lang  == 'ja-zh-gbk':
+      from dictp import gbkdictp
+      parse = gbkdictp.parsedef
+    if parse:
+      import sqlite3
+      from dictdb import dictdb
+      try:
+        with sqlite3.connect(self.path) as conn:
+          t = dictdb.queryentry(conn.cursor(), t, select=dictdb.SELECT_CONTENT)
+          if t:
+            return parse(t[0])
+      except Exception, e: dwarn(e)
 
 class JMDict(Dict):
   def __init__(self, lang): # string, ex. 'fr', 'ru', 'nl'

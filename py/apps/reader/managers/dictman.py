@@ -22,10 +22,13 @@ MIN_HTML_LEN = 290 # empty html length
 #@Q_Q
 class _DictionaryManager:
 
-  def __init__(self):
-    self.enabled = True # bool
+  mecabfmt = mecabformat.UNIDIC_FORMATTER
 
-  def lookupEdict(self, text, feature=None, limit=5, fmt=mecabformat.UNIDIC_FORMATTER):
+  def __init__(self):
+    self.japaneseLookupEnabled = True # bool
+    self.japaneseTranslateLanguages = [] # [str]
+
+  def lookupEdict(self, text, feature=None, limit=5):
     """
     @param  text  unicode
     @param  feature  unicode
@@ -38,7 +41,7 @@ class _DictionaryManager:
       kwargs['surfaces'].append(v)
     reading = None
     if feature:
-      v = fmt.getsource(feature)
+      v = self.mecabfmt.getsource(feature)
       if v and '-' not in v and v != text:
         kwargs['surfaces'].append(v)
       # id is ignored and not needed
@@ -109,13 +112,19 @@ class _DictionaryManager:
           my.tr("Cannot load {0}").format(u"KOJIEN6 (広辞苑)"),
           my.tr("Please double check its location in Preferences."))))
 
-  def lookupEB(self, text, limit=3, complete=True): # Use less count to save memory
+  def lookupEB(self, text, limit=3, feature=None, complete=True): # Use less count to save memory
     """
     @param  text  unicode
     @param* limit  int
+    @param* feature  unicode or None  mecab feature
     @param* complete  bool  whether complete word
     @yield  unicode
     """
+    source = None
+    if feature:
+      v = self.mecabfmt.getsource(feature)
+      if v and '-' not in v and v != text:
+        source = v
     for eb in self._iterEB():
       count = 0
       for v in eb.render(text):
@@ -123,6 +132,12 @@ class _DictionaryManager:
         count += 1
         if count >= limit:
           break
+      if source:
+        for v in eb.render(source):
+          yield v
+          count += 1
+          if count >= limit:
+            break
       if complete and not count:
         t = self._completeEB(text)
         if t and t != text:
@@ -167,17 +182,29 @@ class _DictionaryManager:
     if ss.isLingoesJaEnEnabled():
       yield dicts.lingoes('ja-en'), 'ja-en', 'vicon'
 
-  def lookupLD(self, text, exact=True, limit=3): # LD seems contains lots of wrong word, use smaller size
+  def lookupLD(self, text, exact=True, feature=None, limit=3): # LD seems contains lots of wrong word, use smaller size
     """
     @param  text  unicode
     @param* exact  bool
+    @param* feature  unicode or None
     @param* limit  int
     @yield  unicode source, unicode html
     """
+    source = None
+    if feature:
+      v = self.mecabfmt.getsource(feature)
+      if v and '-' not in v and v != text:
+        source = v
     for db, lang, cat in self._iterLD():
-      for word, xml in db.lookup(text, exact=exact, limit=limit):
+      count = 0
+      for word, xml in db.lookup(text, exact=exact, limit=limit, complete=not source):
+        count += 1
         xml = _dictman.render_lingoes(xml, cat)
         yield word, xml
+      if count < limit and source:
+        for word, xml in db.lookup(source, exact=exact, limit=limit - count, complete=False):
+          xml = _dictman.render_lingoes(xml, cat)
+          yield word, xml
 
   def lookupDB(self, text, exact=True, feature=None): # LD seems contains lots of wrong word, use smaller size
     """
@@ -189,8 +216,18 @@ class _DictionaryManager:
     if settings.global_().isEdictEnabled():
       for it in self.lookupEdict(text, feature=feature):
         yield it
-    for it in self.lookupLD(text, exact=exact):
+    for it in self.lookupLD(text, feature=feature, exact=exact):
       yield it
+
+  def translateJapaneseToChinese(self, t):
+    """
+    @param  unicode
+    @return  unicode or None
+    """
+    ret = dicts.lingoes('ja-zh').translate(t) or dicts.lingoes('ja-zh-gbk').translate(t)
+    if ret and self.userLanguage == 'zht':
+      ret = convutil.zhs2zht(ret)
+    return ret
 
 class DictionaryManager:
 
@@ -201,8 +238,23 @@ class DictionaryManager:
     #self.enabled = ss.isDictionaryEnabled()
     #ss.dictionaryEnabledChanged.connect(self.setEnabled)
 
-  def isEnabled(self): return self.__d.enabled
-  def setEnabled(self, v): self.__d.enabled = v
+  def setUserLanguage(self, v): self.__d.userLanguage = v
+  def userLanguage(self): return self.__d.userLanguage
+
+  def translateJapanese(self, t):
+    """
+    @param  text
+    @return  unicode or None
+    """
+    d = self.__d
+    if 'zh' in d.japaneseTranslateLanguages:
+      return d.translateJapaneseToChinese(t)
+
+  def japaneseTranslateLanguages(self): return self.__d.japaneseTranslateLanguages
+  def setJapaneseTranslateLanguages(self, v): self.__d.japaneseTranslateLanguages = v
+
+  def isJapaneseLookupEnabled(self): return self.__d.japaneseLookupEnabled
+  def setJapaneseLookupEnabled(self, t): self.__d.japaneseLookupEnabled = t
 
   def renderKorean(self, text):
     """
@@ -230,19 +282,19 @@ class DictionaryManager:
     @param* feature  unicode  MeCab feature
     @return  unicode not None  html
     """
-    d = self.__d
-    if not d.enabled:
-      return EMPTY_HTML
+    #if not d.japaneseLookupEnabled:
+    #  return EMPTY_HTML
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
     try:
+      d = self.__d
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
         'feature': mecabman.renderfeature(feature),
         'tuples': d.lookupDB(text, exact=exact, feature=feature),
-        'eb_strings': d.lookupEB(text), # exact not used, since it is already very fast
+        'eb_strings': d.lookupEB(text, feature=feature), # exact not used, since it is already very fast
         #'google': google,
         #'locale': d.locale,
       })

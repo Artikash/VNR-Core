@@ -11359,7 +11359,7 @@ bool InsertAdobeFlash10Hook()
  */
 static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  if (MonoString *s = (MonoString *)argof(1, esp_base)) {
+  if (auto s = (MonoString *)argof(1, esp_base)) {
     *data = (DWORD)s->chars;
     *len = s->length * 2; // for widechar
     // Adding split is very dangerous which might create millions of threads

@@ -14,9 +14,6 @@ if __name__ == '__main__':
   sys.path.append("..")
 
 # For better performance
-#try: from pysqlite2 import dbapi2 as sqlite3
-#except ImportError: import sqlite3
-import sqlite3
 from unitraits import jpchars
 from sakurakit.skdebug import dwarn
 
@@ -169,6 +166,7 @@ def parsetransdef(trans):
   return ''
 
 if __name__ == '__main__':
+  import sqlite3
   dbpath = 'edict.db'
 
   def test_create():

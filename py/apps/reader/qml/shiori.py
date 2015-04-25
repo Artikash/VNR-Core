@@ -99,8 +99,8 @@ class ShioriBean(QObject):
     ShioriBean.instance = self
 
     ss = settings.global_()
-    self.__d.enabled = ss.isDictionaryEnabled()
-    ss.dictionaryEnabledChanged.connect(self.setEnabled)
+    self.__d.enabled = ss.isJapaneseDictionaryEnabled()
+    ss.japaneseDictionaryEnabledChanged.connect(self.setEnabled)
     dprint("pass")
 
   def isEnabled(self): return self.__d.enabled

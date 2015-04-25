@@ -1100,8 +1100,15 @@ class Settings(QSettings):
       self.setValue('ZhongriEnabled', t)
       self._updateDictionaryEnabled()
 
-  dictionaryEnabledChanged = Signal(bool)
-  def isDictionaryEnabled(self):
+  japaneseRubyLanguagesChanged = Signal(list)
+  def japaneseRubyLanguages(self): return to_list(self.value('JapaneseRubyLanguages'))
+  def setJapaneseRubyLanguages(self, value):
+    if value != self.japaneseRubyLanguages():
+      self.setValue('JapaneseRubyLanguages', value)
+      self.japaneseRubyLanguagesChanged.emit(value)
+
+  japaneseDictionaryEnabledChanged = Signal(bool)
+  def isJapaneseDictionaryEnabled(self):
     return (
         self.isEdictEnabled() or
         self.isZhongriEnabled() or
@@ -1117,7 +1124,7 @@ class Settings(QSettings):
         self.isLingoesJaViEnabled() or
         self.isLingoesJaEnEnabled())
   def _updateDictionaryEnabled(self):
-    self.dictionaryEnabledChanged.emit(self.isDictionaryEnabled())
+    self.japaneseDictionaryEnabledChanged.emit(self.isJapaneseDictionaryEnabled())
 
   def kojienLocation(self): return to_unicode(self.value('KojienLocation'))
   def setKojienLocation(self, v): self.setValue('KojienLocation', v)

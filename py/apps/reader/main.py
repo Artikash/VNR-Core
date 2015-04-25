@@ -162,6 +162,11 @@ class _MainObject(object):
 
     ret.setEdictEnabled(ss.isMeCabEdictEnabled())
     ss.meCabEdictEnabledChanged.connect(ret.setEdictEnabled)
+
+    ret.setTranslateEnabled(bool(ss.japaneseRubyLanguages()))
+    ss.japaneseRubyLanguagesChanged.connect(partial(
+        lambda ret, l: ret.setTranslateEnabled(bool(l)),
+        ret))
     return ret
 
     # Already connected in gameman
@@ -244,8 +249,12 @@ class _MainObject(object):
     import dictman
     ret = dictman.manager()
     ss = settings.global_()
-    ret.enabled = ss.isDictionaryEnabled()
-    ss.dictionaryEnabledChanged.connect(ret.setEnabled)
+    ret.setUserLanguage(ss.userLanguage())
+    ss.userLanguageChanged.connect(ret.setUserLanguage)
+    ret.setJapaneseLookupEnabled(ss.isJapaneseDictionaryEnabled())
+    ss.japaneseDictionaryEnabledChanged.connect(ret.setJapaneseLookupEnabled)
+    ret.setJapaneseTranslateLanguages(ss.japaneseRubyLanguages())
+    ss.japaneseRubyLanguagesChanged.connect(ret.setJapaneseTranslateLanguages)
     return ret
 
   @memoizedproperty
