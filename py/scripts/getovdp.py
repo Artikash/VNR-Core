@@ -1,5 +1,5 @@
 # coding: utf8
-# getstardict.py
+# getovdp.py
 # Get the StarDict for different languages
 # 4/26/2015 jichi
 
@@ -30,7 +30,7 @@ DICS = {
 LANGS = frozenset(DICS.iterkeys())
 
 import initdefs
-DIC_DIR = initdefs.CACHE_JMDICT_RELPATH
+DIC_DIR = initdefs.CACHE_DIC_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 
 # Tasks
@@ -43,14 +43,14 @@ def init(): # raise
 def extract(lang): # str -> bool
   dprint("enter: lang = %s" % lang)
 
-  srcpath = TMP_DIR + '/' + FILENAME_TPL % lang
-  tmppath = TMP_DIR + '/JMDict-' + lang
-  targetpath = DIC_DIR + '/%s.fpw' % lang
+  srcpath = TMP_DIR + '/' + DICS[lang]['file']
+  tmppath = TMP_DIR + '/ovdp-' + lang
+  targetpath = DIC_DIR + '/' + DICS[lang]['path']
 
   import shutil
   from sakurakit import skfileio
   with SkProfiler("extract"):
-    ok = skfileio.extracttar(srcpath, tmppath)
+    ok = skfileio.extractzip(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
@@ -65,8 +65,8 @@ def extract(lang): # str -> bool
 
 def get(lang): # str -> bool
   dprint("enter: lang = %s" % lang)
-  url = URL + DICS[lang]['file']
-  path = TMP_DIR + '/' + FILENAME_TPL % lang
+  url = DL_URL + DICS[lang]['file']
+  path = TMP_DIR + '/' + DICS[lang]['file']
 
   dprint("enter: url = %s" % url)
 
@@ -79,14 +79,14 @@ def get(lang): # str -> bool
   from sakurakit import skfileio, sknetio
   with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) > MIN_FILESIZE
+      ok = skfileio.filesize(path) == DICS[lang]['size']
   if not ok and os.path.exists(path):
     skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
   return ok
 
 def lock(lang): # str
-  name = "jmdict.%s.lock" % lang
+  name = "ovdp.%s.lock" % lang
   import initrc
   if initrc.lock(name):
     return True
@@ -109,10 +109,10 @@ def msg(lang): # str ->
   dic = DICS[lang]
   import messages
   messages.info(
-    name="JMDict (%s)" % lang,
-    location="Caches/Dictionaries/JMDict/%s.fpw" % lang,
+    name="OVDP (%s)" % lang,
+    location="Caches/Dictionaries/" + DICS[lang]['path'],
     size=dic['size'],
-    urls=["http://ftp.monash.edu.au/pub/nihongo/" + dic['file']],
+    urls=[HP_URL],
   )
 
 def main(argv):
@@ -135,7 +135,8 @@ def main(argv):
       ok = run(lang)
       if ok:
         from sakurakit import skos
-        skos.open_location(os.path.abspath(DIC_DIR))
+        path = os.path.join(DIC_DIR, DICS[lang]['path'])
+        skos.open_location(os.path.abspath(path))
     except Exception, e:
       dwarn(e)
   ret = 0 if ok else 1
