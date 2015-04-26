@@ -4450,6 +4450,8 @@ class _DictionaryTranslationTab(object):
     layout = QtWidgets.QVBoxLayout()
     if 'zh' not in blans:
       layout.addWidget(self.rubyZhButton)
+    if 'ko' not in blans:
+      layout.addWidget(self.rubyKoButton)
 
     ret = QtWidgets.QGroupBox(my.tr(
       "Preferred languages to display translation in ruby for Japanese"
@@ -4465,15 +4467,25 @@ class _DictionaryTranslationTab(object):
   def rubyZhButton(self):
     ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
         tr_("Chinese"), my.tr("like this"), u"可愛い（可爱）",
-        my.tr("require {0}").format(u"Japanese-Chinese dictionary")))
+        my.tr("require {0}").format(my.tr("Japanese-Chinese dictionary"))))
     ret.language = 'zh'
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
+  @memoizedproperty
+  def rubyKoButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        tr_("Korean"), my.tr("like this"), u"可愛い（귀엽다）",
+        my.tr("require {0}").format(LINGOES_DICT_NAMES['ja-ko'])))
+    ret.language = 'ko'
     ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
     ret.toggled.connect(self._saveRubyLanguage)
     return ret
 
   def _saveRubyLanguage(self):
     v = [b.language for b in
-        (self.rubyZhButton,)
+        (self.rubyZhButton, self.rubyKoButton)
         if b.isChecked()]
     settings.global_().setJapaneseRubyLanguages(v)
 
@@ -4639,6 +4651,10 @@ class _DictionaryTranslationTab(object):
       name = 'ja-ko'
       b = self.lingoesJaKoButton
       b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+
+      b = self.rubyKoButton
+      b.setEnabled(b.isChecked() or dicts.lingoes(name).exists())
+
     if 'vi' not in blans:
       name = 'ja-vi'
       b = self.lingoesJaViButton
