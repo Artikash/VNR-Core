@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
 import re
 from sakurakit import skstr
+from unitraits import jpmacros
 import convutil
 
 #RIGHT_ARROW = u"→" # みぎ
@@ -86,17 +87,17 @@ def _render_lingoes(text, dic):
   Example ja-vi:
   <C><F><H /><K><![CDATA[<ul><li><font color='#cc0000'><b> {ちょっといっぱい}</b></font></li></ul><ul><li><font color='#cc0000'><b> {let's have quick drink}</b></font></li></ul>]] > </K></F></C>
   """
-  if dic == 'ovdp':
-    text = (text
-      .replace('<![CDATA[', '').replace(']] >', '').replace(']]>', '')
-      .replace('{', '').replace('}', '')
-      .replace("<font color='#cc0000'>", '').replace('</font>', '')
-      .replace('<b>', '').replace('</b>', '')
-      #.replace('<ul>', '').replace('</ul>', '')
-      #.replace('<li>', '<br/>').replace('</li>', '<br/>')
-    )
-    #if text.count('<li>') > 1:
-    #  text = text.replace('ul>', 'ol>') # change to ordered list
+  #if dic == 'ovdp':
+  #  text = (text
+  #    .replace('<![CDATA[', '').replace(']] >', '').replace(']]>', '')
+  #    .replace('{', '').replace('}', '')
+  #    .replace("<font color='#cc0000'>", '').replace('</font>', '')
+  #    .replace('<b>', '').replace('</b>', '')
+  #    #.replace('<ul>', '').replace('</ul>', '')
+  #    #.replace('<li>', '<br/>').replace('</li>', '<br/>')
+  #  )
+  #  #if text.count('<li>') > 1:
+  #  #  text = text.replace('ul>', 'ol>') # change to ordered list
   text = re.sub(r'(\[.*?\])', r'<span class="hl">\1</span> ', text) # highlight text in []
   text = text.replace('<T>', '<div>').replace('</T>', '</div>') # example sentence
   text = text.replace('</W><X>', '</W> %s <X>' % RIGHT_ARROW)
@@ -141,6 +142,52 @@ def render_lingoes(text, dic=None):
   """
   return _render_lingoes(text, dic)
 
+def _ovdp_romaji_replace(m):
+  kana = m.group(1)
+  return "%s (%s)" % (kana, convutil.kana2romaji(kana))
+_rx_ovdp_kana = re.compile(jpmacros.applymacros(r'(?<=[{@])({{kana}}+)'))
+def _ovdp_add_romaji(text):
+  """Add romaji for kana in {}
+  @param  text  unicode
+  @return  unicode
+  """
+  if '@' in text or '{' in text:
+    text = _rx_ovdp_kana.sub(_ovdp_romaji_replace, text)
+  return text
+
+def _render_ovdp(text):
+  """Render OVDP ja-vi dictionary.
+  @param  text  unicode
+  @return  unicode  html
+
+  Example ja-zh:
+  @yomi
+  - {hello}
+  - {world}
+  """
+  text = _ovdp_add_romaji(text)
+  if '}' in text:
+    text = text.replace('} ,', '}:') # trim space after }
+    text = text.replace('}', '</span>')
+    text = text.replace('{', '<span class="hl">')
+  if '@' in text:
+    text = re.sub(r'@(.*?)\n', r'<u>\1</u><br/>', text)
+  if text.count('- ') > 1:
+    text = text.replace(r'- ', '<li>')
+    text = "<ol>%s</ol>" % text
+  else:
+    text.replace('\n', '<br/>')
+  return text
+
+def render_stardict(text, dic=None):
+  """Render ovdp ja-vi dictionary.
+  @param  text  unicode
+  @param* dic  str
+  @return  unicode  html
+  """
+  if dic == 'ovdp':
+    return _render_ovdp(text)
+  return text
 
 if __name__ == '__main__':
   t = u'/(n) tank (military vehicle)/(P)/EntL1390270X/'

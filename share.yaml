@@ -660,8 +660,11 @@ lingoes: # language
   - zh
   - zh-gbk # not really a language, though
   - ko
-  - vi
   - en
+  #- vi
+
+stardict:
+  ja-vi: $PWD/../../../Caches/Dictionaries/OVDP/NhatViet/star_nhatviet
 
 jmdict: # language
   - fr
