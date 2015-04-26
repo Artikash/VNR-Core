@@ -220,7 +220,6 @@ class SynFileReader(object):
       return False
     return self._syn[synonym_word]
 
-
 class DictFileReader(object):
   """Read the .dict file, store the data in memory for querying.
   """
@@ -356,10 +355,11 @@ def read_ifo_file(filename):
 if __name__ == '__main__':
   import json
 
-  dictdir = '/Users/jichi/Downloads/naver_jpkr_krjp_dict/'
-  ifo_file = dictdir + "jpdic.ifo"
-  idx_file = dictdir + 'jpdic.idx'
-  dict_file = dictdir + 'jpdic.dict'
+  #dictdir = '/Users/jichi/Downloads/naver_jpkr_krjp_dict/'
+  dictdir = '/Users/jichi/Downloads/NhatViet/'
+  ifo_file = dictdir + "star_nhatviet.ifo"
+  idx_file = dictdir + 'star_nhatviet.idx'
+  dict_file = dictdir + 'star_nhatviet.dict'
   ifo_reader = IfoFileReader(ifo_file)
   idx_reader = IdxFileReader(idx_file)
   dict_reader = DictFileReader(dict_file, ifo_reader, idx_reader, compressed=False)
@@ -368,12 +368,13 @@ if __name__ == '__main__':
   r = dict_reader.get_dict_by_index(index)
   print json.dumps(r, indent=2, ensure_ascii=False)
 
+  #t = u"勝つ"
   #t = u"かわゆい"
   #t = u"可愛い"
   #t = u"万歳"
   t = u'冗談'
   r = dict_reader.get_dict_by_word(t)
   print len(r)
-  print r[0]['h']
+  print r[0]['m']
 
 # EOF

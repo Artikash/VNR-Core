@@ -124,6 +124,9 @@ class _TtsManager(object):
       dprint("ignore when offline: %s" % eng.key)
       return
 
+    if language == '?': #
+      language = textutil.guess_text_language(text) or ''
+
     if language and eng.language and eng.language != '*' and language[:2] != eng.language[:2]:
       #if verbose:
       #  growl.notify("<br/>".join((

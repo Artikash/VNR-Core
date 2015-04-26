@@ -4,9 +4,21 @@
 
 import re
 from sakurakit import skstr
-from unitraits import unichars, jpchars
+from unitraits import unichars, jpchars, kochars
 from windefs import winlocale
 import defs
+
+# Language
+
+def guess_text_language(text):
+  """
+  @param  text
+  @return  str or None
+  """
+  if text:
+    if kochars.ishangul(text[0]):
+      return 'ko'
+    return 'ja'
 
 ## Encoding ##
 
