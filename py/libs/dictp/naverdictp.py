@@ -65,15 +65,17 @@ def parsedef(text):
       i = t.find(c)
       if i != -1:
         t = t[:i]
-    if t and t[-1] == ')':
-      i = t.find('(')
-      if i != -1:
-        t = t[:i]
+    if t:
+      for s in '()', '[]':
+        if t[-1] == s[1]:
+          i = t.find(s[0])
+          if i != -1:
+            t = t[:i]
     for c in u')':
       i = t.find(c)
       if i != -1:
         t = t[i+1:]
-    for c in u"《》〈〉『』‘’":
+    for c in u"()《》〈〉『』‘’":
       if c in t:
         return ''
     t = t.strip()

@@ -2720,7 +2720,7 @@ class _Term(object):
     if self.language.startswith('zh') and self.text:
 
       # W_CHINESE_SIMPLIFIED
-      if self.language == 'zhs' and not opencc.containszhs(self.text):
+      if self.language == 'zhs' and opencc.containszht(self.text):
         return self.W_CHINESE_SIMPLIFIED
 
       # W_CHINESE_TRADITIONAL

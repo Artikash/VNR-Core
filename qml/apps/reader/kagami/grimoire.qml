@@ -1167,8 +1167,12 @@ Item { id: root_
                 if ((model.type === 'text' || model.type !== 'name')
                     && !root_.sameLanguageAsUser(model.language)) {
                   t = Util.removeHtmlTags(t)
-                  if (t)
-                    ttsPlugin_.speak(t, model.language)
+                  if (t) {
+                    var lang = model.language
+                    if (lang === 'ja')
+                      lang = '?'
+                    ttsPlugin_.speak(t, lang)
+                  }
                 }
               }
             }
