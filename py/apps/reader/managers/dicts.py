@@ -91,13 +91,7 @@ class LingoesDict(Dict):
       #growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.lang))
       return
 
-    parse = None
-    if self.lang  == 'ja-zh':
-      from dictp import jazhdictp
-      parse = jazhdictp.parsedef
-    elif self.lang  == 'ja-zh-gbk':
-      from dictp import gbkdictp
-      parse = gbkdictp.parsedef
+    parse = self._getTranslationParser()
     if parse:
       import sqlite3
       from dictdb import dictdb
@@ -107,6 +101,20 @@ class LingoesDict(Dict):
           if t:
             return parse(t[0])
       except Exception, e: dwarn(e)
+
+  def _getTranslationParser(self):
+    """
+    @return  unicode -> unicode  or None
+    """
+    if self.lang  == 'ja-zh':
+      from dictp import jazhdictp
+      return jazhdictp.parsedef
+    if self.lang  == 'ja-zh-gbk':
+      from dictp import gbkdictp
+      return gbkdictp.parsedef
+    if self.lang  == 'ja-ko':
+      from dictp import naverdictp
+      return naverdictp.parsedef
 
 class JMDict(Dict):
   def __init__(self, lang): # string, ex. 'fr', 'ru', 'nl'

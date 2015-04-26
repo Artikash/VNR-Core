@@ -31,7 +31,7 @@ from unitraits import jpchars
 #  """
 #  return skstr.findbetween(t, u'【', u'】') or '' # sep is not implemented
 
-def findbetween_nonempty(text, begin, end):
+def _findbetween(text, begin, end):
   """Text in between is not empty
   @param  text  unicode
   @param  begin  unicode
@@ -47,7 +47,9 @@ def findbetween_nonempty(text, begin, end):
     stop = text.find(end, start)
     if stop == -1:
       break
-    if stop == start or text[stop-1] in '.<':
+    if (stop == start
+        or text[start] in u'.<《『'
+        or text[start] == ' ' and start < len(text) -1 and text[start+1] in u'.<《『'):
       offset = stop + len(end)
     else:
       return text[start:stop]
@@ -57,31 +59,38 @@ def parsedef(text):
   @param  t  unicode
   @return  unicode
   """
-  t = findbetween_nonempty(text, '</x>', '<')
+  t = _findbetween(text, '</x>', '<')
   if t:
     for c in u'.':
       i = t.find(c)
+      if i != -1:
+        t = t[:i]
+    if t and t[-1] == ')':
+      i = t.find('(')
       if i != -1:
         t = t[:i]
     for c in u')':
       i = t.find(c)
       if i != -1:
         t = t[i+1:]
-    if u'《' in t or u'》' in t or u'「' in t or u'」' in t:
-      return ''
+    for c in u"《》〈〉『』‘’":
+      if c in t:
+        return ''
     t = t.strip()
+    if t and t[0] == u'⇒':
+      t = '=' + t[1:].lstrip()
   return t or ''
 
 if __name__ == '__main__':
   dbpath = '../../../../../../Caches/Dictionaries/Lingoes/ja-ko.db'
 
   def test_parse():
-    t = u"殺す"
+    #t = u"殺す"
     #t = u"政治"
     #t = u"声"
     #t = u"出身"
-    t = u"裁判"
-    #t = u"可愛い"
+    #t = u"裁判"
+    t = u"可愛い"
     #t = u"大柴"
     #t = u"身長"
     #t = u"体重"
@@ -101,7 +110,7 @@ if __name__ == '__main__':
     #t = u"任せ"
     #t = u"幸せ"
     #t = u"忘れる"
-    #t = u"忘れ"
+    t = u"忘れ"
     #t = u"止めっ"
     #t = u'移り住ん'
     #t = u'移り住む'
@@ -147,6 +156,14 @@ if __name__ == '__main__':
     #t = u'でしょう'
     #t = u'です'
     #t = u'ついぞ'
+    #t = u'そんな'
+    #t = u'ちゃ'
+    #t = u'中'
+    #t = u'そして'
+    #t = u'まま'
+    #t = u'逃す'
+    #t = u'商店'
+    t = u'永遠'
     import sqlite3
     from dictdb import dictdb
     with sqlite3.connect(dbpath) as conn:

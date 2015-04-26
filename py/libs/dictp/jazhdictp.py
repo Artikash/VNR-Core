@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
 # For better performance
 from unitraits import jpchars
-from sakurakit import skstr
+#from sakurakit import skstr
 
 # Parse translation
 
@@ -31,25 +31,52 @@ from sakurakit import skstr
 #  """
 #  return skstr.findbetween(t, u'【', u'】') or '' # sep is not implemented
 
+def _findbetween(text, begin, end):
+  """Text in between is not empty
+  @param  text  unicode
+  @param  begin  unicode
+  @param  end  unicode
+  @return  unicode or None
+  """
+  offset = 0
+  while offset < len(text) - 1:
+    start = text.find(begin, offset)
+    if start == -1:
+      break
+    start += len(begin)
+    stop = text.find(end, start)
+    if stop == -1:
+      break
+    ret = text[start:stop]
+    if not ret or jpchars.anykana(ret):
+      offset = stop + len(end)
+    else:
+      return ret
+
 def parsedef(text):
   """Get short definition out of translation
   @param  t  unicode
   @return  unicode
   """
-  t = skstr.findbetween(text, '</P><Q>', '<')
-  if not t or jpchars.anykana(t):
-    t = skstr.findbetween(text, '<N><Q>', '<') or skstr.findbetween(text, '</Q><Q>', '<')
+  t = _findbetween(text, '<Q>', '<')
+  #if not t or jpchars.anykana(t):
+  #  t = skstr.findbetween(text, '<N><Q>', '<') or skstr.findbetween(text, '</Q><Q>', '<')
   if t:
     for c in u'·、，。':
       i = t.find(c)
+      if i != -1:
+        t = t[:i]
+    if t and t[-1] == ')':
+      i = t.find('(')
       if i != -1:
         t = t[:i]
     for c in u')〉]':
       i = t.find(c)
       if i != -1:
         t = t[i+1:]
-    if '[' in t or u'「'in t:
-      return ''
+    for c in u'[]「」':
+      if c in t:
+        return ''
     t = t.strip()
   return t or ''
 
@@ -127,7 +154,7 @@ if __name__ == '__main__':
     #t = u"安倍"
     #t = u'でしょう'
     #t = u'です'
-    t = u'ついぞ'
+    #t = u'ついぞ'
     import sqlite3
     from dictdb import dictdb
     with sqlite3.connect(dbpath) as conn:
