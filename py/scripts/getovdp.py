@@ -86,7 +86,7 @@ def get(lang): # str -> bool
   return ok
 
 def lock(lang): # str
-  name = "ovdp.%s.lock" % lang
+  name = "stardict.%s.lock" % lang
   import initrc
   if initrc.lock(name):
     return True

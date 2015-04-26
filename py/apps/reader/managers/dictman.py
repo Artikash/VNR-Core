@@ -177,8 +177,8 @@ class _DictionaryManager:
       yield dicts.lingoes('ja-zh'), 'ja-zh', None
     if ss.isLingoesJaKoEnabled():
       yield dicts.lingoes('ja-ko'), 'ja-ko', 'naver'
-    if ss.isLingoesJaViEnabled():
-      yield dicts.lingoes('ja-vi'), 'ja-vi', 'ovdp'
+    #if ss.isLingoesJaViEnabled():
+    #  yield dicts.lingoes('ja-vi'), 'ja-vi', 'ovdp'
     if ss.isLingoesJaEnEnabled():
       yield dicts.lingoes('ja-en'), 'ja-en', 'vicon'
 
@@ -206,6 +206,46 @@ class _DictionaryManager:
           xml = _dictman.render_lingoes(xml, cat)
           yield word, xml
 
+  def _iterStarDict(self):
+    """
+    @yield  StarDict, str category
+    """
+    ss = settings.global_()
+    if ss.isStardictJaViEnabled():
+      yield dicts.stardict('ja-vi'), 'ovdp'
+
+  def lookupStarDict(self, text, exact=True, feature=None, limit=3): # LD seems contains lots of wrong word, use smaller size
+    """
+    @param  text  unicode
+    @param* exact  bool
+    @param* feature  unicode or None
+    @param* limit  int
+    @yield  unicode source, unicode html
+    """
+    source = None
+    if feature:
+      v = self.mecabfmt.getsource(feature)
+      if v and '-' not in v and v != text:
+        source = v
+    for dic, cat in self._iterStarDict():
+      count = 0
+      q = dic.lookup(text)
+      if q:
+        for html in q:
+          html = _dictman.render_stardict(html, cat)
+          yield text, html
+          count += 1
+          if count >= limit:
+            break
+      if count < limit and source:
+        q = dic.lookup(source)
+        if q:
+          for html in q:
+            html = _dictman.render_stardict(html, cat)
+            yield source, html
+            if count >= limit:
+              break
+
   def lookupDB(self, text, exact=True, feature=None): # LD seems contains lots of wrong word, use smaller size
     """
     @param  text  unicode
@@ -216,6 +256,8 @@ class _DictionaryManager:
     if settings.global_().isEdictEnabled():
       for it in self.lookupEdict(text, feature=feature):
         yield it
+    for it in self.lookupStarDict(text, feature=feature):
+      yield it
     for it in self.lookupLD(text, feature=feature, exact=exact):
       yield it
 
@@ -230,12 +272,16 @@ class _DictionaryManager:
         if self.userLanguage == 'zht':
           ret = convutil.zhs2zht(ret)
         return ret
-    for lang in 'ko', 'vi':
-      if lang in self.japaneseTranslateLanguages:
-        dic = 'ja-' + lang
-        ret = dicts.lingoes(dic).translate(t)
-        if ret:
-          return ret
+
+    if 'ko' in self.japaneseTranslateLanguages:
+      ret = dicts.lingoes('ja-ko').translate(t)
+      if ret:
+        return ret
+
+    if 'vi' in self.japaneseTranslateLanguages:
+      ret = dicts.stardict('ja-vi').translate(t)
+      if ret:
+        return ret
 
 class DictionaryManager:
 

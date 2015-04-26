@@ -1121,8 +1121,8 @@ class Settings(QSettings):
         self.isLingoesJaZhEnabled() or
         self.isLingoesJaZhGbkEnabled() or
         self.isLingoesJaKoEnabled() or
-        self.isLingoesJaViEnabled() or
-        self.isLingoesJaEnEnabled())
+        self.isLingoesJaEnEnabled() or
+        self.isStardictJaViEnabled())
   def _updateDictionaryEnabled(self):
     self.japaneseDictionaryEnabledChanged.emit(self.isJapaneseDictionaryEnabled())
 
@@ -1174,16 +1174,16 @@ class Settings(QSettings):
       self.setValue('LingoesJaKo', v)
       self._updateDictionaryEnabled()
 
-  def isLingoesJaViEnabled(self): return to_bool(self.value('LingoesJaVi'))
-  def setLingoesJaViEnabled(self, v):
-    if v != self.isLingoesJaViEnabled():
-      self.setValue('LingoesJaVi', v)
-      self._updateDictionaryEnabled()
-
   def isLingoesJaEnEnabled(self): return to_bool(self.value('LingoesJaEn'))
   def setLingoesJaEnEnabled(self, v):
     if v != self.isLingoesJaEnEnabled():
       self.setValue('LingoesJaEn', v)
+      self._updateDictionaryEnabled()
+
+  def isStardictJaViEnabled(self): return to_bool(self.value('StardictJaVi'))
+  def setStardictJaViEnabled(self, v):
+    if v != self.isStardictJaViEnabled():
+      self.setValue('StardictJaVi', v)
       self._updateDictionaryEnabled()
 
   def isLingoesDictionaryEnabled(self, name):
@@ -1193,10 +1193,11 @@ class Settings(QSettings):
       return self.isLingoesJaZhGbkEnabled()
     elif name == 'ja-ko':
       return self.isLingoesJaKoEnabled()
-    elif name == 'ja-vi':
-      return self.isLingoesJaViEnabled()
     elif name == 'ja-en':
       return self.isLingoesJaEnEnabled()
+    #elif name == 'ja-vi':
+    #  return self.isLingoesJaViEnabled()
+    return False
 
   def setLingoesDictionaryEnabled(self, name, v):
     if name == 'ja-zh':
@@ -1205,10 +1206,19 @@ class Settings(QSettings):
       self.setLingoesJaZhGbkEnabled(v)
     elif name == 'ja-ko':
       self.setLingoesJaKoEnabled(v)
-    elif name == 'ja-vi':
-      self.setLingoesJaViEnabled(v)
     elif name == 'ja-en':
       self.setLingoesJaEnEnabled(v)
+    #elif name == 'ja-vi':
+    #  self.setLingoesJaViEnabled(v)
+
+  def isStardictDictionaryEnabled(self, name):
+    if name == 'ja-vi':
+      return self.isStardictJaViEnabled()
+    return False
+
+  def setStardictDictionaryEnabled(self, name, v):
+    if name == 'ja-vi':
+      self.setStardictJaViEnabled(v)
 
   # Locations
 

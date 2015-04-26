@@ -435,6 +435,7 @@ def language2codepage(lang): # str -> long
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
+STARDICT_LANGS = [it.partition('-')[2] for it in SHARE_YAML['stardict'].iterkeys()] # [str lang]
 
 # Forum
 
@@ -481,6 +482,9 @@ OPENCC_DICS = {k: parse_path(v) # {str key:unicode relpath}
 HANVIET_DICS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['hanviet'].iteritems()}
 HANVIET_DIC_LOCATION = os.path.dirname(HANVIET_DICS.itervalues().next())
+
+STARDICT_LOCATIONS = {k: parse_path(v) # {str lang:unicode relpath}
+    for k,v in SHARE_YAML['stardict'].iteritems()}
 
 #MECAB_DIC_LOCATION = SHARE_YAML['mecab']['dicdir']
 #MECAB_RCFILE_LOCATION = SHARE_YAML['mecab']['rcfile']

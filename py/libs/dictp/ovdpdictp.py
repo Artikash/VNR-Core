@@ -140,10 +140,10 @@ if __name__ == '__main__':
   #t = u'中'
   #t = u'合う'
   #t = u'意図'
-  t = u'足'
+  #t = u'足'
 
   # adj
-  #t = u'可愛い'
+  t = u'可愛い'
   #t = u'かわいい'
   #t = u'ルージュ'
   #t = u'応える'
@@ -162,7 +162,7 @@ if __name__ == '__main__':
   #t = u'まま'
   #t = u'逃す'
   #t = u'商店'
-  #t = u'永遠'
+  t = u'永遠'
   from stardict import stardict
   dic = stardict.StarDict(path)
   print dic.init()

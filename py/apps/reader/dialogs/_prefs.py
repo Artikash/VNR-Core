@@ -74,15 +74,23 @@ LINGOES_DICT_NAMES = {
   'ja-zh-gbk': my.tr("GBK Japanese-Chinese dictionary"),
   'ja-en': my.tr("Vicon Japanese-English dictionary"),
   'ja-ko': my.tr("Naver Japanese-Korean dictionary"),
-  'ja-vi': my.tr("OVDP Japanese-Vietnamese dictionary"),
+  #'ja-vi': my.tr("OVDP Japanese-Vietnamese dictionary"),
 }
 
 LINGOES_DICT_SIZES = {
   'ja-zh': '129MB',
   'ja-zh-gbk': '2MB',
   'ja-ko': '206MB',
-  'ja-vi': '945MB',
   'ja-en': '248MB',
+  #'ja-vi': '945MB',
+}
+
+STARDICT_NAMES = {
+  'ja-vi': my.tr("OVDP Japanese-Vietnamese dictionary"),
+}
+
+STARDICT_SIZES = {
+  'ja-vi': '40MB', # OVDP
 }
 
 JMDICT_DICT_NAMES = {
@@ -4452,6 +4460,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.rubyZhButton)
     if 'ko' not in blans:
       layout.addWidget(self.rubyKoButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.rubyViButton)
 
     ret = QtWidgets.QGroupBox(my.tr(
       "Preferred languages to display translation in ruby for Japanese"
@@ -4483,9 +4493,19 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(self._saveRubyLanguage)
     return ret
 
+  @memoizedproperty
+  def rubyViButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        tr_("Vietnamese"), my.tr("like this"), u"永遠（vĩnh viễn）",
+        my.tr("require {0}").format(STARDICT_NAMES['ja-vi'])))
+    ret.language = 'vi'
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
   def _saveRubyLanguage(self):
     v = [b.language for b in
-        (self.rubyZhButton, self.rubyKoButton)
+        (self.rubyZhButton, self.rubyKoButton, self.rubyViButton)
         if b.isChecked()]
     settings.global_().setJapaneseRubyLanguages(v)
 
@@ -4506,7 +4526,7 @@ class _DictionaryTranslationTab(object):
     if 'ko' not in blans:
       layout.addWidget(self.lingoesJaKoButton)
     if 'vi' not in blans:
-      layout.addWidget(self.lingoesJaViButton)
+      layout.addWidget(self.stardictJaViButton)
     if 'en' not in blans:
       layout.addWidget(self.lingoesJaEnButton)
     if 'de' not in blans:
@@ -4615,17 +4635,17 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
-  def lingoesJaViButton(self):
-    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-vi'])
-    ret.setChecked(settings.global_().isLingoesJaViEnabled())
-    ret.toggled.connect(settings.global_().setLingoesJaViEnabled)
-    return ret
-
-  @memoizedproperty
   def lingoesJaEnButton(self):
     ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-en']) #my.tr("recommended for English")))
     ret.setChecked(settings.global_().isLingoesJaEnEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaEnEnabled)
+    return ret
+
+  @memoizedproperty
+  def stardictJaViButton(self):
+    ret = QtWidgets.QCheckBox(STARDICT_NAMES['ja-vi'])
+    ret.setChecked(settings.global_().isStardictJaViEnabled())
+    ret.toggled.connect(settings.global_().setStardictJaViEnabled)
     return ret
 
   def refresh(self):
@@ -4657,8 +4677,12 @@ class _DictionaryTranslationTab(object):
 
     if 'vi' not in blans:
       name = 'ja-vi'
-      b = self.lingoesJaViButton
-      b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+      b = self.stardictJaViButton
+      b.setEnabled(ss.isStardictDictionaryEnabled(name) or dicts.stardict(name).exists())
+
+      b = self.rubyViButton
+      b.setEnabled(b.isChecked() or dicts.stardict(name).exists())
+
     if 'en' not in blans:
       name = 'ja-en'
       b = self.lingoesJaEnButton
@@ -5048,6 +5072,10 @@ class _DictionaryDownloadsTab(object):
     self.lingoesStatusLabels = {}
     self.lingoesIntroLabels = {}
 
+    self.stardictButtons = {}
+    self.stardictStatusLabels = {}
+    self.stardictIntroLabels = {}
+
     self.jmdictButtons = {}
     self.jmdictStatusLabels = {}
     self.jmdictIntroLabels = {}
@@ -5304,6 +5332,14 @@ class _DictionaryDownloadsTab(object):
         grid.addWidget(self.getLingoesIntroLabel(name), r, 2)
         r += 1
 
+    for lang in config.STARDICT_LANGS:
+      if lang[:2] not in blans:
+        name = 'ja-' + lang
+        grid.addWidget(self.getStardictButton(name), r, 0)
+        grid.addWidget(self.getStardictStatusLabel(name), r, 1)
+        grid.addWidget(self.getStardictIntroLabel(name), r, 2)
+        r += 1
+
     if 'de' not in blans:
       grid.addWidget(self.wadokuButton, r, 0)
       grid.addWidget(self.wadokuStatusLabel, r, 1)
@@ -5551,6 +5587,83 @@ class _DictionaryDownloadsTab(object):
       skqss.class_(b, 'btn btn-primary')
     return False
 
+  ## StarDict
+
+  def getStardictButton(self, name):
+    ret = self.stardictButtons.get(name)
+    if not ret:
+      ret = self.stardictButtons[name] = QtWidgets.QPushButton()
+      ret.role = ''
+      ret.clicked.connect(partial(lambda name:
+        self._getStardict(name) if ret.role == 'get' else
+        self._removeStardict(name) if ret.role == 'remove' else
+        None,
+      name))
+    return ret
+
+  def getStardictStatusLabel(self, name):
+    ret = self.stardictStatusLabels.get(name)
+    if not ret:
+      ret = self.stardictStatusLabels[name] = QtWidgets.QLabel()
+      dic = dicts.stardict(name)
+      ret.linkActivated.connect(dic.open)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
+    return ret
+
+  def getStardictIntroLabel(self, name):
+    ret = self.stardictIntroLabels.get(name)
+    if not ret:
+      t = "%s (%s)" % (STARDICT_NAMES[name], STARDICT_SIZES[name])
+      ret = self.stardictIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  def _getStardict(self, name):
+    if prompt.confirmDownloadDictionary('StarDict (%s)' % name):
+      dic = dicts.stardict(name)
+      if not dic.exists(): #and not dic.locked():
+        dic.get()
+      refresh = partial(self.refreshStardict, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
+
+  def _removeStardict(self, name):
+    if prompt.confirmRemoveDictionary('StarDict (%s)' % name):
+      dicts.stardict(name).remove()
+      settings.global_().setStardictDictionaryEnabled(name, False)
+      self.refreshStardict(name)
+
+  def refreshStardict(self, name): # -> bool exists
+    b = self.getStardictButton(name)
+    status = self.getStardictStatusLabel(name)
+    dic = dicts.stardict(name)
+    if dic.exists():
+      #status.setText(mytr_("Installed"))
+      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
+      skqss.class_(status, 'text-success')
+      b.role = 'remove'
+      b.setEnabled(True)
+      b.setText(tr_("Remove"))
+      skqss.class_(b, 'btn btn-default')
+      return True
+    elif dic.locked():
+      status.setText(mytr_("Installing"))
+      skqss.class_(status, 'text-info')
+      b.role = ''
+      b.setEnabled(False)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    else:
+      online = netman.manager().isOnline()
+      status.setText(mytr_("Not installed"))
+      skqss.class_(status, 'text-error')
+      b.role = 'get'
+      b.setEnabled(online)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    return False
+
   ## Lingoes
 
   def getLingoesButton(self, name):
@@ -5580,8 +5693,8 @@ class _DictionaryDownloadsTab(object):
     if not ret:
       if name == 'ja-zh':
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for Chinese"))
-      elif name == 'ja-en':
-        t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name]) #my.tr("recommended for English")
+      #elif name == 'ja-en':
+      #  t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name]) #my.tr("recommended for English")
       else:
         t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name])
       ret = self.lingoesIntroLabels[name] = QtWidgets.QLabel(t)
@@ -5729,6 +5842,10 @@ class _DictionaryDownloadsTab(object):
     for lang in config.LINGOES_LANGS:
       name = 'ja-' + lang
       self.refreshLingoes(name)
+
+    for lang in config.STARDICT_LANGS:
+      name = 'ja-' + lang
+      self.refreshStardict(name)
 
   def startRefresh(self, dic, refresh):  # dic, ->
     self._refreshTasks.append((dic, refresh))

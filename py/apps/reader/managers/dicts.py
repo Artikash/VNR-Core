@@ -69,8 +69,8 @@ class LingoesDict(Dict):
 
   @memoizedproperty
   def d(self):
-    from lingoes.lingoesdb import LingoesDb
-    return LingoesDb(self.path)
+    from lingoes import lingoesdb
+    return lingoesdb.LingoesDb(self.path)
 
   def lookup(self, *args, **kwargs): # override
     if self.valid():
@@ -115,6 +115,67 @@ class LingoesDict(Dict):
     if self.lang  == 'ja-ko':
       from dictp import naverdictp
       return naverdictp.parsedef
+
+class StarDict(Dict):
+  def __init__(self, lang): # string, ex. 'ja-en'
+    import config
+    self.lang = lang # str
+    super(StarDict, self).__init__(
+      path=os.path.join(config.STARDICT_LOCATIONS[lang]),
+      lockpath=os.path.join(rc.DIR_TMP, "stardict.%s.lock" % lang),
+    )
+
+  def exists(self): # override
+    return os.path.exists(self.path + '.dict')
+
+  @memoizedproperty
+  def d(self):
+    from stardict import stardict
+    ret = stardict.StarDict(self.path)
+    ret.init()
+    return ret
+
+  def lookup(self, text): # override
+    d = self.d
+    if d.valid():
+      return d.query(text)
+    else:
+      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.lang))
+
+  def get(self): # override
+    from scripts import stardict
+    return stardict.get(self.lang)
+
+  def remove(self): # override
+    from sakurakit import skfileio
+    return skfileio.removetree(os.path.dirname(self.path))
+
+  def translate(self, t):
+    """
+    @param  unicode
+    @return  unicode or None
+    """
+    d = self.d
+    if not d.valid():
+      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.lang))
+      return
+    parse = self._getTranslationParser()
+    if parse:
+      from dictp import ovdpdictp
+      q = d.query(t)
+      if q:
+        for it in q:
+          ret = parse(it)
+          if ret:
+            return ret
+
+  def _getTranslationParser(self):
+    """
+    @return  unicode -> unicode  or None
+    """
+    if self.lang  == 'ja-vi':
+      from dictp import ovdpdictp
+      return ovdpdictp.parsedef
 
 class JMDict(Dict):
   def __init__(self, lang): # string, ex. 'fr', 'ru', 'nl'
@@ -212,6 +273,17 @@ def lingoes(name):
   ret = LINGOES.get(name)
   if not ret:
     LINGOES[name] = ret = LingoesDict(name)
+  return ret
+
+STARDICT = {} # {str name:LingoesDict}
+def stardict(name):
+  """
+  @param  name  str  such as ja-en
+  @return  StarDict
+  """
+  ret = STARDICT.get(name)
+  if not ret:
+    STARDICT[name] = ret = StarDict(name)
   return ret
 
 JMDICT = {} # {str lang:JMDictic}
