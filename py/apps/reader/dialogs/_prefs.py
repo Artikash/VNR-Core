@@ -4402,8 +4402,8 @@ class _DictionaryTranslationTab(object):
   @memoizedproperty
   def viButton(self):
     ret = QtWidgets.QRadioButton(
-      "%s, %s: %s" %
-      (notr_("Phiên âm"), my.tr("like this"), u"可愛い（khả ái i）"))
+      "%s (%s), %s: %s" %
+      (tr_("Vietnamese"), notr_("Phiên âm"), my.tr("like this"), u"可愛い（khả ái i）"))
     ret.toggled.connect(self._saveRubyType)
     return ret
 
