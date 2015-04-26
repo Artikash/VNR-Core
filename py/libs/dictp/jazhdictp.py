@@ -66,10 +66,10 @@ def parsedef(text):
       i = t.find(c)
       if i != -1:
         t = t[:i]
-    if t and t[-1] == ')':
-      i = t.find('(')
-      if i != -1:
-        t = t[:i]
+    #if t and t[-1] == ')': # break 通り
+    #  i = t.find('(')
+    #  if i != -1:
+    #    t = t[:i]
     for c in u')〉]':
       i = t.find(c)
       if i != -1:
@@ -155,6 +155,9 @@ if __name__ == '__main__':
     #t = u'でしょう'
     #t = u'です'
     #t = u'ついぞ'
+    #t = u'商店'
+    t = u'安い'
+    #t = u'通り'
     import sqlite3
     from dictdb import dictdb
     with sqlite3.connect(dbpath) as conn:
