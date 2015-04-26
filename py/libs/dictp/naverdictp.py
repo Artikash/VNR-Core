@@ -61,7 +61,7 @@ def parsedef(text):
   """
   t = _findbetween(text, '</x>', '<')
   if t:
-    for c in u'.':
+    for c in u'.·':
       i = t.find(c)
       if i != -1:
         t = t[:i]
