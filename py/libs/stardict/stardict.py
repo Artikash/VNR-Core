@@ -71,7 +71,6 @@ class IfoFileReader(object):
       return False
     return self._ifo[key]
 
-
 class IdxFileReader(object):
   """Read dictionary indexes from the .idx file and store the indexes in a list and a dictionary.
   The list contains each entry in the .idx file, with subscript indicating the entry's origin index in .idx file.
@@ -90,10 +89,10 @@ class IdxFileReader(object):
     - `index_offset_bits`: the offset field length in bits.
     """
     if compressed:
-      with gzip.open(filename, "rb") as index_file:
+      with gzip.open(filename, 'rb') as index_file:
         self._content = index_file.read()
     else:
-      with open(filename, "r") as index_file:
+      with open(filename, 'rb') as index_file: # always read as byte since data is binary
         self._content = index_file.read()
     self._offset = 0
     self._index = 0
@@ -129,7 +128,7 @@ class IdxFileReader(object):
     word_data_size = 0
     end = self._content.find("\0", self._offset)
     word_str = self._content[self._offset: end]
-    word_str = word_str.decode(self.encoding) # => utf8
+    word_str = word_str.decode(self.encoding) # jichi: force using utf8
     self._offset = end+1
     if self._index_offset_bits == 64:
       word_data_offset, = struct.unpack("!I", self._content[self._offset:self._offset+8])
@@ -177,13 +176,12 @@ class IdxFileReader(object):
       index.append(self._index_idx[number][1:])
     return index
 
-
 class SynFileReader(object):
   """Read infomation from .syn file and form a dictionary as below:
   {synonym_word: original_word_index}, in which 'original_word_index' could be a integer or
   a list of integers.
-
   """
+
   def __init__(self, filename):
     """Constructor.
 
@@ -224,24 +222,32 @@ class DictFileReader(object):
   """Read the .dict file, store the data in memory for querying.
   """
 
-  def __init__(self, filename, dict_ifo, dict_index, compressed = False):
-    """Constructor.
+  encoding = 'utf8'
 
-    Arguments:
-    - `filename`: filename of .dict file.
-    - `dict_ifo`: IfoFileReader object.
-    - `dict_index`: IdxFileReader object.
+  def __init__(self, filename, dict_ifo, dict_index, caching=False, compressed=False):
+    """
+    @param  filename  unicode None
+    @param  dict_ifo  IfoFileReader
+    @param  dict_index  IdxFileReader
+    @param* caching  bool  whether read all data into memory
     """
     self._dict_ifo = dict_ifo
     self._dict_index = dict_index
     self._compressed = compressed
     self._offset = 0
-    if self._compressed:
-      with gzip.open(filename, "rb") as dict_file:
-        self._dict_file = dict_file.read()
+    self._dict_file = None
+    self._dict_file_content = None # string
+
+    f = gzip.open(filename, "rb") if compressed else open(filename, "rb")
+    if caching:
+      self._dict_file_content = f.read()
+      f.close()
     else:
-      with open(filename, "rb") as dict_file:
-        self._dict_file = dict_file.read()
+      self._dict_file = f
+
+  def __del__(self):
+    if self._dict_file:
+      self._dict_file.close()
 
   def get_dict_by_word(self, word):
     """Get the word's dictionary data by it's name.
@@ -317,18 +323,96 @@ class DictFileReader(object):
     return result
 
   def _get_entry_field_null_trail(self):
-    end = self._dict_file.find("\0", self._offset)
+    """
+    @return  unicode
+    """
+    if self._dict_file_content:
+      return self._get_entry_field_null_trail_in_memory(size)
+    else:
+      return self._get_entry_field_null_trail_in_disk(size)
+
+  def _get_entry_field_size(self, size=None):
+    """
+    @param  size  int or None
+    @return  unicode
+    """
+    if self._dict_file_content:
+      return self._get_entry_field_size_in_memory(size)
+    else:
+      return self._get_entry_field_size_in_disk(size)
+
+  def _get_entry_field_size_in_memory(self, size=None):
+    """
+    @param  size  int or None
+    @return  unicode
+    """
+    if size == None:
+      size = struct.unpack("!I", self._dict_file_content[self._offset:self._offset+4])
+      self._offset += 4
+    result = self._dict_file_content[self._offset:self._offset+size]
+    self._offset += size
+    return result.decode(self.encoding)
+
+  def _get_entry_field_null_trail_in_memory(self):
+    """
+    @return  unicode
+    """
+    end = self._dict_file.find('\0', self._offset)
     result = self._dict_file[self._offset:end]
     self._offset = end+1
-    return result
+    return result.decode(self.encoding)
 
-  def _get_entry_field_size(self, size = None):
+  def _get_entry_field_size_in_disk(self, size=None):
+    """
+    @param  size  int or None
+    @return  unicode
+    """
     if size == None:
-      size = struct.unpack("!I", self._dict_file[self._offset:self._offset+4])
+      size = struct.unpack("!I", self._read_file_at(self._offset, 4))
       self._offset += 4
-    result = self._dict_file[self._offset:self._offset+size]
+    result = self._read_file_at(self._offset, size)
     self._offset += size
-    return result
+    return result.decode(self.encoding)
+
+  def _get_entry_field_null_trail_in_disk(self):
+    """
+    @return  unicode
+    """
+    result = self._read_file_until(self._offset, '\0')
+    self._offset += len(result)
+    return result.decode(self.encoding)
+
+  # I/O
+
+  def _read_file_at(self, start, size):
+    """
+    @param  start  int
+    @param  stop  int
+    @return  str
+    """
+    self._dict_file.seek(start)
+    return self._dict_file.read(size)
+
+  def _read_file_until(self, start, stop=0, chunk_size=500):
+    """
+    @param  start  int
+    @param* stop  int or char ord of the stop character
+    @param* chunk_size == 500
+    @return  str
+    """
+    if isinstance(stop, int):
+      stop = chr(stop)
+    self._dict_file.seek(start)
+    ret = data = self._dict_file.read(chunk_size)
+    while data:
+      end = data.find(stop)
+      if end != -1:
+        ret += data[:end]
+        break
+      else:
+        ret += data
+      data = self._dict_file.read(chunk_size)
+    return ret
 
 def read_idx_file(filename):
   """
@@ -353,19 +437,45 @@ def read_ifo_file(filename):
     print key, ":", ifo_file._ifo[key]
 
 if __name__ == '__main__':
-  import json
+
+  import json, os, sys, time
+
+  sys.path.append('..')
+
+  from sakurakit.skprof import SkProfiler
+
+  def sleep():
+    print "sleep: enter"
+    time.sleep(5)
+    print "sleep: leave"
 
   #dictdir = '/Users/jichi/Downloads/naver_jpkr_krjp_dict/'
+  #dictdir = '/Users/jichi/Downloads/NhatViet/'
   dictdir = '/Users/jichi/Downloads/NhatViet/'
-  ifo_file = dictdir + "star_nhatviet.ifo"
-  idx_file = dictdir + 'star_nhatviet.idx'
-  dict_file = dictdir + 'star_nhatviet.dict'
-  ifo_reader = IfoFileReader(ifo_file)
-  idx_reader = IdxFileReader(idx_file)
-  dict_reader = DictFileReader(dict_file, ifo_reader, idx_reader, compressed=False)
 
-  index = 10
-  r = dict_reader.get_dict_by_index(index)
+  if os.name == 'nt':
+    dictdir = 'z:' + dictdir
+
+  sleep()
+
+  with SkProfiler("init"):
+
+    ifo_file = dictdir + "star_nhatviet.ifo"
+    idx_file = dictdir + 'star_nhatviet.idx'
+    dict_file = dictdir + 'star_nhatviet.dict'
+    compressed = False
+    #sleep()
+    ifo_reader = IfoFileReader(ifo_file)
+    #sleep()
+    idx_reader = IdxFileReader(idx_file)
+    #sleep()
+    dict_reader = DictFileReader(dict_file, ifo_reader, idx_reader, compressed=compressed)
+
+  sleep()
+
+  with SkProfiler("query"):
+    index = 10
+    r = dict_reader.get_dict_by_index(index)
   print json.dumps(r, indent=2, ensure_ascii=False)
 
   #t = u"勝つ"
@@ -375,6 +485,9 @@ if __name__ == '__main__':
   t = u'冗談'
   r = dict_reader.get_dict_by_word(t)
   print len(r)
+  print type(r[0]['m'])
   print r[0]['m']
+
+  sleep()
 
 # EOF
