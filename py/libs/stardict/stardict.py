@@ -4,11 +4,11 @@
 from sakurakit.skdebug import dwarn
 
 class StarDict(object):
-  ifo_compressed = False
+  #ifo_compressed = False
   idx_compressed = False
   dict_compressed = False
 
-  def __init__(self, path):
+  def __init__(self, path=''):
     """
     @param  path  unicode  base name
     """
@@ -17,15 +17,23 @@ class StarDict(object):
     self.dict_file = path + ".dict" # unicode
     self.reader = None
 
+  def valid(self): return bool(self.reader)
+
   def init(self):
-    import stardictlib
+    """
+    @return  bool
+    """
+    import starlib
     try:
-      ifo_reader = stardictlib.IfoFileReader(self.ifo_file, compressed=self.ifo_compressed)
-      idx_reader = stardictlib.IdxFileReader(self.idx_file, compressed=self.idx_compressed)
-      dict_reader = stardictlib.DictFileReader(self.dict_file, ifo_reader, idx_reader,compressed=self.ifo_compressed)
+      ifo_reader = starlib.IfoFileReader(self.ifo_file) #, compressed=self.ifo_compressed)
+      idx_reader = starlib.IdxFileReader(self.idx_file, compressed=self.idx_compressed)
+      dict_reader = starlib.DictFileReader(self.dict_file, ifo_reader, idx_reader,compressed=self.dict_compressed)
 
       self.reader = dict_reader
-    except Exception, e: dwarn(e)
+      return True
+    except Exception, e:
+      dwarn(e)
+      return False
 
   def query(self, text):
     """
@@ -33,7 +41,7 @@ class StarDict(object):
     @return  [unicode] or None
     """
     try:
-      m = self.reader.get_dict_by_word(t)
+      m = self.reader.get_dict_by_word(text)
       if m:
         ret = []
         for it in m:
