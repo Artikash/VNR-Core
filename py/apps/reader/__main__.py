@@ -448,7 +448,7 @@ def migrate(ss_version): # long ->
         else:
           ss.setValue('EdictEnabled', False)
 
-    if ss_version <= 1428623451: # reset edict
+    if ss_version and ss_version <= 1428623451: # reset edict
       ss.setValue('EdictEnabled', False)
       path = rc.EDICT_PATH
       if os.path.exists(path):
