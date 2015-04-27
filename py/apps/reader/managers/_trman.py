@@ -1087,7 +1087,7 @@ class HanVietTranslator(OfflineMachineTranslator):
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override
-  parallelEnabled = True # override
+  #parallelEnabled = True # override
 
   def __init__(self, **kwargs):
     super(JBeijingTranslator, self).__init__(**kwargs)
