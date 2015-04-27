@@ -96,7 +96,7 @@ class MeCabManager:
     try: return self.__d.getParser().iterparseToRuby(text, rubyType, tr=tr, show_ruby_kana=rubyKana)
     except Exception, e: dwarn(e)
 
-  def toRomaji(self, capital=True):
+  def toRomaji(self, text, capital=True):
     """
     @param  text  unicode
     @param  capital  bool
