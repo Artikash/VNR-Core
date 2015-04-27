@@ -75,7 +75,7 @@ def parsedef(text):
       i = t.find(c)
       if i != -1:
         t = t[i+1:]
-    for c in u"()《》〈〉「」『』‘’":
+    for c in u"()《》〈〉「」『』‘’0123456789":
       if c in t:
         return ''
     t = t.strip()
