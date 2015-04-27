@@ -281,7 +281,7 @@ Rectangle { id: root_
           var t = textEdit_.selectedText
           if (t) {
             clipboardPlugin_.text = t
-            ttsPlugin_.speak(t, 'ja')
+            ttsPlugin_.speak(t, '?')
           }
         }
       }
@@ -436,7 +436,7 @@ Rectangle { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          ttsPlugin_.speak(t, 'ja')
+          ttsPlugin_.speak(t, '?')
           //ttsPlugin_.speak(t,
           //    Util.containsLatin(textEdit_.selectedText) ? 'en' : 'ja')
       }
