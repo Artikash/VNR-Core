@@ -152,6 +152,8 @@ simple:
   - Elf
   - Eushully
   - FELISTELLA PSP
+  - GXP
+  - GXP2
   #- FocasLens # I am not sure. 幻想人形演舞 cannot go full screen anyway
   - HorkEye
   - Intense PSP
@@ -226,6 +228,8 @@ single: # single thread
   - AB2Try
   - Eushully
   - FocasLens
+  - GXP
+  - GXP2
   - HorkEye
   - Malie3
   - Rejet
@@ -248,7 +252,6 @@ norepeat:
   - BALDR # removed
   - EXP # there could be different type of threads, but it is OK to merge them
   - Gesen18
-  - GXP # I am not sure if it float or not
   - KiriKiri2  # might float, http://sakuradite.com/game/4633
   - QLIE
   - QLIE2
@@ -455,6 +458,7 @@ wchar:
   - Bruns
   - Cotopha
   - GXP
+  - GXP2
   - IronGameSystem
   - KAGParser
   - KAGParserEx
@@ -518,6 +522,8 @@ focus:
   #- Malie3
   #- Mink
   #- Mono
+  #- GXP
+  #- GXP2
   #- KiriKiri1
   #- KiriKiri2
   #- ScenarioPlayerW
