@@ -75,25 +75,29 @@ class GameDebugger(object):
 
   def iterate_modules(self):
     """
-    @yield  module
+    @yield  module  MODULEENTRY32
     """
     if self.debugger and self.pid:
       for it in self.debugger.iterate_modules():
         yield it
 
-  def get_module(self, moduleName):
+  def get_module(self, moduleName=None):
     """
-    @param  moduleName  str
+    @param  moduleName  str or None
     @return   module or None
     """
-    moduleName = moduleName.lower()
-    for module in self.iterate_modules():
-      if module.szModule.lower() == moduleName:
+    if moduleName:
+      moduleName = moduleName.lower()
+      for module in self.iterate_modules():
+        if module.szModule.lower() == moduleName:
+          return module
+    else:
+      for module in self.iterate_modules():
         return module
 
-  def get_module_range(self, moduleName):
+  def get_module_range(self, moduleName=None):
     """
-    @param  moduleName  str
+    @param  moduleName  str or None
     @return  (int lowerBound, int upperBound) or None
     """
     module = self.get_module(moduleName)
@@ -111,10 +115,10 @@ class GameDebugger(object):
 
   # Search
 
-  def search_module_memory(self, moduleName, pattern):
+  def search_module_memory(self, pattern, moduleName=None):
     """Search memory
-    @param  moduleName  str
     @param  pattern  int or str or [int]
+    @param  moduleName  str
     @return  long  addr
     """
     r = self.get_module_range(moduleName)

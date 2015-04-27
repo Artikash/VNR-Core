@@ -104,6 +104,11 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
     offset++;
     hp.type |= NO_CONTEXT;
   }
+  // jichi 4/25/2015: Add support for fixing hook
+  if (*offset == L'f' || *offset == 'F') {
+    offset++;
+    hp.type |= FIXING_SPLIT;
+  }
   while (!accept) {
     t = Convert(offset, data, delim);
     if (t < 0)

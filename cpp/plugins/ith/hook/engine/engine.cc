@@ -6801,12 +6801,28 @@ void InsertRyokuchaHook()
 /**
  *  jichi 5/11/2014: Hook to the beginning of a function
  *
+ *  4/27/2015 old logic:
+ *  1. find the following location
+ *     00A78144   66:833C70 00     CMP WORD PTR DS:[EAX+ESI*2],0x0
+ *     i.e. 0x66833C7000
+ *     There are several matches, the first one is used.
+ *  2. find the first push operation after it
+ *  3. find the function call after push, and hook to it
+ *     The text is in the arg1, which is character by character
+ *
+ *  But in the new game since ウルスラグナ, there the function call is not immediately after 0x66833C7000 any more.
+ *  My own way to find the function to hook is as follows:
+ *  1. find the following location
+ *     00A78144   66:833C70 00     CMP WORD PTR DS:[EAX+ESI*2],0x0
+ *     i.e. 0x66833C7000
+ *     There are several matches, the first one is used.
+ *  2. Use Ollydbg to debug step by step until the first function call is encountered
+ *     Then, the text character is directly on the stack
+ *
  *  Here's an example of Demonion II (reladdr = 0x18c540):
  *  The text is displayed character by character.
  *  sub_58C540 proc near
  *  arg_0 = dword ptr  8 // LPCSTR with 1 character
- *
- *  It's weird that I cannot find the caller of this function using OllyDbg.
  *
  *  0138C540  /$ 55             PUSH EBP
  *  0138C541  |. 8BEC           MOV EBP,ESP
@@ -6874,7 +6890,122 @@ void InsertRyokuchaHook()
  *  0138C5DC  |. 8BE5           MOV ESP,EBP
  *  0138C5DE  |. 5D             POP EBP
  *  0138C5DF  \. C2 0400        RETN 0x4
+ *
+ *  4/26/2015  ウルスラグナ
+ *  base = 0xa30000, old hook addr = 0xbe6360
+ *
+ *  00A7813A   EB 02            JMP SHORT .00A7813E
+ *  00A7813C   8BC7             MOV EAX,EDI
+ *  00A7813E   8BB3 E4020000    MOV ESI,DWORD PTR DS:[EBX+0x2E4]
+ *  00A78144   66:833C70 00     CMP WORD PTR DS:[EAX+ESI*2],0x0  ; jich: here's the first found segment
+ *  00A78149   74 36            JE SHORT .00A78181
+ *  00A7814B   837F 14 08       CMP DWORD PTR DS:[EDI+0x14],0x8
+ *  00A7814F   72 08            JB SHORT .00A78159
+ *  00A78151   8B07             MOV EAX,DWORD PTR DS:[EDI]
+ *
+ *  00A7883A   24 3C            AND AL,0x3C
+ *  00A7883C   50               PUSH EAX
+ *  00A7883D   C74424 4C 000000>MOV DWORD PTR SS:[ESP+0x4C],0x0
+ *  00A78845   0F5B             ???                                      ; Unknown command
+ *  00A78847   C9               LEAVE
+ *  00A78848   F3:0F114424 44   MOVSS DWORD PTR SS:[ESP+0x44],XMM0
+ *  00A7884E   F3:0F114C24 48   MOVSS DWORD PTR SS:[ESP+0x48],XMM1
+ *  00A78854   E8 37040000      CALL .00A78C90  ; jichi: here's the target function to hook to, text char on the stack[0]
+ *  00A78859   A1 888EDD00      MOV EAX,DWORD PTR DS:[0xDD8E88]
+ *  00A7885E   A8 01            TEST AL,0x1
+ *  00A78860   75 30            JNZ SHORT .00A78892
+ *  00A78862   83C8 01          OR EAX,0x1
+ *  00A78865   A3 888EDD00      MOV DWORD PTR DS:[0xDD8E88],EAX
+ *
+ *  Here's the new function call:
+ *  00A78C8A   CC               INT3
+ *  00A78C8B   CC               INT3
+ *  00A78C8C   CC               INT3
+ *  00A78C8D   CC               INT3
+ *  00A78C8E   CC               INT3
+ *  00A78C8F   CC               INT3
+ *  00A78C90   55               PUSH EBP
+ *  00A78C91   8BEC             MOV EBP,ESP
+ *  00A78C93   56               PUSH ESI
+ *  00A78C94   8BF1             MOV ESI,ECX
+ *  00A78C96   57               PUSH EDI
+ *  00A78C97   8B7D 08          MOV EDI,DWORD PTR SS:[EBP+0x8]
+ *  00A78C9A   8B4E 04          MOV ECX,DWORD PTR DS:[ESI+0x4]
+ *  00A78C9D   3BF9             CMP EDI,ECX
+ *  00A78C9F   73 76            JNB SHORT .00A78D17
+ *  00A78CA1   8B06             MOV EAX,DWORD PTR DS:[ESI]
+ *  00A78CA3   3BC7             CMP EAX,EDI
+ *  00A78CA5   77 70            JA SHORT .00A78D17
+ *  00A78CA7   2BF8             SUB EDI,EAX
+ *  00A78CA9   B8 93244992      MOV EAX,0x92492493
+ *  00A78CAE   F7EF             IMUL EDI
+ *  00A78CB0   03D7             ADD EDX,EDI
+ *  00A78CB2   C1FA 04          SAR EDX,0x4
+ *  00A78CB5   8BFA             MOV EDI,EDX
+ *  00A78CB7   C1EF 1F          SHR EDI,0x1F
+ *  00A78CBA   03FA             ADD EDI,EDX
+ *  00A78CBC   3B4E 08          CMP ECX,DWORD PTR DS:[ESI+0x8]
+ *  00A78CBF   75 09            JNZ SHORT .00A78CCA
+ *  00A78CC1   6A 01            PUSH 0x1
+ *  00A78CC3   8BCE             MOV ECX,ESI
+ *  00A78CC5   E8 36030000      CALL .00A79000
+ *  00A78CCA   8B56 04          MOV EDX,DWORD PTR DS:[ESI+0x4]
+ *  00A78CCD   8D0CFD 00000000  LEA ECX,DWORD PTR DS:[EDI*8]
+ *  00A78CD4   2BCF             SUB ECX,EDI
+ *  00A78CD6   8B3E             MOV EDI,DWORD PTR DS:[ESI]
+ *  00A78CD8   85D2             TEST EDX,EDX
+ *  00A78CDA   74 7B            JE SHORT .00A78D57
+ *  00A78CDC   66:8B048F        MOV AX,WORD PTR DS:[EDI+ECX*4]
+ *  00A78CE0   66:8902          MOV WORD PTR DS:[EDX],AX
+ *  00A78CE3   8B448F 04        MOV EAX,DWORD PTR DS:[EDI+ECX*4+0x4]
+ *  00A78CE7   8942 04          MOV DWORD PTR DS:[EDX+0x4],EAX
+ *  00A78CEA   8B448F 08        MOV EAX,DWORD PTR DS:[EDI+ECX*4+0x8]
+ *  00A78CEE   8942 08          MOV DWORD PTR DS:[EDX+0x8],EAX
+ *  00A78CF1   8B448F 0C        MOV EAX,DWORD PTR DS:[EDI+ECX*4+0xC]
+ *  00A78CF5   8942 0C          MOV DWORD PTR DS:[EDX+0xC],EAX
+ *  00A78CF8   C742 10 00000000 MOV DWORD PTR DS:[EDX+0x10],0x0
+ *  00A78CFF   8B448F 14        MOV EAX,DWORD PTR DS:[EDI+ECX*4+0x14]
+ *  00A78D03   8942 14          MOV DWORD PTR DS:[EDX+0x14],EAX
+ *  00A78D06   8A448F 18        MOV AL,BYTE PTR DS:[EDI+ECX*4+0x18]
+ *  00A78D0A   8842 18          MOV BYTE PTR DS:[EDX+0x18],AL
+ *  00A78D0D   8346 04 1C       ADD DWORD PTR DS:[ESI+0x4],0x1C
+ *  00A78D11   5F               POP EDI
+ *  00A78D12   5E               POP ESI
+ *  00A78D13   5D               POP EBP
+ *  00A78D14   C2 0400          RETN 0x4
+ *  00A78D17   3B4E 08          CMP ECX,DWORD PTR DS:[ESI+0x8]
+ *  00A78D1A   75 09            JNZ SHORT .00A78D25
+ *  00A78D1C   6A 01            PUSH 0x1
+ *  00A78D1E   8BCE             MOV ECX,ESI
+ *  00A78D20   E8 DB020000      CALL .00A79000
+ *  00A78D25   8B4E 04          MOV ECX,DWORD PTR DS:[ESI+0x4]
+ *  00A78D28   85C9             TEST ECX,ECX
+ *  00A78D2A   74 2B            JE SHORT .00A78D57
+ *  00A78D2C   66:8B07          MOV AX,WORD PTR DS:[EDI]
+ *  00A78D2F   66:8901          MOV WORD PTR DS:[ECX],AX
+ *  00A78D32   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A78D35   8941 04          MOV DWORD PTR DS:[ECX+0x4],EAX
+ *  00A78D38   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
+ *  00A78D3B   8941 08          MOV DWORD PTR DS:[ECX+0x8],EAX
+ *  00A78D3E   8B47 0C          MOV EAX,DWORD PTR DS:[EDI+0xC]
+ *  00A78D41   8941 0C          MOV DWORD PTR DS:[ECX+0xC],EAX
+ *  00A78D44   C741 10 00000000 MOV DWORD PTR DS:[ECX+0x10],0x0
+ *  00A78D4B   8B47 14          MOV EAX,DWORD PTR DS:[EDI+0x14]
+ *  00A78D4E   8941 14          MOV DWORD PTR DS:[ECX+0x14],EAX
+ *  00A78D51   8A47 18          MOV AL,BYTE PTR DS:[EDI+0x18]
+ *  00A78D54   8841 18          MOV BYTE PTR DS:[ECX+0x18],AL
+ *  00A78D57   8346 04 1C       ADD DWORD PTR DS:[ESI+0x4],0x1C
+ *  00A78D5B   5F               POP EDI
+ *  00A78D5C   5E               POP ESI
+ *  00A78D5D   5D               POP EBP
+ *  00A78D5E   C2 0400          RETN 0x4
+ *  00A78D61   CC               INT3
+ *  00A78D62   CC               INT3
+ *  00A78D63   CC               INT3
+ *  00A78D64   CC               INT3
+ *  00A78D65   CC               INT3
  */
+
 bool InsertGXPHook()
 {
   union {
@@ -6884,6 +7015,9 @@ bool InsertGXPHook()
   };
   //__asm int 3
   for (i = module_base_ + 0x1000; i < module_limit_ - 4; i++) {
+    // jichi example:
+    // 00A78144   66:833C70 00     CMP WORD PTR DS:[EAX+ESI*2],0x0
+
     //find cmp word ptr [esi*2+eax],0
     if (*id != 0x703c8366)
       continue;
@@ -6907,17 +7041,19 @@ bool InsertGXPHook()
     }
     if (flag)
       while (i < j) {
-        if (*ib == 0xe8) {
+        if (*ib == 0xe8) { // jichi: find first long call after the push operation
           i++;
           DWORD addr = *id + i + 4;
           if (addr > module_base_ && addr < module_limit_) {
             HookParam hp = {};
             hp.addr = addr;
-            hp.type = USING_UNICODE|DATA_INDIRECT;
+            //hp.type = USING_UNICODE|DATA_INDIRECT;
+            hp.type = USING_UNICODE|DATA_INDIRECT|NO_CONTEXT|FIXING_SPLIT; // jichi 4/25/2015: Fixing split
             hp.length_offset = 1;
             hp.off = 4;
 
             //ITH_GROWL_DWORD3(hp.addr, module_base_, hp.addr - module_base_);
+
             //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec81); // zero
             //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec83); // zero
             //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec8b55); // zero

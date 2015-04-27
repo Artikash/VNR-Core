@@ -12,8 +12,9 @@ from glob import glob
 from sakurakit.skdebug import dprint
 #from sakurakit.skclass import memoized
 
-UTF16_ENCODING = 'utf-16'
 SJIS_ENCODING = 'shift-jis'
+UTF8_ENCODING = 'utf8'
+UTF16_ENCODING = 'utf-16'
 
 ENINES = []
 def engines():
@@ -23,6 +24,7 @@ def engines():
   if not ENINES:
     ENGINES = [
       MonoEngine(),
+      GXPEngine(),
     ]
   return ENGINES
 
@@ -173,12 +175,67 @@ class MonoEngine(Engine):
       pattern = 0x33DB66390175
       #length = 0x50000 # larger than 0x3b849
 
-      addr = dbg.search_module_memory("mono.dll", pattern)
+      addr = dbg.search_module_memory(pattern, "mono.dll")
       if addr > 0:
         code = "/HWN-8*0:3C@%x" % addr
         ret = self.addHook(code)
     dprint(ret)
     return ret
+
+# 4/27/2015
+# See also GXP comments in engine.cc
+#
+# Sample game: ウルスラグナ
+# Debug step:
+# 1. find the following location
+#    00A78144   66:833C70 00     CMP WORD PTR DS:[EAX+ESI*2],0x0
+#    i.e. 0x66833C7000
+#    There are several matches, the first one is used.
+# 2. Use Ollydbg to debug step by step until the first function call is encountered
+#    Then, the text character is directly on the stack
+#
+#  00A7883A   24 3C            AND AL,0x3C
+#  00A7883C   50               PUSH EAX
+#  00A7883D   C74424 4C 000000>MOV DWORD PTR SS:[ESP+0x4C],0x0
+#  00A78845   0F5B             ???                                      ; Unknown command
+#  00A78847   C9               LEAVE
+#  00A78848   F3:0F114424 44   MOVSS DWORD PTR SS:[ESP+0x44],XMM0
+#  00A7884E   F3:0F114C24 48   MOVSS DWORD PTR SS:[ESP+0x48],XMM1
+#  00A78854   E8 37040000      CALL .00A78C90  ; jichi: here's the target function to hook to, text char on the stack[0]
+#  00A78859   A1 888EDD00      MOV EAX,DWORD PTR DS:[0xDD8E88]
+#  00A7885E   A8 01            TEST AL,0x1
+#  00A78860   75 30            JNZ SHORT .00A78892
+#  00A78862   83C8 01          OR EAX,0x1
+#  00A78865   A3 888EDD00      MOV DWORD PTR DS:[0xDD8E88],EAX
+class GXPEngine(Engine):
+
+  NAME = "GXP2" # str, override
+  ENCODING = UTF16_ENCODING # str, override
+
+  def match(self, pid): # override
+    return bool(self.globAppDirectory('*.gxp', pid))
+
+  def inject(self, pid): # override
+    from gamedebugger import GameDebugger
+    dbg = GameDebugger(pid)
+    ret = False
+    if dbg.active():
+      #  00A78845   0F5B             ???                                      ; Unknown command
+      #  00A78847   C9               LEAVE
+      #  00A78848   F3:0F114424 44   MOVSS DWORD PTR SS:[ESP+0x44],XMM0
+      #  00A7884E   F3:0F114C24 48   MOVSS DWORD PTR SS:[ESP+0x48],XMM1
+      #  00A78854   E8 37040000      CALL .00A78C90  ; jichi: here's the target function to hook to, text char on the stack[0]
+      pattern = 0x0f5bc9f30f11442444f30f114c2448e8
+      addr = dbg.search_module_memory(pattern)
+      if addr > 0:
+        addr += 0x00A78854 - 0x00A78845
+        # type: USING_UNICODE(W) | NO_CONTEXT (N) | DATA_INDIRECT(*) | FIXING_SPLIT(F)
+        # length_offset: 1
+        code = "/HWNF*@%x" % addr
+        ret = self.addHook(code)
+    dprint(ret)
+    return ret
+
 
 # EOF
 
