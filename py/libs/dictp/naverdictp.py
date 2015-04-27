@@ -61,7 +61,7 @@ def parsedef(text):
   """
   t = _findbetween(text, '</x>', '<')
   if t:
-    for c in u'.·':
+    for c in u'.·,':
       i = t.find(c)
       if i != -1:
         t = t[:i]
@@ -166,6 +166,7 @@ if __name__ == '__main__':
     #t = u'逃す'
     #t = u'商店'
     t = u'永遠'
+    t = u'腰'
     import sqlite3
     from dictdb import dictdb
     with sqlite3.connect(dbpath) as conn:
