@@ -6913,7 +6913,7 @@ bool InsertGXPHook()
           if (addr > module_base_ && addr < module_limit_) {
             HookParam hp = {};
             hp.addr = addr;
-            hp.type = USING_UNICODE | DATA_INDIRECT;
+            hp.type = USING_UNICODE|DATA_INDIRECT;
             hp.length_offset = 1;
             hp.off = 4;
 
