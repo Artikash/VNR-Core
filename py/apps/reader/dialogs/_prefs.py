@@ -4254,11 +4254,11 @@ class _DictionaryTranslationTab(object):
 
     if 'en' not in blans:
       layout.addWidget(self.rubyEdictButton)
-      infoLabel = QtWidgets.QLabel(my.tr(
-        "Align MeCab with other dictionary such as EDICT will improve word segmentation and lookup using that dictionary."
-      ))
-      infoLabel.setWordWrap(True)
-      layout.addWidget(infoLabel)
+      #infoLabel = QtWidgets.QLabel(my.tr(
+      #  "Align MeCab with other dictionary such as EDICT will improve word segmentation and lookup using that dictionary."
+      #))
+      #infoLabel.setWordWrap(True)
+      #layout.addWidget(infoLabel)
 
     ret = QtWidgets.QGroupBox("%s (%s)" % (
         my.tr("Japanese furigana"),
@@ -4280,7 +4280,7 @@ class _DictionaryTranslationTab(object):
   @memoizedproperty
   def rubyEdictButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-      my.tr("Align MeCab with EDICT"),
+      my.tr("Align MeCab with EDICT for English translation"),
       my.tr("require {0}").format("UniDic, EDICT"),
     ))
     ss = settings.global_()
