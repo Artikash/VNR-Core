@@ -37,6 +37,8 @@ def parsedef(t):
       i = t.find(s[1])
       if i != -1:
         t = t[:i].rstrip()
+  if t and t[-1] == u'…':
+    t = t[:-1].rstrip()
   if t:
     for c in u'<>［］｜−·':
       if c in t:
