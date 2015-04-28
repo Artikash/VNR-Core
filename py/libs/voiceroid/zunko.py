@@ -23,8 +23,8 @@ def _allpunct(text):
   """
   for c in text:
     if c not in jpchars.s_punct and c not in string.punctuation and c not in string.whitespace:
-      return True
-  return False
+      return False
+  return True
 
 if os.name == 'nt':
   #from PySide.QtCore import QTimer
