@@ -59,7 +59,6 @@ def show(text, key=None):
   w.show()
 
 def dumpzhongri():
-  import ebdict
   from scripts import eb2db
 
   import rc
@@ -211,7 +210,31 @@ if __name__ == '__main__':
   def test_dpwing():
     dumpzhongri()
 
+  def test_wadoku():
+    import ebdict
+    d = ebdict.wadoku()
+    t = u'可愛い'
+    #t = u'風'
+    #t = u'です'
+    #t = u'薫'
+    #t = u'わたし'
+    #t = u'友達'
+    q = d.lookup(t)
+    if q:
+      result = None
+      for it in q:
+        print "heading:", it.heading().decode('utf8')
+        result = it.text().decode('utf8')
+        break
+      if result:
+        from dictp import wadokudictp
+        t = wadokudictp.parsedef(result)
+        result += "\n\n" + t
+        a = app()
+        show(result)
+        a.exec_()
+
   initenv()
-  test_dll()
+  test_wadoku()
 
 # EOF

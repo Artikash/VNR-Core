@@ -53,12 +53,12 @@ def _findbetween(text, begin, end):
     else:
       return ret
 
-def parsedef(text):
+def parsedef(t):
   """Get short definition out of translation
   @param  t  unicode
   @return  unicode
   """
-  t = _findbetween(text, '<Q>', '<')
+  t = _findbetween(t, '<Q>', '<')
   #if not t or jpchars.anykana(t):
   #  t = skstr.findbetween(text, '<N><Q>', '<') or skstr.findbetween(text, '</Q><Q>', '<')
   if t:

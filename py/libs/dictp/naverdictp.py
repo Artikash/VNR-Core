@@ -54,12 +54,12 @@ def _findbetween(text, begin, end):
     else:
       return text[start:stop]
 
-def parsedef(text):
+def parsedef(t):
   """Get short definition out of translation
   @param  t  unicode
   @return  unicode
   """
-  t = _findbetween(text, '</x>', '<')
+  t = _findbetween(t, '</x>', '<')
   if t:
     for c in u'.·,':
       i = t.find(c)

@@ -4462,6 +4462,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.rubyKoButton)
     if 'vi' not in blans:
       layout.addWidget(self.rubyViButton)
+    if 'de' not in blans:
+      layout.addWidget(self.rubyDeButton)
 
     ret = QtWidgets.QGroupBox(my.tr(
       "Preferred languages to display translation in ruby for Japanese"
@@ -4503,9 +4505,19 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(self._saveRubyLanguage)
     return ret
 
+  @memoizedproperty
+  def rubyDeButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        tr_("German"), my.tr("like this"), u"可愛い（niedlich）",
+        my.tr("require {0}").format(my.tr("Wadoku Japanese-German dictionary"))))
+    ret.language = 'de'
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
   def _saveRubyLanguage(self):
     v = [b.language for b in
-        (self.rubyZhButton, self.rubyKoButton, self.rubyViButton)
+        (self.rubyZhButton, self.rubyKoButton, self.rubyViButton, self.rubyDeButton)
         if b.isChecked()]
     settings.global_().setJapaneseRubyLanguages(v)
 
@@ -4704,6 +4716,9 @@ class _DictionaryTranslationTab(object):
     if 'de' not in blans:
       t = ss.isWadokuEnabled() or dicts.wadoku().exists()
       self.wadokuButton.setEnabled(t)
+
+      b = self.rubyDeButton
+      b.setEnabled(b.isChecked() or dicts.wadoku().exists())
 
     if 'en' not in blans:
       self.rubyEdictButton.setEnabled(self.isRubyEdictEnabled())

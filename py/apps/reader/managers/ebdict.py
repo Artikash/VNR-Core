@@ -356,6 +356,28 @@ class WadokuDic(FreePWING):
 
   def name(self): return "Wadoku" # override
 
+  def renderText(self, text): # override
+    text = text.replace('|| ', '')
+    if '[1]' in text:
+      text = text.replace('[1]', '<ol>[1]')
+      text = text.replace('<br/><ol>', '<ol>')
+      text = re.sub(r'\[[0-9]+\]', r'<li>', text)
+      text += '</ol>'
+    return text
+
+  def translate(self, text):
+    """
+    @param  text  unicode
+    @return  unicode or None
+    """
+    try:
+      for it in self.lookup(text):
+        text = it.text().decode('utf8', errors='ignore') # decode might throw key error?!
+        if text:
+          from dictp import wadokudictp
+          return wadokudictp.parsedef(text)
+    except Exception, e: dwarn(e)
+
 # JMDict
 class JMDict(FreePWING):
   NAME = 'JMDict'
