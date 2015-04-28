@@ -14,11 +14,22 @@ if __name__ == '__main__':
     '../../../../Qt/PySide',
   ))
 
+import string
+from unitraits import jpchars
+def _allpunct(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  for c in text:
+    if c not in jpchars.s_punct and c not in string.punctuation and c not in string.whitespace:
+      return True
+  return False
+
 if os.name == 'nt':
   #from PySide.QtCore import QTimer
   #from unitraits import jpchars
   from pyzunko import AITalkSynthesizer
-  from unitraits import jpchars
 
   #SENTENCE_INTERVAL = 100 # the same as Zunko's TextToSpeech thread
 
@@ -44,7 +55,7 @@ if os.name == 'nt':
     t = RE_PUNCT.sub(STOP_PUNCT, t)
     while t and t[0] == STOP_PUNCT: # remove leading stop punctuation
       t = t[1:]
-    return t
+    return t.strip()
 
   class _ZunkoTalk:
 
@@ -118,7 +129,7 @@ if os.name == 'nt':
     def speak(self, text): # unicode -> bool
       d = self.__d
       text = repairtext(text)
-      if jpchars.allpunct(text): # otherwise, it could crash zunko
+      if _allpunct(text): # otherwise, it could crash zunko
         text = None
       elif isinstance(text, unicode):
         text = text.encode(self.ENCODING, errors='ignore')
