@@ -2428,10 +2428,6 @@ class _TextTab(object):
       ret.currentFontChanged.connect(sig)
     return ret
 
-  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Malaysian", "Indonesian", "Arabic", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
-  LANGS =     'ja',       'en',      'zht',     'ko',     'th',   'vi',         'ms',        'id',         'ar',     'de',     'es',      'fr',     'it',       'nl',    'pl',     'pt',         'ru'
-  assert len(LANGUAGES) == len(LANGS)
-
   def _synthesizeLoadSaveFont(self, Lang):
     """
     @return  load method, save method
@@ -2464,18 +2460,17 @@ class _TextTab(object):
     blans = ss.blockedLanguages()
 
     r = 0
-    for i, la in enumerate(self.LANGS):
-      if la == 'ja' or la[:2] not in blans:
+    for i, it in enumerate(config.LANGUAGES2):
+      if it == 'ja' or it not in blans:
         r += 1
-        LangName = self.LANGUAGES[i]
-        Lang = LangName.replace(' ', '')
+        Lang = i18n.LANGUAGE_NAMES[it]
         lang = Lang[0].lower() + Lang[1:]
 
         load, save = self._synthesizeLoadSaveFont(Lang)
         setattr(self, "_load{0}Font".format(Lang), load)
         setattr(self, "_save{0}Font".format(Lang), save)
 
-        deffont = i18n.font_family(la)
+        deffont = i18n.font_family(it)
         resetButton = self._createResetFontButton(deffont, partial(
             getattr(ss, "set{0}Font".format(Lang)), deffont))
 
@@ -2485,7 +2480,7 @@ class _TextTab(object):
 
         c = 0; grid.addWidget(fontEdit, r, c)
         c += 1; grid.addWidget(resetButton, r, c)
-        c += 1; grid.addWidget(QtWidgets.QLabel("<= " + tr_(LangName)), r, c)
+        c += 1; grid.addWidget(QtWidgets.QLabel("<= " + tr_(Lang)), r, c)
 
     ret = QtWidgets.QGroupBox(tr_("Font family"))
     ret.setLayout(grid)
@@ -2660,10 +2655,10 @@ class _TextTab(object):
 
   def load(self):
     blans = settings.global_().blockedLanguages()
-    for i, la in enumerate(self.LANGS):
-      if la == 'ja' or la[:2] not in blans:
-        lang = self.LANGUAGES[i].replace(' ', '')
-        f = getattr(self, "_load{0}Font".format(lang))
+    for i, lang in enumerate(config.LANGUAGES2):
+      if lang == 'ja' or lang not in blans:
+        Lang = i18n.LANGUAGE_NAMES[lang]
+        f = getattr(self, "_load{0}Font".format(Lang))
         f(self)
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
@@ -3254,13 +3249,20 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def infoseekButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Infoseek.ne.jp multilingual translation service"),
-        my.tr("excluding {0}").format(', '.join((
-            tr_("ms"),
-            tr_("ar"),
-            tr_("nl"),
-            tr_("pl"),
-            tr_("ru"),
+      my.tr("Infoseek.ne.jp multilingual translation service"),
+      my.tr("including {0}").format(', '.join((
+        tr_("ja"),
+        tr_("en"),
+        tr_("zh"),
+        tr_("ko"),
+        tr_("vi"),
+        tr_("id"),
+        tr_("th"),
+        tr_("es"),
+        tr_("de"),
+        tr_("fr"),
+        tr_("it"),
+        tr_("pt"),
     )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isInfoseekEnabled())
@@ -3291,15 +3293,18 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def exciteButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Excite.co.jp multilingual translation service"),
-        my.tr("excluding {0}").format(', '.join((
-            tr_("ms"),
-            tr_("th"),
-            tr_("vi"),
-            tr_("id"),
-            tr_("ar"),
-            tr_("nl"),
-            tr_("pl"),
+      my.tr("Excite.co.jp multilingual translation service"),
+      my.tr("including {0}").format(', '.join((
+        tr_("ja"),
+        tr_("en"),
+        tr_("zh"),
+        tr_("ko"),
+        tr_("fr"),
+        tr_("de"),
+        tr_("es"),
+        tr_("it"),
+        tr_("pt"),
+        tr_("ru"),
     )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isExciteEnabled())
@@ -3319,7 +3324,12 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def babylonButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Babylon.com multilingual translation service"))
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("Babylon.com multilingual translation service"),
+      my.tr("excluding {0}").format(', '.join((
+        tr_("fi"),
+        tr_("sk"),
+    )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBabylonEnabled())
     ret.toggled.connect(settings.global_().setBabylonEnabled)
@@ -3376,13 +3386,26 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def lecOnlineButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
-        my.tr("LEC.com multilingual translation service"),
-        my.tr("recommended for European"),
-        my.tr("excluding {0}").format(', '.join((
-            tr_("ms"),
-            tr_("th"),
-            tr_("vi"),
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("LEC.com multilingual translation service"),
+      #my.tr("recommended for European"),
+      my.tr("including {0}").format(', '.join((
+        tr_("ja"),
+        tr_("en"),
+        tr_("zh"),
+        tr_("ko"),
+        tr_("id"),
+        tr_("ar"),
+        tr_("de"),
+        tr_("es"),
+        tr_("fr"),
+        tr_("it"),
+        tr_("nl"),
+        tr_("pl"),
+        tr_("pt"),
+        tr_("ru"),
+        tr_("tr"),
+        tr_("uk"),
     )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isLecOnlineEnabled())
@@ -3402,9 +3425,25 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def baiduButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Baidu.com Chinese translation service"),
-        my.tr("recommended for Chinese")))
+    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+      my.tr("Baidu.com Chinese translation service"),
+      my.tr("recommended for Chinese"),
+      my.tr("including {0}").format(', '.join((
+        tr_("ja"),
+        tr_("en"),
+        tr_("zh"),
+        tr_("ko"),
+        tr_("th"),
+        tr_("ar"),
+        tr_("de"),
+        tr_("el"),
+        tr_("es"),
+        tr_("fr"),
+        tr_("it"),
+        tr_("nl"),
+        tr_("pt"),
+        tr_("ru"),
+    )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBaiduEnabled())
     ret.toggled.connect(settings.global_().setBaiduEnabled)
@@ -3463,17 +3502,18 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def transruButton(self):
     ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
-        my.tr("Translate.Ru multilingual translation service"),
-        my.tr("recommended for Russian"),
-        my.tr("including {0}").format(', '.join((
-            tr_("ja"),
-            tr_("en"),
-            tr_("de"),
-            tr_("es"),
-            tr_("fr"),
-            tr_("it"),
-            tr_("pt"),
-            tr_("ru"),
+      my.tr("Translate.Ru multilingual translation service"),
+      my.tr("recommended for Russian"),
+      my.tr("including {0}").format(', '.join((
+        tr_("ja"),
+        tr_("en"),
+        tr_("ru"),
+        #tr_("de"),
+        #tr_("es"),
+        #tr_("fr"),
+        #tr_("it"),
+        #tr_("pt"),
+        #tr_("ru"),
     )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isTransruEnabled())

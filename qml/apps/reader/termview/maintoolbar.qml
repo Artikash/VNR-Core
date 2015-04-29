@@ -151,12 +151,13 @@ Item { id: root_
         onClicked: mainPlugin_.showMachineTranslationTester()
       }
 
-      Desktop.ToolButton {
-        text: Sk.tr("Statistics")
-        visible: root_.enabled
-        tooltip: qsTr("Plot statistics charts")
-        onClicked: mainPlugin_.showTermChart()
-      }
+      // Temporarily disabled for being too slow
+      //Desktop.ToolButton {
+      //  text: Sk.tr("Statistics")
+      //  visible: root_.enabled
+      //  tooltip: qsTr("Plot statistics charts")
+      //  onClicked: mainPlugin_.showTermChart()
+      //}
 
       Desktop.ToolButton {
         text: Sk.tr("Export")

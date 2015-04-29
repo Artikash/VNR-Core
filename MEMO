@@ -14,17 +14,16 @@ service:
 
 client:
 - share.yaml: -id:, id:
+- winlocale.py
 - util.js: 'id', id: & make
 - kagami.qml: indonesianFont
 - grimoire.qml: ..
 - mirage.qml: ..
-- windefs.py
 - tsupdate.py: 'id'
 - sktr.py: "id" "Indonesian"
 - sakurakit/tr/Makefile: id_ID.ts id_ID.qm
 - settings.py: indonesianFont
 - i18n.py: 'id'
-- config.py: 'it'
 - _prefs.py: 'id', Indonesian
 - _trman.py: 'id'
 - baidufanyi.py: 'id'

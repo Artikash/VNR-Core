@@ -533,6 +533,17 @@ Item { id: root_
         russianFont: settings_.russianFont
         polishFont: settings_.polishFont
         dutchFont: settings_.dutchFont
+        czechFont: settings_.czechFont
+        danishFont: settings_.danishFont
+        finnishFont: settings_.finnishFont
+        hungarianFont: settings_.hungarianFont
+        norwegianFont: settings_.norwegianFont
+        slovakFont: settings_.slovakFont
+        swedishFont: settings_.swedishFont
+        greekFont: settings_.greekFont
+        turkishFont: settings_.turkishFont
+        ukrainianFont: settings_.ukrainianFont
+        romanianFont: settings_.romanianFont
 
         rubyTextEnabled: settings_.rubyTextEnabled
         rubyTranslationEnabled: settings_.rubyTranslationEnabled

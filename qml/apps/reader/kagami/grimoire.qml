@@ -99,6 +99,17 @@ Item { id: root_
   property string russianFont
   property string dutchFont
   property string polishFont
+  property string czechFont
+  property string danishFont
+  property string finnishFont
+  property string hungarianFont
+  property string norwegianFont
+  property string slovakFont
+  property string swedishFont
+  property string greekFont
+  property string turkishFont
+  property string ukrainianFont
+  property string romanianFont
 
   property int shadowMargin: -8 // shadow_.margins
 
@@ -399,17 +410,28 @@ Item { id: root_
     case 'ko': return koreanFont
     case 'th': return thaiFont
     case 'vi': return vietnameseFont
-    case 'ms': return malaysianFont
     case 'id': return indonesianFont
+    case 'ms': return malaysianFont
     case 'ar': return arabicFont
+    case 'cs': return czechFont
+    case 'da': return danishFont
     case 'de': return germanFont
+    case 'el': return greekFont
     case 'es': return spanishFont
+    case 'fi': return finnishFont
     case 'fr': return frenchFont
+    case 'hu': return hungarianFont
     case 'it': return italianFont
     case 'nl': return dutchFont
+    case 'no': return norwegianFont
     case 'pl': return polishFont
     case 'pt': return portugueseFont
     case 'ru': return russianFont
+    case 'sk': return slovakFont
+    case 'sv': return swedishFont
+    case 'tr': return turkishFont
+    case 'uk': return ukrainianFont
+    case 'ro': return romanianFont
     default: return "DFGirl"
     }
   }
@@ -1224,14 +1246,14 @@ Item { id: root_
 
           function translationSummary() {
             var tr = My.tr(Util.translatorName(model.provider))
-            var lang = Sk.tr(model.language)
+            var lang = Sk.tr(Util.languageShortName(model.language))
             return tr + " (" + lang + ")"
           }
 
           function commentSummary(c) {
             var us = '@' + c.userName
             var lang = c.language
-            //var lang = Sk.tr(c.language) // too long orz
+            //var lang = Sk.tr(Util.languageShortName(c.language)) // too long orz
             lang = "(" + lang + ")"
             var sec = c.updateTimestamp > 0 ? c.updateTimestamp : c.timestamp
             var ts = Util.timestampToString(sec)
@@ -1241,7 +1263,7 @@ Item { id: root_
           function subSummary(s) {
             var us = '@' + s.userName
             var lang = s.language
-            //var lang = Sk.tr(c.language) // too long orz
+            //var lang = Sk.tr(i18n.languageShortName(c.language)) // too long orz
             lang = "(" + lang + ")"
             var sec = s.updateTime > 0 ? s.updateTime : s.createTime
             var ts = Util.timestampToString(sec)

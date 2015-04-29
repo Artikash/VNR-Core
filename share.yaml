@@ -376,6 +376,9 @@ encodings:
  - windows-1258 # cp1258, vi
  - tis-620      # cp874, th
  - windows-1256 # cp1256, ar
+ - windows-1254 # cp1254, tr
+ - windows-1253 # cp1253, el
+ - windows-1257 # cp1257, baltic, north europe
  - windows-1250 # cp1250, central/eastern europe
  - windows-1251 # cp1251, cyrillic
  - latin1       # cp1252, latin
@@ -386,34 +389,60 @@ languages:
   - en
   - zht
   - zhs
-  - ko
-  - vi
-  - th
-  - ms
-  - id
-  - ar
-  - de
-  - es
-  - fr
-  - it
-  - nl
-  - pl
-  - pt
-  - ru
+  - ko # Korean
+  - vi # Vietnamese
+  - id # Indonesian
+  - ms # Malaysian
+  - th # Thai
+  - ar # Arabic
+  - cs # Czech
+  - da # Danish
+  - de # German
+  - el # Greek
+  - es # Spanish
+  - fi # Finnish
+  - fr # French
+  - hu # Hungarian
+  - it # Italian
+  - nl # Dutch
+  - 'no' # Norwegian
+  - pl # Polish
+  - pt # Portuguese
+  - ro # Romanian
+  - sk # Slovak
+  - sv # Swedish
+  - tr # Turkish
+  - ru # Russian
+  - uk # Ukrainian
   latin:
   - en
+  - cs
+  - da
   - de
   - es
+  - fi
   - fr
+  - hu
   - it
   - nl
+  - 'no'
   - pl
   - pt
-  - ru
+  - ro
+  - sk
+  - sv
+  - tr
   # Asian, though
   - vi
-  - ms
   - id
+  - ms
+  # Different alphabet, though
+  - el
+  - ru
+  - uk
+  cyrillic:
+  - ru
+  - uk
   asian: # on contrast of latin
   - ja
   - zht
@@ -437,65 +466,70 @@ languages:
   - zhs # 2052: Chinese (Simplified) - People's Republic of China
   - zht # 1028: Chinese - Republic of China (Taiwan), 3076: Chinese - Hong Kong (S.A.R.)
   - ko  # 1042: Korean - Korea
-  #- cs # 1029: Czech - Czech Republic
-  #- da # 1030: Danish - Denmark
-  - nl  # 1043: Dutch - Netherlands
-  #- fi # 1035: Finnish - Finland
-  - fr  # 1036: French - France
+  - cs  # 1029: Czech - Czech Republic
+  - da  # 1030: Danish - Denmark
   - de  # 1031: German - Germany
-  #- el # 1032: Greek - Greece
-  #- hu # 1038: Hungarian - Hungary
+  - fi  # 1035: Finnish - Finland
+  - fr  # 1036: French - France
+  - el  # 1032: Greek - Greece
+  - es  # 3082: Spanish (Modern Sort) - Spain
+  - hu  # 1038: Hungarian - Hungary
   - it  # 1040: Italian - Italy
-  #- nb  # 1044: Norwegian (Bokmål) - Norway
+  - nl  # 1043: Dutch - Netherlands
+  - 'no'  # 1044: Norwegian (Bokmål) - Norway
   - pl  # 1045: Polish - Poland
   - pt  # 1046: Portuguese - Brazil
   - ru  # 1049: Russian - Russia
-  #- sv # 1053: Swedish - Sweden
-  #- tr # 1055: Turkish - Turkey
-  - es  # 3082: Spanish (Modern Sort) - Spain
+  - sv  # 1053: Swedish - Sweden
+  - tr  # 1055: Turkish - Turkey
   - en  # 1033: English - United States
 
 languageNames:
-  ja: 日本語
-  en: English
   zh: 中文
   zht: 中文
   zhs: 简体中文
+  en: English
+  ja: 日本語
   ko: 한국어
-  th: ภาษาไทย
   vi: Tiếng Việt
-  ms: Melayu
   id: Indonesia
+  ms: Bahasa Melayu
+  th: ภาษาไทย
   ar: العربية
+  cs: Čeština
+  da: Dansk
   de: Deutsch
+  el: Ελληνικά
   es: Españo
   fr: Française
   it: Italiano
+  hu: Magyar
+  'no': Norsk bokmål
   nl: Nederlands
   pl: Polski
   pt: Português
+  ro: Română
+  sk: Slovenčina
+  fi: Suomi
+  sv: Svenska
+  tr: Türkçe
   ru: Русский
+  uk: Українська
 
 # See: http://msdn.microsoft.com/en-us/library/aa369771%28v=vs.85%29.aspx
+# See: http://www.science.co.il/language/locale-codes.asp
 locales:
   ja: ja_JP
   en: en_US
   zht: zh_TW
   zhs: zh_CN
   ko: ko_KR
-  th: th_TH
+  ms: ms_MY
+  sv: sv_SE
+  uk: uk_UA
   vi: vi_VN
-  ms: ms_MS
-  id: id_ID
-  ar: ar_AR
-  de: de_DE
-  es: es_ES
-  fr: fr_FR
-  it: it_IT
-  nl: nl_NL
-  pl: pl_PL
-  pt: pt_PT
-  ru: ru_RU
+  ar: ar_SA # Arabic - Saudi Arabia, there are lots of ar, and the one with smallest locale is lcode
+  #nb: nb_NO # Norwegian - Bokml
 
 spells:
   en: en_US
@@ -513,22 +547,6 @@ spells:
 fonts:
   ja: MS Gothic #DFGirl
   en: DFGirl    #Helvetica
-  zht: DFGirl   #YouYuan
-  zhs: DFGirl   #YouYuan
-  ko: DFGirl    #Batang
-  th: DFGirl    #Tahoma
-  vi: DFGirl    #Tahoma
-  ms: DFGirl    #Helvetica
-  id: DFGirl    #Helvetica
-  ar: DFGirl    #Helvetica
-  de: DFGirl    #Helvetica
-  es: DFGirl    #Helvetica
-  fr: DFGirl    #Helvetica
-  it: DFGirl    #Helvetica
-  nl: DFGirl    #Helvetica
-  pl: DFGirl    #Helvetica
-  pt: DFGirl    #Helvetica
-  ru: DFGirl    #Helvetica
 
 font:
   location: $PWD/../../Fonts

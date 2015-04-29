@@ -360,7 +360,7 @@ Item { id: root_
           clip: true
           verticalAlignment: Text.AlignVCenter
 
-          text: Sk.tr(itemValue.sourceLanguage)
+          text: Sk.tr(Util.languageShortName(itemValue.sourceLanguage))
 
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
@@ -373,7 +373,7 @@ Item { id: root_
             Component.onCompleted: {
               for (var i in Util.LANGUAGES) {
                 var lang = Util.LANGUAGES[i]
-                append({value: lang, text: Sk.tr(lang)})
+                append({value: lang, text: Sk.tr(Util.languageShortName(lang))})
               }
             }
           }
@@ -415,7 +415,7 @@ Item { id: root_
           clip: true
           verticalAlignment: Text.AlignVCenter
 
-          text: Sk.tr(itemValue.language === 'ja' ? "all" : itemValue.language)
+          text: Sk.tr(Util.languageShortName(itemValue.language === 'ja' ? "all" : itemValue.language))
 
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
@@ -430,7 +430,7 @@ Item { id: root_
                 var lang = Util.LANGUAGES[i]
                 append({
                   value: lang
-                  , text: Sk.tr(lang === 'ja' ? "all" : lang)
+                  , text: Sk.tr(Util.languageShortName(lang === 'ja' ? "all" : lang))
                 })
               }
             }

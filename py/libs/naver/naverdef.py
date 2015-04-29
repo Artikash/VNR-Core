@@ -18,7 +18,7 @@ MT_LANGUAGES = { # {str fr:[str to]}
   'th': ('en',),
 }
 
-MT_SOURCE_LANGUAGES = MT_TARGET_LANGUAGES = frozenset(MT_LANGUAGES.keys())
+MT_SOURCE_LANGUAGES = MT_TARGET_LANGUAGES = frozenset(MT_LANGUAGES.iterkeys())
 
 def mt_s_langs(online=True): return MT_SOURCE_LANGUAGES
 def mt_t_langs(online=True): return MT_TARGET_LANGUAGES

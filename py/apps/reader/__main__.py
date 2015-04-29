@@ -31,8 +31,9 @@ def guess_language():
     if lc.startswith('zh'):
       return 'zht' # force using Taiwan as Chinese variant
     import config
-    if lc in config.LANGUAGE_LOCALES.values():
-      return lc[:2]
+    lang = lc[:2]
+    if lang in config.LANGUAGES:
+      return lang
   return 'en'
 
 def main():

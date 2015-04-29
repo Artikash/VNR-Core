@@ -154,7 +154,7 @@ def kana2reading(text, lang):
       text = text.replace(u'ゆう', u'ゆ')
       text = text.replace(u'ゆぅ', u'ゆ')
     return kana2ar(text)
-  elif lang == 'ru':
+  elif lang in ('ru', 'uk'):
     return capitalizeromaji(kana2ru(text))
   else:
     return capitalizeromaji(kana2romaji(text))

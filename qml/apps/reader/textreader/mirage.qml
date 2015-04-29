@@ -180,6 +180,17 @@ Item { id: root_
   property string russianFont: settings_.russianFont
   property string polishFont: settings_.polishFont
   property string dutchFont: settings_.dutchFont
+  property string czechFont: settings_.czechFont
+  property string danishFont: settings_.danishFont
+  property string finnishFont: settings_.finnishFont
+  property string hungarianFont: settings_.hungarianFont
+  property string norwegianFont: settings_.norwegianFont
+  property string slovakFont: settings_.slovakFont
+  property string swedishFont: settings_.swedishFont
+  property string greekFont: settings_.greekFont
+  property string turkishFont: settings_.turkishFont
+  property string ukrainianFont: settings_.ukrainianFont
+  property string romanianFont: settings_.romanianFont
 
   function translatorColor(host) { // string -> color
     switch(host) {
@@ -261,17 +272,28 @@ Item { id: root_
     case 'ko': return koreanFont
     case 'th': return thaiFont
     case 'vi': return vietnameseFont
-    case 'ms': return malaysianFont
     case 'id': return indonesianFont
+    case 'ms': return malaysianFont
     case 'ar': return arabicFont
+    case 'cs': return czechFont
+    case 'da': return danishFont
     case 'de': return germanFont
+    case 'el': return greekFont
     case 'es': return spanishFont
+    case 'fi': return finnishFont
     case 'fr': return frenchFont
+    case 'hu': return hungarianFont
     case 'it': return italianFont
     case 'nl': return dutchFont
+    case 'no': return norwegianFont
     case 'pl': return polishFont
     case 'pt': return portugueseFont
     case 'ru': return russianFont
+    case 'sk': return slovakFont
+    case 'sv': return swedishFont
+    case 'tr': return turkishFont
+    case 'uk': return ukrainianFont
+    case 'ro': return romanianFont
     default: return "DFGirl"
     }
   }
@@ -904,7 +926,7 @@ Item { id: root_
 
           function translationSummary() {
             var tr = My.tr(Util.translatorName(model.provider))
-            var lang = Sk.tr(model.language)
+            var lang = Sk.tr(Util.languageShortName(model.language))
             return tr + " (" + lang + ")"
           }
 

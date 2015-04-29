@@ -43,6 +43,10 @@ def langid(lang):
   """
   return LANGUAGES.get(lang) or 0 # default to 0=English
 
+MT_SOURCE_LANGUAGES = MT_TARGET_LANGUAGES = frozenset(LANGUAGES.iterkeys())
+def mt_s_langs(online=True): return MT_SOURCE_LANGUAGES
+def mt_t_langs(online=True): return MT_TARGET_LANGUAGES
+
 def langpair(to, fr):
   """
   @param  to  str
@@ -51,6 +55,7 @@ def langpair(to, fr):
   """
   return "%s|%s" % (langid(fr), langid(to))
 
-def mt_test_lang(to=None, fr=None, online=True): return True
+def mt_test_lang(to=None, fr=None, online=True):
+  return fr in LANGUAGES and to in LANGUAGES if fr and to else fr in LANGUAGES or to in LANGUAGES
 
 # EOF

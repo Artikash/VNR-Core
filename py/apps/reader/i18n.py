@@ -25,32 +25,43 @@ def autotr_(t):
 ## Names ##
 
 LANGUAGE_NAMES = {
-  'ja': tr_("Japanese"),
-  'en': tr_("English"),
-  'zh': tr_("Chinese"), # normalized
-  'zht': tr_("Chinese"),
-  'zhs': tr_("Simplified Chinese"),
-  'ko': tr_("Korean"),
-  'th': tr_("Thai"),
-  'vi': tr_("Vietnamese"),
-  'ms': tr_("Malaysian"),
-  'id': tr_("Indonesian"),
-  'ar': tr_("Arabic"),
-  'de': tr_("German"),
-  'fr': tr_("French"),
-  'it': tr_("Italian"),
-  'es': tr_("Spanish"),
-  'nl': tr_("Dutch"),
-  'pl': tr_("Polish"),
-  'pt': tr_("Portuguese"),
-  'ru': tr_("Russian"),
+  'ja': "Japanese",
+  'en': "English",
+  'zh': "Chinese", # normalized
+  'zht': "Chinese",
+  'zhs': "Simplified Chinese",
+  'ko': "Korean",
+  'th': "Thai",
+  'vi': "Vietnamese",
+  'ms': "Malaysian",
+  'id': "Indonesian",
+  'ar': "Arabic",
+  'cs': "Czech",
+  'da': "Danish",
+  'de': "German",
+  'el': "Greek",
+  'fi': "Finnish",
+  'fr': "French",
+  'hu': "Hungarian",
+  'it': "Italian",
+  'es': "Spanish",
+  'no': "Norwegian",
+  'nl': "Dutch",
+  'pl': "Polish",
+  'pt': "Portuguese",
+  'ro': "Romanian",
+  'ru': "Russian",
+  'sk': "Slovak",
+  'sv': "Swedish",
+  'tr': "Turkish",
+  'uk': "Ukrainian",
 }
 def language_name(lang):
   """
   @param  lang  str
   @return  unicode
   """
-  return LANGUAGE_NAMES.get(lang) or tr_("English")
+  return tr_(LANGUAGE_NAMES.get(lang) or "English")
 
 def ruby_type_name(rb):
   """
@@ -69,6 +80,8 @@ def language_name2(lang):
   @param  lang  str
   @return  unicode
   """
+  if lang == 'no':
+    lang == 'nb' # change Norwegian language name
   if isinstance(lang, str):
     return tr_(lang)
   if isinstance(lang, unicode):
@@ -84,9 +97,12 @@ ENCODING_DESCS = {
   'euc-kr':       "%s (CP949, EUC-KR)" % tr_("Korean"),
   'windows-1258': "%s (CP1258)" % tr_("Vietnamese"),
   'tis-620':      "%s (CP874, TIS-620)" % tr_("Thai"),
-  'windows-1256': "%s (CP1256)" % tr_("Arabic"),
-  'windows-1250': "%s (CP1250)" % my.tr("Central and Eastern Europe"),
-  'windows-1251': "%s (CP1251)" % tr_("Cyrillic"),
+  'windows-1256': "%s (CP1256, ISO-8859-6)" % tr_("Arabic"),
+  'windows-1254': "%s (CP1254, ISO-8859-9)" % tr_("Turkish"),
+  'windows-1253': "%s (CP1253, ISO-8859-7)" % tr_("Greek"),
+  'windows-1250': "%s (CP1250, ISO-8859-2)" % my.tr("Central and Eastern Europe"),
+  'windows-1257': "%s (CP1257, ISO-8859-4)" % my.tr("North Europe"), # Baltic
+  'windows-1251': "%s (CP1251, ISO-8859-5)" % tr_("Cyrillic"),
   'latin1':       "%s (CP1252, ISO-8859-1)" % tr_("Latin"),
 }
 def encoding_desc(enc):
@@ -221,6 +237,8 @@ def language_compatible_to(termLanguage, language):
   if termLanguage[:2] == language[:2]:
     return True
   if termLanguage == 'en' and config.is_latin_language(language):
+    return True
+  if termLanguage == 'ru' and config.is_cyrillic_language(language):
     return True
   return False
 
