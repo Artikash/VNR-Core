@@ -1832,8 +1832,11 @@ class VTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
+  MAX_FAILED_COUNT = 15
+
   def __init__(self, session=None, **kwargs):
     super(VTranslator, self).__init__(**kwargs)
+    self.failedCount = 0
 
     from vtrans import vtrans
     vtrans.CLIENT_VERSION = config.VERSION_TIMESTAMP
@@ -1842,6 +1845,9 @@ class VTranslator(OnlineMachineTranslator):
 
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
     """@reimp"""
+    if self.failedCount > self.MAX_FAILED_COUNT:
+      dwarn("failed for too many times")
+      return None, None, None
     if fr != 'ja':
       return None, None, None
     if not to.startswith('zh'):
@@ -1863,6 +1869,8 @@ class VTranslator(OnlineMachineTranslator):
         if to == 'zht':
           repl = zhs2zht(repl)
         self.cache.update(text, repl)
+      else:
+        self.failedCount += 1
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1870,7 +1878,10 @@ class VTranslator(OnlineMachineTranslator):
     #async = True # force enable async
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
-    except Exception, e: dwarn(e); return ''
+    except Exception, e:
+      self.failedCount += 1
+      dwarn(e)
+      return ''
 
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
