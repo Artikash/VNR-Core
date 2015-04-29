@@ -121,7 +121,7 @@ Rectangle { id: root_
             ret += " <span style='color:darkgreen'>" + sz.replace(' ', '') + "</span>"
           var brand = g.brand
           if (g.language && g.language !== 'ja')
-            ret += " <span style='color:crimson'>(" + Sk.tr(g.language) + ")</span>"
+            ret += " <span style='color:crimson'>(" + Sk.tr(Util.languageShortName(g.language)) + ")</span>"
           if (brand)
             ret += " <span style='color:purple'>@" + brand.replace(/,/g, " @") + "</span>"
           var tags = g.tags

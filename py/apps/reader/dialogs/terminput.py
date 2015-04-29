@@ -243,7 +243,7 @@ class _TermInput(object):
   def sourceLanguageEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
-    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+    ret.addItems(map(i18n.language_name, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
     ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
     #ret.setCurrentIndex(0) # Japanese by default
@@ -256,9 +256,9 @@ class _TermInput(object):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
 
-    #items = map(i18n.language_name2, config.LANGUAGES)
+    #items = map(i18n.language_name, config.LANGUAGES)
     items = [
-      tr_("All languages") if it == 'ja' else i18n.language_name2(it)
+      tr_("All languages") if it == 'ja' else i18n.language_name(it)
       for it in config.LANGUAGES
     ]
     ret.addItems(items)

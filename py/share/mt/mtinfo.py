@@ -56,7 +56,7 @@ def test_lang(key, to=None, fr=None):
   @param* fr  str  language
   @return  bool
   """
-  if key in ('google', 'bing', 'babylon'):
+  if key in ('google', 'bing'):
     return True
   f = get_mod_def(key)
   if f:
@@ -69,7 +69,7 @@ def get_s_langs(key):
   @param  key  str
   @return  [str] or None
   """
-  if key not in ('google', 'bing', 'babylon', 'systran'):
+  if key not in ('google', 'bing', 'systran'):
     f = get_mod_def(key)
     if f:
       online = test_online(key)
@@ -80,7 +80,7 @@ def get_t_langs(key):
   @param  key  str
   @return  [str] or None
   """
-  if key not in ('google', 'bing', 'babylon', 'systran'):
+  if key not in ('google', 'bing', 'systran'):
     f = get_mod_def(key)
     if f:
       online = test_online(key)

@@ -20,11 +20,22 @@ var LANGUAGES = [
   , 'en'
   , 'zht', 'zhs'
   , 'ko'
-  , 'vi', 'th', 'ms', 'id', 'ar'
-  , 'de', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'ru'
+  , 'vi', 'th', 'id', 'ms', 'ar'
+  , 'cs', 'da', 'de', 'el', 'es', 'fr', 'hu', 'it', 'nl', 'no', 'pl', 'pt', 'ro', 'sk', 'sv', 'tr'
+  , 'ru', 'uk'
 ];
 
+/**
+ *  @param  lang  string
+ *  @return  bool
+ **/
 function isKnownLanguage(lang) { return -1 !== LANGUAGES.indexOf(lang); }
+
+/**
+ *  @param  lang  string
+ *  @return  string
+ **/
+function languageShortName(lang) { return lang === 'no' ? 'nb' : lang || '' }
 
 /**
  *  @param  lang  string
@@ -34,37 +45,55 @@ function isKnownLanguage(lang) { return -1 !== LANGUAGES.indexOf(lang); }
 var LANGUAGE_NAME = {
  ja: "Japanese"
  , en: "English"
- , zh: "Chinese"
- , zht: "Chinese"
- , zhs: "Simplified Chinese"
+ , zh: "Chinese", zht: "Chinese", zhs: "Simplified Chinese"
  , ko: "Korean"
  , vi: "Vietnamese"
  , th: "Thai"
- , ms: "Melayu"
  , id: "Indonesian"
+ , ms: "Melayu"
  , ar: "Arabic"
+ , cs: "Czech"
+ , da: "Danish"
  , de: "German"
+ , el: "Greek"
  , es: "Spanish"
+ , fi: "Finnish"
  , fr: "French"
+ , hu: "Hungarian"
  , it: "Italian"
  , nl: "Dutch"
+ , nb: "Norwegian", no: "Norwegian"
  , pl: "Polish"
  , pt: "Portuguese"
+ , ro: "Romanian"
  , ru: "Russian"
+ , sk: "Slovak"
+ , sv: "Swedish"
+ , tr: "Turkish"
+ , uk: "Ukrainian"
 };
 function languageName(lang) { return LANGUAGE_NAME[lang]; }
 
 var LATIN_LANGUAGES = [
   'en'
-  , 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+  , 'el'
+  , 'ru', 'uk',
+  , 'cs', 'da', 'de', 'es', 'fi', 'fr', 'hu', 'it', 'no', 'nl', 'pl', 'pt', 'ro','sk', 'sv', 'tr'
   , 'vi', 'th', 'ms', 'id', 'ar'
 ];
+
 /**
  *  @param  lang  string
  *  @return  bool  whether the language is based on latin characters
  */
-
 function isLatinLanguage(lang) { return -1 !== LATIN_LANGUAGES.indexOf(lang); }
+
+/**
+ *  @param  lang  string
+ *  @return  bool  whether the language is based on cyrillic characters
+ */
+var CYRILLIC_LANGUAGES = ['ru', 'uk']
+function isCyrillic(lang) { return -1 !== CYRILLIC_LANGUAGES.indexOf(lang); }
 
 var CJK_LANGUAGES = [
   'ja'
@@ -139,16 +168,6 @@ var LANGUAGE_FONT = {
   , vi: "Tahoma"
   , th: "Tahoma"
   , ar: "Tahoma" //"Aria"
-  , ms: "Helvetica" //"Aria"
-  , id: "Helvetica" //"Aria"
-  , fr: "Helvetica"
-  , es: "Helvetica"
-  , de: "Helvetica"
-  , it: "Helvetica"
-  , nl: "Helvetica"
-  , pl: "Helvetica"
-  , pt: "Helvetica"
-  , ru: "Helvetica"
 };
 /**
  *  @param  lang  string
@@ -156,7 +175,7 @@ var LANGUAGE_FONT = {
  *
  *  http://en.wikipedia.org/wiki/List_of_CJK_fonts
  */
-function fontFamilyForLanguage(lang) { return LANGUAGE_FONT[lang] || ''; }
+function fontFamilyForLanguage(lang) { return LANGUAGE_FONT[lang] || "Helvetica"; }
 
 var TRANSLATOR_HOST_KEYS = [
   'bing'

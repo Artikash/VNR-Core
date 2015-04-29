@@ -25,6 +25,7 @@ from unitraits.uniconv import wide2thin_alnum
 from mytr import my, mytr_
 from unitraits import unichars, jpchars, jpmacros
 from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
+from share.mt import mtinfo
 import config, defs, growl, termman, textutil, trman, tahscript
 
 _re_jitter = re.compile(jpmacros.applymacros(
@@ -608,7 +609,7 @@ class MachineTranslator(Translator):
         text = self.postprocess(text, to)
       if config.is_latin_language(to):
         text = textutil.capitalize_html_sentence(text)
-      if not (to.startswith('zh') and to in ('ja', 'ar')):
+      if to not in ('ja', 'zhs', 'zht'):
         text = textutil.remove_html_punct_space(text)
       text = textutil.beautify_subtitle(text)
     return text.strip() # escape could produce trailing " "
@@ -667,6 +668,18 @@ class OnlineMachineTranslator(MachineTranslator):
   #persistentCaching = True # bool  enable sqlite
   def __init__(self, *args, **kwargs):
     super(OnlineMachineTranslator, self).__init__(*args, **kwargs)
+
+  def _checkLanguages(self, to, fr):
+    """
+    @param  to  str
+    @param  fr  str
+    @return  (str to, str fr)
+    """
+    if fr not in mtinfo.get_t_langs(self.key):
+      return None, None
+    if to not in mtinfo.get_s_langs(self.key):
+      to = 'en'
+    return to, fr
 
 ## Offline
 
@@ -786,6 +799,9 @@ class LecTranslator(OfflineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e:
       dwarn(e)
@@ -803,15 +819,17 @@ class LecTranslator(OfflineMachineTranslator):
     @param  fr  str
     @return  (str to, str fr)
     """
+    if fr not in ('en', 'ja'):
+      return None, None
     if to not in ('en', 'ru'):
       to = 'en'
-    if fr not in ('en', 'ja'):
-      fr = 'ja'
     return to, fr
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     #if fr != 'ja':
@@ -1302,7 +1320,9 @@ class FastAITTranslator(OfflineMachineTranslator):
     @param  fr  str
     @return  (str to, str fr)
     """
-    if to not in ('en', 'ja') and not to.startswith('zh'):
+    if fr not in ('ja', 'en', 'zhs', 'zht'):
+      return None, None
+    if to not in ('en', 'ja') and to not in ('zhs', 'zht'):
       to = 'en'
       if to == fr:
         to = 'zht'
@@ -1312,6 +1332,9 @@ class FastAITTranslator(OfflineMachineTranslator):
     """@reimp"""
     #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try:
       engine = self.getEngine(fr=fr, to=to)
       if engine:
@@ -1342,6 +1365,8 @@ class FastAITTranslator(OfflineMachineTranslator):
     """@reimp"""
     async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     engine = self.getEngine(to=to, fr=fr)
     if engine:
       if emit:
@@ -1479,20 +1504,6 @@ class InfoseekTranslator(OnlineMachineTranslator):
   asyncSupported = False # override  disable async
   alignSupported = True # override
 
-  NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'ar', 'ru', 'nl', 'pl'))
-
-  def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
-    if to in self.NOT_SUPPORTED_LANGUAGES:
-      to = 'en'
-    if fr in self.NOT_SUPPORTED_LANGUAGES:
-      fr = 'en'
-    return to, fr
-
   def __init__(self, session=None, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
 
@@ -1508,6 +1519,8 @@ class InfoseekTranslator(OnlineMachineTranslator):
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1529,6 +1542,9 @@ class InfoseekTranslator(OnlineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1545,20 +1561,6 @@ class ExciteTranslator(OnlineMachineTranslator):
     #worldtrans.session = session or requests.Session() # disable session or excite could get blocked
     self.engine = worldtrans
 
-  NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'))
-
-  def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
-    if to in self.NOT_SUPPORTED_LANGUAGES:
-      to = 'en'
-    if fr in self.NOT_SUPPORTED_LANGUAGES:
-      fr = 'en'
-    return to, fr
-
   #__excite_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',
   #  ']\n': u'】',
@@ -1567,6 +1569,8 @@ class ExciteTranslator(OnlineMachineTranslator):
     """@reimp"""
     async = True # force async or excite could get blocked using qt session
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1588,6 +1592,9 @@ class ExciteTranslator(OnlineMachineTranslator):
     """@reimp"""
     async = True # force async or excite could get blocked using qt session
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1602,23 +1609,11 @@ class NiftyTranslator(OnlineMachineTranslator):
     niftyhonyaku.session = session or requests.Session()
     self.engine = niftyhonyaku
 
-  SUPPORTED_LANGUAGES = frozenset(('en', 'ja', 'ko', 'zhs', 'zht'))
-
-  def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
-    if to not in self.SUPPORTED_LANGUAGES:
-      to = 'en'
-    if fr not in self.SUPPORTED_LANGUAGES:
-      fr = 'en'
-    return to, fr
-
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1639,6 +1634,9 @@ class NiftyTranslator(OnlineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1655,6 +1653,9 @@ class BabylonTranslator(OnlineMachineTranslator):
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1668,14 +1669,18 @@ class BabylonTranslator(OnlineMachineTranslator):
           self.engine.translate,
           to, fr, async)
       if repl:
-        if to == 'ar':
-          repl = fix_lower_proxy(repl)
+        #if to == 'ar':
+        repl = fix_lower_proxy(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1692,12 +1697,10 @@ class SystranTranslator(OnlineMachineTranslator):
     self.engine = systran
 
   def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
+    """@reimp"""
     from systran import systrandef
+    if not systrandef.mt_test_lang(fr=fr):
+      return None, None
     if not systrandef.mt_test_lang(to=to, fr=fr):
       to = 'en'
     return to, fr
@@ -1706,6 +1709,8 @@ class SystranTranslator(OnlineMachineTranslator):
     """@reimp"""
     async = True # force async or systran could get hanged
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1729,6 +1734,9 @@ class SystranTranslator(OnlineMachineTranslator):
     """@reimp"""
     async = True # force async or systran could get hanged
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1744,23 +1752,11 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     leconline.session = session or requests.Session()
     self.engine = leconline
 
-  NOT_SUPPORTED_LANGUAGES = frozenset(('ms', 'th', 'vi'))
-
-  def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
-    if to in self.NOT_SUPPORTED_LANGUAGES:
-      to = 'en'
-    if fr in self.NOT_SUPPORTED_LANGUAGES:
-      fr = 'en'
-    return to, fr
-
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1781,6 +1777,9 @@ class LecOnlineTranslator(OnlineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1789,8 +1788,6 @@ class TransruTranslator(OnlineMachineTranslator):
   key = 'transru' # override
   asyncSupported = False # override  disable async
 
-  SUPPORTED_LANGUAGES = frozenset(('ja', 'en', 'ru', 'it', 'fr', 'de', 'pt', 'es'))
-
   def __init__(self, session=None, **kwargs):
     super(TransruTranslator, self).__init__(**kwargs)
 
@@ -1798,21 +1795,11 @@ class TransruTranslator(OnlineMachineTranslator):
     transru.session = session or requests.Session()
     self.engine = transru
 
-  def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
-    if to not in self.SUPPORTED_LANGUAGES:
-      to = 'en'
-    if fr not in self.SUPPORTED_LANGUAGES:
-      fr = 'en'
-    return to, fr
-
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1833,6 +1820,9 @@ class TransruTranslator(OnlineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1902,7 +1892,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
-    #to = 'vi'
+    #to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1927,6 +1917,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
+    #to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
     except Exception, e: dwarn(e); return ''
@@ -1955,6 +1946,7 @@ class BingTranslator(OnlineMachineTranslator):
     #if fr != 'ja':
     #  return None, None, None
     #to = 'en'
+    #to, fr = self._checkLanguages(to, fr)
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1976,6 +1968,7 @@ class BingTranslator(OnlineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    #to, fr = self._checkLanguages(to, fr)
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -1994,11 +1987,7 @@ class NaverTranslator(OnlineMachineTranslator):
 
   #@staticmethod
   def _checkLanguages(self, to, fr):
-    """
-    @param  to  str
-    @param  fr  str
-    @return  (str to, str fr)
-    """
+    """@reimp"""
     if fr == 'ja':
       return 'ko', 'ja'
     elif fr == 'en':
@@ -2018,6 +2007,8 @@ class NaverTranslator(OnlineMachineTranslator):
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, align=None, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -2052,6 +2043,9 @@ class NaverTranslator(OnlineMachineTranslator):
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -2108,6 +2102,9 @@ class BaiduTranslator(OnlineMachineTranslator):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     #if lang not in ('zhs', 'zht', 'ja', 'en'):
@@ -2142,6 +2139,10 @@ class BaiduTranslator(OnlineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     engine = self.getEngine(fr=fr, to=to)
     try: return self._translateTest(engine.translate,
             text, to=to, fr=fr, async=async)
@@ -2151,6 +2152,13 @@ class YoudaoTranslator(OnlineMachineTranslator):
   key = 'youdao' # override
   asyncSupported = False # override  disable async
   alignSupported = False # override  disable translation alignment
+
+  def _checkLanguages(self, to, fr):
+    """@reimp"""
+    to, fr = super(YoudaoTranslator, self)._checkLanguages(to=to, fr=fr)
+    if to not in ('zhs', 'zht') and fr not in ('zhs', 'zht'):
+      return None, None
+    return to, fr
 
   def __init__(self, session=None, **kwargs):
     super(YoudaoTranslator, self).__init__(**kwargs)
@@ -2180,6 +2188,9 @@ class YoudaoTranslator(OnlineMachineTranslator):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
     #if lang not in ('zhs', 'zht', 'ja', 'en'):
@@ -2206,6 +2217,10 @@ class YoudaoTranslator(OnlineMachineTranslator):
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''

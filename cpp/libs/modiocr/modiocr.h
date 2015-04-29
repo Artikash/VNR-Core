@@ -50,7 +50,7 @@ enum modiocr_lang : unsigned long {
   , modiocr_lang_el = 1 << 10 // miLANG_GREEK = 8,
   , modiocr_lang_hu = 1 << 11 // miLANG_HUNGARIAN = 14,
   , modiocr_lang_it = 1 << 12 // miLANG_ITALIAN = 16,
-  , modiocr_lang_nb = 1 << 13 // miLANG_NORWEGIAN = 20,
+  , modiocr_lang_no = 1 << 13 // miLANG_NORWEGIAN = 20,
   , modiocr_lang_pl = 1 << 14 // miLANG_POLISH = 21,
   , modiocr_lang_pt = 1 << 15 // miLANG_PORTUGUESE = 22,
   , modiocr_lang_ru = 1 << 16 // miLANG_RUSSIAN = 25,

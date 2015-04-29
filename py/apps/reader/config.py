@@ -331,24 +331,8 @@ TR_LOCATIONS = map(parse_path, APP_YAML['tr']) # [unicode abspath]
 #FONT_DEFAULT = SHARE_YAML['fonts']['default']
 
 FONTS = SHARE_YAML['fonts']
-FONT_EN = FONTS['en']
-FONT_JA = FONTS['ja']
-FONT_ZHT = FONTS['zht']
-FONT_ZHS = FONTS['zhs']
-FONT_KO = FONTS['ko']
-FONT_VI = FONTS['vi']
-FONT_TH = FONTS['th']
-FONT_MS = FONTS['ms']
-FONT_ID = FONTS['id']
-FONT_AR = FONTS['ar']
-FONT_DE = FONTS['de']
-FONT_ES = FONTS['es']
-FONT_FR = FONTS['fr']
-FONT_IT = FONTS['it']
-FONT_NL = FONTS['nl']
-FONT_PL = FONTS['pl']
-FONT_PT = FONTS['pt']
-FONT_RU = FONTS['ru']
+def lang_font(lang): # str -> str
+  return FONTS.get(lang) or FONTS['en']
 
 ## Options ##
 
@@ -379,6 +363,10 @@ LATIN_LANGUAGES = SHARE_YAML['languages']['latin']  # [str lang]
 LATIN_LANGUAGE_SET = frozenset(LATIN_LANGUAGES)
 def is_latin_language(lang): return lang in LATIN_LANGUAGE_SET
 
+CYRILLIC_LANGUAGES = SHARE_YAML['languages']['cyrillic']  # [str lang]
+CYRILLIC_LANGUAGE_SET = frozenset(CYRILLIC_LANGUAGES)
+def is_cyrillic_language(lang): return lang in CYRILLIC_LANGUAGE_SET
+
 SPACE_LANGUAGE_SET = frozenset(LATIN_LANGUAGES +
     SHARE_YAML['languages']['space']) # [str lang]
 def language_has_space(lang): return lang in SPACE_LANGUAGE_SET
@@ -407,7 +395,7 @@ def check_valid_language(lang):
     raise ValueError("invalid language %s" % lang)
 
 def language2locale(lang): # str -> str
-  return LANGUAGE_LOCALES.get(lang) or ""
+  return LANGUAGE_LOCALES.get(lang) or "%s_%s" % (lang, lang.upper()) if lang else ''
 
 def language2htmllocale(lang): # str -> str
   if lang == 'zhs':

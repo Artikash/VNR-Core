@@ -507,7 +507,7 @@ Item { id: root_
 
         function translationSummary() {
           var tr = My.tr(Util.translatorName(model.provider))
-          var lang = Sk.tr(model.language)
+          var lang = Sk.tr(Util.languageShortName(model.language))
           return tr + " (" + lang + ")"
         }
 

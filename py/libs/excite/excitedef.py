@@ -11,8 +11,8 @@ MT_LANGUAGES = frozenset((
 
   'fr',
   'de',
-  'it',
   'es',
+  'it',
   'pt',
   'ru',
 ))

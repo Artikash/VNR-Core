@@ -85,9 +85,13 @@ def _lang_level(lang):
     return 0
   if lang == 'en':
     return 1
+  if lang == 'el':
+    return 4
+  if config.is_cyrillic_language(lang):
+    return 3
   if config.is_latin_language(lang):
     return 2
-  return 3
+  return 5
 def _lang_sort_key(t, s):
   """Larger applied first
   @param  t  str  target language
@@ -422,6 +426,7 @@ class TermWriter:
     fr2 = fr[:2]
     to2 = to[:2]
     fr_is_latin = config.is_latin_language(fr)
+    fr_is_cyrillic = config.is_cyrillic_language(fr)
     items = set() # skip duplicate names
     types = frozenset(types)
     for td in self.termData:
@@ -432,6 +437,7 @@ class TermWriter:
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and not (td.type == 'yomi' and to2 == 'zh' and not ja2zh_name_test(td.pattern)) # skip yomi for Chinese if not pass name test
           and (td.sourceLanguage.startswith(fr2)
+            or fr != 'ru' and fr_is_cyrillic and td.sourceLanguage == 'ru'
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
             or td.sourceLanguage == 'ja' and (
               td.type in jatypes

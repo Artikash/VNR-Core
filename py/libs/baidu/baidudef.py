@@ -320,13 +320,13 @@ BD_LANGUAGES = {
   # The same
   'en': 'en',
   'th': 'th',
+
   'de': 'de',
+  'el': 'el', # Greek
   'it': 'it',
   'nl': 'nl',
   'pt': 'pt',
   'ru': 'ru',
-
-  'el': 'el', # Greek
 
   # Chinese variants
   'yue': 'yue', # 粤语

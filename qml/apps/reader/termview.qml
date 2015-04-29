@@ -216,7 +216,7 @@ Item { id: root_
         append({value:'', text:"From"})
         for (var i in Util.LANGUAGES) {
           var lang = Util.LANGUAGES[i]
-          append({value:lang, text:Sk.tr(lang)})
+          append({value:lang, text:Sk.tr(Util.languageShortName(lang))})
         }
       }
     }
@@ -254,7 +254,7 @@ Item { id: root_
         append({value:'', text:"To"})
         for (var i in Util.LANGUAGES) {
           var lang = Util.LANGUAGES[i]
-          append({value:lang, text:Sk.tr(lang)})
+          append({value:lang, text:Sk.tr(Util.languageShortName(lang))})
         }
       }
     }

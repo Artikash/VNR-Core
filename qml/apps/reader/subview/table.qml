@@ -235,7 +235,7 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          text: Sk.tr(itemValue.language || 'en')
+          text: Sk.tr(Util.languageShortName(itemValue.language || 'en'))
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
@@ -249,7 +249,7 @@ Item { id: root_
                 var lang = Util.LANGUAGES[i]
                 append({
                   value: lang
-                  , text: Sk.tr(lang)
+                  , text: Sk.tr(Util.languageShortName(lang))
                 })
               }
             }
