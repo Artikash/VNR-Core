@@ -5391,7 +5391,7 @@ class _DictionaryDownloadsTab(object):
 
     r = 0
 
-    infoLabel = QtWidgets.QLabel(my.tr("Using phrase dictionaries requires at least one MeCab dictionary to be installed."))
+    infoLabel = QtWidgets.QLabel(my.tr("Using phrase dictionaries requires MeCab UniDic dictionary to be installed."))
     infoLabel.setWordWrap(True)
     skqss.class_(infoLabel, 'text-info')
     grid.addWidget(infoLabel, r, 0, 1, 3)
