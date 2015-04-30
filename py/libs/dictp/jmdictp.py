@@ -59,7 +59,7 @@ def parsedef(t, language=None):
   if t and t[-1] == u'…':
     t = t[:-1].rstrip()
   if t:
-    for c in u'｛｝<>［］｜−·１２３４５６７８９０':
+    for c in u'｛｝<>［］｜−·１２３４５６７８９０‘’':
       if c in t:
         return ''
     if edict1:

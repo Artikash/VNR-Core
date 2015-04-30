@@ -152,8 +152,8 @@ class _MeCabParser:
     """
     ret = tr(surface)
     if ret:
-      if ret == surface:
-        return
+      #if ret == surface:
+      #  return
       return ret
     s = self.formatter.getsource(feature)
     if s and s != surface:
