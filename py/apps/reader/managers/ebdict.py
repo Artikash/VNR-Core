@@ -395,17 +395,8 @@ class JMDict(FreePWING):
   def name(self): return "JMDict-" + self.language # override
 
   def renderText(self, text):
-    if self.language == 'ru':
-      text = self.renderRussianText(text)
-    return super(JMDict, self).renderText(text)
-
-  @staticmethod
-  def renderRussianText(text): # unicode -> unicode
-    text = text.replace(u'？', '') # remove question mark
-    # Append ':' after cyrillic characters
-    # http://stackoverflow.com/questions/10981258/how-can-i-specify-cyrillic-character-ranges-in-a-python-3-2-regex
-    #text = re.sub(u"(?=[\u0400-\u0500])", ": ", text)
-    return text
+    import _dictman # FIXME: cross package
+    return _dictman.render_jmdict(text, self.language)
 
 @memoized
 def kojien():

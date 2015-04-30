@@ -237,9 +237,9 @@ if __name__ == '__main__':
 
   def test_jmdict():
     import ebdict
-    lang = 'nl'
+    #lang = 'nl'
     #lang = 'ru'
-    #lang = 'fr'
+    lang = 'fr'
     d = ebdict.jmdict(lang)
     #t = u'可愛い'
     #t = u'親父'
