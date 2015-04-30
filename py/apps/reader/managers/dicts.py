@@ -150,9 +150,10 @@ class StarDict(Dict):
     from sakurakit import skfileio
     return skfileio.removetree(os.path.dirname(self.path))
 
-  def translate(self, t):
+  def translate(self, t, **kwargs):
     """
-    @param  unicode
+    @param  t  unicode
+    @param*  kwargs  parameters passed to parse
     @return  unicode or None
     """
     d = self.d
@@ -165,7 +166,7 @@ class StarDict(Dict):
       q = d.query(t)
       if q:
         for it in q:
-          ret = parse(it)
+          ret = parse(it, **kwargs)
           if ret:
             return ret
 

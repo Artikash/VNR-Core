@@ -21,9 +21,10 @@ def parseyomi(t):
     if t and jpchars.iskana(t[0]):
       return t
 
-def parsedef(text):
+def parsedef(text, english=False):
   """Get short definition out of translation
   @param  t  unicode
+  @param* english  bool  English only
   @return  unicode or None
   """
   ret = None
@@ -41,7 +42,7 @@ def parsedef(text):
       ret = text[start:stop]
 
   # When the text is after -
-  if not ret:
+  if not ret and not english:
     i = text.find('- ')
     if i != -1:
       ret = text[i+2:]
@@ -138,12 +139,12 @@ if __name__ == '__main__':
   #t = u'ふとん'
   #t = u'目'
   #t = u'中'
-  #t = u'合う'
+  t = u'合う'
   #t = u'意図'
   #t = u'足'
 
   # adj
-  t = u'可愛い'
+  #t = u'可愛い'
   #t = u'かわいい'
   #t = u'ルージュ'
   #t = u'応える'
@@ -162,7 +163,7 @@ if __name__ == '__main__':
   #t = u'まま'
   #t = u'逃す'
   #t = u'商店'
-  t = u'永遠'
+  #t = u'永遠'
   from stardict import stardict
   dic = stardict.StarDict(path)
   print dic.init()
@@ -174,5 +175,6 @@ if __name__ == '__main__':
       print it
       print "yomi:", parseyomi(it)
       print "def:", parsedef(it)
+      print "def_en:", parsedef(it, english=True)
 
 # EOF
