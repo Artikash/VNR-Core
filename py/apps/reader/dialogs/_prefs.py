@@ -4071,8 +4071,8 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
   @memoizedproperty
   def viButton(self):
     ret = QtWidgets.QRadioButton(
-      "%s, %s: %s" %
-      (notr_("Phiên âm"), my.tr("like this"), u"麻婆豆腐（ma bà đậu hủ）"))
+      "%s (%s), %s: %s" %
+      (tr_("Vietnamese"), u"Phiên âm", my.tr("like this"), u"麻婆豆腐（ma bà đậu hủ）"))
     ret.toggled.connect(self._saveChineseGroup)
     return ret
 
@@ -4443,7 +4443,7 @@ class _DictionaryTranslationTab(object):
   def viButton(self):
     ret = QtWidgets.QRadioButton(
       "%s (%s), %s: %s" %
-      (tr_("Vietnamese"), notr_("Phiên âm"), my.tr("like this"), u"可愛い（khả ái i）"))
+      (tr_("Vietnamese"), u"Phiên âm", my.tr("like this"), u"可愛い（khả ái i）"))
     ret.toggled.connect(self._saveRubyType)
     return ret
 
