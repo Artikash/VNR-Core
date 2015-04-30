@@ -86,7 +86,7 @@ LINGOES_DICT_SIZES = {
 }
 
 STARDICT_NAMES = {
-  'ja-vi': my.tr("OVDP Japanese-Vietnamese dictionary"),
+  'ja-vi': my.tr("OVDP Japanese-Vietnamese/English dictionary"),
 }
 
 STARDICT_SIZES = {
@@ -4500,10 +4500,12 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.rubyZhButton)
     if 'ko' not in blans:
       layout.addWidget(self.rubyKoButton)
-    if 'vi' not in blans:
-      layout.addWidget(self.rubyViButton)
     if 'de' not in blans:
       layout.addWidget(self.rubyDeButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.rubyViButton)
+    if 'en' not in blans:
+      layout.addWidget(self.rubyEnButton)
 
     ret = QtWidgets.QGroupBox(my.tr(
       "Preferred languages to display translation in ruby for Japanese"
@@ -4546,6 +4548,16 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def rubyEnButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        tr_("English"), my.tr("like this"), u"可愛い（pretty）",
+        my.tr("require {0}").format(STARDICT_NAMES['ja-vi'])))
+    ret.language = 'en'
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
+  @memoizedproperty
   def rubyDeButton(self):
     ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
         tr_("German"), my.tr("like this"), u"可愛い（niedlich）",
@@ -4556,9 +4568,13 @@ class _DictionaryTranslationTab(object):
     return ret
 
   def _saveRubyLanguage(self):
-    v = [b.language for b in
-        (self.rubyZhButton, self.rubyKoButton, self.rubyViButton, self.rubyDeButton)
-        if b.isChecked()]
+    v = [b.language for b in (
+      self.rubyZhButton,
+      self.rubyKoButton,
+      self.rubyViButton,
+      self.rubyDeButton,
+      self.rubyEnButton,
+    ) if b.isChecked()]
     settings.global_().setJapaneseRubyLanguages(v)
 
   # Dictionaries
@@ -4739,6 +4755,10 @@ class _DictionaryTranslationTab(object):
       name = 'ja-en'
       b = self.lingoesJaEnButton
       b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+
+      name = 'ja-vi'
+      b = self.rubyEnButton
+      b.setEnabled(b.isChecked() or dicts.stardict(name).exists())
 
     if 'fr' not in blans:
       lang = 'fr'
@@ -5388,12 +5408,16 @@ class _DictionaryDownloadsTab(object):
         r += 1
 
     for lang in config.STARDICT_LANGS:
-      if lang[:2] not in blans:
-        name = 'ja-' + lang
-        grid.addWidget(self.getStardictButton(name), r, 0)
-        grid.addWidget(self.getStardictStatusLabel(name), r, 1)
-        grid.addWidget(self.getStardictIntroLabel(name), r, 2)
-        r += 1
+      if lang == 'vi':
+        if 'vi' in blans and 'en' in blans:
+          continue
+      elif lang in blans:
+        continue
+      name = 'ja-' + lang
+      grid.addWidget(self.getStardictButton(name), r, 0)
+      grid.addWidget(self.getStardictStatusLabel(name), r, 1)
+      grid.addWidget(self.getStardictIntroLabel(name), r, 2)
+      r += 1
 
     if 'de' not in blans:
       grid.addWidget(self.wadokuButton, r, 0)
@@ -5892,13 +5916,21 @@ class _DictionaryDownloadsTab(object):
     #map(self.refreshMeCab, config.MECAB_DICS)
     #map(self.refreshCaboCha, config.CABOCHA_DICS)
 
-    map(self.refreshJMDict, config.JMDICT_LANGS)
+    for lang in config.JMDICT_LANGS:
+      if lang not in blans:
+        self.refreshJMDict(lang)
 
     for lang in config.LINGOES_LANGS:
-      name = 'ja-' + lang
-      self.refreshLingoes(name)
+      if lang not in blans:
+        name = 'ja-' + lang
+        self.refreshLingoes(name)
 
     for lang in config.STARDICT_LANGS:
+      if lang == 'vi':
+        if 'vi' in blans and 'en' in blans:
+          continue
+      elif lang in blans:
+        continue
       name = 'ja-' + lang
       self.refreshStardict(name)
 

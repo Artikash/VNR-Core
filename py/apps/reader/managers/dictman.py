@@ -281,6 +281,9 @@ class _DictionaryManager:
     if not ret and 'de' in self.japaneseTranslateLanguages:
       ret = ebdict.wadoku().translate(t)
 
+    if not ret and 'en' in self.japaneseTranslateLanguages:
+      ret = dicts.stardict('ja-vi').translate(t, english=True)
+
     if ret and len(ret) > len(t) * 20: # skip very long translation
       return
 
