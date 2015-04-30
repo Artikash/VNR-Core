@@ -2731,7 +2731,7 @@ VNR可以自動從臺灣大學下載並安裝pAppLocale。
     <message>
         <location filename="dialogs/_prefs.py" line="5394"/>
         <source>Using phrase dictionaries requires at least one MeCab dictionary to be installed.</source>
-        <translation>使用單詞字典需要安裝至少一個MeCab辭書。</translation>
+        <translation type="obsolete">使用單詞字典需要安裝至少一個MeCab辭書。</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="296"/>
@@ -4498,6 +4498,11 @@ The dictionary will be installed to {1}.</source>
         <location filename="dialogs/_prefs.py" line="89"/>
         <source>OVDP Japanese-Vietnamese/English dictionary</source>
         <translation>OVDP日文-越南/英文字典</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="5394"/>
+        <source>Using phrase dictionaries requires MeCab UniDic dictionary to be installed.</source>
+        <translation>使用單詞字典需要安裝MeCab UniDic辭書。</translation>
     </message>
 </context>
 </TS>

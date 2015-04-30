@@ -2763,7 +2763,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
     <message>
         <location filename="dialogs/_prefs.py" line="5394"/>
         <source>Using phrase dictionaries requires at least one MeCab dictionary to be installed.</source>
-        <translation>구문분석 사전을 이용하려면 적어도 하나의 MeCab 사전이 설치되어야 합니다.</translation>
+        <translation type="obsolete">구문분석 사전을 이용하려면 적어도 하나의 MeCab 사전이 설치되어야 합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="296"/>
@@ -4525,7 +4525,12 @@ The dictionary will be installed to {1}.</source>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="89"/>
-        <source>OVDP Japanese-Vietnamese-English dictionary</source>
+        <source>OVDP Japanese-Vietnamese/English dictionary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="5394"/>
+        <source>Using phrase dictionaries requires MeCab UniDic dictionary to be installed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

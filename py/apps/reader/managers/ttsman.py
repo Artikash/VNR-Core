@@ -12,7 +12,7 @@ from PySide.QtCore import QObject, Slot, QTimer, QMutex
 from sakurakit.skdebug import dwarn, dprint
 from sakurakit.skclass import memoized
 #from sakurakit.skqml import QmlObject
-from unitraits import jpchars
+from unitraits import jpchars, unilang
 from mytr import my
 import features, growl, settings, termman, textutil
 import _ttsman
@@ -125,7 +125,7 @@ class _TtsManager(object):
       return
 
     if language == '?': #
-      language = textutil.guess_text_language(text) or ''
+      language = unilang.guess_language(text) or 'ja'
 
     if language and eng.language and eng.language != '*' and language[:2] != eng.language[:2]:
       #if verbose:

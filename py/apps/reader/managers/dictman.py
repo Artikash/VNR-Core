@@ -266,28 +266,41 @@ class _DictionaryManager:
     @param  unicode
     @return  unicode or None
     """
+    MAX_LENGTH = len(t) * 20
     ret = None
     if not ret and 'zh' in self.japaneseTranslateLanguages:
-      ret = dicts.lingoes('ja-zh').translate(t) or dicts.lingoes('ja-zh-gbk').translate(t)
-      if ret and self.userLanguage == 'zht':
-        ret = convutil.zhs2zht(ret)
+      for dic in 'ja-zh', 'ja-zh-gbk':
+        ret = dicts.lingoes(dic).translate(t)
+        if ret and len(ret) < MAX_LENGTH:
+          if self.userLanguage == 'zht':
+            ret = convutil.zhs2zht(ret)
+          return ret
 
-    if not ret and 'ko' in self.japaneseTranslateLanguages:
+    if 'ko' in self.japaneseTranslateLanguages:
       ret = dicts.lingoes('ja-ko').translate(t)
+      if ret and len(ret) < MAX_LENGTH:
+        return ret
 
-    if not ret and 'vi' in self.japaneseTranslateLanguages:
+    if 'vi' in self.japaneseTranslateLanguages:
       ret = dicts.stardict('ja-vi').translate(t)
+      if ret and len(ret) < MAX_LENGTH:
+        return ret
 
-    if not ret and 'de' in self.japaneseTranslateLanguages:
+    if 'de' in self.japaneseTranslateLanguages:
       ret = ebdict.wadoku().translate(t)
+      if ret and len(ret) < MAX_LENGTH:
+        return ret
+
+    for lang in config.JMDICT_LANGS:
+      if lang in self.japaneseTranslateLanguages:
+        ret = ebdict.jmdict(lang).translate(t)
+        if ret and len(ret) < MAX_LENGTH:
+          return ret
 
     if not ret and 'en' in self.japaneseTranslateLanguages:
       ret = dicts.stardict('ja-vi').translate(t, english=True)
-
-    if ret and len(ret) > len(t) * 20: # skip very long translation
-      return
-
-    return ret
+      if ret and len(ret) < MAX_LENGTH:
+        return ret
 
 class DictionaryManager:
 
