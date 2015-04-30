@@ -2,6 +2,7 @@
 # jpchars.py
 # 12/30/2012 jichi
 
+from functools import partial
 import unichars
 
 ## Character traits ##
@@ -27,12 +28,13 @@ l_kata = list(s_kata)
 #re_hira_all = re.compile(r"[%s]+" % s_hira)
 #re_kata_all = re.compile(r"[%s]+" % s_kata)
 
-def anyhira(text): return unichars.ordany(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira.search(text))
-def anykata(text): return unichars.ordany(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata.search(text))
-def allkanji(text): return unichars.ordall(text, unichars.ORD_KANJI_FIRST, unichars.ORD_KANJI_LAST)
-def allhira(text): return unichars.ordall(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira_all.match(text))
-def allkata(text): return unichars.ordall(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata_all.match(text))
-def anykanji(text): return unichars.ordany(text, unichars.ORD_KANJI_FIRST, unichars.ORD_KANJI_LAST)
+anyhira = partial(unichars.ordany, start=unichars.ORD_HIRA_FIRST, stop=unichars.ORD_HIRA_LAST) # unicode -> bool
+anykata = partial(unichars.ordany, start=unichars.ORD_KATA_FIRST, stop=unichars.ORD_KATA_LAST) # unicode -> bool
+anykanji = partial(unichars.ordany, start=unichars.ORD_KANJI_FIRST, stop=unichars.ORD_KANJI_LAST) # unicode -> bool
+
+allhira = partial(unichars.ordall, start=unichars.ORD_HIRA_FIRST, stop=unichars.ORD_HIRA_LAST) # unicode -> bool
+allkata = partial(unichars.ordall, start=unichars.ORD_KATA_FIRST, stop=unichars.ORD_KATA_LAST) # unicode -> bool
+allkanji = partial(unichars.ordall, start=unichars.ORD_KANJI_FIRST, stop=unichars.ORD_KANJI_LAST) # unicode -> bool
 
 def anykana(text): return anyhira(text) or anykata(text)
 def allkana(text):
@@ -43,17 +45,19 @@ def allkana(text):
       return False
   return True
 
-def ishirachar(ch): return len(ch) == 1 and unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST
-def iskatachar(ch): return len(ch) == 1 and unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST
-def iskanjichar(ch): return len(ch) == 1 and unichars.ORD_KANJI_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KANJI_LAST
-def iskanachar(ch): return len(ch) == 1 and (
+ishira = partial(unichars.charinrange, start=unichars.ORD_HIRA_FIRST, stop=unichars.ORD_HIRA_LAST)
+iskata = partial(unichars.charinrange, start=unichars.ORD_KATA_FIRST, stop=unichars.ORD_KATA_LAST)
+iskanji = partial(unichars.charinrange, start=unichars.ORD_KANJI_FIRST, stop=unichars.ORD_KANJI_LAST)
+
+def iskana(ch): return len(ch) == 1 and (
     unichars.ORD_KATA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_KATA_LAST or
     unichars.ORD_HIRA_FIRST <= ord(ch) and ord(ch) <= unichars.ORD_HIRA_LAST)
 
-iskana = iskanachar
-ishira = ishirachar
-iskata = iskatachar
-iskanji = iskanjichar
+# Backward compatibility
+iskanachar = iskana
+ishirachar = ishira
+iskatachar = iskata
+iskanjichar = iskanji
 
 #re_not_hira = re.compile(r"[^%s]" % s_hira)
 #re_not_kata = re.compile(r"[^%s]" % s_kata)

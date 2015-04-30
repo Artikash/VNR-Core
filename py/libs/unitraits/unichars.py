@@ -27,6 +27,10 @@ ORD_IALPHA_LAST = ord('z')
 ORD_UALPHA_FIRST = ord('A')
 ORD_UALPHA_LAST = ord('Z')
 
+# http://stackoverflow.com/questions/10981258/how-can-i-specify-cyrillic-character-ranges-in-a-python-3-2-regex
+ORD_CYRIL_FIRST = 0x400
+ORD_CYRIL_LAST = 0x500
+
 #ORD_NUM_FIRST = ord('0') # 48
 #ORD_NUM_LAST = ord('9') # 57
 
@@ -52,6 +56,8 @@ def ordall(text, start, stop):
   @param  stop  int
   @return  bool
   """
+  if not text:
+    return False
   for c in text:
     u8 = ord(c)
     if u8 < start or u8 > stop:
@@ -84,5 +90,31 @@ def isalpha(ch):
     ch = ord(ch)
     return ORD_IALPHA_FIRST <= ch and ch <= ORD_IALPHA_LAST or ORD_UALPHA_FIRST <= ch and ch <= ORD_UALPHA_LAST
   return False
+
+def findrange(text, start, stop):
+  """
+  @param  text  str
+  @param  start  int
+  @param  stop  int
+  @return  int
+  """
+  for i,c in enumerate(text):
+    c = ord(c)
+    if start <= c and c <= stop:
+      return i
+  return -1
+
+def charinrange(ch, start, stop):
+  """
+  @param  ch  unicode
+  @param  start  int
+  @param  stop  int
+  @return  bool
+  """
+  #if isinstance(ch, basestring):
+  if len(ch) != -1:
+    return False
+  ch = ord(ch)
+  return start <= ch and ch <= stop
 
 # EOF

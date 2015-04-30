@@ -18,4 +18,26 @@ def ishangul(ch):
     or 0xd7b0 <= ch and ch <= 0xd7ff # Hangul Jamo Extended-B (D7B0-D7FF)
   )
 
+def anyhangul(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  for c in text:
+    if ishangul(c):
+      return True
+  return False
+
+def allhangul(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  if not text:
+    return False
+  for c in text:
+    if not ishangul(c):
+      return False
+  return True
+
 # EOF

@@ -4502,6 +4502,12 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.rubyKoButton)
     if 'de' not in blans:
       layout.addWidget(self.rubyDeButton)
+    if 'fr' not in blans:
+      layout.addWidget(self.rubyFrButton)
+    if 'nl' not in blans:
+      layout.addWidget(self.rubyNlButton)
+    if 'ru' not in blans:
+      layout.addWidget(self.rubyRuButton)
     if 'vi' not in blans:
       layout.addWidget(self.rubyViButton)
     if 'en' not in blans:
@@ -4567,12 +4573,48 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(self._saveRubyLanguage)
     return ret
 
+  @memoizedproperty
+  def rubyFrButton(self):
+    lang = 'fr'
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        i18n.language_name(lang), my.tr("like this"), u"可愛い（charmant）",
+        my.tr("require {0}").format(JMDICT_DICT_NAMES[lang])))
+    ret.language = lang
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
+  @memoizedproperty
+  def rubyNlButton(self):
+    lang = 'nl'
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        i18n.language_name(lang), my.tr("like this"), u"可愛い（lief）",
+        my.tr("require {0}").format(JMDICT_DICT_NAMES[lang])))
+    ret.language = lang
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
+  @memoizedproperty
+  def rubyRuButton(self):
+    lang = 'ru'
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+        i18n.language_name(lang), my.tr("like this"), u"可愛い（прелестный）",
+        my.tr("require {0}").format(JMDICT_DICT_NAMES[lang])))
+    ret.language = lang
+    ret.setChecked(ret.language in settings.global_().japaneseRubyLanguages())
+    ret.toggled.connect(self._saveRubyLanguage)
+    return ret
+
   def _saveRubyLanguage(self):
     v = [b.language for b in (
       self.rubyZhButton,
       self.rubyKoButton,
       self.rubyViButton,
       self.rubyDeButton,
+      self.rubyFrButton,
+      self.rubyRuButton,
+      self.rubyNlButton,
       self.rubyEnButton,
     ) if b.isChecked()]
     settings.global_().setJapaneseRubyLanguages(v)
@@ -4764,14 +4806,25 @@ class _DictionaryTranslationTab(object):
       lang = 'fr'
       b = self.jmdictFrButton
       b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
+
+      b = self.rubyFrButton
+      b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
+
     if 'ru' not in blans:
       lang = 'ru'
       b = self.jmdictRuButton
       b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
+
+      b = self.rubyRuButton
+      b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
+
     if 'nl' not in blans:
       lang = 'nl'
       b = self.jmdictNlButton
       b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
+
+      b = self.rubyNlButton
+      b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
 
     if 'de' not in blans:
       t = ss.isWadokuEnabled() or dicts.wadoku().exists()

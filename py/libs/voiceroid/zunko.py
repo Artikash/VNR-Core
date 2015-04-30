@@ -14,6 +14,8 @@ if __name__ == '__main__':
     '../../../../Qt/PySide',
   ))
 
+from sakurakit.skdebug import dwarn
+
 import string
 from unitraits import jpchars
 def _allpunct(text):
@@ -132,7 +134,10 @@ if os.name == 'nt':
       if _allpunct(text): # otherwise, it could crash zunko
         text = None
       elif isinstance(text, unicode):
-        text = text.encode(self.ENCODING, errors='ignore')
+        try: text = text.encode(self.ENCODING) # skip illegal characters
+        except UnicodeEncodeError, e:
+          dwarn("skip non sjis text")
+          text = None
       if not text:
         self.stop()
       else:

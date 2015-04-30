@@ -244,7 +244,8 @@ Rectangle { id: root_
       focus: true
       font.pixelSize: 12 * root_._zoomFactor
       //font.bold: true
-      font.family: 'MS Mincho' // 明朝
+      //font.family: 'MS Mincho' // 明朝
+      font.family: 'Tahoma' // use this font for international text
 
       // Not working, which cause textedit width to shrink
       //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)

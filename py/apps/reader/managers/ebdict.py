@@ -328,6 +328,7 @@ class KoudanjcDic(EBook):
 # Downloadable FPW
 
 class FreePWING(EBook): # Free EPWING
+  language = ''
 
   def __init__(self, *args, **kwargs):
     super(FreePWING, self).__init__(*args, **kwargs)
@@ -344,9 +345,23 @@ class FreePWING(EBook): # Free EPWING
       for it in super(FreePWING, self).render(*args, **kwargs):
         yield it
 
+  def translate(self, text):
+    """
+    @param  text  unicode
+    @return  unicode or None
+    """
+    try:
+      for it in self.lookup(text):
+        text = it.text().decode('utf8', errors='ignore') # decode might throw key error?!
+        if text:
+          from dictp import jmdictp
+          return jmdictp.parsedef(text, self.language)
+    except Exception, e: dwarn(e)
+
 # 和独辞書
 class WadokuDic(FreePWING):
   NAME = 'WADOKU'   # must be consistent with gaiji
+  language = 'ru' # override
   URL = "http://www.wadoku.de/wiki/display/WAD/Downloads+und+Links"
 
   def __init__(self):
@@ -365,19 +380,6 @@ class WadokuDic(FreePWING):
       text += '</ol>'
     return text
 
-  def translate(self, text):
-    """
-    @param  text  unicode
-    @return  unicode or None
-    """
-    try:
-      for it in self.lookup(text):
-        text = it.text().decode('utf8', errors='ignore') # decode might throw key error?!
-        if text:
-          from dictp import wadokudictp
-          return wadokudictp.parsedef(text)
-    except Exception, e: dwarn(e)
-
 # JMDict
 class JMDict(FreePWING):
   NAME = 'JMDict'
@@ -386,11 +388,24 @@ class JMDict(FreePWING):
   URL = "ftp://ftp.monash.edu.au/pub/nihongo"
 
   def __init__(self, language): # str
-    self.language = language
+    self.language = language # override
     super(JMDict, self).__init__(eb=EBShiori)
         #encoding='utf8')
 
   def name(self): return "JMDict-" + self.language # override
+
+  def renderText(self, text):
+    if self.language == 'ru':
+      text = self.renderRussianText(text)
+    return super(JMDict, self).renderText(text)
+
+  @staticmethod
+  def renderRussianText(text): # unicode -> unicode
+    text = text.replace(u'？', '') # remove question mark
+    # Append ':' after cyrillic characters
+    # http://stackoverflow.com/questions/10981258/how-can-i-specify-cyrillic-character-ranges-in-a-python-3-2-regex
+    #text = re.sub(u"(?=[\u0400-\u0500])", ": ", text)
+    return text
 
 @memoized
 def kojien():

@@ -686,8 +686,8 @@ stardict:
 
 jmdict: # language
   - fr
-  - ru
   - nl
+  - ru
 
 jcuserdic: # The preferences will be from top to down
   - $PWD/../../Dictionaries/jb/@djz020815/JcUserdic/Jcuser
