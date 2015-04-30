@@ -243,7 +243,8 @@ if __name__ == '__main__':
     d = ebdict.jmdict(lang)
     #t = u'可愛い'
     #t = u'親父'
-    t = u'想像'
+    #t = u'想像'
+    t = u'貰う'
     #t = u'殺す'
     #t = u'風'
     #t = u'です'
