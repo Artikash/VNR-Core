@@ -165,9 +165,9 @@ var LANGUAGE_FONT = {
   , zhs: "YouYuan"
   , zht: "YouYuan"
   , ko: "Batang"
-  , vi: "Tahoma"
-  , th: "Tahoma"
-  , ar: "Tahoma" //"Aria"
+  //, vi: "Tahoma"
+  //, th: "Tahoma"
+  //, ar: "Tahoma" //"Aria"
 };
 /**
  *  @param  lang  string
@@ -175,7 +175,7 @@ var LANGUAGE_FONT = {
  *
  *  http://en.wikipedia.org/wiki/List_of_CJK_fonts
  */
-function fontFamilyForLanguage(lang) { return LANGUAGE_FONT[lang] || "Helvetica"; }
+function fontFamilyForLanguage(lang) { return LANGUAGE_FONT[lang] || "Tahoma"; } // "Helvetica" not available on Windows
 
 var TRANSLATOR_HOST_KEYS = [
   'bing'
