@@ -10,11 +10,13 @@ if __name__ == '__main__':
 
 import re
 from sakurakit import skstr
-from unitraits import jpmacros
+from unitraits import jpmacros, cyrilchars
 import convutil
 
 #RIGHT_ARROW = u"→" # みぎ
 RIGHT_ARROW = u"⇒" # みぎ
+
+# EDICT
 
 # Example: /EntL1390270X/
 _rx_edict_ref = re.compile(r'/[0-9a-zA-Z]+/$')
@@ -62,11 +64,13 @@ def render_edict(text):
   if popular:
     if head:
       head += ' '
-    head += '<span class="flag">(common usage)</div>'
+    head += '<span class="flag">(common usage)</span>'
   if head:
     head = '<div class="head">%s</div>' % head
     text = head + text
   return text
+
+# Lingoes
 
 def _sub_roman(m): # re.match -> unicode
   t = m.group(2)
@@ -142,6 +146,8 @@ def render_lingoes(text, dic=None):
   """
   return _render_lingoes(text, dic)
 
+# OVDP
+
 def _ovdp_romaji_replace(m):
   kana = m.group(1)
   return "%s (%s)" % (kana, convutil.kana2romaji(kana))
@@ -187,6 +193,70 @@ def render_stardict(text, dic=None):
   """
   if dic == 'ovdp':
     return _render_ovdp(text)
+  return text
+
+# JMDict
+
+def _render_jmdict_nl(text):
+  """Render JMDict ja-nl dictionary.
+  @param  t  unicode
+  @return  unicode  html
+  """
+  if '(1)' in text:
+    text = text.replace('(1)', '<ol>(1)')
+    text = text.replace('<br/><ol>', '<ol>')
+    text = re.sub(r'\s?\(\d+\)\s?', '<li>', text)
+    text += '</ol>'
+  text = text.replace(' }', '}') # trim space
+  return text
+
+def _render_jmdict_ru(text):
+  """Render JMDict ja-ru dictionary.
+  @param  t  unicode
+  @return  unicode  html
+  """
+  text = text.replace(u'?', '') # remove question mark
+  i = cyrilchars.findcyril(text)
+  if i > 0 and text[i-1] != '>':
+    text = text[:i] + '<br/>' + text[i:]
+  return text
+
+#def _render_jmdict_fr(text):
+#  """Render JMDict ja-fr dictionary.
+#  @param  t  unicode
+#  @return  unicode  html
+#  """
+#  return text
+
+def render_jmdict(text, language=None):
+  """Render ovdp ja-vi dictionary.
+  @param  text  unicode
+  @param* language  str
+  @return  unicode  html
+  """
+  if language == 'ru':
+    text = _render_jmdict_ru(text)
+  elif language == 'nl':
+    text = _render_jmdict_nl(text)
+  #elif language == 'fr':
+  #  text = _render_jmdict_fr(text)
+
+  BR = '<br/>'
+  text = text.replace(u'【', BR + u'【') # break new line
+  if text.startswith(BR):
+    text = text[len(BR):]
+  if text.endswith(BR):
+    text = text[:-len(BR)]
+
+  COMMON = '(common)'
+  if COMMON in text:
+    left, flag, right = text.partition(COMMON)
+    if '>' in left:
+      left, mid, role = left.rpartition('>')
+      if ';' not in role:
+        role = '<span class="role">[%s]</span> ' % role.strip()
+        flag = '<span class="flag">%s</span>' % flag
+        text = left + mid + role + flag + right
   return text
 
 if __name__ == '__main__':

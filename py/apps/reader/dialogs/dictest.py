@@ -112,7 +112,7 @@ class _DictionaryTester(object):
     t = self._getInputText()
     if t:
       import ttsman
-      ttsman.speak(t, language='ja')
+      ttsman.speak(t, language='?')
 
   def _paste(self):
     from sakurakit import skclip
