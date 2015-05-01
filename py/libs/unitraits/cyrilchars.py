@@ -32,6 +32,7 @@ RU_UK = ( # (unicode ru, unicode uk)
   (u'э', u'е'),
   (u'и', u'і'),
   #(u'й', u'і'), # u'j'
+  (u'г', u'ґ'),
   (u'х', u'г'),
 )
 def ru2uk(text):
