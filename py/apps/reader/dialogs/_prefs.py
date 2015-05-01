@@ -4372,6 +4372,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.trButton)
     if 'ru' not in blans:
       layout.addWidget(self.ruButton)
+    if 'uk' not in blans:
+      layout.addWidget(self.ukButton)
     if 'ko' not in blans:
       layout.addWidget(self.koButton)
     if 'vi' not in blans:
@@ -4438,6 +4440,14 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def ukButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (tr_("Ukrainian"), my.tr("like this"), u"可愛い（каваіі）"))
+    ret.toggled.connect(self._saveRubyType)
+    return ret
+
+  @memoizedproperty
   def koButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
@@ -4490,6 +4500,7 @@ class _DictionaryTranslationTab(object):
     t = settings.global_().japaneseRubyType()
     b = (self.romajiButton if t == mecabdef.RB_ROMAJI else
         self.ruButton if t == mecabdef.RB_RU else
+        self.ukButton if t == mecabdef.RB_UK else
         self.koButton if t == mecabdef.RB_KO else
         self.thButton if t == mecabdef.RB_TH else
         self.arButton if t == mecabdef.RB_AR else
@@ -4503,6 +4514,7 @@ class _DictionaryTranslationTab(object):
   def _saveRubyType(self):
     t = (mecabdef.RB_ROMAJI if self.romajiButton.isChecked() else
         mecabdef.RB_RU if self.ruButton.isChecked() else
+        mecabdef.RB_UK if self.ukButton.isChecked() else
         mecabdef.RB_KO if self.koButton.isChecked() else
         mecabdef.RB_TH if self.thButton.isChecked() else
         mecabdef.RB_AR if self.arButton.isChecked() else
