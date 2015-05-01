@@ -80,7 +80,7 @@ public:
   bool containsProcess(ulong pid) const;
   bool isEmpty() const; ///<  Return true if at least one process is attached
 
-  bool addHookCode(ulong pid, const QString &code, const QString &name = QString());
+  bool addHookCode(ulong pid, const QString &code, const QString &name = QString(), bool verbose = true);
   static bool verifyHookCode(const QString &code); ///< Return if hcode is valid
   //bool containsHook(ulong pid) const;
   //bool containsHook(ulong pid, const QString &code) const;

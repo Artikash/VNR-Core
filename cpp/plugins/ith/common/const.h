@@ -14,6 +14,7 @@ enum HookFunType {
   , HF_GetGlyphOutlineA
   , HF_ExtTextOutA
   , HF_TextOutA
+  , HF_TabbedTextOutA // 4/30/2015: Added to support とある人妻のネトラレ事情
   , HF_GetCharABCWidthsA
   , HF_DrawTextA
   , HF_DrawTextExA
@@ -22,6 +23,7 @@ enum HookFunType {
   , HF_GetGlyphOutlineW
   , HF_ExtTextOutW
   , HF_TextOutW
+  , HF_TabbedTextOutW
   , HF_GetCharABCWidthsW
   , HF_DrawTextW
   , HF_DrawTextExW
@@ -35,11 +37,13 @@ enum HookFunType {
   , GetGlyphOutlineA \
   , ExtTextOutA \
   , TextOutA \
+  , TabbedTextOutA \
   , GetCharABCWidthsA \
   , GetTextExtentPoint32W \
   , GetGlyphOutlineW \
   , ExtTextOutW \
   , TextOutW \
+  , TabbedTextOutW \
   , GetCharABCWidthsW \
   , DrawTextA \
   , DrawTextExA \

@@ -67,7 +67,7 @@ public:
   static bool detachProcess(ulong pid);
 
   ///  Add hook code
-  static bool addHook(ulong pid, const QString &code, const QString &name = QString());
+  static bool addHook(ulong pid, const QString &code, const QString &name = QString(), bool verbose = true);
   static bool updateHook(ulong pid, const QString &code);
   static bool removeHook(ulong pid, const QString &code);
   static bool verifyHookCode(const QString &code);

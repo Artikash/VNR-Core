@@ -76,6 +76,8 @@ gui:
   - GetTextExtentPoint32W
   - TextOutA
   - TextOutW
+  - TabbedTextOutA
+  - TabbedTextOutW
   # PSP
   - sceFontGetCharInfo
   - sceFontGetShadowInfo
@@ -309,6 +311,7 @@ char:
   - GetGlyphOutlineA
   - GetTextExtentPoint32A
   - TextOutA
+  - TabbedTextOutA
   - lstrlenA
   - MultiByteToWideChar
   # PSP
@@ -429,6 +432,7 @@ wchar:
   - GetGlyphOutlineW
   - GetTextExtentPoint32W
   - TextOutW
+  - TabbedTextOutW
   - lstrlenW
   - WideCharToMultiByte
   # Mono

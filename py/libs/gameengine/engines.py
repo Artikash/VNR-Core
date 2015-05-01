@@ -32,12 +32,15 @@ class Engine(object): # placeholder
   NAME = ''
   ENCODING = ''
 
+  DEBUG = False
+  #DEBUG = True
+
   def name(self): return self.NAME
   def encoding(self): return self.ENCODING
 
   def addHook(self, code, name=''): # str, str -> bool
    from texthook import texthook
-   return texthook.global_().addHook(code, name=name or self.name())
+   return texthook.global_().addHook(code, name=name or self.name(), verbose=self.DEBUG)
 
   # Pure virtual functions
   def match(self, pid):
@@ -80,6 +83,15 @@ class Engine(object): # placeholder
     path = self.getAppPath(pid)
     if path:
       return os.path.dirname(path)
+
+  def exists(self, pattern, pid):
+    """
+    @param  pattern  unicode
+    @param  pid  long
+    @return  bool
+    """
+    path = self.getAppDirectory(pid)
+    return bool(path) and os.path.exists(os.path.join(path, pattern))
 
   def globAppDirectory(self, pattern, pid):
     """
@@ -236,6 +248,8 @@ class GXPEngine(Engine):
     dprint(ret)
     return ret
 
+# 4/30/2015
+# Sample game: とある人妻のネトラレ事情 -- /HBC*0@16B13:とある人妻のネトラレ事情.exe
 
 # EOF
 

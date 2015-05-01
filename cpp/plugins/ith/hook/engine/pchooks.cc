@@ -75,11 +75,14 @@ void PcHooks::hookGDIFunctions()
   NEW_HOOK(GetGlyphOutlineA,      s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
   NEW_HOOK(ExtTextOutA,           s_arg6, 0,s_arg1,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
   NEW_HOOK(TextOutA,              s_arg4, 0,s_arg1,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
+  NEW_HOOK(TabbedTextOutA,        s_arg4, 0,s_arg1,0, USING_STRING,  5) // LONG TabbedTextOut(HDC hDC, int X, int Y, LPCTSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin);
+
   NEW_HOOK(GetCharABCWidthsA,     s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
   NEW_HOOK(GetTextExtentPoint32W, s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
   NEW_HOOK(GetGlyphOutlineW,      s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
   NEW_HOOK(ExtTextOutW,           s_arg6, 0,s_arg1,0, USING_UNICODE|USING_STRING, 7)
   NEW_HOOK(TextOutW,              s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
+  NEW_HOOK(TabbedTextOutW,        s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
   NEW_HOOK(GetCharABCWidthsW,     s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
 
   // user32.dll

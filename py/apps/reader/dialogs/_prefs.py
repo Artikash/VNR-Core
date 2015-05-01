@@ -2789,7 +2789,12 @@ class _MachineTranslationTab(object):
   def _createUi(self, q):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.optionGroup)
+
+    for lang in config.TRANSLIT_LANGUAGES:
+      if lang not in blans:
+        layout.addWidget(self.optionGroup)
+        break
+
     layout.addWidget(self.honyakuGroup)
     #layout.addWidget(self.correctionGroup)
     #if 'en' not in blans:
