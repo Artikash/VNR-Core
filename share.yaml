@@ -440,7 +440,7 @@ languages:
   - el
   - ru
   - uk
-  cyrillic:
+  cyril:
   - ru
   - uk
   asian: # on contrast of latin
@@ -483,6 +483,26 @@ languages:
   - sv  # 1053: Swedish - Sweden
   - tr  # 1055: Turkish - Turkey
   - en  # 1033: English - United States
+
+  yomi: # Yomigana languages
+    - en
+    - ru
+    - uk
+    - ar
+    - th
+    - ko
+
+  # Languages supported by transliterate
+  alphabet:
+    - el
+    - ru
+    - uk
+    # Not supported languages
+    #- bg
+    #- he
+    #- hi
+    #- hy
+    #- ka
 
   names:
     zh: 中文
@@ -535,26 +555,6 @@ spells:
   en: en_US
   de: de_DE
   fr: fr_FR
-
-yomigana: # Yomigana languages
-  - en
-  - ru
-  - uk
-  - ar
-  - th
-  - ko
-
-# Languages supported by transliterate
-translit:
-  - el
-  - ru
-  - uk
-  # Not supported languages
-  #- bg
-  #- he
-  #- hi
-  #- hy
-  #- ka
 
 #image_fonts:
 #  mac:

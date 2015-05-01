@@ -2790,15 +2790,16 @@ class _MachineTranslationTab(object):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
 
-    for lang in config.TRANSLIT_LANGUAGES:
-      if lang not in blans:
-        layout.addWidget(self.optionGroup)
-        break
-
     layout.addWidget(self.honyakuGroup)
     #layout.addWidget(self.correctionGroup)
     #if 'en' not in blans:
     #  layout.addWidget(self.tahGroup)
+
+    for lang in config.ALPHABET_LANGUAGES:
+      if lang not in blans:
+        layout.addWidget(self.optionGroup)
+        break
+
     layout.addStretch()
     q.setLayout(layout)
 
@@ -2894,7 +2895,7 @@ class _MachineTranslationTab(object):
   def alphabetButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Convert translated Latin characters to the alphabet of user language"),
-        my.tr("including {0}").format(', '.join(imap(i18n.language_name, config.TRANSLIT_LANGUAGES)))))
+        my.tr("including {0}").format(', '.join(imap(i18n.language_name, config.ALPHABET_LANGUAGES)))))
     ret.setChecked(settings.global_().translatesAlphabet())
     ret.toggled.connect(settings.global_().setTranslatesAlphabet)
     return ret
