@@ -11,6 +11,7 @@
 #from sakurakit.skprof import SkProfiler
 
 import os, string, re
+from itertools import imap
 #from collections import OrderedDict
 from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
@@ -404,7 +405,7 @@ class TermWriter:
 # Options: type = %s, to = %s, fr = %s, hentai = %s, files = (%s)
 #
 """ % (self.createTime, type, to, fr, self.hentai,
-    ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
+    ','.join(imap(str, self.gameIds)) if self.gameIds else 'empty')
 
   def iterTermData(self, type, to, fr):
     """

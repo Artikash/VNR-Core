@@ -6,7 +6,7 @@ import re
 from sakurakit import skstr
 from unitraits import unichars, jpchars
 from windefs import winlocale
-import defs
+import convutil, defs
 
 ## Encoding ##
 
@@ -219,6 +219,25 @@ def remove_html_tags(text):
   @return  unicode
   """
   return __html_tag_re.sub('', text.replace('<br/>', '\n')) if '<' in text else text
+
+__html_alphabet_re1 = re.compile(r'>[^<>]+<')
+__html_alphabet_re2 = re.compile(r'>[^<>]+$')
+__html_alphabet_re3 = re.compile(r'^[^<>]+<')
+def convert_html_alphabet(text, *args, **kwargs):
+  """
+  @param  text  unicode
+  @param* to  str
+  @param* fr  str  currently not used
+  @return  unicode
+  """
+  conv = convutil.convert_alphabet
+  if '>' not in text or '<' not in text:
+    return conv(text, *args, **kwargs)
+  def repl(m):
+    return conv(m.group(), *args, **kwargs)
+  for rx in __html_alphabet_re1, __html_alphabet_re2, __html_alphabet_re3:
+    text = rx.sub(repl, text)
+  return text
 
 __re_chars = re.compile(r"[%s]" % re.escape(
   skstr.REGEX_SPECIAL_CHARS + r"{}"

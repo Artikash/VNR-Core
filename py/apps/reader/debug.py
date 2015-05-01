@@ -268,7 +268,15 @@ if __name__ == '__main__':
         #show(result)
         #a.exec_()
 
+  def test_lib():
+    from transliterate import translit
+    lang = "ru"
+    #lang = "uk"
+    #lang = "el"
+    print translit("helloi", lang)
+
   initenv()
-  test_jmdict()
+  #test_jmdict()
+  test_lib()
 
 # EOF

@@ -484,37 +484,37 @@ languages:
   - tr  # 1055: Turkish - Turkey
   - en  # 1033: English - United States
 
-languageNames:
-  zh: 中文
-  zht: 中文
-  zhs: 简体中文
-  en: English
-  ja: 日本語
-  ko: 한국어
-  vi: Tiếng Việt
-  id: Indonesia
-  ms: Bahasa Melayu
-  th: ภาษาไทย
-  ar: العربية
-  cs: Čeština
-  da: Dansk
-  de: Deutsch
-  el: Ελληνικά
-  es: Españo
-  fr: Française
-  it: Italiano
-  hu: Magyar
-  'no': Norsk bokmål
-  nl: Nederlands
-  pl: Polski
-  pt: Português
-  ro: Română
-  sk: Slovenčina
-  fi: Suomi
-  sv: Svenska
-  tr: Türkçe
-  ru: Русский
-  uk: Українська
+  names:
+    zh: 中文
+    zht: 中文
+    zhs: 简体中文
+    en: English
+    ja: 日本語
+    ko: 한국어
+    vi: Tiếng Việt
+    id: Indonesia
+    ms: Bahasa Melayu
+    th: ภาษาไทย
+    ar: العربية
+    cs: Čeština
+    da: Dansk
+    de: Deutsch
+    el: Ελληνικά
+    es: Españo
+    fr: Française
+    it: Italiano
+    hu: Magyar
+    'no': Norsk bokmål
+    nl: Nederlands
+    pl: Polski
+    pt: Português
+    ro: Română
+    sk: Slovenčina
+    fi: Suomi
+    sv: Svenska
+    tr: Türkçe
+    ru: Русский
+    uk: Українська
 
 # See: http://msdn.microsoft.com/en-us/library/aa369771%28v=vs.85%29.aspx
 # See: http://www.science.co.il/language/locale-codes.asp
@@ -535,6 +535,18 @@ spells:
   en: en_US
   de: de_DE
   fr: fr_FR
+
+# Languages supported by transliterate
+translit:
+  - el
+  - ru
+  - uk
+  # Not supported languages
+  #- bg
+  #- he
+  #- hi
+  #- hy
+  #- ka
 
 #image_fonts:
 #  mac:

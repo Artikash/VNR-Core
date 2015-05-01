@@ -12,6 +12,7 @@ from ccman import zhs2zhx as zhs2zht
 from ccman import ja2zhx_name as ja2zht_name
 from hangulconv.hangulconv import to_hanja as hangul2hanja
 from kanjiconv.jazh import ja2zh_name_test, ja2zht_name_fix
+import config
 #from pinyinconv import pinyinconv
 
 kana2yomi = kana2reading
@@ -20,6 +21,18 @@ kata2ru = hira2ru = kana2ru
 kata2ko = hira2ko = kana2ko
 kata2th = hira2th = kana2th
 kata2ar = hira2ar = kana2ar
+
+def convert_alphabet(text, to='en', fr='en'):
+  """
+  @param  text  unicode
+  @param* to  str
+  @param* fr  str  currently not used
+  @return  unicode
+  """
+  if to in config.TRANSLIT_LANGUAGE_SET:
+    from transliterate import translit
+    return translit(text, to)
+  return text
 
 #MSIME_VALID = False
 #def ja2zh_name(text, simplified=False): # unicode, bool -> unicode

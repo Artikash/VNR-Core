@@ -6,6 +6,7 @@ __all__ = 'WebBrowser',
 
 import re, weakref
 from functools import partial
+from itertools import imap
 from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
 from Qt5 import QtWidgets
@@ -180,7 +181,7 @@ class _WebBrowser(object):
     """
     @param  gesture  gesture.MouseGesture with name
     """
-    msg = ''.join(map(self.gestureDirectionNames.get, gesture.directions))
+    msg = ''.join(imap(self.gestureDirectionNames.get, gesture.directions))
     msg += ' | ' + gesture.name
     self.showMessage(msg)
 

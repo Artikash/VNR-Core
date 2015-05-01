@@ -32,6 +32,7 @@ class _TranslatorManager(object):
     self.online = False
     self.language = 'en' # str, user language
 
+    self.convertsAlphabet = False
     self.yueEnabled = False # translate zh to yue
 
     self.allTranslators = [] # all created translators
@@ -133,11 +134,13 @@ class _TranslatorManager(object):
       self.retransSettings[engine] = s
       settings.global_().setRetranslatorSettings(self.retransSettings)
 
-  def postprocess(self, text, language):
+  def postprocessCharacterset(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
       ret = self.yueTranslator.translate(text, fr=language)
       if ret:
         return ret
+    if self.convertsAlphabet:
+      text = textutil.convert_html_alphabet(text, language)
     return text
 
   def _newtr(self, tr):
@@ -178,7 +181,7 @@ class _TranslatorManager(object):
   def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator())
 
   @memoizedproperty
-  def lecTranslator(self): return self._newtr(_trman.LecTranslator())
+  def lecTranslator(self): return self._newtr(_trman.LecTranslator(postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def ezTranslator(self): return self._newtr(_trman.EzTranslator(ehndEnabled=self.ehndEnabled))
@@ -187,17 +190,13 @@ class _TranslatorManager(object):
   def transcatTranslator(self): return self._newtr(_trman.TransCATTranslator())
 
   @memoizedproperty
-  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(
-      postprocess=self.postprocess))
+  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
-  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(
-      postprocess=self.postprocess)))
+  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(postprocess=self.postprocessCharacterset)))
 
   @memoizedproperty
-  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(
-      #abortSignal=self.abortSignal,
-      postprocess=self.postprocess))
+  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
@@ -207,84 +206,91 @@ class _TranslatorManager(object):
     return self._newtr(_trman.VTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def googleTranslator(self):
     return self._newtr(_trman.GoogleTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def bingTranslator(self):
     return self._newtr(_trman.BingTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def baiduTranslator(self):
     return self._newtr(_trman.BaiduTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def youdaoTranslator(self):
     return self._newtr(_trman.YoudaoTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def naverTranslator(self):
     return self._newtr(_trman.NaverTranslator(
         abortSignal=self.abortSignal,
         session=self.session,
-        postprocess=self.postprocess))
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
     return self._newtr(_trman.LecOnlineTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def transruTranslator(self):
     return self._newtr(_trman.TransruTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def infoseekTranslator(self):
     return self._newtr(_trman.InfoseekTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def exciteTranslator(self):
     return self._newtr(_trman.ExciteTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def babylonTranslator(self):
     return self._newtr(_trman.BabylonTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def systranTranslator(self):
     return self._newtr(_trman.SystranTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
   def niftyTranslator(self):
     return self._newtr(_trman.NiftyTranslator(
         abortSignal=self.abortSignal,
-        session=self.session))
+        session=self.session,
+        postprocess=self.postprocessCharacterset))
 
   @staticmethod
   def translateAndApply(func, kw, tr, text, align=None, **kwargs):
@@ -502,10 +508,17 @@ class TranslatorManager(QObject):
   def setMarked(self, t): self.__d.marked = t
 
   def language(self): return self.__d.language
-  def setLanguage(self, value): self.__d.language = value
+  def setLanguage(self, t): self.__d.language = t
 
   def isOnline(self): return self.__d.online
-  def setOnline(self, value): self.__d.online = value
+  def setOnline(self, t): self.__d.online = t
+
+  def convertsAlphabet(self): return self.__d.convertsAlphabet
+  def setConvertsAlphabet(self, t):
+    dprint(t)
+    self.__d.convertsAlphabet = t
+
+  ## Translators ##
 
   def isYueEnabled(self): return self.__d.yueEnabled
   def setYueEnabled(self, value): self.__d.yueEnabled = value

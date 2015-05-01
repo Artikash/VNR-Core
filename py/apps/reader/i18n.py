@@ -3,6 +3,7 @@
 # 12/14/2012 jichi
 
 from datetime import datetime
+from itertools import imap
 from sakurakit.sktr import tr_, utr_
 from mecabparser import mecabdef
 from mytr import my, mytr_
@@ -214,7 +215,7 @@ def key_name(t): # str -> unicode
 
 def combined_key_name(t, delim='+'): # str -> unicode
   from hkman import unpackhotkey
-  return delim.join(map(key_name, unpackhotkey(t)))
+  return delim.join(imap(key_name, unpackhotkey(t)))
 
 #def key_from_name(t): # unicode -> str
 #  for k,v in KEY_NAMES.iteritems():

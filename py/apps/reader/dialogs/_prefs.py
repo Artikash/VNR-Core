@@ -4,6 +4,7 @@
 
 import os
 from functools import partial
+from itertools import imap
 from collections import OrderedDict
 from PySide.QtCore import Qt, QTimer
 from PySide import QtCore, QtGui
@@ -2788,6 +2789,7 @@ class _MachineTranslationTab(object):
   def _createUi(self, q):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.optionGroup)
     layout.addWidget(self.honyakuGroup)
     #layout.addWidget(self.correctionGroup)
     #if 'en' not in blans:
@@ -2871,6 +2873,26 @@ class _MachineTranslationTab(object):
 #You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 #).format(email))
 #    return ret
+
+  # Global translation options
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.alphabetButton)
+
+    ret = QtWidgets.QGroupBox(my.tr("Machine translation options"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def alphabetButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Convert translated Latin characters to the alphabet of user language"),
+        my.tr("including {0}").format(', '.join(imap(i18n.language_name, config.TRANSLIT_LANGUAGES)))))
+    ret.setChecked(settings.global_().translatesAlphabet())
+    ret.toggled.connect(settings.global_().setTranslatesAlphabet)
+    return ret
 
   # Machine translator
 
