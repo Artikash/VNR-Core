@@ -51,6 +51,10 @@ def hira2ru(text): return _repair_reading(_repair_ru(_convert(text, 'hira', 'ru'
 def kata2ru(text): return _repair_reading(_repair_ru(_convert(text, 'kata', 'ru')))
 def kana2ru(text): return _repair_reading(_repair_ru(_convert(text, 'kana', 'ru')))
 
+def hira2uk(text): return _repair_reading(_convert(text, 'hira', 'uk'))
+def kata2uk(text): return _repair_reading(_convert(text, 'kata', 'uk'))
+def kana2uk(text): return _repair_reading(_convert(text, 'kana', 'uk'))
+
 def hira2th(text): return _repair_reading(_repair_th(_convert(text, 'hira', 'th')))
 def kata2th(text): return _repair_reading(_repair_th(_convert(text, 'kata', 'th')))
 def kana2th(text): return _repair_reading(_repair_th(_convert(text, 'kana', 'th')))
@@ -154,10 +158,13 @@ def kana2reading(text, lang):
       text = text.replace(u'ゆう', u'ゆ')
       text = text.replace(u'ゆぅ', u'ゆ')
     return kana2ar(text)
-  elif lang in ('ru', 'uk'):
-    return capitalizeromaji(kana2ru(text))
+  elif lang == 'ru':
+    text = kana2ru(text)
+  elif lang == 'uk':
+    text = kana2uk(text)
   else:
-    return capitalizeromaji(kana2romaji(text))
+    text = kana2romaji(text)
+  return capitalizeromaji(text)
 
 def kana2name(text, lang):
   text = simplify_kana_name(text)
@@ -261,6 +268,18 @@ if __name__ == '__main__':
   for k,v in l:
     print k, kana2ru(k), v
     assert kana2ru(k) == v
+
+  # Ukrainian
+  l = [
+    (u'くん', u'кун'),
+    (u'いえやす', u'іеясу'),
+    (u'ほのか', u'хонока'),
+    (u'かわいい', u'каваіі'),
+    (u'れん', u'рен'),
+  ]
+  for k,v in l:
+    print k, kana2uk(k), v
+    assert kana2uk(k) == v
 
   # Korean
   l = [

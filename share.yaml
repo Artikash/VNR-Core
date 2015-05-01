@@ -536,6 +536,14 @@ spells:
   de: de_DE
   fr: fr_FR
 
+yomigana: # Yomigana languages
+  - en
+  - ru
+  - uk
+  - ar
+  - th
+  - ko
+
 # Languages supported by transliterate
 translit:
   - el
