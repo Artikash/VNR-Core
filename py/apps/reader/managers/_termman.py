@@ -438,7 +438,7 @@ class TermWriter:
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and not (td.type == 'yomi' and to2 == 'zh' and not ja2zh_name_test(td.pattern)) # skip yomi for Chinese if not pass name test
           and (td.sourceLanguage.startswith(fr2)
-            or fr != 'ru' and fr_is_cyrillic and td.sourceLanguage == 'ru'
+            #or fr != 'ru' and fr_is_cyrillic and td.sourceLanguage == 'ru'
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
             or td.sourceLanguage == 'ja' and (
               td.type in jatypes

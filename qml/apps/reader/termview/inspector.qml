@@ -176,6 +176,7 @@ Item { id: root_
   function renderYomiName(pattern, text) { // string, string -> string
     var ret = jlp_.kana2name(text, '') + ' (' + Sk.tr('romaji') +  '), '
          + jlp_.kana2name(text, 'ru') + ' (' + Sk.tr('ru') +  '), '
+         + jlp_.kana2name(text, 'uk') + ' (' + Sk.tr('uk') +  '), '
          + jlp_.kana2name(text, 'ko') + ' (' + Sk.tr('ko') +  '), '
          + jlp_.kana2name(text, 'th') + ' (' + Sk.tr('th') +  '), '
          + jlp_.kana2name(text, 'ar') + ' (' + Sk.tr('ar') +  '), '

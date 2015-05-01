@@ -424,6 +424,9 @@ def language2codepage(lang): # str -> long
 TRANSLIT_LANGUAGES = SHARE_YAML['translit']  # [str lang]
 TRANSLIT_LANGUAGE_SET = frozenset(TRANSLIT_LANGUAGES)
 
+YOMIGANA_LANGUAGES = SHARE_YAML['yomigana']  # [str lang]
+YOMIGANA_LANGUAGE_SET = frozenset(YOMIGANA_LANGUAGES)
+
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
 STARDICT_LANGS = [it.partition('-')[2] for it in SHARE_YAML['stardict'].iterkeys()] # [str lang]
