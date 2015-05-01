@@ -20,6 +20,8 @@
 //#define DEBUG "ihf_p.cc"
 #include "sakurakit/skdebug.h"
 
+//#define ITH_WITH_LINK
+
 // - Construction -
 
 bool Ihf::debug_ = true;
@@ -220,7 +222,10 @@ DWORD Ihf::threadRemove(TextThread *t)
     threadDelegates_.erase(p);
     TextThreadDelegate::release(d);
   }
+
+#ifdef ITH_WITH_LINK
   ::IHF_UnLinkAll(t->Number());
+#endif // ITH_WITH_LINK
 
   DOUT("leave");
   return 0;
@@ -268,12 +273,14 @@ DWORD Ihf::threadOutput(TextThread *t, BYTE *data, DWORD dataLength, DWORD newLi
 
 void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
 {
+#ifdef ITH_WITH_LINK
   Q_ASSERT(t);
   foreach (TextThreadDelegate *it, threadDelegates_)
     if (it->delegateOf(d))
       ::IHF_AddLink(d->threadNumber(), it->threadNumber());
     else if (d->delegateOf(it))
       ::IHF_AddLink(it->threadNumber(), d->threadNumber());
+#endif // ITH_WITH_LINK
 }
 
 // - Injection -
@@ -322,7 +329,7 @@ bool Ihf::updateHook(ulong pid, const QString &code)
 }
 
 // See: IHF_InsertHook in IHF/main.cpp
-bool Ihf::addHook(ulong pid, const QString &code, const QString &name)
+bool Ihf::addHook(ulong pid, const QString &code, const QString &name, bool verbose)
 {
   DOUT("enter: pid =" << pid << ", name =" << name << ", code =" << code);
   Q_ASSERT(pid);
@@ -332,7 +339,7 @@ bool Ihf::addHook(ulong pid, const QString &code, const QString &name)
   }
 
   HookParam hp = {};
-  if (!Ith::parseHookCode(code, &hp)) {
+  if (!Ith::parseHookCode(code, &hp, verbose)) {
     DOUT("leave: failed to parse hook code");
     return false;
   }

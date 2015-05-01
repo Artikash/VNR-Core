@@ -366,14 +366,14 @@ static PyObject* Sbk_TextHookFunc_addHookCode(PyObject* self, PyObject* args, Py
     cppSelf = (TextHookWrapper*)((::TextHook*)Shiboken::Conversions::cppPointer(SbkpytexthookTypes[SBK_TEXTHOOK_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp[] = { 0, 0, 0 };
+    PythonToCppFunc pythonToCpp[] = { 0, 0, 0, 0 };
     SBK_UNUSED(pythonToCpp)
     int numNamedArgs = (kwds ? PyDict_Size(kwds) : 0);
     int numArgs = PyTuple_GET_SIZE(args);
-    PyObject* pyArgs[] = {0, 0, 0};
+    PyObject* pyArgs[] = {0, 0, 0, 0};
 
     // invalid argument lengths
-    if (numArgs + numNamedArgs > 3) {
+    if (numArgs + numNamedArgs > 4) {
         PyErr_SetString(PyExc_TypeError, "pytexthook.TextHook.addHookCode(): too many arguments");
         return 0;
     } else if (numArgs < 2) {
@@ -381,19 +381,23 @@ static PyObject* Sbk_TextHookFunc_addHookCode(PyObject* self, PyObject* args, Py
         return 0;
     }
 
-    if (!PyArg_ParseTuple(args, "|OOO:addHookCode", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2])))
+    if (!PyArg_ParseTuple(args, "|OOOO:addHookCode", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2]), &(pyArgs[3])))
         return 0;
 
 
     // Overloaded function decisor
-    // 0: addHookCode(ulong,QString,QString)
+    // 0: addHookCode(ulong,QString,QString,bool)
     if (numArgs >= 2
         && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<ulong>(), (pyArgs[0])))
         && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[1])))) {
         if (numArgs == 2) {
-            overloadId = 0; // addHookCode(ulong,QString,QString)
+            overloadId = 0; // addHookCode(ulong,QString,QString,bool)
         } else if ((pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[2])))) {
-            overloadId = 0; // addHookCode(ulong,QString,QString)
+            if (numArgs == 3) {
+                overloadId = 0; // addHookCode(ulong,QString,QString,bool)
+            } else if ((pythonToCpp[3] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[3])))) {
+                overloadId = 0; // addHookCode(ulong,QString,QString,bool)
+            }
         }
     }
 
@@ -412,6 +416,15 @@ static PyObject* Sbk_TextHookFunc_addHookCode(PyObject* self, PyObject* args, Py
                 if (!(pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[2]))))
                     goto Sbk_TextHookFunc_addHookCode_TypeError;
             }
+            value = PyDict_GetItemString(kwds, "verbose");
+            if (value && pyArgs[3]) {
+                PyErr_SetString(PyExc_TypeError, "pytexthook.TextHook.addHookCode(): got multiple values for keyword argument 'verbose'.");
+                return 0;
+            } else if (value) {
+                pyArgs[3] = value;
+                if (!(pythonToCpp[3] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[3]))))
+                    goto Sbk_TextHookFunc_addHookCode_TypeError;
+            }
         }
         ulong cppArg0;
         pythonToCpp[0](pyArgs[0], &cppArg0);
@@ -419,11 +432,13 @@ static PyObject* Sbk_TextHookFunc_addHookCode(PyObject* self, PyObject* args, Py
         pythonToCpp[1](pyArgs[1], &cppArg1);
         ::QString cppArg2 = QString();
         if (pythonToCpp[2]) pythonToCpp[2](pyArgs[2], &cppArg2);
+        bool cppArg3 = true;
+        if (pythonToCpp[3]) pythonToCpp[3](pyArgs[3], &cppArg3);
 
         if (!PyErr_Occurred()) {
-            // addHookCode(ulong,QString,QString)
+            // addHookCode(ulong,QString,QString,bool)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = cppSelf->addHookCode(cppArg0, cppArg1, cppArg2);
+            bool cppResult = cppSelf->addHookCode(cppArg0, cppArg1, cppArg2, cppArg3);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -436,7 +451,7 @@ static PyObject* Sbk_TextHookFunc_addHookCode(PyObject* self, PyObject* args, Py
     return pyResult;
 
     Sbk_TextHookFunc_addHookCode_TypeError:
-        const char* overloads[] = {"unsigned long, unicode, unicode = QString()", 0};
+        const char* overloads[] = {"unsigned long, unicode, unicode = QString(), bool = true", 0};
         Shiboken::setErrorAboutWrongArguments(args, "pytexthook.TextHook.addHookCode", overloads);
         return 0;
 }

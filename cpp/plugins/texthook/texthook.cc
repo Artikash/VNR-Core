@@ -273,7 +273,7 @@ bool TextHook::detachProcess(ulong pid, bool checkActive)
 //bool TextHook::containsHook(ulong pid, const QString &code) const
 //{ return processHook(pid) == code; }
 
-bool TextHook::addHookCode(ulong pid, const QString &code, const QString &name)
+bool TextHook::addHookCode(ulong pid, const QString &code, const QString &name, bool verbose)
 {
   DOUT("enter: pid =" << pid << ", code =" << code);
   if (isEmpty() || !containsProcess(pid)) {
@@ -285,7 +285,8 @@ bool TextHook::addHookCode(ulong pid, const QString &code, const QString &name)
     return false;
   }
   bool ok = Ihf::addHook(pid, code,
-                         name.isEmpty() ? defaultHookName() : name);
+                         name.isEmpty() ? defaultHookName() : name,
+                         verbose);
   if (ok)
     d_->hooks[pid] = code;
   DOUT("leave: ret =" << ok);

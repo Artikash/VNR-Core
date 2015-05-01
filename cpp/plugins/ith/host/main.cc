@@ -577,6 +577,10 @@ IHFSERVICE DWORD IHFAPI IHF_RemoveHook(DWORD pid, DWORD addr)
 
 IHFSERVICE DWORD IHFAPI IHF_IsAdmin() { return admin; }
 
+// EOF
+
+#if 0 // 4/30/2015: Removed as not needed. Going to change to json
+
 IHFSERVICE DWORD IHFAPI IHF_AddLink(DWORD from, DWORD to)
 {
   man->AddLink(from & 0xffff, to & 0xffff);
@@ -595,4 +599,4 @@ IHFSERVICE DWORD IHFAPI IHF_UnLinkAll(DWORD from)
   return 0;
 }
 
-// EOF
+#endif // 0

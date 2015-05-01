@@ -223,7 +223,7 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
 // - ITH API -
 
 // Sample code: L"/HS-4:-14@4383C0" (WHITE ALBUM 2)
-bool Ith::parseHookCode(const QString &code, HookParam *hp)
+bool Ith::parseHookCode(const QString &code, HookParam *hp, bool verbose)
 {
 #define HCODE_PREFIX  "/H"
   enum { HCODE_PREFIX_LEN = sizeof(HCODE_PREFIX) -1 }; // 2
@@ -239,7 +239,7 @@ bool Ith::parseHookCode(const QString &code, HookParam *hp)
   bool ret = detail::Parse(buf + HCODE_PREFIX_LEN, *hp);
   delete[] buf;
 #ifdef DEBUG
-  if (ret)
+  if (ret && verbose)
     qDebug()
       << "addr:" << hp->addr
       << ", text_fun:" << hp->text_fun

@@ -27,14 +27,16 @@ IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid);
 IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid);
 IHFSERVICE DWORD IHFAPI IHF_GetHookManager(HookManager **hookman);
 IHFSERVICE DWORD IHFAPI IHF_GetSettings(Settings **settings);
-IHFSERVICE DWORD IHFAPI IHF_InsertHook(DWORD pid, HookParam *hp, LPWSTR name = 0);
+IHFSERVICE DWORD IHFAPI IHF_InsertHook(DWORD pid, HookParam *hp, LPWSTR name = nullptr);
 IHFSERVICE DWORD IHFAPI IHF_ModifyHook(DWORD pid, HookParam *hp);
 IHFSERVICE DWORD IHFAPI IHF_RemoveHook(DWORD pid, DWORD addr);
 IHFSERVICE DWORD IHFAPI IHF_IsAdmin();
 //IHFSERVICE DWORD IHFAPI IHF_GetFilters(PVOID *mb_filter, PVOID *uni_filter);
-IHFSERVICE DWORD IHFAPI IHF_AddLink(DWORD from, DWORD to);
-IHFSERVICE DWORD IHFAPI IHF_UnLink(DWORD from);
-IHFSERVICE DWORD IHFAPI IHF_UnLinkAll(DWORD from);
+
+// 4/30/2015: Thread-linking is not needed by VNR. Removed for better performance.
+//IHFSERVICE DWORD IHFAPI IHF_AddLink(DWORD from, DWORD to);
+//IHFSERVICE DWORD IHFAPI IHF_UnLink(DWORD from);
+//IHFSERVICE DWORD IHFAPI IHF_UnLinkAll(DWORD from);
 } // extern "C"
 
 // EOF

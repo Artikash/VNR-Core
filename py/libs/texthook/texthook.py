@@ -266,15 +266,16 @@ if skos.WIN:
       dprint("leave: ret = %s" % ret)
       return ret
 
-    def addHook(self, code, name=""):
+    def addHook(self, code, name="", verbose=True):
       """
       @param  code  str
-      @param  name  str
+      @param* name  str
+      @param* verbose  bool
       @return  bool
       """
       dprint("enter: name = %s, code = %s" % (name, code))
       d = self.__d
-      ok = bool(d.pid) and d.addHookCode(d.pid, code, name)
+      ok = bool(d.pid) and d.addHookCode(d.pid, code, name, verbose)
       if ok:
         d.hooks[name] = code
       dprint("leave: ret = %s" % ok)
@@ -393,7 +394,7 @@ else:
 
     def detachProcess(self): return False
 
-    def addHook(self, code, name=""): return False
+    def addHook(self, code, name="", verbose=True): return False
 
     def setHookCode(self, hcode): return False
 

@@ -647,6 +647,13 @@ bool DetermineNoEngine()
     return true;
   }
 
+  // jichi 4/30/2015: Skip games made from らすこう, such as とある人妻のネトラレ事情
+  // It has garbage from lstrlenW. Correct text is supposed to be in TabbedTextOutA.
+  if (IthCheckFile(L"data_cg.dpm")) {
+    ConsoleOutput("vnreng: IGNORE DPM data_cg.dpm");
+    return true;
+  }
+
   //if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
   //  ConsoleOutput("vnreng: IGNORE Eushully");
   //  return true;
