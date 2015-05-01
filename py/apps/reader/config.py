@@ -350,7 +350,7 @@ def check_valid_encoding(enc):
   if not is_valid_encoding(enc):
     raise ValueError("invalid encoding %s" % enc)
 
-lANGUAGE_NAMES = SHARE_YAML['languageNames']  # {str lang:str name}
+lANGUAGE_NAMES = SHARE_YAML['languages']['names']  # {str lang:str name}
 def language_name(lang): return lANGUAGE_NAMES.get(lang)
 
 LANGUAGES = SHARE_YAML['languages']['all']# [str lang]
@@ -420,6 +420,9 @@ def language2codepage(lang): # str -> long
   loc = language2locale(lang)
   from windefs import winlocale
   return winlocale.locale2codepage(loc)
+
+TRANSLIT_LANGUAGES = SHARE_YAML['translit']  # [str lang]
+TRANSLIT_LANGUAGE_SET = frozenset(TRANSLIT_LANGUAGES)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]

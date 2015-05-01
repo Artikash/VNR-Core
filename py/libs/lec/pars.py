@@ -439,7 +439,7 @@ if __name__ == '__main__': # DEBUG
   enginepath = lecpath + r"\PARS\EnRu"
   os.environ['PATH'] += os.pathsep + enginepath
   l = Loader()
-  l.init()
+  print l.init()
   t = "hello world"
   ret = l.translate(t)
   l.destroy()

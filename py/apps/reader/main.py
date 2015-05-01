@@ -692,6 +692,9 @@ class _MainObject(object):
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
+    ret.setConvertsAlphabet(ss.translatesAlphabet())
+    ss.translatesAlphabetChanged.connect(ret.setConvertsAlphabet)
+
     ret.setYueEnabled(ss.isYueEnabled())
     ss.yueEnabledChanged.connect(ret.setYueEnabled)
 

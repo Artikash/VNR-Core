@@ -258,7 +258,14 @@ class Settings(QSettings):
       self.setValue('JapaneseRubyKana', value)
       self.japaneseRubyKanaEnabledChanged.emit(value)
 
-  ## Romanization for non-Japaense ##
+  ## Romanization for non-Japanese ##
+
+  translatesAlphabetChanged = Signal(bool)
+  def translatesAlphabet(self): return to_bool(self.value('TranslateAlphabet'))
+  def setTranslatesAlphabet(self, value):
+    if value != self.translatesAlphabet():
+      self.setValue('TranslateAlphabet', value)
+      self.translatesAlphabetChanged.emit(value)
 
   rubyTextEnabledChanged = Signal(bool)
   def isRubyTextEnabled(self): return to_bool(self.value('RubyText', True))
