@@ -51,9 +51,9 @@ def hira2ru(text): return _repair_reading(_repair_ru(_convert(text, 'hira', 'ru'
 def kata2ru(text): return _repair_reading(_repair_ru(_convert(text, 'kata', 'ru')))
 def kana2ru(text): return _repair_reading(_repair_ru(_convert(text, 'kana', 'ru')))
 
-def hira2uk(text): return _repair_reading(_convert(text, 'hira', 'uk'))
-def kata2uk(text): return _repair_reading(_convert(text, 'kata', 'uk'))
-def kana2uk(text): return _repair_reading(_convert(text, 'kana', 'uk'))
+def hira2uk(text): return _repair_reading(_repair_uk(_convert(text, 'hira', 'uk')))
+def kata2uk(text): return _repair_reading(_repair_uk(_convert(text, 'kata', 'uk')))
+def kana2uk(text): return _repair_reading(_repair_uk(_convert(text, 'kana', 'uk')))
 
 def hira2th(text): return _repair_reading(_repair_th(_convert(text, 'hira', 'th')))
 def kata2th(text): return _repair_reading(_repair_th(_convert(text, 'kata', 'th')))
@@ -90,11 +90,13 @@ def _repair_en(text): # unicode -> unicode  repair xtu
     text = _re_en_tsu.sub(r'\1\1', text).replace(u'っ', u'-')
   return text
 
+# http://en.wikipedia.org/wiki/Russian_alphabet
 _ru_i_vowel = u"ауэояё"
+_ru_consonant = u"бвгдзклмнпрстфхцчшщъыь"
 _re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
 _re_ru_ii = re.compile(ur"[ий](и+)")
 _re_ru_z = re.compile(ur'\bз', re.UNICODE)
-_re_ru_tsu = re.compile(ur"っ([бвгдзклмнпрстфхцчшщъыь])")
+_re_ru_tsu = re.compile(ur"っ([%s])" % _ru_consonant)
 def _repair_ru(text): # unicode -> unicode  repair xtu
   """
   @param  text
@@ -107,6 +109,18 @@ def _repair_ru(text): # unicode -> unicode  repair xtu
     text = _re_ru_ii.sub(ur'\1й', text) # push i to the end
   if u'з' in text:
     text = _re_ru_z.sub(u'дз', text)
+  return text
+
+# http://en.wikipedia.org/wiki/Ukrainian_alphabet
+_uk_consonant = _ru_consonant + u'ґ'
+_re_uk_tsu = re.compile(ur"っ([%s])" % _uk_consonant)
+def _repair_uk(text): # unicode -> unicode  repair xtu
+  """
+  @param  text
+  @return  unicode
+  """
+  if u'っ' in text:
+    text = _re_uk_tsu.sub(r'\1\1', text)
   return text
 
 # http://en.wikipedia.org/wiki/Thai_alphabet
@@ -273,7 +287,8 @@ if __name__ == '__main__':
   l = [
     (u'くん', u'кун'),
     (u'いえやす', u'іеясу'),
-    (u'ほのか', u'хонока'),
+    (u'ほのか', u'гонока'),
+    (u'ほのっか', u'гонокка'),
     (u'かわいい', u'каваіі'),
     (u'れん', u'рен'),
   ]
