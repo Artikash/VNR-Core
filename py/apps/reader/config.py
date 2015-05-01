@@ -363,7 +363,7 @@ LATIN_LANGUAGES = SHARE_YAML['languages']['latin']  # [str lang]
 LATIN_LANGUAGE_SET = frozenset(LATIN_LANGUAGES)
 def is_latin_language(lang): return lang in LATIN_LANGUAGE_SET
 
-CYRILLIC_LANGUAGES = SHARE_YAML['languages']['cyrillic']  # [str lang]
+CYRILLIC_LANGUAGES = SHARE_YAML['languages']['cyril']  # [str lang]
 CYRILLIC_LANGUAGE_SET = frozenset(CYRILLIC_LANGUAGES)
 def is_cyrillic_language(lang): return lang in CYRILLIC_LANGUAGE_SET
 
@@ -421,10 +421,10 @@ def language2codepage(lang): # str -> long
   from windefs import winlocale
   return winlocale.locale2codepage(loc)
 
-TRANSLIT_LANGUAGES = SHARE_YAML['translit']  # [str lang]
-TRANSLIT_LANGUAGE_SET = frozenset(TRANSLIT_LANGUAGES)
+ALPHABET_LANGUAGES = SHARE_YAML['languages']['alphabet']  # [str lang]
+ALPHABET_LANGUAGE_SET = frozenset(ALPHABET_LANGUAGES)
 
-YOMIGANA_LANGUAGES = SHARE_YAML['yomigana']  # [str lang]
+YOMIGANA_LANGUAGES = SHARE_YAML['languages']['yomi']  # [str lang]
 YOMIGANA_LANGUAGE_SET = frozenset(YOMIGANA_LANGUAGES)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]

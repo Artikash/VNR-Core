@@ -29,7 +29,7 @@ def convert_alphabet(text, to='en', fr='en'):
   @param* fr  str  currently not used
   @return  unicode
   """
-  if to in config.TRANSLIT_LANGUAGE_SET:
+  if to in config.ALPHABET_LANGUAGE_SET:
     from transliterate import translit
     return translit(text, to)
   return text
