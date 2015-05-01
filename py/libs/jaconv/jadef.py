@@ -169,7 +169,8 @@ RU = u"""
 """
 
 # http://en.wikipedia.org/wiki/Ukrainian_alphabet
-UK = RU.replace(u'э', u'е').replace(u'и', u'і')
+from unitraits.cyrilchars import ru2uk
+UK = ru2uk(RU)
 
 # http://blog.naver.com/thinkstart/120072326990
 # http://www.geocities.jp/p451640/moji/skm/gjo/utfgjo_02.html

@@ -28,4 +28,11 @@ allcyril = partial(unichars.ordall, start=unichars.ORD_CYRIL_FIRST, stop=unichar
 """
 iscyril = partial(unichars.charinrange, start=unichars.ORD_CYRIL_FIRST, stop=unichars.ORD_CYRIL_LAST)
 
+def ru2uk(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return text.replace(u'э', u'е').replace(u'и', u'і')
+
 # EOF
