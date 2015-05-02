@@ -1,75 +1,78 @@
 # coding: utf8
 # hangulconv.py
-# 1/6/2015 jichi
+# 5/2/2015 jichi
+# http://en.wikipedia.org/wiki/Hangul_Syllables
+from korean import hangul
 
-if __name__ == '__main__': # DEBUG
-  import sys
-  sys.path.append("..")
+BINARY_CONSONANTS = {
+  u'ㄶ': (u'ㄴ', u'ㅎ'),
+  u'ㄵ': (u'ㄴ', u'ㅈ'),
 
-from sakurakit.skclass import memoized
+  u'ㄺ': (u'ㄹ', u'ㄱ'),
+  u'ㄼ': (u'ㄹ', u'ㅂ'),
+  u'ㄻ': (u'ㄹ', u'ㅁ'),
+  u'ㄽ': (u'ㄹ', u'ㅅ'),
+  u'ㄾ': (u'ㄹ', u'ㅌ'),
+  u'ㄿ': (u'ㄹ', u'ㅍ'),
+  u'ㅀ': (u'ㄹ', u'ㅎ'),
 
-#HANGUL_DIC_DIR = '' # to be set
-#HANGUL_DIC_CONV = 'dic6.txt'
+  u'ㄲ': (u'ㄱ', u'ㄱ'),
+  u'ㄳ': (u'ㄱ', u'ㅅ'),
 
-HANGUL_DIC_PATH = './dic6.txt' # to be set
+  u'ㅆ': (u'ㅅ', u'ㅅ'),
 
-def setdicpath(path):
-  global HANGUL_DIC_PATH
-  HANGUL_DIC_PATH = path
+  u'ㅃ': (u'ㅂ', u'ㅂ'),
+  u'ㅄ': (u'ㅂ', u'ㅅ'),
+}
 
-@memoized
-def converter():
-  import os
-  from pyhangul import HangulHanjaConverter
-  #path = os.path.join(HANGUL_DIC_DIR, HANGUL_DIC_CONV)
-  path = HANGUL_DIC_PATH
-  ret = HangulHanjaConverter()
-  if os.path.exists(path):
-    ret.loadFile(path)
-  else:
-    from sakurakit.skdebug import derror
-    derror("dic path does not exist:", path)
-  return ret
-
-def to_hanja(text):
+def split_consonant(ch):
   """
-  @param  text  unicode
-  @return  unicode
+  @param  ch  unicode
+  @return  (unicode x, unicode y) or None
   """
-  return converter().convert(text)
+  return BINARY_CONSONANTS.get(ch)
 
-def to_hanja_list(text):
+def join_consonant(l):
   """
-  @param  text  unicode
-  @return  [[unicode hangul, unicode hanja]]
+  @param  l  (unicode x, or unicode y) or None
+  @return  unicode or None
   """
-  return converter().parse(text)
+  if len(l) == 1:
+    return l[0]
+  if len(l) == 2:
+    for k,v in BINARY_CONSONANTS.iteritems():
+      if v[0] == l[0] and v[1] == l[1] or v[1] == l[0] and v[0] == l[1]:
+        return k
+
+def split_char(ch):
+  """
+  @param  ch  unicode
+  @return  [unicode] or None
+  """
+  try: return filter(bool,  hangul.split_char(ch))
+  except: pass
+
+def join_char(l):
+  """
+  @param  l  [unicode]
+  @return  unicode or None
+  """
+  try:
+    if len(l) == 2:
+      l = l[0], l[1], ''
+    return hangul.join_char(l)
+  except: pass
 
 if __name__ == '__main__':
-  import os
-  os.environ['PATH'] = os.path.pathsep.join((
-    "../../../bin",
-    "../../../../Qt/PySide",
-    os.environ['PATH'],
-  ))
-  sys.path.append("../../../bin")
-  sys.path.append("../../../../Qt/PySide")
+  t = u'옶'
+  t = u'갟'
+  l = split_char(t)
+  print l[-2], l[-1]
+  print join_char(l)
 
-  dic = "../../../../../Dictionaries/hangul"
-  setdicdir(dic)
-
-  # http://ko.wikipedia.org/wiki/자유_콘텐츠
-  # 自由 콘텐츠는 著作權이 消滅된 퍼블릭 도메인은 勿論, 著作權이 있지만 위 基準에 따라 自由롭게 利用이 許諾된 콘텐츠도 包含한다."
-  t = u"자유 콘텐츠는 저작권이 소멸된 퍼블릭 도메인은 물론, 저작권이 있지만 위 기준에 따라 자유롭게 이용이 허락된 콘텐츠도 포함한다."
-  #  Supposed to be 利用이 instead of 이容易
-  t = u"이용이"
-  t = u"공주"
-  r = to_hanja(t)
-
-  from PySide.QtGui import *
-  a = QApplication(sys.argv)
-  w = QLabel(r)
-  w.show()
-  a.exec_()
+  t = u'ㅄ'
+  l = split_consonant(t)
+  print l[-1]
+  print join_consonant(l)
 
 # EOF

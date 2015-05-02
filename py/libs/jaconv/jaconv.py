@@ -9,7 +9,7 @@ if __name__ == '__main__':
 import re
 from sakurakit.skstr import multireplacer
 from unitraits.uniconv import hira2kata
-import jadef
+import kanadef
 
 def _makeconverter(fr, to):
   """
@@ -17,13 +17,13 @@ def _makeconverter(fr, to):
   @param  to  int
   @return  function or None
   """
-  s = jadef.TABLES[to]
+  s = kanadef.TABLES[to]
   if fr == 'kata':
     s = hira2kata(s)
   elif fr == 'kana':
     s += '\n' + hira2kata(s)
 
-  t = jadef.parse(s)
+  t = kanadef.parse(s)
   return multireplacer(t)
 
 _CONVERTERS = {}
@@ -63,9 +63,9 @@ def hira2th(text): return _repair_reading(_repair_th(_convert(text, 'hira', 'th'
 def kata2th(text): return _repair_reading(_repair_th(_convert(text, 'kata', 'th')))
 def kana2th(text): return _repair_reading(_repair_th(_convert(text, 'kana', 'th')))
 
-def hira2ko(text): return _repair_reading(_convert(text, 'hira', 'ko'))
-def kata2ko(text): return _repair_reading(_convert(text, 'kata', 'ko'))
-def kana2ko(text): return _repair_reading(_convert(text, 'kana', 'ko'))
+def hira2ko(text): return _repair_reading(_repair_ko(_convert(text, 'hira', 'ko')))
+def kata2ko(text): return _repair_reading(_repair_ko(_convert(text, 'kata', 'ko')))
+def kana2ko(text): return _repair_reading(_repair_ko(_convert(text, 'kana', 'ko')))
 
 def hira2ar(text): return _repair_reading(_convert(text, 'hira', 'ar'))
 def kata2ar(text): return _repair_reading(_convert(text, 'kata', 'ar'))
@@ -162,6 +162,30 @@ def _repair_th(text):
   #return text
   for pat, repl in _re_th:
     text = pat.sub(repl, text)
+  return text
+
+# http://en.wikipedia.org/wiki/Hangul_Syllables
+_re_ko_tsu = re.compile(u'[\uac00-\ud7af]っ[\uac00-\ud7af]')
+def _ko_tsu_repl(m): # match -> unicode
+  t = m.group()
+  left = t[0]
+  right = t[-1]
+  from hangulconv import hangulconv
+  left_l = hangulconv.split_char(left)
+  right_l = hangulconv.split_char(right)
+
+  if left_l and right_l and len(left_l) == 2:
+    left_l = left_l[0], left_l[1], right_l[0]
+    left = hangulconv.join_char(left_l)
+    t = left + right
+  return t
+def _repair_ko(text):
+  """
+  @param  text
+  @return  unicode
+  """
+  if u'っ' in text:
+    text = _re_ko_tsu.sub(_ko_tsu_repl, text)
   return text
 
 # Names
@@ -338,6 +362,8 @@ if __name__ == '__main__':
   l = [
     (u'しおり', u'시오리'),
     (u'いぇす', u'예스'),
+    (u'しっば', u'십바'),
+    (u'ゆっき', u'윸키'),
   ]
   for k,v in l:
     print k, kana2ko(k), v
