@@ -2266,15 +2266,15 @@ class _I18nTab(object):
     if value and lang[:2] == ss.userLanguage()[:2]:
       if not prompt.confirmBlockLanguage(lang):
         return False
-    total = ss.blockedLanguages()
+    total = ss.blockedLanguageList()
     if value: # add
       if lang not in total:
-        total.add(lang)
-        ss.setBlockedLanguages(total)
+        total.append(lang)
+        ss.setBlockedLanguageList(total)
     else: # remove
       if lang in total:
         total.remove(lang)
-        ss.setBlockedLanguages(total)
+        ss.setBlockedLanguageList(total)
     return True
 
 class I18nTab(QtWidgets.QDialog):
@@ -2613,7 +2613,7 @@ class _TextTab(object):
     )
     i = 0
     for key, Name, name, lang in conf:
-      if not lang in blans:
+      if not lang or lang not in blans:
         if not Name:
           Name = key.capitalize()
         if not name:
@@ -4380,6 +4380,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.ruButton)
     if 'uk' not in blans:
       layout.addWidget(self.ukButton)
+    if 'el' not in blans:
+      layout.addWidget(self.elButton)
     if 'ko' not in blans:
       layout.addWidget(self.koButton)
     if 'vi' not in blans:
@@ -4454,6 +4456,14 @@ class _DictionaryTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def elButton(self):
+    ret = QtWidgets.QRadioButton(
+      "%s, %s: %s" %
+      (tr_("Greek"), my.tr("like this"), u"可愛い（καωαιι）"))
+    ret.toggled.connect(self._saveRubyType)
+    return ret
+
+  @memoizedproperty
   def koButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
@@ -4508,6 +4518,7 @@ class _DictionaryTranslationTab(object):
         self.ruButton if t == mecabdef.RB_RU else
         self.ukButton if t == mecabdef.RB_UK else
         self.koButton if t == mecabdef.RB_KO else
+        self.elButton if t == mecabdef.RB_EL else
         self.thButton if t == mecabdef.RB_TH else
         self.arButton if t == mecabdef.RB_AR else
         self.kataButton if t == mecabdef.RB_KATA else
@@ -4522,6 +4533,7 @@ class _DictionaryTranslationTab(object):
         mecabdef.RB_RU if self.ruButton.isChecked() else
         mecabdef.RB_UK if self.ukButton.isChecked() else
         mecabdef.RB_KO if self.koButton.isChecked() else
+        mecabdef.RB_EL if self.elButton.isChecked() else
         mecabdef.RB_TH if self.thButton.isChecked() else
         mecabdef.RB_AR if self.arButton.isChecked() else
         mecabdef.RB_KATA if self.kataButton.isChecked() else

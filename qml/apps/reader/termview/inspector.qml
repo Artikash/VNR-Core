@@ -15,11 +15,14 @@ import '.' as TermView
 Item { id: root_
 
   property QtObject currentItem // dataman.Term
+  property string blockedLanguages // string
 
   // - Private -
 
   height: Math.max(120, text_.height + 7)
   //color: '#ced0d6'
+
+  function isLanguageBlocked(lang) { return blockedLanguages.indexOf(lang) !== -1 } // string -> bool
 
   Share.CachedAvatarImage { id: avatar_
     anchors {
@@ -174,20 +177,29 @@ Item { id: root_
   }
 
   function renderYomiName(pattern, text) { // string, string -> string
-    var ret = jlp_.kana2name(text, '') + ' (' + Sk.tr('romaji') +  '), '
-         + jlp_.kana2name(text, 'ru') + ' (' + Sk.tr('ru') +  '), '
-         + jlp_.kana2name(text, 'uk') + ' (' + Sk.tr('uk') +  '), '
-         + jlp_.kana2name(text, 'ko') + ' (' + Sk.tr('ko') +  '), '
-         + jlp_.kana2name(text, 'th') + ' (' + Sk.tr('th') +  '), '
-         + jlp_.kana2name(text, 'ar') + ' (' + Sk.tr('ar') +  '), '
-    if (pattern && jlp_.ja2zh_name_test(pattern)) {
-      var s = jlp_.ja2zhs_name(pattern)
-      var t = jlp_.ja2zht_name(pattern)
-      ret += t + ' (' + Sk.tr('zh') +  ')'
-      if (s != t)
-        ret += ', ' + s + ' (' + Sk.tr('zhs') +  ')'
-    } else
-      ret += Sk.tr("none") + ' (' + Sk.tr('zh') +  ')'
+    var ret = ''
+    for (var i in Util.YOMI_LANGUAGES) {
+      var lang = Util.YOMI_LANGUAGES[i]
+      if (!isLanguageBlocked(lang)) {
+        if (ret)
+          ret += ', '
+        ret += jlp_.kana2name(text, lang) + ' (' + Sk.tr(lang) +  ')'
+      }
+    }
+
+    if (!isLanguageBlocked('zh')) {
+      if (ret)
+        ret += ', '
+
+      if (pattern && jlp_.ja2zh_name_test(pattern)) {
+        var s = jlp_.ja2zhs_name(pattern)
+        var t = jlp_.ja2zht_name(pattern)
+        ret += t + ' (' + Sk.tr('zh') +  ')'
+        if (s != t)
+          ret += ', ' + s + ' (' + Sk.tr('zhs') +  ')'
+      } else
+        ret += Sk.tr("none") + ' (' + Sk.tr('zh') +  ')'
+    }
     return ret
   }
 

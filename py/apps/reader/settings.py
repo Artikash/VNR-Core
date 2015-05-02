@@ -222,18 +222,24 @@ class Settings(QSettings):
 
   ## i18n ##
 
-  blockedLanguagesChanged = Signal(set)
-  def blockedLanguages(self):
+  blockedLanguagesChanged = Signal(str)
+  def blockedLanguages(self): return self.value('BlockedLanguages') or ''
     # http://sakuradite.com/topic/231, prevent strange EOFError
-    try: return to_set(self.value('BlockedLanguages'))
-    except EOFError, e:
-      dwarn("EOFError")
-      self.setValue('BlockedLanguages', set())
-      return set()
+    #try: return to_set(self.value('BlockedLanguages'))
+    #except EOFError, e:
+    #  dwarn("EOFError")
+    #  self.setValue('BlockedLanguages', set())
+    #  return set()
   def setBlockedLanguages(self, value):
     if value != self.blockedLanguages():
       self.setValue('BlockedLanguages', value)
       self.blockedLanguagesChanged.emit(value)
+
+  def blockedLanguageList(self): # -> [unicode]
+    s = self.blockedLanguages()
+    return s.split(',') if s else []
+
+  def setBlockedLanguageList(self, v): self.setBlockedLanguages(','.join(v)) # [unicode] ->
 
   ## Romanization for Japanese ##
 
@@ -2314,6 +2320,8 @@ class SettingsProxy(QObject):
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
     g.hanjaRubyEnabledChanged.connect(self.hanjaRubyEnabledChanged)
 
+    g.blockedLanguagesChanged.connect(self.blockedLanguagesChanged)
+
   hentaiChanged = Signal(bool)
   hentai = Property(bool,
       lambda _: global_().isHentaiEnabled(),
@@ -2385,6 +2393,8 @@ class SettingsProxy(QObject):
   subtitleVoiceEnabledChanged = Signal(bool)
   subtitleVoiceEnabled = bool_property('SubtitleVoice', False, notify=subtitleVoiceEnabledChanged)
 
+  blockedLanguagesChanged = Signal(unicode)
+  blockedLanguages = unicode_property('BlockedLanguages', '', notify=blockedLanguagesChanged)
   japaneseFontChanged = Signal(unicode)
   japaneseFont = unicode_property('JapaneseFont', config.lang_font('ja'), notify=japaneseFontChanged)
   englishFontChanged = Signal(unicode)

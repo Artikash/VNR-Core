@@ -98,7 +98,7 @@ class _TextManager(object):
     #q.rawTextReceived.connect(self._updateTtsText)
     q.nameTextReceived.connect(self._updateTtsName)
 
-    self.blockedLanguages = set() # {str}
+    self.blockedLanguages = '' # str
 
   def reset(self):
     self.agentScenarioBuffer = [] # [unicode scenario text]

@@ -37,6 +37,7 @@ RE_SHORT_HIRAGANA = re.compile(u'^[あ-ん]{1,3}$')
 class _TermInput(object):
   def __init__(self, q):
     self.gameId = 0 # long
+    self.blockedLanguages = '' # str
     self._createUi(q)
 
   def _createUi(self, q):
@@ -579,17 +580,20 @@ class _TermInput(object):
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
-          for lang in config.YOMIGANA_LANGUAGES
+          for lang in config.YOMIGANA_LANGUAGES if lang not in self.blockedLanguages
         ))
         text = self.patternEdit.text().strip()
-        if text and convutil.ja2zh_name_test(text):
-          zhs = convutil.ja2zhs_name(text)
-          zht = convutil.ja2zht_name(text)
-          t += ', %s (%s)' % (zht, tr_('zh'))
-          if zhs != zht:
-            t += ', %s (%s)' % (zhs, tr_('zhs'))
-        else:
-          t += ', %s (%s)' % (tr_("none"), tr_('zh'))
+        if 'zh' not in self.blockedLanguages:
+          if t:
+            t += ', '
+          if text and convutil.ja2zh_name_test(text):
+            zhs = convutil.ja2zhs_name(text)
+            zht = convutil.ja2zht_name(text)
+            t += '%s (%s)' % (zht, tr_('zh'))
+            if zhs != zht:
+              t += ', %s (%s)' % (zhs, tr_('zhs'))
+          else:
+            t += '%s (%s)' % (tr_("none"), tr_('zh'))
         w.setText(t)
         return
 
@@ -638,6 +642,9 @@ class TermInput(QtWidgets.QDialog):
 
     #import netman
     #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
+
+  def blockedLanguages(self): return self.__d.blockedLanguages
+  def setBlockedLanguages(self, v): self.__d.blockedLanguages = v
 
   def setPattern(self, v): self.__d.patternEdit.setText(v)
   def setText(self, v): self.__d.textEdit.setText(v)

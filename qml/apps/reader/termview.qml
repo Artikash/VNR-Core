@@ -389,6 +389,7 @@ Item { id: root_
       rightMargin: 5
     }
     currentItem: table_.currentItem
+    blockedLanguages: settings_.blockedLanguages
   }
 }
 
