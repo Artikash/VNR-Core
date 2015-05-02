@@ -293,6 +293,7 @@ class sakurakit(QObject):
       self.tr("Day"),
 
       self.tr("Account"),
+      self.tr("Alphabet"),
       self.tr("All"), self.tr("all"),
       self.tr("Age"),
       self.tr("Aside"),

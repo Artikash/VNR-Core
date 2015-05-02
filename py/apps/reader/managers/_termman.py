@@ -17,7 +17,7 @@ from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
 from unitraits import jpchars, jpmacros
-from convutil import kana2name, zhs2zht, zht2zhs, \
+from convutil import toalphabet, kana2name, zhs2zht, zht2zhs, \
                      ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
 import config, dataman, defs, i18n
 
@@ -286,6 +286,8 @@ class TermWriter:
                 repl = ja2zht_name_fix(repl)
             if td.type == 'yomi':
               repl = kana2name(repl, to) or repl
+            elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
+              repl = toalphabet(repl, to, td.language) #fr=td.language
 
           if td.phrase:
             left = pattern[0]

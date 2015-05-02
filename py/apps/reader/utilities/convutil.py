@@ -24,14 +24,14 @@ kata2th = hira2th = kana2th
 kata2ar = hira2ar = kana2ar
 
 _alphabet_el_re = re.compile(ur'σ\b', re.UNICODE)
-def convert_alphabet(text, to='en', fr='en'):
+def toalphabet(text, to='en', fr='en'):
   """
   @param  text  unicode
   @param* to  str
   @param* fr  str  currently not used
   @return  unicode
   """
-  if to in config.ALPHABET_LANGUAGE_SET:
+  if fr == 'en' and to in config.ALPHABET_LANGUAGE_SET:
     from transliterate import translit
     text = translit(text, to)
     if to == 'el' and u'σ' in text:

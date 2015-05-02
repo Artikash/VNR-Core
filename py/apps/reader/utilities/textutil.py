@@ -230,7 +230,7 @@ def convert_html_alphabet(text, *args, **kwargs):
   @param* fr  str  currently not used
   @return  unicode
   """
-  conv = convutil.convert_alphabet
+  conv = convutil.toalphabet
   if '>' not in text or '<' not in text:
     return conv(text, *args, **kwargs)
   def repl(m):

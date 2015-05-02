@@ -572,18 +572,20 @@ class _TermInput(object):
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
 
   def _refreshYomi(self):
+    blans = self.blockedLanguages
     w = self.yomiEdit
-    if self._getType() == 'yomi':
+    type = self._getType()
+    if type == 'yomi':
       text = self.textEdit.text().strip()
       if text:
         skqss.class_(w, 'text-primary')
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
-          for lang in config.YOMIGANA_LANGUAGES if lang not in self.blockedLanguages
+          for lang in config.YOMIGANA_LANGUAGES if lang not in blans
         ))
         text = self.patternEdit.text().strip()
-        if 'zh' not in self.blockedLanguages:
+        if 'zh' not in blans:
           if t:
             t += ', '
           if text and convutil.ja2zh_name_test(text):
@@ -594,8 +596,22 @@ class _TermInput(object):
               t += ', %s (%s)' % (zhs, tr_('zhs'))
           else:
             t += '%s (%s)' % (tr_("none"), tr_('zh'))
-        w.setText(t)
-        return
+        if t:
+          w.setText(t)
+          return
+
+    elif type == 'name' and self._getTargetLanguage() == 'en':
+      text = self.textEdit.text().strip()
+      if text:
+        skqss.class_(w, 'text-primary')
+        w.setEnabled(True)
+        t = ', '.join((
+          "%s (%s)" % (convutil.toalphabet(text, lang), tr_(lang))
+          for lang in config.ALPHABET_LANGUAGES if lang != 'el' and lang not in blans
+        ))
+        if t:
+          w.setText(t)
+          return
 
     w.setEnabled(False)
     w.setText("(%s)" % tr_("Empty"))
