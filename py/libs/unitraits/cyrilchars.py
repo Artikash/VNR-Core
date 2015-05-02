@@ -45,4 +45,20 @@ def ru2uk(text):
     text = text.replace(k.upper(), v.upper())
   return text
 
+UK_RU = ( # (unicode ru, unicode uk)
+  (u'е', u'э'),
+  (u'і', u'и'),
+  (u'г', u'х'),
+  (u'ґ', u'г'),
+)
+def uk2ru(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  for k,v in UK_RU:
+    text = text.replace(k, v)
+    text = text.replace(k.upper(), v.upper())
+  return text
+
 # EOF

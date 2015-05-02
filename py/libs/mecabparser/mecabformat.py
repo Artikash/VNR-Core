@@ -10,6 +10,7 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 from unitraits import unichars, jpchars
+import mecabdef
 
 class UniDicFormatter(object):
   # Dict type
@@ -77,10 +78,22 @@ class UniDicFormatter(object):
         return s
     return ''
 
+  def getrole(self, f): # unicode -> str
+    c3 = self.getcol(f, 2)
+    if c3 == u'人名':
+      return mecabdef.ROLE_NAME
+    c1 = self.getcol(f, 0)
+    if c1 == u'名詞':
+      return mecabdef.ROLE_NOUN
+    if c1 == u'動詞':
+      return mecabdef.ROLE_VERB
+    if c1 == u'代名詞':
+      return mecabdef.ROLE_PRONOUN
+    return ''
+
 UNIDIC_FORMATTER = UniDicFormatter()
 
 # EOF
-
 
 # http://chocolapod.sakura.ne.jp/blog/entry/56
 # ジョジョの奇妙な冒険,,,0,名詞,固有名詞,一般,*,*,*,ジョジョノキミョウナボウケン,ジョジョの奇妙な冒険,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,*,*,*,*

@@ -289,7 +289,7 @@ class TermWriter:
             if td.type == 'yomi':
               repl = kana2name(repl, to) or repl
             elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
-              repl = toalphabet(repl, to, td.language) #fr=td.language
+              repl = toalphabet(repl, to=to, fr=td.language)
 
           if td.phrase:
             left = pattern[0]

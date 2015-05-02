@@ -178,7 +178,7 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
 
 ## Render table
 
-def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, center=True):
+def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, center=True, fmt=mecabformat.UNIDIC_FORMATTER):
   """
   @param  text  unicode
   @param  rubyType  str
@@ -188,6 +188,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
   @param* colorsize  bool
   @param* center  bool
   @param* features  {unicode surface:(unicode feature, fmt)} or None
+  @param* fmt  mecabfmt
   @yield  unicode  HTML table
   """
   q = manager().parse(text, rubyType, rubyKana=rubyKana)
@@ -211,6 +212,8 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
 
     for surface, yomi, feature, surface_type in q:
+      #print fmt.getrole(feature), surface
+
       if hasfeature:
         features[surface] = feature
 

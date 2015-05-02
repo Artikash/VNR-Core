@@ -31,11 +31,21 @@ def toalphabet(text, to='en', fr='en'):
   @param* fr  str  currently not used
   @return  unicode
   """
-  if fr == 'en' and to in config.ALPHABET_LANGUAGE_SET:
-    from transliterate import translit
-    text = translit(text, to)
-    if to == 'el' and u'σ' in text:
-      text = _alphabet_el_re.sub(u'ς', text) # replace σ with ς at last
+  if fr == 'en':
+    if to in config.ALPHABET_LANGUAGE_SET:
+      from transliterate import translit
+      text = translit(text, to)
+      if to == 'el' and u'σ' in text:
+        text = _alphabet_el_re.sub(u'ς', text) # replace σ with ς at last
+  elif fr == 'ru':
+    if to == 'uk':
+      from unitraits import cyrilchars
+      return cyrilchars.ru2uk(text)
+  # Disabled
+  #elif fr == 'uk':
+  #  if to == 'ru':
+  #    from unitraits import cyrilchars
+  #    return cyrilchars.uk2ru(text)
   return text
 
 #MSIME_VALID = False

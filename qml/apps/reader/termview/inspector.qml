@@ -141,10 +141,16 @@ Item { id: root_
     if (text) {
       if (type == 'yomi')
         ret += "<br/>" + My.tr("Yomi") + ": " + renderYomiName(pattern, text)
-      else if (type == 'name' && lang == 'en') {
-        var t = renderLatinName(text)
-        if (t)
-          ret += "<br/>" + Sk.tr("Alphabet") + ": " + t
+      else if (type == 'name') {
+        if (lang == 'en') {
+          var t = renderLatinName(text)
+          if (t)
+            ret += "<br/>" + Sk.tr("Alphabet") + ": " + t
+        } else if (lang == 'ru') { // || lang == 'uk') {
+          var t = renderCyrillicName(text)
+          if (t)
+            ret += "<br/>" + Sk.tr("Alphabet") + ": " + t
+        }
       }
     }
 
@@ -210,15 +216,31 @@ Item { id: root_
     return ret
   }
 
+  function renderCyrillicName(text) { // string, string -> string
+    var ret = ''
+    var fr = 'ru'
+    var to = 'uk'
+    if (!isLanguageBlocked(to)) {
+      var t = jlp_.toalphabet(text, to, fr)
+      if (t == text)
+        t = '='
+      ret += ', ' + t + ' (' + Sk.tr(to) +  ')'
+    }
+    if (ret)
+      ret = text + ' (' + Sk.tr(fr) +  ')' + ret
+    return ret
+  }
+
   function renderLatinName(text) { // string -> string
     var ret = ''
+    var fr = 'en'
     for (var i in Util.ALPHABET_LANGUAGES) {
       var lang = Util.ALPHABET_LANGUAGES[i]
       if (!isLanguageBlocked(lang))
-        ret += ', ' + jlp_.toalphabet(text, lang) + ' (' + Sk.tr(lang) +  ')'
+        ret += ', ' + jlp_.toalphabet(text, lang, fr) + ' (' + Sk.tr(lang) +  ')'
     }
     if (ret)
-      ret = text + ' (' + Sk.tr('en') +  ')' + ret
+      ret = text + ' (' + Sk.tr(fr) +  ')' + ret
     return ret
   }
 

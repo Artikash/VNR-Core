@@ -60,4 +60,14 @@ SURFACE_KANJI = 2
 SURFACE_NUMBER = 3
 SURFACE_KANA = 4
 
+# Role type
+
+ROLE_UNKNOWN = 'x'
+ROLE_NAME = 'm'
+ROLE_NOUN = 'n'
+ROLE_PRONOUN = 'p'
+ROLE_VERB = 'v'
+ROLE_ADJ = 'adj'
+ROLE_ADV = 'adv'
+
 # EOF
