@@ -9,7 +9,7 @@ if __name__ == '__main__':
 import re
 from sakurakit.skstr import multireplacer
 from unitraits.uniconv import hira2kata
-import jadef
+import kanadef
 
 def _makeconverter(fr, to):
   """
@@ -17,13 +17,13 @@ def _makeconverter(fr, to):
   @param  to  int
   @return  function or None
   """
-  s = jadef.TABLES[to]
+  s = kanadef.TABLES[to]
   if fr == 'kata':
     s = hira2kata(s)
   elif fr == 'kana':
     s += '\n' + hira2kata(s)
 
-  t = jadef.parse(s)
+  t = kanadef.parse(s)
   return multireplacer(t)
 
 _CONVERTERS = {}

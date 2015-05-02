@@ -1,5 +1,4 @@
 # coding: utf8
-# jadef.py
 # 10/18/2014 jichi
 # See: http://sakuradite.com/wiki/en/Furigana
 
