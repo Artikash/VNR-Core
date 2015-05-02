@@ -58,10 +58,8 @@ def join_char(l):
   @return  unicode or None
   """
   try:
-    if len(l) < 3:
-      l = list(l)
-      while len(l) < 3:
-        l.append('')
+    if len(l) == 2:
+      l = l[0], l[1], ''
     return hangul.join_char(l)
   except: pass
 
