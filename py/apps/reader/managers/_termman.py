@@ -86,13 +86,15 @@ def _lang_level(lang):
     return 0
   if lang == 'en':
     return 1
-  if lang == 'el':
-    return 4
-  if config.is_cyrillic_language(lang):
-    return 3
-  if config.is_latin_language(lang):
+  if lang == 'ru':
     return 2
-  return 5
+  if lang == 'el':
+    return 5
+  if config.is_cyrillic_language(lang):
+    return 4
+  if config.is_latin_language(lang):
+    return 3
+  return 6
 def _lang_sort_key(t, s):
   """Larger applied first
   @param  t  str  target language
