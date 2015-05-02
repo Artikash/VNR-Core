@@ -138,8 +138,15 @@ Item { id: root_
     else
       ret += text
 
-    if (text && type == 'yomi')
-      ret += "<br/>" + My.tr("Yomi") + ": " + renderYomiName(pattern, text)
+    if (text) {
+      if (type == 'yomi')
+        ret += "<br/>" + My.tr("Yomi") + ": " + renderYomiName(pattern, text)
+      else if (type == 'name' && lang == 'en') {
+        var t = renderLatinName(text)
+        if (t)
+          ret += "<br/>" + Sk.tr("Alphabet") + ": " + t
+      }
+    }
 
     if (text && (type == 'trans' || type == 'output' || type == 'name' || type == 'suffix' || type == 'prefix') && lang != 'en' && lang != 'ja')
       ret += "<br/>" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
@@ -200,6 +207,18 @@ Item { id: root_
       } else
         ret += Sk.tr("none") + ' (' + Sk.tr('zh') +  ')'
     }
+    return ret
+  }
+
+  function renderLatinName(text) { // string -> string
+    var ret = ''
+    for (var i in Util.ALPHABET_LANGUAGES) {
+      var lang = Util.ALPHABET_LANGUAGES[i]
+      if (!isLanguageBlocked(lang))
+        ret += ', ' + jlp_.toalphabet(text, lang) + ' (' + Sk.tr(lang) +  ')'
+    }
+    if (ret)
+      ret = text + ' (' + Sk.tr('en') +  ')' + ret
     return ret
   }
 

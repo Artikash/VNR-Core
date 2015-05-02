@@ -160,6 +160,12 @@ var YOMI_LANGUAGES = [
   //, 'zh'
 ]
 
+var ALPHABET_LANGUAGES = [
+  //'en'
+  'ru'
+  , 'uk'
+]
+
 /**
  *  @param  text  string
  *  @return  bool
