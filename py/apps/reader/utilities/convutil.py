@@ -11,7 +11,7 @@ from opencc.opencc import zht2zhs #, ja2zht
 from ccman import zht2zhx, ja2zhs_name
 from ccman import zhs2zhx as zhs2zht
 from ccman import ja2zhx_name as ja2zht_name
-from hangulconv.hangulconv import to_hanja as hangul2hanja
+from hangulconv.hanjaconv import to_hanja as hangul2hanja
 from kanjiconv.jazh import ja2zh_name_test, ja2zht_name_fix
 import config
 #from pinyinconv import pinyinconv

@@ -4,7 +4,7 @@
 import re
 from unidecode import unidecode
 from unitraits import jpchars
-from hangulconv import hangulconv
+from hangulconv import hanjaconv
 from pinyinconv import pinyinconv
 #from opencc.opencc import ja2zht
 from convutil import zht2zhs
@@ -67,7 +67,7 @@ def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True, **kwa
   @param* hanjaRubyEnabled  bool
   @yield  (unicode surface, unicode yomi or None, int groupId or None)
   """
-  for group, l in enumerate(hangulconv.to_hanja_list(text)):
+  for group, l in enumerate(hanjaconv.to_hanja_list(text)):
     for surface,yomi in l:
       if len(surface) == 1 and surface in _s_punct:
         group = None
