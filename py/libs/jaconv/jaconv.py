@@ -165,8 +165,26 @@ def _repair_th(text):
   return text
 
 # http://en.wikipedia.org/wiki/Hangul_Syllables
-_re_ko_tsu = re.compile(u'[\uac00-\ud7af]っ[\uac00-\ud7af]')
-def _ko_tsu_repl(m): # match -> unicode
+_ko_hangul = u'[\uac00-\ud7af]'
+_re_ko_tsu1 = re.compile(u'っ' + _ko_hangul)
+_re_ko_tsu2 = re.compile(_ko_hangul + u'っ' + _ko_hangul)
+def _ko_tsu1_repl(m): # match -> unicode
+  t = m.group()
+  left = t[0]
+  right = t[-1]
+  from hangulconv import hangulconv
+  right_l = hangulconv.split_char(right)
+
+  if right_l:
+    right_ch = right_l[0]
+    right_ch = hangulconv.join_consonant((right_ch, right_ch))
+    if right_ch:
+      right_l = list(right_l)
+      right_l[0] = right_ch
+      right = hangulconv.join_char(right_l)
+      t = right
+  return t
+def _ko_tsu2_repl(m): # match -> unicode
   t = m.group()
   left = t[0]
   right = t[-1]
@@ -185,7 +203,10 @@ def _repair_ko(text):
   @return  unicode
   """
   if u'っ' in text:
-    text = _re_ko_tsu.sub(_ko_tsu_repl, text)
+    text = _re_ko_tsu2.sub(_ko_tsu2_repl, text)
+  # Disabled as not quite useful
+  #if u'っ' in text:
+  #  text = _re_ko_tsu1.sub(_ko_tsu1_repl, text)
   return text
 
 # Names
@@ -364,6 +385,10 @@ if __name__ == '__main__':
     (u'いぇす', u'예스'),
     (u'しっば', u'십바'),
     (u'ゆっき', u'윸키'),
+    (u'ゆっさ', u'윳사'),
+    (u'かって', u'캍테'),
+    (u'って', u'-테'),
+    #(u'っさ', u'싸'), # disabled as not quite useful
   ]
   for k,v in l:
     print k, kana2ko(k), v
