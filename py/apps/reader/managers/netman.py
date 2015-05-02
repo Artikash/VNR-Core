@@ -61,7 +61,7 @@ class _NetworkManager(object):
 
     self.cachedGamesById = {} # {long id:dataman.Game}
     self.cachedGamesByMd5 = {} # {str id:dataman.Game}
-    self.blockedLanguages = set() # set(str) not None
+    self.blockedLanguages = '' # str
 
     if features.WINE:
       self.qtSession = qtrequests.AsyncSession(session) # qtSession is very slow on wine
@@ -81,7 +81,7 @@ class _NetworkManager(object):
     @param  params  dict
     """
     if self.blockedLanguages:
-      params['nolang'] = ','.join(self.blockedLanguages).replace('zh', 'zhs,zht')
+      params['nolang'] = self.blockedLanguages.replace('zh', 'zhs,zht')
 
   ## Filters ##
 
@@ -1764,7 +1764,7 @@ class NetworkManager(QObject):
   def isOnline(self): return self.__d.online
   def updateOnline(self): self.__d.updateOnline()
 
-  #def blockedLanguages(self, v): return self.__d.blockedLanguages
+  def blockedLanguages(self, v): return self.__d.blockedLanguages
   def setBlockedLanguages(self, v): self.__d.blockedLanguages = v
 
   ## Update ##

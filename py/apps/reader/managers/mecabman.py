@@ -16,6 +16,7 @@ ROMAJI_RUBY_TYPES = (
   mecabdef.RB_TR,
   mecabdef.RB_RU,
   mecabdef.RB_UK,
+  mecabdef.RB_EL,
   mecabdef.RB_KO,
   mecabdef.RB_VI,
   mecabdef.RB_TH,

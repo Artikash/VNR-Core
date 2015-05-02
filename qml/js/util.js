@@ -149,6 +149,17 @@ function spellSupportsLanguage(lang) {
   }
 }
 
+var YOMI_LANGUAGES = [
+  'en'
+  , 'ru'
+  , 'uk'
+  , 'el'
+  , 'ar'
+  , 'th'
+  , 'ko'
+  //, 'zh'
+]
+
 /**
  *  @param  text  string
  *  @return  bool

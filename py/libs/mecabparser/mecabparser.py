@@ -50,6 +50,7 @@ def getkataconv(ruby):
       jaconv.kata2romaji if ruby == mecabdef.RB_ROMAJI else
       jaconv.kata2ru if ruby == mecabdef.RB_RU else
       jaconv.kata2uk if ruby == mecabdef.RB_UK else
+      jaconv.kata2el if ruby == mecabdef.RB_EL else
       jaconv.kata2ko if ruby == mecabdef.RB_KO else
       jaconv.kata2th if ruby == mecabdef.RB_TH else
       jaconv.kata2ar if ruby == mecabdef.RB_AR else

@@ -1176,6 +1176,10 @@ class _MainObject(object):
     import terminput
     ret = terminput.TermInput(self.topWindow)
     self.widgets.append(ret)
+
+    ss = settings.global_()
+    ret.setBlockedLanguages(ss.blockedLanguages())
+    ss.blockedLanguagesChanged.connect(ret.setBlockedLanguages)
     return ret
 
   @memoizedproperty

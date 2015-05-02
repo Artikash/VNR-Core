@@ -439,6 +439,13 @@ def migrate(ss_version): # long ->
     #if ss_version <= 1428816315:
     #  ss.setValue('GrimoireHover', True) # enable automatic popup by default
 
+    if ss_version <= 1430531862:
+      s = ss.value('BlockedLanguages')
+      if isinstance(s, set):
+        ss.setValue('BlockedLanguages', ','.join(s))
+      elif not isinstance(s, basestring):
+        ss.setValue('BlockedLanguages', '')
+
     if ss_version > 1428623451 and ss_version <= 1429000689: # re-align EDICT with UniDic
       path = rc.MECAB_EDICT_PATH
       if os.path.exists(path):
