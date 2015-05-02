@@ -55,6 +55,10 @@ def hira2uk(text): return _repair_reading(_repair_uk(_convert(text, 'hira', 'uk'
 def kata2uk(text): return _repair_reading(_repair_uk(_convert(text, 'kata', 'uk')))
 def kana2uk(text): return _repair_reading(_repair_uk(_convert(text, 'kana', 'uk')))
 
+def hira2el(text): return _repair_reading(_repair_el(_convert(text, 'hira', 'el')))
+def kata2el(text): return _repair_reading(_repair_el(_convert(text, 'kata', 'el')))
+def kana2el(text): return _repair_reading(_repair_el(_convert(text, 'kana', 'el')))
+
 def hira2th(text): return _repair_reading(_repair_th(_convert(text, 'hira', 'th')))
 def kata2th(text): return _repair_reading(_repair_th(_convert(text, 'kata', 'th')))
 def kana2th(text): return _repair_reading(_repair_th(_convert(text, 'kana', 'th')))
@@ -123,6 +127,18 @@ def _repair_uk(text): # unicode -> unicode  repair xtu
     text = _re_uk_tsu.sub(r'\1\1', text)
   return text
 
+# http://en.wikipedia.org/wiki/Greek_alphabet
+_el_consonant = u'βγδζθκλμνξπρτφχψω'
+_re_el_tsu = re.compile(ur"っ([%s])" % _el_consonant)
+def _repair_el(text): # unicode -> unicode  repair xtu
+  """
+  @param  text
+  @return  unicode
+  """
+  if u'っ' in text:
+    text = _re_el_tsu.sub(r'\1\1', text)
+  return text
+
 # http://en.wikipedia.org/wiki/Thai_alphabet
 # Thai unicode range: U+0E00–U+0E7F
 _th_b = u'(?:^|(?<![\u0e00-\u0e7f]))' # \b at the beginning
@@ -176,6 +192,8 @@ def kana2reading(text, lang):
     text = kana2ru(text)
   elif lang == 'uk':
     text = kana2uk(text)
+  elif lang == 'el':
+    text = kana2el(text)
   else:
     text = kana2romaji(text)
   return capitalizeromaji(text)
@@ -295,6 +313,26 @@ if __name__ == '__main__':
   for k,v in l:
     print k, kana2uk(k), v
     assert kana2uk(k) == v
+
+  # Greek
+  l = [
+    #(u'かわいい', u'??'), # not sure how to say it
+    #(u'こんと', u'κόντο'), # failed
+    #(u'たろ', u'ταρό'), # failed
+    #(u'やまた', u'γιαμάντα'), # failed
+    # http://el.wikipedia.org/wiki/Ιαπωνική_γραφή
+    (u'イロハニホヘト', u'ιροχανιχοχετο'),  # 色は匂へと
+    (u'チリヌルヲ',  u'τσιρινουρουβο'),     # 散りぬるを
+    (u'ワカヨタレソ', u'βακαγιοταρεσο'),    # 我が世誰そ
+    (u'ツネナラム', u'τσουνεναραμου'),      # 常ならむ
+    (u'ウヰノオクヤマ', u'ουβινοοκουγιαμα'), # 有為の奥山
+    (u'ケフコエテ', u'κεφουκοετε'),         # 今日越えて
+    (u'アサキユメミシ', u'ασακιγιουμεμισι'), # 浅き夢見し
+    (u'ヱヒモセス', u'βεχιμοσεσου'),        # 酔ひもせす
+  ]
+  for k,v in l:
+    print k, kana2el(k), v
+    assert kana2el(k) == v
 
   # Korean
   l = [
