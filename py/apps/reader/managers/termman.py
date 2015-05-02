@@ -34,6 +34,8 @@ def _make_script_interpreter(type):
     from pytrscript import TranslationScriptPerformer
     return TranslationScriptPerformer()
 
+DELEGATE_DISABLED_LANGUAGES = 'el', # languages where user-defined delegation is disabled
+
 @Q_Q
 class _TermManager:
 
@@ -237,10 +239,16 @@ class _TermManager:
     """
     if '{{' not in text or '}}' not in text:
       return text
-    category = _termman.host_category(host)
-    unused_proxies = self.proxies.get((to, fr)) # [TranslationProxy]
+
+    if to in DELEGATE_DISABLED_LANGUAGES:
+      unused_proxies = None # disabled
+    else:
+      unused_proxies = self.proxies.get((to, fr)) # [TranslationProxy]
+
     used_proxy_input = set() # [unicode]
     used_proxy_output = set() # [unicode]
+
+    category = _termman.host_category(host)
 
     def fn(m): # re.match -> unicode
       matched_text = m.group()
