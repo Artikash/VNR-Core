@@ -572,25 +572,25 @@ class _TermInput(object):
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
 
   def _refreshYomi(self):
-    blans = self.blockedLanguages
     w = self.yomiEdit
-    type = self._getType()
-    if type == 'yomi':
-      text = self.textEdit.text().strip()
-      if text:
+    text = self.textEdit.text().strip()
+    if text:
+      blans = self.blockedLanguages
+      type = self._getType()
+      if type == 'yomi':
         skqss.class_(w, 'text-primary')
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2name(text, lang), tr_(lang))
           for lang in config.YOMIGANA_LANGUAGES if lang not in blans
         ))
-        text = self.patternEdit.text().strip()
+        pattern = self.patternEdit.text().strip()
         if 'zh' not in blans:
           if t:
             t += ', '
-          if text and convutil.ja2zh_name_test(text):
-            zhs = convutil.ja2zhs_name(text)
-            zht = convutil.ja2zht_name(text)
+          if pattern and convutil.ja2zh_name_test(pattern):
+            zhs = convutil.ja2zhs_name(pattern)
+            zht = convutil.ja2zht_name(pattern)
             t += '%s (%s)' % (zht, tr_('zh'))
             if zhs != zht:
               t += ', %s (%s)' % (zhs, tr_('zhs'))
@@ -600,18 +600,36 @@ class _TermInput(object):
           w.setText(t)
           return
 
-    elif type == 'name' and self._getTargetLanguage() == 'en':
-      text = self.textEdit.text().strip()
-      if text:
-        skqss.class_(w, 'text-primary')
-        w.setEnabled(True)
-        t = ', '.join((
-          "%s (%s)" % (convutil.toalphabet(text, lang), tr_(lang))
-          for lang in config.ALPHABET_LANGUAGES if lang != 'el' and lang not in blans
-        ))
-        if t:
-          w.setText(t)
-          return
+      elif type == 'name':
+        lang = self._getTargetLanguage()
+        if lang == 'en':
+          skqss.class_(w, 'text-primary')
+          w.setEnabled(True)
+          t = ', '.join((
+            "%s (%s)" % (convutil.toalphabet(text, lang), tr_(lang))
+            for lang in config.ALPHABET_LANGUAGES if lang != 'el' and lang not in blans
+          ))
+          if t:
+            w.setText(t)
+            return
+        elif lang == 'ru':
+          to = 'uk'
+          if to not in blans:
+            skqss.class_(w, 'text-primary')
+            w.setEnabled(True)
+            t = "%s (%s)" % (convutil.toalphabet(text, to=to, fr=lang), tr_(to))
+            w.setText(t)
+            return
+
+      # Disabled
+      #elif lang == 'uk':
+      #  to = 'ru'
+      #  if to not in blans:
+      #    skqss.class_(w, 'text-primary')
+      #    w.setEnabled(True)
+      #    t = "%s (%s)" % (convutil.toalphabet(text, to=to, fr=lang), tr_(to))
+      #    w.setText(t)
+      #    return
 
     w.setEnabled(False)
     w.setText("(%s)" % tr_("Empty"))

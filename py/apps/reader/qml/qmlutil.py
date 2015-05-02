@@ -56,9 +56,9 @@ class JlpUtil(QObject):
   def kana2name(self, text, lang):
     return convutil.kana2name(text, lang)
 
-  @Slot(unicode, unicode, result=unicode)
-  def toalphabet(self, text, lang):
-    return convutil.toalphabet(text, lang)
+  @Slot(unicode, unicode, unicode, result=unicode)
+  def toalphabet(self, text, to, fr):
+    return convutil.toalphabet(text, to=to, fr=fr)
 
   @Slot(unicode, unicode, result=unicode)
   def toroman(self, text, lang):
