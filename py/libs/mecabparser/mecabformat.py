@@ -79,17 +79,19 @@ class UniDicFormatter(object):
     return ''
 
   def getrole(self, f): # unicode -> str
-    c3 = self.getcol(f, 2)
-    if c3 == u'人名':
+    c2 = self.getcol(f, 2)
+    if c2 == u'人名':
       return mecabdef.ROLE_NAME
-    c1 = self.getcol(f, 0)
-    if c1 == u'名詞':
+    c0 = self.getcol(f, 0)
+    if c0 == u'名詞':
       return mecabdef.ROLE_NOUN
-    if c1 == u'動詞':
+    if c0 == u'動詞':
       return mecabdef.ROLE_VERB
-    if c1 == u'代名詞':
+    if c0 == u'代名詞':
       return mecabdef.ROLE_PRONOUN
-    return ''
+    if c0 == u'形容詞':
+      return mecabdef.ROLE_ADJ
+    return  mecabdef.ROLE_UNKNOWN
 
 UNIDIC_FORMATTER = UniDicFormatter()
 

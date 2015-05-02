@@ -4680,8 +4680,6 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
-    if 'en' not in blans:
-      layout.addWidget(self.edictButton)
     if 'zh' not in blans:
       layout.addWidget(self.lingoesJaZhButton)
       layout.addWidget(self.lingoesJaZhGbkButton)
@@ -4690,6 +4688,7 @@ class _DictionaryTranslationTab(object):
     if 'vi' not in blans:
       layout.addWidget(self.stardictJaViButton)
     if 'en' not in blans:
+      layout.addWidget(self.edictButton)
       layout.addWidget(self.lingoesJaEnButton)
     if 'de' not in blans:
       layout.addWidget(self.wadokuButton)
