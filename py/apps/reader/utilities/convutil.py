@@ -2,6 +2,7 @@
 # convutil.py
 # 10/18/2014 jichi
 
+import re
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin
 from unidecode import unidecode
 from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th, kana2ar \
@@ -22,6 +23,7 @@ kata2ko = hira2ko = kana2ko
 kata2th = hira2th = kana2th
 kata2ar = hira2ar = kana2ar
 
+_alphabet_el_re = re.compile(ur'σ\b', re.UNICODE)
 def convert_alphabet(text, to='en', fr='en'):
   """
   @param  text  unicode
@@ -31,7 +33,9 @@ def convert_alphabet(text, to='en', fr='en'):
   """
   if to in config.ALPHABET_LANGUAGE_SET:
     from transliterate import translit
-    return translit(text, to)
+    text = translit(text, to)
+    if to == 'el' and u'σ' in text:
+      text = _alphabet_el_re.sub(u'ς', text) # replace σ with ς at last
   return text
 
 #MSIME_VALID = False
