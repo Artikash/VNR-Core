@@ -16,8 +16,8 @@ CH_NOUN = 8
 CH_MODIFIER = 6
 CH_PUNCT = 3
 CH_KATAGANA = 7
-CH_LATIN = 4
-CH_LATIN2 = 5
+CH_MARK = 4
+CH_MARK2 = 5
 CH_GREEK = 9
 
 # Ruby yomigana type
@@ -79,7 +79,8 @@ ROLE_SUFFIX = 'suf' # suffix
 ROLE_PREFIX = 'pre' # prefix
 ROLE_INTERJ = 'int' # interjection
 ROLE_PUNCT = 'punct' # punctuation
-ROLE_CONJ = 'conj' # conjunctions
+ROLE_CONJ = 'conj' # conjunction
+ROLE_MARK = 'w' # letters
 
 ROLE_NAMES = {
   ROLE_NAME: u'人名',
@@ -98,6 +99,7 @@ ROLE_NAMES = {
   ROLE_INTERJ: u'感動詞',
   ROLE_CONJ: u'接続詞',
   ROLE_PUNCT: u'補助記号',
+  ROLE_MARK: u'記号',
 }
 NAME_ROLES = {v:k for k,v in ROLE_NAMES.iteritems()}
 #def get_role_by_name(v):  # unicode -> unicode or None
@@ -120,6 +122,7 @@ ROLE_NAMES_EN = {
   ROLE_INTERJ: "interjection",
   ROLE_CONJ: "conjunctions",
   ROLE_PUNCT: "punctuation",
+  ROLE_MARK: "letter",
 }
 
 def role_name(v): return ROLE_NAMES.get(v) # str -> unicode or None
