@@ -187,8 +187,8 @@ ROLE_COLORS = {
 
   mecabdef.ROLE_NOUN: 'rgba(0,255,0,%s)'    % ROLE_COLOR_ALPHA, # green
   mecabdef.ROLE_ADN: 'rgba(0,255,0,%s)'     % ROLE_COLOR_ALPHA, # = noun
-  mecabdef.ROLE_SUFFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun
   mecabdef.ROLE_PREFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun
+  mecabdef.ROLE_SUFFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun, dangling
 
   mecabdef.ROLE_VERB: 'rgba(255,0,255,%s)'  % ROLE_COLOR_ALPHA, # magenta
   mecabdef.ROLE_ADV: 'rgba(255,0,255,%s)'   % ROLE_COLOR_ALPHA, # = verb
@@ -198,7 +198,8 @@ ROLE_COLORS = {
   mecabdef.ROLE_ADJ: 'rgba(255,255,0,%s)'   % ROLE_COLOR_ALPHA, # = a
 
   mecabdef.ROLE_CONJ: 'rgba(0,0,255,%s)'    % ROLE_COLOR_ALPHA, # blue
-  mecabdef.ROLE_PART: 'rgba(0,0,255,%s)'    % ROLE_COLOR_ALPHA, # = conj, dangling particle
+  mecabdef.ROLE_INTERJ: 'rgba(0,0,255,%s)'  % ROLE_COLOR_ALPHA, # = conj
+  mecabdef.ROLE_PART: 'rgba(0,0,255,%s)'    % ROLE_COLOR_ALPHA, # = conj, dangling
 }
 def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, annotated=False, highlight=False, center=True, fmt=mecabformat.UNIDIC_FORMATTER):
   """
@@ -258,7 +259,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         else:
           color = None
       elif highlight:
-        if last_color and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX):
+        if last_color and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX, mecabdef.ROLE_SUFFIX):
           color = last_color
         else:
           last_color = color = ROLE_COLORS.get(role)
