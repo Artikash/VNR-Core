@@ -189,6 +189,7 @@ ROLE_COLORS = {
   mecabdef.ROLE_ADN: 'rgba(0,255,0,%s)'     % ROLE_COLOR_ALPHA, # = noun
   mecabdef.ROLE_PREFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun
   mecabdef.ROLE_SUFFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun, dangling
+  mecabdef.ROLE_LATIN: 'rgba(0,255,0,%s)'   % ROLE_COLOR_ALPHA, # = noun
 
   mecabdef.ROLE_VERB: 'rgba(255,0,255,%s)'  % ROLE_COLOR_ALPHA, # magenta
   mecabdef.ROLE_ADV: 'rgba(255,0,255,%s)'   % ROLE_COLOR_ALPHA, # = verb
@@ -259,7 +260,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         else:
           color = None
       elif highlight:
-        if last_color and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX, mecabdef.ROLE_SUFFIX):
+        if last_color and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX, mecabdef.ROLE_SUFFIX, mecabdef.ROLE_LATIN):
           color = last_color
         else:
           last_color = color = ROLE_COLORS.get(role)
