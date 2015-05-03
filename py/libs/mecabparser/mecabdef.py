@@ -122,7 +122,7 @@ ROLE_NAMES_EN = {
   ROLE_INTERJ: "interjection",
   ROLE_CONJ: "conjunctions",
   ROLE_PUNCT: "punctuation",
-  ROLE_MARK: "letter",
+  ROLE_MARK: "word",
 }
 
 def role_name(v): return ROLE_NAMES.get(v) # str -> unicode or None
