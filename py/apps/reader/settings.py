@@ -264,6 +264,20 @@ class Settings(QSettings):
       self.setValue('JapaneseRubyKana', value)
       self.japaneseRubyKanaEnabledChanged.emit(value)
 
+  japaneseRubyHighlightEnabledChanged = Signal(bool)
+  def isJapaneseRubyHighlightEnabled(self): return to_bool(self.value('JapaneseRubyHighlight', True))
+  def setJapaneseRubyHighlightEnabled(self, t):
+    if t != self.isJapaneseRubyHighlightEnabled():
+      self.setValue('JapaneseRubyHighlight', t)
+      self.japaneseRubyHighlightEnabledChanged.emit(t)
+
+  japaneseRubyAnnotatedChanged = Signal(bool)
+  def isJapaneseRubyAnnotated(self): return to_bool(self.value('JapaneseRubyAnnotated', True))
+  def setJapaneseRubyAnnotated(self, t):
+    if t != self.isJapaneseRubyAnnotated():
+      self.setValue('JapaneseRubyAnnotated', t)
+      self.japaneseRubyAnnotatedChanged.emit(t)
+
   ## Romanization for non-Japanese ##
 
   translatesAlphabetChanged = Signal(bool)
@@ -1555,7 +1569,7 @@ class Settings(QSettings):
       self.fastaitEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
-  dreyeEnabledChanged =Signal(bool)
+  dreyeEnabledChanged = Signal(bool)
   def isDreyeEnabled(self):
     return to_bool(self.value('DreyeEnabled'))
   def setDreyeEnabled(self, value):
@@ -2315,6 +2329,8 @@ class SettingsProxy(QObject):
     g.japaneseRubyEnabledChanged.connect(self.japaneseRubyEnabledChanged)
     g.japaneseRubyKanaEnabledChanged.connect(self.japaneseRubyKanaEnabledChanged)
     g.japaneseRubyTypeChanged.connect(self.japaneseRubyTypeChanged)
+    g.japaneseRubyHighlightEnabledChanged.connect(self.japaneseRubyHighlightChanged)
+    g.japaneseRubyAnnotatedChanged.connect(self.japaneseRubyAnnotatedChanged)
 
     g.koreanRubyEnabledChanged.connect(self.koreanRubyEnabledChanged)
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
@@ -2530,6 +2546,12 @@ class SettingsProxy(QObject):
 
   japaneseRubyTypeChanged = Signal(unicode)
   japaneseRubyType = unicode_property('JapaneseRubyType', 'hira', notify=japaneseRubyTypeChanged)
+
+  japaneseRubyHighlightChanged = Signal(bool)
+  japaneseRubyHighlight = bool_property('JapaneseRubyHighlight', True, notify=japaneseRubyHighlightChanged)
+
+  japaneseRubyAnnotatedChanged = Signal(bool)
+  japaneseRubyAnnotated = bool_property('JapaneseRubyAnnotated', True, notify=japaneseRubyAnnotatedChanged)
 
   grimoireNormalizedXChanged = Signal(float)
   grimoireNormalizedX = float_property('GrimoireNormalizedX', 0.0, notify=grimoireNormalizedXChanged)

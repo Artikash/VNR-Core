@@ -696,12 +696,12 @@
     <message>
         <location filename="sktr.py" line="430"/>
         <source>Width</source>
-        <translation>폭</translation>
+        <translation>글상자 너비</translation>
     </message>
     <message>
         <location filename="sktr.py" line="436"/>
         <source>Zoom</source>
-        <translation>확대</translation>
+        <translation>글자크기</translation>
     </message>
     <message>
         <location filename="sktr.py" line="500"/>
@@ -721,7 +721,7 @@
     <message>
         <location filename="sktr.py" line="360"/>
         <source>Notification</source>
-        <translation>공지</translation>
+        <translation>알림</translation>
     </message>
     <message>
         <location filename="sktr.py" line="402"/>
@@ -1951,7 +1951,7 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>Engine</source>
-        <translation type="obsolete">エンジン</translation>
+        <translation>엔진</translation>
     </message>
     <message>
         <location filename="sktr.py" line="303"/>
@@ -2546,7 +2546,7 @@
     <message>
         <location filename="sktr.py" line="448"/>
         <source>Required</source>
-        <translation>필수</translation>
+        <translation>필요</translation>
     </message>
     <message>
         <location filename="sktr.py" line="448"/>
@@ -2556,48 +2556,47 @@
     <message>
         <location filename="sktr.py" line="51"/>
         <source>Czech</source>
-        <translation>체코의</translation>
+        <translation>체코어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="52"/>
         <source>Danish</source>
-        <translation>덴마크의</translation>
+        <translation>덴마크어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="53"/>
         <source>Finnish</source>
-        <translation>핀란드의</translation>
+        <translation>핀란드어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="55"/>
         <source>Hungarian</source>
-        <translation>헝가리의</translation>
+        <translation>헝가리어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="56"/>
         <source>Norwegian</source>
-        <translation>노르웨이의</translation>
+        <translation>노르웨이어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="58"/>
         <source>Slovak</source>
-        <translation>슬로바키아의</translation>
+        <translation>슬로바키아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="59"/>
         <source>Swedish</source>
-        <translation>
-スウェーデン語</translation>
+        <translation>스웨덴어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="54"/>
         <source>Greek</source>
-        <translation>그리스의</translation>
+        <translation>그리스어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="61"/>
         <source>Turkish</source>
-        <translation>터키의</translation>
+        <translation>터키어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="80"/>
@@ -2652,7 +2651,7 @@
     <message>
         <location filename="sktr.py" line="60"/>
         <source>Ukrainian</source>
-        <translation>우크라이나의</translation>
+        <translation>우크라이나어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="94"/>

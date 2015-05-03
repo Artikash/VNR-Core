@@ -206,6 +206,8 @@ class MonoEngine(Engine):
 # 2. Use Ollydbg to debug step by step until the first function call is encountered
 #    Then, the text character is directly on the stack
 #
+#  Issues: It cannot extract character name.
+#
 #  00A7883A   24 3C            AND AL,0x3C
 #  00A7883C   50               PUSH EAX
 #  00A7883D   C74424 4C 000000>MOV DWORD PTR SS:[ESP+0x4C],0x0
@@ -219,6 +221,9 @@ class MonoEngine(Engine):
 #  00A78860   75 30            JNZ SHORT .00A78892
 #  00A78862   83C8 01          OR EAX,0x1
 #  00A78865   A3 888EDD00      MOV DWORD PTR DS:[0xDD8E88],EAX
+#
+# 5/2/2015: Alternative H-code for the full game: /HWN-4@48806:verethragna.exe
+# Try this one if GXP2 fails.
 class GXPEngine(Engine):
 
   NAME = "GXP2" # str, override

@@ -5,7 +5,7 @@
 <context>
     <name>ajaxindicator</name>
     <message>
-        <location filename="../kagami/ajaxindicator.qml" line="63"/>
+        <location filename="../kagami/ajaxindicator.qml" line="61"/>
         <source>{0} background threads are running</source>
         <translation>{0}個執行緒正在後臺運行</translation>
     </message>
@@ -575,81 +575,81 @@
 <context>
     <name>graffiti</name>
     <message>
-        <location filename="../submaker/graffiti.qml" line="501"/>
         <location filename="../submaker/graffiti.qml" line="502"/>
         <location filename="../submaker/graffiti.qml" line="503"/>
+        <location filename="../submaker/graffiti.qml" line="504"/>
         <source>Creation user and time</source>
         <translation>創建的使用者和時間</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="556"/>
-        <location filename="../submaker/graffiti.qml" line="571"/>
+        <location filename="../submaker/graffiti.qml" line="557"/>
+        <location filename="../submaker/graffiti.qml" line="572"/>
         <source>Create a new {0}</source>
         <translation>創建新的{0}</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="599"/>
+        <location filename="../submaker/graffiti.qml" line="600"/>
         <source>Edit properties of the subtitle</source>
         <translation>編輯字幕的屬性</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="614"/>
+        <location filename="../submaker/graffiti.qml" line="615"/>
         <source>Improve the subtitle</source>
         <translation>改進字幕</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="634"/>
+        <location filename="../submaker/graffiti.qml" line="635"/>
         <source>Enable or disable the subtitle</source>
         <translation>啟用或禁用字幕</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="649"/>
+        <location filename="../submaker/graffiti.qml" line="650"/>
         <source>Delete the subtitle</source>
         <translation>刪除字幕</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="674"/>
+        <location filename="../submaker/graffiti.qml" line="675"/>
         <source>Lock the subtitle to prevent others from overriding it</source>
         <translation>鎖定字幕以阻止他人修改</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="703"/>
+        <location filename="../submaker/graffiti.qml" line="704"/>
         <source>Modification user and time</source>
         <translation>修改的使用者和時間</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="882"/>
-        <location filename="../submaker/graffiti.qml" line="898"/>
+        <location filename="../submaker/graffiti.qml" line="883"/>
+        <location filename="../submaker/graffiti.qml" line="899"/>
         <source>Please login to add comment</source>
         <translation>請登入來提交評論</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="886"/>
+        <location filename="../submaker/graffiti.qml" line="887"/>
         <source>New {0}</source>
         <translation>新的{0}</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="893"/>
+        <location filename="../submaker/graffiti.qml" line="894"/>
         <source>Cannot create new comment here</source>
         <translation>不可以在這裡創建字幕</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="905"/>
+        <location filename="../submaker/graffiti.qml" line="906"/>
         <source>Cannot improve the comment</source>
         <translation>不可以改進別人的字幕</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="996"/>
+        <location filename="../submaker/graffiti.qml" line="997"/>
         <source>Read Sentence</source>
         <translation>讀出句子</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="1006"/>
+        <location filename="../submaker/graffiti.qml" line="1007"/>
         <source>Read Selection</source>
         <translation>讀出下面的文字</translation>
     </message>
     <message>
-        <location filename="../submaker/graffiti.qml" line="1018"/>
+        <location filename="../submaker/graffiti.qml" line="1019"/>
         <source>Lookup Selection</source>
         <translation>翻譯下面的單詞</translation>
     </message>
@@ -657,82 +657,82 @@
 <context>
     <name>grimoire</name>
     <message>
-        <location filename="../kagami/grimoire.qml" line="515"/>
+        <location filename="../kagami/grimoire.qml" line="553"/>
         <source>You can drag me to move the text box.</source>
         <translation>你可以拖動這裡來移動文字。</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1771"/>
+        <location filename="../kagami/grimoire.qml" line="1833"/>
         <source>Hide text box</source>
         <translation>隱藏文字</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="887"/>
+        <location filename="../kagami/grimoire.qml" line="925"/>
         <source>Lock text box position</source>
         <translation>鎖定文字位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="829"/>
+        <location filename="../kagami/grimoire.qml" line="867"/>
         <source>Save text box position</source>
         <translation>儲存文字位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="563"/>
+        <location filename="../kagami/grimoire.qml" line="601"/>
         <source>Read current Japanese game text using TTS</source>
         <translation>使用語音合成讀出當前的日文遊戲文字</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="848"/>
+        <location filename="../kagami/grimoire.qml" line="886"/>
         <source>Move text box to the saved position</source>
         <translation>移動文字到儲存的位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="907"/>
+        <location filename="../kagami/grimoire.qml" line="945"/>
         <source>Unlock text box position</source>
         <translation>解鎖文字位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="799"/>
+        <location filename="../kagami/grimoire.qml" line="837"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>你可以拖動這個黑條條來移動文字。</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="920"/>
+        <location filename="../kagami/grimoire.qml" line="958"/>
         <source>you can drag me!</source>
         <translation>可以拖動這裡的！</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1585"/>
+        <location filename="../kagami/grimoire.qml" line="1647"/>
         <source>Add to the Shared Dictionary</source>
         <translation>新增到共享辭書</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1719"/>
+        <location filename="../kagami/grimoire.qml" line="1781"/>
         <source>Read Current</source>
         <translation>讀出當前</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1725"/>
+        <location filename="../kagami/grimoire.qml" line="1787"/>
         <source>Scroll to the Beginning</source>
         <translation>滾動到首頁</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1730"/>
+        <location filename="../kagami/grimoire.qml" line="1792"/>
         <source>Scroll to the End</source>
         <translation>滾動到尾頁</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1743"/>
+        <location filename="../kagami/grimoire.qml" line="1805"/>
         <source>Lock Position</source>
         <translation>鎖定位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1749"/>
+        <location filename="../kagami/grimoire.qml" line="1811"/>
         <source>Save Position</source>
         <translation>儲存位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1754"/>
+        <location filename="../kagami/grimoire.qml" line="1816"/>
         <source>Load Position</source>
         <translation>載入位置</translation>
     </message>
@@ -807,32 +807,32 @@
         <translation>從Dashboard中移除這個遊戲</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="217"/>
+        <location filename="../termview/inspector.qml" line="305"/>
         <source>Pattern is too short</source>
         <translation>匹配的文字太短了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="216"/>
+        <location filename="../termview/inspector.qml" line="304"/>
         <source>Pattern or translation is very long</source>
         <translation>匹配或翻譯的文字很長</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="218"/>
+        <location filename="../termview/inspector.qml" line="306"/>
         <source>Translation is empty</source>
         <translation>翻譯被刪掉了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="219"/>
+        <location filename="../termview/inspector.qml" line="307"/>
         <source>Translation should not contain Japanese</source>
         <translation>日文的翻譯中不應該包含日文字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="220"/>
+        <location filename="../termview/inspector.qml" line="308"/>
         <source>Game type should not be used for translation</source>
         <translation>不應該用遊戲詞條來做翻譯</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="221"/>
+        <location filename="../termview/inspector.qml" line="309"/>
         <source>Type should not translation instead of input</source>
         <translation>詞條類型應該是翻譯而不應該是輸入</translation>
     </message>
@@ -841,57 +841,57 @@
         <translation type="obsolete">中文翻譯中包含日本漢字</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="214"/>
+        <location filename="../termview/inspector.qml" line="302"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>翻譯不包含簡體字的詞條的語言應該是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="213"/>
+        <location filename="../termview/inspector.qml" line="301"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>如果翻譯包含簡體字，那麼詞條的語言不應該是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="222"/>
+        <location filename="../termview/inspector.qml" line="310"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>正則表示式中的括號可能不匹配</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="223"/>
+        <location filename="../termview/inspector.qml" line="311"/>
         <source>This rule is useless that has no effect</source>
         <translation>這個詞條是沒有作用的</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="224"/>
+        <location filename="../termview/inspector.qml" line="312"/>
         <source>Pattern does not need enabling regex</source>
         <translation>匹配的文字不需要開啟正則表達</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="225"/>
+        <location filename="../termview/inspector.qml" line="313"/>
         <source>Entry type does not allow being translator-specific</source>
         <translation>詞條類型不允許指定翻譯器</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="226"/>
+        <location filename="../termview/inspector.qml" line="314"/>
         <source>Please use only ASCII characters for translation role</source>
         <translation>翻譯的Role只可以包含ASCII字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="227"/>
+        <location filename="../termview/inspector.qml" line="315"/>
         <source>New line characters are not allowed in text</source>
         <translation>詞條不可以包含\n字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="228"/>
+        <location filename="../termview/inspector.qml" line="316"/>
         <source>Tab characters are not allowed in text</source>
         <translation>詞條不可以包含\t字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="229"/>
+        <location filename="../termview/inspector.qml" line="317"/>
         <source>Missing translation</source>
         <translation>翻譯被刪掉了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="230"/>
+        <location filename="../termview/inspector.qml" line="318"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文字</translation>
     </message>
@@ -904,49 +904,49 @@
         <translation>かがみ</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="385"/>
+        <location filename="../kagami.qml" line="383"/>
         <source>VNR&apos;s top padding</source>
         <translation>VNR頂部的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="401"/>
+        <location filename="../kagami.qml" line="399"/>
         <source>VNR&apos;s bottom padding</source>
         <translation>VNR底部的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="417"/>
+        <location filename="../kagami.qml" line="415"/>
         <source>VNR&apos;s left padding</source>
         <translation>VNR左邊的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="433"/>
+        <location filename="../kagami.qml" line="431"/>
         <source>VNR&apos;s right padding</source>
         <translation>VNR右邊的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="575"/>
+        <location filename="../kagami.qml" line="584"/>
         <source>Save the text box position</source>
         <translation>儲存文字的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="577"/>
-        <location filename="../kagami.qml" line="589"/>
-        <location filename="../kagami.qml" line="603"/>
+        <location filename="../kagami.qml" line="586"/>
+        <location filename="../kagami.qml" line="598"/>
+        <location filename="../kagami.qml" line="612"/>
         <source>Cannot find the game window. Is it closed?</source>
         <translation>沒有找到遊戲視窗。是不是已經關閉了呢？</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="587"/>
+        <location filename="../kagami.qml" line="596"/>
         <source>Load the text box position</source>
         <translation>載入文字的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="601"/>
+        <location filename="../kagami.qml" line="610"/>
         <source>Reset the text box position</source>
         <translation>重置文字的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="1093"/>
+        <location filename="../kagami.qml" line="1111"/>
         <source>Not login or offline</source>
         <translation>沒有登入或沒有網路連線</translation>
     </message>
@@ -978,19 +978,18 @@
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="130"/>
-        <location filename="../termview/maintoolbar.qml" line="157"/>
         <source>Plot statistics charts</source>
         <translation>繪製統計圖表</translation>
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="137"/>
-        <location filename="../termview/maintoolbar.qml" line="164"/>
+        <location filename="../termview/maintoolbar.qml" line="165"/>
         <source>Save entries in Excel CSV format to the Desktop</source>
         <translation>以Excel的CSV格式儲存資料到桌面</translation>
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="144"/>
-        <location filename="../termview/maintoolbar.qml" line="178"/>
+        <location filename="../termview/maintoolbar.qml" line="179"/>
         <source>Update entries online</source>
         <translation>線上更新資料</translation>
     </message>
@@ -1005,7 +1004,7 @@
         <translation>是否使用自定義辭書來改進機翻</translation>
     </message>
     <message>
-        <location filename="../termview/maintoolbar.qml" line="171"/>
+        <location filename="../termview/maintoolbar.qml" line="172"/>
         <source>Browse current enabled rules</source>
         <translation>瀏覽當前開啟的規則</translation>
     </message>
@@ -1021,17 +1020,17 @@
 <context>
     <name>mirage</name>
     <message>
-        <location filename="../textreader/mirage.qml" line="332"/>
+        <location filename="../textreader/mirage.qml" line="365"/>
         <source>You can drag me to move the text box.</source>
         <translation>你可以拖動這裡來移動文字。</translation>
     </message>
     <message>
-        <location filename="../textreader/mirage.qml" line="613"/>
+        <location filename="../textreader/mirage.qml" line="646"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>你可以拖動這個黑條條來移動文字。</translation>
     </message>
     <message>
-        <location filename="../textreader/mirage.qml" line="669"/>
+        <location filename="../textreader/mirage.qml" line="702"/>
         <source>you can drag me!</source>
         <translation>可以拖動這裡的！</translation>
     </message>
@@ -1326,12 +1325,12 @@
         <translation>你可以通過拖動四周的邊框來移動文字框</translation>
     </message>
     <message>
-        <location filename="../kagami/shiori.qml" line="424"/>
+        <location filename="../kagami/shiori.qml" line="425"/>
         <source>Lookup Selection</source>
         <translation>翻譯下面的單詞</translation>
     </message>
     <message>
-        <location filename="../kagami/shiori.qml" line="434"/>
+        <location filename="../kagami/shiori.qml" line="435"/>
         <source>Read Selection</source>
         <translation>讀出下面的文字</translation>
     </message>
@@ -1386,43 +1385,43 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="147"/>
+        <location filename="../termview/table.qml" line="169"/>
         <source>Short</source>
         <translation>太短</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="146"/>
+        <location filename="../termview/table.qml" line="168"/>
         <source>Long</source>
         <translation>很長</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="148"/>
+        <location filename="../termview/table.qml" line="170"/>
         <source>Missing</source>
         <translation>缺失</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="152"/>
+        <location filename="../termview/table.qml" line="174"/>
         <source>Brackets</source>
         <translation>括號</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="153"/>
+        <location filename="../termview/table.qml" line="175"/>
         <source>Useless</source>
         <translation>無用</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="154"/>
-        <location filename="../termview/table.qml" line="549"/>
+        <location filename="../termview/table.qml" line="176"/>
+        <location filename="../termview/table.qml" line="571"/>
         <source>Regex</source>
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="585"/>
+        <location filename="../termview/table.qml" line="607"/>
         <source>Case-insensitive</source>
         <translation>大小寫忽略</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="639"/>
+        <location filename="../termview/table.qml" line="661"/>
         <source>Series</source>
         <translation>系列專用</translation>
     </message>
@@ -1430,7 +1429,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="335"/>
+        <location filename="../termview.qml" line="336"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>輸入需要查詢的文字，翻譯，使用者名，語言等，然後按下回車搜尋</translation>
     </message>

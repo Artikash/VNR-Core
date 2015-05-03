@@ -4371,6 +4371,8 @@ class _DictionaryTranslationTab(object):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.rubyKanaButton)
+    layout.addWidget(self.rubyHighlightButton)
+    layout.addWidget(self.rubyAnnotButton)
     layout.addWidget(self.hiraButton)
     layout.addWidget(self.kataButton)
     layout.addWidget(self.romajiButton)
@@ -4412,6 +4414,26 @@ class _DictionaryTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isJapaneseRubyKanaEnabled())
     ret.toggled.connect(ss.setJapaneseRubyKanaEnabled)
+    return ret
+
+  @memoizedproperty
+  def rubyHighlightButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Colorize Japanese phrases based on their grammatic roles"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.isJapaneseRubyHighlightEnabled())
+    ret.toggled.connect(ss.setJapaneseRubyHighlightEnabled)
+    return ret
+
+  @memoizedproperty
+  def rubyAnnotButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Annotate Japanese phrases with their grammatic roles in footnote"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.isJapaneseRubyAnnotated())
+    ret.toggled.connect(ss.setJapaneseRubyAnnotated)
     return ret
 
   @memoizedproperty
