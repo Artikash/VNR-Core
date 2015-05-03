@@ -271,14 +271,14 @@ class _DictionaryManager:
     if not ret and 'zh' in self.japaneseTranslateLanguages:
       for dic in 'ja-zh', 'ja-zh-gbk':
         ret = dicts.lingoes(dic).translate(t)
-        if ret and len(ret) < MAX_LENGTH:
+        if ret and len(ret) < MAX_LENGTH/2:
           if self.userLanguage == 'zht':
             ret = convutil.zhs2zht(ret)
           return ret
 
     if 'ko' in self.japaneseTranslateLanguages:
       ret = dicts.lingoes('ja-ko').translate(t)
-      if ret and len(ret) < MAX_LENGTH:
+      if ret and len(ret) < MAX_LENGTH/2:
         return ret
 
     if 'vi' in self.japaneseTranslateLanguages:
