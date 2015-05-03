@@ -229,15 +229,20 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     PADDING_FACTOR = 0.3
     LATIN_YOMI_WIDTH = 0.33 # = 2/6
     KANJI_YOMI_WIDTH = 0.55 # = 1/2
-    ANNOT_WIDTH = LATIN_YOMI_WIDTH
+
+    ANNOT_ZOOM = 0.9
+    ANNOT_WIDTH = LATIN_YOMI_WIDTH * ANNOT_ZOOM
     # yomi size / surface size
     yomiWidth = KANJI_YOMI_WIDTH if mecabdef.rb_is_wide(rubyType) else LATIN_YOMI_WIDTH
 
     invertRuby = False # always disable inverting
     roundRubySize = int(round(rubySize)) or 1
     paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
+    annotSize = int(round(rubySize * ANNOT_ZOOM)) or 1
 
     role = None
+    roleExists = False
+    rubyExists = False
     color = last_color = None
 
     for surface, yomi, feature, surface_type in q:
@@ -265,10 +270,10 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         else:
           last_color = color = ROLE_COLORS.get(role)
 
-      annotWidth = (len(role) + 1) * ANNOT_WIDTH if annotated and role else 0
       width = max(
-        len(surface) + annotWidth,
+        len(surface),
         len(yomi)*yomiWidth if yomi else 0,
+        (len(role) + 1) * ANNOT_WIDTH if annotated and role else 0,
       )
       if width + lineCount <= charPerLine:
         pass
@@ -278,26 +283,37 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
           'rubySize': roundRubySize,
           'paddingSize': paddingSize,
           'center': center,
+          'annotSize': annotSize,
+          'annotExists': annotated and roleExists,
+          'rubyExists': rubyExists,
         })
         line = []
         lineCount = 0
-      group = None # phrase group is none and not used
+        roleExists = False
+        rubyExists = False
       if invertRuby and yomi:
         #if surface:
         #  surface = wide2thin(surface)
         if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU) and len(yomi) > 2:
           yomi = yomi.title()
-        t = yomi, surface, role if annotated else None, color, group
+        t = yomi, surface, (role if annotated else None), color
       else:
-        t = surface, yomi, role if annotated else None, color, group
+        t = surface, yomi, (role if annotated else None), color
+      if role:
+        roleExists = True
+      if yomi:
+        rubyExists = True
       line.append(t)
       lineCount += width
     if line:
       yield render({
         'tuples': line,
+        'center': center,
         'rubySize': roundRubySize,
         'paddingSize': paddingSize,
-        'center': center,
+        'annotSize': annotSize,
+        'annotExists': annotated and roleExists,
+        'rubyExists': rubyExists,
       })
 
 def rendertable(*args, **kwargs):

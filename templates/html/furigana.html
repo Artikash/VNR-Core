@@ -1,9 +1,11 @@
 {# furigana.html 11/28/2012 jichi
  # @param  tuples  [unicode surface, unicode yomigana, str annot, str color, int groupId or None]
- # @param  rubySize  int  yomigana font size
+ # @param* rubySize  int  yomigana font size
+ # @param* annotSize  int  annot font size
  # @param* paddingSize  int  padding space size
  # @param* center  bool  align ment
- # @param* groupColor  str  group color
+ # @param* annotExists  bool
+ # @param* rubyExists  bool
  #
  # Tuples will be iterated twice.
  # Tuple elements can be None.
@@ -15,6 +17,9 @@
 .ruby {
 	font-weight: bold;
 	font-size: {{rubySize}}px;
+}
+.annot {
+	font-size: {{annotSize}}px;
 }
 %if paddingSize
 td {
@@ -29,36 +34,42 @@ td {
 		<center>
 %endif
 			<table>
+%if rubyExists
 				<tr class="ruby" valign="bottom">
-%for _, yomi, _, _, _ in tuples
-%	if yomi
+%	for _, yomi, _, _ in tuples
+%		if yomi
 					<td align="center">{{yomi|e}}</td>
-%	else
+%		else
 					<td />
-%	endif
-%endfor
+%		endif
+%	endfor
 				</tr>
+%endif
 				<tr class="surface">
-%for surface, _, annot, color, groupId in tuples
+%for surface, _, _, color in tuples
 %	if surface
 					<td align="center"
 %		if color
 						style="background-color:{{color}}"
-%		elif groupColor and groupId and groupId%2
-						style="color:{{groupColor}}"
 %		endif
 						>{{surface|e}}
-%		if annot
-						<sub>&nbsp;{{annot|e}}</sub>
-%		endif
 					</td>
-%		if annot
-%		endif
 %	else
 					<td />
 %	endif
 %endfor
 				</tr>
+%if annotExists
+				<tr class="annot">
+%	for _, _, annot, _ in tuples
+%		if annot
+					<td align="center"> {{annot|e}}</td>
+%		else
+					<td />
+%		endif
+%	endfor
+				</tr>
+%endif
 			</table>
 %if center
 		</center>
