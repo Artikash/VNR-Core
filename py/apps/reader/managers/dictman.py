@@ -7,7 +7,7 @@
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
-from mecabparser import mecabformat
+from mecabparser import mecabdef, mecabformat
 from mytr import my
 #from kagami import GrimoireBean
 import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
@@ -359,11 +359,19 @@ class DictionaryManager:
     #feature = GrimoireBean.instance.lookupFeature(text)
     try:
       d = self.__d
+      f = None
+      if feature:
+        f = mecabman.renderfeature(feature)
+      else:
+        roleName = mecabdef.role_name(text)
+        if roleName:
+          f = ','.join((text, mecabdef.role_name_en(text) or '', roleName))
+
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
-        'feature': mecabman.renderfeature(feature),
+        'feature': f,
         'tuples': d.lookupDB(text, exact=exact, feature=feature),
         'eb_strings': d.lookupEB(text, feature=feature), # exact not used, since it is already very fast
         #'google': google,

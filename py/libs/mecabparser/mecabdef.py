@@ -61,13 +61,68 @@ SURFACE_NUMBER = 3
 SURFACE_KANA = 4
 
 # Role type
+# See: https://answers.yahoo.com/question/index?qid=20110805070212AAdpWZf
+# See: https://gist.github.com/neubig/2555399
+ROLE_PHRASE = 'x'
+ROLE_NAME = 'm' # name
+ROLE_PLACE = 'mp' # place
+ROLE_NOUN = 'n' # noun
+ROLE_PRONOUN = 'pn' # pronoun
+ROLE_VERB = 'v' # verb
+ROLE_A = 'a' # http://d.hatena.ne.jp/taos/20090701/p1
+ROLE_ADN = 'adn' # adnominal, http://en.wiktionary.org/wiki/連体詞
+ROLE_ADJ = 'adj' # adjective
+ROLE_ADV = 'adv' # adverb
+ROLE_PART = 'p' # 動詞 = particle
+ROLE_AUX = 'aux' # 助動詞 = auxiliary verb
+ROLE_SUFFIX = 'suf' # suffix
+ROLE_PREFIX = 'pre' # prefix
+ROLE_INTERJ = 'int' # interjection
+ROLE_PUNCT = 'punct' # punctuation
+ROLE_CONJ = 'conj' # conjunctions
 
-ROLE_UNKNOWN = 'x'
-ROLE_NAME = 'm'
-ROLE_NOUN = 'n'
-ROLE_PRONOUN = 'p'
-ROLE_VERB = 'v'
-ROLE_ADJ = 'adj'
-ROLE_ADV = 'adv'
+ROLE_NAMES = {
+  ROLE_NAME: u'人名',
+  ROLE_PLACE: u'地名',
+  ROLE_NOUN: u'名詞',
+  ROLE_PRONOUN: u'代名詞',
+  ROLE_VERB: u'動詞',
+  ROLE_A: u'形状詞',
+  ROLE_ADN: u'連体詞',
+  ROLE_ADJ: u'形容詞',
+  ROLE_ADV: u'副詞',
+  ROLE_PART: u'助詞',
+  ROLE_AUX: u'助動詞',
+  ROLE_SUFFIX: u'接尾辞',
+  ROLE_PREFIX: u'接頭辞',
+  ROLE_INTERJ: u'感動詞',
+  ROLE_CONJ: u'接続詞',
+  ROLE_PUNCT: u'補助記号',
+}
+NAME_ROLES = {v:k for k,v in ROLE_NAMES.iteritems()}
+#def get_role_by_name(v):  # unicode -> unicode or None
+#  return NAME_ROLES.get(v)
+
+ROLE_NAMES_EN = {
+  ROLE_NAME: "name",
+  ROLE_PLACE: "place",
+  ROLE_NOUN: "noun",
+  ROLE_PRONOUN: "pronoun",
+  ROLE_VERB: "verb",
+  ROLE_A: "ad stem",
+  ROLE_ADN: "adnominal",
+  ROLE_ADJ: "adjective",
+  ROLE_ADV: "adverb",
+  ROLE_PART: "particle",
+  ROLE_AUX: "auxiliary",
+  ROLE_SUFFIX: "suffix",
+  ROLE_PREFIX: "prefix",
+  ROLE_INTERJ: "interjection",
+  ROLE_CONJ: "conjunctions",
+  ROLE_PUNCT: "punctuation",
+}
+
+def role_name(v): return ROLE_NAMES.get(v) # str -> unicode or None
+def role_name_en(v): return ROLE_NAMES_EN.get(v) # str -> unicode or None
 
 # EOF

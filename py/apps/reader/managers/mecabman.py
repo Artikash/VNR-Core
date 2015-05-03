@@ -178,7 +178,30 @@ def renderfeature(feature, fmt=mecabformat.UNIDIC_FORMATTER):
 
 ## Render table
 
-def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, center=True, fmt=mecabformat.UNIDIC_FORMATTER):
+ROLE_COLOR_ALPHA = 30
+ROLE_COLORS = {
+  mecabdef.ROLE_NAME: 'rgba(255,0,0,%s)'    % ROLE_COLOR_ALPHA, # red
+  mecabdef.ROLE_PLACE: 'rgba(255,0,0,%s)'   % ROLE_COLOR_ALPHA, # = name
+  mecabdef.ROLE_PRONOUN: 'rgba(255,0,0,%s)' % ROLE_COLOR_ALPHA, # = name
+  mecabdef.ROLE_PHRASE: 'rgba(255,0,0,%s)'  % ROLE_COLOR_ALPHA, # = name
+
+  mecabdef.ROLE_NOUN: 'rgba(0,255,0,%s)'    % ROLE_COLOR_ALPHA, # green
+  mecabdef.ROLE_ADN: 'rgba(0,255,0,%s)'     % ROLE_COLOR_ALPHA, # = noun
+  mecabdef.ROLE_PREFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun
+  mecabdef.ROLE_SUFFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun, dangling
+
+  mecabdef.ROLE_VERB: 'rgba(255,0,255,%s)'  % ROLE_COLOR_ALPHA, # magenta
+  mecabdef.ROLE_ADV: 'rgba(255,0,255,%s)'   % ROLE_COLOR_ALPHA, # = verb
+  mecabdef.ROLE_AUX: 'rgba(255,0,255,%s)'   % ROLE_COLOR_ALPHA, # = verb, dangling
+
+  mecabdef.ROLE_A: 'rgba(255,255,0,%s)'     % ROLE_COLOR_ALPHA, # yellow
+  mecabdef.ROLE_ADJ: 'rgba(255,255,0,%s)'   % ROLE_COLOR_ALPHA, # = a
+
+  mecabdef.ROLE_CONJ: 'rgba(0,0,255,%s)'    % ROLE_COLOR_ALPHA, # blue
+  mecabdef.ROLE_INTERJ: 'rgba(0,0,255,%s)'  % ROLE_COLOR_ALPHA, # = conj
+  mecabdef.ROLE_PART: 'rgba(0,0,255,%s)'    % ROLE_COLOR_ALPHA, # = conj, dangling
+}
+def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, annotated=False, highlight=False, center=True, fmt=mecabformat.UNIDIC_FORMATTER):
   """
   @param  text  unicode
   @param  rubyType  str
@@ -186,6 +209,8 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
   @param* charPerLine  int  maximum number of characters per line
   @param* rubySize  float
   @param* colorsize  bool
+  @param* annotated  bool
+  @param* highlight  bool
   @param* center  bool
   @param* features  {unicode surface:(unicode feature, fmt)} or None
   @param* fmt  mecabfmt
@@ -199,11 +224,11 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     line = []
     lineCount = 0 # int  estimated line width, assume ruby has half width
     hasfeature = features is not None
-    color = None
 
     PADDING_FACTOR = 0.3
     LATIN_YOMI_WIDTH = 0.33 # = 2/6
     KANJI_YOMI_WIDTH = 0.55 # = 1/2
+    ANNOT_WIDTH = LATIN_YOMI_WIDTH
     # yomi size / surface size
     yomiWidth = KANJI_YOMI_WIDTH if mecabdef.rb_is_wide(rubyType) else LATIN_YOMI_WIDTH
 
@@ -211,11 +236,17 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     roundRubySize = int(round(rubySize)) or 1
     paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
 
-    for surface, yomi, feature, surface_type in q:
-      #print fmt.getrole(feature), surface
+    role = None
+    color = last_color = None
 
+    for surface, yomi, feature, surface_type in q:
       if hasfeature:
         features[surface] = feature
+
+      if annotated or not colorize and highlight:
+        role = fmt.getrole(feature)
+        if role == mecabdef.ROLE_PUNCT:
+          role = None
 
       if colorize:
         if surface_type == mecabdef.SURFACE_KANJI:
@@ -223,12 +254,21 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
           color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)' # red or yellow
         elif surface_type == mecabdef.SURFACE_KANA:
           j += 1
-          #color = "rgba(0,255,0,40)" if j % 2 else "rgba(255,0,255,40)" # green or magenta
-          color = "rgba(0,255,0,40)" if j % 2 else "rgba(0,0,255,40)" # green or blue
+          #color = 'rgba(0,255,0,40)' if j % 2 else 'rgba(255,0,255,40)' # green or magenta
+          color = 'rgba(0,255,0,40)' if j % 2 else 'rgba(0,0,255,40)' # green or blue
         else:
           color = None
+      elif highlight:
+        if last_color and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX, mecabdef.ROLE_SUFFIX):
+          color = last_color
+        else:
+          last_color = color = ROLE_COLORS.get(role)
 
-      width = max(len(surface), len(yomi)*yomiWidth if yomi else 0)
+      annotWidth = (len(role) + 1) * ANNOT_WIDTH if annotated and role else 0
+      width = max(
+        len(surface) + annotWidth,
+        len(yomi)*yomiWidth if yomi else 0,
+      )
       if width + lineCount <= charPerLine:
         pass
       elif line:
@@ -240,15 +280,15 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         })
         line = []
         lineCount = 0
-      group = None # group is none
+      group = None # phrase group is none and not used
       if invertRuby and yomi:
         #if surface:
         #  surface = wide2thin(surface)
         if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU) and len(yomi) > 2:
           yomi = yomi.title()
-        t = yomi, surface, color, group
+        t = yomi, surface, role if annotated else None, color, group
       else:
-        t = surface, yomi, color, group
+        t = surface, yomi, role if annotated else None, color, group
       line.append(t)
       lineCount += width
     if line:

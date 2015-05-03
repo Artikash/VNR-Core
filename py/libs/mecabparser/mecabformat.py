@@ -78,20 +78,32 @@ class UniDicFormatter(object):
         return s
     return ''
 
-  def getrole(self, f): # unicode -> str
-    c2 = self.getcol(f, 2)
-    if c2 == u'人名':
-      return mecabdef.ROLE_NAME
-    c0 = self.getcol(f, 0)
-    if c0 == u'名詞':
-      return mecabdef.ROLE_NOUN
-    if c0 == u'動詞':
-      return mecabdef.ROLE_VERB
-    if c0 == u'代名詞':
-      return mecabdef.ROLE_PRONOUN
-    if c0 == u'形容詞':
-      return mecabdef.ROLE_ADJ
-    return  mecabdef.ROLE_UNKNOWN
+  def getrole(self, f): # unicode -> str not None
+    if self.getdictype(f) == self.DIC_EDICT: # probably EDICT
+      for i in (0, 1):
+        c = self.getcol(f, i)
+        if c:
+          if c in ('n', 'num'):
+            return mecabdef.ROLE_NOUN
+          if c in ('v', 'vi', 'vt'):
+            return mecabdef.ROLE_VERB
+          if c == 'adj':
+            return mecabdef.ROLE_ADJ
+          if c == 'adv':
+            return mecabdef.ROLE_ADV
+          if c == 'suf':
+            return mecabdef.ROLE_SUFFIX
+          if c == 'conj':
+            return mecabdef.ROLE_CONJ
+          #if c == 'exp':
+      return mecabdef.ROLE_PHRASE
+    else:
+      c2 = self.getcol(f, 2)
+      ret = mecabdef.NAME_ROLES.get(c2)
+      if ret:
+        return ret
+      c0 = self.getcol(f, 0)
+      return mecabdef.NAME_ROLES.get(c0) or mecabdef.ROLE_PHRASE
 
 UNIDIC_FORMATTER = UniDicFormatter()
 

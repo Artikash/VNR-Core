@@ -56,7 +56,7 @@ Item { id: root_
 
   property bool toolTipEnabled: true
 
-  property string userLanguage
+  //property string userLanguage
 
   property color bingColor
   property color googleColor
@@ -177,6 +177,8 @@ Item { id: root_
   property bool romajaRubyEnabled
 
   property bool japaneseRubyEnabled
+  property bool japaneseRubyHighlight
+  property bool japaneseRubyAnnotated
   property bool japaneseRubyKanaEnabled
   property string japaneseRubyType
 
@@ -203,9 +205,9 @@ Item { id: root_
 
   property bool mouseLocked: false // click locked
 
-  function sameLanguageAsUser(lang) { // string -> bool
-    return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
-  }
+  //function sameLanguageAsUser(lang) { // string -> bool
+  //  return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
+  //}
 
   function normalizeTtsText(text) { // string ->  string  remove HTML tags
     return Util.removeHtmlTags(text).replace(/^【[^】]+】/, '') // remove character name for tts
@@ -230,6 +232,8 @@ Item { id: root_
       , Math.round(root_.width / (22 * root_._zoomFactor)) // char per line
       , 10 * root_._zoomFactor // ruby size of furigana
       , colorize // colorize
+      , root_.japaneseRubyHighlight
+      , root_.japaneseRubyAnnotated
       , root_.alignCenter
     )
   }
@@ -1186,8 +1190,8 @@ Item { id: root_
                     root_.lookupRequested(t, model.language, gp.x, gp.y)
                 }
                 //if (root_.readEnabled && model.language === 'ja')
-                if ((model.type === 'text' || model.type !== 'name')
-                    && !root_.sameLanguageAsUser(model.language)) {
+                if ((model.type === 'text' || model.type !== 'name')) {
+                    //&& !root_.sameLanguageAsUser(model.language)) {
                   t = Util.removeHtmlTags(t)
                   if (t) {
                     var lang = model.language
@@ -1213,10 +1217,10 @@ Item { id: root_
                 textEdit_.deselect()
                 //if (root_.readEnabled)
                 //if (model.type === 'text' || model.type !== 'name')
-                if (!root_.sameLanguageAsUser(model.language)) {
-                  t = root_.normalizeTtsText(t) || t
-                  ttsPlugin_.speak(t, model.language)
-                }
+                //if (!root_.sameLanguageAsUser(model.language)) {
+                t = root_.normalizeTtsText(t) || t
+                ttsPlugin_.speak(t, model.language)
+                //}
               }
             }
             root_.mouseLocked = false

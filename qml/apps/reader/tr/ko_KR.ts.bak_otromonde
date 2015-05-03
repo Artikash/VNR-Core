@@ -416,7 +416,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1380"/>
         <source>Length</source>
-        <translation>길이</translation>
+        <translation>최대 번역 길이</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1384"/>

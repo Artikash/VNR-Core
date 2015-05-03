@@ -513,7 +513,7 @@ Item { id: root_
 
         toolTipEnabled: !gameWindowTracker_.fullScreenOrStretched
 
-        userLanguage: root_.userLanguage
+        //userLanguage: root_.userLanguage
 
         japaneseFont: settings_.japaneseFont
         englishFont: settings_.englishFont
@@ -638,6 +638,8 @@ Item { id: root_
 
         japaneseRubyEnabled: settings_.japaneseRubyEnabled
         japaneseRubyKanaEnabled: settings_.japaneseRubyKanaEnabled
+        japaneseRubyHighlight: settings_.japaneseRubyHighlight
+        japaneseRubyAnnotated: settings_.japaneseRubyAnnotated
         japaneseRubyType: settings_.japaneseRubyType
 
         //rubyType: settings_.rubyType

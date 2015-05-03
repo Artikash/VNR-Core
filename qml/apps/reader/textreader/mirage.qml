@@ -56,6 +56,8 @@ Item { id: root_
   property string rubyType: settings_.japaneseRubyType
   property bool rubyEnabled: settings_.japaneseRubyEnabled
   property bool rubyKanaEnabled: settings_.japaneseRubyKanaEnabled
+  property bool rubyHighlight: settings_.japaneseRubyHighlight
+  property bool rubyAnnotated: settings_.japaneseRubyAnnotated
   //property bool caboChaEnabled: settings_.caboChaEnabled
 
   property bool convertsChinese: false // convert Simplified Chinese to Chinese
@@ -967,14 +969,16 @@ Item { id: root_
           //model.comment ? root_.renderComment(model.comment) :
           root_.rubyEnabled && model.type === 'text' && model.language === 'ja' ?
             bean_.renderJapanese(
-              model.text,
-              root_.rubyType,
-              root_.rubyKanaEnabled,
-              //Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
-              Math.round(root_.width / (22 * zoomFactor)), // char per line
-              10 * zoomFactor, // ruby size of furigana
-              toolTip_.containsMouse || textCursor_.containsMouse, // colorize
-              root_.alignCenter
+              model.text
+              , root_.rubyType
+              , root_.rubyKanaEnabled
+              //, Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
+              , Math.round(root_.width / (22 * zoomFactor)) // char per line
+              , 10 * zoomFactor // ruby size of furigana
+              , toolTip_.containsMouse || textCursor_.containsMouse // colorize
+              , root_.rubyHighlight
+              , root_.rubyAnnotated
+              , root_.alignCenter
             ) :
           model.text
         )
