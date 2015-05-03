@@ -103,7 +103,7 @@ class UniDicFormatter(object):
       if ret:
         return ret
       if c2 == u'サ変可能':
-        return mecabdef..ROLE_VERB
+        return mecabdef.ROLE_VERB
       c0 = self.getcol(f, 0)
       return mecabdef.NAME_ROLES.get(c0) or mecabdef.ROLE_PHRASE
 
