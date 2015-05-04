@@ -31,7 +31,7 @@ iscyril = partial(unichars.charinrange, start=unichars.ORD_CYRIL_FIRST, stop=uni
 RU_UK = ( # (unicode ru, unicode uk)
   (u'э', u'е'),
   (u'и', u'і'),
-  #(u'й', u'і'), # u'j'
+  (u'й', u'ї'), # j
   (u'г', u'ґ'),
   (u'х', u'г'),
 )
@@ -45,18 +45,12 @@ def ru2uk(text):
     text = text.replace(k.upper(), v.upper())
   return text
 
-UK_RU = ( # (unicode ru, unicode uk)
-  (u'е', u'э'),
-  (u'і', u'и'),
-  (u'г', u'х'),
-  (u'ґ', u'г'),
-)
 def uk2ru(text):
   """
   @param  text  unicode
   @return  unicode
   """
-  for k,v in UK_RU:
+  for v,k in reversed(RU_UK):
     text = text.replace(k, v)
     text = text.replace(k.upper(), v.upper())
   return text

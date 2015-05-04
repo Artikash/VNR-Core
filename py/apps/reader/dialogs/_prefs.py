@@ -4473,7 +4473,7 @@ class _DictionaryTranslationTab(object):
   def ukButton(self):
     ret = QtWidgets.QRadioButton(
       "%s, %s: %s" %
-      (tr_("Ukrainian"), my.tr("like this"), u"可愛い（каваіі）"))
+      (tr_("Ukrainian"), my.tr("like this"), u"可愛い（каваії）"))
     ret.toggled.connect(self._saveRubyType)
     return ret
 
