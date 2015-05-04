@@ -3,6 +3,7 @@
 # 10/18/2014 jichi
 
 import re
+from unitraits import cyrilchars
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin
 from unidecode import unidecode
 from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th, kana2ar \
@@ -32,19 +33,20 @@ def toalphabet(text, to='en', fr='en'):
   @return  unicode
   """
   if fr == 'en':
-    if to in config.ALPHABET_LANGUAGE_SET:
+    if to in cyrilchars.CYRILLIC_LANGUAGES:
+      return cyrilchars.latin2cyril(text, to)
+    elif to in config.ALPHABET_LANGUAGE_SET:
       from transliterate import translit
       text = translit(text, to)
-      if to == 'el' and u'σ' in text:
-        text = _alphabet_el_re.sub(u'ς', text) # replace σ with ς at last
+      if to == 'el':
+        if u'σ' in text:
+          text = _alphabet_el_re.sub(u'ς', text) # replace σ with ς at last
   elif fr == 'ru':
     if to == 'uk':
-      from unitraits import cyrilchars
       return cyrilchars.ru2uk(text)
   # Disabled
   #elif fr == 'uk':
   #  if to == 'ru':
-  #    from unitraits import cyrilchars
   #    return cyrilchars.uk2ru(text)
   return text
 
