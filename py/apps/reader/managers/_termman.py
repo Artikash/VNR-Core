@@ -262,10 +262,11 @@ class TermWriter:
 
           pattern = _unescape_term_text(td.pattern)
           pattern = self._applyMacros(pattern, macros)
-          if zs:
-            pattern = zht2zhs(pattern)
-          elif zt:
-            pattern = zhs2zht(pattern)
+          if type == 'output':
+            if zs:
+              pattern = zht2zhs(pattern)
+            elif zt:
+              pattern = zhs2zht(pattern)
             #if role == defs.TERM_NAME_ROLE:
             #  pattern = jazh.ja2zht_name_fix(pattern)
 
