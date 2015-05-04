@@ -76,7 +76,7 @@ ROLE_ADV = 'adv' # adverb
 ROLE_PART = 'p' # 動詞 = particle
 ROLE_AUX = 'aux' # 助動詞 = auxiliary verb
 ROLE_SUFFIX = 'suf' # suffix
-ROLE_PREFIX = 'pre' # prefix
+ROLE_PREFIX = 'pref' # prefix
 ROLE_INTERJ = 'int' # interjection
 ROLE_PUNCT = 'punct' # punctuation
 ROLE_CONJ = 'conj' # conjunction
