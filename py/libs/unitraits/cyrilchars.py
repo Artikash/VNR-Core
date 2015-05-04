@@ -55,4 +55,42 @@ def uk2ru(text):
     text = text.replace(k.upper(), v.upper())
   return text
 
+_TRANSLIT_FIX = (
+  (u'c', u'с'),
+)
+def en2ru(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  from transliterate import translit
+  text = translit(text, 'ru')
+  for k,v in _TRANSLIT_FIX:
+    text = text.replace(k, v)
+    text = text.replace(k.upper(), v.upper())
+  return text
+def en2uk(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  from transliterate import translit
+  text = translit(text, 'uk')
+  for k,v in _TRANSLIT_FIX:
+    text = text.replace(k, v)
+    text = text.replace(k.upper(), v.upper())
+  return text
+
+CYRILLIC_LANGUAGES = 'ru', 'uk'
+def latin2cyril(text, lang=CYRILLIC_LANGUAGES[0]):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if lang == 'ru':
+    return en2ru(text)
+  if lang == 'uk':
+    return en2uk(text)
+  return text
+
 # EOF
