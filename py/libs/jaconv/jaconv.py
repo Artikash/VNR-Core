@@ -95,7 +95,7 @@ def _repair_en(text): # unicode -> unicode  repair xtu
   return text
 
 # http://en.wikipedia.org/wiki/Russian_alphabet
-_ru_i_vowel = u"ауэояё"
+_ru_i_vowel = u"ауэояё" # vowel except "и"
 _ru_consonant = u"бвгдзклмнпрстфхцчшщъыь"
 _re_ru_i = re.compile(ur"(?<=[%s])и" % _ru_i_vowel)
 _re_ru_ii = re.compile(ur"[ий](и+)")
@@ -116,8 +116,11 @@ def _repair_ru(text): # unicode -> unicode  repair xtu
   return text
 
 # http://en.wikipedia.org/wiki/Ukrainian_alphabet
+_uk_i_vowel = _ru_i_vowel + u'еї' # vowel except "і"
 _uk_consonant = _ru_consonant + u'ґ'
 _re_uk_tsu = re.compile(ur"っ([%s])" % _uk_consonant)
+_re_uk_i = re.compile(ur"(?<=[%s])і" % _uk_i_vowel)
+_re_uk_ii = re.compile(ur"[ії](і+)")
 def _repair_uk(text): # unicode -> unicode  repair xtu
   """
   @param  text
@@ -125,6 +128,9 @@ def _repair_uk(text): # unicode -> unicode  repair xtu
   """
   if u'っ' in text:
     text = _re_uk_tsu.sub(r'\1\1', text)
+  if u'і' in text:
+    text = _re_uk_i.sub(u'ї', text)
+    text = _re_uk_ii.sub(ur'\1ї', text) # push i to the end
   return text
 
 # http://en.wikipedia.org/wiki/Greek_alphabet
@@ -352,7 +358,8 @@ if __name__ == '__main__':
     (u'いえやす', u'іеясу'),
     (u'ほのか', u'гонока'),
     (u'ほのっか', u'гонокка'),
-    (u'かわいい', u'каваіі'),
+    (u'かわいい', u'каваії'),
+    (u'せんせい', u'сенсеї'),
     (u'れん', u'рен'),
   ]
   for k,v in l:
