@@ -83,19 +83,26 @@ class UniDicFormatter(object):
       for i in (0, 1):
         c = self.getcol(f, i)
         if c:
-          if c in ('n', 'num'):
+          if c in ('n', 'num') or c.startswith('n-'):
             return mecabdef.ROLE_NOUN
-          if c in ('v', 'vi', 'vt'):
-            return mecabdef.ROLE_VERB
-          if c == 'adj':
+          if c == 'pn':
+            return mecabdef.ROLE_PRONOUN
+          if c == 'adj' or c.startswith('adj-'):
             return mecabdef.ROLE_ADJ
-          if c == 'adv':
+          if c == 'adv' or c.startswith('adv-'):
             return mecabdef.ROLE_ADV
           if c == 'suf':
             return mecabdef.ROLE_SUFFIX
+          if c == 'pref':
+            return mecabdef.ROLE_PREFIX
           if c == 'conj':
             return mecabdef.ROLE_CONJ
-          #if c == 'exp':
+          if c == 'exp':
+            return mecabdef.ROLE_PHRASE
+          if c == 'aux' or c.startswith('aux-'):
+            return mecabdef.ROLE_AUX
+          if c in ('v', 'vi', 'vt', 'vs'):
+            return mecabdef.ROLE_VERB
       return mecabdef.ROLE_PHRASE
     else:
       c2 = self.getcol(f, 2)
