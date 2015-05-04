@@ -186,6 +186,7 @@ ROLE_COLORS = {
   mecabdef.ROLE_PHRASE: 'rgba(255,0,0,%s)'  % ROLE_COLOR_ALPHA, # = name
 
   mecabdef.ROLE_NOUN: 'rgba(0,255,0,%s)'    % ROLE_COLOR_ALPHA, # green
+  mecabdef.ROLE_NUM: 'rgba(0,255,0,%s)'     % ROLE_COLOR_ALPHA, # = noun
   mecabdef.ROLE_ADN: 'rgba(0,255,0,%s)'     % ROLE_COLOR_ALPHA, # = noun
   mecabdef.ROLE_PREFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun
   mecabdef.ROLE_SUFFIX: 'rgba(0,255,0,%s)'  % ROLE_COLOR_ALPHA, # = noun, dangling

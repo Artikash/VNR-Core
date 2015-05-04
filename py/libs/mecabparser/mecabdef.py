@@ -66,6 +66,7 @@ SURFACE_KANA = 4
 ROLE_PHRASE = 'x'
 ROLE_NAME = 'm' # name
 ROLE_PLACE = 'mp' # place
+ROLE_NUM = 'num' # number
 ROLE_NOUN = 'n' # noun
 ROLE_PRONOUN = 'pn' # pronoun
 ROLE_VERB = 'v' # verb
@@ -86,6 +87,7 @@ ROLE_NAMES = {
   ROLE_NAME: u'人名',
   ROLE_PLACE: u'地名',
   ROLE_NOUN: u'名詞',
+  ROLE_NUM: u"数詞",
   ROLE_PRONOUN: u'代名詞',
   ROLE_VERB: u'動詞',
   ROLE_A: u'形状詞',
@@ -108,6 +110,7 @@ NAME_ROLES = {v:k for k,v in ROLE_NAMES.iteritems()}
 ROLE_NAMES_EN = {
   ROLE_NAME: "name",
   ROLE_PLACE: "place",
+  ROLE_NUM: "number",
   ROLE_NOUN: "noun",
   ROLE_PRONOUN: "pronoun",
   ROLE_VERB: "verb",

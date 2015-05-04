@@ -83,14 +83,10 @@ class UniDicFormatter(object):
       for i in (0, 1):
         c = self.getcol(f, i)
         if c:
-          if c in ('n', 'num') or c.startswith('n-'):
-            return mecabdef.ROLE_NOUN
+          if c == 'num':
+            return mecabdef.ROLE_NUM
           if c == 'pn':
             return mecabdef.ROLE_PRONOUN
-          if c == 'adj' or c.startswith('adj-'):
-            return mecabdef.ROLE_ADJ
-          if c == 'adv' or c.startswith('adv-'):
-            return mecabdef.ROLE_ADV
           if c == 'suf':
             return mecabdef.ROLE_SUFFIX
           if c == 'pref':
@@ -99,20 +95,23 @@ class UniDicFormatter(object):
             return mecabdef.ROLE_CONJ
           if c == 'exp':
             return mecabdef.ROLE_PHRASE
+          if c == 'n' or c.startswith('n-'):
+            return mecabdef.ROLE_NOUN
+          if c == 'adj' or c.startswith('adj-'):
+            return mecabdef.ROLE_ADJ
+          if c == 'adv' or c.startswith('adv-'):
+            return mecabdef.ROLE_ADV
           if c == 'aux' or c.startswith('aux-'):
             return mecabdef.ROLE_AUX
           if c in ('v', 'vi', 'vt', 'vs'):
             return mecabdef.ROLE_VERB
       return mecabdef.ROLE_PHRASE
     else:
-      c2 = self.getcol(f, 2)
-      ret = mecabdef.NAME_ROLES.get(c2)
-      if ret:
-        return ret
-      #if c2 == u'サ変可能':
-      #  return mecabdef.ROLE_VERB
-      c0 = self.getcol(f, 0)
-      return mecabdef.NAME_ROLES.get(c0) or mecabdef.ROLE_PHRASE
+      for i in (2, 1, 0):
+        ret = mecabdef.NAME_ROLES.get(self.getcol(f, i))
+        if ret:
+          return ret
+      return mecabdef.ROLE_PHRASE # something is wrong here
 
 UNIDIC_FORMATTER = UniDicFormatter()
 
