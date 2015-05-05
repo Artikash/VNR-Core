@@ -230,7 +230,8 @@ class TermWriter:
     #if type not in ('input', 'trans_input', 'trans_output'):
     #  titles = None
 
-    trans_type = type == 'trans'
+    type_trans = type == 'trans'
+    type_output = type == 'output'
 
     fr2 = fr[:2]
     to2 = to[:2]
@@ -262,7 +263,7 @@ class TermWriter:
 
           pattern = _unescape_term_text(td.pattern)
           pattern = self._applyMacros(pattern, macros)
-          if type == 'output':
+          if type_output:
             if zs:
               pattern = zht2zhs(pattern)
             elif zt:
@@ -270,7 +271,7 @@ class TermWriter:
             #if role == defs.TERM_NAME_ROLE:
             #  pattern = jazh.ja2zht_name_fix(pattern)
 
-          if trans_type and role == defs.TERM_NAME_ROLE and fr2 == 'zh':
+          elif type_trans and role == defs.TERM_NAME_ROLE and fr2 == 'zh':
             if fr == 'zhs':
               pattern = opencc.ja2zhs(pattern)
             elif fr == 'zht':
@@ -300,7 +301,7 @@ class TermWriter:
               pattern = re.escape(pattern)
             pattern = _phrase_lbound(left, fr) + pattern + _phrase_rbound(right, fr)
 
-          if trans_type:
+          if type_trans:
             if td.type == 'suffix':
               if not _contains_syntax_symbol(pattern):
                 pattern = "[[%s]]%s" % (defs.TERM_NAME_ROLE, pattern)
@@ -318,7 +319,7 @@ class TermWriter:
                 else:
                   repl = "%s[[]]" % repl
 
-          if trans_type:
+          if type_trans:
             self._writeCodecLine(f, td.id, pattern, repl, regex, td.icase, td.host, role)
           else:
             self._writeTransformLine(f, td.id, pattern, repl, regex, td.icase, td.host)

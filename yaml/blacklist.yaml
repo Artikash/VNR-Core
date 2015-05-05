@@ -98,6 +98,7 @@ processes:
   - HD-Agent.exe        # BlueStacks
   - HD-Frontend.exe     # BlueStacks
   - hidfind.exe         # Dell
+  - iCloudServices.exe  # Apple
   - idaq.exe            # IDA
   - idea.exe            # Intelij IDEA
   - IDMan.exe           # Internet Download Manager
@@ -112,24 +113,16 @@ processes:
   - iTunes.exe          # Apple
   - iTunesHelper.exe    # Apple
   - Jane2ch.exe         # 2ch
+  - java.exe            # Java
+  - javaw.exe           # Java
   - JCT.exe             # JBeijing
   - jct.exe             # JBeijing
   - JCTchs.exe          # JBeijing
   - JOCR.exe            # JOCR
-  - KHALMNPR.exe        # Logitech
-  - KuGou.exe           # Kugou
-  - MacDrive.exe        # MacDrive
-  - MagicISO.exe        # Magic ISO Maker
-  - MangaMeeya.exe      # Manga reader
-  - mousegesture.exe    # Sogou
-  - netbeans.exe        # NetBeans
-  - notepad++.exe       # Notepad++
-  - ollydbg.exe         # OllyDbg
-  - java.exe            # Java
-  - javaw.exe           # Java
   - JspVReader.exe      # 詠太2
   - jusched.exe         # Java
-  - iCloudServices.exe  # Apple
+  - KHALMNPR.exe        # Logitech
+  - KuGou.exe           # Kugou
   - KMPlayer.exe        # KMPlayer
   - kmplayer.exe        # KMPlayer
   - KSafeTray.exe       # Kingsoft
@@ -141,16 +134,23 @@ processes:
   - LSC.exe             # Locale Switch
   - KanKan.exe          # Xunlei
   - Maxthon.exe         # Maxthon
+  - MacDrive.exe        # MacDrive
+  - MagicISO.exe        # Magic ISO Maker
+  - MangaMeeya.exe      # Manga reader
+  - mousegesture.exe    # Sogou
   - MediaInfo.exe       # MediaInfo
-  - ModOrganizer.exe    # Skyrim Mod Organizer
   - mpc-be.exe          # MPC
   - mpc-hc.exe          # MPC
   - mpc-hc_nvo.exe      # MPC
   - mpcstar.exe         # MPC
+  - ModOrganizer.exe    # Skyrim Mod Organizer
+  - netbeans.exe        # NetBeans
+  - notepad++.exe       # Notepad++
   - ntleac.exe          # NTLER
   - NtleaGUI.exe        # NTLER
   - ntleas.exe          # NTLEAS
   - NK-Frontend.exe     # Android emulator
+  - ollydbg.exe         # OllyDbg
   - ONENOTE.EXE         # Microsoft Office
   - onenote.exe         # Microsoft Office
   - opera.exe           # Opera
@@ -175,6 +175,7 @@ processes:
   - qtcreator.exe       # Qt
   - QuickTime.exe       # Apple
   - QvodPlayer.exe      # QVOD
+  - Rainmeter.exe       # Rainmeter
   - saayaa.exe          # Baidu
   - Safari.exe          # Apple
   - ScreenshotReaderPortable.exe # http://sakuradite.com/topic/524
