@@ -2,6 +2,7 @@
  # @param  language  unicode  not used
  # @param  text  unicode not None  The orignal text to translate
  # @param  feature  unicode or None
+ # @param  kanji  unicode or None
  # @param  tuples  [unicode word, unicode html]
  # @param  eb_strings  [unicode]
  #
@@ -19,6 +20,7 @@ li{margin:0;padding:0}
 a{color:silver}
 .q a{text-decoration:none;color:#add8ff}
 .f{background-color:rgba(255,0,0,40%);font-weight:bold;font-family:"MS Mincho"}
+.zh{background-color:rgba(0,0,255,40%);font-weight:bold;font-family:"YouYuan"}
 .sk,.th{background-color:rgba(128,225,0,40%)}
 .ta{text-align:right}
 .hl{background-color:rgba(255,165,0,40%)}
@@ -30,6 +32,9 @@ u,.role{background-color:rgba(128,0,128,60%)}
 	<body>
 %if feature
 		<div><span class="f">{{feature}}</span></div>
+%endif
+%if kanji
+		<div><span class="zh">{{kanji}}</span></div>
 %endif
 		<p class="q">
 			<a href="{{gg}}{{text}}">+google</a>

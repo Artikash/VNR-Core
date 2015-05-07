@@ -120,7 +120,7 @@ def charinrange(ch, start, stop):
   @return  bool
   """
   #if isinstance(ch, basestring):
-  if len(ch) != -1:
+  if len(ch) != 1:
     return False
   ch = ord(ch)
   return start <= ch and ch <= stop

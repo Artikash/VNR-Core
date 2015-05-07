@@ -10,7 +10,7 @@ def manager(): return HanziDictionary()
 
 class HanziDictionary:
   def __init__(self):
-    pass
+    self.__d = _HanziDictionary()
 
   def lookupRadicals(self, ch):
     """

@@ -10,6 +10,7 @@ from sakurakit.sktr import tr_
 from mecabparser import mecabdef, mecabformat
 from mytr import my
 #from kagami import GrimoireBean
+from unitraits.jpchars import iskanji
 import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
 import _dictman
 
@@ -27,6 +28,25 @@ class _DictionaryManager:
   def __init__(self):
     self.japaneseLookupEnabled = True # bool
     self.japaneseTranslateLanguages = [] # [str]
+
+  def renderKanjiRadicals(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    ret = ''
+    for ch in text:
+      if iskanji(ch):
+        import hanzidict
+        r = hanzidict.manager().lookupRadicalString(ch)
+        if r:
+          r[0] = '['
+          r[-1] = ']'
+          r = "%s: %s" % (ch, r)
+          if ret:
+            ret += ', '
+          ret += r
+    return ret
 
   def lookupEdict(self, text, feature=None, limit=5):
     """
@@ -358,6 +378,7 @@ class DictionaryManager:
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
     try:
+      ss = settings.global_()
       d = self.__d
       f = None
       if feature:
@@ -367,11 +388,16 @@ class DictionaryManager:
         if roleName:
           f = ','.join((text, mecabdef.role_name_en(text) or '', roleName))
 
+      kanji = None
+      if ss.isKanjiRadicalEnabled():
+        kanji = d.renderKanjiRadicals(text)
+
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
         'feature': f,
+        'kanji': kanji,
         'tuples': d.lookupDB(text, exact=exact, feature=feature),
         'eb_strings': d.lookupEB(text, feature=feature), # exact not used, since it is already very fast
         #'google': google,
