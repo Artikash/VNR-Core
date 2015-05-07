@@ -580,6 +580,9 @@ opencc:
   t2ja:     $PWD/../../Dictionaries/opencc/JPVariants.txt
   t2ko:     $PWD/../../Dictionaries/hanja/dic0.txt
 
+hanzi:
+  radical:  $PWD/../../Dictionaries/hanzi/cjk-decomp-0.4.0.txt
+
 hangul:
   path:     $PWD/../../Dictionaries/hanja/dic6.txt
 
