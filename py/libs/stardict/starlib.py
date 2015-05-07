@@ -107,6 +107,13 @@ class IdxFileReader(object):
           self._word_idx[word_str] = [self._word_idx[word_str], len(self._index_idx)-1]
       else:
         self._word_idx[word_str] = len(self._index_idx)-1
+
+    # Switch to tuple to save memory
+    # Disabled since few indices are list
+    #for k,v in self._word_idx.iteritems():
+    #  if isinstance(v, list):
+    #    self._word_idx[k] = tuple(v)
+
     del self._content
     del self._index_offset_bits
     del self._index
@@ -452,9 +459,7 @@ if __name__ == '__main__':
     time.sleep(5)
     print "sleep: leave"
 
-  #dictdir = '/Users/jichi/Downloads/naver_jpkr_krjp_dict/'
-  #dictdir = '/Users/jichi/Downloads/NhatViet/'
-  dictdir = '/Users/jichi/Downloads/NhatViet/'
+  dictdir = '../../../../../../Caches/Dictionaries/OVDP/NhatViet/'
 
   if os.name == 'nt':
     dictdir = 'z:' + dictdir

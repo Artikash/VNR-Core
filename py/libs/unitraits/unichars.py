@@ -84,14 +84,14 @@ def isascii(s):
 
 def isspace(ch):
   """
-  @param  s  unicode
+  @param  ch  unicode
   @return  bool
   """
   return ch in u" \u3000\t\n"
 
 def isalpha(ch):
   """
-  @param  s  unicode
+  @param  ch  unicode
   @return  bool
   """
   if len(ch) == 1:
@@ -124,5 +124,12 @@ def charinrange(ch, start, stop):
     return False
   ch = ord(ch)
   return start <= ch and ch <= stop
+
+def isdigit(ch):
+  """
+  @param  ch  unicode
+  @return  bool
+  """
+  return charinrange(ch, ORD_DIGIT_FIRST, ORD_DIGIT_FIRST)
 
 # EOF
