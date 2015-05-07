@@ -443,11 +443,11 @@ AVATARS_LOCATION = os.path.abspath(parse_path(SHARE_YAML['avatars']['location'])
 AVATARS_COUNT = parse_int(SHARE_YAML['avatars']['count'])
 #AVATARS_FORMAT = SHARE_YAML['avatars']['format']
 
-FONT_LOCATION = parse_path(SHARE_YAML['font']['location']) # unicode abspath
-
 HANGUL_DIC_PATH = parse_path(SHARE_YAML['hangul']['path']) # unicode abspath
 
 PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
+
+HANZI_RADICAL_DIC_PATH = os.path.abspath(parse_path(SHARE_YAML['hanzi']['radical'])) # unicode abspath
 
 #IPADIC_LOCATION = parse_path(SHARE_YAML['dictionaries']['ipadic']) # unicode abspath
 #EDICT_LOCATION = parse_path(SHARE_YAML['dictionaries']['edict']) # unicode abspath
@@ -466,6 +466,9 @@ TEMPLATE_LOCATION = parse_path(SHARE_YAML['templates']['location']) # unicode ab
 TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpath}
 
 JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspath]
+
+FONT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
+    for k,v in SHARE_YAML['font'].iteritems()}
 
 TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['tahscript'].iteritems()}

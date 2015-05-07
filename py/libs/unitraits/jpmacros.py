@@ -25,7 +25,7 @@ MACROS = {
   ':digit:': ur'0-9',
   ':alpha:': ur'a-zA-Z',
   ':alnum:': ur'{{:alpha:}}{{:digit:}}',
-  ':kanji:': ur'一-龥',
+  ':kanji:': ur'一-龯',
   ':hira:': ur'ぁ-ゖ',
   ':kata:': ur'ァ-ヺ',
   ':kana:': ur'{{:hira:}}{{:kata:}}',

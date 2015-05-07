@@ -19,7 +19,7 @@ class Dict(res.Resource):
 class Edict(Dict):
   def __init__(self):
     super(Edict, self).__init__(
-      path=os.path.join(rc.EDICT_PATH),
+      path=rc.EDICT_PATH,
       lockpath=os.path.join(rc.DIR_TMP, "edict.lock"),
     )
 
@@ -49,9 +49,8 @@ class Edict(Dict):
 class MeCabEdict(res.Resource):
 
   def __init__(self):
-    from sakurakit import skpaths
     super(MeCabEdict, self).__init__(
-      path=os.path.join(rc.MECAB_EDICT_PATH),
+      path=rc.MECAB_EDICT_PATH,
       lockpath=os.path.join(rc.DIR_TMP, "mecab-edict.lock"),
     )
 
@@ -121,7 +120,7 @@ class StarDict(Dict):
     import config
     self.lang = lang # str
     super(StarDict, self).__init__(
-      path=os.path.join(config.STARDICT_LOCATIONS[lang]),
+      path=config.STARDICT_LOCATIONS[lang],
       lockpath=os.path.join(rc.DIR_TMP, "stardict.%s.lock" % lang),
     )
 
@@ -226,7 +225,7 @@ class Wadoku(Dict):
 class UniDic(Dict):
   def __init__(self):
     super(UniDic, self).__init__(
-      path=os.path.join(rc.DIR_UNIDIC),
+      path=rc.DIR_UNIDIC,
       lockpath=os.path.join(rc.DIR_TMP, "unidic.lock"),
     )
 

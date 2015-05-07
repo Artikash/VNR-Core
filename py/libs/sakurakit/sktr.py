@@ -326,6 +326,7 @@ class sakurakit(QObject):
       self.tr("Folder"),
       self.tr("Font"),
       self.tr("Font family"),
+      self.tr("Fonts"),
       self.tr("Game"), self.tr("game"),
       self.tr("Game Information"), self.tr("Game information"), self.tr("game information"),
       self.tr("Gender"),

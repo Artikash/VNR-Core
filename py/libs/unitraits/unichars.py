@@ -2,6 +2,12 @@
 # unichars.py
 # 6/16/2014 jichi
 
+# Some of the kana characters are skipped
+# See: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana
+# Here's the range used by Google Guava
+# - Hiragana: \u3040-\u309f
+# - Katagana: \u30a0-\u30ff
+
 # Orders of hiragana and katagana
 ORD_HIRA_FIRST = 12353
 ORD_HIRA_LAST = 12438
@@ -16,8 +22,10 @@ DIST_THIN_WIDE = 65248
 ORD_WIDE_FIRST = ORD_THIN_FIRST + DIST_THIN_WIDE
 ORD_WIDE_LAST = ORD_THIN_LAST + DIST_THIN_WIDE
 
-ORD_KANJI_FIRST = 19968
-ORD_KANJI_LAST = 40869
+# The same range as Google Guava
+# See: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana
+ORD_KANJI_FIRST = 0x4e00 # = u'一'
+ORD_KANJI_LAST = 0x9faf # = u'龯'
 
 ORD_DIGIT_FIRST = ord('0')
 ORD_DIGIT_LAST = ord('9')
@@ -76,14 +84,14 @@ def isascii(s):
 
 def isspace(ch):
   """
-  @param  s  unicode
+  @param  ch  unicode
   @return  bool
   """
   return ch in u" \u3000\t\n"
 
 def isalpha(ch):
   """
-  @param  s  unicode
+  @param  ch  unicode
   @return  bool
   """
   if len(ch) == 1:
@@ -112,9 +120,16 @@ def charinrange(ch, start, stop):
   @return  bool
   """
   #if isinstance(ch, basestring):
-  if len(ch) != -1:
+  if len(ch) != 1:
     return False
   ch = ord(ch)
   return start <= ch and ch <= stop
+
+def isdigit(ch):
+  """
+  @param  ch  unicode
+  @return  bool
+  """
+  return charinrange(ch, ORD_DIGIT_FIRST, ORD_DIGIT_FIRST)
 
 # EOF

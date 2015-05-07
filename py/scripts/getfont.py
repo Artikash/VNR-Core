@@ -1,7 +1,7 @@
 # coding: utf8
-# getovdp.py
-# Get the StarDict for different languages
-# 4/26/2015 jichi
+# getfont.py
+# Get the Hanazono Font.
+# 5/7/2015 jichi
 
 if __name__ == '__main__':
   import initrc
@@ -16,36 +16,33 @@ import os
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
 
-# http://ftp.monash.edu.au/pub/nihongo/UPDATES
-# ftp://ftp.monash.edu.au/pub/nihongo/
-
-HP_URL = "http://sourceforge.net/projects/ovdp/files/Stardict/Japanese/"
-DL_URL = "http://tcpdiag.dl.sourceforge.net/project/ovdp/Stardict/Japanese/"
-
-DICS = {
-  'ja-vi': {'file':'NhatViet.zip', 'size':12392678, 'path':'OVDP/NhatViet'},
-  'vi-ja': {'file':'VietNhat.zip', 'size':852519, 'path':'OVDP/VietNhat'},
+FONTS = {
+  'hanazono': {
+    'size': 26963516,
+    'name': 'Hanazono',
+    'path': 'Hanazono',
+    'hp': 'http://fonts.jp/hanazono',
+    'dl': "http://jaist.dl.sourceforge.jp/hanazono-font/62072/hanazono-20141012.zip",
+  },
 }
 
-LANGS = frozenset(DICS.iterkeys())
-
 import initdefs
-DIC_DIR = initdefs.CACHE_DIC_RELPATH
+FONT_DIR = initdefs.CACHE_FONT_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 
 # Tasks
 
 def init(): # raise
-  for it in TMP_DIR,: # DIC_DIR,
+  for it in TMP_DIR, FONT_DIR:
     if not os.path.exists(it):
       os.makedirs(it)
 
-def extract(lang): # str -> bool
-  dprint("enter: lang = %s" % lang)
+def extract(family): # str -> bool
+  dprint("enter: family = %s" % family)
 
-  srcpath = TMP_DIR + '/' + DICS[lang]['file']
-  tmppath = TMP_DIR + '/ovdp-' + lang
-  targetpath = DIC_DIR + '/' + DICS[lang]['path']
+  srcpath = TMP_DIR + '/font-%s.zip' % family
+  tmppath = TMP_DIR + '/font-%s' % family
+  targetpath = FONT_DIR + '/' + FONTS[family]['path']
 
   import shutil
   from sakurakit import skfileio
@@ -54,8 +51,7 @@ def extract(lang): # str -> bool
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
-    child = skfileio.getfirstchilddir(tmppath)
-    os.renames(child, targetpath)
+    os.renames(tmppath, targetpath)
   if os.path.exists(tmppath):
     shutil.rmtree(tmppath)
   skfileio.removefile(srcpath)
@@ -63,11 +59,11 @@ def extract(lang): # str -> bool
   dprint("leave: ok = %s" % ok)
   return ok
 
-def get(lang): # str -> bool
-  url = DL_URL + DICS[lang]['file']
-  path = TMP_DIR + '/' + DICS[lang]['file']
+def get(family): # str -> bool
+  url = FONTS[family]['dl']
+  path = TMP_DIR + '/font-%s.zip' % family
 
-  dprint("enter: lang = %s, url = %s" % (lang, url))
+  dprint("enter: family = %s, url = %s" % (family, url))
 
   #from sakurakit import skfileio
   #if os.path.exists(path) and skfileio.filesize(path) == size:
@@ -78,14 +74,14 @@ def get(lang): # str -> bool
   from sakurakit import skfileio, sknetio
   with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) == DICS[lang]['size']
+      ok = skfileio.filesize(path) == FONTS[family]['size']
   if not ok and os.path.exists(path):
     skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
   return ok
 
-def lock(lang): # str
-  name = "stardict.%s.lock" % lang
+def lock(family): # str
+  name = "font.%s.lock" % family
   import initrc
   if initrc.lock(name):
     return True
@@ -93,25 +89,25 @@ def lock(lang): # str
     dwarn("multiple instances")
     return False
 
-def run(lang): # str -> bool
-  if lang not in LANGS:
-    dwarn("unknown lang: %s" % lang)
+def run(family): # str -> bool
+  if family not in FONTS:
+    dwarn("unknown font: %s" % family)
     return False
-  return lock(lang) and get(lang) and extract(lang)
+  return lock(family) and get(family) and extract(family)
 
 # Main process
 
 def usage():
-  print 'usage:', '|'.join(LANGS)
+  print 'usage:', '|'.join(FONTS.iterkeys())
 
-def msg(lang): # str ->
-  dic = DICS[lang]
+def msg(family): # str ->
+  font = FONTS[family]
   import messages
   messages.info(
-    name="OVDP (%s)" % lang,
-    location="Caches/Dictionaries/" + dic['path'],
-    size=dic['size'],
-    urls=[HP_URL],
+    name=font['name'],
+    location="Caches/Fonts/" + font['path'],
+    size=font['size'],
+    urls=[font['hp']],
   )
 
 def main(argv):
@@ -127,14 +123,14 @@ def main(argv):
     dwarn("invalid number of parameters")
     usage()
   else:
-    lang, = argv
+    family, = argv
     try:
-      msg(lang)
+      msg(family)
       init()
-      ok = run(lang)
+      ok = run(family)
       if ok:
         from sakurakit import skos
-        path = os.path.join(DIC_DIR, DICS[lang]['path'])
+        path = os.path.join(FONT_DIR, FONTS[family]['path'])
         skos.open_location(os.path.abspath(path))
     except Exception, e:
       dwarn(e)

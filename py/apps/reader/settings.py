@@ -1247,6 +1247,11 @@ class Settings(QSettings):
     if name == 'ja-vi':
       self.setStardictJaViEnabled(v)
 
+  # Hanzi
+
+  def isKanjiRadicalEnabled(self): return to_bool(self.value('KanjiRadical'))
+  def setKanjiRadicalEnabled(self, t): self.setValue('KanjiRadical', t)
+
   # Locations
 
   grabLocationChanged = Signal(unicode)

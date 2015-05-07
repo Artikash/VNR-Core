@@ -169,16 +169,18 @@ def main():
   # Must come after QApplication is created
   dprint("load fonts")
   from PySide.QtGui import QFontDatabase
-  for root, dirs, files in os.walk(config.FONT_LOCATION):
-    FONT_EXTS = frozenset(('.otf', '.ttf', '.ttc'))
-    for f in files:
-      if os.path.splitext(f.lower())[1] in FONT_EXTS:
-        p = os.path.join(root, f)
-        index = QFontDatabase.addApplicationFont(p)
-        if index >= 0:
-          dprint(QFontDatabase.applicationFontFamilies(index))
-        else:
-          dwarn("failed to load font %s" % f)
+  for path in config.FONT_LOCATIONS.itervalues():
+    if os.path.exists(path):
+      for root, dirs, files in os.walk(path):
+        FONT_EXTS = frozenset(('.otf', '.ttf', '.ttc'))
+        for f in files:
+          if os.path.splitext(f.lower())[1] in FONT_EXTS:
+            p = os.path.join(root, f)
+            index = QFontDatabase.addApplicationFont(p)
+            if index >= 0:
+              dprint(QFontDatabase.applicationFontFamilies(index))
+            else:
+              dwarn("failed to load font %s" % f)
 
   #ff = ss.applicationFontFamily()
   #if ff:

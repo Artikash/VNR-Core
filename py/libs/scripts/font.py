@@ -1,19 +1,19 @@
 # coding: utf8
-# jmdict.py
+# font.py
 # 2/14/2014 jichi
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-def get(lang):
+def get(family):
   """
-  @param  lang  str  such as fr
+  @param  family  str  such as hanazono
   @return  bool
   """
   import rc
-  return rc.runscript('getjmdict.py', (lang,))
+  return rc.runscript('getfont.py', (family,))
 
 if __name__ == "__main__":
-  get('fr')
+  get('hanazono')
 
 # EOF

@@ -2,7 +2,7 @@
 // 1/7/2014 jichi
 #include "pinyinconv/pinyinconv.h"
 #include <QtCore>
-#include <boost/algorithm/string.hpp>
+//#include <boost/algorithm/string.hpp>
 
 int main()
 {

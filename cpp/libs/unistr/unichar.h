@@ -24,6 +24,11 @@ inline int wide2thin(int ch) { return iswide(ch) ? ch - thin_wide_dist : ch; }
 
 // Japanese
 
+// Some of the kana characters are skipped
+// See: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana
+// Here's the range used by Google Guava
+// - Hiragana: \u3040-\u309f
+// - Katagana: \u30a0-\u30ff
 enum { hira_kata_dist = 96 };
 enum : wchar_t { hira_min = 12353, hira_max = 12438 }; // xa-xge
 enum : wchar_t { kata_min = 12449, kata_max = 12538 }; // xa-vo
@@ -40,7 +45,9 @@ inline int kata2hira(int ch) // because katagana has a larger range
 
 // Chinese
 
-enum : wchar_t { kanji_min = 19968, kanji_max = 40869 }; // 一-龥
+// The same range as Google Guava
+// See: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana
+enum : wchar_t { kanji_min = 0x4e00, kanji_max = 0x9faf }; // 一-龯
 inline bool iskanji(int ch) { return kanji_min <= ch && ch <= kanji_max; }
 
 // Korean

@@ -80,6 +80,7 @@ class _PrefsDialog(object):
     self.downloadsTab = _prefs.DownloadsTab()
     self.dictionaryDownloadsTab = _prefs.DictionaryDownloadsTab()
     self.launcherDownloadsTab = _prefs.LauncherDownloadsTab()
+    self.fontDownloadsTab = _prefs.FontDownloadsTab()
 
     self.libraryTab = _prefs.LibraryTab()
     self.localeLibraryTab = _prefs.LocaleLibraryTab()
@@ -125,6 +126,12 @@ class _PrefsDialog(object):
               'decoration': rc.icon('pref-dict'),
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Manage dictionaries"),
+            },
+            { 'widget': self.fontDownloadsTab,
+              'user': self._indexWidget(self.fontDownloadsTab),
+              'decoration': rc.icon('pref-font'),
+              'display': tr_("Fonts"),
+              'toolTip': my.tr("Manage fonts"),
             },
           ]
         },
@@ -340,6 +347,7 @@ class _PrefsDialog(object):
     #yield self.translationScriptTab
 
     yield self.downloadsTab
+    yield self.fontDownloadsTab
     yield self.dictionaryDownloadsTab
     yield self.launcherDownloadsTab
 
