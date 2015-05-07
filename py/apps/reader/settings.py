@@ -1249,7 +1249,7 @@ class Settings(QSettings):
 
   # Hanzi
 
-  def isKanjiRadicalEnabled(self): return to_bool(self.value('KanjiRadical', True))
+  def isKanjiRadicalEnabled(self): return to_bool(self.value('KanjiRadical'))
   def setKanjiRadicalEnabled(self, t): self.setValue('KanjiRadical', t)
 
   # Locations

@@ -70,6 +70,14 @@ DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 #  #'juman': '78MB',
 #}
 
+FONT_INFO = {
+  'hanazono': {
+    'name': mytr_("Hanazono font"),
+    'size': '46MB',
+    'desc': my.tr("for uncommon CJK hanzi and radicals"),
+  }
+}
+
 LINGOES_DICT_NAMES = {
   'ja-zh': my.tr("New Japanese-Chinese dictionary"),
   'ja-zh-gbk': my.tr("GBK Japanese-Chinese dictionary"),
@@ -4701,6 +4709,7 @@ class _DictionaryTranslationTab(object):
     #if 'en' not in blans:
     ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.kanjiRadicalButton)
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
     if 'zh' not in blans:
       layout.addWidget(self.lingoesJaZhButton)
@@ -4732,6 +4741,18 @@ class _DictionaryTranslationTab(object):
     #ret.setEnabled(bool(ss.meCabDictionary()))
     #ss.meCabDictionaryChanged.connect(lambda v:
     #    ret.setEnabled(bool(v)))
+    return ret
+
+  @memoizedproperty
+  def kanjiRadicalButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
+      my.tr("CJK hanzi radical dictionary"),
+      my.tr("like this"),
+      u"香[禾,日]",
+      my.tr("require {0}").format(mytr_("Hanazono font")),
+    ))
+    ret.setChecked(settings.global_().isKanjiRadicalEnabled())
+    ret.toggled.connect(settings.global_().setKanjiRadicalEnabled)
     return ret
 
   @memoizedproperty
@@ -6096,6 +6117,204 @@ class DictionaryDownloadsTab(QtWidgets.QDialog):
     super(DictionaryDownloadsTab, self).__init__(parent)
     skqss.class_(self, 'texture')
     self.__d = _DictionaryDownloadsTab(self)
+    #self.setChildrenCollapsible(False)
+    #self.setMinimumWidth(DOWNLOADS_MINIMUM_WIDTH)
+
+  def save(self): pass #self.__d.save()
+  def load(self): pass
+  def refresh(self): self.__d.refresh()
+
+  def stop(self): self.__d.stopRefresh()
+
+# Font downloads
+
+#@Q_Q
+class _FontDownloadsTab(object):
+  def __init__(self, q):
+
+    self.fontButtons = {}
+    self.fontStatusLabels = {}
+    self.fontIntroLabels = {}
+
+    t = self.refreshTimer = QTimer(q)
+    t.setSingleShot(False)
+    t.setInterval(DOWNLOAD_REFRESH_INTERVAL)
+    t.timeout.connect(self._tryRefresh)
+
+    self._refreshTasks = [] # [(dic, refresh ->)]
+
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.fontGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+    #q.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+
+  # Japanese fonts
+
+  @memoizedproperty
+  def fontGroup(self): # Phrase dictionaries
+
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+
+    #blans = settings.global_().blockedLanguages()
+
+    for family in FONT_INFO:
+      #if lang[:2] not in blans:
+      grid.addWidget(self.getFontButton(family), r, 0)
+      grid.addWidget(self.getFontStatusLabel(family), r, 1)
+      grid.addWidget(self.getFontIntroLabel(family), r, 2)
+      r += 1
+
+    infoLabel = QtWidgets.QLabel('\n'.join((
+      my.tr("Adding fonts require restarting VNR to take effect."),
+      my.tr("Removing fonts being used might require closing VNR."),
+    )))
+    #infoLabel.setWordWrap(True)
+    #skqss.class_(infoLabel, 'text-info')
+    grid.addWidget(infoLabel, r, 0, 1, 3)
+    r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("Japanese fonts"))
+    ret.setLayout(grid)
+    return ret
+
+  @memoizedproperty
+  def refreshButton(self):
+    ret = QtWidgets.QPushButton(tr_("Refresh"))
+    ret.setToolTip(tr_("Refresh"))
+    skqss.class_(ret, 'btn btn-info')
+    ret.clicked.connect(self.refresh)
+    ret.clicked.connect(lambda: growl.msg(my.tr("Reload font caches")))
+    return ret
+
+  ## Japanese
+
+  def getFontButton(self, name):
+    ret = self.fontButtons.get(name)
+    if not ret:
+      ret = self.fontButtons[name] = QtWidgets.QPushButton()
+      ret.role = ''
+      ret.clicked.connect(partial(lambda name:
+        self._getFont(name) if ret.role == 'get' else
+        self._removeFont(name) if ret.role == 'remove' else
+        None,
+      name))
+    return ret
+
+  def getFontStatusLabel(self, name):
+    ret = self.fontStatusLabels.get(name)
+    if not ret:
+      ret = self.fontStatusLabels[name] = QtWidgets.QLabel()
+      dic = res.font(name)
+      ret.linkActivated.connect(dic.open)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
+    return ret
+
+  def getFontIntroLabel(self, name):
+    ret = self.fontIntroLabels.get(name)
+    if not ret:
+      font = FONT_INFO[name]
+      ret = self.fontIntroLabels[name] = QtWidgets.QLabel(
+          "%s (%s, %s)" % (font['name'], font['size'], font['desc']))
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  def _getFont(self, name):
+    if prompt.confirmDownloadFont(FONT_INFO[name]['name']):
+      dic = res.font(name)
+      if not dic.exists(): #and not dic.locked():
+        dic.get()
+      refresh = partial(self.refreshFont, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
+
+  def _removeFont(self, name):
+    if prompt.confirmRemoveDictionary(FONT_INFO[name]['name']):
+      res.font(name).remove()
+      self.refreshFont(name)
+
+  def refreshFont(self, name): # -> bool exists
+    b = self.getFontButton(name)
+    status = self.getFontStatusLabel(name)
+    dic = res.font(name)
+    if dic.exists():
+      #status.setText(mytr_("Installed"))
+      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
+      skqss.class_(status, 'text-success')
+      b.role = 'remove'
+      b.setEnabled(True)
+      b.setText(tr_("Remove"))
+      skqss.class_(b, 'btn btn-default')
+      return True
+    elif dic.locked():
+      status.setText(mytr_("Installing"))
+      skqss.class_(status, 'text-info')
+      b.role = ''
+      b.setEnabled(False)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    else:
+      online = netman.manager().isOnline()
+      status.setText(mytr_("Not installed"))
+      skqss.class_(status, 'text-error')
+      b.role = 'get'
+      b.setEnabled(online)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    return False
+
+  def refresh(self):
+    #blans = settings.global_().blockedLanguages()
+
+
+    #map(self.refreshMeCab, config.MECAB_DICS)
+    #map(self.refreshCaboCha, config.CABOCHA_DICS)
+
+    for family in FONT_INFO:
+      self.refreshFont(family)
+
+  def startRefresh(self, dic, refresh):  # dic, ->
+    self._refreshTasks.append((dic, refresh))
+    if not self.refreshTimer.isActive():
+      self.refreshTimer.start()
+
+  def stopRefresh(self):
+    if self.refreshTimer.isActive():
+      self.refreshTimer.stop()
+    if self._refreshTasks:
+      self._refreshTasks = []
+
+  def _tryRefresh(self):
+    if not self._refreshTasks:
+      self.stopRefresh()
+      return
+
+    exists = False
+    tasks = []
+    for t in self._refreshTasks:
+      dic, refresh = t
+      if not dic.exists():
+        tasks.append(t)
+      #else:
+      refresh()
+
+    if len(tasks) != len(self._refreshTasks):
+      self._refreshTasks = tasks
+      if not tasks:
+        self.stopRefresh()
+
+class FontDownloadsTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(FontDownloadsTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _FontDownloadsTab(self)
     #self.setChildrenCollapsible(False)
     #self.setMinimumWidth(DOWNLOADS_MINIMUM_WIDTH)
 
@@ -8337,7 +8556,7 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.chineseEnableButton)
 
-    info =  QtWidgets.QLabel(my.tr(
+    info = QtWidgets.QLabel(my.tr(
       "Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks."
     ))
     info.setWordWrap(True)

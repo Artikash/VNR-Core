@@ -58,7 +58,6 @@ class AppLocale(Resource):
 #  URL = 'http://sakuradite.com/wiki/en/VNR/Translation_Scripts'
 #
 #  def __init__(self):
-#    from sakurakit import skpaths
 #    super(TahScript, self).__init__(
 #      path=os.path.join(rc.DIR_CACHE_DICT, "Scripts/tahscript.txt"),
 #      lockpath=os.path.join(rc.DIR_TMP, "tahscript.lock"),
@@ -69,10 +68,38 @@ class AppLocale(Resource):
 #    # Fetch the online wiki at URL
 #    return True
 
+class Font(Resource):
+
+  def __init__(self, family):
+    import config
+    self.family = family
+    super(Font, self).__init__(
+      path=config.FONT_LOCATIONS[family],
+      lockpath=os.path.join(rc.DIR_TMP, "font.%s.lock" % family),
+    )
+
+  def get(self): # override
+    from scripts import font
+    return font.get(self.family)
+
+  def remove(self): # override
+    return self.removetree()
+
 # Global objects
 
 @memoized
 def apploc(): return AppLocale()
+
+FONTS = {} # {str lang:JMDictic}
+def font(key):
+  """
+  @param  key  str  such as hanazono
+  @return  Font
+  """
+  ret = FONTS.get(key)
+  if not ret:
+    FONTS[key] = ret = Font(key)
+  return ret
 
 #@memoized
 #def tahscript(): return TahScript()

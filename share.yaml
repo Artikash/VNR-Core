@@ -570,7 +570,8 @@ fonts:
   en: DFGirl    #Helvetica
 
 font:
-  location: $PWD/../../Fonts
+  default:  $PWD/../../Fonts
+  hanazono: $PWD/../../../Caches/Fonts/Hanazono
 
 opencc:
   s2t:      $PWD/../../Dictionaries/opencc/STCharacters.txt
@@ -756,6 +757,7 @@ icons:
   pref-dev:         $PWD/images/dev.png
   pref-text:        $PWD/images/doc.png
   pref-script:      $PWD/images/dock/edit.png
+  pref-font:        $PWD/images/dock/font.png
   pref-dict:        $PWD/images/dock/dict.png
   pref-feature:     $PWD/images/gear.png
   pref-i18n:        $PWD/images/earth.png

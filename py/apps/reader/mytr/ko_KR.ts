@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="ko_KR">
+<!DOCTYPE TS>
+<TS version="2.0" language="ko_KR">
 <context>
     <name>reader</name>
     <message>
@@ -33,22 +34,22 @@
         <translation>댓글</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="244"/>
+        <location filename="mytr.py" line="246"/>
         <source>Auto Hide</source>
         <translation>자동 숨김</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="245"/>
+        <location filename="mytr.py" line="247"/>
         <source>Edit Subtitle</source>
         <translation>자막 편집</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="247"/>
+        <location filename="mytr.py" line="249"/>
         <source>New subtitle</source>
         <translation>새 자막</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="246"/>
+        <location filename="mytr.py" line="248"/>
         <source>New comment</source>
         <translation>새 댓글</translation>
     </message>
@@ -68,17 +69,17 @@
         <translation type="obsolete">ATLAS</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="129"/>
+        <location filename="mytr.py" line="131"/>
         <source>Infoseek</source>
         <translation>Infoseek</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="135"/>
+        <location filename="mytr.py" line="137"/>
         <source>Bing</source>
         <translation>Bing</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="146"/>
+        <location filename="mytr.py" line="148"/>
         <source>JBeijing</source>
         <translation>JBeijing</translation>
     </message>
@@ -88,62 +89,62 @@
         <translation type="obsolete">LEC</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="173"/>
+        <location filename="mytr.py" line="175"/>
         <source>Text thread</source>
         <translation>텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="174"/>
+        <location filename="mytr.py" line="176"/>
         <source>Text threads</source>
         <translation>텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="253"/>
+        <location filename="mytr.py" line="255"/>
         <source>Sync with Running Game</source>
         <translation>실행된 게임과 동기화</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="181"/>
+        <location filename="mytr.py" line="183"/>
         <source>Background shadow</source>
         <translation>배경 그림자</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="248"/>
+        <location filename="mytr.py" line="250"/>
         <source>Add comment</source>
         <translation>댓글 추가</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="248"/>
+        <location filename="mytr.py" line="250"/>
         <source>add comment</source>
         <translation>댓글 추가</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="249"/>
+        <location filename="mytr.py" line="251"/>
         <source>Add subtitle</source>
         <translation>자막 추가</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="249"/>
+        <location filename="mytr.py" line="251"/>
         <source>add subtitle</source>
         <translation>자막 추가</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="141"/>
+        <location filename="mytr.py" line="143"/>
         <source>Kojien</source>
         <translation>코지엔(広辞苑)</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="147"/>
+        <location filename="mytr.py" line="149"/>
         <source>JBeijing7</source>
         <translation>JBeijing7</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="145"/>
+        <location filename="mytr.py" line="147"/>
         <source>Zhongri</source>
         <translation>일중통합사전</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="183"/>
+        <location filename="mytr.py" line="185"/>
         <source>Text color</source>
         <translation>텍스트 색상</translation>
     </message>
@@ -163,17 +164,17 @@
         <translation>음성</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="251"/>
+        <location filename="mytr.py" line="253"/>
         <source>Read Sentence</source>
         <translation>문장 읽기</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="170"/>
+        <location filename="mytr.py" line="172"/>
         <source>Launcher</source>
         <translation>실행기</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="175"/>
+        <location filename="mytr.py" line="177"/>
         <source>Hook code</source>
         <translation>후킹코드</translation>
     </message>
@@ -193,22 +194,22 @@
         <translation>탄막</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="130"/>
+        <location filename="mytr.py" line="132"/>
         <source>Excite</source>
         <translation>Excite</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="172"/>
+        <location filename="mytr.py" line="174"/>
         <source>Game language</source>
         <translation>게임 언어</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="127"/>
+        <location filename="mytr.py" line="129"/>
         <source>Baidu</source>
         <translation>바이두</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="128"/>
+        <location filename="mytr.py" line="130"/>
         <source>Youdao</source>
         <translation>Youdao</translation>
     </message>
@@ -218,22 +219,22 @@
         <translation type="obsolete">Dr.eye</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="213"/>
+        <location filename="mytr.py" line="215"/>
         <source>Game-specific</source>
         <translation>게임 전용</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="215"/>
+        <location filename="mytr.py" line="217"/>
         <source>Current game</source>
         <translation>현재 게임</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="217"/>
+        <location filename="mytr.py" line="219"/>
         <source>{0} games</source>
         <translation>{0}개 게임</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="254"/>
+        <location filename="mytr.py" line="256"/>
         <source>Update Shared Dictionary</source>
         <translation>공유사전 업데이트</translation>
     </message>
@@ -243,7 +244,7 @@
         <translation type="obsolete">공유자막 업데이트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="257"/>
+        <location filename="mytr.py" line="259"/>
         <source>Update Game Database</source>
         <translation>게임 데이터베이스 업데이트</translation>
     </message>
@@ -288,12 +289,12 @@
         <translation>이전 단락</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="177"/>
+        <location filename="mytr.py" line="179"/>
         <source>Update reason</source>
         <translation>업데이트 사유</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="185"/>
+        <location filename="mytr.py" line="187"/>
         <source>Sub</source>
         <translation>자막</translation>
     </message>
@@ -338,7 +339,7 @@
         <translation>캐릭터</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="144"/>
+        <location filename="mytr.py" line="146"/>
         <source>Wadoku</source>
         <translation>Wadoku</translation>
     </message>
@@ -363,7 +364,7 @@
         <translation>캐릭터 이름</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="180"/>
+        <location filename="mytr.py" line="182"/>
         <source>Fill color</source>
         <translation>채울 색</translation>
     </message>
@@ -373,7 +374,7 @@
         <translation>음성 설정</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="134"/>
+        <location filename="mytr.py" line="136"/>
         <source>Yahoo!</source>
         <translation>야후!</translation>
     </message>
@@ -383,7 +384,7 @@
         <translation>텍스트 리더</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="227"/>
+        <location filename="mytr.py" line="229"/>
         <source>Speak {0}</source>
         <translation>{0} 읽기</translation>
     </message>
@@ -403,12 +404,12 @@
         <translation>대화상자</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="241"/>
+        <location filename="mytr.py" line="243"/>
         <source>Monitor mouse</source>
         <translation>마우스 감시</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="242"/>
+        <location filename="mytr.py" line="244"/>
         <source>Monitor clipboard</source>
         <translation>클립보드 감시</translation>
     </message>
@@ -423,7 +424,7 @@
         <translation>전체화면</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="186"/>
+        <location filename="mytr.py" line="188"/>
         <source>Info</source>
         <translation>정보</translation>
     </message>
@@ -438,7 +439,7 @@
         <translation>게임 참조</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="188"/>
+        <location filename="mytr.py" line="190"/>
         <source>Transp</source>
         <translation>투명</translation>
     </message>
@@ -448,7 +449,7 @@
         <translation>Game Board</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="136"/>
+        <location filename="mytr.py" line="138"/>
         <source>Google</source>
         <translation>Google</translation>
     </message>
@@ -463,7 +464,7 @@
         <translation>익명 용어 수정</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="214"/>
+        <location filename="mytr.py" line="216"/>
         <source>Series-specific</source>
         <translation>시리즈 전용</translation>
     </message>
@@ -503,27 +504,27 @@
         <translation>YouTube 다운로더</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="229"/>
+        <location filename="mytr.py" line="231"/>
         <source>Capture</source>
         <translation>캡쳐</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="163"/>
+        <location filename="mytr.py" line="165"/>
         <source>Need to install</source>
         <translation>설치 필요</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="164"/>
+        <location filename="mytr.py" line="166"/>
         <source>need to install</source>
         <translation>설치 필요</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="154"/>
+        <location filename="mytr.py" line="156"/>
         <source>Built-in</source>
         <translation>내장</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="155"/>
+        <location filename="mytr.py" line="157"/>
         <source>built-in</source>
         <translation>내장</translation>
     </message>
@@ -548,17 +549,17 @@
         <translation>게임 토론</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="166"/>
+        <location filename="mytr.py" line="168"/>
         <source>Installing</source>
         <translation>설치 중</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="167"/>
+        <location filename="mytr.py" line="169"/>
         <source>Installed</source>
         <translation>설치됨</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="168"/>
+        <location filename="mytr.py" line="170"/>
         <source>Not installed</source>
         <translation>설치되지 않음</translation>
     </message>
@@ -568,17 +569,17 @@
         <translation>일본어 사전</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="219"/>
+        <location filename="mytr.py" line="221"/>
         <source>{0} people are viewing this page</source>
         <translation>{0}명이 이 페이지를 보고 있음</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="238"/>
+        <location filename="mytr.py" line="240"/>
         <source>Open in external browser</source>
         <translation>외부 브라우저에서 열기</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="239"/>
+        <location filename="mytr.py" line="241"/>
         <source>Open in external window</source>
         <translation>외부 브라우저에서 열기</translation>
     </message>
@@ -588,12 +589,12 @@
         <translation>노트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="138"/>
+        <location filename="mytr.py" line="140"/>
         <source>LEC Online</source>
         <translation>LEC 온라인</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="159"/>
+        <location filename="mytr.py" line="161"/>
         <source>Shortcuts</source>
         <translation>단축키</translation>
     </message>
@@ -613,12 +614,12 @@
         <translation>게임 엔진</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="142"/>
+        <location filename="mytr.py" line="144"/>
         <source>Daijirin</source>
         <translation>다이지린(大辞林)</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="143"/>
+        <location filename="mytr.py" line="145"/>
         <source>Daijisen</source>
         <translation>다이지린(大辞林)</translation>
     </message>
@@ -628,27 +629,27 @@
         <translation>게시물 수정</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="123"/>
+        <location filename="mytr.py" line="125"/>
         <source>Ecchi</source>
         <translation>H</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="124"/>
+        <location filename="mytr.py" line="126"/>
         <source>Easy</source>
         <translation>읽기 쉬움</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="258"/>
+        <location filename="mytr.py" line="260"/>
         <source>Update Translation Scripts</source>
         <translation>번역 스크립트 업데이트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="259"/>
+        <location filename="mytr.py" line="261"/>
         <source>Reload Translation Scripts</source>
         <translation>번역 스크립트 새로고침</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="232"/>
+        <location filename="mytr.py" line="234"/>
         <source>Optical character recognition</source>
         <translation>광학 문자인식</translation>
     </message>
@@ -673,52 +674,52 @@
         <translation>메시지</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="150"/>
+        <location filename="mytr.py" line="152"/>
         <source>FastAIT</source>
         <translation>FastAIT</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="151"/>
+        <location filename="mytr.py" line="153"/>
         <source>Kingsoft</source>
         <translation>Kingsoft</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="152"/>
+        <location filename="mytr.py" line="154"/>
         <source>Kingsoft FastAIT</source>
         <translation>Kingsoft FastAIT</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="191"/>
+        <location filename="mytr.py" line="193"/>
         <source>Name</source>
         <translation>이름</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="195"/>
+        <location filename="mytr.py" line="197"/>
         <source>Suffix</source>
         <translation>호칭</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="199"/>
+        <location filename="mytr.py" line="201"/>
         <source>TTS</source>
         <translation>TTS음성합성</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="200"/>
+        <location filename="mytr.py" line="202"/>
         <source>OCR</source>
         <translation>OCR광학인식</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="203"/>
+        <location filename="mytr.py" line="205"/>
         <source>Input</source>
         <translation>입력</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="204"/>
+        <location filename="mytr.py" line="206"/>
         <source>Output</source>
         <translation>출력</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="191"/>
+        <location filename="mytr.py" line="193"/>
         <source>name</source>
         <translation>이름</translation>
     </message>
@@ -743,17 +744,17 @@
         <translation>일본어 문법 테스트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="168"/>
+        <location filename="mytr.py" line="170"/>
         <source>not installed</source>
         <translation>설치되지 않음</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="161"/>
+        <location filename="mytr.py" line="163"/>
         <source>Multilingual</source>
         <translation>다국어</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="161"/>
+        <location filename="mytr.py" line="163"/>
         <source>multilingual</source>
         <translation>다국어</translation>
     </message>
@@ -778,12 +779,12 @@
         <translation>일본어 간지</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="235"/>
+        <location filename="mytr.py" line="237"/>
         <source>Speech recognition</source>
         <translation>음성인식</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="236"/>
+        <location filename="mytr.py" line="238"/>
         <source>Speech Recognition</source>
         <translation>음성인식</translation>
     </message>
@@ -803,17 +804,17 @@
         <translation>다시재생</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="201"/>
+        <location filename="mytr.py" line="203"/>
         <source>ASR</source>
         <translation>ASR음성인식</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="234"/>
+        <location filename="mytr.py" line="236"/>
         <source>Automatic speech recognition</source>
         <translation>자동 음성인식</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="122"/>
+        <location filename="mytr.py" line="124"/>
         <source>Overall</source>
         <translation>종합</translation>
     </message>
@@ -833,22 +834,22 @@
         <translation>녹화</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="255"/>
+        <location filename="mytr.py" line="257"/>
         <source>Update Subtitles</source>
         <translation>자막 업데이트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="256"/>
+        <location filename="mytr.py" line="258"/>
         <source>Update Danmaku</source>
         <translation>탄막 업데이트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="194"/>
+        <location filename="mytr.py" line="196"/>
         <source>Yomi</source>
         <translation>요미가나</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="157"/>
+        <location filename="mytr.py" line="159"/>
         <source>Romanize</source>
         <translation>로마자 표기</translation>
     </message>
@@ -858,17 +859,17 @@
         <translation>한국어 한자</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="178"/>
+        <location filename="mytr.py" line="180"/>
         <source>Update comment</source>
         <translation>댓글 업데이트</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="192"/>
+        <location filename="mytr.py" line="194"/>
         <source>Names</source>
         <translation>이름</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="192"/>
+        <location filename="mytr.py" line="194"/>
         <source>names</source>
         <translation>이름</translation>
     </message>
@@ -878,7 +879,7 @@
         <translation>번역기</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="193"/>
+        <location filename="mytr.py" line="195"/>
         <source>Yomigana</source>
         <translation>요미가나</translation>
     </message>
@@ -898,12 +899,12 @@
         <translation>성조 표시안함</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="196"/>
+        <location filename="mytr.py" line="198"/>
         <source>Prefix</source>
         <translation>접두어</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="197"/>
+        <location filename="mytr.py" line="199"/>
         <source>Boundary</source>
         <translation>경계선</translation>
     </message>
@@ -911,6 +912,11 @@
         <location filename="mytr.py" line="102"/>
         <source>User-defined</source>
         <translation>사용자 정의</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="122"/>
+        <source>Hanazono font</source>
+        <translation>花園明朝글꼴</translation>
     </message>
 </context>
 </TS>

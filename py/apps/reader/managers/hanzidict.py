@@ -29,7 +29,10 @@ class HanziDictionary:
       for it in l:
         if ret:
           ret += ','
-        ret += self.renderRadicals(it)
+        if isinstance(it, basestring):
+          ret += it
+        else:
+          ret += self.renderRadicals(it)
       ret = '(' + ret + ')'
     return ret
 
@@ -47,7 +50,7 @@ class _HanziDictionary:
   def decomp(self):
     from hanzicomp.hanzidecomp import HanziDecomposer
     import config
-    ret = HanziDecomp()
+    ret = HanziDecomposer()
     ret.loadFile(config.HANZI_RADICAL_DIC_PATH)
     dprint("size = %s" % ret.size())
     return ret

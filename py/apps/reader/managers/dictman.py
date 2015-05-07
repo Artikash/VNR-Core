@@ -34,18 +34,13 @@ class _DictionaryManager:
     @param  text  unicode
     @return  unicode
     """
-    ret = ''
+    ret = []
     for ch in text:
       if iskanji(ch):
         import hanzidict
         r = hanzidict.manager().lookupRadicalString(ch)
         if r:
-          r[0] = '['
-          r[-1] = ']'
-          r = "%s: %s" % (ch, r)
-          if ret:
-            ret += ', '
-          ret += r
+          ret.append("%s: [%s]" % (ch, r[1:-1]))
     return ret
 
   def lookupEdict(self, text, feature=None, limit=5):

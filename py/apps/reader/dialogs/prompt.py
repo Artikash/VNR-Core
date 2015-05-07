@@ -521,7 +521,7 @@ WARNING:
 This might result in redundant spaces for Japanese games."""),
       Yes|No, No)
 
-def confirmDownloadGameVideo():
+def confmrmDownloadGameVideo():
   """
   @return  bool
   """
@@ -565,6 +565,18 @@ def confirmRemoveDictionary(name): # unicode
       my.tr("Remove dictionary"),
       my.tr("""Do you want to remove the {0} dictionary?
 You can reinstall it later if you want.""").format(name),
+      Yes|No, No)
+
+def confirmDownloadFont(name): # unicode
+  """
+  @return  bool
+  """
+  location = "Caches/Fonts"
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Download font"),
+      my.tr("""Do you want to download the {0}?
+It requires Internet access and might take a couple of minutes.
+The font will be installed to {1}.""").format(name, location),
       Yes|No, No)
 
 def confirmDownloadDictionary(name): # unicode

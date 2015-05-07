@@ -119,6 +119,8 @@ class reader(QObject):
       self.tr('Discussion'),
       self.tr('Game Discussion'),
 
+      self.tr('Hanazono font'),
+
       self.tr('Overall'),
       self.tr('Ecchi'),
       self.tr('Easy'),
