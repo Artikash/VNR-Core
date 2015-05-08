@@ -16,10 +16,21 @@ import convutil
 #RIGHT_ARROW = u"→" # みぎ
 RIGHT_ARROW = u"⇒" # みぎ
 
+# KanjiDic
+
+def render_kanji(text):
+  """
+  @param  text  unicode
+  @return  unicode  html
+
+  Add class before and after {}
+  """
+  text = text.replace('{', '<span class="def">{')
+  text = text.replace('}', '}</span>')
+  return text
+
 # EDICT
 
-# Example: /EntL1390270X/
-_rx_edict_ref = re.compile(r'/[0-9a-zA-Z]+/$')
 def render_edict(text):
   """
   @param  text  unicode
@@ -27,7 +38,8 @@ def render_edict(text):
 
   Example: /(n,adj-no) (1) center/centre/middle/heart/core/focus/pivot/emphasis/balance/(suf) (2) -centered/-centred/-focussed/-oriented/centered on/focussed on/(P)/
   """
-  text = _rx_edict_ref.sub('/', text) # remove trailing ref
+  # Example: /EntL1390270X/
+  text = re.sub(r'/[0-9a-zA-Z]+/$', '/', text) # remove trailing ref
   if text.startswith('/'):
     text = text[1:]
   if text.endswith('/'):

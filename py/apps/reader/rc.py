@@ -89,6 +89,8 @@ DIR_YAML_SUB = DIR_CACHE_SUB + '/yaml'          # $app/Caches/Subtitles/yaml
 
 DIR_UNIDIC = DIR_CACHE_DICT + "/UniDic"
 
+KANJIDIC_PATH = DIR_CACHE_DICT + "/KanjiDic/kanjidic"
+
 EDICT_PATH = DIR_CACHE_DICT + "/EDICT/edict.db"
 MECAB_EDICT_PATH = DIR_CACHE_DICT + "/EDICT/edict.dic"
 
