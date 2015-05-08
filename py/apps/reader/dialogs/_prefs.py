@@ -4748,8 +4748,11 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
       my.tr("CJK hanzi radical dictionary"),
       my.tr("like this"),
-      u"香[禾(grain),日(sun/day)]",
-      my.tr("require {0}").format(mytr_("Hanazono font")),
+      u"香[禾{grain},日{sun/day}]",
+      my.tr("require {0}").format(', '.join((
+        mytr_("Hanazono font"),
+        "KanjiDic",
+      ))),
     ))
     ret.setChecked(settings.global_().isKanjiRadicalEnabled())
     ret.toggled.connect(settings.global_().setKanjiRadicalEnabled)
@@ -5546,6 +5549,12 @@ class _DictionaryDownloadsTab(object):
 
     blans = settings.global_().blockedLanguages()
 
+    #if 'en' not in blans:
+    grid.addWidget(self.kanjidicButton, r, 0)
+    grid.addWidget(self.kanjidicStatusLabel, r, 1)
+    grid.addWidget(self.kanjidicIntroLabel, r, 2)
+    r += 1
+
     for lang in config.LINGOES_LANGS:
       if lang[:2] not in blans:
         name = 'ja-' + lang
@@ -5639,6 +5648,76 @@ class _DictionaryDownloadsTab(object):
     b = self.wadokuButton
     status = self.wadokuStatusLabel
     dic = dicts.wadoku()
+    if dic.exists():
+      #status.setText(mytr_("Installed"))
+      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
+      skqss.class_(status, 'text-success')
+      b.role = 'remove'
+      b.setEnabled(True)
+      b.setText(tr_("Remove"))
+      skqss.class_(b, 'btn btn-default')
+      return True
+    elif dic.locked():
+      status.setText(mytr_("Installing"))
+      skqss.class_(status, 'text-info')
+      b.role = ''
+      b.setEnabled(False)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    else:
+      online = netman.manager().isOnline()
+      status.setText(mytr_("Not installed"))
+      skqss.class_(status, 'text-error')
+      b.role = 'get'
+      b.setEnabled(online)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    return False
+
+  ## KanjiDic
+
+  @memoizedproperty
+  def kanjidicButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.role = ''
+    ret.clicked.connect(lambda:
+        self._getKanjidic() if ret.role == 'get' else
+        self._removeKanjidic() if ret.role == 'remove' else
+        None)
+    return ret
+
+  @memoizedproperty
+  def kanjidicStatusLabel(self):
+    ret = QtWidgets.QLabel()
+    dic = dicts.kanjidic()
+    ret.linkActivated.connect(dic.open)
+    path = QtCore.QDir.toNativeSeparators(dic.path)
+    ret.setToolTip(path)
+    return ret
+
+  @memoizedproperty
+  def kanjidicIntroLabel(self):
+    return QtWidgets.QLabel("%s (1MB, %s)" % (
+        my.tr("KanjiDic Japanese kanji dictionary"),
+        my.tr("recommended for English")))
+
+  def _getKanjidic(self):
+    if prompt.confirmDownloadDictionary('KanjiDic'):
+      dic = dicts.kanjidic()
+      if not dic.exists(): #and not dic.locked():
+        dic.get()
+      if not self.refreshKanjidic():
+        self.startRefresh(dic, self.refreshKanjidic)
+
+  def _removeKanjidic(self):
+    if prompt.confirmRemoveDictionary('KanjiDic'):
+      dicts.kanjidic().remove()
+      self.refreshKanjidic()
+
+  def refreshKanjidic(self): # -> bool exists
+    b = self.kanjidicButton
+    status = self.kanjidicStatusLabel
+    dic = dicts.kanjidic()
     if dic.exists():
       #status.setText(mytr_("Installed"))
       status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
@@ -6051,6 +6130,8 @@ class _DictionaryDownloadsTab(object):
 
   def refresh(self):
     blans = settings.global_().blockedLanguages()
+
+    self.refreshKanjidic()
 
     self.refreshUnidic()
     if 'en' not in blans:

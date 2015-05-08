@@ -166,6 +166,7 @@ if __name__ == '__main__':
 
   t = u'密'
   t = u'織'
+  t = u'聴'
   l = cc.lookup(t)
   print l
   if l:

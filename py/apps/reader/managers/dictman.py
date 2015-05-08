@@ -34,13 +34,21 @@ class _DictionaryManager:
     @param  text  unicode
     @return  unicode
     """
+    import hanzidict
+    m = hanzidict.manager()
     ret = []
     for ch in text:
       if iskanji(ch):
-        import hanzidict
-        r = hanzidict.manager().lookupRadicalString(ch)
-        if r:
-          ret.append("%s: {%s}" % (ch, r[1:-1]))
+        rad = m.lookupRadicalString(ch)
+        trans = m.translateKanji(ch)
+        if trans:
+          ch = "%s{%s}" % (ch, trans)
+        if rad:
+          text = "%s: [%s]" % (ch, rad[1:-1])
+        else:
+          text = ch
+        text = _dictman.render_kanji(text)
+        ret.append(text)
     return ret
 
   def lookupEdict(self, text, feature=None, limit=5):

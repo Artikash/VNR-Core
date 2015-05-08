@@ -11,8 +11,8 @@ def parse(path, encoding='utf8'):
   try:
     with codecs.open(path, 'r', encoding) as f:
       data = f.read()
-    _, _, data = data.partition(' = ')
-    data, _, _ = data.rpartition(';')
+    data = data.partition(' = ')[-1]
+    data = data.rpartition(';')[0]
     return json.loads(data)
   except Exception, e:
     from sakurakit.skdebug import dwarn

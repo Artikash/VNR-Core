@@ -46,6 +46,37 @@ class Edict(Dict):
     else:
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('EDICT'))
 
+class KanjiDic(Dict):
+  URL = 'http://www.csse.monash.edu.au/~jwb/kanjidic.html'
+
+  def __init__(self):
+    super(KanjiDic, self).__init__(
+      path=rc.KANJIDIC_PATH,
+      lockpath=os.path.join(rc.DIR_TMP, "kanjidic.lock"),
+    )
+
+    self._meanings = None # {}
+
+  def get(self): # override
+    from scripts import kanjidic
+    return kanjidic.get()
+
+  def lookup(self, ch):
+    """
+    @param  ch  unicode
+    @return  unicode
+    """
+    m = self.meanings
+    if m:
+      return m.get(ch)
+
+  @property
+  def meanings(self):
+    if not self._meanings and os.path.exists(self.path):
+      from dictp import kanjidicp
+      self._meanings = kanjidicp.parsefiledef(self.path)
+    return self._meanings
+
 class MeCabEdict(res.Resource):
 
   def __init__(self):
@@ -254,6 +285,9 @@ class UniDic(Dict):
 
 @memoized
 def edict(): return Edict()
+
+@memoized
+def kanjidic(): return KanjiDic()
 
 @memoized
 def mecabedict(): return MeCabEdict()

@@ -1,5 +1,5 @@
 # coding: utf8
-# getedict.py
+# getkanjidic.py
 # Get the latest EDICT dictionary.
 # 2/9/2014 jichi
 
@@ -17,14 +17,13 @@ from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
 
 import initdefs
-TARGET_DIR = initdefs.CACHE_EDICT_RELPATH
+TARGET_DIR = initdefs.CACHE_KANJIDIC_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
-FILENAME = 'edict.db'
 
-DIC_URL = 'http://ftp.monash.edu.au/pub/nihongo/edict2u.gz'
-MIN_DIC_SIZE = 15 * 1024 * 1024 # 15MB, actually 15 ~ 16 MB
-DIC_FILENAME = 'edict2u'
-DB_FILENAME = 'edict.db'
+DIC_URL = 'http://ftp.monash.edu.au/pub/nihongo/kanjidic.gz'
+HP_URL = 'http://www.csse.monash.edu.au/~jwb/kanjidic.html'
+MIN_DIC_SIZE = 1 * 1024 * 1024 # 1MB, actually 1.1 MB
+DIC_FILENAME = 'kanjidic'
 
 import initdefs
 TMP_DIR = initdefs.TMP_RELPATH
@@ -40,6 +39,7 @@ def get(): # -> bool
   url = DIC_URL
   minsize = MIN_DIC_SIZE
   path = TMP_DIR + '/' + DIC_FILENAME
+  targetpath = TARGET_DIR + '/' + DIC_FILENAME
 
   dprint("enter: url = %s, minsize = %s" % (url, minsize))
 
@@ -55,40 +55,23 @@ def get(): # -> bool
     # flush=false to use more memory to reduce disk access
     if sknetio.getfile(url, path, flush=False, gzip=True):
       ok = skfileio.filesize(path) > minsize
-  if not ok and os.path.exists(path):
+  if ok:
+    os.renames(path, targetpath)
+  elif os.path.exists(path):
     skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
   return ok
 
-def makedb(): # -> bool
-  dprint("enter")
-  tmpdic = TMP_DIR + '/' + DIC_FILENAME
-  tmpdb = TMP_DIR + '/' + DB_FILENAME
-
-  targetdic = TARGET_DIR + '/' + DIC_FILENAME
-  targetdb = TARGET_DIR + '/' + DB_FILENAME
-
-  from dictdb import edictdb
-  with SkProfiler("create db"):
-    ok = edictdb.makedb(tmpdb, tmpdic)
-  if ok:
-    with SkProfiler("create index"):
-      ok = edictdb.makesurface(tmpdb)
-
-  from sakurakit import skfileio
-  if ok:
-    skfileio.removefile(targetdb)
-    skfileio.removefile(targetdic)
-    os.rename(tmpdb, targetdb)
-    os.rename(tmpdic, targetdic)
-  else:
-    for it in tmpdb, tmpdic:
-      if os.path.exists(it):
-        skfileio.removefile(it)
-  dprint("leave: ok = %s" % ok)
-  return ok
-
 # Main process
+
+def msg():
+  import messages
+  messages.info(
+    name="KANJIDIC",
+    location="Caches/Dictionaries/KanjiDic/kanjidic",
+    size=MIN_DIC_SIZE,
+    urls=[HP_URL, DIC_URL],
+  )
 
 def main():
   """
@@ -98,7 +81,8 @@ def main():
   ok = False
   try:
     init()
-    ok = get() and makedb()
+    msg()
+    ok = get()
     if ok:
       from sakurakit import skos
       skos.open_location(os.path.abspath(TARGET_DIR))
@@ -110,7 +94,7 @@ def main():
 
 if __name__ == '__main__':
   import sys
-  if not initrc.lock('edict.lock'):
+  if not initrc.lock('kanjidic.lock'):
     dwarn("multiple instances")
     sys.exit(1)
   ret = main()
