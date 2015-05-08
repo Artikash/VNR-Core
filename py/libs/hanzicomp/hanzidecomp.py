@@ -113,11 +113,11 @@ class _HanziDecomposer:
     @return  bool
     @raise
     """
+    import codecs
     RAD_BASE = 10000
-    with open(path, 'r') as f:
+    with codecs.open(path, 'r', self.ENCODING) as f:
       charSection = False
       for line in f:
-        line = line.decode(self.ENCODING)
         left, mid, right = line.partition(':')
         #if len(left) > 1 and len(left) < 5:
         #  dprint("stop at utf16 character")
