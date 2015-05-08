@@ -229,7 +229,10 @@ bool Ith::parseHookCode(const QString &code, HookParam *hp, bool verbose)
   enum { HCODE_PREFIX_LEN = sizeof(HCODE_PREFIX) -1 }; // 2
   if (!hp || !code.startsWith(HCODE_PREFIX))
     return false;
-  DOUT("enter: code =" << code);
+  if (verbose)
+    DOUT("enter: code =" << code);
+  else
+    DOUT("enter");
 
   size_t bufsize = qMax(0xFF, code.size() + 1); // in case detail::Convert modify the buffer
   auto buf = new wchar_t[bufsize];

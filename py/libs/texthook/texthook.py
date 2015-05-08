@@ -273,7 +273,10 @@ if skos.WIN:
       @param* verbose  bool
       @return  bool
       """
-      dprint("enter: name = %s, code = %s" % (name, code))
+      if verbose:
+        dprint("enter: name = %s, code = %s" % (name, code))
+      else:
+        dprint("enter: name = %s" % name)
       d = self.__d
       ok = bool(d.pid) and d.addHookCode(d.pid, code, name, verbose)
       if ok:

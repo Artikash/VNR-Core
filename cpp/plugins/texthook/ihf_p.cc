@@ -280,6 +280,8 @@ void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
       ::IHF_AddLink(d->threadNumber(), it->threadNumber());
     else if (d->delegateOf(it))
       ::IHF_AddLink(it->threadNumber(), d->threadNumber());
+#else
+  Q_UNUSED(d);
 #endif // ITH_WITH_LINK
 }
 

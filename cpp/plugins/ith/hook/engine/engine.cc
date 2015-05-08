@@ -3763,10 +3763,64 @@ bool InsertAliceHook()
  *    0042e096  |. 5b             pop ebx
  *    0042e097  \. c2 0400        retn 0x4
  *    0042e09a     cc             int3
+ *
+ *  5/7/2015  イブニクル version 1.0.1
+ *  The hooked function is no longer get called after loading AliceRunPatch.dll.
+ *  The hooked function is below.
+ *  See also ATcode: http://capita.tistory.com/m/post/256
+ *    005C40AE   CC               INT3
+ *    005C40AF   CC               INT3
+ *    005C40B0   53               PUSH EBX
+ *    005C40B1   8B5C24 08        MOV EBX,DWORD PTR SS:[ESP+0x8]
+ *    005C40B5   56               PUSH ESI
+ *    005C40B6   57               PUSH EDI
+ *    005C40B7   8B7B 10          MOV EDI,DWORD PTR DS:[EBX+0x10]
+ *    005C40BA   8BF0             MOV ESI,EAX
+ *    005C40BC   47               INC EDI
+ *    005C40BD   3B7E 0C          CMP EDI,DWORD PTR DS:[ESI+0xC]
+ *    005C40C0   76 0F            JBE SHORT .005C40D1
+ *    005C40C2   E8 79F8FFFF      CALL .005C3940
+ *    005C40C7   84C0             TEST AL,AL
+ *    005C40C9   75 06            JNZ SHORT .005C40D1
+ *    005C40CB   5F               POP EDI
+ *    005C40CC   5E               POP ESI
+ *    005C40CD   5B               POP EBX
+ *    005C40CE   C2 0400          RETN 0x4
+ *    005C40D1   837B 14 10       CMP DWORD PTR DS:[EBX+0x14],0x10
+ *    005C40D5   72 02            JB SHORT .005C40D9
+ *    005C40D7   8B1B             MOV EBX,DWORD PTR DS:[EBX]
+ *    005C40D9   837E 0C 00       CMP DWORD PTR DS:[ESI+0xC],0x0
+ *    005C40DD   75 15            JNZ SHORT .005C40F4
+ *    005C40DF   57               PUSH EDI
+ *    005C40E0   33C0             XOR EAX,EAX
+ *    005C40E2   53               PUSH EBX
+ *    005C40E3   50               PUSH EAX
+ *    005C40E4   E8 B7400D00      CALL .006981A0
+ *    005C40E9   83C4 0C          ADD ESP,0xC
+ *    005C40EC   5F               POP EDI
+ *    005C40ED   5E               POP ESI
+ *    005C40EE   B0 01            MOV AL,0x1
+ *    005C40F0   5B               POP EBX
+ *    005C40F1   C2 0400          RETN 0x4
+ *    005C40F4   8B46 08          MOV EAX,DWORD PTR DS:[ESI+0x8]
+ *    005C40F7   57               PUSH EDI
+ *    005C40F8   53               PUSH EBX
+ *    005C40F9   50               PUSH EAX
+ *    005C40FA   E8 A1400D00      CALL .006981A0 ; jichi: call here
+ *    005C40FF   83C4 0C          ADD ESP,0xC
+ *    005C4102   5F               POP EDI
+ *    005C4103   5E               POP ESI
+ *    005C4104   B0 01            MOV AL,0x1
+ *    005C4106   5B               POP EBX
+ *    005C4107   C2 0400          RETN 0x4
+ *    005C410A   CC               INT3
+ *    005C410B   CC               INT3
+ *    005C410C   CC               INT3
  */
 bool InsertSystem43Hook()
 {
   // 9/25/2014 TODO: I should use matchBytes and replace the part after e8 with XX4
+  // i.e. 83c40c5f5eb0015bc20400cccc without leading 0xe8
   const BYTE ins[] = {  //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
     0x83,0xc4, 0x0c,    //   005506ae  |. 83c4 0c        add esp,0xc
     0x5f,               //   005506b1  |. 5f             pop edi

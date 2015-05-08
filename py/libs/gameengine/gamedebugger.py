@@ -34,6 +34,16 @@ class debug(object):
 
 def _empty_func(self, *args, **kwargs): pass
 
+#def _isregex(pattern):
+#  """
+#  @param  pattern  str
+#  @return  bool
+#  """
+#  for ch in '.?*[]()':
+#    if ch in pattern:
+#      return True
+#  return False
+
 class GameDebugger(object):
   def __init__(self, pid):
     """
@@ -131,13 +141,15 @@ class GameDebugger(object):
     """
     if isinstance(pattern, (int, long)):
       return self.search_memory_long(pattern, *args, **kwargs)
-    elif isinstance(pattern, basestring):
-      return self.search_memory_string(pattern, *args, **kwargs)
-    elif isinstance(pattern, list):
+    elif isinstance(pattern, (list, tuple)):
       return self.search_memory_list(pattern, *args, **kwargs)
+    #elif isinstance(pattern, basestring): #, re._pattern_type)):
+    #  return self.search_memory_string(pattern, *args, **kwargs)
     else:
-      dwarn("invalid pattern type: %s" % type(pattern))
-      return -1
+      return self.search_memory_string(pattern, *args, **kwargs)
+    #else:
+    #  dwarn("invalid pattern type: %s" % type(pattern))
+    #  return -1
 
   def search_memory_long(self, pattern, *args, **kwargs):
     """Search memory
@@ -154,13 +166,20 @@ class GameDebugger(object):
     @param  pattern  [int]
     @return  long  addr
     """
-    #pattern = 0x90ff503c83c4208b45ec
-    s = ''.join(imap(chr, pattern))
-    return self.search_memory_string(s, *args, **kwargs)
+    pattern = ''.join(imap(chr, pattern))
+    return self.search_memory_string(pattern, *args, **kwargs)
+
+  #def search_memory_string(self, pattern, *args, **kwargs):
+  #  """Search memory with printable string pattern
+  #  @param  pattern  str
+  #  @return  long  addr
+  #  """
+  #  pattern = ''.join(imap(_hex2chr, pattern))
+  #  return self.search_memory_binary(pattern, *args, **kwargs)
 
   def search_memory_string(self, pattern, start, stop):
-    """Search memory
-    @param  pattern  str  regular expression
+    """Search memory with unprintable raw string pattern
+    @param  pattern  str or regular expression
     @param  start  int  search memory lower bound
     @param  stop  int  search memory upper bound
     @return  long  addr
@@ -173,6 +192,14 @@ class GameDebugger(object):
     #  return -1
     #import re
     #rx = re.compile(pattern)
+
+    if isinstance(pattern, basestring):
+      find = lambda s, t: s.find(t) # str, str -> int
+    else:
+      #assert isinstance(pattern, re._pattern_type)
+      def find(s, t): # str, str -> int
+        m = t.search(s)
+        return m.start() if m else -1
 
     from pydbg import defines
     skipped_perms = defines.PAGE_GUARD|defines.PAGE_NOACCESS|defines.PAGE_READONLY
@@ -190,7 +217,7 @@ class GameDebugger(object):
         # read the raw bytes from the memory block.
         try:
           data = pydbg.read_process_memory(mbi.BaseAddress, mbi.RegionSize)
-          offset = data.find(pattern)
+          offset = find(data, pattern)
           if offset >= 0:
             return mbi.BaseAddress + offset
         except: pass # ignore accessed denied
