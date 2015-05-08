@@ -4748,7 +4748,7 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QCheckBox("%s, %s: %s (%s)" % (
       my.tr("CJK hanzi radical dictionary"),
       my.tr("like this"),
-      u"香[禾(grain),日(sun/day)]",
+      u"香[禾{grain},日{sun/day}]",
       my.tr("require {0}").format(mytr_("Hanazono font")),
     ))
     ret.setChecked(settings.global_().isKanjiRadicalEnabled())

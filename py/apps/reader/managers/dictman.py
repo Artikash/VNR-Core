@@ -40,7 +40,7 @@ class _DictionaryManager:
         import hanzidict
         r = hanzidict.manager().lookupRadicalString(ch)
         if r:
-          ret.append("%s: {%s}" % (ch, r[1:-1]))
+          ret.append("%s: [%s]" % (ch, r[1:-1]))
     return ret
 
   def lookupEdict(self, text, feature=None, limit=5):

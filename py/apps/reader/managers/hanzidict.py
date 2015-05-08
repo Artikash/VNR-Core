@@ -34,16 +34,17 @@ class HanziDictionary:
     ret = ''
     if l:
       for it in l:
-        t = self.translateRadical(it)
-        if t:
-          it += '(' + t + ')'
+        if isinstance(it, basestring):
+          t = self.translateRadical(it)
+          if t:
+            it += '{' + t + '}'
         if ret:
           ret += ', '
         if isinstance(it, basestring):
           ret += it
         else:
           ret += self.renderRadicals(it)
-      ret = '[' + ret + ']'
+      ret = '(' + ret + ')'
     return ret
 
   def lookupRadicalString(self, ch):
