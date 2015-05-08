@@ -34,14 +34,13 @@ def writecsv(dic, path, mode='w', encoding='utf8', fmt=mecabfmt.DEFAULT):
   @return  bool
   """
   try:
-    fout = codecs.open(path, mode, encoding) # enforce utf8 encoding
-    for surf,yomi in dic:
-      cost = costof(surf)
-      hira = kata2hira(yomi)
-      kata = hira2kata(yomi)
-      line = fmt.csv(surf, cost, hira, kata) + '\n'
-      fout.write(line)
-    fout.close()
+    with codecs.open(path, mode, encoding) as f: # enforce utf8 encoding
+      for surf,yomi in dic:
+        cost = costof(surf)
+        hira = kata2hira(yomi)
+        kata = hira2kata(yomi)
+        line = fmt.csv(surf, cost, hira, kata) + '\n'
+        f.write(line)
     return True
   except Exception, e:
     dwarn(e)
