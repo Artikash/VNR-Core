@@ -131,6 +131,7 @@ simple:
   - Adobe Flash 10
   - Alchemist PSP
   - Alchemist2 PSP
+  - AliceRunPatch
   - AMUSE CRAFT
   - AOS
   - ApRicot # renamed
@@ -331,6 +332,7 @@ char:
   - AbelSoftware
   - Alchemist PSP
   - Alchemist2 PSP
+  - AliceRunPatch
   - AMUSE CRAFT
   - Anex86
   - AOS
@@ -521,6 +523,7 @@ focus:
   - WillPlus
   - YU-RIS2
 # No focus:
+  #- AliceRunPatch
   #- AOS
   #- LunaSoft
   #- Majiro
@@ -535,5 +538,7 @@ focus:
   #- ScenarioPlayerW
   #- SystemAoi
   #- SystemAoi2
+  #- System40
+  #- System43
 
 # EOF

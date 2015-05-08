@@ -7,7 +7,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-import os
+import os, re
 from glob import glob
 from sakurakit.skdebug import dprint
 #from sakurakit.skclass import memoized
@@ -25,6 +25,7 @@ def engines():
     ENGINES = [
       MonoEngine(),
       GXPEngine(),
+      AliceEngine(),
     ]
   return ENGINES
 
@@ -189,7 +190,7 @@ class MonoEngine(Engine):
 
       addr = dbg.search_module_memory(pattern, "mono.dll")
       if addr > 0:
-        code = "/HWN-8*0:3C@%x" % addr
+        code = "/HWN-8*:3C@%x" % addr
         ret = self.addHook(code)
     dprint(ret)
     return ret
@@ -253,8 +254,53 @@ class GXPEngine(Engine):
     dprint(ret)
     return ret
 
-# 4/30/2015
-# Sample game: とある人妻のネトラレ事情 -- /HBC*0@16B13:とある人妻のネトラレ事情.exe
+# 5/8/2015
+# Sample game: イブニクル version 1.0.1
+# It is basically the same System43 engine but code moved to AliceRunPatch.dll
+#
+# See System43 in engine.cc
+#   // 9/25/2014 TODO: I should use matchBytes and replace the part after e8 with XX4
+#   // i.e. 83c40c5f5eb0015bc20400cccc without leading 0xe8
+#   const BYTE ins[] = {  //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
+#     0x83,0xc4, 0x0c,    //   005506ae  |. 83c4 0c        add esp,0xc
+#     0x5f,               //   005506b1  |. 5f             pop edi
+#     0x5e,               //   005506b2  |. 5e             pop esi
+#     0xb0, 0x01,         //   005506b3  |. b0 01          mov al,0x1
+#     0x5b,               //   005506b5  |. 5b             pop ebx
+#     0xc2, 0x04,0x00,    //   005506b6  \. c2 0400        retn 0x4
+#     0xcc, 0xcc // patching a few int3 to make sure that this is at the end of the code block
+#   };
+#   enum { hook_offset = -5 }; // the function call before the ins
+#
+#   HookParam hp = {};
+#   hp.addr = addr;
+#   hp.off = 4;
+#   hp.split = -0x18;
+#   hp.type = NO_CONTEXT|USING_SPLIT|USING_STRING;
+class AliceEngine(Engine):
+
+  NAME = "AliceRunPatch" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  DLL = 'AliceRunPatch.dll'
+  def match(self, pid): # override
+    return bool(self.exists(self.DLL, pid))
+
+  def inject(self, pid): # override
+    from gamedebugger import GameDebugger
+    dbg = GameDebugger(pid)
+    ret = False
+    if dbg.active():
+      # Use 4 dots to represent the 8-bit calling address after e8
+      pattern = re.compile(r'\xe8....\x83\xc4\x0c\x5f\x5e\xb0\x01\x5b\xc2\x04\x00\xcc\xcc')
+      addr = dbg.search_module_memory(pattern, self.DLL)
+      if addr > 0:
+        # Sample code: 5506A9
+        code = "/HSN4:-14@%x" % addr
+        print 4444, code
+        ret = self.addHook(code)
+    dprint(ret)
+    return ret
 
 # EOF
 
