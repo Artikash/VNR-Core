@@ -297,7 +297,6 @@ class AliceEngine(Engine):
       if addr > 0:
         # Sample code: 5506A9
         code = "/HSN4:-14@%x" % addr
-        print 4444, code
         ret = self.addHook(code)
     dprint(ret)
     return ret
