@@ -582,7 +582,8 @@ opencc:
   t2ko:     $PWD/../../Dictionaries/hanja/dic0.txt
 
 hanzi:
-  radical:  $PWD/../../Dictionaries/hanzi/cjk-decomp-0.4.0.txt
+  decomp:   $PWD/../../Dictionaries/hanzi/cjk-decomp-0.4.0.txt
+  radical:  $PWD/../../Dictionaries/hanzi/radicalListWithMeaning.js
 
 hangul:
   path:     $PWD/../../Dictionaries/hanja/dic6.txt

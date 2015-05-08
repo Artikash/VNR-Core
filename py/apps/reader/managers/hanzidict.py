@@ -12,6 +12,13 @@ class HanziDictionary:
   def __init__(self):
     self.__d = _HanziDictionary()
 
+  def translateRadical(self, ch):
+    """
+    @param  ch  unicode
+    @return  unicode or None
+    """
+    return self.__d.radicals.get(ch)
+
   def lookupRadicals(self, ch):
     """
     @param  ch  unicode
@@ -27,13 +34,16 @@ class HanziDictionary:
     ret = ''
     if l:
       for it in l:
+        t = self.translateRadical(it)
+        if t:
+          it += '(' + t + ')'
         if ret:
-          ret += ','
+          ret += ', '
         if isinstance(it, basestring):
           ret += it
         else:
           ret += self.renderRadicals(it)
-      ret = '(' + ret + ')'
+      ret = '[' + ret + ']'
     return ret
 
   def lookupRadicalString(self, ch):
@@ -51,8 +61,14 @@ class _HanziDictionary:
     from hanzicomp.hanzidecomp import HanziDecomposer
     import config
     ret = HanziDecomposer()
-    ret.loadFile(config.HANZI_RADICAL_DIC_PATH)
+    ret.loadFile(config.HANZI_DECOMP_DIC_PATH)
     dprint("size = %s" % ret.size())
     return ret
+
+  @memoizedproperty
+  def radicals(self):
+    from hanzicomp import hanziradic
+    import config
+    return hanziradic.parse(config.HANZI_RADICAL_DIC_PATH) or {}
 
 # EOF

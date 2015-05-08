@@ -447,6 +447,7 @@ HANGUL_DIC_PATH = parse_path(SHARE_YAML['hangul']['path']) # unicode abspath
 
 PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
 
+HANZI_DECOMP_DIC_PATH = os.path.abspath(parse_path(SHARE_YAML['hanzi']['decomp'])) # unicode abspath
 HANZI_RADICAL_DIC_PATH = os.path.abspath(parse_path(SHARE_YAML['hanzi']['radical'])) # unicode abspath
 
 #IPADIC_LOCATION = parse_path(SHARE_YAML['dictionaries']['ipadic']) # unicode abspath

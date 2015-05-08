@@ -1,5 +1,5 @@
 # coding: utf8
-# radic.py
+# hanziradic.py
 # 5/6/2015 jichi
 # See: https://github.com/nieldlr/hanzi
 
