@@ -25,11 +25,10 @@ def parsefile(path, encoding='utf8'):
   @yield  (unicode word, unicode definition)
   @raise
   """
+  import codecs
   try:
-    with open(path, 'r') as f:
+    with codecs.open(path, 'r', encoding) as f:
       for line in f:
-        if encoding:
-          line = line.decode(encoding)
         ch = ord(line[0])
         # skip the first line and letters
         if ch == 0x3000 or ch >= ord(u'Ａ') and ch <= ord(u'Ｚ') or ch >= ord(u'ａ') and ch <= ord(u'ｚ'):
