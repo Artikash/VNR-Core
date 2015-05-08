@@ -42,9 +42,9 @@ class _DictionaryManager:
         rad = m.lookupRadicalString(ch)
         trans = m.translateKanji(ch)
         if trans:
-          ch = "%s{%s}" % (ch, trans)
+          ch = u"【%s{%s}】" % (ch, trans)
         if rad:
-          text = "%s: [%s]" % (ch, rad[1:-1])
+          text = "%s[%s]" % (ch, rad[1:-1])
         else:
           text = ch
         text = _dictman.render_kanji(text)
