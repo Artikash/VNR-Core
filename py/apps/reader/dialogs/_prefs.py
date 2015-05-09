@@ -115,6 +115,9 @@ JMDICT_DICT_SIZES = {
   'nl': '21MB',
 }
 
+def kanjidic_name(lang):
+  return my.tr("KanjiDic Japanese-{0} kanji dictionary").format(i18n.language_name(lang))
+
 #from sakurakit import skos
 #if skos.MAC:
 #  KEY_CTRL = "cmd"
@@ -4143,6 +4146,8 @@ class RomanTranslationTab(QtWidgets.QDialog):
 class _DictionaryTranslationTab(object):
 
   def __init__(self, q):
+    self.kanjidicButtons = {}   # {str lang:QCheckBox}
+    self.jmdictButtons = {}     # {str lang:QCheckBox}
     self._createUi(q)
 
   def _createUi(self, q):
@@ -4151,6 +4156,7 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.optionGroup)
     layout.addWidget(self.rubyTypeGroup)
     layout.addWidget(self.rubyLanguageGroup)
+    layout.addWidget(self.kanjiGroup)
     layout.addWidget(self.dictGroup)
     layout.addStretch()
     q.setLayout(layout)
@@ -4701,40 +4707,19 @@ class _DictionaryTranslationTab(object):
     ) if b.isChecked()]
     settings.global_().setJapaneseRubyLanguages(v)
 
-  # Dictionaries
+  # KanjiDic
 
   @memoizedproperty
-  def dictGroup(self):
+  def kanjiGroup(self):
     blans = settings.global_().blockedLanguages()
     #if 'en' not in blans:
-    ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese kanji dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.kanjiRadicalButton)
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
-    if 'zh' not in blans:
-      layout.addWidget(self.lingoesJaZhButton)
-      layout.addWidget(self.lingoesJaZhGbkButton)
-    if 'ko' not in blans:
-      layout.addWidget(self.lingoesJaKoButton)
-    if 'vi' not in blans:
-      layout.addWidget(self.stardictJaViButton)
-    if 'en' not in blans:
-      layout.addWidget(self.edictButton)
-      layout.addWidget(self.lingoesJaEnButton)
-    if 'de' not in blans:
-      layout.addWidget(self.wadokuButton)
-    if 'fr' not in blans:
-      layout.addWidget(self.jmdictFrButton)
-    if 'ru' not in blans:
-      layout.addWidget(self.jmdictRuButton)
-    if 'nl' not in blans:
-      layout.addWidget(self.jmdictNlButton)
-    layout.addWidget(QtWidgets.QLabel(my.tr("Manual installation required") + ":"))
-    if 'ja' not in blans:
-      layout.addWidget(self.daijirinButton)
-      layout.addWidget(self.kojienButton)
-    if 'zh' not in blans:
-      layout.addWidget(self.zhongriButton)
+    for lang in config.KANJIDIC_LANGS:
+      if lang == 'en' or lang not in blans:
+        layout.addWidget(self.getKanjiDicButton(lang))
     ret.setLayout(layout)
 
     #ss = settings.global_()
@@ -4749,13 +4734,72 @@ class _DictionaryTranslationTab(object):
       my.tr("CJK hanzi radical dictionary"),
       my.tr("like this"),
       u"香[禾{grain},日{sun}]",
-      my.tr("require {0}").format(', '.join((
-        mytr_("Hanazono font"),
-        "KanjiDic",
-      ))),
+      my.tr("require {0}").format(mytr_("Hanazono font")),
     ))
     ret.setChecked(settings.global_().isKanjiRadicalEnabled())
     ret.toggled.connect(settings.global_().setKanjiRadicalEnabled)
+    return ret
+
+  def getKanjiDicButton(self, lang):
+    ret = self.kanjidicButtons.get(lang)
+    if not ret:
+      ret = self.kanjidicButtons[lang] = QtWidgets.QCheckBox(kanjidic_name(lang))
+      ret.setChecked(lang in settings.global_().kanjiDicLanguages())
+      ret.toggled.connect(self._saveKanjiDicLanguages)
+    return ret
+
+  def _saveKanjiDicLanguages(self):
+    ret = []
+    for lang in config.KANJIDIC_LANGS:
+      b = self.kanjidicButtons.get(lang)
+      if b and b.isChecked():
+        ret.append(lang)
+    settings.global_().setKanjiDicLanguageList(ret)
+
+  # Dictionaries
+
+  @memoizedproperty
+  def dictGroup(self):
+    blans = settings.global_().blockedLanguages()
+    #if 'en' not in blans:
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
+    if 'zh' not in blans:
+      layout.addWidget(self.lingoesJaZhButton)
+      layout.addWidget(self.lingoesJaZhGbkButton)
+    if 'ko' not in blans:
+      layout.addWidget(self.lingoesJaKoButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.stardictJaViButton)
+    if 'en' not in blans:
+      layout.addWidget(self.edictButton)
+      layout.addWidget(self.lingoesJaEnButton)
+    if 'de' not in blans:
+      layout.addWidget(self.wadokuButton)
+    for lang in config.JMDICT_LANGS:
+      if lang not in blans:
+        layout.addWidget(self.getJMDictButton(lang))
+    layout.addWidget(QtWidgets.QLabel(my.tr("Manual installation required") + ":"))
+    if 'ja' not in blans:
+      layout.addWidget(self.daijirinButton)
+      layout.addWidget(self.kojienButton)
+    if 'zh' not in blans:
+      layout.addWidget(self.zhongriButton)
+    ret.setLayout(layout)
+
+    #ss = settings.global_()
+    #ret.setEnabled(bool(ss.meCabDictionary()))
+    #ss.meCabDictionaryChanged.connect(lambda v:
+    #    ret.setEnabled(bool(v)))
+    return ret
+
+  def getJMDictButton(self, lang):
+    ret = self.jmdictButtons.get(lang)
+    if not ret:
+      ret = self.jmdictButtons[lang] = QtWidgets.QCheckBox(JMDICT_DICT_NAMES[lang])
+      ret.setChecked(settings.global_().isJMDictEnabled(lang))
+      ret.toggled.connect(partial(settings.global_().setJMDictEnabled, lang))
     return ret
 
   @memoizedproperty
@@ -4795,27 +4839,6 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QCheckBox(my.tr("Zhongri (日中) Japanese-Chinese dictionary"))
     ret.setChecked(settings.global_().isZhongriEnabled())
     ret.toggled.connect(settings.global_().setZhongriEnabled)
-    return ret
-
-  @memoizedproperty
-  def jmdictFrButton(self):
-    ret = QtWidgets.QCheckBox(JMDICT_DICT_NAMES['fr'])
-    ret.setChecked(settings.global_().isJMDictFrEnabled())
-    ret.toggled.connect(settings.global_().setJMDictFrEnabled)
-    return ret
-
-  @memoizedproperty
-  def jmdictRuButton(self):
-    ret = QtWidgets.QCheckBox(JMDICT_DICT_NAMES['ru'])
-    ret.setChecked(settings.global_().isJMDictRuEnabled())
-    ret.toggled.connect(settings.global_().setJMDictRuEnabled)
-    return ret
-
-  @memoizedproperty
-  def jmdictNlButton(self):
-    ret = QtWidgets.QCheckBox(JMDICT_DICT_NAMES['nl'])
-    ret.setChecked(settings.global_().isJMDictNlEnabled())
-    ret.toggled.connect(settings.global_().setJMDictNlEnabled)
     return ret
 
   @memoizedproperty
@@ -4861,6 +4884,18 @@ class _DictionaryTranslationTab(object):
 
     self.rubyEnabledButton.setEnabled(ss.isJapaneseRubyEnabled() or dicts.unidic().exists())
 
+    for lang in config.KANJIDIC_LANGS:
+      if lang == 'en' or lang not in blans:
+        b = self.kanjidicButtons.get(lang)
+        if b:
+          b.setEnabled(b.isChecked() or dicts.kanjidic(lang).exists())
+
+    for lang in config.JMDICT_LANGS:
+      if lang not in blans:
+        b = self.jmdictButtons.get(lang)
+        if b:
+          b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
+
     # Dictionaries
     if 'zh' not in blans:
       name = 'ja-zh'
@@ -4901,25 +4936,16 @@ class _DictionaryTranslationTab(object):
 
     if 'fr' not in blans:
       lang = 'fr'
-      b = self.jmdictFrButton
-      b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
-
       b = self.rubyFrButton
       b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
 
     if 'ru' not in blans:
       lang = 'ru'
-      b = self.jmdictRuButton
-      b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
-
       b = self.rubyRuButton
       b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
 
     if 'nl' not in blans:
       lang = 'nl'
-      b = self.jmdictNlButton
-      b.setEnabled(ss.isJMDictEnabled(lang) or dicts.jmdict(lang).exists())
-
       b = self.rubyNlButton
       b.setEnabled(b.isChecked() or dicts.jmdict(lang).exists())
 
@@ -5305,6 +5331,10 @@ class _DictionaryDownloadsTab(object):
     self.jmdictStatusLabels = {}
     self.jmdictIntroLabels = {}
 
+    self.kanjidicButtons = {}
+    self.kanjidicStatusLabels = {}
+    self.kanjidicIntroLabels = {}
+
     t = self.refreshTimer = QTimer(q)
     t.setSingleShot(False)
     t.setInterval(DOWNLOAD_REFRESH_INTERVAL)
@@ -5317,7 +5347,7 @@ class _DictionaryDownloadsTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.meCabGroup)
-
+    layout.addWidget(self.kanjiGroup)
     layout.addWidget(self.phraseGroup)
 
     #row = QtWidgets.QHBoxLayout()
@@ -5532,6 +5562,115 @@ class _DictionaryDownloadsTab(object):
   #    skqss.class_(b, 'btn btn-primary')
   #  return False
 
+  # - Kanji dictionaries -
+
+  @memoizedproperty
+  def kanjiGroup(self): # Kanji dictionaries
+
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+
+    #infoLabel = QtWidgets.QLabel(my.tr("Using kanji dictionaries requires MeCab UniDic dictionary to be installed."))
+    #infoLabel.setWordWrap(True)
+    #skqss.class_(infoLabel, 'text-info')
+    #grid.addWidget(infoLabel, r, 0, 1, 3)
+    #r += 1
+
+    blans = settings.global_().blockedLanguages()
+
+    for lang in config.KANJIDIC_LANGS:
+      if lang == 'en' or lang not in blans:
+        grid.addWidget(self.getKanjiDicButton(lang), r, 0)
+        grid.addWidget(self.getKanjiDicStatusLabel(lang), r, 1)
+        grid.addWidget(self.getKanjiDicIntroLabel(lang), r, 2)
+        r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("Dictionaries for looking up Japanese kanji"))
+    ret.setLayout(grid)
+    #ret.setLayout(skwidgets.SkWidgetLayout(skwidgets.SkLayoutWidget(grid)))
+
+    # Increase the width for English
+    #ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  ## KanjiDic
+
+  def getKanjiDicButton(self, name):
+    ret = self.kanjidicButtons.get(name)
+    if not ret:
+      ret = self.kanjidicButtons[name] = QtWidgets.QPushButton()
+      ret.role = ''
+      ret.clicked.connect(partial(lambda name:
+        self._getKanjiDic(name) if ret.role == 'get' else
+        self._removeKanjiDic(name) if ret.role == 'remove' else
+        None,
+      name))
+    return ret
+
+  def getKanjiDicStatusLabel(self, name):
+    ret = self.kanjidicStatusLabels.get(name)
+    if not ret:
+      ret = self.kanjidicStatusLabels[name] = QtWidgets.QLabel()
+      dic = dicts.kanjidic(name)
+      ret.linkActivated.connect(dic.open)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
+    return ret
+
+  def getKanjiDicIntroLabel(self, lang):
+    ret = self.kanjidicIntroLabels.get(lang)
+    if not ret:
+      ret = self.kanjidicIntroLabels[lang] = QtWidgets.QLabel(
+          "%s (1MB)" % kanjidic_name(lang))
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  def _getKanjiDic(self, name):
+    if prompt.confirmDownloadDictionary('KanjiDic (%s)' % name):
+      dic = dicts.kanjidic(name)
+      if not dic.exists(): #and not dic.locked():
+        dic.get()
+      refresh = partial(self.refreshKanjiDic, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
+
+  def _removeKanjiDic(self, name):
+    if prompt.confirmRemoveDictionary('KanjiDic (%s)' % name):
+      dicts.kanjidic(name).remove()
+      #settings.global_().removeKanjiDicLanguage(name)
+      self.refreshKanjiDic(name)
+
+  def refreshKanjiDic(self, name): # -> bool exists
+    b = self.getKanjiDicButton(name)
+    status = self.getKanjiDicStatusLabel(name)
+    dic = dicts.kanjidic(name)
+    if dic.exists():
+      #status.setText(mytr_("Installed"))
+      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
+      skqss.class_(status, 'text-success')
+      b.role = 'remove'
+      b.setEnabled(True)
+      b.setText(tr_("Remove"))
+      skqss.class_(b, 'btn btn-default')
+      return True
+    elif dic.locked():
+      status.setText(mytr_("Installing"))
+      skqss.class_(status, 'text-info')
+      b.role = ''
+      b.setEnabled(False)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    else:
+      online = netman.manager().isOnline()
+      status.setText(mytr_("Not installed"))
+      skqss.class_(status, 'text-error')
+      b.role = 'get'
+      b.setEnabled(online)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    return False
+
   # - Phrase dictionaries -
 
   @memoizedproperty
@@ -5548,12 +5687,6 @@ class _DictionaryDownloadsTab(object):
     r += 1
 
     blans = settings.global_().blockedLanguages()
-
-    #if 'en' not in blans:
-    grid.addWidget(self.kanjidicButton, r, 0)
-    grid.addWidget(self.kanjidicStatusLabel, r, 1)
-    grid.addWidget(self.kanjidicIntroLabel, r, 2)
-    r += 1
 
     for lang in config.LINGOES_LANGS:
       if lang[:2] not in blans:
@@ -5648,76 +5781,6 @@ class _DictionaryDownloadsTab(object):
     b = self.wadokuButton
     status = self.wadokuStatusLabel
     dic = dicts.wadoku()
-    if dic.exists():
-      #status.setText(mytr_("Installed"))
-      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
-      skqss.class_(status, 'text-success')
-      b.role = 'remove'
-      b.setEnabled(True)
-      b.setText(tr_("Remove"))
-      skqss.class_(b, 'btn btn-default')
-      return True
-    elif dic.locked():
-      status.setText(mytr_("Installing"))
-      skqss.class_(status, 'text-info')
-      b.role = ''
-      b.setEnabled(False)
-      b.setText(tr_("Install"))
-      skqss.class_(b, 'btn btn-primary')
-    else:
-      online = netman.manager().isOnline()
-      status.setText(mytr_("Not installed"))
-      skqss.class_(status, 'text-error')
-      b.role = 'get'
-      b.setEnabled(online)
-      b.setText(tr_("Install"))
-      skqss.class_(b, 'btn btn-primary')
-    return False
-
-  ## KanjiDic
-
-  @memoizedproperty
-  def kanjidicButton(self):
-    ret = QtWidgets.QPushButton()
-    ret.role = ''
-    ret.clicked.connect(lambda:
-        self._getKanjidic() if ret.role == 'get' else
-        self._removeKanjidic() if ret.role == 'remove' else
-        None)
-    return ret
-
-  @memoizedproperty
-  def kanjidicStatusLabel(self):
-    ret = QtWidgets.QLabel()
-    dic = dicts.kanjidic()
-    ret.linkActivated.connect(dic.open)
-    path = QtCore.QDir.toNativeSeparators(dic.path)
-    ret.setToolTip(path)
-    return ret
-
-  @memoizedproperty
-  def kanjidicIntroLabel(self):
-    return QtWidgets.QLabel("%s (1MB, %s)" % (
-        my.tr("KanjiDic Japanese kanji dictionary"),
-        my.tr("recommended for English")))
-
-  def _getKanjidic(self):
-    if prompt.confirmDownloadDictionary('KanjiDic'):
-      dic = dicts.kanjidic()
-      if not dic.exists(): #and not dic.locked():
-        dic.get()
-      if not self.refreshKanjidic():
-        self.startRefresh(dic, self.refreshKanjidic)
-
-  def _removeKanjidic(self):
-    if prompt.confirmRemoveDictionary('KanjiDic'):
-      dicts.kanjidic().remove()
-      self.refreshKanjidic()
-
-  def refreshKanjidic(self): # -> bool exists
-    b = self.kanjidicButton
-    status = self.kanjidicStatusLabel
-    dic = dicts.kanjidic()
     if dic.exists():
       #status.setText(mytr_("Installed"))
       status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
@@ -6095,7 +6158,7 @@ class _DictionaryDownloadsTab(object):
   def _removeJMDict(self, name):
     if prompt.confirmRemoveDictionary('JMDict (%s)' % name):
       dicts.jmdict(name).remove()
-      settings.global_().setJMDictEnabled(name, False)
+      #settings.global_().removeJMDictLanguage(name)
       self.refreshJMDict(name)
 
   def refreshJMDict(self, name): # -> bool exists
@@ -6131,8 +6194,6 @@ class _DictionaryDownloadsTab(object):
   def refresh(self):
     blans = settings.global_().blockedLanguages()
 
-    self.refreshKanjidic()
-
     self.refreshUnidic()
     if 'en' not in blans:
       self.refreshEdict()
@@ -6143,6 +6204,10 @@ class _DictionaryDownloadsTab(object):
 
     #map(self.refreshMeCab, config.MECAB_DICS)
     #map(self.refreshCaboCha, config.CABOCHA_DICS)
+
+    for lang in config.KANJIDIC_LANGS:
+      if lang == 'en' or lang not in blans:
+        self.refreshKanjiDic(lang)
 
     for lang in config.JMDICT_LANGS:
       if lang not in blans:

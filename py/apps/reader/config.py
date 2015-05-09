@@ -429,6 +429,7 @@ YOMIGANA_LANGUAGE_SET = frozenset(YOMIGANA_LANGUAGES)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
+KANJIDIC_LANGS = SHARE_YAML['kanjidic'] # [str lang]
 STARDICT_LANGS = [it.partition('-')[2] for it in SHARE_YAML['stardict'].iterkeys()] # [str lang]
 
 # Forum

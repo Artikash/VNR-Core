@@ -676,6 +676,16 @@ class _MainObject(object):
   #  return ret
 
   @memoizedproperty
+  def hanziManager(self):
+    dprint("create hanzi manager")
+    import hanzidict
+    ret = hanzidict.manager()
+    ss = settings.global_()
+    ret.setKanjiDicLanguages(ss.kanjiDicLanguages())
+    ss.kanjiDicLanguagesChanged.connect(ret.setKanjiDicLanguages)
+    return ret
+
+  @memoizedproperty
   def translatorManager(self):
     dprint("create translator manager")
     import trman
@@ -1712,6 +1722,7 @@ class MainObject(QObject):
     #d.translationScriptManager
     #d.tahScriptManager
     d.translatorManager
+    d.hanziManager
     #d.translationCacheManager
     d.dictionaryManager
     d.meCabManager

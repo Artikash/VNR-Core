@@ -66,6 +66,20 @@ def to_dict(value):
   """
   return value if isinstance(value, dict) else {}
 
+def list2string(value, sep=','):
+  """
+  @param  value  list
+  @return  string
+  """
+  return sep.join(value) if value else ''
+
+def string2list(value, sep=','):
+  """
+  @param  value  string
+  @return  list
+  """
+  return value.split() if value and isinstance(value, basestring) else list()
+
 class _Settings:
 
   def __init__(self, q):
@@ -235,11 +249,8 @@ class Settings(QSettings):
       self.setValue('BlockedLanguages', value)
       self.blockedLanguagesChanged.emit(value)
 
-  def blockedLanguageList(self): # -> [unicode]
-    s = self.blockedLanguages()
-    return s.split(',') if s else []
-
-  def setBlockedLanguageList(self, v): self.setBlockedLanguages(','.join(v)) # [unicode] ->
+  def setBlockedLanguageList(self, v): self.setBlockedLanguages(list2string(v)) # [unicode] ->
+  def blockedLanguageList(self): return string2list(self.blockedLanguages()) # -> [unicode]
 
   ## Romanization for Japanese ##
 
@@ -1262,6 +1273,23 @@ class Settings(QSettings):
       self.setValue('GrabLocation', value)
       self.grabLocationChanged.emit(value)
 
+  # KanjiDic
+
+  kanjiDicLanguagesChanged = Signal(unicode)
+  def kanjiDicLanguages(self): return self.value('KanjiDicLanguages') or ''
+  def setKanjiDicLanguages(self, v):
+    if v != self.kanjiDicLanguages():
+      self.setValue('KanjiDicLanguages', v)
+      self.kanjiDicLanguagesChanged.emit(v)
+
+  def setKanjiDicLanguageList(self, v): self.setKanjiDicLanguages(list2string(v)) # [unicode] ->
+  def kanjiDicLanguageList(self): return string2list(self.kanjiDicLanguages()) # -> [unicode]
+  #def removeKanjiDicLanguage(self, v):
+  #  l = self.kanjiDicLanguageList()
+  #  if l and v in l:
+  #    l.remove(v)
+  #    self.setKanjiDicLanguageList(v)
+
   # JMDict
 
   def isJMDictFrEnabled(self): return to_bool(self.value('JMDictFr'))
@@ -1289,6 +1317,8 @@ class Settings(QSettings):
       return self.isJMDictRuEnabled()
     elif lang == 'nl':
       return self.isJMDictNlEnabled()
+    else:
+      return False
 
   def setJMDictEnabled(self, lang, v):
     if lang == 'fr':

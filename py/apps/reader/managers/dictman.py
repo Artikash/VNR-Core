@@ -11,7 +11,7 @@ from mecabparser import mecabdef, mecabformat
 from mytr import my
 #from kagami import GrimoireBean
 from unitraits.jpchars import iskanji
-import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
+import config, convutil, dicts, ebdict, growl, hanzidict, mecabman, rc, settings
 import _dictman
 
 @memoized
@@ -32,21 +32,25 @@ class _DictionaryManager:
   def renderKanjiRadicals(self, text):
     """
     @param  text  unicode
-    @return  unicode
+    @return  [unicode] or None
     """
-    import hanzidict
+    ss = settings.global_()
+    radicalEnabled = ss.isKanjiRadicalEnabled()
+    kanjidicEnabled = ss.kanjiDicLanguages()
+    if not radicalEnabled and not kanjidicEnabled:
+      return
+
     m = hanzidict.manager()
     ret = []
     for ch in text:
       if iskanji(ch):
-        rad = m.lookupRadicalString(ch)
-        trans = m.translateKanji(ch)
+        rad = m.lookupRadicalString(ch) if radicalEnabled else None
+        trans = m.translateKanji(ch) if kanjidicEnabled else None
         if trans:
-          ch = u"【%s{%s}】" % (ch, trans)
+          ch = u"%s{%s}" % (ch, trans)
+        text = u"【%s】" % ch
         if rad:
-          text = "%s[%s]" % (ch, rad[1:-1])
-        else:
-          text = ch
+          text = "%s[%s]" % (text, rad[1:-1])
         text = _dictman.render_kanji(text)
         ret.append(text)
     return ret
@@ -381,7 +385,6 @@ class DictionaryManager:
     #google = proxy.manager().google_search
     #feature = GrimoireBean.instance.lookupFeature(text)
     try:
-      ss = settings.global_()
       d = self.__d
       f = None
       if feature:
@@ -391,16 +394,12 @@ class DictionaryManager:
         if roleName:
           f = ','.join((text, mecabdef.role_name_en(text) or '', roleName))
 
-      kanji = None
-      if ss.isKanjiRadicalEnabled():
-        kanji = d.renderKanjiRadicals(text)
-
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
         'feature': f,
-        'kanji': kanji,
+        'kanji': d.renderKanjiRadicals(text),
         'tuples': d.lookupDB(text, exact=exact, feature=feature),
         'eb_strings': d.lookupEB(text, feature=feature), # exact not used, since it is already very fast
         #'google': google,
