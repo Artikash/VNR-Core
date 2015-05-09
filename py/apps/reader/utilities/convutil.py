@@ -9,11 +9,13 @@ from unidecode import unidecode
 from jaconv.jaconv import kana2romaji, kana2ru, kana2ko, kana2th, kana2ar \
                         , kana2name, kana2reading, capitalizeromaji
 from opencc.opencc import zht2zhs #, ja2zht
-from ccman import zht2zhx, ja2zhs_name
+from ccman import zht2zhx
 from ccman import zhs2zhx as zhs2zht
-from ccman import ja2zhx_name as ja2zht_name
+from ccman import ja2zhs_name as _ja2zhs_name
+from ccman import ja2zhx_name as _ja2zht_name
 from hangulconv.hanjaconv import to_hanja as hangul2hanja
-from kanjiconv.jazh import ja2zh_name_test, ja2zht_name_fix
+from kanjiconv.jazh import ja2zht_name_fix
+from kanjiconv.jazh import ja2zh_name_test as _ja2zh_name_test
 import config
 #from pinyinconv import pinyinconv
 
@@ -23,6 +25,53 @@ kata2ru = hira2ru = kana2ru
 kata2ko = hira2ko = kana2ko
 kata2th = hira2th = kana2th
 kata2ar = hira2ar = kana2ar
+
+def _get_yomi_name(text):
+  """Deal with regex in yomigana
+  @param  unicode
+  @return  unicode or None
+  """
+  if text:
+    for s in '()', '{}':
+      while text.startswith(s[0]) and s[1] in text:
+        text = text.partition(s[1])[-1]
+      while text.endswith(s[1]) and s[0] in text:
+        text = text.partition(s[0])[0]
+    c = '?'
+    if c in text:
+      while text.startswith(c):
+        text = text[1:]
+      while text.endswith(c):
+        text = text[:-1]
+    if text:
+      for ch in '()[]{}?':
+        if ch in text:
+          return
+      return text
+
+def ja2zh_name_test(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  text = _get_yomi_name(text)
+  return bool(text) and _ja2zh_name_test(text)
+
+def ja2zhs_name(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  text = _get_yomi_name(text)
+  return _ja2zhs_name(text) if text and _ja2zh_name_test(text) else ''
+
+def ja2zht_name(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  text = _get_yomi_name(text)
+  return _ja2zht_name(text) if text and _ja2zh_name_test(text) else ''
 
 _alphabet_el_re = re.compile(ur'σ\b', re.UNICODE)
 def toalphabet(text, to='en', fr='en'):

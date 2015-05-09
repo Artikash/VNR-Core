@@ -279,6 +279,8 @@ class TermWriter:
 
           if td.type == 'yomi' and to2 == 'zh':
             repl = ja2zhs_name(pattern) if to == 'zhs' else ja2zht_name(pattern)
+            if not repl: # this should never happen
+              continue
           else:
             repl = _unescape_term_text(td.text)
             repl = self._applyMacros(repl, macros)

@@ -589,8 +589,8 @@ class _TermInput(object):
           if t:
             t += ', '
           if pattern and convutil.ja2zh_name_test(pattern):
-            zhs = convutil.ja2zhs_name(pattern)
-            zht = convutil.ja2zht_name(pattern)
+            zhs = convutil.ja2zhs_name(pattern) or tr_("none")
+            zht = convutil.ja2zht_name(pattern) or tr_("none")
             t += '%s (%s)' % (zht, tr_('zh'))
             if zhs != zht:
               t += ', %s (%s)' % (zhs, tr_('zhs'))
