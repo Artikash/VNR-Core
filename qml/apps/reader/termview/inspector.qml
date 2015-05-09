@@ -205,8 +205,8 @@ Item { id: root_
         ret += ', '
 
       if (pattern && jlp_.ja2zh_name_test(pattern)) {
-        var s = jlp_.ja2zhs_name(pattern)
-        var t = jlp_.ja2zht_name(pattern)
+        var s = jlp_.ja2zhs_name(pattern) || Sk.tr("none")
+        var t = jlp_.ja2zht_name(pattern) || Sk.tr("none")
         ret += t + ' (' + Sk.tr('zh') +  ')'
         if (s != t)
           ret += ', ' + s + ' (' + Sk.tr('zhs') +  ')'
