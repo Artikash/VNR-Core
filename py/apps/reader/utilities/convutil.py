@@ -32,16 +32,14 @@ def _get_yomi_name(text):
   @return  unicode or None
   """
   if text:
-    c = '?'
-    while text.endswith(c):
+    while text.endswith('?'):
       text = text[:-1]
     for s in '()', '{}':
       while text.startswith(s[0]) and s[1] in text:
         text = text.partition(s[1])[-1]
       while text.endswith(s[1]) and s[0] in text:
         text = text.partition(s[0])[0]
-    c = '?'
-    while text.startswith(c):
+    while text.startswith('?'):
       text = text[1:]
     if text:
       for ch in '()[]{}?':
