@@ -295,7 +295,6 @@ class AliceEngine(Engine):
       pattern = re.compile(r'\xe8....\x83\xc4\x0c\x5f\x5e\xb0\x01\x5b\xc2\x04\x00\xcc\xcc')
       addr = dbg.search_module_memory(pattern, self.DLL)
       if addr > 0:
-        # Sample code: 5506A9
         code = "/HSN4:-14@%x" % addr
         ret = self.addHook(code)
     dprint(ret)
