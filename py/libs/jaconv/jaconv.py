@@ -223,15 +223,14 @@ def kana2reading(text, lang):
   @param  lang  str
   @return  unicode or None
   """
-  if lang in ('ko', 'th'):
-    # remove xtu in name
+  if lang == 'ko':
+    text = kana2ko(text)
     text = text.replace(u'っ', '')
     text = text.replace(u'ッ', '')
-    if not text:
-      return ''
-  if lang == 'ko':
-    return kana2ko(text)
+    return text
   elif lang == 'th':
+    text = text.replace(u'っ', '')
+    text = text.replace(u'ッ', '')
     text = text.replace(u'おお', u'お')
     return kana2th(text)
   elif lang == 'ar':
@@ -395,11 +394,13 @@ if __name__ == '__main__':
     (u'ゆっさ', u'윳사'),
     (u'かって', u'캍테'),
     (u'って', u'-테'),
+    (u'ゆりっぺ', u'유맆페'),
     #(u'っさ', u'싸'), # disabled as not quite useful
   ]
   for k,v in l:
     print k, kana2ko(k), v
     assert kana2ko(k) == v
+    assert kana2name(k, 'ko') == v
 
   # Thai
   l = [
