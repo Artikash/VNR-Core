@@ -20,10 +20,16 @@ import initdefs
 TARGET_DIR = initdefs.CACHE_KANJIDIC_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 
-DIC_URL = 'http://ftp.monash.edu.au/pub/nihongo/kanjidic.gz'
 HP_URL = 'http://www.csse.monash.edu.au/~jwb/kanjidic.html'
 MIN_DIC_SIZE = 1 * 1024 * 1024 # 1MB, actually 1.1 MB
-DIC_FILENAME = 'kanjidic'
+
+DIC_URL = 'http://ftp.monash.edu.au/pub/nihongo/%s.gz'
+DICS = {
+  'en': 'kanjidic',
+  'es': 'kanjidic_es',
+  'fr': 'kanjidic_fr',
+  'pt': 'kanjidic_pt',
+}
 
 import initdefs
 TMP_DIR = initdefs.TMP_RELPATH
@@ -35,11 +41,12 @@ def init(): # raise
     if not os.path.exists(it):
       os.makedirs(it)
 
-def get(): # -> bool
-  url = DIC_URL
+def get(lang): # str -> bool
+  filename = DICS[lang]
+  url = DIC_URL % filename
   minsize = MIN_DIC_SIZE
-  path = TMP_DIR + '/' + DIC_FILENAME
-  targetpath = TARGET_DIR + '/' + DIC_FILENAME
+  path = TMP_DIR + '/' + filename
+  targetpath = TARGET_DIR + '/' + filename
 
   dprint("enter: url = %s, minsize = %s" % (url, minsize))
 
@@ -62,42 +69,67 @@ def get(): # -> bool
   dprint("leave: ok = %s" % ok)
   return ok
 
+def lock(lang): # str -> bool
+  name = "kanjidic.%s.lock" % lang
+  import initrc
+  if initrc.lock(name):
+    return True
+  else:
+    dwarn("multiple instances")
+    return False
+
+def run(lang): # str -> bool
+  if lang not in DICS:
+    dwarn("unknown lang: %s" % lang)
+    return False
+  return lock(lang) and get(lang)
+
 # Main process
 
-def msg():
+def usage():
+  print 'usage:', '|'.join(sorted(DICS.iterkeys()))
+
+def msg(lang): # str ->
+  dic = DICS[lang]
+  url = DIC_URL % dic
   import messages
   messages.info(
-    name="KANJIDIC",
-    location="Caches/Dictionaries/KanjiDic/kanjidic",
+    name="KANJIDIC (%s)" % lang,
+    location="Caches/Dictionaries/KanjiDic/%s" % dic,
     size=MIN_DIC_SIZE,
-    urls=[HP_URL, DIC_URL],
+    urls=[HP_URL, url],
   )
 
-def main():
+def main(argv):
   """
+  @param  argv  [unicode]
   @return  int
   """
   dprint("enter")
   ok = False
-  try:
-    init()
-    msg()
-    ok = get()
-    if ok:
-      from sakurakit import skos
-      skos.open_location(os.path.abspath(TARGET_DIR))
-  except Exception, e:
-    dwarn(e)
+  if not argv or len(argv) == 1 and argv[0] in ('-h', '--help'):
+    usage()
+  elif len(argv) != 1:
+    dwarn("invalid number of parameters")
+    usage()
+  else:
+    lang, = argv
+    try:
+      msg(lang)
+      init()
+      ok = run(lang)
+      if ok:
+        from sakurakit import skos
+        skos.open_location(os.path.abspath(TARGET_DIR))
+    except Exception, e:
+      dwarn(e)
   ret = 0 if ok else 1
   dprint("leave: ret = %s" % ret)
   return ret
 
 if __name__ == '__main__':
   import sys
-  if not initrc.lock('kanjidic.lock'):
-    dwarn("multiple instances")
-    sys.exit(1)
-  ret = main()
+  ret = main(sys.argv[1:])
   sys.exit(ret)
 
 

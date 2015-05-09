@@ -5,6 +5,7 @@
 import os
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skclass import memoized, memoizedproperty
+import config, dicts
 
 @memoized
 def manager(): return HanziDictionary()
@@ -13,13 +14,27 @@ class HanziDictionary:
   def __init__(self):
     self.__d = _HanziDictionary()
 
+  # Properties
+
+  def kanjiDicLanguages(self, v): return self.__d.kanjidicLangs
+  def setKanjiDicLanguages(self, v):
+    dprint(v)
+    self.__d.kanjidicLangs = v
+
+  # Queries
+
   def translateKanji(self, ch):
     """
     @param  ch  unicode
     @return  unicode or None
     """
-    import dicts
-    return dicts.kanjidic().lookup(ch)
+    langs = self.__d.kanjidicLangs
+    if langs:
+      for lang in reversed(config.KANJIDIC_LANGS):
+        if lang in langs:
+          ret = dicts.kanjidic(lang).lookup(ch)
+          if ret:
+            return ret
 
   def translateRadical(self, ch):
     """
@@ -66,7 +81,7 @@ class HanziDictionary:
 
 class _HanziDictionary:
   def __init__(self):
-    self._kanjidic = None
+    self.kanjidicLangs = ''
 
   @memoizedproperty
   def decomp(self):

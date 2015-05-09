@@ -49,17 +49,18 @@ class Edict(Dict):
 class KanjiDic(Dict):
   URL = 'http://www.csse.monash.edu.au/~jwb/kanjidic.html'
 
-  def __init__(self):
+  def __init__(self, language='en'):
     super(KanjiDic, self).__init__(
-      path=rc.KANJIDIC_PATH,
-      lockpath=os.path.join(rc.DIR_TMP, "kanjidic.lock"),
+      path=rc.kanjidic_path(language),
+      lockpath=os.path.join(rc.DIR_TMP, "kanjidic.%s.lock" % language),
     )
-
+    self.language = language
+    self.encoding = 'euc-jp' if language == 'en' else 'utf8'
     self._meanings = None # {}
 
   def get(self): # override
     from scripts import kanjidic
-    return kanjidic.get()
+    return kanjidic.get(self.language)
 
   def lookup(self, ch):
     """
@@ -74,7 +75,7 @@ class KanjiDic(Dict):
   def meanings(self):
     if not self._meanings and os.path.exists(self.path):
       from dictp import kanjidicp
-      self._meanings = kanjidicp.parsefiledef(self.path)
+      self._meanings = kanjidicp.parsefiledef(self.path, self.encoding)
     return self._meanings
 
 class MeCabEdict(res.Resource):
@@ -90,11 +91,11 @@ class MeCabEdict(res.Resource):
     return edict.align()
 
 class LingoesDict(Dict):
-  def __init__(self, lang): # string, ex. 'ja-en'
-    self.lang = lang # str
+  def __init__(self, language): # string, ex. 'ja-en'
+    self.language = language # str
     super(LingoesDict, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "Lingoes/%s.db" % lang),
-      lockpath=os.path.join(rc.DIR_TMP, "lingoes.%s.lock" % lang),
+      path=os.path.join(rc.DIR_CACHE_DICT, "Lingoes/%s.db" % language),
+      lockpath=os.path.join(rc.DIR_TMP, "lingoes.%s.lock" % language),
     )
 
   @memoizedproperty
@@ -106,11 +107,11 @@ class LingoesDict(Dict):
     if self.valid():
       return self.d.lookup(*args, **kwargs)
     else:
-      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.lang))
+      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.language))
 
   def get(self): # override
     from scripts import lingoes
-    return lingoes.get(self.lang)
+    return lingoes.get(self.language)
 
   def translate(self, t):
     """
@@ -118,7 +119,7 @@ class LingoesDict(Dict):
     @return  unicode or None
     """
     if not self.valid():
-      #growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.lang))
+      #growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('Lingoes ' + self.language))
       return
 
     parse = self._getTranslationParser()
@@ -136,23 +137,23 @@ class LingoesDict(Dict):
     """
     @return  unicode -> unicode  or None
     """
-    if self.lang  == 'ja-zh':
+    if self.language  == 'ja-zh':
       from dictp import jazhdictp
       return jazhdictp.parsedef
-    if self.lang  == 'ja-zh-gbk':
+    if self.language  == 'ja-zh-gbk':
       from dictp import gbkdictp
       return gbkdictp.parsedef
-    if self.lang  == 'ja-ko':
+    if self.language  == 'ja-ko':
       from dictp import naverdictp
       return naverdictp.parsedef
 
 class StarDict(Dict):
-  def __init__(self, lang): # string, ex. 'ja-en'
+  def __init__(self, language): # string, ex. 'ja-en'
     import config
-    self.lang = lang # str
+    self.language = language # str
     super(StarDict, self).__init__(
-      path=config.STARDICT_LOCATIONS[lang],
-      lockpath=os.path.join(rc.DIR_TMP, "stardict.%s.lock" % lang),
+      path=config.STARDICT_LOCATIONS[language],
+      lockpath=os.path.join(rc.DIR_TMP, "stardict.%s.lock" % language),
     )
 
   def exists(self): # override
@@ -170,11 +171,11 @@ class StarDict(Dict):
     if d.valid():
       return d.query(text)
     else:
-      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.lang))
+      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.language))
 
   def get(self): # override
     from scripts import stardict
-    return stardict.get(self.lang)
+    return stardict.get(self.language)
 
   def remove(self): # override
     from sakurakit import skfileio
@@ -188,7 +189,7 @@ class StarDict(Dict):
     """
     d = self.d
     if not d.valid():
-      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.lang))
+      growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.language))
       return
     parse = self._getTranslationParser()
     if parse:
@@ -204,21 +205,21 @@ class StarDict(Dict):
     """
     @return  unicode -> unicode  or None
     """
-    if self.lang  == 'ja-vi':
+    if self.language  == 'ja-vi':
       from dictp import ovdpdictp
       return ovdpdictp.parsedef
 
 class JMDict(Dict):
-  def __init__(self, lang): # string, ex. 'fr', 'ru', 'nl'
-    self.lang = lang # str
+  def __init__(self, language): # string, ex. 'fr', 'ru', 'nl'
+    self.language = language # str
     super(JMDict, self).__init__(
-      path=os.path.join(rc.DIR_CACHE_DICT, "JMDict/%s.fpw" % lang),
-      lockpath=os.path.join(rc.DIR_TMP, "jmdict.%s.lock" % lang),
+      path=os.path.join(rc.DIR_CACHE_DICT, "JMDict/%s.fpw" % language),
+      lockpath=os.path.join(rc.DIR_TMP, "jmdict.%s.lock" % language),
     )
 
   def get(self): # override
     from scripts import jmdict
-    return jmdict.get(self.lang)
+    return jmdict.get(self.language)
 
   def remove(self): # override
     return self.removetree()
@@ -287,9 +288,6 @@ class UniDic(Dict):
 def edict(): return Edict()
 
 @memoized
-def kanjidic(): return KanjiDic()
-
-@memoized
 def mecabedict(): return MeCabEdict()
 
 @memoized
@@ -320,15 +318,26 @@ def stardict(name):
     STARDICT[name] = ret = StarDict(name)
   return ret
 
-JMDICT = {} # {str lang:JMDictic}
-def jmdict(lang):
+KANJIDIC = {} # {str language:JMDictic}
+def kanjidic(language):
   """
-  @param  lang  str  such as fr, ru, nl
+  @param  language  str  such as fr, ru, nl
   @return  JMDict
   """
-  ret = JMDICT.get(lang)
+  ret = KANJIDIC.get(language)
   if not ret:
-    JMDICT[lang] = ret = JMDict(lang)
+    KANJIDIC[language] = ret = KanjiDic(language)
+  return ret
+
+JMDICT = {} # {str language:JMDictic}
+def jmdict(language):
+  """
+  @param  language  str  such as fr, ru, nl
+  @return  JMDict
+  """
+  ret = JMDICT.get(language)
+  if not ret:
+    JMDICT[language] = ret = JMDict(language)
   return ret
 
 # EOF

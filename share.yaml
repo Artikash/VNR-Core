@@ -715,6 +715,12 @@ jmdict: # language
   - nl
   - ru
 
+kanjidic: # language
+  - en
+  - fr
+  - es
+  - pt
+
 jcuserdic: # The preferences will be from top to down
   - $PWD/../../Dictionaries/jb/@djz020815/JcUserdic/Jcuser
   #- $PWD/../../Dictionaries/jb/@jichi/JcUserdic/Jcuser

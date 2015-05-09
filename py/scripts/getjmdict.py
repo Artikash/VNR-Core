@@ -31,8 +31,6 @@ DICS = {
 
 FILENAME_TPL = 'jmdict.%s.tar'
 
-LANGS = frozenset(DICS.iterkeys())
-
 import initdefs
 DIC_DIR = initdefs.CACHE_JMDICT_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
@@ -89,7 +87,7 @@ def get(lang): # str -> bool
   dprint("leave: ok = %s" % ok)
   return ok
 
-def lock(lang): # str
+def lock(lang): # str -> bool
   name = "jmdict.%s.lock" % lang
   import initrc
   if initrc.lock(name):
@@ -99,7 +97,7 @@ def lock(lang): # str
     return False
 
 def run(lang): # str -> bool
-  if lang not in LANGS:
+  if lang not in DICS:
     dwarn("unknown lang: %s" % lang)
     return False
   return lock(lang) and get(lang) and extract(lang)
@@ -107,7 +105,7 @@ def run(lang): # str -> bool
 # Main process
 
 def usage():
-  print 'usage:', '|'.join(LANGS)
+  print 'usage:', '|'.join(sorted(DICS.iterkeys()))
 
 def msg(lang): # str ->
   dic = DICS[lang]
