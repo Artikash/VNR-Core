@@ -277,6 +277,14 @@ class GXPEngine(Engine):
 #   hp.off = 4;
 #   hp.split = -0x18;
 #   hp.type = NO_CONTEXT|USING_SPLIT|USING_STRING;
+#
+# TODO: Add alternative hook with character name
+# See: http://capita.tistory.com/m/post/256
+#   004EEB30   8BCF             MOV ECX,EDI
+#   004EEB32   881E             MOV BYTE PTR DS:[ESI],BL
+#   004EEB34   E8 67CB0100      CALL .0050B6A0  ; jichi: hook here
+#   004EEB39   396C24 28        CMP DWORD PTR SS:[ESP+0x28],EBP
+#   004EEB3D   72 0D            JB SHORT .004EEB4C
 class AliceEngine(Engine):
 
   NAME = "AliceRunPatch" # str, override
