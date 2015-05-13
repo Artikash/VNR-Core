@@ -3,6 +3,7 @@
 
 rename:
   #AB2Try: YaneSDK # TODO
+  AliceRunPatch: AliceRunPatch43
   AUEngine: Tenco
   ApRicot: ApRicoT
   MAJIRO: Majiro
@@ -91,6 +92,8 @@ gui:
 optgui:
   - 5pb2 # 5pb1 is better
   - KiriKiri2
+  - AliceRunPatch43 # System43+ is better
+  - System43 # System43+ is better
   #- KiriKiriZ # KAGParser is better
   - SiglusEngine3 # SiglusEngine2 is better
   - Malie2 # Malie3 is better
@@ -131,7 +134,9 @@ simple:
   - Adobe Flash 10
   - Alchemist PSP
   - Alchemist2 PSP
-  - AliceRunPatch
+  - AliceRunPatch # renamed
+  - AliceRunPatch43
+  #- AliceRunPatch4x
   - AMUSE CRAFT
   - AOS
   - ApRicot # renamed
@@ -207,6 +212,7 @@ simple:
   - StuffScriptEngine
   - SystemC
   - System43
+  - System43+
   - SystemAoi
   - SystemAoi2
   - Syuntada
@@ -237,6 +243,7 @@ single: # single thread
   - Malie3
   - Rejet
   - SiglusEngine2
+  - System43+
   # PSP
   - 5pb PSP
   - Intense PSP
@@ -332,7 +339,9 @@ char:
   - AbelSoftware
   - Alchemist PSP
   - Alchemist2 PSP
-  - AliceRunPatch
+  - AliceRunPatch # renamed
+  - AliceRunPatch43
+  #- AliceRunPatch4x
   - AMUSE CRAFT
   - Anex86
   - AOS
@@ -405,6 +414,7 @@ char:
   - StuffScriptEngine
   - System40
   - System43
+  - System43+
   - SystemC
   - Syuntada
   - TanukiSoft
@@ -523,7 +533,7 @@ focus:
   - WillPlus
   - YU-RIS2
 # No focus:
-  #- AliceRunPatch
+  #- AliceRunPatch43
   #- AOS
   #- LunaSoft
   #- Majiro

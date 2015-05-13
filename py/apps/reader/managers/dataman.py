@@ -7773,7 +7773,7 @@ class _DataManager(object):
       for c in self.iterComments():
         context = c.d.context
         if context:
-          h = hashutil.hashcontext(context)
+          h = hashutil.hashcontexts(context)
           l = d.get(h)
           if l:
             l.append(c)
@@ -7933,7 +7933,7 @@ class _DataManager(object):
     ret = {}
     if subs:
       for s in subs:
-        h = hashutil.hashtext(s.text)
+        h = hashutil.hashcontext(s.text)
         l = ret.get(h)
         if l:
           l.append(s)

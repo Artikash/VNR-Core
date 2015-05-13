@@ -25,7 +25,7 @@ def engines():
     ENGINES = [
       MonoEngine(),
       GXPEngine(),
-      AliceEngine(),
+      #AliceEngine(),
     ]
   return ENGINES
 
@@ -254,6 +254,8 @@ class GXPEngine(Engine):
     dprint(ret)
     return ret
 
+# EOF
+
 # 5/8/2015
 # Sample game: イブニクル version 1.0.1
 # It is basically the same System43 engine but code moved to AliceRunPatch.dll
@@ -277,30 +279,36 @@ class GXPEngine(Engine):
 #   hp.off = 4;
 #   hp.split = -0x18;
 #   hp.type = NO_CONTEXT|USING_SPLIT|USING_STRING;
-class AliceEngine(Engine):
-
-  NAME = "AliceRunPatch" # str, override
-  ENCODING = SJIS_ENCODING # str, override
-
-  DLL = 'AliceRunPatch.dll'
-  def match(self, pid): # override
-    return bool(self.exists(self.DLL, pid))
-
-  def inject(self, pid): # override
-    from gamedebugger import GameDebugger
-    dbg = GameDebugger(pid)
-    ret = False
-    if dbg.active():
-      # Use 4 dots to represent the 8-bit calling address after e8
-      pattern = re.compile(r'\xe8....\x83\xc4\x0c\x5f\x5e\xb0\x01\x5b\xc2\x04\x00\xcc\xcc')
-      addr = dbg.search_module_memory(pattern, self.DLL)
-      if addr > 0:
-        code = "/HSN4:-14@%x" % addr
-        ret = self.addHook(code)
-    dprint(ret)
-    return ret
-
-# EOF
+#
+# TODO: Add alternative hook with character name
+# See: http://capita.tistory.com/m/post/256
+#   004EEB30   8BCF             MOV ECX,EDI
+#   004EEB32   881E             MOV BYTE PTR DS:[ESI],BL
+#   004EEB34   E8 67CB0100      CALL .0050B6A0  ; jichi: hook here
+#   004EEB39   396C24 28        CMP DWORD PTR SS:[ESP+0x28],EBP
+#   004EEB3D   72 0D            JB SHORT .004EEB4C
+#class AliceEngine(Engine):
+#
+#  NAME = "AliceRunPatch" # str, override
+#  ENCODING = SJIS_ENCODING # str, override
+#
+#  DLL = 'AliceRunPatch.dll'
+#  def match(self, pid): # override
+#    return bool(self.exists(self.DLL, pid))
+#
+#  def inject(self, pid): # override
+#    from gamedebugger import GameDebugger
+#    dbg = GameDebugger(pid)
+#    ret = False
+#    if dbg.active():
+#      # Use 4 dots to represent the 8-bit calling address after e8
+#      pattern = re.compile(r'\xe8....\x83\xc4\x0c\x5f\x5e\xb0\x01\x5b\xc2\x04\x00\xcc\xcc')
+#      addr = dbg.search_module_memory(pattern, self.DLL)
+#      if addr > 0:
+#        code = "/HSN4:-14@%x" % addr
+#        ret = self.addHook(code)
+#    dprint(ret)
+#    return ret
 
 # jichi 10/4/2013: Unity3D
 # See (ok123): http://9baka.com/read.php?tid=411756

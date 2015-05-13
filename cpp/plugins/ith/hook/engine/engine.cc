@@ -3670,7 +3670,7 @@ System40 hook:
   data offset dynamically.
 ********************************************************************************************/
 
-void InsertAliceHook1(DWORD addr, DWORD module, DWORD limit)
+static void InsertAliceHook1(DWORD addr, DWORD module, DWORD limit)
 {
   if (!addr) {
     ConsoleOutput("vnreng:AliceHook1: failed");
@@ -3701,7 +3701,7 @@ void InsertAliceHook1(DWORD addr, DWORD module, DWORD limit)
     }
   ConsoleOutput("vnreng:AliceHook1: failed");
 }
-void InsertAliceHook2(DWORD addr)
+static void InsertAliceHook2(DWORD addr)
 {
   if (!addr) {
     ConsoleOutput("vnreng:AliceHook2: failed");
@@ -3720,6 +3720,7 @@ void InsertAliceHook2(DWORD addr)
 
 // jichi 8/23/2013 Move here from engine.cc
 // Do not work for the latest Alice games
+// jichi 5/13/2015: Looking for function entries in StoatSpriteEngine.dll
 bool InsertAliceHook()
 {
   DWORD low, high, addr;
@@ -3815,13 +3816,40 @@ bool InsertAliceHook()
  *    005C4107   C2 0400          RETN 0x4
  *    005C410A   CC               INT3
  *    005C410B   CC               INT3
- *    005C410C   CC               INT3
+ *    005C410C   CC               INT3 *
  */
-bool InsertSystem43Hook()
+static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
 {
-  // 9/25/2014 TODO: I should use matchBytes and replace the part after e8 with XX4
   // i.e. 83c40c5f5eb0015bc20400cccc without leading 0xe8
-  const BYTE ins[] = {  //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
+  //const BYTE ins[] = {  //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
+  //  0x83,0xc4, 0x0c,    //   005506ae  |. 83c4 0c        add esp,0xc
+  //  0x5f,               //   005506b1  |. 5f             pop edi
+  //  0x5e,               //   005506b2  |. 5e             pop esi
+  //  0xb0, 0x01,         //   005506b3  |. b0 01          mov al,0x1
+  //  0x5b,               //   005506b5  |. 5b             pop ebx
+  //  0xc2, 0x04,0x00,    //   005506b6  \. c2 0400        retn 0x4
+  //  0xcc, 0xcc // patching a few int3 to make sure that this is at the end of the code block
+  //};
+  //enum { hook_offset = -5 }; // the function call before the ins
+  //ULONG addr = module_base_; //- sizeof(ins);
+  ////addr = 0x5506a9;
+  //enum { near_call = 0xe8 }; // intra-module function call
+  //do {
+  //  //addr += sizeof(ins); // so that each time return diff address -- not needed
+  //  ULONG range = min(module_limit_ - addr, MAX_REL_ADDR);
+  //  addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
+  //  if (!addr) {
+  //    //ITH_MSG(L"failed");
+  //    ConsoleOutput("vnreng:System43: pattern not found");
+  //    return false;
+  //  }
+  //  addr += hook_offset;
+  //} while(near_call != *(BYTE *)addr); // function call
+  //ITH_GROWL_DWORD(addr);
+
+  // i.e. 83c40c5f5eb0015bc20400cccc without leading 0xe8
+  const BYTE bytes[] = {
+    0xe8, XX4,          //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
     0x83,0xc4, 0x0c,    //   005506ae  |. 83c4 0c        add esp,0xc
     0x5f,               //   005506b1  |. 5f             pop edi
     0x5e,               //   005506b2  |. 5e             pop esi
@@ -3830,31 +3858,166 @@ bool InsertSystem43Hook()
     0xc2, 0x04,0x00,    //   005506b6  \. c2 0400        retn 0x4
     0xcc, 0xcc // patching a few int3 to make sure that this is at the end of the code block
   };
-  enum { hook_offset = -5 }; // the function call before the ins
-  ULONG addr = module_base_; //- sizeof(ins);
-  //addr = 0x5506a9;
-  enum { near_call = 0xe8 }; // intra-module function call
-  do {
-    //addr += sizeof(ins); // so that each time return diff address -- not needed
-    ULONG range = min(module_limit_ - addr, MAX_REL_ADDR);
-    addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
-    if (!addr) {
-      //ITH_MSG(L"failed");
-      ConsoleOutput("vnreng:System43: pattern not found");
-      return false;
-    }
-    addr += hook_offset;
-  } while(near_call != *(BYTE *)addr); // function call
+  enum { hook_offset = 0 };
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:System43: pattern not found");
+    return false;
+  }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.addr = addr + hook_offset;
   hp.off = 4;
   hp.split = -0x18;
   hp.type = NO_CONTEXT|USING_SPLIT|USING_STRING;
   ConsoleOutput("vnreng: INSERT System43");
-  NewHook(hp, L"System43");
-  return false;
+  NewHook(hp, hookName);
+
+  ConsoleOutput("vnreng:System43: disable GDI hooks"); // disable hooking to TextOutA, which is cached
+  DisableGDIHooks();
+  return true;
+}
+
+/** 5/13/2015 Add new hook for System43 engine that has no garbage threads and can detect character name
+ *  Sample game: Evenicle
+ *  See: http://capita.tistory.com/m/post/256
+ *
+ *  004EEA6C   CC               INT3
+ *  004EEA6D   CC               INT3
+ *  004EEA6E   CC               INT3
+ *  004EEA6F   CC               INT3
+ *  004EEA70   6A FF            PUSH -0x1
+ *  004EEA72   68 E8267000      PUSH .007026E8
+ *  004EEA77   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  004EEA7D   50               PUSH EAX
+ *  004EEA7E   83EC 20          SUB ESP,0x20
+ *  004EEA81   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  004EEA86   33C4             XOR EAX,ESP
+ *  004EEA88   894424 1C        MOV DWORD PTR SS:[ESP+0x1C],EAX
+ *  004EEA8C   53               PUSH EBX
+ *  004EEA8D   55               PUSH EBP
+ *  004EEA8E   56               PUSH ESI
+ *  004EEA8F   57               PUSH EDI
+ *  004EEA90   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  004EEA95   33C4             XOR EAX,ESP
+ *  004EEA97   50               PUSH EAX
+ *  004EEA98   8D4424 34        LEA EAX,DWORD PTR SS:[ESP+0x34]
+ *  004EEA9C   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  004EEAA2   8B4424 44        MOV EAX,DWORD PTR SS:[ESP+0x44]
+ *  004EEAA6   8BF1             MOV ESI,ECX
+ *  004EEAA8   E8 8346FBFF      CALL .004A3130
+ *  004EEAAD   8BE8             MOV EBP,EAX
+ *  004EEAAF   33DB             XOR EBX,EBX
+ *  004EEAB1   3BEB             CMP EBP,EBX
+ *  004EEAB3   75 07            JNZ SHORT .004EEABC
+ *  004EEAB5   32C0             XOR AL,AL
+ *  004EEAB7   E9 92000000      JMP .004EEB4E
+ *  004EEABC   8B06             MOV EAX,DWORD PTR DS:[ESI]
+ *  004EEABE   8B10             MOV EDX,DWORD PTR DS:[EAX]
+ *  004EEAC0   8BCE             MOV ECX,ESI
+ *  004EEAC2   FFD2             CALL EDX
+ *  004EEAC4   8BC8             MOV ECX,EAX
+ *  004EEAC6   C74424 28 0F0000>MOV DWORD PTR SS:[ESP+0x28],0xF
+ *  004EEACE   895C24 24        MOV DWORD PTR SS:[ESP+0x24],EBX
+ *  004EEAD2   885C24 14        MOV BYTE PTR SS:[ESP+0x14],BL
+ *  004EEAD6   8D71 01          LEA ESI,DWORD PTR DS:[ECX+0x1]
+ *  004EEAD9   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  004EEAE0   8A11             MOV DL,BYTE PTR DS:[ECX]
+ *  004EEAE2   41               INC ECX
+ *  004EEAE3   3AD3             CMP DL,BL
+ *  004EEAE5  ^75 F9            JNZ SHORT .004EEAE0
+ *  004EEAE7   2BCE             SUB ECX,ESI
+ *  004EEAE9   50               PUSH EAX
+ *  004EEAEA   8BF9             MOV EDI,ECX
+ *  004EEAEC   8D7424 18        LEA ESI,DWORD PTR SS:[ESP+0x18]
+ *  004EEAF0   E8 CB27F1FF      CALL .004012C0
+ *  004EEAF5   8B7C24 48        MOV EDI,DWORD PTR SS:[ESP+0x48]
+ *  004EEAF9   895C24 3C        MOV DWORD PTR SS:[ESP+0x3C],EBX
+ *  004EEAFD   8B75 3C          MOV ESI,DWORD PTR SS:[EBP+0x3C]
+ *  004EEB00   E8 1B4A0100      CALL .00503520
+ *  004EEB05   8BF8             MOV EDI,EAX
+ *  004EEB07   8DB7 E4000000    LEA ESI,DWORD PTR DS:[EDI+0xE4]
+ *  004EEB0D   8D4424 14        LEA EAX,DWORD PTR SS:[ESP+0x14]
+ *  004EEB11   8BD6             MOV EDX,ESI
+ *  004EEB13   E8 985CF1FF      CALL .004047B0
+ *  004EEB18   BD 10000000      MOV EBP,0x10
+ *  004EEB1D   84C0             TEST AL,AL
+ *  004EEB1F   75 18            JNZ SHORT .004EEB39
+ *  004EEB21   895E 10          MOV DWORD PTR DS:[ESI+0x10],EBX
+ *  004EEB24   396E 14          CMP DWORD PTR DS:[ESI+0x14],EBP
+ *  004EEB27   72 02            JB SHORT .004EEB2B
+ *  004EEB29   8B36             MOV ESI,DWORD PTR DS:[ESI]
+ *  004EEB2B   8D4424 14        LEA EAX,DWORD PTR SS:[ESP+0x14]
+ *  004EEB2F   50               PUSH EAX
+ *  004EEB30   8BCF             MOV ECX,EDI
+ *  004EEB32   881E             MOV BYTE PTR DS:[ESI],BL
+ *  004EEB34   E8 67CB0100      CALL .0050B6A0  ; jichi: ATcode modified here, text is on the top of the stack
+ *  004EEB39   396C24 28        CMP DWORD PTR SS:[ESP+0x28],EBP
+ *  004EEB3D   72 0D            JB SHORT .004EEB4C
+ *  004EEB3F   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  004EEB43   51               PUSH ECX
+ *  004EEB44   E8 42DC1900      CALL .0068C78B
+ *  004EEB49   83C4 04          ADD ESP,0x4
+ *  004EEB4C   B0 01            MOV AL,0x1
+ *  004EEB4E   8B4C24 34        MOV ECX,DWORD PTR SS:[ESP+0x34]
+ *  004EEB52   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  004EEB59   59               POP ECX
+ *  004EEB5A   5F               POP EDI
+ *  004EEB5B   5E               POP ESI
+ *  004EEB5C   5D               POP EBP
+ *  004EEB5D   5B               POP EBX
+ *  004EEB5E   8B4C24 1C        MOV ECX,DWORD PTR SS:[ESP+0x1C]
+ *  004EEB62   33CC             XOR ECX,ESP
+ *  004EEB64   E8 9CD61900      CALL .0068C205
+ *  004EEB69   83C4 2C          ADD ESP,0x2C
+ *  004EEB6C   C3               RETN
+ *  004EEB6D   CC               INT3
+ *  004EEB6E   CC               INT3
+ */
+static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
+{
+  const BYTE bytes[] = {
+    0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here
+    0x39,0x6c,0x24, 0x28,   // 004eeb39   396c24 28        cmp dword ptr ss:[esp+0x28],ebp
+    0x72, 0x0d,             // 004eeb3d   72 0d            jb short .004eeb4c
+    0x8b,0x4c,0x24, 0x14,   // 004eeb3f   8b4c24 14        mov ecx,dword ptr ss:[esp+0x14]
+    0x51,                   // 004eeb43   51               push ecx
+    0xe8 //, XX4,           // 004eeb44   e8 42dc1900      call .0068c78b
+  };
+  enum { hook_offset = 0 };
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  //ITH_GROWL_DWORD(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:System43+: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  hp.type = NO_CONTEXT|USING_STRING|FIXING_SPLIT;
+  ConsoleOutput("vnreng: INSERT System43+");
+  NewHook(hp, hookName);
+
+  ConsoleOutput("vnreng:System43+: disable GDI hooks"); // disable hooking to TextOutA, which is cached
+  DisableGDIHooks();
+  return true;
+}
+
+bool InsertSystem43Hook()
+{
+  bool patched = IthCheckFile(L"AliceRunPatch.dll");
+  ULONG startAddress, stopAddress;
+  if (patched ?
+      !NtInspect::getModuleMemoryRange(L"AliceRunPatch.dll", &startAddress, &stopAddress) :
+      !NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) {
+    ConsoleOutput("vnreng:System43: failed to get memory range");
+    return false;
+  }
+  // Insert new hook first
+  bool ok = InsertSystem43OldHook(startAddress, stopAddress, patched ? L"AliceRunPatch43" : L"System43");
+  ok = InsertSystem43NewHook(startAddress, stopAddress, L"System43+") || ok;
+  return ok;
 }
 
 /********************************************************************************************
