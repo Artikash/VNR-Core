@@ -498,7 +498,7 @@ class _TextManager(object):
 
     if text:
       if dm.hasSubtitles():
-        h = hashutil.hashtext(textutil.remove_text_name(text))
+        h = hashutil.hashcontext(text) #textutil.remove_text_name(text))
         l = dm.querySubtitles(hash=h)
         if l:
           if len(l) > 1:
@@ -508,11 +508,11 @@ class _TextManager(object):
           return l[0].text
 
       # Calculate hash2
-      h = hashutil.hashtext(text)
+      h = hashutil.hashcontext(text)
       hashes2 = [h]
       for h in self.hashes2:
         if h:
-          hashes2.append(hashutil.hashtext(text, h))
+          hashes2.append(hashutil.hashcontext(text, h))
         else:
           break
 
@@ -622,9 +622,9 @@ class _TextManager(object):
 
     # Calculate hash2
     self.hashes2[1:CONTEXT_CAPACITY] = [
-        hashutil.hashtext(text, h) if h else 0
+        hashutil.hashcontext(text, h) if h else 0
           for h in self.hashes2[:CONTEXT_CAPACITY-1]]
-    self.hashes2[0] = hashutil.hashtext(text)
+    self.hashes2[0] = hashutil.hashcontext(text)
 
     self.texts.append(text)
     dm = dataman.manager()
@@ -662,7 +662,7 @@ class _TextManager(object):
 
     #with SkProfiler("query subs"): # jichi 1/11/2015: 0.0007 sec for MuvLuv
     if dm.hasSubtitles():
-      h = hashutil.hashtext(textutil.remove_text_name(text))
+      h = hashutil.hashcontext(text) #textutil.remove_text_name(text))
       s = dm.queryBestSubtitle(hash=h)
       if s:
         matched_sub = s
@@ -818,7 +818,7 @@ class _TextManager(object):
 
     if dm.hasSubtitles():
       subs = set()
-      h = hashutil.hashtext(textutil.remove_text_name(text))
+      h = hashutil.hashcontext(text) #textutil.remove_text_name(text))
       l = dm.querySubtitles(hash=h)
       if l:
         for s in l:

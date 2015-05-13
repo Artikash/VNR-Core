@@ -100,20 +100,49 @@ def hashtexts(l, h=None):
      h = hashtext(it, h)
     return h
 
-def hashcontext(t):
+def _normalizecontext(t):
+  """Hash unicode text combined with context_sep
+  @param  t  unicode
+  @return   unicode
+  """
+  if not t:
+    return ''
+  for s in u"「」", u"（）":
+    if t[-1] == s[1]:
+      pos = t.find(s[0]) # remove character name
+      if pos != -1 and pos < defs.MAX_NAME_LENGTH:
+        if pos:
+          t = t[pos:]
+        break
+  if t and t[0] == u'【':
+    i = text.find(u'】')
+    if i > 0 and i < defs.MAX_NAME_LENGTH:
+      t = t[i+1:].lstrip() or t # avoid deleting context
+  return t
+
+def hashcontext(t, h=None):
+  """Hash unicode text combined with context_sep
+  @param  t  unicode
+  @return   long
+  """
+  t = _normalizecontext(t)
+  if not t:
+    return 0
+  return hashtext(t, h)
+
+def hashcontexts(t):
   """Hash unicode text combined with context_sep
   @param  t  unicode
   @return   long
   """
   if not t:
     return 0
-  sep_pos = t.find(defs.CONTEXT_SEP)
-  i = t.find(u"「") # remove character name
-  if i > 0 and i < defs.MAX_NAME_LENGTH and (sep_pos == -1 or i < sep_pos):
-    t = t[i:]
-  if sep_pos != -1:
-    t = t.replace(defs.CONTEXT_SEP, '')
-  return hashtext(t)
+  if defs.CONTEXT_SEP not in t:
+    return hashcontext(t)
+  l = t.split(defs.CONTEXT_SEP)
+  for i,t in enumerate(l):
+    l[i] = _normalizecontext(t)
+  return hashtext(''.join(l))
 
 if __name__ == '__main__':
   print urlsum("http://www.amazon.co.jp")
@@ -125,6 +154,9 @@ if __name__ == '__main__':
   print hashtext(u"111222\n\u3000")
 
   print hashcontext(u"そして、そこで初めて、オレたちに近づいてくる男の姿を視認する。||「…………」")
-  print hashcontext(u"「…………」")
+  print hashcontext(u"そして||「…………」")
+  print hashcontext(u"そして||織「…………」")
+  print hashcontext(u'アスタ「なんだ、キノウ姉ちゃんもいたんだ」')
+  print hashcontext(      u'「なんだ、キノウ姉ちゃんもいたんだ」')
 
 # EOF
