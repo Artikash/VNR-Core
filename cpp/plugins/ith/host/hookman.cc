@@ -624,70 +624,70 @@ void HookManager::UnRegisterProcess(DWORD pid)
 //  //swprintf(user_entry,L"UserHook%c",c);
 //}
 
-void HookManager::AddLink(WORD from, WORD to)
-{
-  HM_LOCK;
-  //bool flag=false;
-  //ConsoleOutput("vnrhost:AddLink: lock");
-  //EnterCriticalSection(&hmcs);
-  TextThread *from_thread = thread_table->FindThread(from),
-             *to_thread = thread_table->FindThread(to);
-  if (to_thread && from_thread) {
-    if (from_thread->GetThreadParameter()->pid != to_thread->GetThreadParameter()->pid)
-      ConsoleOutput("vnrhost:AddLink: link to different process");
-    else if (from_thread->Link()==to_thread)
-      ConsoleOutput("vnrhost:AddLink: link already exists");
-    else if (to_thread->CheckCycle(from_thread))
-      ConsoleOutput("vnrhost:AddLink: cyclic link");
-    else {
-      from_thread->Link()=to_thread;
-      from_thread->LinkNumber()=to;
-      ConsoleOutput("vnrhost:AddLink: thread linked");
-      //WCHAR str[0x40];
-      //swprintf(str,FormatLink,from,to);
-      //AddConsoleOutput(str);
-    }
-  } else
-    ConsoleOutput("vnrhost:AddLink: error link");
-  //else
-  //  AddConsoleOutput(ErrorLink);
-  //LeaveCriticalSection(&hmcs);
-  //ConsoleOutput("vnrhost:AddLink: unlock");
-}
-void HookManager::UnLink(WORD from)
-{
-  HM_LOCK;
-  //bool flag=false;
-  //ConsoleOutput("vnrhost:UnLink: lock");
-  //EnterCriticalSection(&hmcs);
-  if (TextThread *from_thread = thread_table->FindThread(from)) {
-    from_thread->Link() = nullptr;
-    from_thread->LinkNumber() = 0xffff;
-    ConsoleOutput("vnrhost:UnLink: link deleted");
-  }
-  //else // jichi 12/25/2013: This could happen when the game exist
-  //  ConsoleOutput("vnrhost:UnLink: thread does not exist");
-  //LeaveCriticalSection(&hmcs);
-  //ConsoleOutput("vnrhost:UnLink: unlock");
-}
-void HookManager::UnLinkAll(WORD from)
-{
-  HM_LOCK;
-  //bool flag=false;
-  //ConsoleOutput("vnrhost:UnLinkAll: lock");
-  //EnterCriticalSection(&hmcs);
-  if (TextThread *from_thread = thread_table->FindThread(from)) {
-    from_thread->UnLinkAll();
-    ConsoleOutput("vnrhost:UnLinkAll: link deleted");
-  }
-  //else // jichi 12/25/2013: This could happen after the process exists
-  //  ConsoleOutput("vnrhost:UnLinkAll: thread not exist");
-    //AddConsoleOutput(L"Link deleted.");
-  //} else
-  //  AddConsoleOutput(L"Thread not exist.");
-  //LeaveCriticalSection(&hmcs);
-  //ConsoleOutput("vnrhost:UnLinkAll: unlock");
-}
+//void HookManager::AddLink(WORD from, WORD to)
+//{
+//  HM_LOCK;
+//  //bool flag=false;
+//  //ConsoleOutput("vnrhost:AddLink: lock");
+//  //EnterCriticalSection(&hmcs);
+//  TextThread *from_thread = thread_table->FindThread(from),
+//             *to_thread = thread_table->FindThread(to);
+//  if (to_thread && from_thread) {
+//    if (from_thread->GetThreadParameter()->pid != to_thread->GetThreadParameter()->pid)
+//      ConsoleOutput("vnrhost:AddLink: link to different process");
+//    else if (from_thread->Link()==to_thread)
+//      ConsoleOutput("vnrhost:AddLink: link already exists");
+//    else if (to_thread->CheckCycle(from_thread))
+//      ConsoleOutput("vnrhost:AddLink: cyclic link");
+//    else {
+//      from_thread->Link()=to_thread;
+//      from_thread->LinkNumber()=to;
+//      ConsoleOutput("vnrhost:AddLink: thread linked");
+//      //WCHAR str[0x40];
+//      //swprintf(str,FormatLink,from,to);
+//      //AddConsoleOutput(str);
+//    }
+//  } else
+//    ConsoleOutput("vnrhost:AddLink: error link");
+//  //else
+//  //  AddConsoleOutput(ErrorLink);
+//  //LeaveCriticalSection(&hmcs);
+//  //ConsoleOutput("vnrhost:AddLink: unlock");
+//}
+//void HookManager::UnLink(WORD from)
+//{
+//  HM_LOCK;
+//  //bool flag=false;
+//  //ConsoleOutput("vnrhost:UnLink: lock");
+//  //EnterCriticalSection(&hmcs);
+//  if (TextThread *from_thread = thread_table->FindThread(from)) {
+//    from_thread->Link() = nullptr;
+//    from_thread->LinkNumber() = 0xffff;
+//    ConsoleOutput("vnrhost:UnLink: link deleted");
+//  }
+//  //else // jichi 12/25/2013: This could happen when the game exist
+//  //  ConsoleOutput("vnrhost:UnLink: thread does not exist");
+//  //LeaveCriticalSection(&hmcs);
+//  //ConsoleOutput("vnrhost:UnLink: unlock");
+//}
+//void HookManager::UnLinkAll(WORD from)
+//{
+//  HM_LOCK;
+//  //bool flag=false;
+//  //ConsoleOutput("vnrhost:UnLinkAll: lock");
+//  //EnterCriticalSection(&hmcs);
+//  if (TextThread *from_thread = thread_table->FindThread(from)) {
+//    from_thread->UnLinkAll();
+//    ConsoleOutput("vnrhost:UnLinkAll: link deleted");
+//  }
+//  //else // jichi 12/25/2013: This could happen after the process exists
+//  //  ConsoleOutput("vnrhost:UnLinkAll: thread not exist");
+//    //AddConsoleOutput(L"Link deleted.");
+//  //} else
+//  //  AddConsoleOutput(L"Thread not exist.");
+//  //LeaveCriticalSection(&hmcs);
+//  //ConsoleOutput("vnrhost:UnLinkAll: unlock");
+//}
 
 void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD retn, DWORD spl, int len, bool space)
 {
@@ -858,7 +858,7 @@ DWORD  GetCurrentPID() { return ::man->GetCurrentPID(); }
 
 HANDLE  GetCmdHandleByPID(DWORD pid) { return ::man->GetCmdHandleByPID(pid); }
 
-void AddLink(WORD from, WORD to) { ::man->AddLink(from, to); }
+//void AddLink(WORD from, WORD to) { ::man->AddLink(from, to); }
 
 // jichi 9/27/2013: Unparse to hook parameters /H code
 void GetCode(const HookParam &hp, LPWSTR buffer, DWORD pid)
