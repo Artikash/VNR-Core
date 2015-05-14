@@ -10,7 +10,7 @@ __all__ = 'TextHook',
 from PySide.QtCore import Signal, QObject, Qt
 from sakurakit import skos
 from sakurakit.skclass import Q_Q, memoized
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 
 ENABLE_GAMEENGINE = True
 
@@ -263,7 +263,10 @@ if skos.WIN:
       d = self.__d
       if d.pid and not d.hijacked:
         d.hijacked = d.hijackProcess(d.pid)
-      dprint("leave: ret = %s" % d.hijacked)
+      if d.hijacked:
+        dprint("leave: ret = %s" % d.hijacked)
+      else:
+        dwarn("leave: ret = %s" % d.hijacked)
       return ret
 
     def detachProcess(self):
