@@ -70,11 +70,11 @@ bool DeterminePCEngine()
     return true;
   }
 
-  //if (IthFindFile(L"*\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
-  //if (IthCheckFile(L"bsz2_Data\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
-  //  InsertMonoHook();
-  //  return true;
-  //}
+  // jichi 5/14/2015: Skip hijacking BALDRSKY ZEROs
+  if (IthCheckFile(L"bsz_Data\\Mono\\mono.dll") || IthCheckFile(L"bsz2_Data\\Mono\\mono.dll")) {
+    ConsoleOutput("vnreng: IGNORE BALDRSKY ZEROs");
+    return true;
+  }
   if (::GetModuleHandleA("mono.dll")) {
     InsertMonoHooks();
 
