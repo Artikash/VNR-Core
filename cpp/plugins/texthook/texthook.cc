@@ -252,6 +252,21 @@ bool TextHook::detachProcess(ulong pid, bool checkActive)
   return ret;
 }
 
+bool TextHook::hijackProcess(ulong pid)
+{
+  DOUT("enter: pid =" << pid);
+  Q_ASSERT(isActive());
+
+  if (!containsProcess(pid)) {
+    DOUT("leave: aborted, process not attached");
+    return false;
+  }
+
+  bool ret = Ihf::hijackProcess(pid);
+  DOUT("leave: ret =" << ret);
+  return ret;
+}
+
 //void TextHook::detachAllProcesses()
 //{
 //  DOUT("enter");

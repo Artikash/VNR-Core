@@ -315,7 +315,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   BYTE *pbData,
        pbSmallBuff[SMALL_BUFF_SIZE];
   DWORD dwType = hp.type;
-  if (!live)
+  if (!::live) // the pipe thread is busy
     return 0;
   if ((dwType & NO_CONTEXT) == 0 && HookFilter(dwRetn))
     return 0;
@@ -452,9 +452,9 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
 
       IthCoolDown(); // jichi 9/28/2013: cool down to prevent parallelization in wine
       //CliLockPipe();
-      if (STATUS_PENDING == NtWriteFile(hPipe, 0, 0, 0, &ios, pbData, dwCount + HEADER_SIZE, 0, 0)) {
-        NtWaitForSingleObject(hPipe, 0, 0);
-        NtFlushBuffersFile(hPipe, &ios);
+      if (STATUS_PENDING == NtWriteFile(::hPipe, 0, 0, 0, &ios, pbData, dwCount + HEADER_SIZE, 0, 0)) {
+        NtWaitForSingleObject(::hPipe, 0, 0);
+        NtFlushBuffersFile(::hPipe, &ios);
       }
       //CliUnlockPipe();
     }

@@ -80,7 +80,7 @@ enum HostCommandType {
   , HOST_COMMAND_NEW_HOOK = 0
   , HOST_COMMAND_REMOVE_HOOK = 1
   , HOST_COMMAND_MODIFY_HOOK = 2
-  , HOST_COMMAND_HIJACK = 3
+  , HOST_COMMAND_HIJACK_PROCESS = 3
 };
 
 enum HostNotificationType {

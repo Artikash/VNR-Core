@@ -33,17 +33,12 @@ LARGE_INTEGER sleep_time = {-20*10000, -1};
 DWORD engine_type;
 DWORD module_base;
 
-//DWORD engine_base;
-bool engine_registered; // 10/19/2014 jichi: disable engine dll
-
 HANDLE hPipe,
        hCommand,
        hDetach; //,hLose;
 //InsertHookFun InsertHook;
 //IdentifyEngineFun IdentifyEngine;
 //InsertDynamicHookFun InsertDynamicHook;
-
-bool hook_inserted = false;
 
 // jichi 9/28/2013: protect pipe on wine
 // Put the definition in this file so that it might be inlined
@@ -78,8 +73,6 @@ HANDLE IthOpenPipe(LPWSTR name, ACCESS_MASK direction)
 DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH main module status.
 {
   CC_UNUSED(lpThreadParameter);
-  int i;
-  TextHook *man;
   struct {
     DWORD pid;
     TextHook *man;
@@ -88,72 +81,75 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
   } u;
   HANDLE hMutex,
          hPipeExist;
+
   //swprintf(engine_event,L"ITH_ENGINE_%d",current_process_id);
   swprintf(detach_mutex, ITH_DETACH_MUTEX_ L"%d", current_process_id);
   //swprintf(lose_event,L"ITH_LOSEPIPE_%d",current_process_id);
   //hEngine=IthCreateEvent(engine_event);
   //NtWaitForSingleObject(hEngine,0,0);
   //NtClose(hEngine);
-  while (!engine_registered)
-    NtDelayExecution(0, &wait_time);
+
+  //while (!engine_registered)
+  //  NtDelayExecution(0, &wait_time);
+
   //LoadEngine(L"ITH_Engine.dll");
   u.module = module_base;
   u.pid = current_process_id;
   u.man = hookman;
   //u.engine = engine_base; // jichi 10/19/2014: disable the second dll
-  hPipeExist = IthOpenEvent(exist);
+  hPipeExist = IthOpenEvent(::exist);
   IO_STATUS_BLOCK ios;
   //hLose=IthCreateEvent(lose_event,0,0);
   if (hPipeExist != INVALID_HANDLE_VALUE)
-  while (running) {
-    hPipe = INVALID_HANDLE_VALUE;
+  while (::running) {
+    ::hPipe = INVALID_HANDLE_VALUE;
     hCommand = INVALID_HANDLE_VALUE;
-    while (NtWaitForSingleObject(hPipeExist,0,&wait_time) == WAIT_TIMEOUT)
-      if (!running)
+    while (NtWaitForSingleObject(hPipeExist, 0, &wait_time) == WAIT_TIMEOUT)
+      if (!::running)
         goto _release;
-    hMutex = IthCreateMutex(mutex,0);
-    NtWaitForSingleObject(hMutex,0,0);
-    while (hPipe == INVALID_HANDLE_VALUE||
+    hMutex = IthCreateMutex(::mutex, 0);
+    NtWaitForSingleObject(hMutex, 0, 0);
+    while (::hPipe == INVALID_HANDLE_VALUE||
       hCommand == INVALID_HANDLE_VALUE) {
       NtDelayExecution(0, &sleep_time);
-      if (hPipe == INVALID_HANDLE_VALUE)
-        hPipe = IthOpenPipe(recv_pipe, GENERIC_WRITE);
+      if (::hPipe == INVALID_HANDLE_VALUE)
+        ::hPipe = IthOpenPipe(recv_pipe, GENERIC_WRITE);
       if (hCommand == INVALID_HANDLE_VALUE)
         hCommand = IthOpenPipe(command, GENERIC_READ);
     }
     //NtClearEvent(hLose);
     CliLockPipe();
-    NtWriteFile(hPipe, 0, 0, 0, &ios, &u, sizeof(u), 0, 0);
+    NtWriteFile(::hPipe, 0, 0, 0, &ios, &u, sizeof(u), 0, 0);
     CliUnlockPipe();
-    live = true;
-    for (man = hookman, i = 0; i < current_hook; man++)
-      if (man->RecoverHook()) // jichi 9/27/2013: This is the place where built-in hooks like TextOutA are inserted
-        i++;
+    for (int i = 0, count = 0; count < ::current_hook; i++)
+      if (hookman[i].RecoverHook()) // jichi 9/27/2013: This is the place where built-in hooks like TextOutA are inserted
+        count++;
     //ConsoleOutput(dll_name);
-    ConsoleOutput("vnrcli:WaitForPipe: pipe connected");
     //OutputDWORD(tree->Count());
     NtReleaseMutant(hMutex,0);
     NtClose(hMutex);
-    if (!hook_inserted && engine_registered) {
-      hook_inserted = true;
-      Engine::IdentifyEngine();
-    }
-    hDetach = IthCreateMutex(detach_mutex,1);
-    while (running && NtWaitForSingleObject(hPipeExist, 0, &sleep_time) == WAIT_OBJECT_0)
+
+    ConsoleOutput("vnrcli:WaitForPipe: pipe connected");
+
+    ::live = true;
+    ::hDetach = IthCreateMutex(detach_mutex,1);
+    while (::running && NtWaitForSingleObject(hPipeExist, 0, &sleep_time) == WAIT_OBJECT_0)
       NtDelayExecution(0, &sleep_time);
-    live = false;
-    for (man = hookman, i = 0; i < current_hook; man++)
-      if (man->RemoveHook())
-        i++;
-    if (!running) {
+    ::live = false;
+
+    for (int i = 0, count = 0; count < ::current_hook; count++)
+      if (hookman[i].RemoveHook())
+        count++;
+    if (!::running) {
       IthCoolDown(); // jichi 9/28/2013: Use cooldown instead of lock pipe to prevent from hanging on exit
       //CliLockPipe();
-      NtWriteFile(hPipe, 0, 0, 0, &ios, man, 4, 0, 0);
+      //NtWriteFile(::hPipe, 0, 0, 0, &ios, man, 4, 0, 0);
+      NtWriteFile(::hPipe, 0, 0, 0, &ios, hookman, 4, 0, 0);
       //CliUnlockPipe();
-      IthReleaseMutex(hDetach);
+      IthReleaseMutex(::hDetach);
     }
-    NtClose(hDetach);
-    NtClose(hPipe);
+    NtClose(::hDetach);
+    NtClose(::hPipe);
   }
 _release:
   //NtClose(hLose);
@@ -169,9 +165,9 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
   hPipeExist = IthOpenEvent(exist);
   IO_STATUS_BLOCK ios={};
   if (hPipeExist!=INVALID_HANDLE_VALUE)
-    while (running) {
-      while (!live) {
-        if (!running)
+    while (::running) {
+      while (!::live) {
+        if (!::running)
           goto _detach;
         NtDelayExecution(0, &sleep_time);
       }
@@ -190,11 +186,11 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
           continue;
         case 0: break;
         default:
-          if (NtWaitForSingleObject(hDetach, 0, &wait_time) == WAIT_OBJECT_0)
+          if (NtWaitForSingleObject(::hDetach, 0, &wait_time) == WAIT_OBJECT_0)
             goto _detach;
         }
       }
-      if (ios.uInformation && live) {
+      if (ios.uInformation && ::live) {
         command = *(DWORD *)buff;
         switch(command) {
         case HOST_COMMAND_NEW_HOOK:
@@ -234,12 +230,13 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
             IthSetEvent(hModify);
             NtClose(hModify);
           } break;
-        // jichi 5/13/2015: removed as not used
+        case HOST_COMMAND_HIJACK_PROCESS:
+          Engine::hijack();
+          break;
         //case HOST_COMMAND_DETACH:
-        //  running = false;
-        //  live = false;
+        //  ::running = false;
+        //  ::live = false;
         //  goto _detach;
-        default: ;
         }
       }
     }

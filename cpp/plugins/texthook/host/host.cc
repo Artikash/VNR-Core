@@ -511,6 +511,20 @@ DWORD Host_GetSettings(Settings **p)
     return 1;
 }
 
+DWORD Host_HijackProcess(DWORD pid)
+{
+  //ITH_SYNC_HOOK;
+
+  HANDLE hCmd = man->GetCmdHandleByPID(pid);
+  if (hCmd == 0)
+    return -1;
+
+  DWORD cmd = HOST_COMMAND_HIJACK_PROCESS;
+  IO_STATUS_BLOCK ios;
+  NtWriteFile(hCmd, 0,0,0, &ios, &cmd, sizeof(cmd), 0, 0);
+  return 0;
+}
+
 DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPWSTR name)
 {
   ITH_SYNC_HOOK;

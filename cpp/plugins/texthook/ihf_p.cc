@@ -325,6 +325,14 @@ bool Ihf::detachProcess(DWORD pid)
   return ok;
 }
 
+bool Ihf::hijackProcess(DWORD pid)
+{
+  DOUT("enter: pid =" << pid);
+  bool ok = 0 == ::Host_HijackProcess(pid);
+  DOUT("leave: ret =" << ok);
+  return ok;
+}
+
 // - Hook -
 
 // See: Host_ModifyHook in IHF/main.cpp

@@ -72,6 +72,7 @@ public:
   //bool attachOneProcess(ulong pid, bool checkActive = false);
   bool attachProcess(ulong pid, bool checkActive = false);
   bool detachProcess(ulong pid, bool checkActive = false);
+  bool hijackProcess(ulong pid);
   //void detachAllProcesses();
   //QList<ulong> attachedProcesses(bool checkActive = false) const;
   //ulong anyAttachedProcess(bool checkActive = false) const;

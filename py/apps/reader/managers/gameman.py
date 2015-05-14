@@ -403,13 +403,18 @@ class GameProfile(QtCore.QObject):
       self.ignoresRepeat = game.ignoresRepeat
       self.keepsSpace = game.keepsSpace
       self.threadKept = game.threadKept
+
+      hooked = False
       if hookEnabled:
         if game.hook and self.hook != game.hook:
           self.hook = game.hook
-          self.applyHook()
+          hooked = self.applyHook()
       elif game.hook and game.hook != texthook.global_().currentHookCode():
         growl.notify(my.tr("Skip user-defined hook as you wish")
             + "<br/>" + game.hook)
+
+      if not hooked:
+        texthook.global_().hijackProcess()
 
       dprint("encoding = %s, thread name = %s" % (self.encoding, self.threadName))
 
@@ -900,7 +905,7 @@ class GameManager(QtCore.QObject):
 
   ## Actions ##
 
-  def attachTextHook(self):
+  def attachTextHook(self): # this function is only called in main.py when GameAgent Failed
     pid = self.currentGamePid()
     if not pid:
       dwarn("game already closed")
@@ -1161,7 +1166,7 @@ class GameManager(QtCore.QObject):
           #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
           #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
           dprint("attach using text hook")
-          attached = texthook.global_().attachProcess(g.pid)
+          attached = texthook.global_().attachProcess(g.pid, hijack=False) # disable hijack by default, delay it to updateThread
 
           #if attached:
           #  dprint("try game engine")

@@ -7278,6 +7278,11 @@ bool InsertGXPHook()
 
             ConsoleOutput("vnreng: INSERT GXP");
             NewHook(hp, L"GXP");
+
+            // jichi 5/13/2015: Disable hooking to GetGlyphOutlineW
+            // FIXME: GetGlyphOutlineW can extract name, but GXP cannot
+            ConsoleOutput("vnreng:GXP: disable GDI hooks");
+            DisableGDIHooks();
             return true;
           }
         }

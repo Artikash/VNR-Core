@@ -68,6 +68,7 @@ public:
   // - Injection -
   static bool attachProcess(ulong pid);
   static bool detachProcess(ulong pid);
+  static bool hijackProcess(ulong pid);
 
   ///  Add hook code
   static bool addHook(ulong pid, const QString &code, const QString &name = QString(), bool verbose = true);
