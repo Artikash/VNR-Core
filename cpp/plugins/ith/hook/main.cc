@@ -10,10 +10,10 @@
 
 #include "cli.h"
 #include "tree/avl.h"
-#include "engine/match.h"
 #include "ith/common/const.h"
 #include "ith/common/defs.h"
 #include "ith/common/except.h"
+#include "engine/match.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
 #include "ccutil/ccmacro.h"
@@ -166,8 +166,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 {
 
   static HANDLE hSendThread,
-                hCmdThread,
-                hEngineThread;
+                hCmdThread;
 
 
   CC_UNUSED(lpReserved);
@@ -231,7 +230,6 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       //InitDefaultHook(); // jichi 7/17/2014: Disabled by default
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
-      hEngineThread = IthCreateThread(Engine::match, 0);
     }
     break;
   case DLL_PROCESS_DETACH:
@@ -243,10 +241,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 
       const LONGLONG timeout = -50000000; // in nanoseconds = 5 seconds
 
-      if (hEngineThread) {
-        NtWaitForSingleObject(hEngineThread, 0, (PLARGE_INTEGER)&timeout);
-        NtClose(hEngineThread);
-      }
+      Engine::terminate();
 
       if (hSendThread) {
         NtWaitForSingleObject(hSendThread, 0, (PLARGE_INTEGER)&timeout);

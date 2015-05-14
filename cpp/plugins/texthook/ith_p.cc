@@ -96,7 +96,7 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
 
   int t;
   bool accept = false;
-  DWORD *data = &hp.off;  //
+  DWORD *data = &hp.offset;  //
   LPWSTR offset = cmd + 1;
   LPWSTR delim_str = L":*@!";
   LPWSTR delim = delim_str;
@@ -126,13 +126,13 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
       break;
     case L'*':
       if (hp.split) {
-        data = &hp.split_ind;
+        data = &hp.split_index;
         delim = delim_str + 2;
         hp.type |= SPLIT_INDIRECT;
       }
       else {
         hp.type |= DATA_INDIRECT;
-        data = &hp.ind;
+        data = &hp.index;
       }
       break;
     case L'@':
@@ -140,11 +140,11 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
       break;
     }
   }
-  t = Convert(offset, &hp.addr, delim_str);
+  t = Convert(offset, &hp.address, delim_str);
   if (t < 0)
     return false;
-  if (hp.off & 0x80000000)
-    hp.off -= 4;
+  if (hp.offset & 0x80000000)
+    hp.offset -= 4;
   if (hp.split & 0x80000000)
     hp.split -= 4;
   LPWSTR temp = offset;
@@ -244,17 +244,17 @@ bool Ith::parseHookCode(const QString &code, HookParam *hp, bool verbose)
 #ifdef DEBUG
   if (ret && verbose)
     qDebug()
-      << "addr:" << hp->addr
+      << "addr:" << hp->address
       << ", text_fun:" << hp->text_fun
       << ", function:"<< hp->function
       << ", hook_len:" << hp->hook_len
-      << ", ind:" << hp->ind
+      << ", ind:" << hp->index
       << ", length_offset:" << hp->length_offset
       << ", module:" << hp->module
-      << ", off:" <<hp->off
+      << ", off:" <<hp->offset
       << ", recover_len:" << hp->recover_len
       << ", split:" << hp->split
-      << ", split_ind:" << hp->split_ind
+      << ", split_ind:" << hp->split_index
       << ", type:" << hp->type;
 #endif // DEBUG
   DOUT("leave: ret =" << ret);

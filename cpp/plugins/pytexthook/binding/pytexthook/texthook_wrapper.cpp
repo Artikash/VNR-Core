@@ -797,6 +797,53 @@ static PyObject* Sbk_TextHookFunc_detachProcess(PyObject* self, PyObject* args, 
         return 0;
 }
 
+static PyObject* Sbk_TextHookFunc_hijackProcess(PyObject* self, PyObject* pyArg)
+{
+    TextHookWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (TextHookWrapper*)((::TextHook*)Shiboken::Conversions::cppPointer(SbkpytexthookTypes[SBK_TEXTHOOK_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: hijackProcess(ulong)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<ulong>(), (pyArg)))) {
+        overloadId = 0; // hijackProcess(ulong)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_TextHookFunc_hijackProcess_TypeError;
+
+    // Call function/method
+    {
+        ulong cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // hijackProcess(ulong)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = cppSelf->hijackProcess(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_TextHookFunc_hijackProcess_TypeError:
+        const char* overloads[] = {"unsigned long", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pytexthook.TextHook.hijackProcess", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_TextHookFunc_interval(PyObject* self)
 {
     TextHookWrapper* cppSelf = 0;
@@ -1810,6 +1857,7 @@ static PyMethodDef Sbk_TextHook_methods[] = {
     {"dataCapacity", (PyCFunction)Sbk_TextHookFunc_dataCapacity, METH_NOARGS},
     {"defaultHookName", (PyCFunction)Sbk_TextHookFunc_defaultHookName, METH_NOARGS},
     {"detachProcess", (PyCFunction)Sbk_TextHookFunc_detachProcess, METH_VARARGS|METH_KEYWORDS},
+    {"hijackProcess", (PyCFunction)Sbk_TextHookFunc_hijackProcess, METH_O},
     {"interval", (PyCFunction)Sbk_TextHookFunc_interval, METH_NOARGS},
     {"isActive", (PyCFunction)Sbk_TextHookFunc_isActive, METH_NOARGS},
     {"isDebug", (PyCFunction)Sbk_TextHookFunc_isDebug, METH_NOARGS},

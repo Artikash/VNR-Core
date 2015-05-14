@@ -4,11 +4,14 @@
 
 CONFIG += noqtgui dll #eha # eha will catch all exceptions, but does not work on Windows XP
 include(../../../config.pri)
-include($$PLUGINDIR/ith/host/host.pri)
+#include($$LIBDIR/winmaker/winmaker.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
+include(host/host.pri)
 
-#include($$LIBDIR/winmaker/winmaker.pri)
+# TODO: Get rid of ITH_SYS. Use my own inject/pipe implementation in Python/Qt.
+include($$PLUGINDIR/ith/sys/sys.pri)
+LIBS  += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
 
 DEFINES  += ITH_HAS_CRT # Use native CRT
 

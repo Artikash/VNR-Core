@@ -450,9 +450,9 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
                     //swprintf(str, L"Hook addr: 0x%.8X",pt+k);
                     //ConsoleOutput(str);
                     HookParam hp = {};
-                    hp.addr = pt + k + 0x14;
-                    hp.off = -0x14;
-                    hp.ind = -0x2;
+                    hp.address = pt + k + 0x14;
+                    hp.offset = -0x14;
+                    hp.index = -0x2;
                     hp.split = -0xc;
                     hp.length_offset = 1;
                     hp.type = USING_UNICODE|NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
@@ -465,9 +465,9 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
               //swprintf(str, L"Hook addr: 0x%.8X",pt+j);
               //ConsoleOutput(str);
               HookParam hp = {};
-              hp.addr = (DWORD)pt + j;
-              hp.off = -0x8;
-              hp.ind = 0x14;
+              hp.address = (DWORD)pt + j;
+              hp.offset = -0x8;
+              hp.index = 0x14;
               hp.split = -0x8;
               hp.length_offset = 1;
               hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
@@ -664,7 +664,7 @@ bool InsertKAGParserHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.text_fun = SpecialHookKAGParser;
   hp.filter_fun = KAGParserFilter;
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
@@ -704,7 +704,7 @@ bool InsertKAGParserExHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.text_fun = SpecialHookKAGParserEx;
   hp.filter_fun = KAGParserFilter;
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
@@ -1261,10 +1261,10 @@ namespace { // unnamed
 void NewKiriKiriZHook(DWORD addr)
 {
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = pusha_ecx_off - 4;
-  hp.split = hp.off;    // the same logic but diff value as KiriKiri1, use [ecx] as split
-  hp.ind = 0x14;        // the same as KiriKiri1
+  hp.address = addr;
+  hp.offset = pusha_ecx_off - 4;
+  hp.split = hp.offset;    // the same logic but diff value as KiriKiri1, use [ecx] as split
+  hp.index = 0x14;        // the same as KiriKiri1
   hp.length_offset = 1; // the same as KiriKiri1
   hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
   //hp.filter_fun = NewLineWideCharFilter;
@@ -1303,7 +1303,7 @@ bool InsertKiriKiriZHook1()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = HOOK_EMPTY;
   hp.hook_fun = KiriKiriZHook1;
   ConsoleOutput("vnreng: INSERT KiriKiriZ1 empty hook");
@@ -1392,8 +1392,8 @@ static bool FindBGIHook(DWORD fun, DWORD size, DWORD pt, WORD sig)
                 //swprintf(str, L"Entry 2(final): 0x%.8X",pt+l);
                 //ConsoleOutput(str);
                 HookParam hp = {};
-                hp.addr = (DWORD)pt + l;
-                hp.off = 0x8;
+                hp.address = (DWORD)pt + l;
+                hp.offset = 0x8;
                 hp.split = -0x18;
                 hp.length_offset = 1;
                 hp.type = BIG_ENDIAN|USING_SPLIT;
@@ -1492,9 +1492,9 @@ bool InsertBGI1Hook()
     if (ib[0] == 0x3d) {
       i++;
       if (id[0] == 0xffff) { //cmp eax,0xffff
-        hp.addr = SafeFindEntryAligned(i, 0x40);
-        if (hp.addr) {
-          hp.off = 0xc;
+        hp.address = SafeFindEntryAligned(i, 0x40);
+        if (hp.address) {
+          hp.offset = 0xc;
           hp.split = -0x18;
           hp.type = BIG_ENDIAN|USING_SPLIT;
           hp.length_offset = 1;
@@ -1508,9 +1508,9 @@ bool InsertBGI1Hook()
     if (ib[0] == 0x81 && ((ib[1] & 0xf8) == 0xf8)) {
       i += 2;
       if (id[0] == 0xffff) { //cmp reg,0xffff
-        hp.addr = SafeFindEntryAligned(i, 0x40);
-        if (hp.addr) {
-          hp.off = 0xc;
+        hp.address = SafeFindEntryAligned(i, 0x40);
+        if (hp.address) {
+          hp.offset = 0xc;
           hp.split = -0x18;
           hp.type = BIG_ENDIAN|USING_SPLIT;
           hp.length_offset = 1;
@@ -1770,7 +1770,7 @@ bool InsertBGI1Hook()
 //
 //static void SpecialHookBGI2(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 //{
-//  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->off);
+//  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->offset);
 //  if (text) {
 //    *data = (DWORD)text;
 //    *len = _bgistrlen(text);
@@ -1789,8 +1789,8 @@ bool InsertBGI2Hook()
     //0x77, 0x6a     // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
   };
   enum {  // distance to the beginning of the function
-    hook_offset_3 = 0x34c80 - 0x34d31 // for old BGI2 game, text is in arg2
-    , hook_offset_2 = 0x01312cd0 - 0x01312d8e // for new BGI2 game since 蒼の彼方 (2014/08), text is in arg3
+    addr_offset_3 = 0x34c80 - 0x34d31 // for old BGI2 game, text is in arg2
+    , addr_offset_2 = 0x01312cd0 - 0x01312d8e // for new BGI2 game since 蒼の彼方 (2014/08), text is in arg3
   };
 
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
@@ -1811,20 +1811,20 @@ bool InsertBGI2Hook()
 
   HookParam hp = {};
   switch (funaddr - addr) {
-  case hook_offset_3: hp.off = 4 * 3; break; // arg3
-  case hook_offset_2: hp.off = 4 * 2; break; // arg2
+  case addr_offset_3: hp.offset = 4 * 3; break; // arg3
+  case addr_offset_2: hp.offset = 4 * 2; break; // arg2
   default:
     ConsoleOutput("vnreng:BGI2: function found bug unrecognized hook offset");
     return false;
   }
-  hp.addr = funaddr;
+  hp.address = funaddr;
 
   // jichi 5/12/2014: Using split could distinguish name and choices. But the signature might become unstable
   hp.type = USING_STRING|USING_SPLIT;
   hp.split = 4 * 8; // pseudo arg8
   //hp.split = -0x18;
 
-  //ITH_GROWL_DWORD2(hp.addr, module_base_);
+  //ITH_GROWL_DWORD2(hp.address, module_base_);
 
   ConsoleOutput("vnreng: INSERT BGI2");
   NewHook(hp, L"BGI2");
@@ -1897,7 +1897,7 @@ bool InsertBGI3Hook()
     //0x5d,           // 00e88e6e  |. 5d             pop ebp
     //0xc3            // 00e88e6f  \. c3             retn
   };
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //reladdr = 0x68e56;
@@ -1908,11 +1908,11 @@ bool InsertBGI3Hook()
 
   HookParam hp = {};
   hp.type = USING_STRING|USING_SPLIT;
-  hp.off = -0x20;
+  hp.offset = -0x20;
   hp.split = -0x8;
-  hp.addr = addr;
+  hp.address = addr;
 
-  //ITH_GROWL_DWORD2(hp.addr, module_base_);
+  //ITH_GROWL_DWORD2(hp.address, module_base_);
 
   ConsoleOutput("vnreng: INSERT BGI3");
   NewHook(hp, L"BGI3");
@@ -1938,22 +1938,79 @@ Reallive hook:
   up stack frames so we can just refer to EBP to find function entry.
 
 ********************************************************************************************/
+/** jichi 5/13/2015
+ *  RealLive does not work for 水着少女と媚薬アイス from 裸足少女
+ *  012da80f   cc               int3
+ *  012da810   55               push ebp    ; jichi: change to hook here
+ *  012da811   8bec             mov ebp,esp
+ *  012da813   83ec 10          sub esp,0x10 ; jichi: hook here by default
+ *  012da816   53               push ebx
+ *  012da817   56               push esi
+ *  012da818   57               push edi
+ *  012da819   8b7d 18          mov edi,dword ptr ss:[ebp+0x18]
+ *  012da81c   81ff 5c810000    cmp edi,0x815c
+ *  012da822   75 0a            jnz short reallive.012da82e
+ *  012da824   c745 18 9f840000 mov dword ptr ss:[ebp+0x18],0x849f
+ *  012da82b   8b7d 18          mov edi,dword ptr ss:[ebp+0x18]
+ *  012da82e   b8 9041e301      mov eax,reallive.01e34190
+ *  012da833   b9 18a49001      mov ecx,reallive.0190a418
+ *  012da838   e8 a38d0000      call reallive.012e35e0
+ *  012da83d   85c0             test eax,eax
+ *  012da83f   74 14            je short reallive.012da855
+ *  012da841   e8 6addffff      call reallive.012d85b0
+ *  012da846   ba 9041e301      mov edx,reallive.01e34190
+ *  012da84b   b8 18a49001      mov eax,reallive.0190a418
+ *  012da850   e8 ab7c0000      call reallive.012e2500
+ *  012da855   8d45 f0          lea eax,dword ptr ss:[ebp-0x10]
+ *  012da858   50               push eax
+ *  012da859   8d4d f4          lea ecx,dword ptr ss:[ebp-0xc]
+ *  012da85c   51               push ecx
+ *  012da85d   8d55 fc          lea edx,dword ptr ss:[ebp-0x4]
+ *  012da860   52               push edx
+ *  012da861   8d45 f8          lea eax,dword ptr ss:[ebp-0x8]
+ *  012da864   50               push eax
+ *  012da865   8bc7             mov eax,edi
+ *  012da867   e8 54dfffff      call reallive.012d87c0
+ *  012da86c   8bf0             mov esi,eax
+ *  012da86e   83c4 10          add esp,0x10
+ *  012da871   85f6             test esi,esi
+ *  012da873   75 4b            jnz short reallive.012da8c0
+ *  012da875   8d4d f4          lea ecx,dword ptr ss:[ebp-0xc]
+ *  012da878   51               push ecx
+ *  012da879   57               push edi
+ *  012da87a   8d4d f0          lea ecx,dword ptr ss:[ebp-0x10]
+ *  012da87d   e8 cef0ffff      call reallive.012d9950
+ *  012da882   8bf0             mov esi,eax
+ *  012da884   83c4 08          add esp,0x8
+ *  012da887   85f6             test esi,esi
+ */
 static bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 {
   if (addr != ::GetGlyphOutlineA)
     return false;
+  // jichi 5/13/2015: Find the enclosing caller of GetGlyphOutlineA
   if (DWORD i = frame) {
     i = *(DWORD *)(i + 4);
     for (DWORD j = i; j > i - 0x100; j--)
       if (*(WORD *)j == 0xec83) { // jichi 7/26/2014: function starts
+        // 012da80f   cc               int3
+        // 012da810   55               push ebp    ; jichi: change to hook here
+        // 012da811   8bec             mov ebp,esp
+        // 012da813   83ec 10          sub esp,0x10 ; jichi: hook here by default
+        if (*(DWORD *)(j-3) == 0x83ec8b55)
+          j -= 3;
+
         HookParam hp = {};
-        hp.addr = j;
-        hp.off = 0x14;
-        hp.split = -0x18;
+        hp.address = j;
+        hp.offset = 0x14;
+        hp.split = pusha_esp_off - 4; // -0x18
         hp.length_offset = 1;
         hp.type = BIG_ENDIAN|USING_SPLIT;
+        //ITH_GROWL_DWORD(hp.address);
         NewHook(hp, L"RealLive");
         //RegisterEngineType(ENGINE_REALLIVE);
+        ConsoleOutput("vnreng:RealLive: disable GDI hooks");
+        DisableGDIHooks();
         return true;
       }
   }
@@ -2049,7 +2106,7 @@ bool InsertSiglus3Hook()
                            // 002667e0   5d               pop ebp
                            // 002667e1   c2 0c00          retn 0xc
   };
-  enum { hook_offset = sizeof(bytes) - 4 };
+  enum { addr_offset = sizeof(bytes) - 4 };
   ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) { // jichi 8/17/2013: Add "== 0" check to prevent breaking new games
@@ -2065,8 +2122,8 @@ bool InsertSiglus3Hook()
   //}
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = pusha_eax_off - 4;
+  hp.address = addr + addr_offset;
+  hp.offset = pusha_eax_off - 4;
   hp.type = USING_UNICODE;
   hp.length_offset = 1;
   //hp.text_fun = SpecialHookSiglus3;
@@ -2850,7 +2907,7 @@ bool InsertSiglus2Hook()
   //  0x3b,0xd7                       // 3bd7             cmp edx,edi ; hook here
   //};
   //enum { cur_ins_size = 2 };
-  //enum { hook_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
+  //enum { addr_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
 
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr;
@@ -2859,7 +2916,7 @@ bool InsertSiglus2Hook()
       0x3b,0xd7,  // cmp edx,edi ; hook here
       0x75,0x4b   // jnz short
     };
-    //enum { hook_offset = 0 };
+    //enum { addr_offset = 0 };
     addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
     if (addr)
       ConsoleOutput("vnreng:Siglus2: type 1 pattern found");
@@ -2868,7 +2925,7 @@ bool InsertSiglus2Hook()
     const BYTE bytes[] = {
       0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
     };
-    //enum { hook_offset = 0 };
+    //enum { addr_offset = 0 };
     addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
     if (addr)
       ConsoleOutput("vnreng:Siglus2: type 2 pattern found");
@@ -2880,8 +2937,8 @@ bool InsertSiglus2Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = pusha_esi_off - 4; // -0x20
+  hp.address = addr;
+  hp.offset = pusha_esi_off - 4; // -0x20
   hp.type = USING_UNICODE|FIXING_SPLIT; // jichi 6/1/2014: fixing the split value
   hp.length_offset = 1;
 
@@ -2925,7 +2982,7 @@ bool InsertSiglus1Hook()
   while (addr > limit) {
     if (*(WORD*)addr == 0xff6a) {
       HookParam hp = {};
-      hp.addr = addr;
+      hp.address = addr;
       hp.text_fun = SpecialHookSiglus1;
       //hp.type = USING_UNICODE; // string type not needed
       ConsoleOutput("vnreng: INSERT Siglus");
@@ -3208,11 +3265,11 @@ bool InsertMajiroHook()
   bool newMajiro = 0x55 == *(BYTE *)addr;
 
   HookParam hp = {};
-  //hp.off=0xc;
+  //hp.offset=0xc;
   //hp.split=4;
-  //hp.split_ind=0x28;
+  //hp.split_index=0x28;
   //hp.type|=USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
-  hp.addr = addr;
+  hp.address = addr;
   hp.text_fun = SpecialHookMajiro;
   hp.user_value = newMajiro;
   if (newMajiro) {
@@ -3256,8 +3313,8 @@ bool InsertCMVS1Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = 0x8;
+  hp.address = addr;
+  hp.offset = 0x8;
   hp.split = -0x18;
   hp.type = BIG_ENDIAN|USING_SPLIT;
   hp.length_offset = 1 ;
@@ -3366,7 +3423,7 @@ bool InsertCMVS2Hook()
     0x3b,0xc6,          // 00449001  |. 3bc6           cmp eax,esi
     0x74, 0x37          // 00449003  |. 74 37          je short cmvs32.0044903c
   };
-  enum { hook_offset = 3 }; // offset from the beginning of the function
+  enum { addr_offset = 3 }; // offset from the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
@@ -3377,8 +3434,8 @@ bool InsertCMVS2Hook()
   //reladdr = 0x48ff0;
   //reladdr = 0x48ff3;
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = 0xc;
+  hp.address = addr + addr_offset;
+  hp.offset = 0xc;
   hp.type = BIG_ENDIAN;
   hp.length_offset = 1 ;
 
@@ -3427,7 +3484,7 @@ void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *s
 
   }
   if (i < 4) {
-    hp->off = i << 2;
+    hp->offset = i << 2;
     *data = val;
     *len = 2;
     hp->text_fun = nullptr;
@@ -3456,8 +3513,8 @@ bool InsertRUGP1Hook()
       return false;
     if (DWORD i = SafeFindEntryAligned((DWORD)s, 0x200)) {
       HookParam hp = {};
-      hp.addr = i;
-      //hp.off= -8;
+      hp.address = i;
+      //hp.offset= -8;
       hp.length_offset = 1;
       hp.text_fun = SpecialHookRUGP1;
       hp.type = BIG_ENDIAN;
@@ -3481,8 +3538,8 @@ bool InsertRUGP1Hook()
         //swprintf(str, L"HookAddr 0x%.8x", t);
         //ConsoleOutput(str);
         HookParam hp = {};
-        hp.addr = t;
-        hp.off = 0x4;
+        hp.address = t;
+        hp.offset = 0x4;
         hp.length_offset = 1;
         hp.type = BIG_ENDIAN;
         ConsoleOutput("vnreng:INSERT rUGP#2");
@@ -3597,7 +3654,7 @@ bool InsertRUGP2Hook()
     0x89,0x45, 0x08,            // 1001e524   8945 08          mov dword ptr ss:[ebp+0x8],eax
     0x89,0x75, 0x0c             // 1001e527   8975 0c          mov dword ptr ss:[ebp+0xc],esi
   };
-  enum { hook_offset = 0x1001e51d - 0x1001e515 };
+  enum { addr_offset = 0x1001e51d - 0x1001e515 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), low, high);
   //ITH_GROWL_DWORD(addr);
   if (!addr) {
@@ -3606,9 +3663,9 @@ bool InsertRUGP2Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   hp.length_offset = 1;
-  hp.off = -8;
+  hp.offset = -8;
   hp.type = NO_CONTEXT|BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT rUGP2");
   NewHook(hp, L"rUGP2");
@@ -3634,8 +3691,8 @@ void InsertLucifenHook()
   //   _Out_  LPSIZE lpSize
   // );
   HookParam hp = {};
-  hp.addr = (DWORD)::GetTextExtentPoint32A;
-  hp.off = 0x8; // arg2 lpString
+  hp.address = (DWORD)::GetTextExtentPoint32A;
+  hp.offset = 0x8; // arg2 lpString
   hp.split = -0x18; // jichi 8/12/2014: = -4 - pusha_esp_off
   hp.length_offset = 3;
   hp.type = USING_STRING|USING_SPLIT;
@@ -3688,8 +3745,8 @@ static void InsertAliceHook1(DWORD addr, DWORD module, DWORD limit)
         }
         DWORD c = *(BYTE *)s;
         HookParam hp = {};
-        hp.addr = j;
-        hp.off = -0x8;
+        hp.address = j;
+        hp.offset = -0x8;
         hp.split = -8 -((c & 0xf) << 2);
         hp.type = USING_STRING|USING_SPLIT;
         //if (s>j) hp.type^=USING_SPLIT;
@@ -3708,9 +3765,9 @@ static void InsertAliceHook2(DWORD addr)
     return;
   }
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = -0x8;
-  hp.ind = 0x8;
+  hp.address = addr;
+  hp.offset = -0x8;
+  hp.index = 0x8;
   hp.length_offset = 1;
   hp.type = DATA_INDIRECT;
   ConsoleOutput("vnreng: INSERT AliceHook2");
@@ -3830,7 +3887,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
   //  0xc2, 0x04,0x00,    //   005506b6  \. c2 0400        retn 0x4
   //  0xcc, 0xcc // patching a few int3 to make sure that this is at the end of the code block
   //};
-  //enum { hook_offset = -5 }; // the function call before the ins
+  //enum { addr_offset = -5 }; // the function call before the ins
   //ULONG addr = module_base_; //- sizeof(ins);
   ////addr = 0x5506a9;
   //enum { near_call = 0xe8 }; // intra-module function call
@@ -3843,7 +3900,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
   //    ConsoleOutput("vnreng:System43: pattern not found");
   //    return false;
   //  }
-  //  addr += hook_offset;
+  //  addr += addr_offset;
   //} while(near_call != *(BYTE *)addr); // function call
   //ITH_GROWL_DWORD(addr);
 
@@ -3858,7 +3915,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
     0xc2, 0x04,0x00,    //   005506b6  \. c2 0400        retn 0x4
     0xcc, 0xcc // patching a few int3 to make sure that this is at the end of the code block
   };
-  enum { hook_offset = 0 };
+  enum { addr_offset = 0 };
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(addr);
   if (!addr) {
@@ -3867,8 +3924,8 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = 4;
+  hp.address = addr + addr_offset;
+  hp.offset = 4;
   hp.split = -0x18;
   hp.type = NO_CONTEXT|USING_SPLIT|USING_STRING;
   ConsoleOutput("vnreng: INSERT System43");
@@ -3985,7 +4042,7 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
     0x51,                   // 004eeb43   51               push ecx
     0xe8 //, XX4,           // 004eeb44   e8 42dc1900      call .0068c78b
   };
-  enum { hook_offset = 0 };
+  enum { addr_offset = 0 };
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(addr);
   if (!addr) {
@@ -3994,7 +4051,7 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   hp.type = NO_CONTEXT|USING_STRING|FIXING_SPLIT;
   ConsoleOutput("vnreng: INSERT System43+");
   NewHook(hp, hookName);
@@ -4048,8 +4105,8 @@ bool InsertAtelierHook()
     for (DWORD j=i-0x200; i>j; i--)
       if (*(DWORD *)i == 0xff6acccc) { // find the function entry
         HookParam hp = {};
-        hp.addr = i+2;
-        hp.off = 8;
+        hp.address = i+2;
+        hp.offset = 8;
         hp.split = -0x18;
         hp.length_offset = 1;
         hp.type = USING_SPLIT;
@@ -4086,8 +4143,8 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
           DWORD k = *(DWORD *)(j+1)+j+5;
           if (k > module_base_ && k < module_limit_) {
             HookParam hp = {};
-            hp.addr = k;
-            hp.off = 0xc;
+            hp.address = k;
+            hp.offset = 0xc;
             hp.split = -0x18;
             hp.length_offset = 1;
             hp.type = DATA_INDIRECT|USING_SPLIT;
@@ -4136,12 +4193,12 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
     if ((*(DWORD *)i & 0xffffff) == 0x75243c) { // cmp al, 24; je
       if (DWORD j = SafeFindEntryAligned(i, 0x80)) {
         HookParam hp = {};
-        hp.addr = j;
-        hp.off = 0x8;
+        hp.address = j;
+        hp.offset = 0x8;
         //hp.filter_fun = CharNewLineFilter; // \n\s* is used to remove new line
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
-        //ITH_GROWL_DWORD(hp.addr); // jichi 6/5/2014: 0x4201d0 for DC3
+        //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 0x4201d0 for DC3
         NewHook(hp, L"CIRCUS");
         //RegisterEngineType(ENGINE_CIRCUS);
         return true;
@@ -4274,7 +4331,7 @@ bool InsertShinaHook()
   int ver = GetShinaRioVersion();
   if (ver >= 48) { // v2.48, v2.49
     HookParam hp = {};
-    hp.addr = (DWORD)::GetTextExtentPoint32A;
+    hp.address = (DWORD)::GetTextExtentPoint32A;
     hp.text_fun = SpecialHookShina2;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: INSERT ShinaRio > 2.47");
@@ -4294,8 +4351,8 @@ bool InsertShinaHook()
     };
 
     HookParam hp = {};
-    hp.addr = (DWORD)::GetTextExtentPoint32A;
-    hp.off = arg2_lpString; // 0x8
+    hp.address = (DWORD)::GetTextExtentPoint32A;
+    hp.offset = arg2_lpString; // 0x8
     hp.length_offset = 1;
     hp.type = DATA_INDIRECT|USING_SPLIT;
 
@@ -4364,9 +4421,9 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     if (*id == handler && *(ib - 1) == 0x68)
       if (DWORD t = SafeFindEntryAligned(i, 0x40)) {
         HookParam hp = {};
-        hp.addr = t;
-        hp.off = 8;
-        hp.ind = 4;
+        hp.address = t;
+        hp.offset = 8;
+        hp.index = 4;
         hp.length_offset = 1;
         hp.type = DATA_INDIRECT;
         ConsoleOutput("vnreng: INSERT Dynamic Waffle");
@@ -4405,10 +4462,10 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 //      if (retn > module_base_ && retn < module_limit_)
 //      {
 //        HookParam hp = {};
-//        hp.addr = retn + *(DWORD*)(retn - 4);
+//        hp.address = retn + *(DWORD*)(retn - 4);
 //        hp.length_offset = 1;
-//        hp.off = -0x20;
-//        hp.ind = 4;
+//        hp.offset = -0x20;
+//        hp.index = 4;
 //        //hp.split = 0x1E8;
 //        hp.type = DATA_INDIRECT;
 //        NewHook(hp, L"WAFFLE");
@@ -4425,10 +4482,10 @@ void InsertWaffleHook()
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ - 4; i++)
     if (*(DWORD *)i == 0xac68) {
       HookParam hp = {};
-      hp.addr = i;
+      hp.address = i;
       hp.length_offset = 1;
-      hp.off = -0x20;
-      hp.ind = 4;
+      hp.offset = -0x20;
+      hp.index = 4;
       hp.split = 0x1e8;
       hp.type = DATA_INDIRECT|USING_SPLIT;
       ConsoleOutput("vnreng: INSERT WAFFLE");
@@ -4455,16 +4512,16 @@ void InsertTinkerBellHook()
     if (*(DWORD*)i == 0x8141) {
       BYTE t = *(BYTE*)(i - 1);
       if (t == 0x3d || t == 0x2d) {
-        hp.off = -0x8;
-        hp.addr = i - 1;
+        hp.offset = -0x8;
+        hp.address = i - 1;
       } else if (*(BYTE*)(i-2) == 0x81) {
         t &= 0xf8;
         if (t == 0xf8 || t == 0xe8) {
-          hp.off = -8 - ((*(BYTE*)(i-1) & 7) << 2);
-          hp.addr = i - 2;
+          hp.offset = -8 - ((*(BYTE*)(i-1) & 7) << 2);
+          hp.address = i - 2;
         }
       }
-      if (hp.addr) {
+      if (hp.address) {
         WCHAR hook_name[0x20];
         memcpy(hook_name, L"TinkerBell", 0x14);
         hook_name[0xa] = L'0' + count;
@@ -4472,7 +4529,7 @@ void InsertTinkerBellHook()
         ConsoleOutput("vnreng:INSERT TinkerBell");
         NewHook(hp, hook_name);
         count++;
-        hp.addr = 0;
+        hp.address = 0;
       }
     }
   }
@@ -4486,7 +4543,7 @@ void InsertTinkerBellHook()
 //    {
 //      if (*(WORD*)(module_base_+i)==0xec83)
 //      {
-//        hp.addr=module_base_+i;
+//        hp.address=module_base_+i;
 //        NewHook(hp, L"C.System");
 //        break;
 //      }
@@ -4499,7 +4556,7 @@ void InsertTinkerBellHook()
 //    {
 //      if (*(WORD*)(module_base_+i)==0xec83)
 //      {
-//        hp.addr=module_base_+i;
+//        hp.address=module_base_+i;
 //        NewHook(hp, L"TinkerBell");
 //        break;
 //      }
@@ -4517,8 +4574,8 @@ bool InsertMBLHook()
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::ExtTextOutA, module_limit_ - module_base_, module_base_, true))
     if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, fun)) {
       HookParam hp = {};
-      hp.addr = addr;
-      hp.off = 4;
+      hp.address = addr;
+      hp.offset = 4;
       hp.type = USING_STRING;
       ConsoleOutput("vnreng:INSERT MBL-Furigana");
       NewHook(hp, L"MBL-Furigana");
@@ -4527,8 +4584,8 @@ bool InsertMBLHook()
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
     if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, fun)) {
       HookParam hp = {};
-      hp.addr = addr;
-      hp.off = 4;
+      hp.address = addr;
+      hp.offset = 4;
       hp.split = -0x18;
       hp.length_offset = 1;
       hp.type = BIG_ENDIAN|USING_SPLIT;
@@ -4567,9 +4624,9 @@ bool InsertEaglsHook()
 
   // Modify the split for GetGlyphOutlineA
   HookParam hp = {};
-  hp.addr = (DWORD)::GetGlyphOutlineA;
+  hp.address = (DWORD)::GetGlyphOutlineA;
   hp.type = BIG_ENDIAN|USING_SPLIT; // the only difference is the split value
-  hp.off = arg2_uChar;
+  hp.offset = arg2_uChar;
   hp.split = arg4_lpgm;
   //hp.split = arg7_lpmat2;
   hp.length_offset = 1;
@@ -4634,12 +4691,12 @@ static bool InsertYuris1Hook()
   }
   //ITH_GROWL_DWORD2(i,t);
   HookParam hp = {};
-  hp.addr = i + t;
-  hp.off = -0x24;
+  hp.address = i + t;
+  hp.offset = -0x24;
   hp.split = -0x8;
   hp.type = USING_STRING|USING_SPLIT;
   ConsoleOutput("vnreng: INSERT YU-RIS");
-  //ITH_GROWL_DWORD(hp.addr);
+  //ITH_GROWL_DWORD(hp.address);
   NewHook(hp, L"YU-RIS");
   //RegisterEngineType(ENGINE_WHIRLPOOL);
   return true;
@@ -4754,9 +4811,9 @@ static bool InsertYuris2Hook()
   };
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // disable context that will cause thread split
-  hp.off = arg4_lpString;
+  hp.offset = arg4_lpString;
   hp.split = arg6_split;
 
   ConsoleOutput("vnreng: INSERT YU-RIS 2");
@@ -4782,8 +4839,8 @@ bool InsertCotophaHook()
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = 4;
+  hp.address = addr;
+  hp.offset = 4;
   hp.split = -0x1c;
   hp.type = USING_UNICODE|USING_SPLIT|USING_STRING;
   ConsoleOutput("vnreng: INSERT Cotopha");
@@ -4928,7 +4985,7 @@ bool InsertCotophaHook()
 
 static void SpecialHookCatSystem3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  //DWORD ch = *data = *(DWORD *)(esp_base + hp->off); // arg2
+  //DWORD ch = *data = *(DWORD *)(esp_base + hp->offset); // arg2
   DWORD ch = *data = argof(2, esp_base);
   *len = LeadByteTable[(ch >> 8) & 0xff];  // BIG_ENDIAN
   *split = regof(edx, esp_base) >> 16;
@@ -4943,11 +5000,11 @@ bool InsertCatSystemHook()
   //for (j=i-0x100;i>j;i--)
   //  if (*(DWORD*)i==0xcccccccc) break;
   //if (i==j) return;
-  //hp.addr=i+4;
-  //hp.off=-0x8;
-  //hp.ind=4;
+  //hp.address=i+4;
+  //hp.offset=-0x8;
+  //hp.index=4;
   //hp.split=4;
-  //hp.split_ind=0x18;
+  //hp.split_index=0x18;
   //hp.type =BIG_ENDIAN|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
   //hp.length_offset=1;
 
@@ -4958,7 +5015,7 @@ bool InsertCatSystemHook()
     return false;
   }
   enum { beg = 0xff6acccc }; // jichi 7/12/2014: beginning of the function
-  enum { hook_offset = 2 }; // skip two leading 0xcc
+  enum { addr_offset = 2 }; // skip two leading 0xcc
   ULONG addr = MemDbg::findCallerAddress((ULONG)::GetTextMetricsA, beg, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:CatSystem2: pattern not exist");
@@ -4966,8 +5023,8 @@ bool InsertCatSystemHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset; // skip 1 push?
-  hp.off = 4 * 2; // text character is in arg2
+  hp.address = addr + addr_offset; // skip 1 push?
+  hp.offset = 4 * 2; // text character is in arg2
   hp.length_offset = 1; // only 1 character
 
   // jichi 12/23/2014: Modify split for new catsystem
@@ -4999,8 +5056,8 @@ bool InsertNitroPlusHook()
   while (*(WORD *)addr != sub_esp)
     addr--;
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = -0x14+ (b << 2);
+  hp.address = addr;
+  hp.offset = -0x14+ (b << 2);
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT NitroPlus");
@@ -5015,8 +5072,8 @@ bool InsertRetouchHook()
   if (GetFunctionAddr("?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z", &addr, nullptr, nullptr, nullptr) ||
       GetFunctionAddr("?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z", &addr, nullptr, nullptr, nullptr)) {
     HookParam hp = {};
-    hp.addr = addr;
-    hp.off = 4;
+    hp.address = addr;
+    hp.offset = 4;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: INSERT RetouchSystem");
     NewHook(hp, L"RetouchSystem");
@@ -5056,11 +5113,11 @@ bool InsertMalieHook1()
     return false;
   }
   HookParam hp = {};
-  hp.addr = j + i;
-  hp.off = -0x14;
-  hp.ind = -0x8;
+  hp.address = j + i;
+  hp.offset = -0x14;
+  hp.index = -0x8;
   hp.split = -0x14;
-  hp.split_ind = 0x10;
+  hp.split_index = 0x10;
   hp.length_offset = 1;
   hp.type = USING_UNICODE|USING_SPLIT|DATA_INDIRECT|SPLIT_INDIRECT;
   ConsoleOutput("vnreng: INSERT MalieHook1");
@@ -5113,8 +5170,8 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
   }
   malie_furi_flag_ = 0; // reset old malie flag
   HookParam hp = {};
-  hp.addr = (DWORD)ptr + 4;
-  hp.off = -8;
+  hp.address = (DWORD)ptr + 4;
+  hp.offset = -8;
   hp.length_offset = 1;
   hp.text_fun = SpecialHookMalie;
   //hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT; // full type not needed
@@ -5210,8 +5267,8 @@ bool InsertMalie2Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = -8; // pusha_eax_off - 4
+  hp.address = addr;
+  hp.offset = -8; // pusha_eax_off - 4
   hp.length_offset = 1;
   //hp.split = 0xc; // jichi 12/17/2013: Subcontext removed
   //hp.split = -0xc; // jichi 12/17/2013: This could split the furigana, but will mess up the text
@@ -5223,7 +5280,7 @@ bool InsertMalie2Hook()
   ConsoleOutput("vnreng: INSERT Malie2");
   NewHook(hp, L"Malie2");
 
-  //ITH_GROWL_DWORD2(hp.addr, reladdr);
+  //ITH_GROWL_DWORD2(hp.address, reladdr);
   //RegisterEngineType(ENGINE_MALIE);
   return true;
 }
@@ -5351,18 +5408,18 @@ bool InsertMalie3Hook()
     0x66,0x8b,0x34,0x51,    // 5b51ed  mov si,word ptr ds:[ecx+edx*2] // jichi: hook here
     0x42                    // 5b51f1  inc edx
   };
-  enum {hook_offset = 0x5b51ed - 0x5b51e0};
+  enum {addr_offset = 0x5b51ed - 0x5b51e0};
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:Malie3: pattern not found");
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  //ITH_GROWL(hp.addr);
-  //hp.addr = 0x5b51ed;
-  //hp.addr = 0x5b51f1;
-  //hp.addr = 0x5b51f2;
+  hp.address = addr + addr_offset;
+  //ITH_GROWL(hp.address);
+  //hp.address = 0x5b51ed;
+  //hp.address = 0x5b51f1;
+  //hp.address = 0x5b51f2;
   // jichi 3/15/2015: Remove 0704 in シルヴァリオ ヴェンデッタ
   hp.filter_fun = IllegalWideCharsFilter; // remove illegal control chars such as 0x07,0x01
   hp.text_fun = SpecialHookMalie3;
@@ -5440,8 +5497,8 @@ bool InsertEMEHook()
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = -0x8;
+  hp.address = addr;
+  hp.offset = -0x8;
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   ConsoleOutput("vnreng: INSERT EmonEngine");
@@ -5468,7 +5525,7 @@ bool InsertRREHook()
   }
   WORD sig = 0x51c3;
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   if ((*(WORD *)(addr-2) != sig)) {
@@ -5476,7 +5533,7 @@ bool InsertRREHook()
     ConsoleOutput("vnreng: INSERT Runrun#1");
     NewHook(hp, L"RunrunEngine Old");
   } else {
-    hp.off = -0x8;
+    hp.offset = -0x8;
     ConsoleOutput("vnreng: INSERT Runrun#2");
     NewHook(hp, L"RunrunEngine");
   }
@@ -5493,8 +5550,8 @@ bool InsertMEDHook()
           DWORD t = j + 5 + *(DWORD*)(j+1);
           if (t > module_base_ && t < module_limit_) {
             HookParam hp = {};
-            hp.addr = t;
-            hp.off = -0x8;
+            hp.address = t;
+            hp.offset = -0x8;
             hp.length_offset = 1;
             hp.type = BIG_ENDIAN;
             ConsoleOutput("vnreng: INSERT MED");
@@ -5523,8 +5580,8 @@ bool InsertAbelHook()
     for (DWORD i = j - 0x100; j > i; j--)
       if (*(WORD *)j == 0xff6a) {
         HookParam hp = {};
-        hp.addr = j;
-        hp.off = 4;
+        hp.address = j;
+        hp.offset = 4;
         hp.type = USING_STRING|NO_CONTEXT;
         ConsoleOutput("vnreng: INSERT AbelSoftware");
         NewHook(hp, L"AbelSoftware");
@@ -5546,8 +5603,8 @@ bool InsertLiveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   DWORD j = k + *(DWORD *)(k - 4);
   if (j > module_base_ && j < module_limit_) {
     HookParam hp = {};
-    hp.addr = j;
-    hp.off = -0x10;
+    hp.address = j;
+    hp.offset = -0x10;
     hp.length_offset = 1;
     hp.type = BIG_ENDIAN;
     ConsoleOutput("vnreng: INSERT DynamicLive");
@@ -5573,8 +5630,8 @@ bool InsertLiveHook()
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = -0x10;
+  hp.address = addr;
+  hp.offset = -0x10;
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT Live");
@@ -5588,7 +5645,7 @@ void InsertBrunsHook()
 {
   if (IthCheckFile(L"libscr.dll")) {
     HookParam hp = {};
-    hp.off = 4;
+    hp.offset = 4;
     hp.length_offset = 1;
     hp.type = USING_UNICODE|MODULE_OFFSET|FUNCTION_OFFSET;
     // jichi 12/27/2013: This function does not work for the latest bruns games anymore
@@ -5641,8 +5698,8 @@ void InsertBrunsHook()
             if (t > module_base_ && t <module_limit_) {
 
               HookParam hp = {};
-              hp.addr = t;
-              hp.off = 4;
+              hp.address = t;
+              hp.offset = 4;
               hp.length_offset = 1;
               hp.type = USING_UNICODE|DATA_INDIRECT;
               ConsoleOutput("vnreng: INSERT Brus#2");
@@ -5700,7 +5757,7 @@ bool InsertQLIE2Hook()
     0x53,           // 53       push ebx
     0x8b,0x5d, 0x1c // 8b5d 1c  mov ebx, dword ptr ss:[ebp+1c]
   };
-  //enum { hook_offset = 0 }; // current instruction is the first one
+  //enum { addr_offset = 0 }; // current instruction is the first one
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
@@ -5712,8 +5769,8 @@ bool InsertQLIE2Hook()
   HookParam hp = {};
   hp.type = DATA_INDIRECT|NO_CONTEXT; // 0x408
   hp.length_offset = 1;
-  hp.off = 0x14;
-  hp.addr = addr;
+  hp.offset = 0x14;
+  hp.address = addr;
 
   ConsoleOutput("vnreng: INSERT QLIE2");
   NewHook(hp, L"QLIE2");
@@ -5737,8 +5794,8 @@ bool InsertQLIE1Hook()
         for (DWORD j = i; j > i - 0x100; j--)
           if (*(DWORD *)j == 0x83ec8b55) { //push ebp, mov ebp,esp, sub esp,*
             HookParam hp = {};
-            hp.addr = j;
-            hp.off = 0x18;
+            hp.address = j;
+            hp.offset = 0x18;
             hp.split = -0x18;
             hp.length_offset = 1;
             hp.type = DATA_INDIRECT|USING_SPLIT;
@@ -5790,8 +5847,8 @@ bool InsertCandyHook1()
       for (DWORD j = i, k = i - 0x100; j > k; j--)
         if (*(DWORD *)j == 0xc0330a8a) { // mov cl,[edx]; xor eax,eax
           HookParam hp = {};
-          hp.addr = j;
-          hp.off = -0x10;
+          hp.address = j;
+          hp.offset = -0x10;
           hp.type = USING_STRING;
           ConsoleOutput("vnreng: INSERT SystemC#1");
           NewHook(hp, L"SystemC");
@@ -5811,8 +5868,8 @@ bool InsertCandyHook2()
       for (DWORD j = i, k = i - 0x100; j > k; j--)
         if ((*(DWORD *)j & 0xffff) == 0x8b55) { // push ebp, mov ebp,esp, sub esp,*
           HookParam hp = {};
-          hp.addr = j;
-          hp.off = 4;
+          hp.address = j;
+          hp.offset = 4;
           hp.type = USING_STRING;
           ConsoleOutput("vnreng: INSERT SystemC#2");
           NewHook(hp, L"SystemC");
@@ -5843,7 +5900,7 @@ bool InsertCandyHook2()
 //    0x85,0xc0,       // test eax,eax
 //    0x75, 0x0e       // jnz XXOO ; it must be 0xe, or there will be duplication
 //  };
-//  enum { hook_offset = 0 };
+//  enum { addr_offset = 0 };
 //  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
 //  ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
 //  reladdr = 0x104a48;
@@ -5853,8 +5910,8 @@ bool InsertCandyHook2()
 //    return false;
 //
 //  HookParam hp = {};
-//  hp.addr = module_base_ + reladdr + hook_offset;
-//  hp.off = -8;
+//  hp.address = module_base_ + reladdr + addr_offset;
+//  hp.offset = -8;
 //  hp.type = USING_STRING|NO_CONTEXT;
 //  NewHook(hp, L"Candy");
 //  return true;
@@ -5998,11 +6055,11 @@ bool InsertApricoTHook()
       for (DWORD j = i + 3, k = i + 0x100; j < k; j++)
         if ((*(DWORD *)j & 0xffffff) == 0x4c2) { // retn 4
           HookParam hp = {};
-          hp.addr = j + 3;
+          hp.address = j + 3;
           hp.text_fun = SpecialHookApricoT;
           hp.type = USING_STRING|NO_CONTEXT; // |USING_UNICODE string type not needed
           ConsoleOutput("vnreng: INSERT ApricoT");
-          //ITH_GROWL_DWORD3(hp.addr, module_base_, module_limit_);
+          //ITH_GROWL_DWORD3(hp.address, module_base_, module_limit_);
           NewHook(hp, L"ApRicoT");
           //RegisterEngineType(ENGINE_APRICOT);
           // jichi 2/14/2015: disable cached GDI functions
@@ -6023,8 +6080,8 @@ void InsertStuffScriptHook()
   //   _Out_  LPSIZE lpSize
   // );
   HookParam hp = {};
-  hp.addr = (DWORD)::GetTextExtentPoint32A;
-  hp.off = 0x8; // arg2 lpString
+  hp.address = (DWORD)::GetTextExtentPoint32A;
+  hp.offset = 0x8; // arg2 lpString
   hp.split = -0x18; // jichi 8/12/2014: = -4 - pusha_esp_off
   hp.type = USING_STRING | USING_SPLIT;
   ConsoleOutput("vnreng: INSERT StuffScriptEngine");
@@ -6040,8 +6097,8 @@ bool InsertTriangleHook()
           DWORD t = j + 5 + *(DWORD *)(j + 1);
           if (t > module_base_ && t < module_limit_) {
             HookParam hp = {};
-            hp.addr = t;
-            hp.off = 4;
+            hp.address = t;
+            hp.offset = 4;
             hp.type = USING_STRING;
             ConsoleOutput("vnreng: INSERT Triangle");
             NewHook(hp, L"Triangle");
@@ -6059,8 +6116,8 @@ bool InsertPensilHook()
     if (*(DWORD *)i == 0x6381) // cmp *,8163
       if (DWORD j = SafeFindEntryAligned(i, 0x100)) {
         HookParam hp = {};
-        hp.addr = j;
-        hp.off = 8;
+        hp.address = j;
+        hp.offset = 8;
         hp.length_offset = 1;
         ConsoleOutput("vnreng: INSERT Pensil");
         NewHook(hp, L"Pensil");
@@ -6098,12 +6155,12 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
 {
   DWORD retn = *(DWORD*)esp_base;
   if (*(WORD*)retn == 0xc483) // add esp, *
-    hp->off = 4;
+    hp->offset = 4;
   else
-    hp->off = -0x8;
+    hp->offset = -0x8;
   //hp->type ^= EXTERN_HOOK;
   hp->text_fun = nullptr;
-  *data = *(DWORD*)(esp_base + hp->off);
+  *data = *(DWORD*)(esp_base + hp->offset);
   *len = ::strlen((char*)*data);
 }
 bool InsertDebonosuHook()
@@ -6130,7 +6187,7 @@ bool InsertDebonosuHook()
             *(DWORD *)(j + 1) == push)
           if (DWORD hook_addr = SafeFindEntryAligned(i, 0x200)) {
             HookParam hp = {};
-            hp.addr = hook_addr;
+            hp.address = hook_addr;
             hp.text_fun = SpecialHookDebonosu;
             hp.type = USING_STRING;
             ConsoleOutput("vnreng: INSERT Debonosu");
@@ -6293,18 +6350,18 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         ((*(WORD *)(k - 6) == 0x15ff) || *(BYTE *)(k - 5) == 0xe8)) { // jichi 10/20/2014: call dword ptr ds
 
       HookParam hp = {};
-      hp.off = 0x4; // target text is on the top of the stack
+      hp.offset = 0x4; // target text is on the top of the stack
       hp.text_fun = SpecialSystemAoiHook; // need to remove garbage
       hp.type = utf16 ? USING_UNICODE : USING_STRING;
 
       i = *(DWORD *)(k - 4); // get function call address
       if (*(DWORD *)(k - 5) == 0xe8) // short jump
-        hp.addr = i + k;
+        hp.address = i + k;
       else
-        hp.addr = *(DWORD *)i; // jichi: long jump, this is what is happening in Aoi5
+        hp.address = *(DWORD *)i; // jichi: long jump, this is what is happening in Aoi5
       //NewHook(hp, L"SofthouseChara");
-      //ITH_GROWL_DWORD(hp.addr); // BUNNYBLACK: 0x10024730, base 0x01d0000
-      if (hp.addr) {
+      //ITH_GROWL_DWORD(hp.address); // BUNNYBLACK: 0x10024730, base 0x01d0000
+      if (hp.address) {
         ConsoleOutput("vnreng: INSERT SystemAoi");
         if (addr == ::GetGlyphOutlineW)
           NewHook(hp, L"SystemAoi2"); // jichi 2/12/2015
@@ -6335,7 +6392,7 @@ bool InsertSystemAoiHook()
 
 static void SpecialHookCaramelBox(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD reg_ecx = *(DWORD*)(esp_base + hp->off);
+  DWORD reg_ecx = *(DWORD*)(esp_base + hp->offset);
   BYTE *ptr = (BYTE *)reg_ecx;
   buffer_index = 0;
   while (ptr[0])
@@ -6391,22 +6448,22 @@ bool InsertCaramelBoxHook()
       for (DWORD j = i, k = i - 0x100; j > k; j--) {
         if ((*(DWORD *)j & 0xffff00ff) == 0x1000b8) { // mov eax,10??
           HookParam hp = {};
-          hp.addr = j & ~0xf;
+          hp.address = j & ~0xf;
           hp.text_fun = SpecialHookCaramelBox;
           hp.type = USING_STRING;
           for (i &= ~0xffff; i < module_limit_ - 4; i++)
             if (pb[0] == 0xe8) {
               pb++;
-              if (pd[0] + i + 4 == hp.addr) {
+              if (pd[0] + i + 4 == hp.address) {
                 pb += 4;
                 if ((pd[0] & 0xffffff) == 0x04c483)
-                  hp.off = 4;
-                else hp.off = -0xc;
+                  hp.offset = 4;
+                else hp.offset = -0xc;
                 break;
               }
             }
 
-          if (hp.off == 0) {
+          if (hp.offset == 0) {
             ConsoleOutput("vnreng:CaramelBox: failed, zero off");
             return false;
           }
@@ -6483,12 +6540,12 @@ bool InsertWolfHook()
       for (i = c2 - 0x100, j = c2 - 0x400; i > j; i--)
         if (*k == 0xec83) { // jichi 10/12/2013: 83 EC XX   sub esp, XX  See: http://lists.cs.uiuc.edu/pipermail/llvm-commits/Week-of-Mon-20120312.txt
           HookParam hp = {};
-          hp.addr = i;
-          hp.off = -0xc;
+          hp.address = i;
+          hp.offset = -0xc;
           hp.split = -0x18;
           hp.type = DATA_INDIRECT|USING_SPLIT;
           hp.length_offset = 1;
-          //ITH_GROWL_DWORD(hp.addr); // jichi 6/5/2014: 淫乱勇者セフィのRPG = 0x50a400
+          //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 淫乱勇者セフィのRPG = 0x50a400
           ConsoleOutput("vnreng: INSERT WolfRPG");
           NewHook(hp, L"WolfRPG");
           return true;
@@ -6514,8 +6571,8 @@ bool InsertIGSDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     DWORD t = *(DWORD *)(i + 1) + i + 5;
     if (t>j && t<k) {
       HookParam hp = {};
-      hp.addr = t;
-      hp.off = -0x10;
+      hp.address = t;
+      hp.offset = -0x10;
       hp.split = -0x18;
       hp.length_offset = 1;
       hp.type = USING_UNICODE|USING_SPLIT;
@@ -6637,7 +6694,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
             if (*(DWORD*)j == 0x5044b70f) {
               if (*(WORD*)(j + 4) == 0x890c) { // movzx eax, word ptr [edx*2 + eax + 0xC]; wchar = string[i];
                 HookParam hp = {};
-                hp.addr = j;
+                hp.address = j;
                 hp.text_fun = SpecialHookAB2Try;
                 hp.type = USING_STRING|NO_CONTEXT; //|USING_UNICODE string type not needed
                 ConsoleOutput("vnreng: INSERT AB2Try");
@@ -6682,15 +6739,15 @@ C4 hook: (Contributed by Stomp)
 bool InsertC4Hook()
 {
   const BYTE bytes[] = { 0x8a, 0x10, 0x40, 0x80, 0xfa, 0x5f, 0x88, 0x15 };
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:C4: pattern not found");
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = -0x8;
+  hp.address = addr;
+  hp.offset = -0x8;
   hp.type = DATA_INDIRECT|NO_CONTEXT;
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT C4");
@@ -6830,8 +6887,8 @@ static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
   }
 
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = 4 * 8; // arg8, address of text
+  hp.address = addr;
+  hp.offset = 4 * 8; // arg8, address of text
 
   // Strategy 1: Use caller's address as split
   //hp.type = USING_STRING; // merge different scenario threads
@@ -6876,22 +6933,22 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
     // By studying [honeybee] RE:BIRTHDAY SONG, it seems the scenario text is at fixed address
     // This offset might be used to find fixed address
     // However, this method cannot extract character name like GetGlyphOutlineA
-    hp->off = *(pb + 2) - 8;
+    hp->offset = *(pb + 2) - 8;
 
     // Still extract the first text
     //hp->type ^= EXTERN_HOOK;
-    char *str = *(char **)(esp_base + hp->off);
+    char *str = *(char **)(esp_base + hp->offset);
     *data = (DWORD)str;
     *len = ::strlen(str);
     *split = 0; // 8/3/2014 jichi: use return address as split
 
   } else { // jichi 1/19/2015: Try willplus2
     ConsoleOutput("vnreng: WillPlus1 pattern not found, try WillPlus2 instead");
-    hp->off = 4 * 8; // arg8, address of text
+    hp->offset = 4 * 8; // arg8, address of text
     hp->type = USING_STRING|NO_CONTEXT|USING_SPLIT; // merge different scenario threads
     hp->split = 4 * 1; // arg1 as split to get rid of saving message
     // The first text is skipped here
-    //char *str = *(char **)(esp_base + hp->off);
+    //char *str = *(char **)(esp_base + hp->offset);
     //*data = (DWORD)str;
     //*len = ::strlen(str);
   }
@@ -6911,7 +6968,7 @@ bool InsertWillPlusHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.text_fun = SpecialHookWillPlus;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT WillPlus");
@@ -6946,8 +7003,8 @@ bool InsertTanukiHook()
       if (DWORD j = SafeFindEntryAligned(i, 0x400)) { // jichi 9/14/2013: might crash the game without admin priv
         //ITH_GROWL_DWORD2(i, j);
         HookParam hp = {};
-        hp.addr = j;
-        hp.off = 4;
+        hp.address = j;
+        hp.offset = 4;
         hp.type = USING_STRING | NO_CONTEXT;
         ConsoleOutput("vnreng: INSERT TanukiSoft");
         NewHook(hp, L"TanukiSoft");
@@ -6964,7 +7021,7 @@ static void SpecialHookRyokucha(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
   for (DWORD i = 1; i < 5; i++) {
     DWORD j = base[i];
     if ((j >> 16) == 0 && (j >> 8)) {
-      hp->off = i << 2;
+      hp->offset = i << 2;
       *data = j;
       *len = 2;
       //hp->type &= ~EXTERN_HOOK;
@@ -6995,7 +7052,7 @@ bool InsertRyokuchaDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   }
   if (flag) {
     HookParam hp = {};
-    hp.addr = insert_addr;
+    hp.address = insert_addr;
     hp.length_offset = 1;
     hp.text_fun = SpecialHookRyokucha;
     hp.type = BIG_ENDIAN;
@@ -7263,21 +7320,26 @@ bool InsertGXPHook()
           DWORD addr = *id + i + 4;
           if (addr > module_base_ && addr < module_limit_) {
             HookParam hp = {};
-            hp.addr = addr;
+            hp.address = addr;
             //hp.type = USING_UNICODE|DATA_INDIRECT;
             hp.type = USING_UNICODE|DATA_INDIRECT|NO_CONTEXT|FIXING_SPLIT; // jichi 4/25/2015: Fixing split
             hp.length_offset = 1;
-            hp.off = 4;
+            hp.offset = 4;
 
-            //ITH_GROWL_DWORD3(hp.addr, module_base_, hp.addr - module_base_);
+            //ITH_GROWL_DWORD3(hp.address, module_base_, hp.address - module_base_);
 
-            //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec81); // zero
-            //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec83); // zero
-            //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec8b55); // zero
+            //DWORD call = Util::FindCallAndEntryAbs(hp.address, module_limit_ - module_base_, module_base_, 0xec81); // zero
+            //DWORD call = Util::FindCallAndEntryAbs(hp.address, module_limit_ - module_base_, module_base_, 0xec83); // zero
+            //DWORD call = Util::FindCallAndEntryAbs(hp.address, module_limit_ - module_base_, module_base_, 0xec8b55); // zero
             //ITH_GROWL_DWORD3(call, module_base_, call - module_base_);
 
             ConsoleOutput("vnreng: INSERT GXP");
             NewHook(hp, L"GXP");
+
+            // jichi 5/13/2015: Disable hooking to GetGlyphOutlineW
+            // FIXME: GetGlyphOutlineW can extract name, but GXP cannot
+            ConsoleOutput("vnreng:GXP: disable GDI hooks");
+            DisableGDIHooks();
             return true;
           }
         }
@@ -7372,7 +7434,7 @@ bool InsertAnex86Hook()
     if (*(DWORD *)i == dwords[0])
       if (*(DWORD *)(i + 4) == dwords[1]) {
         HookParam hp = {};
-        hp.addr = i;
+        hp.address = i;
         hp.text_fun = SpecialHookAnex86;
         //hp.type = EXTERN_HOOK;
         hp.length_offset = 1;
@@ -7433,7 +7495,7 @@ bool InsertShinyDaysHook()
   }
 
   HookParam hp = {};
-  hp.addr = 0x42ad9c;
+  hp.address = 0x42ad9c;
   hp.text_fun = SpecialHookShinyDays;
   hp.type = USING_UNICODE|USING_STRING|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT ShinyDays");
@@ -7479,7 +7541,7 @@ bool InsertNextonHook()
     0x85,0xc0,              // 00804150   85c0             test eax,eax
     0x0f,0x84               // 00804152  ^0f84 c0feffff    je imoutoba.00804018
   };
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
   ULONG addr = module_base_; //- sizeof(bytes);
   do {
     addr += sizeof(bytes); // ++ so that each time return diff address
@@ -7500,9 +7562,9 @@ bool InsertNextonHook()
   //ITH_GROWL_DWORD3(module_base_, addr, *(DWORD *)(addr-8));
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.length_offset = 1;
-  //hp.off = -0x10;
+  //hp.offset = -0x10;
   //hp.type = BIG_ENDIAN; // 4
 
   // 魔王のくせに生イキだっ！2 ～今度は性戦だ！～
@@ -7513,7 +7575,7 @@ bool InsertNextonHook()
   //addr = 0x768776;
   //addr = 0x7a5319;
 
-  hp.off = -0x24;
+  hp.offset = -0x24;
   hp.split = 4;
   hp.type = BIG_ENDIAN|USING_SPLIT; // 0x54
 
@@ -7521,7 +7583,7 @@ bool InsertNextonHook()
   // Such as: /HA-C*0@4583DE for 「魔王のくせに生イキだっ！２」
   //hp.type = BIG_ENDIAN|DATA_INDIRECT; // 12
   //hp.type = USING_UNICODE;
-  //ITH_GROWL_DWORD3(addr, -hp.off, hp.type);
+  //ITH_GROWL_DWORD3(addr, -hp.offset, hp.type);
 
   ConsoleOutput("vnreng: INSERT NEXTON");
   NewHook(hp, L"NEXTON");
@@ -7765,7 +7827,7 @@ bool InsertNexton1Hook()
     //0x5e,                // 00419776   5e               pop esi
     //0xc2, 0x04,0x00      // 00419777   c2 0400          retn 0x4
   };
-  enum { hook_offset = 0 }; // distance to the beginning of the function
+  enum { addr_offset = 0 }; // distance to the beginning of the function
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
   if (!addr) {
@@ -7775,9 +7837,9 @@ bool InsertNexton1Hook()
   //ITH_GROWL_DWORD(addr);
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   //hp.length_offset = 1;
-  hp.off = 4; // [esp+4] == arg0
+  hp.offset = 4; // [esp+4] == arg0
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT NEXTON1");
   NewHook(hp, L"NEXTON1");
@@ -7803,7 +7865,7 @@ bool InsertGesen18Hook()
     0x2b,0xce,  // sub ecx,esi ; hook here
     0x8b,0xf8   // mov eds,eax
   };
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
@@ -7814,8 +7876,8 @@ bool InsertGesen18Hook()
   HookParam hp = {};
   hp.type = NO_CONTEXT | DATA_INDIRECT;
   hp.length_offset = 1;
-  hp.off = -0x24;
-  hp.addr = addr;
+  hp.offset = -0x24;
+  hp.address = addr;
 
   //index = SearchPattern(module_base_, size,ins, sizeof(ins));
   //ITH_GROWL_DWORD2(base, index);
@@ -7892,7 +7954,7 @@ bool InsertArtemisHook()
     0x85,0xc0,       // test eax,eax
     0x75, 0x0e       // jnz XXOO ; it must be 0xe, or there will be duplication
   };
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD3(reladdr, module_base_, range);
@@ -7902,14 +7964,14 @@ bool InsertArtemisHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.length_offset = 1;
-  hp.off = -0xc;
+  hp.offset = -0xc;
   hp.split = 0x14;
   hp.type = NO_CONTEXT|DATA_INDIRECT|USING_SPLIT; // 0x418
 
-  //hp.addr = 0x650a2f;
-  //ITH_GROWL_DWORD(hp.addr);
+  //hp.address = 0x650a2f;
+  //ITH_GROWL_DWORD(hp.address);
 
   ConsoleOutput("vnreng: INSERT Artemis");
   NewHook(hp, L"Artemis");
@@ -8057,7 +8119,7 @@ bool InsertTaskforce2Hook()
     0x75, 0xf3, // 005948e7  |.^75 f3          \jnz short taskforc.005948dc
     0x3b,0xfb   // 005948e9  |> 3bfb           cmp edi,ebx ; jichi: hook here
   };
-  enum { hook_offset = sizeof(bytes) - 2 };
+  enum { addr_offset = sizeof(bytes) - 2 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD3(reladdr, module_base_, range);
@@ -8067,12 +8129,12 @@ bool InsertTaskforce2Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = -0xc;
+  hp.address = addr + addr_offset;
+  hp.offset = -0xc;
   hp.type = BIG_ENDIAN|USING_STRING; // 0x41
 
-  //ITH_GROWL_DWORD(hp.addr);
-  //hp.addr = 0x1948e9 + module_base_;
+  //ITH_GROWL_DWORD(hp.address);
+  //hp.address = 0x1948e9 + module_base_;
 
   ConsoleOutput("vnreng: INSERT Taskforce2");
   NewHook(hp, L"Taskforce2");
@@ -8206,10 +8268,10 @@ namespace { // unnamed Rejet
  *    01113578     68 dc6a5401    push kengakim.01546adc
  *    0111357d     e8 3eaff6ff    call kengakim.0107e4c0    ; hook here
  */
-bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD hp_off, LPCWSTR hp_name = L"Rejet")
+bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD hook_offset, LPCWSTR hook_name = L"Rejet")
 {
   // Offset to the function call from the beginning of the function
-  //enum { hook_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
+  //enum { addr_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
   //const BYTE pattern[] = {    // Type1: Function start
   //  0xff,0xf0,      // 01185311   . fff0           push eax  ; beginning of a new function
   //  0x0f,0xc1,0x11, // 01185313   . 0fc111         xadd dword ptr ds:[ecx],edx
@@ -8240,14 +8302,14 @@ bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD hp
 
   ConsoleOutput("vnreng: INSERT Rejet");
   HookParam hp = {};
-  hp.addr = addr; //- 0xf;
+  hp.address = addr; //- 0xf;
   hp.type = NO_CONTEXT|DATA_INDIRECT|FIXING_SPLIT;
   hp.length_offset = 1;
-  hp.off = hp_off;
-  //hp.off = -0x8; // Type1
-  //hp.off = -0xc; // Type2
+  hp.offset = hook_offset;
+  //hp.offset = -0x8; // Type1
+  //hp.offset = -0xc; // Type2
 
-  NewHook(hp, hp_name);
+  NewHook(hp, hook_name);
   return true;
 }
 bool InsertRejetHook1() // This type of hook has varied hook address
@@ -8260,9 +8322,9 @@ bool InsertRejetHook1() // This type of hook has varied hook address
     0x0f,0x8f           // 01185319   . 0f8f 45020000  jg DotKares.01185564
   };
   // Offset to the function call from the beginning of the function
-  enum { hook_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
-  enum { hp_off = -0x8 }; // hook parameter
-  return FindRejetHook(bytes, sizeof(bytes), hook_offset, hp_off);
+  enum { addr_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
+  enum { hook_offset = -0x8 }; // hook parameter
+  return FindRejetHook(bytes, sizeof(bytes), addr_offset, hook_offset);
 }
 bool InsertRejetHook2() // This type of hook has static hook address
 {
@@ -8280,9 +8342,9 @@ bool InsertRejetHook2() // This type of hook has static hook address
     0x8b,0x4c,0x24, 0x14 //   01357ae6   8b4c24 14      mov ecx,dword ptr ss:[esp+0x14]
   };
   // Offset to the function call from the beginning of the function
-  enum { hook_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
-  enum { hp_off = -0xc }; // hook parameter
-  return FindRejetHook(bytes, sizeof(bytes), hook_offset, hp_off);
+  enum { addr_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
+  enum { hook_offset = -0xc }; // hook parameter
+  return FindRejetHook(bytes, sizeof(bytes), addr_offset, hook_offset);
 }
 bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
 {
@@ -8301,8 +8363,8 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
     0x8b,0x4c,0x24, 0x14 //   01357ae6   8b4c24 14      mov ecx,dword ptr ss:[esp+0x14]
   };
   // Offset to the function call from the beginning of the function
-  //enum { hook_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
-  enum { hp_off = -0xc }; // hook parameter
+  //enum { addr_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
+  enum { hook_offset = -0xc }; // hook parameter
   ULONG addr = module_base_; //- sizeof(bytes);
   while (true) {
     //addr += sizeof(bytes); // ++ so that each time return diff address
@@ -8335,12 +8397,12 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
   ConsoleOutput("vnreng: INSERT Rejet");
   // The same as type2
   HookParam hp = {};
-  hp.addr = addr; //- 0xf;
+  hp.address = addr; //- 0xf;
   hp.type = NO_CONTEXT|DATA_INDIRECT|FIXING_SPLIT;
   hp.length_offset = 1;
-  hp.off = hp_off;
-  //hp.off = -0x8; // Type1
-  //hp.off = -0xc; // Type2
+  hp.offset = hook_offset;
+  //hp.offset = -0x8; // Type1
+  //hp.offset = -0xc; // Type2
 
   NewHook(hp, L"Rejet");
   return true;
@@ -8425,7 +8487,7 @@ bool InsertTencoHook()
     0x8d,0x5c,0x24, 0x24,           // 004ad803  |. 8d5c24 24      |lea ebx,dword ptr ss:[esp+0x24]
     0xe8 //740cf6ff                 // 004ad807  |. e8 740cf6ff    |call 英雄＊戦.0040e480     ; jichi: hook here
   };
-  enum { hook_offset = sizeof(bytes) - 1 };
+  enum { addr_offset = sizeof(bytes) - 1 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //reladdr = 0x4ad807;
@@ -8435,10 +8497,10 @@ bool InsertTencoHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   hp.length_offset = 1;
-  hp.ind = 4;
-  hp.off = -0xc;
+  hp.index = 4;
+  hp.offset = -0xc;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
 
   ConsoleOutput("vnreng: INSERT Tenco");
@@ -8523,7 +8585,7 @@ bool InsertAOSHook()
   //  0x0f,0xb6,0x3d, 0xc7,0x46,0xeb,0x00,  // 00e3c30a  |. 0fb63d c746eb00 movzx edi,byte ptr ds:[0xeb46c7]
   //  0x81,0xe6, 0xff,0xff,0xff,0x00        // 00e3c311  |. 81e6 ffffff00   and esi,0xffffff
   //};
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
 
   const BYTE bytes[] = {
     0x0f,0xbf,0x55, 0x1c,   // 00e3c33c  |> 0fbf55 1c                  movsx edx,word ptr ss:[ebp+0x1c]
@@ -8536,7 +8598,7 @@ bool InsertAOSHook()
     0x03,0xd6,              // 00e3c352  |. 03d6                       add edx,esi
     0x85,0xc9               // 00e3c354  |. 85c9                       test ecx,ecx
   };
-  enum { hook_offset = 0x00e3c2f0 - 0x00e3c33c }; // distance to the beginning of the function, which is 0x51 (push ecx)
+  enum { addr_offset = 0x00e3c2f0 - 0x00e3c33c }; // distance to the beginning of the function, which is 0x51 (push ecx)
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL(reladdr);
@@ -8544,7 +8606,7 @@ bool InsertAOSHook()
     ConsoleOutput("vnreng:AOS: pattern not found");
     return false;
   }
-  addr += hook_offset;
+  addr += addr_offset;
   //ITH_GROWL(addr);
   enum { push_ecx = 0x51 }; // beginning of the function
   if (*(BYTE *)addr != push_ecx) {
@@ -8553,9 +8615,9 @@ bool InsertAOSHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.length_offset = 1;
-  hp.off = 8;
+  hp.offset = 8;
   hp.type = DATA_INDIRECT;
 
   ConsoleOutput("vnreng: INSERT AOS");
@@ -8644,7 +8706,7 @@ bool InsertAdobeAirHook()
     0xff,0x45, 0xfc, // 0f8f04bd  |. ff45 fc       |inc dword ptr ss:[ebp-0x4]
     0xeb, 0x3a       // 0f8f04c0  |. eb 3a         |jmp short adobe_ai.0f8f04fc
   };
-  enum { hook_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
+  enum { addr_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
   enum { range = 0x600000 }; // larger than relative addresses
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), base, base + range);
   //ITH_GROWL(reladdr);
@@ -8654,10 +8716,10 @@ bool InsertAdobeAirHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   //hp.module = module;
   hp.length_offset = 1;
-  hp.off = -0x10;
+  hp.offset = -0x10;
   hp.split = 0xd8;
   //hp.type = USING_SPLIT|MODULE_OFFSET|USING_UNICODE|DATA_INDIRECT; // 0x5a;
   hp.type = USING_SPLIT|USING_UNICODE|DATA_INDIRECT;
@@ -8716,7 +8778,7 @@ bool InsertAdobeAirHook()
  *  - off: 4
  *  - type: 4
  *
- *  ASCII: あやめ, hook_offset = -50
+ *  ASCII: あやめ, addr_offset = -50
  *  Function starts
  *  00609bef  /> cc             int3
  *  00609bf0  /> 55             push ebp
@@ -8748,7 +8810,7 @@ bool InsertAdobeAirHook()
  *  00609c38  |. c2 0400        retn 0x4
  *  Function stops
  *
- *  WideChar: こいなか-小田舎で初恋x中出しセクシャルライフ-, hook_offset = -53
+ *  WideChar: こいなか-小田舎で初恋x中出しセクシャルライフ-, addr_offset = -53
  *  0040653a     cc             int3
  *  0040653b     cc             int3
  *  0040653c     cc             int3
@@ -8783,7 +8845,7 @@ bool InsertAdobeAirHook()
  *  00406584   . 5d             pop ebp
  *  00406585   . c2 0400        retn 0x4
  *
- *  WideChar: 祝福の鐘の音は、桜色の風と共に, hook_offset = -50,
+ *  WideChar: 祝福の鐘の音は、桜色の風と共に, addr_offset = -50,
  *  FIXME: how to know if it is UTF16? This game has /H code, though:
  *
  *      /HA-4@94D62:shukufuku_main.exe
@@ -8833,7 +8895,7 @@ bool InsertScenarioPlayerHook()
   //  0x83,0x7f, 0x44, 0x00,   // 00609c21  |. 837f 44 00     cmp dword ptr ds:[edi+0x44],0x0
   //  0x74, 0x14,              // 00609c25  |. 74 14          je short あやめ.00609c3b
   //};
-  //enum { hook_offset = 0x00609bf0 - 0x00609c0e }; // distance to the beginning of the function
+  //enum { addr_offset = 0x00609bf0 - 0x00609c0e }; // distance to the beginning of the function
 
   const BYTE bytes[] = {
     0x74, 0x14,     // 00609c25  |. 74 14          je short あやめ.00609c3b
@@ -8843,8 +8905,8 @@ bool InsertScenarioPlayerHook()
     0x8b,0x4d, 0xf4 // 00609c2b  |. 8b4d f4        mov ecx,dword ptr ss:[ebp-0xc]
   };
   enum { // distance to the beginning of the function
-    hook_offset_A = 0x00609bf0 - 0x00609c25   // -53
-    , hook_offset_W = 0x00406540 - 0x00406572 // -50
+    addr_offset_A = 0x00609bf0 - 0x00609c25   // -53
+    , addr_offset_W = 0x00406540 - 0x00406572 // -50
   };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG start = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
@@ -8862,10 +8924,10 @@ bool InsertScenarioPlayerHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.length_offset = 1;
-  hp.off = 4;
-  if (addr - start == hook_offset_W) {
+  hp.offset = 4;
+  if (addr - start == addr_offset_W) {
     hp.type = USING_UNICODE;
     ConsoleOutput("vnreng: INSERT ScenarioPlayerW");
     NewHook(hp, L"ScenarioPlayerW");
@@ -8969,7 +9031,7 @@ bool InsertMarineHeartHook()
     0x50,                       // 0040d1e8  |. 50                 push eax                        ; |height
     0xe8, 0x00,0xfa,0x06,0x00   // 0040d1e9  |. e8 00fa0600        call <jmp.&gdi32.CreateFontA>   ; \createfonta
   };
-  enum { hook_offset = 0x0040d160 - 0x0040d1c6 }; // distance to the beginning of the function
+  enum { addr_offset = 0x0040d160 - 0x0040d1c6 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr);
@@ -8978,7 +9040,7 @@ bool InsertMarineHeartHook()
     return false;
   }
 
-  addr += hook_offset;
+  addr += addr_offset;
   //addr = 0x40d160;
   //ITH_GROWL_DWORD(addr);
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
@@ -8988,8 +9050,8 @@ bool InsertMarineHeartHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = 4;
+  hp.address = addr;
+  hp.offset = 4;
   hp.type = USING_STRING|DATA_INDIRECT; // = 9
 
   ConsoleOutput("vnreng: INSERT MarineHeart");
@@ -9114,7 +9176,7 @@ bool InsertElfHook()
       0x8b,0x48, 0x04,                  // 0093f9c5  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
       0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
   };
-  //enum { hook_offset = 0xc };
+  //enum { addr_offset = 0xc };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(addr);
@@ -9131,7 +9193,7 @@ bool InsertElfHook()
     if (*(BYTE *)addr == push_ebp) { // beginning of the function
 
       HookParam hp = {};
-      hp.addr = addr;
+      hp.address = addr;
       hp.text_fun = SpecialHookElf;
       hp.type = USING_STRING|NO_CONTEXT; // = 9
 
@@ -9175,9 +9237,9 @@ bool InsertEushullyHook()
   };
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = USING_STRING|FIXING_SPLIT; // merging all threads
-  hp.off = arg2_lpString; // arg2 = 0x4 * 2
+  hp.offset = arg2_lpString; // arg2 = 0x4 * 2
   ConsoleOutput("vnreng: INSERT Eushully");
   NewHook(hp, L"Eushully");
   return true;
@@ -9252,11 +9314,11 @@ bool InsertAmuseCraftHook()
     0x0f,0xb6,0x08,       // 013c6156  |. 0fb608         movzx ecx,byte ptr ds:[eax]
     0x81,0xf9 //81000000  // 013c6159  |. 81f9 81000000  cmp ecx,0x81 ; jichi: hook here
   };
-  enum { hook_offset = sizeof(bytes) - 2 };
+  enum { addr_offset = sizeof(bytes) - 2 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr); // supposed to be 0x21650
-  //ITH_GROWL_DWORD(reladdr  + hook_offset);
+  //ITH_GROWL_DWORD(reladdr  + addr_offset);
   //reladdr = 0x26159; // 魔女こいにっき trial
   if (!addr) {
     ConsoleOutput("vnreng:AMUSE CRAFT: pattern not found");
@@ -9264,11 +9326,11 @@ bool InsertAmuseCraftHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   //hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT; // 0x418
   //hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT|RELATIVE_SPLIT;  // Use relative address to prevent floating issue
   hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
-  hp.off = -0x8; // eax
+  hp.offset = -0x8; // eax
   //hp.split = 0x18;
   //hp.split = 0x4; // This is supposed to be the return address
   hp.split = 0x20; // arg6
@@ -9541,12 +9603,12 @@ bool InsertNeXASHook()
   };
 
   HookParam hp = {};
-  //hp.addr = (DWORD)::GetGlyphOutlineA;
-  hp.addr = addr;
+  //hp.address = (DWORD)::GetGlyphOutlineA;
+  hp.address = addr;
   //hp.type = USING_STRING|USING_SPLIT;
   hp.type = BIG_ENDIAN|NO_CONTEXT|USING_SPLIT;
   hp.length_offset = 1; // determine string length at runtime
-  hp.off = arg2_uChar; // = 0x4, arg2 before the function call, so it is: 0x4 * (2-1) = 4
+  hp.offset = arg2_uChar; // = 0x4, arg2 before the function call, so it is: 0x4 * (2-1) = 4
 
   // Either lpgm or lpmat2 are good choices
   hp.split = arg4_lpgm; // = 0xc, arg4
@@ -9663,7 +9725,7 @@ bool InsertYukaSystem2Hook()
     0x5d,            // 004010ed  |. 5d             pop ebp
     0xc3             // 004010ee  \. c3             retn
   };
-  //enum { hook_offset = 0 };
+  //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
@@ -9673,7 +9735,7 @@ bool InsertYukaSystem2Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = NO_CONTEXT|USING_STRING|USING_UTF8; // UTF-8, though
   hp.text_fun = SpecialHookYukaSystem2;
   ConsoleOutput("vnreng: INSERT YukaSystem2");
@@ -9828,7 +9890,7 @@ bool Insert2RMHook()
     0x89,0x4c,0x24, 0x2c,           // 0045429e   894c24 2c        mov dword ptr ss:[esp+0x2c],ecx
     0xe8 //, 498a0100               // 004542a2   e8 498a0100      call .0046ccf0
   };
-  enum { hook_offset = 0x00454296 - 0x0045428d };
+  enum { addr_offset = 0x00454296 - 0x0045428d };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
@@ -9838,9 +9900,9 @@ bool Insert2RMHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   hp.length_offset = 1;
-  hp.off = -0x24;
+  hp.offset = -0x24;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   ConsoleOutput("vnreng: INSERT 2RM");
   NewHook(hp, L"2RM");
@@ -9960,7 +10022,7 @@ bool InsertSideBHook()
     0x89,0x5d, 0xe4,                      // 00f6444f   895d e4          mov dword ptr ss:[ebp-0x1c],ebx
     0x88,0x5d, 0xd4                       // 00f64452   885d d4          mov byte ptr ss:[ebp-0x2c],bl
   };
-  enum { hook_offset = 0x00f64410 - 0x00f64435 }; // distance to the beginning of the function
+  enum { addr_offset = 0x00f64410 - 0x00f64435 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
@@ -9968,7 +10030,7 @@ bool InsertSideBHook()
     ConsoleOutput("vnreng:SideB: pattern not found");
     return false;
   }
-  addr += hook_offset;
+  addr += addr_offset;
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
   if (*(BYTE *)addr != push_ebp) {
     ConsoleOutput("vnreng:SideB: pattern found but the function offset is invalid");
@@ -9977,9 +10039,9 @@ bool InsertSideBHook()
   //ITH_GROWL_DWORD(addr);
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   //hp.length_offset = 1;
-  hp.off = 4; // [esp+4] == arg1
+  hp.offset = 4; // [esp+4] == arg1
   hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|RELATIVE_SPLIT; // NO_CONTEXT && RELATIVE_SPLIT to get rid of floating return address
   //hp.split = 0; // use retaddr as split
   ConsoleOutput("vnreng: INSERT SideB");
@@ -10188,7 +10250,7 @@ bool InsertExpHook()
     0x8d,0x49, 0x00,        // 0025804d   8d49 00          lea ecx,dword ptr ds:[ecx]
     0x8a,0x0a               // 00258050   8a0a             mov cl,byte ptr ds:[edx]  ; jichi: text accessed in edx
   };
-  enum { hook_offset = 0 };
+  enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(addr);
@@ -10198,7 +10260,7 @@ bool InsertExpHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.address = addr + addr_offset;
   hp.type = NO_CONTEXT|USING_STRING; // NO_CONTEXT to get rid of floating address
   hp.text_fun = SpecialHookExp;
   ConsoleOutput("vnreng: INSERT EXP");
@@ -10328,7 +10390,7 @@ bool InsertHorkEyeHook()
     0x89,0x4c,0x24, 0x18,   // 013cdb09   894c24 18        mov dword ptr ss:[esp+0x18],ecx
     0x8a,0x0c,0x1a          // 013cdb0d   8a0c1a           mov cl,byte ptr ds:[edx+ebx]        jichi: here
   };
-  enum { hook_offset = sizeof(bytes) - 3 }; // 8a0c1a
+  enum { addr_offset = sizeof(bytes) - 3 }; // 8a0c1a
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:HorkEye: pattern not found");
@@ -10336,8 +10398,8 @@ bool InsertHorkEyeHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = pusha_ebx_off -4;
+  hp.address = addr + addr_offset;
+  hp.offset = pusha_ebx_off -4;
   hp.type = USING_STRING|NO_CONTEXT|FIXING_SPLIT; // floating address
   hp.filter_fun = HorkEyeFilter;
   ConsoleOutput("vnreng: INSERT HorkEye");
@@ -10482,18 +10544,18 @@ bool Insert5pbHook1()
     0x33,0xc0,      // 0016d918   33c0             xor eax,eax
     0x84,0xc9       // 0016d91a   84c9             test cl,cl
   };
-  enum { hook_offset = 0x0016d916 - 0x0016d90e };
+  enum { addr_offset = 0x0016d916 - 0x0016d90e };
 
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL_DWORD3(addr+hook_offset, module_base_,module_limit_);
+  //ITH_GROWL_DWORD3(addr+addr_offset, module_base_,module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:5pb1: pattern not found");
     return false;
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = pusha_edx_off - 4;
+  hp.address = addr + addr_offset;
+  hp.offset = pusha_edx_off - 4;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT 5pb1");
   NewHook(hp, L"5pb1");
@@ -10541,10 +10603,10 @@ bool Insert5pbHook2()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = USING_STRING;
   hp.text_fun = SpecialHook5pb2;
-  //hp.off = pusha_eax_off - 4;
+  //hp.offset = pusha_eax_off - 4;
   //hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT 5pb2");
   NewHook(hp, L"5pb2");
@@ -10697,7 +10759,7 @@ bool Insert5pbHook3()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = USING_STRING|NO_CONTEXT;
   hp.text_fun = SpecialHook5pb3;
   hp.extra_text_count = 1; // extract character name in arg1
@@ -10848,8 +10910,8 @@ static bool InsertMinkDynamicHook(LPVOID fun, DWORD frame, DWORD stack)
   }
 
   HookParam hp = {};
-  hp.addr = addr; // hook to the beginning of the caller function
-  hp.off = 4 * 1; // text character is in arg1
+  hp.address = addr; // hook to the beginning of the caller function
+  hp.offset = 4 * 1; // text character is in arg1
   hp.length_offset = 1; // only 1 character
   hp.type = BIG_ENDIAN;
   NewHook(hp, L"Mink");
@@ -10862,7 +10924,7 @@ static bool InsertMinkDynamicHook(LPVOID fun, DWORD frame, DWORD stack)
 
 static void SpecialHookMink(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  //DWORD addr = *(DWORD *)(esp_base + hp->off); // default value
+  //DWORD addr = *(DWORD *)(esp_base + hp->offset); // default value
   DWORD addr = regof(eax, esp_base);
   if (!IthGetMemoryRange((LPVOID)(addr), 0, 0))
     return;
@@ -10890,7 +10952,7 @@ bool InsertMinkHook()
     0x83,0x60, 0x70, 0xfd,  // 00451654   8360 70 fd       and dword ptr ds:[eax+0x70],0xfffffffd
     0x8b,0x45, 0x08         // 00451658   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
   };
-  enum { hook_offset = 2 };
+  enum { addr_offset = 2 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ULONG addr = 0x45164a;
   //ULONG addr = 0x451648;
@@ -10902,8 +10964,8 @@ bool InsertMinkHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = pusha_eax_off - 4; // -8
+  hp.address = addr + addr_offset;
+  hp.offset = pusha_eax_off - 4; // -8
   hp.length_offset = 1;
   hp.split = 0x64;
   hp.type = USING_SPLIT|DATA_INDIRECT; // 0x18
@@ -10998,7 +11060,7 @@ bool InsertLeafHook()
     //0xff,0x15           // 0045167a   ff15 74104a00    call dword ptr ds:[0x4a1074]             ; kernel32.getprocessheap
   };
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  enum { hook_offset = 0x0045166f - 0x00451658 };
+  enum { addr_offset = 0x0045166f - 0x00451658 };
   //ITH_GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:Leaf: pattern not found");
@@ -11006,8 +11068,8 @@ bool InsertLeafHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  //hp.off = pusha_eax_off - 4;
+  hp.address = addr + addr_offset;
+  //hp.offset = pusha_eax_off - 4;
   hp.type = USING_STRING|USING_SPLIT;
   hp.text_fun = SpecialHookLeaf;
   //hp.filter_fun = NewLineStringFilter; // remove two characters of "\\n"
@@ -11111,7 +11173,7 @@ bool InsertLunaSoftHook()
     0x83,0xc1, 0x1c, // 0046c58c   83c1 1c          add ecx,0x1c
     0xe8             // 0046c58f   e8 2cebf9ff      call .0040b0c0
   };
-  enum { hook_offset = 2 };
+  enum { addr_offset = 2 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ITH_GROWL(addr);
   if (!addr) {
@@ -11119,8 +11181,8 @@ bool InsertLunaSoftHook()
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = 1 * 4; // arg1
+  hp.address = addr + addr_offset;
+  hp.offset = 1 * 4; // arg1
   hp.type = USING_STRING;
   //hp.filter_fun = LunaSoftFilter; // remove \n
   ConsoleOutput("vnreng: INSERT LunaSoft");
@@ -11253,7 +11315,7 @@ bool InsertFocasLensHook()
     0x40,           // 001fabbf   40               inc eax
     0x3b,0xc3       // 001fabc0   3bc3             cmp eax,ebx
   };
-  enum { hook_offset = 0x001fabbc - 0x001fabb9 };
+  enum { addr_offset = 0x001fabbc - 0x001fabb9 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ITH_GROWL(addr);
   if (!addr) {
@@ -11261,8 +11323,8 @@ bool InsertFocasLensHook()
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  //hp.off = pusha_edx_off - 4;
+  hp.address = addr + addr_offset;
+  //hp.offset = pusha_edx_off - 4;
   //hp.length_offset = 1; // Why this does not work?!
   //hp.split = pusha_eax_off - 4; // use eax as split
   hp.text_fun = SpecialHookFocasLens; // use special hook to force byte access
@@ -11427,7 +11489,7 @@ bool InsertSyuntadaHook()
     0x85,0xff,                      // 0046944c   85ff             test edi,edi    ; jichi: hook here
     0x74, 0x3a                      // 0046944e   74 3a            je short .0046948a
   };
-  enum { hook_offset = 0x0046944c - 0x0046943d };
+  enum { addr_offset = 0x0046944c - 0x0046943d };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ITH_GROWL(addr);
   if (!addr) {
@@ -11435,8 +11497,8 @@ bool InsertSyuntadaHook()
     return false;
   }
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = -0x1c;
+  hp.address = addr + addr_offset;
+  hp.offset = -0x1c;
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN; // 0x4
   ConsoleOutput("vnreng: INSERT Syuntada");
@@ -11694,8 +11756,8 @@ bool InsertAdobeFlash10Hook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
-  hp.off = 1 * 4; // arg1
+  hp.address = addr;
+  hp.offset = 1 * 4; // arg1
   //hp.length_offset = 2 * 4; // arg2 might be the length
   hp.type = USING_UNICODE;
   hp.filter_fun = AdobeFlashFilter;
@@ -11739,9 +11801,9 @@ bool InsertMonoHooks()
   for (int i = 0; i < FunctionCount; i++) {
     const auto &it = funcs[i];
     if (FARPROC addr = ::GetProcAddress(h, it.functionName)) {
-      hp.addr = (DWORD)addr;
+      hp.address = (DWORD)addr;
       hp.type = it.hookType;
-      hp.off = it.textIndex * 4;
+      hp.offset = it.textIndex * 4;
       hp.length_offset = it.lengthIndex * 4;
       hp.text_fun = (HookParam::text_fun_t)it.text_fun;
       ConsoleOutput("vnreng: Mono: INSERT");
@@ -11923,15 +11985,15 @@ bool InsertVanillawareGCHook()
     //0xeb, 26              // 160941da   eb 26            jmp short 16094202
   };
   enum { memory_offset = 3 }; // 160941a0   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000]
-  enum { hook_offset = 0x160941a0 - 0x16094193 };
+  enum { addr_offset = 0x160941a0 - 0x16094193 };
 
   DWORD addr = SafeMatchBytesInGCMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Vanillaware GC: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.text_fun = SpecialGCHookVanillaware;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Vanillaware GC: INSERT");
@@ -11947,7 +12009,7 @@ bool InsertVanillawareGCHook()
  */
 void SpecialPSPHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD offset = *(DWORD *)(esp_base + hp->off);
+  DWORD offset = *(DWORD *)(esp_base + hp->offset);
   LPCSTR text = LPCSTR(offset + hp->user_value);
   static LPCSTR lasttext;
   if (*text) {
@@ -11997,9 +12059,9 @@ bool InsertPPSSPPHLEHooks()
         && (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
         && (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) // range = 0x200, use the safe version or it might raise
        ) {
-       hp.addr = addr;
+       hp.address = addr;
        hp.type = it.hookType;
-       hp.off = 4 * it.argIndex;
+       hp.offset = 4 * it.argIndex;
        hp.split = it.hookSplit;
        if (hp.split)
          hp.type |= USING_SPLIT;
@@ -12233,7 +12295,7 @@ bool InsertAlchemistPSPHook()
      0x88,0x90 //, XX4               // 13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: alternatively hook here
   };
   enum { memory_offset = 3 }; // 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = 0x13407711 - 0x134076f4 };
+  enum { addr_offset = 0x13407711 - 0x134076f4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
@@ -12241,8 +12303,8 @@ bool InsertAlchemistPSPHook()
     ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.text_fun = SpecialPSPHookAlchemist;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
@@ -12332,7 +12394,7 @@ bool InsertAlchemist2PSPHook()
     0x81,0xfd, 0x00,0x00,0x00,0x00  // 13400f2b   81fd 00000000    cmp ebp,0x0
   };
   enum { memory_offset = 2 }; // 13400f13   8bb8 00004007    mov edi,dword ptr ds:[eax+0x7400000]
-  enum { hook_offset = 0x13400f13 - 0x13400ef4 };
+  enum { addr_offset = 0x13400f13 - 0x13400ef4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
@@ -12340,8 +12402,8 @@ bool InsertAlchemist2PSPHook()
     ConsoleOutput("vnreng: Alchemist2 PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.text_fun = SpecialPSPHookAlchemist2;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
@@ -12574,7 +12636,7 @@ bool Insert5pbPSPHook()
     0x0f,0xbe,0xb0 //, XX4          // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
   };
   enum { memory_offset = 3 }; // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = sizeof(bytes) - memory_offset };
+  enum { addr_offset = sizeof(bytes) - memory_offset };
 
   enum : DWORD { start = MemDbg::MappedMemoryStartAddress };
   DWORD stop = PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 8 ? MemDbg::MemoryStopAddress : 0x15000000;
@@ -12584,8 +12646,8 @@ bool Insert5pbPSPHook()
     ConsoleOutput("vnreng: 5pb PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.text_fun = SpecialPSPHook5pb;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: 5pb PSP: INSERT");
@@ -12681,18 +12743,18 @@ bool InsertImageepochPSPHook()
     0x0f,0xbe,0xc8                  // 1346d38d   0fbec8           movsx ecx,al
   };
   enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = 0x1346d381 - 0x1346d350 };
-  //enum { hook_offset = sizeof(bytes) - memory_offset };
+  enum { addr_offset = 0x1346d381 - 0x1346d350 };
+  //enum { addr_offset = sizeof(bytes) - memory_offset };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Imageepoch PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
     hp.user_flags = HPF_IgnoreSameAddress;
     //hp.text_fun = SpecialPSPHook;
@@ -12767,17 +12829,17 @@ bool InsertImageepoch2PSPHook()
     0x0f,0x85 //, XX4,                   // 135fd4fc   0f85 16000000    jnz 135fd518
   };
   enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = 0x135fd4c1 - 0x135fd498 };
+  enum { addr_offset = 0x135fd4c1 - 0x135fd498 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Imageepoch2 PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
     hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: Imageepoch2 PSP: INSERT");
@@ -13294,18 +13356,18 @@ bool InsertYetiPSPHook()
     0x0f,0xb6,0xb0 //, XX4,         // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here
   };
   enum { memory_offset = 3 }; // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]
-  enum { hook_offset = sizeof(bytes) - memory_offset };
+  enum { addr_offset = sizeof(bytes) - memory_offset };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Yeti PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     hp.text_fun = SpecialPSPHook;
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     ConsoleOutput("vnreng: Yeti PSP: INSERT");
     NewHook(hp, L"Yeti PSP");
   }
@@ -13436,23 +13498,23 @@ bool InsertKidPSPHook()
     0x81,0xfe, 0x00,0x00,0x00,0x00  // 13973ab3   81fe 00000000    cmp esi,0x0
   };
   enum { memory_offset = 3 }; // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
-  enum { hook_offset = 0x13973aac - 0x13973a7c };
+  enum { addr_offset = 0x13973aac - 0x13973a7c };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: KID PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.text_fun = SpecialPSPHookKid;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
 
     //HookParam hp = {};
-    //hp.addr = addr + hook_offset;
-    //hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    //hp.address = addr + addr_offset;
+    //hp.user_value = *(DWORD *)(hp.address + memory_offset);
     //hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
-    //hp.off = pusha_eax_off - 4;
+    //hp.offset = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4;
     //hp.text_fun = SpecialPSPHook;
 
@@ -13573,7 +13635,7 @@ bool InsertCyberfrontPSPHook()
     0xc7,0x05 //, XX8               // 0ed8cf6a   c705 c84c1301 18>mov dword ptr ds:[0x1134cc8],0x888d218
   };
   enum { memory_offset = 3 }; // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
-  enum { hook_offset = 0x0ed8cf31 - 0x0ed8cf14 };
+  enum { addr_offset = 0x0ed8cf31 - 0x0ed8cf14 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
@@ -13581,10 +13643,10 @@ bool InsertCyberfrontPSPHook()
     ConsoleOutput("vnreng: CYBERFRONT PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    //hp.off = pusha_eax_off - 4;
+    //hp.offset = pusha_eax_off - 4;
     //hp.split = pusha_edi_off - 4;
     hp.text_fun = SpecialPSPHookCyberfront;
     ConsoleOutput("vnreng: CYBERFRONT PSP: INSERT");
@@ -13812,20 +13874,20 @@ bool InsertYeti2PSPHook()
                                     // 14289b16   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = sizeof(bytes) - memory_offset };
-  //enum { hook_offset = sizeof(bytes) + 4 }; // point to next statement after ebp is assigned
+  enum { addr_offset = sizeof(bytes) - memory_offset };
+  //enum { addr_offset = sizeof(bytes) + 4 }; // point to next statement after ebp is assigned
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Yeti2 PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
-    //hp.off = pusha_eax_off - 4;
+    //hp.offset = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4; // this would split scenario thread
-    //hp.split = hp.off; // directly use text address to split
+    //hp.split = hp.offset; // directly use text address to split
     hp.text_fun = SpecialPSPHookYeti2;
     ConsoleOutput("vnreng: Yeti2 PSP: INSERT");
     NewHook(hp, L"Yeti2 PSP");
@@ -13995,17 +14057,17 @@ bool InsertBandaiNamePSPHook()
     0x0f,0xb6,0xb8 //, XX4          // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
   };
   enum { memory_offset = 3 };  // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = sizeof(bytes) - memory_offset };
+  enum { addr_offset = sizeof(bytes) - memory_offset };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: BANDAI Name PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     hp.split = pusha_ebx_off - 4;
     hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: BANDAI Name PSP: INSERT");
@@ -14087,17 +14149,17 @@ bool InsertBandaiPSPHook()
     0x81,0xff, 0x00,0x00,0x00,0x00  // 13400599   81ff 00000000    cmp edi,0x0
   };
   enum { memory_offset = 3 };  // 13400589   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = 0x13400589 - 0x13400560 };
+  enum { addr_offset = 0x13400589 - 0x13400560 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: BANDAI PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    //hp.off = pusha_eax_off - 4;
+    //hp.offset = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4;
     hp.text_fun = SpecialPSPHookBandai;
     ConsoleOutput("vnreng: BANDAI PSP: INSERT");
@@ -14147,7 +14209,7 @@ bool InsertBandaiPSPHook()
 static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
-  LPCSTR text = LPCSTR(esp_base + hp->off); // dynamic offset, ebp or esi
+  LPCSTR text = LPCSTR(esp_base + hp->offset); // dynamic offset, ebp or esi
   if (*text) {
     *data = (DWORD)text;
     *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp or si has at most two bytes
@@ -14177,15 +14239,15 @@ bool InsertNippon1PSPHook()
     0x8d,0x6d, 0x01                 // 134e0590   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x134e0583 - 0x134e0554 };
+  enum { addr_offset = 0x134e0583 - 0x134e0554 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Nippon1 PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.off = pusha_ebp_off - 4; // ebp
+    hp.address = addr + addr_offset;
+    hp.offset = pusha_ebp_off - 4; // ebp
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
@@ -14277,15 +14339,15 @@ bool InsertNippon2PSPHook()
     0x66,0x89,0xb0 //, XX4          // 13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si ; jichi: hook here
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = sizeof(bytes) - memory_offset };
+  enum { addr_offset = sizeof(bytes) - memory_offset };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Nippon2 PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.off = pusha_esi_off - 4; // esi
+    hp.address = addr + addr_offset;
+    hp.offset = pusha_esi_off - 4; // esi
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon2 PSP: INSERT");
@@ -14420,17 +14482,17 @@ bool InsertBroccoliPSPHook()
     0x8d,0x6d, 0x01,                // 13d26d93   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
     0x81,0xfe, 0x00,0x00,0x00,0x00  // 13d26d96   81fe 00000000    cmp esi,0x0
   };
-  enum { hook_offset = 0x13d26d87 - 0x13d26d4d };
+  enum { addr_offset = 0x13d26d87 - 0x13d26d4d };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Broccoli PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookBroccoli;
-    //ITH_GROWL_DWORD(hp.addr);
+    //ITH_GROWL_DWORD(hp.address);
     ConsoleOutput("vnreng: Broccoli PSP: INSERT");
     NewHook(hp, L"Broccoli PSP");
   }
@@ -14522,8 +14584,8 @@ bool InsertOtomatePSPHook()
     0x83,0x2d, XX4, 0x03            // 13c01029   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
   };
   enum { memory_offset = 3 };
-  //enum { hook_offset = 0x13c01008 - 0x13c00fe4 };
-  enum { hook_offset = 0x13c01001- 0x13c00fe4 };
+  //enum { addr_offset = 0x13c01008 - 0x13c00fe4 };
+  enum { addr_offset = 0x13c01001- 0x13c00fe4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
@@ -14531,8 +14593,8 @@ bool InsertOtomatePSPHook()
     ConsoleOutput("vnreng: Otomate PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookOtomate;
     ConsoleOutput("vnreng: Otomate PSP: INSERT");
@@ -14613,8 +14675,8 @@ bool InsertOtomatePPSSPPHook()
     0x5e,                       // 006db4d4   5e               pop esi
     0x8d,0x04,0x85, 0x07,0x00,0x00,0x00  // 006db4d5   8d0485 07000000  lea eax,dword ptr ds:[eax*4+0x7]
   };
-  //enum { hook_offset = 0x006db4c8 - 0x006db4b0 };
-  enum { hook_offset = 0x006db4b7 - 0x006db4b0 };
+  //enum { addr_offset = 0x006db4c8 - 0x006db4b0 };
+  enum { addr_offset = 0x006db4b7 - 0x006db4b0 };
   enum { ds_offset = 0x006db4bf - 0x006db4b0 + 2 };
 
   DWORD addr = SafeMatchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
@@ -14623,7 +14685,7 @@ bool InsertOtomatePPSSPPHook()
     ConsoleOutput("vnreng: Otomate PPSSPP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.user_value = *(DWORD *)(addr + ds_offset); // this is the address after ds:[]
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPPSSPPHookOtomate;
@@ -14718,14 +14780,14 @@ bool InsertOtomate2PSPHook()
     //0x89,0x35, XX4,                 // 14039186   8935 608b1301    mov dword ptr ds:[0x1138b60],esi   ; jichi: hook here, get lower bytes in esi
     //0x83,0x2d, XX4, 0x04            // 1403918c   832d b48e1301 04 sub dword ptr ds:[0x1138eb4],0x4
   };
-  enum { hook_offset = 0x14039186 - 0x14039128 };
+  enum { addr_offset = 0x14039186 - 0x14039128 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr) {
     ConsoleOutput("vnreng: Otomate2 PSP: leave: first pattern not found");
     return false;
   }
-  addr += hook_offset;
+  addr += addr_offset;
 
   //0x89,0x35, XX4,                 // 14039186   8935 608b1301    mov dword ptr ds:[0x1138b60],esi   ; jichi: hook here, get lower bytes in esi
   enum : WORD { mov_esi = 0x3589 };
@@ -14735,7 +14797,7 @@ bool InsertOtomate2PSPHook()
   }
 
   HookParam hp = {};
-  hp.addr = addr;
+  hp.address = addr;
   hp.type = USING_STRING|NO_CONTEXT;
   hp.text_fun = SpecialPSPHookOtomate2;
   ConsoleOutput("vnreng: Otomate2 PSP: INSERT");
@@ -14848,15 +14910,15 @@ bool InsertIntensePSPHook()
     0x81,0xe0, 0xff,0xff,0xff,0x3f  // 13472274   81e0 ffffff3f    and eax,0x3fffffff
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x13472267 - 0x13472228 };
+  enum { addr_offset = 0x13472267 - 0x13472228 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Intense PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookIntense;
     ConsoleOutput("vnreng: Intense PSP: INSERT");
@@ -15011,15 +15073,15 @@ bool InsertKonamiPSPHook()
     //0x8b,0x05, XX4                        // 14178fb4   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x14178f91 - 0x14178f74 };
+  enum { addr_offset = 0x14178f91 - 0x14178f74 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: KONAMI PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookKonami;
     ConsoleOutput("vnreng: KONAMI PSP: INSERT");
@@ -15175,21 +15237,21 @@ bool InsertKadokawaNamePSPHook()
     0x89,0x35 //, XX4,              // 1348d7e9   8935 70a71001    mov dword ptr ds:[0x110a770],esi
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x1348d7bd - 0x1348d7a0 };
+  enum { addr_offset = 0x1348d7bd - 0x1348d7a0 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Kadokawa Name PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     hp.split = pusha_edx_off - 4; // use edx to split repetition
     hp.text_fun = SpecialPSPHook;
 
-    //ITH_GROWL_DWORD2(hp.addr, hp.user_value);
+    //ITH_GROWL_DWORD2(hp.address, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa Name PSP: INSERT");
     NewHook(hp, L"Kadokawa Name PSP");
   }
@@ -15307,7 +15369,7 @@ bool InsertFelistellaPSPHook()
     //0x16                               // 141be98b   16               push ss
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x141be94f - 0x141be930 };
+  enum { addr_offset = 0x141be94f - 0x141be930 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
@@ -15315,12 +15377,12 @@ bool InsertFelistellaPSPHook()
     ConsoleOutput("vnreng: FELISTELLA PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_UTF8|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     //hp.text_fun = SpecialPSPHook;
     hp.text_fun = SpecialPSPHookFelistella;
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4; // cause main thread to split
     //hp.split = pusha_edx_off - 4; // cause main thread to split for different lines
     ConsoleOutput("vnreng: FELISTELLA PSP: INSERT");
@@ -15362,7 +15424,7 @@ bool InsertKadokawaPSPHook()
     // Below will change at runtime
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x134844f9 - 0x134844f3 };
+  enum { addr_offset = 0x134844f9 - 0x134844f3 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr) {
@@ -15376,15 +15438,15 @@ bool InsertKadokawaPSPHook()
     ConsoleOutput("vnreng: Kadokawa PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4; // use edx to split repetition
     hp.length_offset = 1; // byte by byte
     hp.text_fun = SpecialPSPHook;
 
-    //ITH_GROWL_DWORD2(hp.addr, hp.user_value);
+    //ITH_GROWL_DWORD2(hp.address, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa PSP: INSERT");
     NewHook(hp, L"Kadokawa PSP");
   }
@@ -15529,15 +15591,15 @@ bool InsertTypeMoonPSPHook()
     0xc1,0xfe, 0x10                 // 1351e179   c1fe 10          sar esi,0x10
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x1351e14d - 0x1351e130 };
+  enum { addr_offset = 0x1351e14d - 0x1351e130 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: TypeMoon PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookTypeMoon;
     ConsoleOutput("vnreng: TypeMoon PSP: INSERT");
@@ -15608,17 +15670,17 @@ bool InsertTecmoPSPHook()
     //0x81,0xfa, 0x01,0x00,0x00,0x00  // 13459931   81fa 01000000    cmp edx,0x1
   };
   enum { memory_offset = 2 };
-  enum { hook_offset = 0x13459901 - 0x134598e4 };
+  enum { addr_offset = 0x13459901 - 0x134598e4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Tecmo PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.off = pusha_eax_off - 4;
+    hp.offset = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
     hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: Tecmo PSP: INSERT");
@@ -15835,22 +15897,22 @@ bool InsertTypeMoonPS2Hook()
     0x66,0xc1,0xf8, 0x0f, // 305a5489   66:c1f8 0f       sar ax,0xf
     0x98                  // 305a548d   98               cwde
   };
-  enum { hook_offset = 0x305a5454 - 0x305a5424 };
+  enum { addr_offset = 0x305a5454 - 0x305a5424 };
 
   DWORD addr = SafeMatchBytesInPS2Memory(bytes, sizeof(bytes));
   //addr = 0x30403967;
   if (!addr)
     ConsoleOutput("vnreng: TypeMoon PS2: pattern not found");
   else {
-    //ITH_GROWL_DWORD(addr + hook_offset);
+    //ITH_GROWL_DWORD(addr + addr_offset);
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
     hp.text_fun = SpecialPS2HookTypeMoon;
-    //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
+    //hp.offset = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.addr);
+    //ITH_GROWL_DWORD(hp.address);
     NewHook(hp, L"TypeMoon PS2");
   }
 
@@ -16083,22 +16145,22 @@ bool InsertMarvelousPS2Hook()
     0x99,                               // 3026e2b2   99               cdq
     0xa3 //70ab6201                     // 3026e2b3   a3 70ab6201      mov dword ptr ds:[0x162ab70],eax
   };
-  enum { hook_offset = 0x3026e296 - 0x3026e266 };
+  enum { addr_offset = 0x3026e296 - 0x3026e266 };
 
   DWORD addr = SafeMatchBytesInPS2Memory(bytes, sizeof(bytes));
   //addr = 0x30403967;
   if (!addr)
     ConsoleOutput("vnreng: Marvelous PS2: pattern not found");
   else {
-    //ITH_GROWL_DWORD(addr + hook_offset);
+    //ITH_GROWL_DWORD(addr + addr_offset);
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
     hp.text_fun = SpecialPS2HookMarvelous;
-    //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
+    //hp.offset = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.addr);
+    //ITH_GROWL_DWORD(hp.address);
     NewHook(hp, L"Marvelous PS2");
   }
 
@@ -16269,22 +16331,22 @@ bool InsertMarvelous2PS2Hook()
     0xbb, XX4,            // 302073ea   bb f9732030      mov ebx,0x302073f9
     0x01,0xc1             // 302073ef   01c1             add ecx,eax
   };
-  enum { hook_offset = 0x3020734d - 0x30207334 };
+  enum { addr_offset = 0x3020734d - 0x30207334 };
 
   DWORD addr = SafeMatchBytesInPS2Memory(bytes, sizeof(bytes));
   //addr = 0x30403967;
   if (!addr)
     ConsoleOutput("vnreng: Marvelous2 PS2: pattern not found");
   else {
-    //ITH_GROWL_DWORD(addr + hook_offset);
+    //ITH_GROWL_DWORD(addr + addr_offset);
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
     hp.text_fun = SpecialPS2HookMarvelous2;
-    //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
+    //hp.offset = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous2 PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.addr);
+    //ITH_GROWL_DWORD(hp.address);
     NewHook(hp, L"Marvelous2 PS2");
   }
 
@@ -16302,7 +16364,7 @@ bool InsertNamcoPS2Hook()
   ConsoleOutput("vnreng: Namco PS2: enter");
   const BYTE bytes[1] =  {
   };
-  enum { hook_offset = 0 };
+  enum { addr_offset = 0 };
 
   //DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //DWORD addr = 0x303baf26;
@@ -16311,12 +16373,12 @@ bool InsertNamcoPS2Hook()
     ConsoleOutput("vnreng: Namco PS2: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.type = USING_STRING|USING_SPLIT; // no context to get rid of return address
-    hp.off = pusha_ecx_off - 4; // ecx
-    hp.split = hp.off; // use ecx address to split
+    hp.offset = pusha_ecx_off - 4; // ecx
+    hp.split = hp.offset; // use ecx address to split
     ConsoleOutput("vnreng: Namco PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.addr);
+    //ITH_GROWL_DWORD(hp.address);
     NewHook(hp, L"Namco PS2");
   }
 
@@ -16406,15 +16468,15 @@ bool InsertSegaPSPHook()
     0x89,0xb0   //, XX4,            // 135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi ; jichi: hook here, get text in esi
   };
   enum { memory_offset = 2 };
-  enum { hook_offset = sizeof(bytes) - memory_offset };
-  //enum { hook_offset = 0x13513495 - 0x13513478 };
+  enum { addr_offset = sizeof(bytes) - memory_offset };
+  //enum { addr_offset = 0x13513495 - 0x13513478 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: SEGA PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
+    hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // UTF-8
     hp.text_fun = SpecialPSPHookSega;
     ConsoleOutput("vnreng: SEGA PSP: INSERT");
@@ -16531,15 +16593,15 @@ bool InsertShadePSPHook()
     0x81,0xff, 0x00,0x00,0x00,0x00  // 13400e4d   81ff 00000000    cmp edi,0x0
   };
   enum{ memory_offset = 3 };
-  enum { hook_offset = 0x13400e3d - 0x13400e12 };
+  enum { addr_offset = 0x13400e3d - 0x13400e12 };
 
   ULONG addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset);
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset);
     hp.text_fun = SpecialPSPHookShade;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: Shade PSP: INSERT");
@@ -16651,15 +16713,15 @@ bool InsertAlchemist3PSPHook()
     0x0f,0x85 //, 16000000          // 13400e50   0f85 16000000    jnz 13400e6c
   };
   enum { memory_offset = 3 };
-  enum { hook_offset = 0x13407711 - 0x134076f4 };
+  enum { addr_offset = 0x13407711 - 0x134076f4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Alchemist3 PSP: pattern not found");
   else {
     HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.user_value = *(DWORD *)(hp.addr + memory_offset); // use module to pass membase
+    hp.address = addr + addr_offset;
+    hp.user_value = *(DWORD *)(hp.address + memory_offset); // use module to pass membase
     hp.text_fun = SpecialPSPHookAlchemist3;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist3 PSP: INSERT");
@@ -16755,7 +16817,7 @@ bool InsertMonoHook()
     0x66,0x39,0x01, // 1003b84b  |. 66:3901        |cmp word ptr ds:[ecx],ax
     0x75 //,0x16    // 1003b84e  |. 75 16          |jnz short mono.1003b866
   };
-  enum { hook_offset = 0 }; // no offset
+  enum { addr_offset = 0 }; // no offset
   enum { range = 0x50000 }; // larger than relative addresses = 0x3b849
   ULONG reladdr = SearchPattern(base, range, ins, sizeof(ins));
   //reladdr = 0x3b849;
@@ -16766,10 +16828,10 @@ bool InsertMonoHook()
   }
 
   HookParam hp = {};
-  hp.addr = base + reladdr + hook_offset;
+  hp.address = base + reladdr + addr_offset;
   //hp.module = module;
   hp.length_offset = 1;
-  hp.off = -0xc;
+  hp.offset = -0xc;
   hp.split = 0x3c;
   //hp.type = NO_CONTEXT|USING_SPLIT|MODULE_OFFSET|USING_UNICODE|DATA_INDIRECT; // 0x45a;
   hp.type = NO_CONTEXT|USING_SPLIT|USING_UNICODE|DATA_INDIRECT;

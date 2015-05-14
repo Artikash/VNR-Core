@@ -172,24 +172,7 @@ def _repair_th(text):
 
 # http://en.wikipedia.org/wiki/Hangul_Syllables
 _ko_hangul = u'[\uac00-\ud7af]'
-_re_ko_tsu1 = re.compile(u'っ' + _ko_hangul)
 _re_ko_tsu2 = re.compile(_ko_hangul + u'っ' + _ko_hangul)
-def _ko_tsu1_repl(m): # match -> unicode
-  t = m.group()
-  left = t[0]
-  right = t[-1]
-  from hangulconv import hangulconv
-  right_l = hangulconv.split_char(right)
-
-  if right_l:
-    right_ch = right_l[0]
-    right_ch = hangulconv.join_consonant((right_ch, right_ch))
-    if right_ch:
-      right_l = list(right_l)
-      right_l[0] = right_ch
-      right = hangulconv.join_char(right_l)
-      t = right
-  return t
 def _ko_tsu2_repl(m): # match -> unicode
   t = m.group()
   left = t[0]
@@ -199,10 +182,28 @@ def _ko_tsu2_repl(m): # match -> unicode
   right_l = hangulconv.split_char(right)
 
   if left_l and right_l and len(left_l) == 2:
-    left_l = left_l[0], left_l[1], right_l[0]
+    left_l = left_l[0], left_l[1], u'ㅅ' #right_l[0]
     left = hangulconv.join_char(left_l)
-    t = left + right
+    if left:
+      t = left + right
   return t
+#_re_ko_tsu1 = re.compile(u'っ' + _ko_hangul)
+#def _ko_tsu1_repl(m): # match -> unicode
+#  t = m.group()
+#  left = t[0]
+#  right = t[-1]
+#  from hangulconv import hangulconv
+#  right_l = hangulconv.split_char(right)
+#
+#  if right_l:
+#    right_ch = right_l[0]
+#    right_ch = hangulconv.join_consonant((right_ch, right_ch))
+#    if right_ch:
+#      right_l = list(right_l)
+#      right_l[0] = right_ch
+#      right = hangulconv.join_char(right_l)
+#      t = right
+#  return t
 def _repair_ko(text):
   """
   @param  text
@@ -389,12 +390,12 @@ if __name__ == '__main__':
   l = [
     (u'しおり', u'시오리'),
     (u'いぇす', u'예스'),
-    (u'しっば', u'십바'),
-    (u'ゆっき', u'윸키'),
+    (u'しっば', u'싯바'),
+    (u'ゆっき', u'윳키'),
     (u'ゆっさ', u'윳사'),
-    (u'かって', u'캍테'),
+    (u'かって', u'캇테'),
     (u'って', u'-테'),
-    (u'ゆりっぺ', u'유맆페'),
+    (u'ゆりっぺ', u'유릿페'),
     #(u'っさ', u'싸'), # disabled as not quite useful
   ]
   for k,v in l:

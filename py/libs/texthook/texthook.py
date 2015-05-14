@@ -10,7 +10,7 @@ __all__ = 'TextHook',
 from PySide.QtCore import Signal, QObject, Qt
 from sakurakit import skos
 from sakurakit.skclass import Q_Q, memoized
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 
 ENABLE_GAMEENGINE = True
 
@@ -32,6 +32,7 @@ if skos.WIN:
       # it is on a different eventloop hacked by wintimer
 
       self.pid = 0
+      self.hijacked = False # bool
       self.hcode = ''     # str hook code
       self.hooks = {}     # {str name:str code}
       self.encoding = 'shift-jis'
@@ -187,6 +188,7 @@ if skos.WIN:
     def isActive(self): return self.__d.isActive()
 
     def isAttached(self): return bool(self.__d.pid) # -> bool
+    def isHijacked(self): return self.hijacked # -> bool
 
     def currentPid(self):
       """
@@ -215,8 +217,10 @@ if skos.WIN:
       dprint("pass")
       self.__d.stop()
 
-    def attachProcess(self, pid):
+    def attachProcess(self, pid, hijack=True):
       """Return if succeed
+      @param  pid  long
+      @param* hijack  bool
       @return  bool
       """
       dprint("enter")
@@ -230,11 +234,14 @@ if skos.WIN:
           d.removeHookCode(d.pid)
           d.hooks = {}
         d.detachProcess(d.pid)
+        d.hijacked = False
         self.processDetached.emit(d.pid)
         d.pid = 0
       ok = d.attachProcess(pid)
       if ok:
         d.pid = pid
+        if hijack:
+          self.hijackProcess()
         self.processAttached.emit(d.pid)
 
         if ENABLE_GAMEENGINE:
@@ -247,6 +254,21 @@ if skos.WIN:
       dprint("leave: ret = %s" % ok)
       return ok
 
+    def hijackProcess(self):
+      """Return if succeed
+      @return  bool
+      """
+      dprint("enter")
+      ret = False
+      d = self.__d
+      if d.pid and not d.hijacked:
+        d.hijacked = d.hijackProcess(d.pid)
+      if d.hijacked:
+        dprint("leave: ret = %s" % d.hijacked)
+      else:
+        dwarn("leave: ret = %s" % d.hijacked)
+      return ret
+
     def detachProcess(self):
       """Return if succeed
       @return  bool
@@ -255,6 +277,7 @@ if skos.WIN:
       ret = False
       d = self.__d
       #d.signature = 0
+      d.hijacked = False
       if d.pid:
         if d.hcode or d.hooks:
           d.hcode = ''
@@ -383,6 +406,7 @@ else:
 
     def isActive(self): return False
     def isAttached(self): return False
+    def isHijacked(self): return False
 
     def currentPid(self): return 0
     def currentHookCode(self): return ""
@@ -393,9 +417,9 @@ else:
     def start(self): pass
     def stop(self): pass
 
-    def attachProcess(self, pid): return False
-
+    def attachProcess(self, pid, hijack=True): return False
     def detachProcess(self): return False
+    def hijackProcess(self): return False
 
     def addHook(self, code, name="", verbose=True): return False
 

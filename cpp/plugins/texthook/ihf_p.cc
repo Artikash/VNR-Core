@@ -1,12 +1,14 @@
-// ihf_p.cc
+// Host_p.cc
 // 10/15/2011 jichi
 
 #include "texthook/ihf_p.h"
 #include "texthook/ith_p.h"
 #include "texthook/textthread_p.h"
 #include "ith/common/types.h"
-#include "ith/host/srv.h"
+#include "ith/sys/sys.h"
+#include "host/host.h"
 //#include "ith/host/settings.h"
+#include "wintimer/wintimer.h"
 #include <QtCore/QDebug>
 
 #ifdef WITH_LIB_WINMAKER
@@ -48,6 +50,17 @@ void Ihf::consoleOutput(const char *text)
 void Ihf::consoleOutputW(const wchar_t *text)
 { if (debug_) qDebug() << "texthook:console:" << QString::fromWCharArray(text); }
 
+void Ihf::init()
+{
+  IthInitSystemService();
+  Host_Init();
+}
+void Ihf::destroy()
+{
+  Host_Destroy();
+  IthCloseSystemService();
+}
+
 // See also: HelloITH/main.cpp
 bool Ihf::load()
 {
@@ -76,14 +89,15 @@ bool Ihf::load()
   //  return false;
   //}
 
-  if (::IHF_Init()) {
+  if (::Host_Open()) {
 #ifdef WITH_LIB_WINMAKER
     if (!parentWindow_)
       parentWindow_ = (WId)::wm_create_hidden_window("vnrtexthook");
 #endif // WITH_LIB_WINMAKER
-    ::IHF_GetHookManager(&hookManager_);
+    WinTimer::setGlobalWindow(parentWindow_);
+    ::Host_GetHookManager(&hookManager_);
     if (hookManager_) {
-      //::IHF_GetSettings(&settings_);
+      //::Host_GetSettings(&settings_);
       //settings_->debug = debug_;
 
       hookManager_->RegisterConsoleCallback(consoleOutput);
@@ -95,10 +109,10 @@ bool Ihf::load()
       hookManager_->RegisterThreadCreateCallback(threadCreate);
       hookManager_->RegisterThreadRemoveCallback(threadRemove);
 
-      ::IHF_Start();
+      ::Host_Start();
     }
   } else
-    ::IHF_Cleanup();
+    ::Host_Close();
   DOUT("leave: hook manager =" << hookManager_);
   return hookManager_;
 }
@@ -116,7 +130,7 @@ void Ihf::unload()
     // Console output is not unregisterd to avoid segmentation fault
     //hookManager_->RegisterConsoleCallback(nullptr);
 
-    ::IHF_Cleanup();
+    ::Host_Close();
     hookManager_ = nullptr;
     //settings_ = nullptr;
 
@@ -224,7 +238,7 @@ DWORD Ihf::threadRemove(TextThread *t)
   }
 
 #ifdef ITH_WITH_LINK
-  ::IHF_UnLinkAll(t->Number());
+  ::Host_UnLinkAll(t->Number());
 #endif // ITH_WITH_LINK
 
   DOUT("leave");
@@ -277,9 +291,9 @@ void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
   Q_ASSERT(t);
   foreach (TextThreadDelegate *it, threadDelegates_)
     if (it->delegateOf(d))
-      ::IHF_AddLink(d->threadNumber(), it->threadNumber());
+      ::Host_AddLink(d->threadNumber(), it->threadNumber());
     else if (d->delegateOf(it))
-      ::IHF_AddLink(it->threadNumber(), d->threadNumber());
+      ::Host_AddLink(it->threadNumber(), d->threadNumber());
 #else
   Q_UNUSED(d);
 #endif // ITH_WITH_LINK
@@ -287,12 +301,12 @@ void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
 
 // - Injection -
 
-// See: IHF_InjectByPID in IHF/main.cpp
+// See: Host_InjectByPID in IHF/main.cpp
 // See: InjectThread in ITH/profile.cpp
 bool Ihf::attachProcess(DWORD pid)
 {
   DOUT("enter: pid =" << pid);
-  DWORD module = ::IHF_InjectByPID(pid);
+  DWORD module = ::Host_InjectByPID(pid);
 
   enum { AttachDelay = 500 }; // in msec
   ::Sleep(AttachDelay);
@@ -302,18 +316,26 @@ bool Ihf::attachProcess(DWORD pid)
   return ok;
 }
 
-// See: IHF_ActiveDetachProcess in IHF/main.cpp
+// See: Host_ActiveDetachProcess in IHF/main.cpp
 bool Ihf::detachProcess(DWORD pid)
 {
   DOUT("enter");
-  BOOL ok = ::IHF_ActiveDetachProcess(pid);
+  BOOL ok = ::Host_ActiveDetachProcess(pid);
+  DOUT("leave: ret =" << ok);
+  return ok;
+}
+
+bool Ihf::hijackProcess(DWORD pid)
+{
+  DOUT("enter: pid =" << pid);
+  bool ok = 0 == ::Host_HijackProcess(pid);
   DOUT("leave: ret =" << ok);
   return ok;
 }
 
 // - Hook -
 
-// See: IHF_ModifyHook in IHF/main.cpp
+// See: Host_ModifyHook in IHF/main.cpp
 bool Ihf::updateHook(ulong pid, const QString &code)
 {
   DOUT("enter: pid =" << pid << ", code =" << code);
@@ -324,13 +346,13 @@ bool Ihf::updateHook(ulong pid, const QString &code)
     return false;
   }
 
-  DWORD hh = ::IHF_ModifyHook(pid, &hp);
+  DWORD hh = ::Host_ModifyHook(pid, &hp);
   bool ok = ~hh;
   DOUT("leave: ret =" << ok);
   return ok;
 }
 
-// See: IHF_InsertHook in IHF/main.cpp
+// See: Host_InsertHook in IHF/main.cpp
 bool Ihf::addHook(ulong pid, const QString &code, const QString &name, bool verbose)
 {
   DOUT("enter: pid =" << pid << ", name =" << name << ", code =" << code);
@@ -353,12 +375,12 @@ bool Ihf::addHook(ulong pid, const QString &code, const QString &name, bool verb
     name.toWCharArray(nameBuf);
     nameBuf[name.size()] = 0;
   }
-  DWORD hh = ::IHF_InsertHook(pid, &hp, nameBuf);
+  DWORD hh = ::Host_InsertHook(pid, &hp, nameBuf);
   //DWORD hh = ::NewHook(hp, nameBuf);
   bool ok = ~hh;
-  if (ok && hp.addr) {
-    DOUT("hook address =" << hp.addr);
-    hookAddresses_[code] = hp.addr;
+  if (ok && hp.address) {
+    DOUT("hook address =" << hp.address);
+    hookAddresses_[code] = hp.address;
   }
   if (nameBuf)
     delete[] nameBuf;
@@ -366,7 +388,7 @@ bool Ihf::addHook(ulong pid, const QString &code, const QString &name, bool verb
   return ok;
 }
 
-// See: IHF_RemoveHook in IHF/main.cpp
+// See: Host_RemoveHook in IHF/main.cpp
 bool Ihf::removeHook(ulong pid, const QString &code)
 {
   DOUT("enter: pid =" << pid << ", code =" << code);
@@ -380,7 +402,7 @@ bool Ihf::removeHook(ulong pid, const QString &code)
   Q_ASSERT(addr);
   hookAddresses_.erase(p);
 
-  DWORD hh = ::IHF_RemoveHook(pid, addr);
+  DWORD hh = ::Host_RemoveHook(pid, addr);
   bool ok = ~hh;
   DOUT("leave: ret =" << ok);
   return ok;

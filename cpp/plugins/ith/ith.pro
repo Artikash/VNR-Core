@@ -6,8 +6,8 @@ TEMPLATE = subdirs
 # The order is important!
 SUBDIRS += \
   sys \
-  hook hookxp \
-  host
+  hook \
+  hookxp
 
 OTHER_FILES += dllconfig.pri
 

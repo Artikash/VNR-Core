@@ -1,5 +1,5 @@
 #pragma once
-// srv_p.h
+// host_p.h
 // 8/24/2013 jichi
 // Branch IHF/main.h, rev 111
 #include "config.h"

@@ -82,7 +82,7 @@ def language_name2(lang):
   @return  unicode
   """
   if lang == 'no':
-    lang == 'nb' # change Norwegian language name
+    lang = 'nb' # change Norwegian language name
   if isinstance(lang, str):
     return tr_(lang)
   if isinstance(lang, unicode):

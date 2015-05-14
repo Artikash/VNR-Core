@@ -32,6 +32,7 @@ TextHookPrivate *TextHookPrivate::instance_;
 TextHook::TextHook(QObject *parent)
   : Base(parent), d_(new D(this))
 {
+  Ihf::init();
   //Ihf::setUserDefinedThreadName(d_->source);
   DOUT("pass");
 }
@@ -42,6 +43,8 @@ TextHook::~TextHook()
   if (isActive())
     stop();
   delete d_;
+
+  Ihf::destroy();
   DOUT("leave");
 }
 
@@ -112,11 +115,8 @@ void TextHook::stop()
   Ihf::unload();
 }
 
-WId TextHook::parentWinId() const
-{ return Ihf::parentWindow(); }
-
-void TextHook::setParentWinId(WId hwnd)
-{ Ihf::setParentWindow(hwnd); }
+WId TextHook::parentWinId() const { return Ihf::parentWindow(); }
+void TextHook::setParentWinId(WId hwnd) { Ihf::setParentWindow(hwnd); }
 
 int TextHook::interval() const
 { return Ihf::messageInterval(); }
@@ -137,11 +137,8 @@ void TextHook::clear()
   DOUT("leave");
 }
 
-bool TextHook::containsProcess(ulong pid) const
-{ return d_->pids.contains(pid); }
-
-bool TextHook::isEmpty() const
-{ return d_->pids.isEmpty(); }
+bool TextHook::containsProcess(ulong pid) const { return d_->pids.contains(pid); }
+bool TextHook::isEmpty() const { return d_->pids.isEmpty(); }
 
 //QList<ulong> TextHook::attachedProcesses(bool checkActive) const
 //{
@@ -255,6 +252,21 @@ bool TextHook::detachProcess(ulong pid, bool checkActive)
   return ret;
 }
 
+bool TextHook::hijackProcess(ulong pid)
+{
+  DOUT("enter: pid =" << pid);
+  Q_ASSERT(isActive());
+
+  if (!containsProcess(pid)) {
+    DOUT("leave: aborted, process not attached");
+    return false;
+  }
+
+  bool ret = Ihf::hijackProcess(pid);
+  DOUT("leave: ret =" << ret);
+  return ret;
+}
+
 //void TextHook::detachAllProcesses()
 //{
 //  DOUT("enter");
@@ -293,8 +305,7 @@ bool TextHook::addHookCode(ulong pid, const QString &code, const QString &name, 
   return ok;
 }
 
-bool TextHook::verifyHookCode(const QString &code)
-{ return Ihf::verifyHookCode(code); }
+bool TextHook::verifyHookCode(const QString &code) { return Ihf::verifyHookCode(code); }
 
 bool TextHook::removeHookCode(ulong pid)
 {
@@ -318,28 +329,22 @@ bool TextHook::removeHookCode(ulong pid)
 //  return p == d_->hooks.end() ? QString() : p.value();
 //}
 
-bool TextHook::isThreadWhitelistEnabled() const
-{ return Ihf::isWhitelistEnabled(); }
+bool TextHook::isThreadWhitelistEnabled() const { return Ihf::isWhitelistEnabled(); }
 
-void TextHook::setThreadWhitelistEnabled(bool t)
-{ Ihf::setWhitelistEnabled(t); }
+void TextHook::setThreadWhitelistEnabled(bool t) { Ihf::setWhitelistEnabled(t); }
 
-QList<qint32> TextHook::threadWhitelist() const
-{ return Ihf::whitelist(); }
+QList<qint32> TextHook::threadWhitelist() const { return Ihf::whitelist(); }
 
-void TextHook::setThreadWhitelist(const QList<qint32> &signatures)
-{ Ihf::setWhitelist(signatures); }
+void TextHook::setThreadWhitelist(const QList<qint32> &sigs) { Ihf::setWhitelist(sigs); }
 
-void TextHook::clearThreadWhitelist()
-{ Ihf::clearWhitelist(); }
+void TextHook::clearThreadWhitelist() { Ihf::clearWhitelist(); }
 
-QString TextHook::keptThreadName() const
-{ return Ihf::keptThreadName(); }
+QString TextHook::keptThreadName() const { return Ihf::keptThreadName(); }
 
-void TextHook::setKeptThreadName(const QString &v)
-{ Ihf::setKeptThreadName(v); }
+void TextHook::setKeptThreadName(const QString &v) { Ihf::setKeptThreadName(v); }
 
 // EOF
+
 /*
 QString
 TextHook::guessEncodingForFile(const QString &fileName)

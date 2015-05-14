@@ -33,15 +33,15 @@ HEADERS += \
   config.h \
   hookman.h \
   settings.h \
-  srv.h \
-  srv_p.h \
+  host.h \
+  host_p.h \
   textthread.h \
   textthread_p.h
   #util.h
 
 SOURCES += \
   hookman.cc \
-  main.cc \
+  host.cc \
   pipe.cc \
   textthread.cc
   #util.cc

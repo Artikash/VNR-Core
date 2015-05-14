@@ -38,7 +38,7 @@ env:
   integritypath:
   - $PWD/bin/vnrhook.dll
   - $PWD/bin/vnrhookxp.dll  # recognized as virus
-  - $PWD/bin/vnrhost.dll
+  - $PWD/bin/texthook.dll
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll

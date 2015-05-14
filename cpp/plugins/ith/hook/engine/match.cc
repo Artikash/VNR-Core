@@ -400,7 +400,7 @@ bool DetermineEngineByProcessName()
   wcscpy(str, process_name_);
   _wcslwr(str); // lower case
 
-  if (wcsstr(str,L"reallive") || IthCheckFile(L"Reallive.exe")) {
+  if (wcsstr(str,L"reallive") || IthCheckFile(L"Reallive.exe") || IthCheckFile(L"REALLIVEDATA\\Start.ini")) {
     InsertRealliveHook();
     return true;
   }
@@ -799,29 +799,50 @@ bool DetermineEngineType()
 //  else
 //    ConsoleOutput("Initialized successfully.");
 //}
+//
+
+HANDLE hijackThread;
+void hijackThreadProc(LPVOID lpThreadParameter)
+{
+  CC_UNUSED(lpThreadParameter);
+
+  //static bool done = false;
+  //if (done)
+  //  return;
+  //done = true;
+
+  // jichi 12/18/2013: Though FillRange could raise, it should never raise for he current process
+  // So, SEH is not used here.
+  Util::GetProcessName(process_name_); // Initialize shared process name
+  Util::GetProcessPath(process_path_); // Initialize shared process path
+
+  FillRange(process_name_, &module_base_, &module_limit_);
+  DetermineEngineType();
+}
 
 }} // namespace Engine unnamed
 
 // - API -
 
-bool Engine::IdentifyEngine()
-{
-  // jichi 12/18/2013: Though FillRange could raise, it should never raise for he current process
-  // So, SEH is not used here.
-  FillRange(process_name_, &module_base_, &module_limit_);
-  return DetermineEngineType();
-}
-
 DWORD Engine::InsertDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 { return trigger_fun_ ? !trigger_fun_(addr, frame, stack) : 0; }
 
-void Engine::match(LPVOID lpThreadParameter)
+void Engine::hijack()
 {
-  CC_UNUSED(lpThreadParameter);
-  Util::GetProcessName(process_name_); // Initialize process name
-  Util::GetProcessPath(process_path_); // Initialize process path
-  ::engine_registered = true;
-  //::RegisterEngineModule((DWORD)IdentifyEngine, (DWORD)InsertDynamicHook);
+  if (!hijackThread) {
+    ConsoleOutput("vnreng: hijack process");
+    hijackThread = IthCreateThread(hijackThreadProc, 0);
+  }
+}
+
+void Engine::terminate()
+{
+  if (hijackThread) {
+    const LONGLONG timeout = -50000000; // in nanoseconds = 5 seconds
+    NtWaitForSingleObject(hijackThread, 0, (PLARGE_INTEGER)&timeout);
+    NtClose(hijackThread);
+    hijackThread = 0;
+  }
 }
 
 // EOF
