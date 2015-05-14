@@ -165,7 +165,6 @@ int GetHookNameByIndex(LPWSTR str, DWORD pid, DWORD index)
 //  return str-begin;
 //}
 
-
 void ThreadTable::SetThread(DWORD num, TextThread *ptr)
 {
   int number = num;
