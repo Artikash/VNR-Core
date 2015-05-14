@@ -579,24 +579,21 @@ IHFSERVICE DWORD IHFAPI IHF_IsAdmin() { return admin; }
 
 // EOF
 
-#if 0 // 4/30/2015: Removed as not needed. Going to change to json
-
-IHFSERVICE DWORD IHFAPI IHF_AddLink(DWORD from, DWORD to)
-{
-  man->AddLink(from & 0xffff, to & 0xffff);
-  return 0;
-}
-
-IHFSERVICE DWORD IHFAPI IHF_UnLink(DWORD from)
-{
-  man->UnLink(from & 0xffff);
-  return 0;
-}
-
-IHFSERVICE DWORD IHFAPI IHF_UnLinkAll(DWORD from)
-{
-  man->UnLinkAll(from & 0xffff);
-  return 0;
-}
-
-#endif // 0
+// 4/30/2015: Removed as not needed. Going to change to json
+//IHFSERVICE DWORD IHFAPI IHF_AddLink(DWORD from, DWORD to)
+//{
+//  man->AddLink(from & 0xffff, to & 0xffff);
+//  return 0;
+//}
+//
+//IHFSERVICE DWORD IHFAPI IHF_UnLink(DWORD from)
+//{
+//  man->UnLink(from & 0xffff);
+//  return 0;
+//}
+//
+//IHFSERVICE DWORD IHFAPI IHF_UnLinkAll(DWORD from)
+//{
+//  man->UnLinkAll(from & 0xffff);
+//  return 0;
+//}

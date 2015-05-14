@@ -50,9 +50,9 @@ public:
   //void UnlockHookman();
   void ResetRepeatStatus();
   void ClearCurrent();
-  void AddLink(WORD from, WORD to);
-  void UnLink(WORD from);
-  void UnLinkAll(WORD from);
+  //void AddLink(WORD from, WORD to);
+  //void UnLink(WORD from);
+  //void UnLinkAll(WORD from);
   void SelectCurrent(DWORD num);
   void DetachProcess(DWORD pid);
   void SetCurrent(TextThread *it);
