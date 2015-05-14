@@ -132,6 +132,9 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     ConsoleOutput("vnrcli:WaitForPipe: pipe connected");
 
     ::live = true;
+
+    //Engine::hijack();
+
     ::hDetach = IthCreateMutex(detach_mutex,1);
     while (::running && NtWaitForSingleObject(hPipeExist, 0, &sleep_time) == WAIT_OBJECT_0)
       NtDelayExecution(0, &sleep_time);

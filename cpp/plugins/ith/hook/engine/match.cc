@@ -806,6 +806,11 @@ void hijackThreadProc(LPVOID lpThreadParameter)
 {
   CC_UNUSED(lpThreadParameter);
 
+  //static bool done = false;
+  //if (done)
+  //  return;
+  //done = true;
+
   // jichi 12/18/2013: Though FillRange could raise, it should never raise for he current process
   // So, SEH is not used here.
   Util::GetProcessName(process_name_); // Initialize shared process name
