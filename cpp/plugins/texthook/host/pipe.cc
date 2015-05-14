@@ -3,7 +3,7 @@
 // Branch IHF/pipe.cpp, rev 93
 // 8/24/2013 TODO: Clean up this file
 
-#include "srv_p.h"
+#include "host_p.h"
 #include "hookman.h"
 #include "ith/common/defs.h"
 #include "ith/common/const.h"
@@ -250,9 +250,9 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
     buff[RecvLen] = 0;
     buff[RecvLen + 1] = 0;
 
-    if (hook == IHF_NOTIFICATION) {
+    if (hook == HOST_NOTIFICATION) {
       switch (cmd_type) {
-      case IHF_NOTIFICATION_NEWHOOK:
+      case HOST_NOTIFICATION_NEWHOOK:
         {
           static long lock;
           while (InterlockedExchange(&lock, 1) == 1);
@@ -261,7 +261,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
             new_hook(pid);
           lock = 0;
         } break;
-      case IHF_NOTIFICATION_TEXT:
+      case HOST_NOTIFICATION_TEXT:
         ConsoleOutput((LPCSTR)(buff + 8));
         break;
       }

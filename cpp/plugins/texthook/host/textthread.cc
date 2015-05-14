@@ -10,6 +10,7 @@
 #include "config.h"
 #include "settings.h"
 #include "textthread.h"
+#include "wintimer/wintimer.h"
 #include "ith/common/const.h"
 #include "ith/sys/sys.h"
 
@@ -745,7 +746,9 @@ void TextThread::SetNewLineTimer()
     // jichi 10/27/2013: Not used
     timer = 0; //SetTimer(hMainWnd,(UINT_PTR)this, settings->splittingInterval, NewLineConsole);
   else
-    timer = SetTimer(hMainWnd,(UINT_PTR)this, settings->splittingInterval, NewLineBuff);
+    timer = ::SetTimer(
+        WinTimer::globalWindow(), // TODO: Use native WinTimer function
+        (UINT_PTR)this, settings->splittingInterval, NewLineBuff);
 }
 
 DWORD TextThread::GetThreadString(LPWSTR str, DWORD max)

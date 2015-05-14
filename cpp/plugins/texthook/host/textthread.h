@@ -4,7 +4,7 @@
 // 8/23/2013 jichi
 // Branch: ITH/TextThread.h, rev 120
 
-#include "ith/host/textthread_p.h"
+#include "host/textthread_p.h"
 #include <intrin.h> // require _InterlockedExchange
 
 struct RepeatCountNode {

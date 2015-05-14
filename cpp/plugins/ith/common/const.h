@@ -75,18 +75,18 @@ enum pusha_off {
   , pusha_off = -0x24 // pushad offset
 };
 
-enum IhfCommandType {
-  IHF_COMMAND = -1 // null type
-  , IHF_COMMAND_NEW_HOOK = 0
-  , IHF_COMMAND_REMOVE_HOOK = 1
-  , IHF_COMMAND_MODIFY_HOOK = 2
-  , IHF_COMMAND_DETACH = 3
+enum HostCommandType {
+  HOST_COMMAND = -1 // null type
+  , HOST_COMMAND_NEW_HOOK = 0
+  , HOST_COMMAND_REMOVE_HOOK = 1
+  , HOST_COMMAND_MODIFY_HOOK = 2
+  , HOST_COMMAND_HIJACK = 3
 };
 
-enum IhfNotificationType {
-  IHF_NOTIFICATION = -1 // null type
-  , IHF_NOTIFICATION_TEXT = 0
-  , IHF_NOTIFICATION_NEWHOOK = 1
+enum HostNotificationType {
+  HOST_NOTIFICATION = -1 // null type
+  , HOST_NOTIFICATION_TEXT = 0
+  , HOST_NOTIFICATION_NEWHOOK = 1
 };
 
 // jichi 9/8/2013: The meaning are guessed

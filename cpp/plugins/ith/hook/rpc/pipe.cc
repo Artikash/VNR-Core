@@ -197,13 +197,13 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
       if (ios.uInformation && live) {
         command = *(DWORD *)buff;
         switch(command) {
-        case IHF_COMMAND_NEW_HOOK:
+        case HOST_COMMAND_NEW_HOOK:
           //IthBreak();
           buff[ios.uInformation] = 0;
           buff[ios.uInformation + 1] = 0;
           NewHook(*(HookParam *)(buff + 4), (LPWSTR)(buff + 4 + sizeof(HookParam)), 0);
           break;
-        case IHF_COMMAND_REMOVE_HOOK:
+        case HOST_COMMAND_REMOVE_HOOK:
           {
             DWORD rm_addr = *(DWORD *)(buff+4);
             HANDLE hRemoved = IthOpenEvent(ITH_REMOVEHOOK_EVENT);
@@ -218,7 +218,7 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
             IthSetEvent(hRemoved);
             NtClose(hRemoved);
           } break;
-        case IHF_COMMAND_MODIFY_HOOK:
+        case HOST_COMMAND_MODIFY_HOOK:
           {
             DWORD rm_addr = *(DWORD *)(buff + 4);
             HANDLE hModify = IthOpenEvent(ITH_MODIFYHOOK_EVENT);
@@ -234,10 +234,11 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
             IthSetEvent(hModify);
             NtClose(hModify);
           } break;
-        case IHF_COMMAND_DETACH:
-          running = false;
-          live = false;
-          goto _detach;
+        // jichi 5/13/2015: removed as not used
+        //case HOST_COMMAND_DETACH:
+        //  running = false;
+        //  live = false;
+        //  goto _detach;
         default: ;
         }
       }
@@ -258,8 +259,8 @@ void IHFAPI ConsoleOutput(LPCSTR text)
   size_t data_size = text_size + 8;
 
   BYTE *data = (data_size <= buf_size) ? buf : new BYTE[data_size];
-  *(DWORD *)data = IHF_NOTIFICATION; //cmd
-  *(DWORD *)(data + 4) = IHF_NOTIFICATION_TEXT; //console
+  *(DWORD *)data = HOST_NOTIFICATION; //cmd
+  *(DWORD *)(data + 4) = HOST_NOTIFICATION_TEXT; //console
   memcpy(data + 8, text, text_size);
 
   IO_STATUS_BLOCK ios;
@@ -281,8 +282,8 @@ void IHFAPI ConsoleOutput(LPCSTR text)
   //  }
   //  else
   //    buff = buffer;
-  //  *(DWORD *)buff = IHF_NOTIFICATION; //cmd
-  //  *(DWORD *)(buff + 4) = IHF_NOTIFICATION_TEXT; //console
+  //  *(DWORD *)buff = HOST_NOTIFICATION; //cmd
+  //  *(DWORD *)(buff + 4) = HOST_NOTIFICATION_TEXT; //console
   //  memcpy(buff + t + 8, str, len);
   //  IO_STATUS_BLOCK ios;
   //  NtWriteFile(hPipe,0,0,0,&ios,buff,sum,0,0);
@@ -330,8 +331,8 @@ DWORD IHFAPI NotifyHookInsert(DWORD addr)
 {
   if (live) {
     BYTE buffer[0x10];
-    *(DWORD *)buffer = IHF_NOTIFICATION;
-    *(DWORD *)(buffer + 4) = IHF_NOTIFICATION_NEWHOOK;
+    *(DWORD *)buffer = HOST_NOTIFICATION;
+    *(DWORD *)(buffer + 4) = HOST_NOTIFICATION_NEWHOOK;
     *(DWORD *)(buffer + 8) = addr;
     *(DWORD *)(buffer + 0xc) = 0;
     IO_STATUS_BLOCK ios;

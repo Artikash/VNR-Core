@@ -42,6 +42,9 @@ class Ihf
 public:
 
   // - Initialization -
+  static void init();
+  static void destroy();
+
   static bool load();
   static bool isLoaded() { return hookManager_; }
   static void unload();
