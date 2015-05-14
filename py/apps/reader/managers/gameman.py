@@ -414,12 +414,14 @@ class GameProfile(QtCore.QObject):
             + "<br/>" + game.hook)
 
       if not hooked:
-        texthook.global_().hijackProcess()
+        self.hijackProcess()
 
       dprint("encoding = %s, thread name = %s" % (self.encoding, self.threadName))
 
     finally:
       self.threadUpdated.emit()
+
+  def hijackProcess(self): return texthook.global_().hijackProcess()
 
   def updateHook(self):
     """
@@ -1166,7 +1168,7 @@ class GameManager(QtCore.QObject):
           #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
           #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
           dprint("attach using text hook")
-          attached = texthook.global_().attachProcess(g.pid, hijack=False) # disable hijack by default, delay it to updateThread
+          attached = texthook.global_().attachProcess(g.pid, hijack=False) # delay hijack
 
           #if attached:
           #  dprint("try game engine")
@@ -1199,12 +1201,14 @@ class GameManager(QtCore.QObject):
 
       g.updateGameNames()
 
-      if hookEnabled and not g.updateHook() and g.hook:
-        growl.error("<br/>".join((
-          my.tr("Failed to apply hook code"),
-          g.hook,
-          my.tr("Try adjusting it in Text Settings"),
-        )))
+      if hookEnabled and not g.updateHook():
+        if g.hook:
+          growl.error("<br/>".join((
+            my.tr("Failed to apply hook code"),
+            g.hook,
+            my.tr("Try adjusting it in Text Settings"),
+          )))
+        g.hijackProcess()
 
       #skevents.runlater(self.enableWindowHook, 4000)
 

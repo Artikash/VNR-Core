@@ -17,11 +17,11 @@
 #define NEW_HOOK(_fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
   { \
     HookParam hp = {}; \
-    hp.addr = (DWORD)_fun; \
-    hp.off = _data; \
-    hp.ind = _data_ind; \
+    hp.address = (DWORD)_fun; \
+    hp.offset = _data; \
+    hp.index = _data_ind; \
     hp.split = _split_off; \
-    hp.split_ind = _split_ind; \
+    hp.split_index = _split_ind; \
     hp.type = _type; \
     hp.length_offset = _len_off; \
     NewHook(hp, L(#_fun)); \

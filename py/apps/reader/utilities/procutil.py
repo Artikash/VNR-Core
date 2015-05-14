@@ -176,6 +176,9 @@ def may_be_game_window(wid):
 
   return True
 
+# Always run new applications without admin privileges
+# http://superuser.com/questions/171917/force-a-program-to-run-without-administrator-privileges-or-uac
+ENVIRON_RUNAS = {'__COMPAT_LAYER':'RUNASINVOKER'}
 def open_executable(path, type=None, language='', lcid=0, codepage=0, params=None, vnrlocale=False):
   """
   @param  path  str  path to executable
@@ -191,45 +194,55 @@ def open_executable(path, type=None, language='', lcid=0, codepage=0, params=Non
       lcid = config.language2lcid(language)
     if not codepage:
       codepage = config.language2codepage(language)
+
+  env = ENVIRON_RUNAS if not features.ADMIN and not features.WINXP and type != 'lsc' else None # locale switch still need admin priv
   if not type or type == 'apploc':
-    return open_executable_with_apploc(path, params=params, lcid=lcid, vnrlocale=vnrlocale)
+    return open_executable_with_apploc(path, params=params, environ=env, lcid=lcid, vnrlocale=vnrlocale)
   if type == 'le':
-    return open_executable_with_leproc(path, params=params)
+    return open_executable_with_leproc(path, params=params, environ=env)
   if type == 'ntlea':
-    return open_executable_with_ntlea(path, params=params, locale=lcid, codepage=codepage)
+    return open_executable_with_ntlea(path, params=params, environ=env, locale=lcid, codepage=codepage)
   if type == 'ntleas':
-    return open_executable_with_ntleas(path, params=params, locale=lcid, codepage=codepage)
+    return open_executable_with_ntleas(path, params=params, environ=env, locale=lcid, codepage=codepage)
   if type == 'lsc':
-    return open_executable_with_lsc(path, params=params, locale=lcid, codepage=codepage)
+    return open_executable_with_lsc(path, params=params, environ=env, locale=lcid, codepage=codepage)
   return 0
 
-def open_executable_with_apploc(path, lcid=0, params=None, vnrlocale=False):
+def open_executable_with_apploc(path, lcid=0, params=None, environ=None, vnrlocale=False):
   """
   @param  path  str  path to executable
   @param* lcid  int  Microsoft lcid
   @param* codepage  int  Microsoft lcid
   @param* params  [unicode param] or None
+  @param* environ  dict or None
   @param* vnrlocale  bool  whether inject vnrlocale on the startup
   @return  long  pid
   """
   dprint("lcid = 0x%.4x, vnrlocale = %s, path = %s" % (lcid, vnrlocale, path))
 
-  env = applocale.create_environ(lcid) if lcid and applocale.exists() else None
-
+  if lcid and applocale.exists():
+    environ = environ.copy()
+    for k,v in applocale.create_environ(lcid):
+      if k in environ and k == '__COMPAT_LAYER':
+        # http://techsupt.winbatch.com/webcgi/webbatch.exe?techsupt/tsleft.web+WinBatch/How~To+Control~Compatibility~Mode.txt
+        # Join '__COMPAT_LAYER' using spaces
+        v += ' ' + environ[k]
+      environ[k] = v
   if not vnrlocale:
-    return skwin.create_process(path, params=params, environ=env)
+    return skwin.create_process(path, params=params, environ=environ)
     #return QDesktopServices.openUrl(QUrl.fromLocalFile(path))
   else:
     from sakurakit import skwinsec
-    with skwinsec.SkProcessCreator(path, params=params, environ=env) as proc:
+    with skwinsec.SkProcessCreator(path, params=params, environ=environ) as proc:
       import inject
       inject.inject_vnrlocale(handle=proc.processHandle)
       return proc.processId
 
-def open_executable_with_ntlea(path, params=None, **kwargs):
+def open_executable_with_ntlea(path, params=None, environ=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
+  @param* environ  dict or tuple or None
   @return  long  pid of NTLEA, not the target process!
   """
   dprint("path = %s" % path)
@@ -238,12 +251,13 @@ def open_executable_with_ntlea(path, params=None, **kwargs):
 
   from ntlea import ntlea
   params = ntlea.params(path=path, args=params, **kwargs)
-  return skwin.create_process(exe, params=params)
+  return skwin.create_process(exe, params=params, environ=environ)
 
-def open_executable_with_leproc(path, params=None):
+def open_executable_with_leproc(path, params=None, environ=None):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
+  @param* environ  dict or tuple or None
   @return  long  pid of LEProc, not the target process!
   """
   dprint("path = %s" % path)
@@ -259,12 +273,13 @@ def open_executable_with_leproc(path, params=None):
 
   from localeemu import leproc
   params = leproc.params(path=path, args=params)
-  return skwin.create_process(exe, params=params)
+  return skwin.create_process(exe, params=params, environ=environ)
 
-def open_executable_with_ntleas(path, params=None, **kwargs):
+def open_executable_with_ntleas(path, params=None, environ=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
+  @param* environ  dict or tuple or None
   @return  long  pid of ntleas, not the target process!
   """
   dprint("path = %s" % path)
@@ -280,12 +295,13 @@ def open_executable_with_ntleas(path, params=None, **kwargs):
 
   from ntleas import ntleas
   params = ntleas.params(path=path, args=params, **kwargs)
-  return skwin.create_process(exe, params=params)
+  return skwin.create_process(exe, params=params, environ=environ)
 
-def open_executable_with_lsc(path, params=None, **kwargs):
+def open_executable_with_lsc(path, params=None, environ=None, **kwargs):
   """
   @param  path  str  path to executable
   @param* params  [unicode param] or None
+  @param* environ  dict or tuple or None
   @return  long  pid of LEProc, not the target process!
   """
   dprint("path = %s" % path)
@@ -293,7 +309,7 @@ def open_executable_with_lsc(path, params=None, **kwargs):
 
   from localeswitch import lsc
   params = lsc.params(path=path, args=params, **kwargs)
-  return skwin.create_process(exe, params=params)
+  return skwin.create_process(exe, params=params, environ=environ)
 
 def getyoutube(vids, path=''):
   """

@@ -6,17 +6,14 @@ from sakurakit.skdebug import dprint
 from sakurakit import skpaths, skwin
 import os
 
-ENV_LAYER = '__COMPAT_LAYER'
-ENV_LCID = 'AppLocaleID'
-
 def create_environ(lcid):
   """
   @param  lcid  int  ms lcid
   @return  tuple
   """
   return (
-    (ENV_LAYER, '#APPLICATIONLOCALE'),
-    (ENV_LCID, '%.4x' % lcid),
+    ('__COMPAT_LAYER', '#APPLICATIONLOCALE'),
+    ('AppLocaleID', '%.4x' % lcid),
   )
 
 def create_process(path, lcid, params=None):

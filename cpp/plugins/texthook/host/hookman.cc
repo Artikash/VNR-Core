@@ -887,27 +887,27 @@ void GetCode(const HookParam &hp, LPWSTR buffer, DWORD pid)
   ptr += swprintf(ptr, L"/H%c",c);
   if (hp.type & NO_CONTEXT)
     *ptr++ = L'N';
-  if (hp.off>>31)
-    ptr += swprintf(ptr,L"-%X",-(hp.off+4));
+  if (hp.offset>>31)
+    ptr += swprintf(ptr, L"-%X",-(hp.offset+4));
   else
-    ptr += swprintf(ptr,L"%X",hp.off);
+    ptr += swprintf(ptr, L"%X",hp.offset);
   if (hp.type & DATA_INDIRECT) {
-    if (hp.ind>>31)
-      ptr += swprintf(ptr,L"*-%X",-hp.ind);
+    if (hp.index>>31)
+      ptr += swprintf(ptr, L"*-%X",-hp.index);
     else
-      ptr += swprintf(ptr,L"*%X",hp.ind);
+      ptr += swprintf(ptr,L"*%X",hp.index);
   }
   if (hp.type & USING_SPLIT) {
     if (hp.split >> 31)
-      ptr += swprintf(ptr,L":-%X", -(4 + hp.split));
+      ptr += swprintf(ptr, L":-%X", -(4 + hp.split));
     else
-      ptr += swprintf(ptr,L":%X", hp.split);
+      ptr += swprintf(ptr, L":%X", hp.split);
   }
   if (hp.type & SPLIT_INDIRECT) {
-    if (hp.split_ind >> 31)
-      ptr += swprintf(ptr, L"*-%X", -hp.split_ind);
+    if (hp.split_index >> 31)
+      ptr += swprintf(ptr, L"*-%X", -hp.split_index);
     else
-      ptr += swprintf(ptr, L"*%X", hp.split_ind);
+      ptr += swprintf(ptr, L"*%X", hp.split_index);
   }
   if (hp.module) {
     if (pid) {
@@ -916,18 +916,18 @@ void GetCode(const HookParam &hp, LPWSTR buffer, DWORD pid)
       ProcessRecord* pr = ::man->GetProcessRecord(pid);
       if (pr) {
         HANDLE hProc = pr->process_handle;
-        if (NT_SUCCESS(NtQueryVirtualMemory(hProc,(PVOID)hp.addr, MemorySectionName, path, MAX_PATH*2, 0)) &&
-            NT_SUCCESS(NtQueryVirtualMemory(hProc,(PVOID)hp.addr, MemoryBasicInformation, &info, sizeof(info), 0)))
-          ptr += swprintf(ptr, L"@%X:%s", hp.addr - (DWORD)info. AllocationBase, wcsrchr(path,L'\\') + 1);
+        if (NT_SUCCESS(NtQueryVirtualMemory(hProc,(PVOID)hp.address, MemorySectionName, path, MAX_PATH*2, 0)) &&
+            NT_SUCCESS(NtQueryVirtualMemory(hProc,(PVOID)hp.address, MemoryBasicInformation, &info, sizeof(info), 0)))
+          ptr += swprintf(ptr, L"@%X:%s", hp.address - (DWORD)info. AllocationBase, wcsrchr(path,L'\\') + 1);
       }
     } else {
-      ptr += swprintf(ptr, L"@%X!%X", hp.addr, hp.module);
+      ptr += swprintf(ptr, L"@%X!%X", hp.address, hp.module);
       if (hp.function)
         ptr += swprintf(ptr, L"!%X", hp.function);
     }
   }
   else
-    ptr += swprintf(ptr, L"@%X", hp.addr);
+    ptr += swprintf(ptr, L"@%X", hp.address);
 }
 
 // jichi 1/16/2015

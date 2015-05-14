@@ -27,11 +27,11 @@ struct HookParam {
   // jichi 10/24/2014: Add generic hook function, return false if stop execution.
   typedef bool (*hook_fun_t)(DWORD esp, HookParam *hp);
 
-  DWORD addr;   // absolute or relative address
-  DWORD off,    // offset of the data in the memory
-        ind,    // ?
-        split,  // esp offset of the split character = pusha offset - 4
-        split_ind;  // ?
+  DWORD address;    // absolute or relative address
+  DWORD offset,     // offset of the data in the memory
+        index,      // ?
+        split,      // esp offset of the split character = pusha offset - 4
+        split_index; // ?
   DWORD module, // hash of the module
         function;
   text_fun_t text_fun;
@@ -81,7 +81,7 @@ struct Hook { // size: 0x80
   BYTE recover[0x68 - sizeof(HookParam)];
   BYTE original[0x10];
 
-  DWORD Address() const { return hp.addr; }
+  DWORD Address() const { return hp.address; }
   DWORD Type() const { return hp.type; }
   WORD Length() const { return hp.hook_len; }
   LPWSTR Name() const { return hook_name; }

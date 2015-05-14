@@ -378,9 +378,9 @@ bool Ihf::addHook(ulong pid, const QString &code, const QString &name, bool verb
   DWORD hh = ::Host_InsertHook(pid, &hp, nameBuf);
   //DWORD hh = ::NewHook(hp, nameBuf);
   bool ok = ~hh;
-  if (ok && hp.addr) {
-    DOUT("hook address =" << hp.addr);
-    hookAddresses_[code] = hp.addr;
+  if (ok && hp.address) {
+    DOUT("hook address =" << hp.address);
+    hookAddresses_[code] = hp.address;
   }
   if (nameBuf)
     delete[] nameBuf;

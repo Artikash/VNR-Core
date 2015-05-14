@@ -569,7 +569,7 @@ DWORD Host_ModifyHook(DWORD pid, HookParam *hp)
     //const LONGLONG timeout = HOOK_TIMEOUT;
     NtWaitForSingleObject(hModify, 0, nullptr);
   NtClose(hModify);
-  man->RemoveSingleHook(pid, sp.hp.addr);
+  man->RemoveSingleHook(pid, sp.hp.address);
   return 0;
 }
 
@@ -585,7 +585,7 @@ DWORD Host_RemoveHook(DWORD pid, DWORD addr)
   SendParam sp = {};
   IO_STATUS_BLOCK ios;
   sp.type = HOST_COMMAND_REMOVE_HOOK;
-  sp.hp.addr = addr;
+  sp.hp.address = addr;
   //cmdq -> AddRequest(sp, pid);
   NtWriteFile(hCmd, 0,0,0, &ios, &sp, sizeof(SendParam),0,0);
   // jichi 10/22/2013: Timeout might crash vnrsrv
@@ -593,7 +593,7 @@ DWORD Host_RemoveHook(DWORD pid, DWORD addr)
   //NtWaitForSingleObject(hRemoved, 0, (PLARGE_INTEGER)&timeout);
   NtWaitForSingleObject(hRemoved, 0, nullptr);
   NtClose(hRemoved);
-  man -> RemoveSingleHook(pid, sp.hp.addr);
+  man -> RemoveSingleHook(pid, sp.hp.address);
   return 0;
 }
 

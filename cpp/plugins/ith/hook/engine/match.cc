@@ -400,7 +400,7 @@ bool DetermineEngineByProcessName()
   wcscpy(str, process_name_);
   _wcslwr(str); // lower case
 
-  if (wcsstr(str,L"reallive") || IthCheckFile(L"Reallive.exe")) {
+  if (wcsstr(str,L"reallive") || IthCheckFile(L"Reallive.exe") || IthCheckFile(L"REALLIVEDATA\\Start.ini")) {
     InsertRealliveHook();
     return true;
   }

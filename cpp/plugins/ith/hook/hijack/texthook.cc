@@ -321,10 +321,10 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
 
   // jichi 10/24/2014: Skip GDI functions
-  if (::gdi_hook_disabled_ && ::IsGDIFunction((LPCVOID)hp.addr))
+  if (::gdi_hook_disabled_ && ::IsGDIFunction((LPCVOID)hp.address))
     return 0;
 
-  dwAddr = hp.addr;
+  dwAddr = hp.address;
 
   /** jichi 12/24/2014
    *  @param  addr  function address
@@ -366,7 +366,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   for (BYTE textIndex = 0; textIndex <= hp.extra_text_count; textIndex++) {
     dwCount = 0;
     dwSplit = 0;
-    dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
+    dwDataIn = *(DWORD *)(dwDataBase + hp.offset); // default value
 
     //if (dwType & EXTERN_HOOK) {
     if (hp.text_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
@@ -385,8 +385,8 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
       else if (dwType & USING_SPLIT) {
         dwSplit = *(DWORD *)(dwDataBase + hp.split);
         if (dwType & SPLIT_INDIRECT) {
-          if (IthGetMemoryRange((LPVOID)(dwSplit + hp.split_ind), 0, 0))
-            dwSplit = *(DWORD *)(dwSplit + hp.split_ind);
+          if (IthGetMemoryRange((LPVOID)(dwSplit + hp.split_index), 0, 0))
+            dwSplit = *(DWORD *)(dwSplit + hp.split_index);
           else
             return 0;
         }
@@ -394,8 +394,8 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
           dwSplit -= ::processStartAddress;
       }
       if (dwType & DATA_INDIRECT) {
-        if (IthGetMemoryRange((LPVOID)(dwDataIn + hp.ind), 0, 0))
-          dwDataIn = *(DWORD *)(dwDataIn + hp.ind);
+        if (IthGetMemoryRange((LPVOID)(dwDataIn + hp.index), 0, 0))
+          dwDataIn = *(DWORD *)(dwDataIn + hp.index);
         else
           return 0;
       }
@@ -472,9 +472,9 @@ int TextHook::InsertHook()
   int ok = InsertHookCode();
   IthReleaseMutex(hmMutex);
   if (hp.type & HOOK_ADDITIONAL) {
-    NotifyHookInsert(hp.addr);
+    NotifyHookInsert(hp.address);
     //ConsoleOutput(hook_name);
-    //RegisterHookName(hook_name,hp.addr);
+    //RegisterHookName(hook_name,hp.address);
   }
   //ConsoleOutput("vnrcli:InsertHook: leave");
   return ok;
@@ -500,7 +500,7 @@ int TextHook::UnsafeInsertHookCode()
       if (hp.function && (hp.type & FUNCTION_OFFSET)) {
         base = GetExportAddress(base, hp.function);
         if (base)
-          hp.addr += base;
+          hp.address += base;
         else {
           current_hook--;
           ConsoleOutput("vnrcli:UnsafeInsertHookCode: FAILED: function not found in the export table");
@@ -508,7 +508,7 @@ int TextHook::UnsafeInsertHookCode()
         }
       }
       else
-        hp.addr += base;
+        hp.address += base;
       hp.type &= ~(MODULE_OFFSET|FUNCTION_OFFSET);
     } else {
       current_hook--;
@@ -524,17 +524,17 @@ int TextHook::UnsafeInsertHookCode()
       //it = hookman + i;
       if (it == this)
         continue;
-      if (it->Address() <= hp.addr &&
-          it->Address() + it->Length() > hp.addr) {
+      if (it->Address() <= hp.address &&
+          it->Address() + it->Length() > hp.address) {
         it->ClearHook();
         break;
       }
     }
   }
 
-  // Verify hp.addr.
+  // Verify hp.address.
   MEMORY_BASIC_INFORMATION info = {};
-  NtQueryVirtualMemory(NtCurrentProcess(), (LPVOID)hp.addr, MemoryBasicInformation, &info, sizeof(info), nullptr);
+  NtQueryVirtualMemory(NtCurrentProcess(), (LPVOID)hp.address, MemoryBasicInformation, &info, sizeof(info), nullptr);
   if (info.Type & PAGE_NOACCESS) {
     ConsoleOutput("vnrcli:UnsafeInsertHookCode: FAILED: page no access");
     return no;
@@ -542,7 +542,7 @@ int TextHook::UnsafeInsertHookCode()
 
   // Initialize common routine.
   memcpy(recover, common_hook, sizeof(common_hook));
-  BYTE *c = (BYTE *)hp.addr,
+  BYTE *c = (BYTE *)hp.address,
        *r = recover;
   BYTE inst[8]; // jichi 9/27/2013: Why 8? Only 5 bytes will be written using NtWriteVirtualMemory
   inst[0] = 0xe9; // jichi 9/27/2013: 0xe9 is jump, see: http://code.google.com/p/sexyhook/wiki/SEXYHOOK_Hackers_Manual
@@ -566,7 +566,7 @@ int TextHook::UnsafeInsertHookCode()
   hp.hook_len = 5;
   //bool jmpflag=false; // jichi 9/28/2013: nto used
   // Copy original code.
-  switch (MapInstruction(hp.addr, (DWORD)r, hp.hook_len, hp.recover_len)) {
+  switch (MapInstruction(hp.address, (DWORD)r, hp.hook_len, hp.recover_len)) {
   case -1:
     ConsoleOutput("vnrcli:UnsafeInsertHookCode: FAILED: failed to map instruction");
     return no;
@@ -576,7 +576,7 @@ int TextHook::UnsafeInsertHookCode()
       mov ecx,this
       movzx eax,[ecx]hp.hook_len
       movzx edx,[ecx]hp.recover_len
-      add edx,[ecx]hp.addr
+      add edx,[ecx]hp.address
       add eax,r
       add eax,5
       sub edx,eax
@@ -585,7 +585,7 @@ int TextHook::UnsafeInsertHookCode()
     }
   }
   // jichi 9/27/2013: Save the original instructions in the memory
-  memcpy(original, (LPVOID)hp.addr, hp.recover_len);
+  memcpy(original, (LPVOID)hp.address, hp.recover_len);
   //Check if the new hook range conflict with existing ones. Clear older if conflict.
   {
     TextHook *it = hookman;
@@ -594,8 +594,8 @@ int TextHook::UnsafeInsertHookCode()
         i++;
       if (it == this)
         continue;
-      if (it->Address() >= hp.addr &&
-          it->Address() < hp.hook_len + hp.addr) {
+      if (it->Address() >= hp.address &&
+          it->Address() < hp.hook_len + hp.address) {
         it->ClearHook();
         break;
       }
@@ -610,13 +610,13 @@ int TextHook::UnsafeInsertHookCode()
   // jichi 9/27/2013: Overwrite the memory with inst
   // See: http://undocumented.ntinternals.net/UserMode/Undocumented%20Functions/Memory%20Management/Virtual%20Memory/NtProtectVirtualMemory.html
   // See: http://doxygen.reactos.org/d8/d6b/ndk_2mmfuncs_8h_af942709e0c57981d84586e74621912cd.html
-  DWORD addr = hp.addr;
+  DWORD addr = hp.address;
   NtProtectVirtualMemory(NtCurrentProcess(), (PVOID *)&addr, &t, PAGE_EXECUTE_READWRITE, &old);
-  NtWriteVirtualMemory(NtCurrentProcess(), (BYTE *)hp.addr, inst, 5, &t);
+  NtWriteVirtualMemory(NtCurrentProcess(), (BYTE *)hp.address, inst, 5, &t);
   len = hp.recover_len - 5;
   if (len)
-    NtWriteVirtualMemory(NtCurrentProcess(), (BYTE *)hp.addr + 5, int3, len, &t);
-  NtFlushInstructionCache(NtCurrentProcess(), (LPVOID)hp.addr, hp.recover_len);
+    NtWriteVirtualMemory(NtCurrentProcess(), (BYTE *)hp.address + 5, int3, len, &t);
+  NtFlushInstructionCache(NtCurrentProcess(), (LPVOID)hp.address, hp.recover_len);
   NtFlushInstructionCache(NtCurrentProcess(), (LPVOID)::hookman, 0x1000);
   //ConsoleOutput("vnrcli:UnsafeInsertHookCode: leave: succeed");
   return 0;
@@ -626,11 +626,11 @@ int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind,
     DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
 {
   NtWaitForSingleObject(hmMutex, 0, 0);
-  hp.addr = (DWORD)addr;
-  hp.off = data;
-  hp.ind = data_ind;
+  hp.address = (DWORD)addr;
+  hp.offset = data;
+  hp.index = data_ind;
   hp.split = split_off;
-  hp.split_ind = split_ind;
+  hp.split_index = split_ind;
   hp.type = type;
   hp.hook_len = 0;
   hp.module = 0;
@@ -667,7 +667,7 @@ int TextHook::InitHook(const HookParam &h, LPCWSTR name, WORD set_flag)
 int TextHook::RemoveHook()
 {
   enum : int { yes = 1, no = 0 };
-  if (!hp.addr)
+  if (!hp.address)
     return no;
   ConsoleOutput("vnrcli:RemoveHook: enter");
   const LONGLONG timeout = -50000000; // jichi 9/28/2012: in 100ns, wait at most for 5 seconds
@@ -676,8 +676,8 @@ int TextHook::RemoveHook()
   //with_seh({ // jichi 9/17/2013: might crash ><
   // jichi 12/25/2013: Actually, __try cannot catch such kind of exception
   ITH_TRY {
-    NtWriteVirtualMemory(NtCurrentProcess(), (LPVOID)hp.addr, original, hp.recover_len, &l);
-    NtFlushInstructionCache(NtCurrentProcess(), (LPVOID)hp.addr, hp.recover_len);
+    NtWriteVirtualMemory(NtCurrentProcess(), (LPVOID)hp.address, original, hp.recover_len, &l);
+    NtFlushInstructionCache(NtCurrentProcess(), (LPVOID)hp.address, hp.recover_len);
   } ITH_EXCEPT {}
   //});
   hp.hook_len = 0;
@@ -725,9 +725,9 @@ int TextHook::ModifyHook(const HookParam &hp)
 
 int TextHook::RecoverHook()
 {
-  if (hp.addr) {
+  if (hp.address) {
     // jichi 9/28/2013: Only enable TextOutA to debug Cross Channel
-    //if (hp.addr == (DWORD)TextOutA)
+    //if (hp.address == (DWORD)TextOutA)
     InsertHook();
     return 1;
   }
