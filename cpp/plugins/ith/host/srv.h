@@ -30,7 +30,6 @@ IHFSERVICE DWORD IHFAPI IHF_GetSettings(Settings **settings);
 IHFSERVICE DWORD IHFAPI IHF_InsertHook(DWORD pid, HookParam *hp, LPWSTR name = nullptr);
 IHFSERVICE DWORD IHFAPI IHF_ModifyHook(DWORD pid, HookParam *hp);
 IHFSERVICE DWORD IHFAPI IHF_RemoveHook(DWORD pid, DWORD addr);
-IHFSERVICE DWORD IHFAPI IHF_IsAdmin();
 //IHFSERVICE DWORD IHFAPI IHF_GetFilters(PVOID *mb_filter, PVOID *uni_filter);
 
 // 4/30/2015: Thread-linking is not needed by VNR. Removed for better performance.

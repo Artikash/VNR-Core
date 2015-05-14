@@ -38,7 +38,6 @@ CRITICAL_SECTION cs;
 //WCHAR DllNameXp[] = ITH_CLIENT_XP_DLL;
 HANDLE hServerMutex; // jichi 9/28/2013: used to guard pipe
 HANDLE hHookMutex;  // jichi 9/28/2013: used to guard hook modification
-DWORD admin;
 } // unnamed namespace
 
 //extern LPWSTR current_dir;
@@ -64,7 +63,6 @@ void GetDebugPriv()
   NtOpenProcessToken(NtCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
 
   status = NtAdjustPrivilegesToken(hToken, 0, &Privileges, sizeof(Privileges), 0, &dwRet);
-  admin = 1; // jichi 8/24/2013: ITH do not need admin
   //if (STATUS_SUCCESS == status)
   //{
   //  admin = 1;
@@ -574,8 +572,6 @@ IHFSERVICE DWORD IHFAPI IHF_RemoveHook(DWORD pid, DWORD addr)
   man -> RemoveSingleHook(pid, sp.hp.addr);
   return 0;
 }
-
-IHFSERVICE DWORD IHFAPI IHF_IsAdmin() { return admin; }
 
 // EOF
 
