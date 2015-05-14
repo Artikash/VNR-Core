@@ -171,22 +171,21 @@ def _repair_th(text):
   return text
 
 # http://en.wikipedia.org/wiki/Hangul_Syllables
-_ko_hangul = u'[\uac00-\ud7af]'
-_re_ko_tsu2 = re.compile(_ko_hangul + u'っ' + _ko_hangul)
-def _ko_tsu2_repl(m): # match -> unicode
-  t = m.group()
-  left = t[0]
-  right = t[-1]
-  from hangulconv import hangulconv
-  left_l = hangulconv.split_char(left)
-  right_l = hangulconv.split_char(right)
-
-  if left_l and right_l and len(left_l) == 2:
-    left_l = left_l[0], left_l[1], u'ㅅ' #right_l[0]
-    left = hangulconv.join_char(left_l)
-    if left:
-      t = left + right
-  return t
+#_re_ko_tsu2 = re.compile(_ko_hangul + u'っ' + _ko_hangul)
+#def _ko_tsu2_repl(m): # match -> unicode
+#  t = m.group()
+#  left = t[0]
+#  right = t[-1]
+#  from hangulconv import hangulconv
+#  left_l = hangulconv.split_char(left)
+#  right_l = hangulconv.split_char(right)
+#
+#  if left_l and right_l and len(left_l) == 2:
+#    left_l = left_l[0], left_l[1], right_l[0]
+#    left = hangulconv.join_char(left_l)
+#    if left:
+#      t = left + right
+#  return t
 #_re_ko_tsu1 = re.compile(u'っ' + _ko_hangul)
 #def _ko_tsu1_repl(m): # match -> unicode
 #  t = m.group()
@@ -204,13 +203,27 @@ def _ko_tsu2_repl(m): # match -> unicode
 #      right = hangulconv.join_char(right_l)
 #      t = right
 #  return t
+_ko_hangul = u'[\uac00-\ud7af]'
+_re_ko_tsu = re.compile(_ko_hangul + u'っ')
+def _ko_tsu_repl(m): # match -> unicode
+  t = m.group()
+  left = t[0]
+  from hangulconv import hangulconv
+  left_l = hangulconv.split_char(left)
+  if left_l and len(left_l) == 2:
+    left_l = left_l[0], left_l[1], u'ㅅ' #right_l[0]
+    left = hangulconv.join_char(left_l)
+    if left:
+      t = left
+  return t
 def _repair_ko(text):
   """
   @param  text
   @return  unicode
   """
   if u'っ' in text:
-    text = _re_ko_tsu2.sub(_ko_tsu2_repl, text)
+    text = _re_ko_tsu.sub(_ko_tsu_repl, text)
+  text = text.replace(u'っ', u'ㅅ')
   # Disabled as not quite useful
   #if u'っ' in text:
   #  text = _re_ko_tsu1.sub(_ko_tsu1_repl, text)
@@ -394,7 +407,7 @@ if __name__ == '__main__':
     (u'ゆっき', u'윳키'),
     (u'ゆっさ', u'윳사'),
     (u'かって', u'캇테'),
-    (u'って', u'-테'),
+    (u'って', u'ㅅ테'),
     (u'ゆりっぺ', u'유릿페'),
     #(u'っさ', u'싸'), # disabled as not quite useful
   ]
