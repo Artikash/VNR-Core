@@ -409,6 +409,7 @@ if __name__ == '__main__':
     (u'かって', u'캇테'),
     (u'って', u'ㅅ테'),
     (u'ゆりっぺ', u'유릿페'),
+    (u'ゆりっっぺ', '유릿ㅅ페'),
     #(u'っさ', u'싸'), # disabled as not quite useful
   ]
   for k,v in l:
