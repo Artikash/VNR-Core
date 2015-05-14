@@ -240,8 +240,8 @@ struct InsertHookStruct
 IHFSERVICE DWORD IHFAPI IHF_Init()
 {
   BOOL result = false;
-  DWORD present;
   EnterCriticalSection(&cs);
+  DWORD present;
   hServerMutex = IthCreateMutex(ITH_SERVER_MUTEX, 1, &present);
   if (present)
     //MessageBox(0,L"Already running.",0,0);

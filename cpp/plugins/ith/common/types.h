@@ -18,7 +18,7 @@
   *  Negative values of 'data_offset' and 'sub_offset' refer to registers:-4 for EAX, -8 for ECX, -C for EDX, -10 for EBX, -14 for ESP, -18 for EBP, -1C for ESI, -20 for EDIhttp://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial
   */
 struct HookParam {
-  // jichi 8/24/2013: For special hooks. Orignial name: DataFun
+  // jichi 8/24/2013: For special hooks.
   typedef void (*text_fun_t)(DWORD esp, HookParam *hp, BYTE index, DWORD *data, DWORD *split, DWORD *len);
 
   // jichi 10/24/2014: Add filter function. Return the if skip the text
