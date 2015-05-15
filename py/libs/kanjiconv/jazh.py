@@ -8,10 +8,14 @@ from unitraits import jpchars, jpmacros
 import re
 
 _J2C_NAME = {
-  u'ノ': u'之',
   u'の': u'之',
+  u'ノ': u'之',
   u'ヶ': '',
   u'し': '', # example: 串刺し公
+  u'つ': '', # example: 一つ目小僧
+  u'ツ': '',
+  u'っ': '',
+  u'ッ': '',
 }
 _rx_name_repeat = re.compile(
   jpmacros.applymacros(
@@ -41,8 +45,9 @@ def ja2zht_name_fix(text): # unicode -> unicode
   return text.replace(u'裡', u'里').replace(u'裏', u'里')
 
 if __name__ == '__main__':
-  s = u'乃々華'
+  #s = u'乃々華'
   #s = u'串刺し公'
+  s = u'一つ目小僧'
   print ja2zh_name_test(s)
   print ja2zh_name(s)
 
