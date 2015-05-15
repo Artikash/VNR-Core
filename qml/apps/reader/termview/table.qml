@@ -1035,8 +1035,7 @@ Item { id: root_
       width: 200
       delegate: Item {
         height: table_.cellHeight
-        //property bool editable: itemValue.updateUserId === root_.userId
-        property bool editable: root_.userId !== root_._GUEST_USER_ID
+        property bool editable: itemValue.updateUserId === root_.userId || root_.userId !== root_._GUEST_USER_ID
         Text {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           textFormat: Text.PlainText
