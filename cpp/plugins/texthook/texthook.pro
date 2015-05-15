@@ -4,49 +4,26 @@
 
 CONFIG += noqtgui dll #eha # eha will catch all exceptions, but does not work on Windows XP
 include(../../../config.pri)
-#include($$LIBDIR/winmaker/winmaker.pri)
+include(host/host.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
-include(host/host.pri)
+#include($$LIBDIR/winmaker/winmaker.pri)
 
-# TODO: Get rid of ITH_SYS. Use my own inject/pipe implementation in Python/Qt.
+# TODO: Get rid of ITH_SYS.
+# Use my own inject/pipe implementation in Python/Qt instead.
+# Get rid of dependence on NT apis at host side.
 include($$PLUGINDIR/ith/sys/sys.pri)
-LIBS  += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
+LIBS += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
 
-DEFINES  += ITH_HAS_CRT # Use native CRT
+DEFINES += ITH_HAS_CRT # Use native CRT
+
+# TODO: Get rid of dependence on msvc's swprintf
+DEFINES += _CRT_NON_CONFORMING_SWPRINTFS
 
 ## Libraries
 
 QT += core
 QT -= gui
-
-#WDK_HOME  = c:/winddk
-#LIBS    += -L$$WDK_HOME/lib
-# override folder must come before winddk/inc/api
-#INCLUDEPATH += $$PWD/override/wdk/vc10
-#INCLUDEPATH += $$WDK_HOME/include/api
-#INCLUDEPATH += $$WDK_HOME/include/crt
-#INCLUDEPATH += $$WDK_HOME/include/ddk
-
-#ITH_HOME  = c:/dev/ith
-#INCLUDEPATH += $$ITH_HOME/include
-#LIBS    += -L$$ITH_HOME/lib
-#LIBS    += -lITH_DLL #-lITH_SYS
-
-#INCLUDEPATH += $$ITH_HOME/include
-#LIBS        += -L$$ITH_HOME/lib -lihf #-lihf_dll
-#LIBS        += -lvnrhost
-
-# Tell IHF not to override new operators, see: ith/mem.h
-#DEFINES += ITH_HAS_CXX
-#LIBS    += -lith_sys -lntdll
-#LIBS    += -lith_tls -lntdll
-#LIBS    += -lntoskrnl
-
-#LIBS  += -lmsvcrtd
-#LIBS  += -lmsvcrt
-#QMAKE_LFLAGS += /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:msvcrtd.lib
-DEFINES += _CRT_NON_CONFORMING_SWPRINTFS
 
 ## Sources
 
