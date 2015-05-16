@@ -221,13 +221,17 @@ def open_executable_with_apploc(path, lcid=0, params=None, environ=None, vnrloca
   dprint("lcid = 0x%.4x, vnrlocale = %s, path = %s" % (lcid, vnrlocale, path))
 
   if lcid and applocale.exists():
-    environ = environ.copy()
-    for k,v in applocale.create_environ(lcid):
-      if k in environ and k == '__COMPAT_LAYER':
-        # http://techsupt.winbatch.com/webcgi/webbatch.exe?techsupt/tsleft.web+WinBatch/How~To+Control~Compatibility~Mode.txt
-        # Join '__COMPAT_LAYER' using spaces
-        v += ' ' + environ[k]
-      environ[k] = v
+    m = applocale.create_environ(lcid)
+    if not environ:
+      environ = m
+    else:
+      environ = environ.copy()
+      for k,v in m:
+        if k in environ and k == '__COMPAT_LAYER':
+          # http://techsupt.winbatch.com/webcgi/webbatch.exe?techsupt/tsleft.web+WinBatch/How~To+Control~Compatibility~Mode.txt
+          # Join '__COMPAT_LAYER' using spaces
+          v += ' ' + environ[k]
+        environ[k] = v
   if not vnrlocale:
     return skwin.create_process(path, params=params, environ=environ)
     #return QDesktopServices.openUrl(QUrl.fromLocalFile(path))
