@@ -313,7 +313,10 @@ proxies:
     #witchflame: www.witchflame.jp      # Do not need proxy
     sun-magazine: www.sun-magazine.jp
 
-    muzintou: muzintou.sakura.ne.jp # only needed by Mainland China
+    # Only needed by Mainland China
+    c-queen: www.c-queen.net
+    muzintou: muzintou.sakura.ne.jp
+    ojaru: drs.ojaru.jp
 
     # Example:
     # http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1715apc10593/
