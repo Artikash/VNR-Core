@@ -8764,6 +8764,8 @@ class _DataManager(object):
 
       terms = []
       path = 0
+      now = skdatetime.current_unixtime()
+      OUTDATE_TIME = now - 40 * 86400 # 1.5 month
       for event, elem in context:
         if event == 'start':
           path += 1
@@ -8804,6 +8806,11 @@ class _DataManager(object):
           elif path == 2 and kw['type'] in Term.TYPES:
             #if not kw.get('userHash'):
             #  kw['userHash'] = kw['userId']
+            if kw.get('disabled'):
+              t = kw.get('updateTimestamp') or kw.get('timestamp')
+              if t and t < OUTDATE_TIME:
+                dprint("ignore outdated term: id = %s" % kw.get('id'))
+                continue
             terms.append(Term(
                 init=False,
                 parent=self.q, # FIXME: increase PySide reference count
