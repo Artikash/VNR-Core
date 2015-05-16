@@ -4384,9 +4384,9 @@ class _DictionaryTranslationTab(object):
   def rubyTypeGroup(self):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.rubyKanaButton)
     layout.addWidget(self.rubyHighlightButton)
     layout.addWidget(self.rubyAnnotButton)
+    layout.addWidget(self.rubyKanaButton)
     layout.addWidget(self.hiraButton)
     layout.addWidget(self.kataButton)
     layout.addWidget(self.romajiButton)
