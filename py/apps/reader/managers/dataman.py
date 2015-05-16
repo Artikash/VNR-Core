@@ -7470,11 +7470,11 @@ class _DataManager(object):
               g.nameThreadName = thread.find('./name').text
               g.nameThreadSignature = long(thread.find('./signature').text)
 
-            support = e.iterfind('./thread[@type="support"]')
-            if support:
+            threads = e.iterfind('./thread[@type="other"]')
+            if threads:
               g.otherThreads = {
                 long(e.find('./signature').text) : e.find('./name').text
-                for e in support
+                for e in threads
               }
           elif tag == 'names':
             l = {

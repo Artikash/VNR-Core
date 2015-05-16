@@ -68,9 +68,9 @@
 					<signature>{{it.nameThreadSignature}}</signature>
 				</thread>
 %	endif
-%	if it.supportThreads
-%		for sig, name in it.supportThreads.iteritems()
-				<thread type="support">
+%	if it.otherThreads
+%		for sig, name in it.otherThreads.iteritems()
+				<thread type="other">
 					<name>{{name}}</name>
 					<signature>{{sig}}</signature>
 				</thread>
