@@ -128,7 +128,30 @@ ROLE_NAMES_EN = {
   ROLE_MARK: "word",
 }
 
+# http://sakuradite.com/topic/816
+ROLE_NAMES_KO = {
+  ROLE_NAME: u"이름",
+  ROLE_PLACE: u"지명",
+  ROLE_NUM: u"수사",
+  ROLE_NOUN: u"명사",
+  ROLE_PRONOUN: u"대명사",
+  ROLE_VERB: u"동사",
+  ROLE_A: u"형상사",
+  ROLE_ADN: u"연체사",
+  ROLE_ADJ: u"형용사",
+  ROLE_ADV: u"부사",
+  ROLE_PART: u"조사",
+  ROLE_AUX: u"조동사",
+  ROLE_SUFFIX: u"접미사",
+  ROLE_PREFIX: u"접두사",
+  ROLE_INTERJ: u"감동사",
+  ROLE_CONJ: u"접속사",
+  ROLE_PUNCT: u"문장부호",
+  ROLE_MARK: u"기호",
+}
+
 def role_name(v): return ROLE_NAMES.get(v) # str -> unicode or None
 def role_name_en(v): return ROLE_NAMES_EN.get(v) # str -> unicode or None
+def role_name_ko(v): return ROLE_NAMES_KO.get(v) # str -> unicode or None
 
 # EOF

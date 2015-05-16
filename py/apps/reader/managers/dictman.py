@@ -392,7 +392,14 @@ class DictionaryManager:
       else:
         roleName = mecabdef.role_name(text)
         if roleName:
-          f = ','.join((text, mecabdef.role_name_en(text) or '', roleName))
+          f = ','.join((
+            text,
+            mecabdef.role_name_en(text) or '', # or part should never happen
+            roleName,
+          ))
+
+          if d.userLanguage == 'ko':
+            f += ',' + (mecabdef.role_name_ko(text) or '') # or part should never happen
 
       #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({

@@ -10,6 +10,7 @@ import re
 _J2C_NAME = {
   u'の': u'之',
   u'ノ': u'之',
+  u'ケ': '', # example: 芹ケ野
   u'ヶ': '',
   u'し': '', # example: 串刺し公
   u'つ': '', # example: 一つ目小僧
