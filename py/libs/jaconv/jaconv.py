@@ -203,18 +203,22 @@ def _repair_th(text):
 #      right = hangulconv.join_char(right_l)
 #      t = right
 #  return t
-_ko_hangul = u'[\uac00-\ud7af]'
+# http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Syllables
+# http://en.wikipedia.org/wiki/Hangul_consonant_and_vowel_tables
+_ko_hangul = u'[\uac00-\ud7a3]'
 _re_ko_tsu = re.compile(_ko_hangul + u'っ')
 def _ko_tsu_repl(m): # match -> unicode
   t = m.group()
-  left = t[0]
-  from hangulconv import hangulconv
-  left_l = hangulconv.split_char(left)
-  if left_l and len(left_l) == 2:
-    left_l = left_l[0], left_l[1], u'ㅅ' #right_l[0]
-    left = hangulconv.join_char(left_l)
-    if left:
-      t = left
+  left = ord(t[0])
+  if (left - 0xac00) % 28 == 0:
+    t = unichr(left + 19) # 19 is ㅅ
+  #from hangulconv import hangulconv
+  #left_l = hangulconv.split_char(left)
+  #if left_l and len(left_l) == 2:
+  #  left_l = left_l[0], left_l[1], u'ㅅ' #right_l[0]
+  #  left = hangulconv.join_char(left_l)
+  #  if left:
+  #    t = left
   return t
 def _repair_ko(text):
   """
