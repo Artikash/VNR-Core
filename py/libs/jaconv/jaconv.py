@@ -205,7 +205,7 @@ def _repair_th(text):
 #  return t
 # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Syllables
 # http://en.wikipedia.org/wiki/Hangul_consonant_and_vowel_tables
-_ko_hangul = u'[\uac00-\ud7a3]'
+_ko_hangul = u'[\uac00-\ud7a3]' # all 2~3 hangul characters
 _re_ko_tsu = re.compile(_ko_hangul + u'っ')
 def _ko_tsu_repl(m): # match -> unicode
   t = m.group()
