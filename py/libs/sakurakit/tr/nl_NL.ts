@@ -1971,7 +1971,7 @@
     <message>
         <location filename="sktr.py" line="42"/>
         <source>Polish</source>
-        <translation>Pools</translation>
+        <translation>Polish</translation>
     </message>
     <message>
         <location filename="sktr.py" line="92"/>
@@ -2673,6 +2673,11 @@
         <location filename="sktr.py" line="329"/>
         <source>Fonts</source>
         <translation>Fonts</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>facultatief</translation>
     </message>
 </context>
 </TS>

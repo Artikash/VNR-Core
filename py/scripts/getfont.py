@@ -23,6 +23,20 @@ FONTS = {
     'path': 'Hanazono',
     'hp': 'http://fonts.jp/hanazono',
     'dl': "http://jaist.dl.sourceforge.jp/hanazono-font/62072/hanazono-20141012.zip",
+    'type': 'folder',
+    'format': 'zip',
+  },
+  # https://github.com/hiun/NanumBarunGothic
+  # http://www.hiunkim.com/NanumBarunGothic/
+  # http://hangeul.naver.com/2014/nanum
+  'nanum': {
+    'size': 4186060,
+    'name': 'NanumBarunGothic',
+    'path': 'Nanum/NanumBarunGothic.ttf',
+    'hp': 'https://github.com/hiun/NanumBarunGothic',
+    'dl': "http://rawgithub.com/hiun/NanumBarunGothic/master/NanumBarunGothic.ttf", # use rawgithub.com to avoid illegal access
+    'type': 'file',
+    'format': 'ttf',
   },
 }
 
@@ -39,15 +53,17 @@ def init(): # raise
 
 def extract(family): # str -> bool
   dprint("enter: family = %s" % family)
+  font = FONTS[family]
 
-  srcpath = TMP_DIR + '/font-%s.zip' % family
+  fmt = font['format']
   tmppath = TMP_DIR + '/font-%s' % family
-  targetpath = FONT_DIR + '/' + FONTS[family]['path']
+  srcpath = tmppath + '.' + fmt
+  targetpath = FONT_DIR + '/' + font['path']
 
   import shutil
   from sakurakit import skfileio
   with SkProfiler("extract"):
-    ok = skfileio.extractzip(srcpath, tmppath)
+    ok = skfileio.extractarchive(srcpath, tmppath, type=fmt)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
@@ -59,9 +75,26 @@ def extract(family): # str -> bool
   dprint("leave: ok = %s" % ok)
   return ok
 
+def move(family): # str -> bool
+  dprint("enter: family = %s" % family)
+  font = FONTS[family]
+
+  srcpath = TMP_DIR + '/font-%s.%s' % (family, font['format'])
+  targetpath = FONT_DIR + '/' + font['path']
+
+  targetdir = os.path.dirname(targetpath)
+
+  if os.path.exists(targetpath):
+    os.remove(targetpath)
+  os.renames(srcpath, targetpath)
+
+  dprint("leave: ok = true")
+  return True
+
 def get(family): # str -> bool
-  url = FONTS[family]['dl']
-  path = TMP_DIR + '/font-%s.zip' % family
+  font = FONTS[family]
+  url = font['dl']
+  path = TMP_DIR + '/font-%s.%s' % (family, font['format'])
 
   dprint("enter: family = %s, url = %s" % (family, url))
 
@@ -74,7 +107,7 @@ def get(family): # str -> bool
   from sakurakit import skfileio, sknetio
   with SkProfiler("fetch"):
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) == FONTS[family]['size']
+      ok = skfileio.filesize(path) == font['size']
   if not ok and os.path.exists(path):
     skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
@@ -93,7 +126,12 @@ def run(family): # str -> bool
   if family not in FONTS:
     dwarn("unknown font: %s" % family)
     return False
-  return lock(family) and get(family) and extract(family)
+  if not (lock(family) and get(family)):
+    return False
+  if FONTS[family]['type'] == 'file':
+    return move(family)
+  else:
+    return extract(family)
 
 # Main process
 
@@ -130,7 +168,10 @@ def main(argv):
       ok = run(family)
       if ok:
         from sakurakit import skos
-        path = os.path.join(FONT_DIR, FONTS[family]['path'])
+        font = FONTS[family]
+        path = os.path.join(FONT_DIR, font['path'])
+        if font['type'] == 'file':
+          path = os.path.dirname(path)
         skos.open_location(os.path.abspath(path))
     except Exception, e:
       dwarn(e)

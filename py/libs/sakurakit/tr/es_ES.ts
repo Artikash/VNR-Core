@@ -166,7 +166,7 @@
     <message>
         <location filename="sktr.py" line="177"/>
         <source>OK</source>
-        <translation>Bueno</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="sktr.py" line="178"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="sktr.py" line="221"/>
         <source>Quit</source>
-        <translation>Dejar de</translation>
+        <translation>Dejar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="222"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="sktr.py" line="335"/>
         <source>Help</source>
-        <translation>Ayudar</translation>
+        <translation>Ayuda</translation>
     </message>
     <message>
         <location filename="sktr.py" line="337"/>
@@ -801,7 +801,7 @@
     <message>
         <location filename="sktr.py" line="215"/>
         <source>stop</source>
-        <translation>detener</translation>
+        <translation>Deténgase</translation>
     </message>
     <message>
         <location filename="sktr.py" line="215"/>
@@ -841,7 +841,7 @@
     <message>
         <location filename="sktr.py" line="209"/>
         <source>Software Update</source>
-        <translation>Actualización de software</translation>
+        <translation>Actualización De Software</translation>
     </message>
     <message>
         <location filename="sktr.py" line="385"/>
@@ -921,7 +921,7 @@
     <message>
         <location filename="sktr.py" line="198"/>
         <source>Restart</source>
-        <translation>Reanudar</translation>
+        <translation>Reiniciar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="493"/>
@@ -1276,7 +1276,7 @@
     <message>
         <location filename="sktr.py" line="414"/>
         <source>Time zone</source>
-        <translation>Huso horario</translation>
+        <translation>Zona horaria</translation>
     </message>
     <message>
         <location filename="sktr.py" line="349"/>
@@ -1336,7 +1336,7 @@
     <message>
         <location filename="sktr.py" line="299"/>
         <source>Aside</source>
-        <translation>Aparte</translation>
+        <translation>Un Lado</translation>
     </message>
     <message>
         <location filename="sktr.py" line="424"/>
@@ -1681,7 +1681,7 @@
     <message>
         <location filename="sktr.py" line="424"/>
         <source>User Information</source>
-        <translation>Información del usuario</translation>
+        <translation>Informacion Del Usuario</translation>
     </message>
     <message>
         <location filename="sktr.py" line="261"/>
@@ -1761,7 +1761,7 @@
     <message>
         <location filename="sktr.py" line="115"/>
         <source>Right Click</source>
-        <translation>Haga clic</translation>
+        <translation>Botón Derecho Del Ratón</translation>
     </message>
     <message>
         <location filename="sktr.py" line="115"/>
@@ -1771,7 +1771,7 @@
     <message>
         <location filename="sktr.py" line="116"/>
         <source>Right-Click</source>
-        <translation>Haga clic</translation>
+        <translation>Botón Derecho Del Ratón</translation>
     </message>
     <message>
         <location filename="sktr.py" line="116"/>
@@ -2071,7 +2071,7 @@
     <message>
         <location filename="sktr.py" line="474"/>
         <source>Network Error</source>
-        <translation>Error de red</translation>
+        <translation>Error De Red</translation>
     </message>
     <message>
         <location filename="sktr.py" line="125"/>
@@ -2246,7 +2246,7 @@
     <message>
         <location filename="sktr.py" line="439"/>
         <source>Zoom Out</source>
-        <translation>Alejar</translation>
+        <translation>Disminuir El Zoom</translation>
     </message>
     <message>
         <location filename="sktr.py" line="439"/>
@@ -2673,6 +2673,11 @@
         <location filename="sktr.py" line="329"/>
         <source>Fonts</source>
         <translation>Fuentes</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>opcional</translation>
     </message>
 </context>
 </TS>

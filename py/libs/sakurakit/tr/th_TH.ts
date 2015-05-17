@@ -2674,5 +2674,10 @@
         <source>Fonts</source>
         <translation>แบบอักษร</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>ไม่จำเป็น</translation>
+    </message>
 </context>
 </TS>

@@ -2674,5 +2674,10 @@
         <source>Fonts</source>
         <translation>الخطوط</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>اختياري</translation>
+    </message>
 </context>
 </TS>

@@ -2674,5 +2674,10 @@
         <source>Fonts</source>
         <translation>Czcionki</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>fakultatywny</translation>
+    </message>
 </context>
 </TS>

@@ -2673,5 +2673,10 @@
         <source>Fonts</source>
         <translation>字型</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>可選的</translation>
+    </message>
 </context>
 </TS>

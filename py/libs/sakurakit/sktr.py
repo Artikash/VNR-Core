@@ -361,7 +361,7 @@ class sakurakit(QObject):
       self.tr("Notification"),
       self.tr("Opacity"),
       self.tr("Option"), self.tr("option"),
-      self.tr("Optional"),
+      self.tr("Optional"), self.tr("optional"),
       self.tr("Options"), self.tr("options"),
       self.tr("Order"),
       self.tr("Owner"),
