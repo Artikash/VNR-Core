@@ -72,10 +72,17 @@ DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
 FONT_INFO = {
   'hanazono': {
+    'lang': 'ja',
     'name': mytr_("Hanazono font"),
     'size': '46MB',
     'desc': my.tr("for uncommon CJK hanzi and radicals"),
-  }
+  },
+  'nanum': {
+    'lang': 'ko',
+    'name': "Nanum Barun Gothic",
+    'size': '4MB',
+    'desc': my.tr("for Korean text to look better"),
+  },
 }
 
 LINGOES_DICT_NAMES = {
@@ -2494,7 +2501,7 @@ class _TextTab(object):
         c += 1; grid.addWidget(resetButton, r, c)
 
         label = "<= " + tr_(Lang)
-        if lang == 'ko':
+        if it == 'ko':
           label += " (%s %s)" % (tr_("recommended"), "NanumBarunGothic")
         c += 1; grid.addWidget(QtWidgets.QLabel(label), r, c)
 
@@ -6306,6 +6313,7 @@ class _FontDownloadsTab(object):
 
   @memoizedproperty
   def fontGroup(self): # Phrase dictionaries
+    blans = settings.global_().blockedLanguages()
 
     grid = QtWidgets.QGridLayout()
 
@@ -6313,23 +6321,34 @@ class _FontDownloadsTab(object):
 
     #blans = settings.global_().blockedLanguages()
 
-    for family in FONT_INFO:
-      #if lang[:2] not in blans:
-      grid.addWidget(self.getFontButton(family), r, 0)
-      grid.addWidget(self.getFontStatusLabel(family), r, 1)
-      grid.addWidget(self.getFontIntroLabel(family), r, 2)
-      r += 1
+    for lang in 'ja', 'ko':
+      if lang not in blans:
+        label = "%s" % i18n.language_name(lang)
+        if lang == 'ko':
+          label += " (%s, %s)" % (
+            tr_("optional"),
+            my.tr("recommended by {0}").format('@mireado'),
+          )
+        label += ":"
+        grid.addWidget(QtWidgets.QLabel(label), r, 0, 1, 3)
+        r += 1
+        for family,info in FONT_INFO.iteritems():
+          if lang == info['lang']:
+            grid.addWidget(self.getFontButton(family), r, 0)
+            grid.addWidget(self.getFontStatusLabel(family), r, 1)
+            grid.addWidget(self.getFontIntroLabel(family), r, 2)
+            r += 1
 
     infoLabel = QtWidgets.QLabel('\n'.join((
       my.tr("Adding fonts require restarting VNR to take effect."),
       my.tr("Removing fonts being used might require closing VNR."),
     )))
     #infoLabel.setWordWrap(True)
-    #skqss.class_(infoLabel, 'text-info')
+    skqss.class_(infoLabel, 'text-info')
     grid.addWidget(infoLabel, r, 0, 1, 3)
     r += 1
 
-    ret = QtWidgets.QGroupBox(my.tr("Japanese fonts"))
+    ret = QtWidgets.QGroupBox(my.tr("Additional fonts"))
     ret.setLayout(grid)
     return ret
 
@@ -6420,14 +6439,10 @@ class _FontDownloadsTab(object):
     return False
 
   def refresh(self):
-    #blans = settings.global_().blockedLanguages()
-
-
-    #map(self.refreshMeCab, config.MECAB_DICS)
-    #map(self.refreshCaboCha, config.CABOCHA_DICS)
-
-    for family in FONT_INFO:
-      self.refreshFont(family)
+    blans = settings.global_().blockedLanguages()
+    for family,info in FONT_INFO.iteritems():
+      if info['lang'] not in blans:
+        self.refreshFont(family)
 
   def startRefresh(self, dic, refresh):  # dic, ->
     self._refreshTasks.append((dic, refresh))

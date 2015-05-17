@@ -2674,5 +2674,10 @@
         <source>Fonts</source>
         <translation>Шрифты</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>необязательный</translation>
+    </message>
 </context>
 </TS>

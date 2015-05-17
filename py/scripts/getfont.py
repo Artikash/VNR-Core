@@ -26,6 +26,9 @@ FONTS = {
     'type': 'folder',
     'format': 'zip',
   },
+  # https://github.com/hiun/NanumBarunGothic
+  # http://www.hiunkim.com/NanumBarunGothic/
+  # http://hangeul.naver.com/2014/nanum
   'nanum': {
     'size': 4186060,
     'name': 'NanumBarunGothic',

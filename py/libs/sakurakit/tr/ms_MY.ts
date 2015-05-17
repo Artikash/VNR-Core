@@ -2674,5 +2674,10 @@
         <source>Fonts</source>
         <translation>Font</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>pilihan</translation>
+    </message>
 </context>
 </TS>

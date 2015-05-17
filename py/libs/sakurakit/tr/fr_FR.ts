@@ -166,7 +166,7 @@
     <message>
         <location filename="sktr.py" line="177"/>
         <source>OK</source>
-        <translation>Bien</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="sktr.py" line="178"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="sktr.py" line="335"/>
         <source>Help</source>
-        <translation>Aider</translation>
+        <translation>Aidez-Moi</translation>
     </message>
     <message>
         <location filename="sktr.py" line="337"/>
@@ -796,7 +796,7 @@
     <message>
         <location filename="sktr.py" line="215"/>
         <source>Stop</source>
-        <translation>Stop</translation>
+        <translation>Arrêtez</translation>
     </message>
     <message>
         <location filename="sktr.py" line="215"/>
@@ -921,7 +921,7 @@
     <message>
         <location filename="sktr.py" line="198"/>
         <source>Restart</source>
-        <translation>Recommencer</translation>
+        <translation>Redémarrage</translation>
     </message>
     <message>
         <location filename="sktr.py" line="493"/>
@@ -1126,7 +1126,7 @@
     <message>
         <location filename="sktr.py" line="174"/>
         <source>Next</source>
-        <translation>Prochaine</translation>
+        <translation>Suivant</translation>
     </message>
     <message>
         <location filename="sktr.py" line="188"/>
@@ -1801,7 +1801,7 @@
     <message>
         <location filename="sktr.py" line="243"/>
         <source>Score</source>
-        <translation>Score</translation>
+        <translation>But</translation>
     </message>
     <message>
         <location filename="sktr.py" line="244"/>
@@ -2673,6 +2673,11 @@
         <location filename="sktr.py" line="329"/>
         <source>Fonts</source>
         <translation>Fonts</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>optionnel</translation>
     </message>
 </context>
 </TS>

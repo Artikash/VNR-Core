@@ -2674,5 +2674,10 @@
         <source>Fonts</source>
         <translation>글꼴</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="364"/>
+        <source>optional</source>
+        <translation>선택</translation>
+    </message>
 </context>
 </TS>
