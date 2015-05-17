@@ -35,7 +35,7 @@ const boost::wregex
     L"\\]\\]"
   )
 
-  // To capture [[x#123]]'s x#123 part
+  // To capture [[x#123]]'s both x and #123 part
   , raw_symbol_with_symbol_group(
     L"\\[\\["
       L"("
@@ -123,7 +123,12 @@ static inline std::wstring _symbol_escape_re(const wchar_t *s)
 static inline std::wstring _symbol_escape_re(const std::wstring &s)
 { return _symbol_escape_re(s.c_str()); }
 
-#define _ENCODE_SYMBOL_MATCH    "{{" "$1" "\\(<[-0-9<>]+>\\)" "}}"
+#define _ENCODE_SYMBOL_MATCH \
+  "{{" \
+    "$1" \
+    "(?:_" TR_RE_TOKEN_A ")?" \
+    "\\(<[-0-9<>]+>\\)" \
+  "}}"
 static std::wstring _encode_symbol_match(const boost::wsmatch &m)
 {
   std::wstring ret = L"{{";
