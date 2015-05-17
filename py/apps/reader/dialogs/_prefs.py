@@ -2502,7 +2502,7 @@ class _TextTab(object):
 
         label = "<= " + tr_(Lang)
         if it == 'ko':
-          label += " (%s %s)" % (tr_("recommended"), "NanumBarunGothic")
+          label += " (%s %s by @mireado)" % (tr_("recommended"), "NanumBarunGothic")
         c += 1; grid.addWidget(QtWidgets.QLabel(label), r, c)
 
     ret = QtWidgets.QGroupBox(tr_("Font family"))
