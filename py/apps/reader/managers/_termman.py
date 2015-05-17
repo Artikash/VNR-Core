@@ -308,7 +308,10 @@ class TermWriter:
               if not _contains_syntax_symbol(pattern):
                 pattern = "[[%s]]%s" % (defs.TERM_NAME_ROLE, pattern)
               if not _contains_syntax_symbol(repl):
-                repl = "[[]]%s" % repl
+                if to == 'ko':
+                  repl = "[[]] %s" % repl
+                else:
+                  repl = "[[]]%s" % repl
             elif td.type == 'prefix':
               if not _contains_syntax_symbol(pattern):
                 if frSpaceLanguage:
