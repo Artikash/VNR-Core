@@ -102,10 +102,16 @@
               %a(href="http://#{url}",title="#{url}") #{name}
       .col.col-4
         %section
-          %h3.title Game
+          %h3.title Novel
           -for url,name in \
+              ("http://syosetu.com", "小説家になろう"),
+            %div(class="game")
+              %a(href="#{url}",title="#{url}") #{name}
+        %section
+          %h3.title Game
+          -for id,name in \
               (534991, "対魔忍アサギ～決戦アリーナ～ (DMM)"),
-            -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % 534991
+            -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % id
             %div(class="game")
               %a(href="#{url}",title="#{url}") #{name}
       .col.col-3
