@@ -973,6 +973,9 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
         title = "%s - %s" % (name, title)
       self.setWindowTitle(title)
 
+    if visible:
+      texthook.global_().hijackProcess()
+
     if visible != self.isVisible():
       if visible:
         d.clear()

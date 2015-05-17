@@ -258,16 +258,15 @@ if skos.WIN:
       """Return if succeed
       @return  bool
       """
-      dprint("enter")
-      ret = False
       d = self.__d
       if d.pid and not d.hijacked:
+        dprint("enter")
         d.hijacked = d.hijackProcess(d.pid)
-      if d.hijacked:
-        dprint("leave: ret = %s" % d.hijacked)
-      else:
-        dwarn("leave: ret = %s" % d.hijacked)
-      return ret
+        if d.hijacked:
+          dprint("leave: ret = true")
+        else:
+          dwarn("leave: ret = false")
+      return bool(d.pid) and d.hijacked
 
     def detachProcess(self):
       """Return if succeed
