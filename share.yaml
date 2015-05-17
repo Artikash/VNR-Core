@@ -577,6 +577,7 @@ fonts:
 font:
   default:  $PWD/../../Fonts
   hanazono: $PWD/../../../Caches/Fonts/Hanazono
+  nanum:    $PWD/../../../Caches/Fonts/Nanum
 
 opencc:
   s2t:      $PWD/../../Dictionaries/opencc/STCharacters.txt

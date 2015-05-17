@@ -248,10 +248,36 @@ def getfirstchilddir(path): # unicode -> unicode or None
 
 # Compression
 
+def extractarchive(path, location, type, *args, **kwargs):
+  """
+  @param  path  unicode
+  @param  location  unicode
+  @param  type  str
+  @return  bool
+  """
+  if type == 'tar':
+    x = extracttar
+  elif type == 'zip':
+    x = extractzip
+  elif type == 'xz':
+    x = extractxz
+  elif type == '7z':
+    x = extract7z
+  else:
+    dwarn("unknown archive type = %s" % type)
+    return False
+  return x(path, location, *args, **kwargs)
+
 # http://docs.python.org/2/library/tarfile.html
 # mode: r, r:, r:gz, r:bz2
 # http://stackoverflow.com/questions/740820/python-write-string-directly-to-tarfile
 def extracttar(path, location, mode='r'): # unicode, unicode -> bool
+  """
+  @param  path  unicode
+  @param  location  unicode
+  @param* mode  str
+  @return  bool
+  """
   import tarfile
   try:
     #with tarfile.TarFile(path) as z: # without extraction
@@ -264,6 +290,11 @@ def extracttar(path, location, mode='r'): # unicode, unicode -> bool
 
 # http://stackoverflow.com/questions/9431918/extracting-zip-file-contents-to-specific-directory-in-python-2-7
 def extractzip(path, location): # unicode, unicode -> bool
+  """
+  @param  path  unicode
+  @param  location  unicode
+  @return  bool
+  """
   import zipfile
   try:
     with zipfile.ZipFile(path, 'r') as z:
@@ -277,6 +308,11 @@ def extractzip(path, location): # unicode, unicode -> bool
 # github.com/fancycode/pylzma/blob/master/doc/usage.txt
 # http://stackoverflow.com/questions/10701528/example-of-how-to-use-pylzma
 def extractxz(infile, outfile): # unicode, unicode -> bool
+  """
+  @param  infile  unicode
+  @param  outfile  unicode
+  @return  bool
+  """
   import pylzma
   try:
     with open(infile, 'rb') as i:
@@ -295,6 +331,11 @@ def extractxz(infile, outfile): # unicode, unicode -> bool
 # http://stackoverflow.com/questions/10701528/example-of-how-to-use-pylzma
 # http://stackoverflow.com/questions/17217073/how-to-decompress-a-xz-file-which-has-multiple-folders-files-inside-in-a-singl
 def extracttarxz(path, location): # unicode, unicode -> bool
+  """
+  @param  path  unicode
+  @param  location  unicode
+  @return  bool
+  """
   try:
     import pylzma
     with open(path, 'rb') as fp:
@@ -331,6 +372,11 @@ def extracttarxz(path, location): # unicode, unicode -> bool
 # FIXME: py7zlib does not support latest 7zip
 
 def extract7zarchive(z, location): # py7zlib.Archive7z, unicode ->, throws
+  """
+  @param  z  file object
+  @param  location  unicode
+  @return  bool
+  """
   for name in z.getnames():
     outfile = os.path.join(location, name)
     outdir = os.path.dirname(outfile)
@@ -342,6 +388,11 @@ def extract7zarchive(z, location): # py7zlib.Archive7z, unicode ->, throws
 # Warning: This only support 7z version 0.3 and does not support 7z 0.4
 # Warning: This could cause out of memory error
 def extract7z(path, location): # unicode, unicode -> bool
+  """
+  @param  path  unicode
+  @param  location  unicode
+  @return  bool
+  """
   import py7zlib # could be found in pylzma from pip
   try:
     with open(path, 'rb') as fp:

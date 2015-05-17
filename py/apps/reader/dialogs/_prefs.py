@@ -2492,7 +2492,11 @@ class _TextTab(object):
 
         c = 0; grid.addWidget(fontEdit, r, c)
         c += 1; grid.addWidget(resetButton, r, c)
-        c += 1; grid.addWidget(QtWidgets.QLabel("<= " + tr_(Lang)), r, c)
+
+        label = "<= " + tr_(Lang)
+        if lang == 'ko':
+          label += " (%s %s)" % (tr_("recommended"), "NanumBarunGothic")
+        c += 1; grid.addWidget(QtWidgets.QLabel(label), r, c)
 
     ret = QtWidgets.QGroupBox(tr_("Font family"))
     ret.setLayout(grid)
