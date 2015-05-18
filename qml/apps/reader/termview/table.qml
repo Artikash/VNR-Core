@@ -699,9 +699,11 @@ Item { id: root_
               append({value:-1, text:My.tr("Current game")})
             }
             function containsValue(value) {
-              for (var i = 0; i < model.count; ++i)
-                if (model.get(i).value === value)
+              for (var i = 0; i < model.count; ++i) {
+                var item = model.get(i)
+                if (item && item.value === value)
                   return true
+              }
               return false
             }
           }
