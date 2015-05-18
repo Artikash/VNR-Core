@@ -131,8 +131,8 @@ static inline std::wstring _symbol_escape_re(const std::wstring &s)
   "}}"
 static std::wstring _encode_symbol_match(const boost::wsmatch &m)
 {
-  std::wstring ret = L"{{";
-  std::wstring tokens = m[1];
+  std::wstring ret = L"{{",
+               tokens = m[1];
   if (tokens.find(',') == std::wstring::npos)
     ret += tokens;
   else {
@@ -158,8 +158,10 @@ static std::wstring _encode_symbol_match(const boost::wsmatch &m)
 "\\)"
 static std::wstring _encode_output_symbol_match(const boost::wsmatch &m)
 {
-  std::wstring ret = L"({{";
-  std::wstring tokens = m[1];
+  std::wstring ret = L"({{",
+               tokens = m[1];
+  if (tokens.find('$') != std::wstring::npos)
+    boost::replace_all(tokens, "$", "\\$");
   if (tokens.find(',') == std::wstring::npos)
     ret += tokens;
   else {
@@ -192,7 +194,7 @@ std::wstring trsym::encode_symbol(const std::wstring &s, bool escape)
 
 std::wstring trsym::encode_output_symbol(const std::wstring &s, bool escape)
 {
-  if (s.find(',') == std::wstring::npos) {
+  if (s.find_first_of(L",$") == std::wstring::npos) {
     if (escape && _symbol_needs_escape_re(s))
       return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, _ENCODE_OUTPUT_SYMBOL_MATCH);
     else

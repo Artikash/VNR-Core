@@ -16,7 +16,7 @@ from itertools import imap
 from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
-from unitraits import jpchars, jpmacros
+from unitraits import jpchars, jpmacros, kochars
 from convutil import toalphabet, kana2name, zhs2zht, zht2zhs, \
                      ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
 import config, dataman, defs, i18n
@@ -41,7 +41,26 @@ class TranslationProxy(object):
     self.output = _unescape_term_text(td.text)
     self.category = host_categories(td.host)
 
+  def match_category(self, v): # str -> bool
+    return self.category & v
+  def match_role(self, v): # str -> bool
+    return self.role == v or '$' in v and self.role == v.partition('$')[0]
+
 ## Helper functions used by termman
+
+def _mutate_ko_role(role, text):
+  """
+  @param  role  str
+  @param  text  unicode  replacement
+  @return  str not None
+  """
+  if text and role in ('m', 'n'):
+    ch = text[-1]
+    if kochars.issyllable(ch):
+      ch = kochars.gethangulfinal_en(ch)
+      suf = '$x$' + ch if ch else '$o'
+      return role + suf
+  return role
 
 # http://sakuradite.com/wiki/en/Machine_Translators
 def host_category(host):
@@ -233,6 +252,14 @@ class TermWriter:
     fr2 = fr[:2]
     to2 = to[:2]
 
+    fr_zhs = fr == 'zhs'
+    fr_zht = fr == 'zht'
+
+    to_zh = to2 == 'zh'
+    to_zhs = to == 'zhs'
+    to_zht = to == 'zht'
+    to_ko = to == 'ko'
+
     frKanjiLanguage = config.is_kanji_language(fr)
     frSpaceLanguage = config.language_word_has_space(fr)
 
@@ -240,8 +267,8 @@ class TermWriter:
     toSpaceLanguage = config.language_word_has_space(to)
 
 
-    convertsSimplifiedChinese = to == 'zhs' and type in ('output', 'trans')
-    convertsTraditionalChinese = to == 'zht' and type in ('output', 'trans')
+    convertsSimplifiedChinese = to_zhs and type in ('output', 'trans')
+    convertsTraditionalChinese = to_zht and type in ('output', 'trans')
 
     #padding = trans_input or toLatinLanguage and td.type in ('trans', 'name', 'yomi')
 
@@ -272,13 +299,13 @@ class TermWriter:
             #  pattern = jazh.ja2zht_name_fix(pattern)
 
           elif type_trans and role == defs.TERM_NAME_ROLE and fr2 == 'zh':
-            if fr == 'zhs':
+            if fr_zhs:
               pattern = opencc.ja2zhs(pattern)
-            elif fr == 'zht':
+            elif fr_zht:
               pattern = opencc.ja2zht(pattern)
 
-          if td.type == 'yomi' and to2 == 'zh':
-            repl = ja2zhs_name(pattern) if to == 'zhs' else ja2zht_name(pattern)
+          if td.type == 'yomi' and to_zh:
+            repl = ja2zhs_name(pattern) if to_zhs else ja2zht_name(pattern)
             if not repl: # this should never happen
               continue
           else:
@@ -304,11 +331,14 @@ class TermWriter:
             pattern = _phrase_lbound(left, fr) + pattern + _phrase_rbound(right, fr)
 
           if type_trans:
+            if role and to_ko:
+              role = _mutate_ko_role(role, repl)
+
             if td.type == 'suffix':
               if not _contains_syntax_symbol(pattern):
                 pattern = "[[%s]]%s" % (defs.TERM_NAME_ROLE, pattern)
               if not _contains_syntax_symbol(repl):
-                if to == 'ko':
+                if to_ko:
                   repl = "[[]] %s" % repl
                 else:
                   repl = "[[]]%s" % repl
@@ -439,6 +469,8 @@ class TermWriter:
     zhtypes = 'name', 'yomi' # Japanese types applied to all Chinese languages
     fr2 = fr[:2]
     to2 = to[:2]
+    fr_zh = fr2 == 'zh'
+    to_zh = to2 == 'zh'
     fr_is_latin = config.is_latin_language(fr)
     fr_is_cyrillic = config.is_cyrillic_language(fr)
     items = set() # skip duplicate names
@@ -449,13 +481,13 @@ class TermWriter:
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
-          and not (td.type == 'yomi' and to2 == 'zh' and not ja2zh_name_test(td.pattern)) # skip yomi for Chinese if not pass name test
+          and not (td.type == 'yomi' and to_zh and not ja2zh_name_test(td.pattern)) # skip yomi for Chinese if not pass name test
           and (td.sourceLanguage.startswith(fr2)
             #or fr != 'ru' and fr_is_cyrillic and td.sourceLanguage == 'ru'
             or fr != 'en' and fr_is_latin and td.sourceLanguage == 'en'
             or td.sourceLanguage == 'ja' and (
               td.type in jatypes
-              or fr2 == 'zh' and td.type in zhtypes
+              or fr_zh and td.type in zhtypes
             )
           )
           and (syntax is None or syntax == _contains_syntax_symbol(td.pattern))

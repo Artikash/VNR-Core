@@ -7,8 +7,8 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"{{m<1234>}}くんを{{m$x<5678>}}";
-  //wchar_t ws[] = L"ABCD";
+  //wchar_t ws[] = L"{{m<1234>}}くんを{{m$x<5678>}}";
+  wchar_t ws[] = L"【상】「{{m$x$n<<64928>61114>}}를 공략하면 210엔인가. 과연…」";
   //QString text = QString::fromWCharArray(ws);
   std::wstring text = ws;
 
