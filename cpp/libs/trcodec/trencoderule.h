@@ -15,7 +15,7 @@ class TranslationEncodeRule : private TranslationBaseRule
 
   mutable bool valid; // whether the object is valid
 
-  std::string *target,  // cached replacement, use pointer to avoid contension
+  std::string *target,  // cached replacement, use pointer to avoid contention
                target_token; // the LHS token
   std::wstring source;       // the RHS source
   boost::wregex *source_re;  // cached compiled regex. Either source_re or source exists after init.

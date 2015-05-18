@@ -2,7 +2,7 @@
 // 9/20/2014 jichi
 
 #include "trcodec/trencoderule.h"
-#include "trcodec/trsymbol.h"
+#include "trsym/trsym.h"
 #include "cpputil/cppregex.h"
 //#include <QDebug>
 
@@ -32,7 +32,7 @@ void TranslationEncodeRule::init(const TranslationRule &param)
   if (!param.target.empty())
     target_token = param.token;
 
-  source_symbol_count = trsymbol::count_raw_symbols(source);
+  source_symbol_count = trsym::count_raw_symbols(source);
   WITH (
     init_source();
     valid = true; // do this at last to prevent crash
@@ -44,7 +44,7 @@ void TranslationEncodeRule::init(const TranslationRule &param)
 void TranslationEncodeRule::init_target()
 {
   target = new std::string(
-    trsymbol::create_symbol_target(target_token, id, source_symbol_count)
+    trsym::create_symbol_target(target_token, id, source_symbol_count)
   );
 }
 
@@ -52,7 +52,7 @@ void TranslationEncodeRule::init_source()
 {
   if (is_symbolic()) {
     bool escape = !is_regex();
-    source = trsymbol::encode_symbol(source, escape);
+    source = trsym::encode_symbol(source, escape);
     set_regex(true);
   }
   if (is_regex()) {

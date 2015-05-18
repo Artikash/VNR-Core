@@ -1,14 +1,14 @@
-#ifndef trsymbol_H
-#define trsymbol_H
+#ifndef TRSYM_H
+#define TRSYM_H
 
-// trsymbol.h
+// trsym.h
 // 9/20/2014 jichi
 
 #include <functional>
 #include <string>
 #include <vector>
 
-namespace trsymbol {
+namespace trsym {
 
 typedef std::function<void (const std::string &)> collect_string_f; // string ->
 typedef std::function<void (const std::wstring &)> collect_wstring_f; // wstring ->
@@ -38,8 +38,12 @@ void iter_raw_symbols(const std::wstring &target, const collect_string_f &fun);
 ///  Replace [[x]] by regular expression for {{x}}. Escape specifies whether escape regex special chars.
 std::wstring encode_symbol(const std::wstring &text, bool escape = false);
 
+///  Replace [[x]] by regular expression for {{x}}. Escape specifies whether escape regex special chars.
+std::wstring encode_output_symbol(const std::wstring &text, bool escape = false);
+
 ///  Replace {{x}} by something else
 std::wstring decode_symbol(const std::wstring &text, const decode_f &fun);
-};
 
-#endif // trsymbol_H
+} // namespace trsym
+
+#endif // TRSYM_H

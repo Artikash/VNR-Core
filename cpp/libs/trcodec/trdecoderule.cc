@@ -2,7 +2,7 @@
 // 9/20/2014 jichi
 
 #include "trcodec/trdecoderule.h"
-#include "trcodec/trsymbol.h"
+#include "trsym/trsym.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/lambda/lambda.hpp>
 //#include <QDebug>
@@ -34,19 +34,18 @@ void TranslationDecodeRule::init(const TranslationRule &param)
   flags = param.flags;
   category = param.category;
   target = param.target;
+  //source = param.source;
 
-  //if (trsymbol::contains_raw_symbol(target)) { // target rule is not fully checked, because "[[#12]]" is not well checked
-  if (boost::contains(target, "[[")) {
-    source_symbol_count = trsymbol::count_raw_symbols(param.source);
-    if (source_symbol_count)
-      trsymbol::iter_raw_symbols(param.source, [this](const std::string &symbol) {
-        if (!source_symbols.empty())
-          source_symbols.push_back(source_symbol_sep);
-        source_symbols += symbol;
-      });
-  }
+  //if (trsym::contains_raw_symbol(target)) { // target rule is not fully checked, because "[[#12]]" is not well checked
+  //if (boost::contains(target, "[[")) {
+  source_symbol_count = trsym::count_raw_symbols(param.source);
+  if (source_symbol_count)
+    trsym::iter_raw_symbols(param.source, [this](const std::string &symbol) {
+      if (!source_symbols.empty())
+        source_symbols.push_back(source_symbol_sep);
+      source_symbols += symbol;
+    });
 
-  //  source = param.source;
   valid = true;
 }
 
@@ -64,9 +63,8 @@ std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring
 
         size_t pos = source_symbols.find('#');
         if (pos != std::wstring::npos && ret.find('#') != std::wstring::npos) {
-          std::string pattern = "[[";
-          pattern += source_symbols.substr(pos);
-          boost::replace_all(ret, pattern, args.front());
+          std::string pat = "[[" + source_symbols.substr(pos);
+          boost::replace_all(ret, pat, args.front());
         }
       }
     } else {
@@ -82,9 +80,8 @@ std::wstring TranslationDecodeRule::render_target(const std::vector<std::wstring
         for (size_t i = 0; i < args.size(); i++) {
           size_t pos = symbols[i].find('#');
           if (pos != std::wstring::npos) {
-            std::string pattern = "[[";
-            pattern += symbols[i].substr(pos);
-            boost::replace_all(ret, pattern, args[i]);
+            std::string pat = "[[" + symbols[i].substr(pos);
+            boost::replace_all(ret, pat, args[i]);
           }
         }
     }

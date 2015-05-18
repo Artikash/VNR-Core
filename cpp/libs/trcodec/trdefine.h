@@ -4,10 +4,6 @@
 // trdefine.h
 // 3/5/2015 jichi
 
-// Pattern used to describe a symbol token's name
-#define TR_RE_TOKEN L"[a-zA-Z0-9_,]+"
-#define TR_RE_TOKEN_A "[a-zA-Z0-9_,]+"  // ascii version
-
 #define TRSCRIPT_COLUMNSEP L" ||| "   // deliminator of fields in a line, wrapped with spaces
 
 // Translation script special characters

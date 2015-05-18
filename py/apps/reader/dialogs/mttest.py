@@ -80,6 +80,8 @@ class _MTTester(object):
     tm.jointTranslationReceived.connect(lambda t:
         self.jointTranslationEdit.setPlainText(t or _EMPTY_TEXT))
 
+    tm.outputSyntacticTranslationReceived.connect(lambda t:
+        self.outputSyntacticTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.decodedTranslationReceived.connect(lambda t:
         self.decodedTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.outputTranslationReceived.connect(lambda t:
@@ -135,6 +137,8 @@ class _MTTester(object):
     cell.addWidget(self.gameTextEdit)
     grid.addLayout(cell, r, c)
 
+    c += 2 # skip two columns
+
     c += 1
     grid.addWidget(QtWidgets.QLabel(_RIGHTARROW), r, c)
     c += 1
@@ -187,7 +191,7 @@ class _MTTester(object):
     label.setAlignment(Qt.AlignCenter)
     grid.addWidget(label, r, c)
 
-    c = 6 * 2 - 2 # totally six columnes
+    c = 6 * 2 - 2 # totally six columns
     label = QtWidgets.QLabel(_DOWNARROW)
     label.setAlignment(Qt.AlignCenter)
     grid.addWidget(label, r, c)
@@ -223,6 +227,14 @@ class _MTTester(object):
     cell = QtWidgets.QVBoxLayout()
     cell.addWidget(self.decodedTranslationLabel)
     cell.addWidget(self.decodedTranslationEdit)
+    grid.addLayout(cell, r, c)
+
+    c += 1
+    grid.addWidget(QtWidgets.QLabel(_LEFTARROW), r, c)
+    c += 1
+    cell = QtWidgets.QVBoxLayout()
+    cell.addWidget(self.outputSyntacticTranslationLabel)
+    cell.addWidget(self.outputSyntacticTranslationEdit)
     grid.addLayout(cell, r, c)
 
     c += 1
@@ -270,6 +282,7 @@ class _MTTester(object):
         self.splitTranslationEdit,
         self.jointTranslationEdit,
         self.delegateTranslationEdit,
+        self.outputSyntacticTranslationEdit,
         self.decodedTranslationEdit,
         self.outputTranslationEdit,
         self.finalTranslationEdit,
@@ -361,7 +374,7 @@ class _MTTester(object):
     import dataman
     dm = dataman.manager()
     ret = QtWidgets.QLabel()
-    ret.setToolTip(my.tr("Current game for game-specific terms in the Shared Dictionary"))
+    ret.setToolTip(my.tr("Current game for game-specific definitions in the Shared Dictionary"))
     def _refresh():
       ret.setText('#' + (dm.currentGameName() or my.tr("Unknown game")))
       skqss.class_(ret, 'text-error' if dm.currentGame() else 'text-info')
@@ -566,10 +579,10 @@ class _MTTester(object):
     return ret
   @memoizedproperty
   def gameTextLabel(self):
-    return self._createTextLabel(self.gameTextEdit, my.tr("Apply game terms") + _TERM_STAR)
+    return self._createTextLabel(self.gameTextEdit, my.tr("Apply game rules") + _TERM_STAR)
   @memoizedproperty
   def gameTextEdit(self):
-    return self._createTextView(my.tr("Apply game terms in the Shared Dictionary to correct game text"))
+    return self._createTextView(my.tr("Apply game definitions in the Shared Dictionary to correct game text"))
   def setGameTextEditText(self, t):
     e = self.gameTextEdit
     e.setPlainText(t)
@@ -614,46 +627,54 @@ class _MTTester(object):
 
   @memoizedproperty
   def inputTextLabel(self):
-    return self._createTextLabel(self.inputTextEdit, my.tr("Apply input terms") + _TERM_STAR)
+    return self._createTextLabel(self.inputTextEdit, my.tr("Apply input rules") + _TERM_STAR)
   @memoizedproperty
   def inputTextEdit(self):
-    return self._createTextView(my.tr("Apply input terms in the Shared Dictionary to correct input text"))
+    return self._createTextView(my.tr("Apply input definitions in the Shared Dictionary to correct input text"))
 
   @memoizedproperty
   def encodedTextLabel(self):
     return self._createTextLabel(self.encodedTextEdit, my.tr("Encode translations") + _TERM_STAR)
   @memoizedproperty
   def encodedTextEdit(self):
-    return self._createTextView(my.tr("Apply name and translation terms in Shared Dictionary"))
+    return self._createTextView(my.tr("Apply name and translation definitions in Shared Dictionary"))
 
   @memoizedproperty
   def delegateTextLabel(self):
     return self._createTextLabel(self.delegateTextEdit, my.tr("Delegate translation roles") + _TERM_STAR)
   @memoizedproperty
   def delegateTextEdit(self):
-    return self._createTextView(my.tr("Apply proxy terms in the Shared Dictionary to hide translation replacement"))
+    return self._createTextView(my.tr("Apply proxy definitions in the Shared Dictionary to hide translation replacement"))
 
   @memoizedproperty
   def delegateTranslationLabel(self):
     return self._createTextLabel(self.delegateTranslationEdit, my.tr("Undelegate translation roles") + _TERM_STAR)
   @memoizedproperty
   def delegateTranslationEdit(self):
-    return self._createTextView(my.tr("Recover applied proxy terms in the Shared Dictionary"))
+    return self._createTextView(my.tr("Recover applied proxy definitions in the Shared Dictionary"))
 
   @memoizedproperty
   def decodedTranslationLabel(self):
     return self._createTextLabel(self.decodedTranslationEdit, my.tr("Decode translations") + _TERM_STAR)
   @memoizedproperty
   def decodedTranslationEdit(self):
-    return self._createTextView(my.tr("Recover applied name and translation terms in the Shared Dictionary"),
+    return self._createTextView(my.tr("Recover applied name and translation definitions in the Shared Dictionary"),
+        rich=True)
+
+  @memoizedproperty
+  def outputSyntacticTranslationLabel(self):
+    return self._createTextLabel(self.outputSyntacticTranslationEdit, my.tr("Apply output rules w/ grammar") + _TERM_STAR)
+  @memoizedproperty
+  def outputSyntacticTranslationEdit(self):
+    return self._createTextView(my.tr("Apply output definitions with grammatic roles in the Shared Dictionary to correct output translations"),
         rich=True)
 
   @memoizedproperty
   def outputTranslationLabel(self):
-    return self._createTextLabel(self.outputTranslationEdit, my.tr("Apply output terms") + _TERM_STAR)
+    return self._createTextLabel(self.outputTranslationEdit, my.tr("Apply output rules w/o grammar") + _TERM_STAR)
   @memoizedproperty
   def outputTranslationEdit(self):
-    return self._createTextView(my.tr("Apply output terms in the Shared Dictionary to correct output translations"),
+    return self._createTextView(my.tr("Apply output definitions without grammatic roles in the Shared Dictionary to correct output translations"),
         rich=True)
 
   @memoizedproperty

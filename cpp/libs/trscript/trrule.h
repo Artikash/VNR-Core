@@ -46,16 +46,11 @@ class TranslationScriptRule : private TranslationScriptBaseRule
 
   mutable bool valid; // whether the object is valid
   mutable boost::wregex *source_re; // cached compiled regex
-  mutable std::wstring *rendered_target; // cached rendered target, use pointer to avoid thread contention
+  mutable std::wstring rendered_target; // cached rendered target, use pointer to avoid thread contention
 
 public:
-  TranslationScriptRule()
-    : valid(false) , source_re(nullptr), rendered_target(nullptr) {}
-  ~TranslationScriptRule()
-  {
-    if (source_re) delete source_re;
-    if (rendered_target) delete rendered_target;
-  }
+  TranslationScriptRule() : valid(false) , source_re(nullptr) {}
+  ~TranslationScriptRule() { if (source_re) delete source_re; }
 
   bool is_valid() const { return valid; }
 
@@ -78,8 +73,8 @@ private:
   std::wstring render_target() const; //const std::wstring &matched_text = std::wstring()) const;
   void cache_target() const
   {
-    if (!target.empty() && !rendered_target)
-      rendered_target = new std::wstring(render_target());
+    if (!target.empty() && rendered_target.empty())
+      rendered_target = render_target();
   }
 
   void string_replace(std::wstring &ret, bool mark) const;
