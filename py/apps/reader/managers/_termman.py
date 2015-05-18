@@ -224,11 +224,8 @@ class TermWriter:
     @param  macros  {unicode pattern:unicode repl}
     @return  bool
     """
-    #marksChanges = self.marked and type in ('output', 'trans_output')
-    convertsSimplifiedChinese = to == 'zhs' and type in ('output', 'trans')
-    convertsTraditionalChinese = to == 'zht' and type in ('output', 'trans')
-    #if type not in ('input', 'trans_input', 'trans_output'):
-    #  titles = None
+    type, _, attr = type.partition('_')
+    syntax = True if attr == 'syntax' else False if attr == 'nosyntax' else None
 
     type_trans = type == 'trans'
     type_output = type == 'output'
@@ -242,15 +239,18 @@ class TermWriter:
     toKanjiLanguage = config.is_kanji_language(to)
     toSpaceLanguage = config.language_word_has_space(to)
 
-    empty = True
+
+    convertsSimplifiedChinese = to == 'zhs' and type in ('output', 'trans')
+    convertsTraditionalChinese = to == 'zht' and type in ('output', 'trans')
 
     #padding = trans_input or toLatinLanguage and td.type in ('trans', 'name', 'yomi')
 
+    empty = True
     count = len(self.termData)
     try:
       with open(path, 'w') as f:
         f.write(self._renderHeader(type, to, fr))
-        for td in self.iterTermData(type, to, fr):
+        for td in self.iterTermData(type, to, fr, syntax=syntax):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
           zs = convertsSimplifiedChinese and td.language == 'zht'
@@ -418,13 +418,15 @@ class TermWriter:
 """ % (self.createTime, type, to, fr, self.hentai,
     ','.join(imap(str, self.gameIds)) if self.gameIds else 'empty')
 
-  def iterTermData(self, type, to, fr):
+  def iterTermData(self, type, to, fr, syntax=None):
     """
     @param  type  str
     @param  to  str
     @param  fr  str
+    @param* syntax  bool or None
     @yield  _Term
     """
+    #type, _, attr = type.partition('_')
     if type == 'trans':
       types = 'trans', 'name', 'yomi', 'suffix', 'prefix'
       #if not to.startswith('zh'):
@@ -456,6 +458,7 @@ class TermWriter:
               or fr2 == 'zh' and td.type in zhtypes
             )
           )
+          and (syntax is None or syntax == _contains_syntax_symbol(td.pattern))
         ) and td.pattern not in items:
           items.add(td.pattern)
           yield td

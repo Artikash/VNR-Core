@@ -489,6 +489,7 @@ class TranslatorManager(QObject):
   delegateTranslationReceived = Signal(unicode) # text after recovering proxied terms
   decodedTranslationReceived = Signal(unicode)  # translation after unescaping terms
   outputTranslationReceived = Signal(unicode)  # translation after applying target terms
+  outputSyntacticTranslationReceived = Signal(unicode)  # translation after applying toutput terms before decoded
 
   clearCacheRequested = Signal() # async
 

@@ -154,6 +154,8 @@ class Translator(object):
     trman.manager().jointTranslationReceived.emit(t)
   def emitDelegateTranslation(self, t):
     trman.manager().delegateTranslationReceived.emit(t)
+  def emitOutputSyntacticTranslation(self, t):
+    trman.manager().outputSyntacticTranslationReceived.emit(t)
   def emitDecodedTranslation(self, t):
     trman.manager().decodedTranslationReceived.emit(t)
   def emitOutputTranslation(self, t):
@@ -535,7 +537,7 @@ class MachineTranslator(Translator):
     tm = termman.manager()
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applyInputTerms(text, to=to, fr=fr, host=self.key)
+    text = tm.applyPlainInputTerms(text, to=to, fr=fr, host=self.key)
     if emit and text != t:
       self.emitInputText(text)
 
@@ -574,7 +576,7 @@ class MachineTranslator(Translator):
     if emit:
       self.emitJointTranslation(text)
 
-    if proxies is not None:
+    if proxies:
       t = text
       text = tm.undelegateTranslation(text, to=to, fr=fr, host=self.key, proxies=proxies, proxyDigit=proxyDigit)
       if emit and text != t:
@@ -583,15 +585,21 @@ class MachineTranslator(Translator):
     if to == 'zht':
       text = zht2zhx(text)
 
-    #text = self.__google_repl_after(text)
-    t = text
-    #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
-    text = tm.decodeTranslation(text, to=to, fr=fr, mark=mark, host=self.key)
-    if emit and text != t:
-      self.emitDecodedTranslation(text)
+    if proxies:
+      t = text
+      text = tm.applySyntacticOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
+      if emit and text != t:
+        self.emitOutputSyntacticTranslation(text)
+
+      t = text
+      #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
+      text = tm.decodeTranslation(text, to=to, fr=fr, mark=mark, host=self.key)
+      if emit and text != t:
+        self.emitDecodedTranslation(text)
+
     t = text
     #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
-    text = tm.applyOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
+    text = tm.applyPlainOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
 
     if defs.TERM_ESCAPE_EOS in text:
       sep = '' if to in ('ja', 'zhs', 'zht') else ' '

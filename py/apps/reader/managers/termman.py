@@ -26,10 +26,13 @@ import _termman
 @memoized
 def manager(): return TermManager()
 
-def _make_script_interpreter(type):
+def _make_script_interpreter(type): # str -> Object
   if type == 'trans':
     from pytrcodec import TranslationCoder
     return TranslationCoder()
+  elif type == 'output_syntax':
+    from pytroscript import TranslationOutputScriptPerformer
+    return TranslationOutputScriptPerformer()
   else:
     from pytrscript import TranslationScriptPerformer
     return TranslationScriptPerformer()
@@ -186,7 +189,7 @@ class _TermManager:
     @param* fr  str  language
     @param* key  str
     @param* mark  bool or None
-    @param* ignoreIfNotReady bool
+    @param* ignoreIfNotReady  bool
     """
     if mark is None:
       mark = self.marked
@@ -478,7 +481,7 @@ class TermManager(QObject):
       return text
     return d.applyTerms(text, 'ocr', 'ja', language or 'ja')
 
-  def applyOutputTerms(self, text, to, fr, host='', mark=None):
+  def applyPlainOutputTerms(self, text, to, fr, host='', mark=None):
     """
     @param  text  unicode
     @param  to  str  language
@@ -494,13 +497,27 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     # 3/11/2015: 0.01 seconds new trscript
     #with SkProfiler("output term"):
-    return d.applyTerms(text, 'output', to, fr, host=host, mark=mark)
+    return d.applyTerms(text, 'output_nosyntax', to, fr, host=host, mark=mark)
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
     #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 
-  def applyInputTerms(self, text, to, fr, host=''):
+  def applySyntacticOutputTerms(self, text, to, fr, host='', mark=None):
+    """
+    @param  text  unicode
+    @param  to  str  language
+    @param  fr  str  language
+    @param* host  str
+    @param* mark  bool or None
+    @return  unicode
+    """
+    d = self.__d
+    if not d.enabled or not text:
+      return text
+    return d.applyTerms(text, 'output_syntax', to, fr, host=host, mark=mark)
+
+  def applyPlainInputTerms(self, text, to, fr, host=''):
     """
     @param  text  unicode
     @param  to  str  language
