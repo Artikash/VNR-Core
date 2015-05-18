@@ -1,7 +1,7 @@
-// trsymbol.cc
+// trsym.cc
 // 3/5/2015 jichi
-#include "trcodec/trsymbol.h"
-#include "trcodec/trdefine.h"
+#include "trsym/trsym.h"
+#include "trsym/trsymdef.h"
 #include "cpputil/cppregex.h"
 #include "cpputil/cppstring.h"
 #include <stack>
@@ -13,7 +13,7 @@
 #define DEBUG "trencode.cc"
 #include "sakurakit/skdebug.h"
 
-#define SYMBOL_ESCAPE_RE L"\\|?!.+*^$<>(){}" // characters needed to be escaped for a regex, escapt []
+#define SYMBOL_ESCAPE_RE L"\\|?!.+*^<>(){}" // characters needed to be escaped for a regex, except [] and $
 
 // Precompiled regex
 namespace { namespace rx {
@@ -22,7 +22,7 @@ const boost::wregex
   // To test [[x#123]]
   raw_symbol(
     L"\\[\\["
-      TR_RE_TOKEN
+      TRCODEC_RE_TOKEN
       L"(?:#[0-9]+)?"
     L"\\]\\]"
   )
@@ -30,7 +30,7 @@ const boost::wregex
   // To capture [[x#123]]'s x part
   , raw_symbol_with_token_group(
     L"\\[\\["
-      L"(" TR_RE_TOKEN L")"
+      L"(" TRCODEC_RE_TOKEN L")"
       L"(?:#[0-9]+)?"
     L"\\]\\]"
   )
@@ -39,7 +39,7 @@ const boost::wregex
   , raw_symbol_with_symbol_group(
     L"\\[\\["
       L"("
-        TR_RE_TOKEN
+        TRCODEC_RE_TOKEN
         L"(?:#[0-9]+)?"
       L")"
     L"\\]\\]"
@@ -48,7 +48,7 @@ const boost::wregex
   // To test {{x<123>}}
   , encoded_symbol(
     L"{{"
-      TR_RE_TOKEN
+      TRCODEC_RE_TOKEN
       L"<[-0-9<>]+>"
     L"}}"
   )
@@ -56,7 +56,7 @@ const boost::wregex
   // To capture {{x<123>}}'s <123> parts
   , encoded_symbol_with_param_group(
     L"{{"
-      TR_RE_TOKEN
+      TRCODEC_RE_TOKEN
       L"(" L"<[-0-9<>]+>" L")"
     L"}}"
   )
@@ -64,19 +64,19 @@ const boost::wregex
 
 }} // unnamed namespace rx
 
-bool trsymbol::contains_raw_symbol(const std::wstring &s)
+bool trsym::contains_raw_symbol(const std::wstring &s)
 {
   return boost::algorithm::contains(s, "[[")
       && cpp_regex_contains(s, rx::raw_symbol);
 }
 
-bool trsymbol::contains_encoded_symbol(const std::wstring &s)
+bool trsym::contains_encoded_symbol(const std::wstring &s)
 {
   return boost::algorithm::contains(s, "{{")
       && cpp_regex_contains(s, rx::encoded_symbol);
 }
 
-std::string trsymbol::create_symbol_target(const std::string &token, int id, int argc)
+std::string trsym::create_symbol_target(const std::string &token, int id, int argc)
 {
   std::string ret = "{{";
   ret += token;
@@ -98,7 +98,7 @@ std::string trsymbol::create_symbol_target(const std::string &token, int id, int
   return ret;
 }
 
-size_t trsymbol::count_raw_symbols(const std::wstring &s)
+size_t trsym::count_raw_symbols(const std::wstring &s)
 {
   return !boost::algorithm::contains(s, "[[") ? 0
        : ::cpp_regex_count(s, rx::raw_symbol);
@@ -108,7 +108,7 @@ size_t trsymbol::count_raw_symbols(const std::wstring &s)
 static inline bool _symbol_needs_escape_re(const std::wstring &s)
 { return std::wstring::npos != s.find_first_of(SYMBOL_ESCAPE_RE); }
 
-/// Escape regex special chars
+/// Escape regex special chars. FIXME: This logic does not consider '$'
 static inline std::wstring _symbol_escape_re(const wchar_t *s)
 {
   std::wstring ret;
@@ -126,7 +126,7 @@ static inline std::wstring _symbol_escape_re(const std::wstring &s)
 #define _ENCODE_SYMBOL_MATCH \
   "{{" \
     "$1" \
-    "(?:_" TR_RE_TOKEN_A ")?" \
+    "(?:" "[_$]" TRCODEC_RE_TOKEN_A ")?" \
     "\\(<[-0-9<>]+>\\)" \
   "}}"
 static std::wstring _encode_symbol_match(const boost::wsmatch &m)
@@ -141,11 +141,14 @@ static std::wstring _encode_symbol_match(const boost::wsmatch &m)
     ret += tokens;
     ret += L')';
   }
-  ret += L"([-0-9<>]+)" L"}}";
+  ret +=
+    L"(?:" L"[_$]" TRCODEC_RE_TOKEN L")?"
+    L"([-0-9<>]+)"
+  L"}}";
   return ret;
 }
 
-std::wstring trsymbol::encode_symbol(const std::wstring &s, bool escape)
+std::wstring trsym::encode_symbol(const std::wstring &s, bool escape)
 {
   if (s.find(',') == std::wstring::npos) {
     if (escape && _symbol_needs_escape_re(s))
@@ -160,7 +163,7 @@ std::wstring trsymbol::encode_symbol(const std::wstring &s, bool escape)
   }
 }
 
-void trsymbol::iter_raw_symbols(const std::wstring &target, const collect_string_f &fun)
+void trsym::iter_raw_symbols(const std::wstring &target, const collect_string_f &fun)
 {
   std::for_each(
     boost::wsregex_iterator(target.cbegin(), target.cend(), rx::raw_symbol_with_symbol_group),
@@ -173,7 +176,7 @@ void trsymbol::iter_raw_symbols(const std::wstring &target, const collect_string
 }
 
 // Example text to decode: 4<3<1>>,<2>
-static std::wstring _decode_symbol_stack(const char *str, const trsymbol::decode_f &fun)
+static std::wstring _decode_symbol_stack(const char *str, const trsym::decode_f &fun)
 {
   std::vector<std::wstring> args;
 
@@ -220,7 +223,7 @@ static std::wstring _decode_symbol_stack(const char *str, const trsymbol::decode
   return std::wstring();
 }
 
-std::wstring trsymbol::decode_symbol(const std::wstring &text, const decode_f &fun)
+std::wstring trsym::decode_symbol(const std::wstring &text, const decode_f &fun)
 {
   return boost::regex_replace(text, rx::encoded_symbol_with_param_group,
     [&fun](const boost::wsmatch &m) -> std::wstring {

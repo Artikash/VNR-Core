@@ -3,7 +3,7 @@
 
 #include "trcodec/trdecode.h"
 #include "trcodec/trdecoderule.h"
-#include "trcodec/trsymbol.h"
+#include "trsym/trsym.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 //#include <QDebug>
@@ -53,9 +53,9 @@ void TranslationDecoder::decode(std::wstring &text, int category, bool mark) con
 {
   if (d_->map.empty())
     return;
-  if (!trsymbol::contains_encoded_symbol(text))
+  if (!trsym::contains_encoded_symbol(text))
     return;
-  text = trsymbol::decode_symbol(text,
+  text = trsym::decode_symbol(text,
     [this, category, mark](int id, const std::vector<std::wstring> &args) -> std::wstring {
       auto p = d_->map.find(id);
       if (p != d_->map.end()) {

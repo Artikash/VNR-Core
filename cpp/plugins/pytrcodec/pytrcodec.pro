@@ -7,8 +7,9 @@
 
 CONFIG += pyplugin shiboken noqt
 include(../../../config.pri)
-include($$LIBDIR/trrender/trrender.pri)
 include($$LIBDIR/trcodec/trcodec.pri)
+include($$LIBDIR/trrender/trrender.pri)
+include($$LIBDIR/trsym/trsym.pri)
 
 INCLUDEPATH += $$LIBDIR/trcodec # needed by shiboken generated code
 

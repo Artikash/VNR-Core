@@ -223,7 +223,7 @@ class _TermManager:
 
   _rx_delegate = re.compile(
     r"{{"
-      r"([a-zA-Z0-9_,]+)" # TR_RE_TOKEN
+      r"([a-zA-Z0-9,_$]+)" # TR_RE_TOKEN
       r"<[-0-9<>]+>"
     r"}}"
   )

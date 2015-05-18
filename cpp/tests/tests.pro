@@ -15,6 +15,7 @@ SUBDIRS += \
   pinyintest \
   pytest \
   trcodectest \
+  troscripttest \
   trscripttest \
   socktest \
   tahtest \
