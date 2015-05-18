@@ -10,7 +10,7 @@
 //#include <QDebug>
 
 #define SK_NO_QT
-#define DEBUG "trencode.cc"
+#define DEBUG "trsym.cc"
 #include "sakurakit/skdebug.h"
 
 #define SYMBOL_ESCAPE_RE L"\\|?!.+*^<>(){}" // characters needed to be escaped for a regex, except [] and $
@@ -148,6 +148,33 @@ static std::wstring _encode_symbol_match(const boost::wsmatch &m)
   return ret;
 }
 
+#define _ENCODE_OUTPUT_SYMBOL_MATCH \
+"\\(" \
+  "{{" \
+    "$1" \
+    "(?:" "[_$]" TRCODEC_RE_TOKEN_A ")?" \
+    "<[-0-9<>]+>" \
+  "}}" \
+"\\)"
+static std::wstring _encode_output_symbol_match(const boost::wsmatch &m)
+{
+  std::wstring ret = L"({{";
+  std::wstring tokens = m[1];
+  if (tokens.find(',') == std::wstring::npos)
+    ret += tokens;
+  else {
+    std::replace(tokens.begin(), tokens.end(), L',', L'|');
+    ret += L"(?:";
+    ret += tokens;
+    ret += L')';
+  }
+  ret +=
+    L"(?:" L"[_$]" TRCODEC_RE_TOKEN L")?"
+    L"[-0-9<>]+"
+  L"}})";
+  return ret;
+}
+
 std::wstring trsym::encode_symbol(const std::wstring &s, bool escape)
 {
   if (s.find(',') == std::wstring::npos) {
@@ -160,6 +187,21 @@ std::wstring trsym::encode_symbol(const std::wstring &s, bool escape)
       return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, _encode_symbol_match);
     else
       return boost::regex_replace(s, rx::raw_symbol_with_token_group, _encode_symbol_match);
+  }
+}
+
+std::wstring trsym::encode_output_symbol(const std::wstring &s, bool escape)
+{
+  if (s.find(',') == std::wstring::npos) {
+    if (escape && _symbol_needs_escape_re(s))
+      return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, _ENCODE_OUTPUT_SYMBOL_MATCH);
+    else
+      return boost::regex_replace(s, rx::raw_symbol_with_token_group, _ENCODE_OUTPUT_SYMBOL_MATCH);
+  } else {
+    if (escape && _symbol_needs_escape_re(s))
+      return boost::regex_replace(_symbol_escape_re(s), rx::raw_symbol_with_token_group, _encode_output_symbol_match);
+    else
+      return boost::regex_replace(s, rx::raw_symbol_with_token_group, _encode_output_symbol_match);
   }
 }
 

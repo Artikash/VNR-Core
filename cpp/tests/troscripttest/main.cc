@@ -7,7 +7,7 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"{{m<1234>}}くんを";
+  wchar_t ws[] = L"{{m<1234>}}くんを{{m$x<5678>}}";
   //wchar_t ws[] = L"ABCD";
   //QString text = QString::fromWCharArray(ws);
   std::wstring text = ws;

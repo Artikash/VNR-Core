@@ -39,7 +39,6 @@ std::wstring CompiledTranslationRule::render_target() const
 }
 
 // Construction
-
 void CompiledTranslationRule::init(const TranslationRule &param)
 {
   id = param.id;
@@ -51,7 +50,7 @@ void CompiledTranslationRule::init(const TranslationRule &param)
   }
 
   bool escape = !param.is_regex();
-  std::wstring pattern = trexp::compile_pattern(param.source, escape);
+  std::wstring pattern = trsym::encode_output_symbol(param.source, escape);
   if (!pattern.empty())
     WITH (
       source_re = new boost::wregex(pattern,
