@@ -766,17 +766,17 @@
     <message>
         <location filename="mytr.py" line="90"/>
         <source>Taiwan Standard Chinese</source>
-        <translation>中华民国正体中文</translation>
+        <translation>中華民國正體中文</translation>
     </message>
     <message>
         <location filename="mytr.py" line="91"/>
         <source>Hong Kong Traditional Chinese</source>
-        <translation>香港繁体中文</translation>
+        <translation>香港繁體中文</translation>
     </message>
     <message>
         <location filename="mytr.py" line="92"/>
         <source>Japanese Kanji</source>
-        <translation>日本汉字</translation>
+        <translation>日本漢字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="237"/>
@@ -856,7 +856,7 @@
     <message>
         <location filename="mytr.py" line="93"/>
         <source>Korean Hanja</source>
-        <translation>朝鲜汉字</translation>
+        <translation>朝鮮漢字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="180"/>
