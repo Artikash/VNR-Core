@@ -585,7 +585,7 @@ class MachineTranslator(Translator):
     if to == 'zht':
       text = zht2zhx(text)
 
-    if proxies:
+    if proxies is not None:
       t = text
       text = tm.applySyntacticOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
       if emit and text != t:
