@@ -576,7 +576,8 @@ class MachineTranslator(Translator):
     if emit:
       self.emitJointTranslation(text)
 
-    if proxies:
+    proxied = bool(proxies)
+    if proxied: # undelegate process might delete proxies
       t = text
       text = tm.undelegateTranslation(text, to=to, fr=fr, host=self.key, proxies=proxies, proxyDigit=proxyDigit)
       if emit and text != t:
@@ -585,7 +586,7 @@ class MachineTranslator(Translator):
     if to == 'zht':
       text = zht2zhx(text)
 
-    if proxies is not None:
+    if proxied:
       t = text
       text = tm.applySyntacticOutputTerms(text, to=to, fr=fr, mark=mark, host=self.key)
       if emit and text != t:
