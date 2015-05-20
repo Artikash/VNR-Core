@@ -30,7 +30,7 @@ Item { id: root_
   //  console.log(ttsEngines.length)
   //}
 
-  function entryColor(entry) {
+  function entryColor(entry) { // object -> string
     switch (entry.gender) {
     case 'f': return 'purple'
     case 'm': return 'steelblue'
@@ -38,7 +38,15 @@ Item { id: root_
     }
   }
 
-  function ttsEngineName(key) {
+  function characterName(name) { // string -> string
+    switch (name) {
+    case '': return "(" + Sk.tr("Aside") + ")"
+    case '?': return "(" + Sk.tr("Unknown") + ")"
+    default: return name
+    }
+  }
+
+  function ttsEngineName(key) { // string -> string
     switch (key) {
     case '': return Sk.tr('Default')
     case 'google': return "Google.com"
@@ -263,7 +271,7 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          text: itemValue.name ? itemValue.name : "(" + Sk.tr("Aside") + ")"
+          text: root_.characterName(itemValue.name)
           color: itemSelected ? 'white' : entryColor(itemValue)
           //font.strikeout: !itemSelected && !itemValue.ttsEnabled
           font.bold: itemValue.ttsEnabled
