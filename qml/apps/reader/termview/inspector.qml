@@ -186,6 +186,13 @@ Item { id: root_
       if (currentItem.updateComment)
         ret += ": " + renderComment(currentItem.updateComment)
     }
+
+    if (pattern) { // && (fr === 'ja' || fr === 'zhs' || fr === 'zht')) {
+      var t = jlp_.render_hanzi(pattern)
+      if (t)
+        ret += "<br/><br/>KanjiDic: " + t
+    }
+
     return ret
   }
 
