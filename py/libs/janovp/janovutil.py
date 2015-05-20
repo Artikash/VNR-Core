@@ -21,16 +21,16 @@ def guess_text_name(text, limit=defs.MAX_NAME_LENGTH, quotes=defs.NAME_QUOTES):
   if text:
     if text[0] == u'【':
       i = text.find(u'】')
-      if 0 < i and i <= limit:
+      if 0 < i and i < limit:
         return text[1:i].strip()
     i = text.find(u'「')
-    if 0 < i and i <= limit:
+    if 0 < i and i < limit:
       return text[:i]
     if quotes:
       for q in quotes:
         if text[-1] == q[-1]:
           i = text.find(q[0])
-          if 0 < i and i <= limit and -1 == text.find(q[-1], i, -1):
+          if 0 < i and i < limit and -1 == text.find(q[-1], i, -1):
             return text[:i].strip()
 
   #m = __name_re.match(text)
@@ -51,7 +51,7 @@ def remove_text_name(text, limit=defs.MAX_NAME_LENGTH, quotes=defs.NAME_QUOTES):
   for q in quotes:
     if text[-1] == q[-1]:
       i = text.find(q[0]) # remove character name
-      if i != -1 and i <= limit:
+      if i != -1 and i < limit:
         if i:
           text = text[i:]
         return text
@@ -70,17 +70,17 @@ def split_text_name(text, limit=defs.MAX_NAME_LENGTH, quotes=defs.NAME_QUOTES):
   """
   if text:
     i = text.find(u'「')
-    if 0 < i and i <= limit:
+    if 0 < i and i < limit:
       return text[:i], text[i:]
     if text[0] == u'【':
       i = text.find(u'】')
-      if 0 < i and i <= limit:
+      if 0 < i and i < limit:
         return text[:i+1], text[i+1:]
     if quotes:
       for q in quotes:
         if text[-1] == q[-1]:
           i = text.find(q[0])
-          if 0 < i and i <= limit and -1 == text.find(q[-1], i, -1):
+          if 0 < i and i < limit and -1 == text.find(q[-1], i, -1):
             return text[:i], text[i:]
   return '', text
 
