@@ -190,7 +190,7 @@ Item { id: root_
     if (pattern && pattern.length < 10) { // && (fr === 'ja' || fr === 'zhs' || fr === 'zht')) {
       var t = jlp_.render_hanzi(pattern)
       if (t)
-        ret += '<br/><br/>KanjiDic: <span style="font-family:Tahoma,HanaMinA,HanaMinB">' + t + '</span>'
+        ret += '<br/>KanjiDic: <span style="font-family:Tahoma,HanaMinA,HanaMinB">' + t.replace(/\n/g, ', ') + '</span>'
     }
 
     return ret
