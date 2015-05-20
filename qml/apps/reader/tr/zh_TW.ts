@@ -662,7 +662,7 @@
         <translation>你可以拖動這裡來移動文字。</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1833"/>
+        <location filename="../kagami/grimoire.qml" line="1834"/>
         <source>Hide text box</source>
         <translation>隱藏文字</translation>
     </message>
@@ -702,37 +702,37 @@
         <translation>可以拖動這裡的！</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1647"/>
+        <location filename="../kagami/grimoire.qml" line="1648"/>
         <source>Add to the Shared Dictionary</source>
         <translation>新增到共享辭書</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1781"/>
+        <location filename="../kagami/grimoire.qml" line="1782"/>
         <source>Read Current</source>
         <translation>讀出當前</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1787"/>
+        <location filename="../kagami/grimoire.qml" line="1788"/>
         <source>Scroll to the Beginning</source>
         <translation>滾動到首頁</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1792"/>
+        <location filename="../kagami/grimoire.qml" line="1793"/>
         <source>Scroll to the End</source>
         <translation>滾動到尾頁</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1805"/>
+        <location filename="../kagami/grimoire.qml" line="1806"/>
         <source>Lock Position</source>
         <translation>鎖定位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1811"/>
+        <location filename="../kagami/grimoire.qml" line="1812"/>
         <source>Save Position</source>
         <translation>儲存位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1816"/>
+        <location filename="../kagami/grimoire.qml" line="1817"/>
         <source>Load Position</source>
         <translation>載入位置</translation>
     </message>
@@ -807,32 +807,32 @@
         <translation>從Dashboard中移除這個遊戲</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="305"/>
+        <location filename="../termview/inspector.qml" line="312"/>
         <source>Pattern is too short</source>
         <translation>匹配的文字太短了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="304"/>
+        <location filename="../termview/inspector.qml" line="311"/>
         <source>Pattern or translation is very long</source>
         <translation>匹配或翻譯的文字很長</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="306"/>
+        <location filename="../termview/inspector.qml" line="313"/>
         <source>Translation is empty</source>
         <translation>翻譯被刪掉了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="307"/>
+        <location filename="../termview/inspector.qml" line="314"/>
         <source>Translation should not contain Japanese</source>
         <translation>日文的翻譯中不應該包含日文字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="308"/>
+        <location filename="../termview/inspector.qml" line="315"/>
         <source>Game type should not be used for translation</source>
         <translation>不應該用遊戲詞條來做翻譯</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="309"/>
+        <location filename="../termview/inspector.qml" line="316"/>
         <source>Type should not translation instead of input</source>
         <translation>詞條類型應該是翻譯而不應該是輸入</translation>
     </message>
@@ -841,57 +841,57 @@
         <translation type="obsolete">中文翻譯中包含日本漢字</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="302"/>
+        <location filename="../termview/inspector.qml" line="309"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>翻譯不包含簡體字的詞條的語言應該是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="301"/>
+        <location filename="../termview/inspector.qml" line="308"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>如果翻譯包含簡體字，那麼詞條的語言不應該是中文</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="310"/>
+        <location filename="../termview/inspector.qml" line="317"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>正則表示式中的括號可能不匹配</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="311"/>
+        <location filename="../termview/inspector.qml" line="318"/>
         <source>This rule is useless that has no effect</source>
         <translation>這個詞條是沒有作用的</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="312"/>
+        <location filename="../termview/inspector.qml" line="319"/>
         <source>Pattern does not need enabling regex</source>
         <translation>匹配的文字不需要開啟正則表達</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="313"/>
+        <location filename="../termview/inspector.qml" line="320"/>
         <source>Entry type does not allow being translator-specific</source>
         <translation>詞條類型不允許指定翻譯器</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="314"/>
+        <location filename="../termview/inspector.qml" line="321"/>
         <source>Please use only ASCII characters for translation role</source>
         <translation>翻譯的Role只可以包含ASCII字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="315"/>
+        <location filename="../termview/inspector.qml" line="322"/>
         <source>New line characters are not allowed in text</source>
         <translation>詞條不可以包含\n字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="316"/>
+        <location filename="../termview/inspector.qml" line="323"/>
         <source>Tab characters are not allowed in text</source>
         <translation>詞條不可以包含\t字元</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="317"/>
+        <location filename="../termview/inspector.qml" line="324"/>
         <source>Missing translation</source>
         <translation>翻譯被刪掉了</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="318"/>
+        <location filename="../termview/inspector.qml" line="325"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文字</translation>
     </message>
@@ -983,13 +983,13 @@
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="137"/>
-        <location filename="../termview/maintoolbar.qml" line="165"/>
+        <location filename="../termview/maintoolbar.qml" line="179"/>
         <source>Save entries in Excel CSV format to the Desktop</source>
         <translation>以Excel的CSV格式儲存資料到桌面</translation>
     </message>
     <message>
         <location filename="../subview/maintoolbar.qml" line="144"/>
-        <location filename="../termview/maintoolbar.qml" line="179"/>
+        <location filename="../termview/maintoolbar.qml" line="193"/>
         <source>Update entries online</source>
         <translation>線上更新資料</translation>
     </message>
@@ -999,12 +999,22 @@
         <translation>複製選定的內容</translation>
     </message>
     <message>
-        <location filename="../termview/maintoolbar.qml" line="125"/>
+        <location filename="../termview/maintoolbar.qml" line="88"/>
+        <source>Lookup pattern in the dictionary</source>
+        <translation>在辭書中查詢詞條</translation>
+    </message>
+    <message>
+        <location filename="../termview/maintoolbar.qml" line="96"/>
+        <source>Speak pattern using TTS</source>
+        <translation>用TTS讀出詞條</translation>
+    </message>
+    <message>
+        <location filename="../termview/maintoolbar.qml" line="139"/>
         <source>Whether use user-defined terms to improve machine translation</source>
         <translation>是否使用自定義辭書來改進機翻</translation>
     </message>
     <message>
-        <location filename="../termview/maintoolbar.qml" line="172"/>
+        <location filename="../termview/maintoolbar.qml" line="186"/>
         <source>Browse current enabled rules</source>
         <translation>瀏覽當前開啟的規則</translation>
     </message>
@@ -1429,7 +1439,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="336"/>
+        <location filename="../termview.qml" line="338"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>輸入需要查詢的文字，翻譯，使用者名，語言等，然後按下回車搜尋</translation>
     </message>
