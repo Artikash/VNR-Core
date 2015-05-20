@@ -187,10 +187,10 @@ Item { id: root_
         ret += ": " + renderComment(currentItem.updateComment)
     }
 
-    if (pattern) { // && (fr === 'ja' || fr === 'zhs' || fr === 'zht')) {
+    if (pattern && pattern.length < 10) { // && (fr === 'ja' || fr === 'zhs' || fr === 'zht')) {
       var t = jlp_.render_hanzi(pattern)
       if (t)
-        ret += '<br/><br/>KanjiDic: <span style="font-family:HanaMinA,HanaMinB">' + t + '</span>'
+        ret += '<br/><br/>KanjiDic: <span style="font-family:Tahoma,HanaMinA,HanaMinB">' + t + '</span>'
     }
 
     return ret
