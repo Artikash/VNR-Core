@@ -50,7 +50,7 @@ _DISABLED_TEXT = "(%s)" % tr_("Disabled")
 #_LANGUAGE_STAR = '<span style="color:green">+</span>' # plus
 _TERM_STAR = '<span style="color:red">*</span>' # star
 
-_TEXTEDIT_MINWIDTH = 150
+_TEXTEDIT_MINWIDTH = 120
 _TEXTEDIT_MINHEIGHT = 200
 
 class _MTTester(object):

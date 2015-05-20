@@ -20,6 +20,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
 from convutil import zhs2zht
+from janovp import janovutil
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
@@ -242,16 +243,6 @@ class _TextManager(object):
       if ss.isSubtitleVoiceEnabled():
         self._speakSubtitleTimer.start(timeout)
 
-  @staticmethod
-  def guessName(text):
-    """
-    @param  text  unicode
-    @return  unicode or None
-    """
-    ret = textutil.guess_text_name(text) #or termman.manager().applyNameTerms(text, self.language)
-    if ret and len(ret) <= 16: # limit max name size
-      return ret
-
   def speakLastTextOrSubtitle(self):
     tm = ttsman.manager()
     lang = tm.defaultEngineLanguage()
@@ -287,7 +278,7 @@ class _TextManager(object):
         dm = dataman.manager()
         name = self.ttsName
         if not name: #and not self.nameSignature:
-          name = self.guessName(text)
+          name = janovutil.guess_text_name(text)
         if name:
           name = self._repairText(name) # terms are disabled as language is None
           if name:
