@@ -22,6 +22,7 @@ from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skprof import SkProfiler
 from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
+from janovp import janovutil
 from mytr import my, mytr_
 from unitraits import unichars, jpchars, jpmacros
 from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
@@ -287,7 +288,9 @@ class RomajiTranslator(Translator):
 
 class MachineTranslator(Translator):
 
-  splitsSentences = False # bool
+  splitsSentences = False # bool  split individual sentences for English translators
+  #splitsParagraphs = True # bool  always true
+  #splitsNames = True # bool  split name out of a novel sentence
   #persistentCaching = False # bool  whether use sqlite to cache the translation
 
   #_CACHE_LENGTH = 10 # length of the translation to cache
@@ -357,20 +360,35 @@ class MachineTranslator(Translator):
     #dprint("%s pass" % self.key)
     return ret
 
+  def _splitQuotes(self, text):
+    """Split name from text
+    @param  text  unicode
+    @yield  unicode
+    """
+    name, text = janovutil.split_text_name(text)
+    name = name.strip()
+    if name:
+      yield name
+    text = text.strip()
+    if text:
+      for it in janovutil.split_quotes(text):
+        yield it
+
   def _itertexts(self, text):
     """
     @param  text  unicode
     @yield  unicode
     """
-    for line in _PARAGRAPH_RE.split(text):
-      line = line.strip()
-      if line:
-        if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS:
-          yield line
-        else:
-          for sentence in _SENTENCE_RE.sub(r"\1\n", line).split("\n"):
-            if sentence:
-              yield sentence
+    for paragraph in self._splitQuotes(text):
+      for line in _PARAGRAPH_RE.split(paragraph):
+        line = line.strip()
+        if line:
+          if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS:
+            yield line
+          else:
+            for sentence in _SENTENCE_RE.sub(r"\1\n", line).split("\n"):
+              if sentence:
+                yield sentence
 
   def _splitTranslate(self, text, tr, to, fr, async):
     """

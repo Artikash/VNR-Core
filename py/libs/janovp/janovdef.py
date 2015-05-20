@@ -4,7 +4,7 @@
 
 MAX_NAME_LENGTH = 16 # maximum number of characters in text
 
-NAME_BRACKETS = (
+NAME_QUOTES = (
   u"「」",
   u"『』",
   u"《》",
