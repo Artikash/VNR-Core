@@ -20,7 +20,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
 from convutil import zhs2zht
-from janovp import janovutil
+from janovp import janovdef, janovutil
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
@@ -263,6 +263,21 @@ class _TextManager(object):
     #else:
     #  growl.warn(my.tr("No game text"))
 
+  @staticmethod
+  def _guessTtsName(text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    if text:
+      ret = janovutil.guess_text_name(text)
+      if ret:
+        return ret
+      if len(text) > 2:
+        for q in janovdef.NAME_QUOTES:
+          if text[0] == q[0] and text[-1] == q[-1]:
+            return '?'
+
   def _speakText(self):
     text = self.ttsText
     #text = textutil.remove_html_tags(text)
@@ -278,7 +293,7 @@ class _TextManager(object):
         dm = dataman.manager()
         name = self.ttsName
         if not name: #and not self.nameSignature:
-          name = janovutil.guess_text_name(text)
+          name = self._guessTtsName(text)
         if name:
           name = self._repairText(name) # terms are disabled as language is None
           if name:
@@ -292,12 +307,12 @@ class _TextManager(object):
             if cd.ttsEnabled:
               #lang = tm.getEngineLanguage(eng) # always speak TTS subtitle
               #if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
-              if (name
-                  or not text.startswith(u"「") and not text.endswith(u"」")
-                  or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
-                ): # do not speak if no character name is detected
-                eng = cd.ttsEngine or tm.defaultEngine()
-                tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng, gender=cd.gender)
+              #if (name
+              #    #or not text.startswith(u"「") and not text.endswith(u"」")
+              #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+              #  ): # do not speak if no character name is detected
+              eng = cd.ttsEngine or tm.defaultEngine()
+              tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng, gender=cd.gender)
         #else:
         #  tm.stop()
     self.ttsText = self.ttsName = ""
@@ -320,16 +335,12 @@ class _TextManager(object):
           if cd.ttsEnabled:
             #lang = tm.getEngineLanguage(eng) # always speak
             #if lang and (lang == '*' or lang[:2] == self.ttsSubtitleLanguage[:2]) and (name or
-            if (name
-                or not text.startswith(u"「") and not text.endswith(u"」")
-                or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
-              ): # do not speak if no character name is detected
-              eng = cd.ttsEngine or tm.defaultEngine()
-              #if (name
-              #    #not text.startswith(u"「") and not text.endswith(u"」")
-              #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
-              #  ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng, gender=cd.gender)
+            #if (name
+            #    #or not text.startswith(u"「") and not text.endswith(u"」")
+            #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+            #  ): # do not speak if no character name is detected
+            eng = cd.ttsEngine or tm.defaultEngine()
+            tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng, gender=cd.gender)
     self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
   def _repairText(self, text, to=None, fr=None):
