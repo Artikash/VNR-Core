@@ -70,35 +70,41 @@ Item { id: root_
       Desktop.ToolButton {
         text: Sk.tr("User")
         tooltip: Sk.tr("Show {0}").replace('{0}'), Sk.tr("user information")
-        visible: !!root_.currentItem //&& root_.currentItem.userId
-        onClicked: {
-          var item = root_.currentItem
-          if (item)
-            mainPlugin_.showUserWithHash(item.userId, item.userHash)
-        }
+        visible: !!currentItem //&& root_.currentItem.userId
+        onClicked:
+          if (currentItem)
+            mainPlugin_.showUserWithHash(currentItem.userId, currentItem.userHash)
       }
       Desktop.ToolButton {
         text: Sk.tr("Game")
         tooltip: Sk.tr("Show {0}").replace('{0}'), Sk.tr("game information")
-        visible: !!(root_.currentItem && root_.currentItem.gameId)
+        visible: !!(currentItem && currentItem.gameId)
         onClicked:
-          if (root_.currentItem)
-            mainPlugin_.showGameView(root_.currentItem.gameId)
+          if (currentItem)
+            mainPlugin_.showGameView(currentItem.gameId)
       }
       Desktop.ToolButton {
         text: Sk.tr("Dictionary")
         tooltip: qsTr("Lookup pattern in the dictionary")
-        visible: !!(root_.currentItem && root_.currentItem.pattern)
+        visible: !!(currentItem && currentItem.pattern)
         onClicked:
-          if (root_.currentItem)
-            mainPlugin_.lookupDictionaryTester(root_.currentItem.pattern)
+          if (currentItem)
+            mainPlugin_.lookupDictionaryTester(currentItem.pattern)
+      }
+      Desktop.ToolButton {
+        text: My.tr("Speak")
+        tooltip: qsTr("Speak pattern using TTS")
+        visible: !!(currentItem && currentItem.pattern)
+        onClicked:
+          if (currentItem)
+            ttsPlugin_.speak(currentItem.pattern, currentItem.sourceLanguage)
       }
       //Desktop.ToolButton { // TOO slow to compute
       //  text: Sk.tr("Name")
       //  tooltip: Sk.tr("Show {0}").replace('{0}'), My.tr("names")
-      //  visible: !!(root_.currentItem && currentItem.gameId && datamanPlugin_.queryGameItemId(currentItem.gameId))
+      //  visible: !!(currentItem && currentItem.gameId && datamanPlugin_.queryGameItemId(currentItem.gameId))
       //  onClicked:
-      //    if (root_.currentItem) {
+      //    if (currentItem) {
       //      var id = currentItem.gameId
       //      if (id) {
       //        id = datamanPlugin_.queryGameItemId(id)

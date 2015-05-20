@@ -58,6 +58,8 @@ Item { id: root_
       searchRequested.connect(root_.search)
   }
 
+  Plugin.Tts { id: ttsPlugin_ }
+
   function search(text, col, lang) {
     searchToolBar_.clear()
     //console.log("termview.qml:search: col =", col)
