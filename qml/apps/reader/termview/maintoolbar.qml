@@ -85,6 +85,14 @@ Item { id: root_
           if (root_.currentItem)
             mainPlugin_.showGameView(root_.currentItem.gameId)
       }
+      Desktop.ToolButton {
+        text: Sk.tr("Dictionary")
+        tooltip: qsTr("Lookup pattern in the dictionary")
+        visible: !!(root_.currentItem && root_.currentItem.pattern)
+        onClicked:
+          if (root_.currentItem)
+            mainPlugin_.lookupDictionaryTester(root_.currentItem.pattern)
+      }
       //Desktop.ToolButton { // TOO slow to compute
       //  text: Sk.tr("Name")
       //  tooltip: Sk.tr("Show {0}").replace('{0}'), My.tr("names")

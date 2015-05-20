@@ -2119,6 +2119,10 @@ class MainObject(QObject):
   def showReferenceHelp(self): _MainObject.showWindow(self.__d.referenceHelpDialog)
   def showVoiceHelp(self): _MainObject.showWindow(self.__d.voiceHelpDialog)
 
+  def lookupDictionaryTester(self, text): # unicode ->
+    self.showDictionaryTester()
+    self.__d.dictionaryTesterDialog.lookup(text)
+
   def showTermCache(self):
     growl.msg(my.tr("Browse current enabled terms"))
     import osutil
@@ -2445,6 +2449,8 @@ class MainObjectProxy(QObject):
   def showYouTubeInput(self): manager().showYouTubeInput()
   @Slot()
   def showDictionaryTester(self): manager().showDictionaryTester()
+  @Slot(unicode)
+  def lookupDictionaryTester(self, text): manager().lookupDictionaryTester(text)
   @Slot()
   def showMachineTranslationTester(self): manager().showMachineTranslationTester()
   @Slot()
