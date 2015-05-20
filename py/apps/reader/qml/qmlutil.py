@@ -76,4 +76,9 @@ class JlpUtil(QObject):
   def ja2zh_name_test(self, text):
     return convutil.ja2zh_name_test(text)
 
+  @Slot(unicode, result=unicode)
+  def render_hanzi(self, text):
+    import dictman
+    return '\n'.join(dictman.manager().renderHanzi(text))
+
 # EOF

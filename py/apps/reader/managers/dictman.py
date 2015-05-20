@@ -29,9 +29,10 @@ class _DictionaryManager:
     self.japaneseLookupEnabled = True # bool
     self.japaneseTranslateLanguages = [] # [str]
 
-  def renderKanjiRadicals(self, text):
+  def renderHanzi(self, text, html=False):
     """
     @param  text  unicode
+    @param* html  bool
     @return  [unicode] or None
     """
     ss = settings.global_()
@@ -51,7 +52,8 @@ class _DictionaryManager:
         text = u"【%s】" % ch
         if rad:
           text = "%s[%s]" % (text, rad[1:-1])
-        text = _dictman.render_kanji(text)
+        if html:
+          text = _dictman.render_kanji(text)
         ret.append(text)
     return ret
 
@@ -341,6 +343,12 @@ class DictionaryManager:
   def setUserLanguage(self, v): self.__d.userLanguage = v
   def userLanguage(self): return self.__d.userLanguage
 
+  def japaneseTranslateLanguages(self): return self.__d.japaneseTranslateLanguages
+  def setJapaneseTranslateLanguages(self, v): self.__d.japaneseTranslateLanguages = v
+
+  def isJapaneseLookupEnabled(self): return self.__d.japaneseLookupEnabled
+  def setJapaneseLookupEnabled(self, t): self.__d.japaneseLookupEnabled = t
+
   def translateJapanese(self, t):
     """
     @param  text
@@ -348,11 +356,12 @@ class DictionaryManager:
     """
     return self.__d.translateJapanese(t)
 
-  def japaneseTranslateLanguages(self): return self.__d.japaneseTranslateLanguages
-  def setJapaneseTranslateLanguages(self, v): self.__d.japaneseTranslateLanguages = v
-
-  def isJapaneseLookupEnabled(self): return self.__d.japaneseLookupEnabled
-  def setJapaneseLookupEnabled(self, t): self.__d.japaneseLookupEnabled = t
+  def renderHanzi(self, t):
+    """
+    @param  text
+    @return  [unicode] not None
+    """
+    return self.__d.renderHanzi(t) or []
 
   def renderKorean(self, text):
     """
@@ -406,7 +415,7 @@ class DictionaryManager:
         'language': 'ja',
         'text': text,
         'feature': f,
-        'kanji': d.renderKanjiRadicals(text),
+        'kanji': d.renderHanzi(text, html=True),
         'tuples': d.lookupDB(text, exact=exact, feature=feature),
         'eb_strings': d.lookupEB(text, feature=feature), # exact not used, since it is already very fast
         #'google': google,
