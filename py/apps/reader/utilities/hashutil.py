@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
 import re
 from sakurakit import skhash
+from janovp import janovutil
 import defs
 
 MD5SUM = {} # {unicode path : str hex}
@@ -100,25 +101,12 @@ def hashtexts(l, h=None):
      h = hashtext(it, h)
     return h
 
-def _normalizecontext(t):
-  """Hash unicode text combined with context_sep
-  @param  t  unicode
-  @return   unicode
-  """
-  if not t:
-    return ''
-  for s in u"「」", u"（）":
-    if t[-1] == s[1]:
-      pos = t.find(s[0]) # remove character name
-      if pos != -1 and pos < defs.MAX_NAME_LENGTH:
-        if pos:
-          t = t[pos:]
-        break
-  if t and t[0] == u'【':
-    i = text.find(u'】')
-    if i > 0 and i < defs.MAX_NAME_LENGTH:
-      t = t[i+1:].lstrip() or t # avoid deleting context
-  return t
+#def _normalizecontext(t):
+"""Hash unicode text combined with context_sep
+@param  t  unicode
+@return   unicode
+"""
+_normalizecontext = janovutil.remove_text_name
 
 def hashcontext(t, h=None):
   """Hash unicode text combined with context_sep
