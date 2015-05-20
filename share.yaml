@@ -278,7 +278,6 @@ proxies:
   kancolle:     http://203.104.209.7
 
   domains: # persistent DNS
-    annot.me:       153.121.54.194
     sakuradite.com: 153.121.54.194
     sakuradite.org: 153.121.52.138
     getchu.com:     210.155.150.152

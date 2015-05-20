@@ -186,6 +186,7 @@ ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
   }
 
   if (!addr) {
+    // 81fe0c300000
     const BYTE bytes2[] = {
       0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
     };
@@ -202,8 +203,9 @@ ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
     0x8b,0xec, // 013bac71  |. 8bec     mov ebp,esp
     0x6a,0xff  // 013bac73  |. 6a ff    push -0x1
   };
-  //enum { range = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
-  enum { range = 0x400 };   // 0x013baf32  -0x013bac70 = 0x36a
+  //enum { range = 0x300 };   // 0x013baf32 - 0x013bac70 = 706 = 0x2c2
+  //enum { range = 0x400 };   // 0x013baf32 - 0x013bac70 = 0x36a
+  enum { range = 0x500 };     // 0x00b6bcf8 - 0x00b6b880 = 0x478
   return MemDbg::findBytes(bytes, sizeof(bytes), addr - range, addr);
   //if (!reladdr)
   //  //ConsoleOutput("vnreng:Siglus2: pattern not found");
