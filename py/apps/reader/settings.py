@@ -254,6 +254,14 @@ class Settings(QSettings):
 
   ## Romanization for Japanese ##
 
+  japaneseRubyInvertedChanged = Signal(bool)
+  def isJapaneseRubyInverted(self):
+    return to_bool(self.value('JapaneseInvertRuby'))
+  def setJapaneseRubyInverted(self, t):
+    if t != self.isJapaneseRubyInverted():
+      self.setValue('JapaneseInvertRuby', t)
+      self.japaneseRubyInvertedChanged.emit(t)
+
   japaneseRubyTypeChanged = Signal(unicode)
   def japaneseRubyType(self): return self.value('JapaneseRubyType', 'hira')
   def setJapaneseRubyType(self, value):
@@ -2366,6 +2374,7 @@ class SettingsProxy(QObject):
     g.japaneseRubyTypeChanged.connect(self.japaneseRubyTypeChanged)
     g.japaneseRubyHighlightEnabledChanged.connect(self.japaneseRubyHighlightChanged)
     g.japaneseRubyAnnotatedChanged.connect(self.japaneseRubyAnnotatedChanged)
+    g.japaneseRubyInvertedChanged.connect(self.japaneseRubyInvertedChanged)
 
     g.koreanRubyEnabledChanged.connect(self.koreanRubyEnabledChanged)
     g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
@@ -2572,6 +2581,9 @@ class SettingsProxy(QObject):
 
   chineseRubyTypeChanged = Signal(unicode)
   chineseRubyType = unicode_property('ChineseRubyType', 'pinyin', notify=chineseRubyTypeChanged)
+
+  japaneseRubyInvertedChanged = Signal(bool)
+  japaneseRubyInverted = bool_property('JapaneseInvertRuby', False, notify=japaneseRubyInvertedChanged)
 
   japaneseRubyEnabledChanged = Signal(bool)
   japaneseRubyEnabled = bool_property('JapaneseRuby', False, notify=japaneseRubyEnabledChanged)

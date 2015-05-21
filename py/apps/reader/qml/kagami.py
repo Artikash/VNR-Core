@@ -194,8 +194,8 @@ class GrimoireBean(QObject):
   @Slot(unicode, result=unicode)
   def convertChinese(self, text): return zhs2zht(text)
 
-  @Slot(unicode, unicode, bool, int, float, bool, bool, bool, bool, result=unicode)
-  def renderJapanese(self, text, rubyType, rubyKana, charPerLine, rubySize, colorize, highlight, annotated, center):
+  @Slot(unicode, unicode, bool, int, float, bool, bool, bool, bool, bool, result=unicode)
+  def renderJapanese(self, text, rubyType, rubyKana, charPerLine, rubySize, colorize, highlight, annotated, rubyInverted, center):
     """
     @return  unicode  html
     """
@@ -204,7 +204,7 @@ class GrimoireBean(QObject):
       d.features = {}
     features = d.features if colorize else None
     return ''.join(
-        mecabman.rendertable(t, features=features, rubyType=rubyType, rubyKana=rubyKana, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, highlight=highlight, annotated=annotated, center=center)
+        mecabman.rendertable(t, features=features, rubyType=rubyType, rubyKana=rubyKana, charPerLine=charPerLine, rubySize=rubySize, rubyInverted=rubyInverted, colorize=colorize, highlight=highlight, annotated=annotated, center=center)
         for t in text.split('\n') if t)
 
   @Slot(unicode, int, float, bool, bool, bool, bool, bool, result=unicode)
@@ -579,8 +579,8 @@ class MirageBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
 
-  @Slot(unicode, unicode, bool, int, float, bool, bool, bool, bool, result=unicode)
-  def renderJapanese(self, text, rubyType, rubyKana, charPerLine, rubySize, colorize, highlight, annotated, center):
+  @Slot(unicode, unicode, bool, int, float, bool, bool, bool, bool, bool, result=unicode)
+  def renderJapanese(self, text, rubyType, rubyKana, charPerLine, rubySize, colorize, highlight, annotated, rubyInverted, center):
     """
     @return  unicode  html
     """
@@ -589,7 +589,7 @@ class MirageBean(QObject):
       d.features = {}
     features = d.features if colorize else None
     return ''.join(
-        mecabman.rendertable(t, features=features, rubyType=rubyType, rubyKana=rubyKana, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, highlight=highlight, annotated=annotated, center=center)
+        mecabman.rendertable(t, features=features, rubyType=rubyType, rubyKana=rubyKana, charPerLine=charPerLine, rubySize=rubySize, rubyInverted=rubyInverted, colorize=colorize, highlight=highlight, annotated=annotated, center=center)
         for t in text.split('\n') if t)
 
   @Slot(unicode, result=unicode)

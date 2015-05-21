@@ -55,6 +55,7 @@ Item { id: root_
 
   property string rubyType: settings_.japaneseRubyType
   property bool rubyEnabled: settings_.japaneseRubyEnabled
+  property bool rubyInverted: settings_.japaneseRubyInverted
   property bool rubyKanaEnabled: settings_.japaneseRubyKanaEnabled
   property bool rubyHighlight: settings_.japaneseRubyHighlight
   property bool rubyAnnotated: settings_.japaneseRubyAnnotated
@@ -972,12 +973,12 @@ Item { id: root_
               model.text
               , root_.rubyType
               , root_.rubyKanaEnabled
-              //, Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
-              , Math.round(root_.width / (22 * zoomFactor)) // char per line
+              , Math.round(root_.width / (22 * zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
               , 10 * zoomFactor // ruby size of furigana
               , toolTip_.containsMouse || textCursor_.containsMouse // colorize
               , root_.rubyHighlight
               , root_.rubyAnnotated
+              , root_.rubyInverted
               , root_.alignCenter
             ) :
           model.text

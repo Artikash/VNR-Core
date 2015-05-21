@@ -641,6 +641,7 @@ Item { id: root_
         japaneseRubyHighlight: settings_.japaneseRubyHighlight
         japaneseRubyAnnotated: settings_.japaneseRubyAnnotated
         japaneseRubyType: settings_.japaneseRubyType
+        japaneseRubyInverted: settings_.japaneseRubyInverted
 
         //rubyType: settings_.rubyType
         //rubyDic: settings_.meCabDictionary
