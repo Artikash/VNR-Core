@@ -123,7 +123,9 @@ JMDICT_DICT_SIZES = {
 }
 
 def kanjidic_name(lang):
-  return my.tr("KanjiDic Japanese-{0} kanji dictionary").format(i18n.language_name(lang))
+  return my.tr("KanjiDic {0} kanji dictionary").format("%s-%s" % (
+      tr_("Japanese"),
+      i18n.language_name(lang)))
 
 #from sakurakit import skos
 #if skos.MAC:
@@ -8882,6 +8884,9 @@ class _EngineTab(object):
     self.scenarioTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
     ret.addButton(self.scenarioTranslateButton)
 
+    self.scenarioVisibleButton = QtWidgets.QRadioButton(tr_("Both"))
+    ret.addButton(self.scenarioVisibleButton)
+
     self.scenarioHideButton = QtWidgets.QRadioButton(tr_("Hide"))
     ret.addButton(self.scenarioHideButton)
 
@@ -8893,6 +8898,8 @@ class _EngineTab(object):
     ss = settings.global_()
     if not ss.isEmbeddedScenarioVisible():
       self.scenarioHideButton.setChecked(True)
+    elif ss.isEmbeddedScenarioTextVisible():
+      self.scenarioVisibleButton.setChecked(True)
     elif ss.isEmbeddedScenarioTranslationEnabled():
       self.scenarioTranslateButton.setChecked(True)
     elif ss.isEmbeddedScenarioTranscodingEnabled():
@@ -8902,22 +8909,31 @@ class _EngineTab(object):
 
   def _saveScenarioTextGroup(self):
     ss = settings.global_()
-    if self.scenarioTranslateButton.isChecked():
+    if self.scenarioVisibleButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
       ss.setEmbeddedScenarioTranscodingEnabled(True)
       ss.setEmbeddedScenarioTranslationEnabled(True)
+      ss.setEmbeddedScenarioTextVisible(True)
+    elif self.scenarioTranslateButton.isChecked():
+      ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(True)
+      ss.setEmbeddedScenarioTranslationEnabled(True)
+      ss.setEmbeddedScenarioTextVisible(False)
     elif self.scenarioTranscodeButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
       ss.setEmbeddedScenarioTranscodingEnabled(True)
       ss.setEmbeddedScenarioTranslationEnabled(False)
+      ss.setEmbeddedScenarioTextVisible(False)
     elif self.scenarioDisableButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
       ss.setEmbeddedScenarioTranscodingEnabled(False)
       ss.setEmbeddedScenarioTranslationEnabled(False)
+      ss.setEmbeddedScenarioTextVisible(False)
     elif self.scenarioHideButton.isChecked():
       ss.setEmbeddedScenarioVisible(False)
       ss.setEmbeddedScenarioTranscodingEnabled(False)
       ss.setEmbeddedScenarioTranslationEnabled(False)
+      ss.setEmbeddedScenarioTextVisible(False)
 
   # Name
 
