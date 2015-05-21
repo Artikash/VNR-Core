@@ -157,16 +157,17 @@ def main(argv):
   ok = False
   if not argv or len(argv) == 1 and argv[0] in ('-h', '--help'):
     usage()
-  elif len(argv) != 1:
-    dwarn("invalid number of parameters")
-    usage()
+  #elif len(argv) != 1:
+  #  dwarn("invalid number of parameters")
+  #  usage()
   else:
-    family, = argv
+    family = argv[0]
+    quiet = '-q' in argv or '--quiet' in argv
     try:
       msg(family)
       init()
       ok = run(family)
-      if ok:
+      if ok and not quiet:
         from sakurakit import skos
         font = FONTS[family]
         path = os.path.join(FONT_DIR, font['path'])
