@@ -112,6 +112,7 @@ void MainDriverPrivate::createEmbedDriver()
   connect(rpc, SIGNAL(reconnected()), eng, SLOT(sendEngineName()));
 
   connect(settings, SIGNAL(embeddedScenarioVisibleChanged(bool)), eng, SLOT(setScenarioVisible(bool)));
+  connect(settings, SIGNAL(embeddedScenarioTextVisibleChanged(bool)), eng, SLOT(setScenarioTextVisible(bool)));
   connect(settings, SIGNAL(embeddedScenarioTranscodingEnabledChanged(bool)), eng, SLOT(setScenarioTranscodingEnabled(bool)));
   connect(settings, SIGNAL(embeddedScenarioTranslationEnabledChanged(bool)), eng, SLOT(setScenarioTranslationEnabled(bool)));
   connect(settings, SIGNAL(embeddedNameVisibleChanged(bool)), eng, SLOT(setNameVisible(bool)));
@@ -139,6 +140,7 @@ void MainDriverPrivate::createEmbedDriver()
     eng->setEncoding(settings->gameEncoding());
 
     eng->setScenarioVisible(settings->isEmbeddedScenarioVisible());
+    eng->setScenarioTextVisible(settings->isEmbeddedScenarioTextVisible());
     eng->setScenarioTranscodingEnabled(settings->isEmbeddedScenarioTranscodingEnabled());
     eng->setScenarioTranslationEnabled(settings->isEmbeddedScenarioTranslationEnabled());
     eng->setNameVisible(settings->isEmbeddedNameVisible());

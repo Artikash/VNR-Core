@@ -15,6 +15,7 @@ public:
      , windowTranscodingEnabled
      , windowTextVisible
      , embeddedScenarioVisible
+     , embeddedScenarioTextVisible
      , embeddedScenarioTranslationEnabled
      , embeddedScenarioTranscodingEnabled
      , embeddedNameVisible
@@ -41,6 +42,7 @@ public:
      , windowTranscodingEnabled(false)
      , windowTextVisible(false)
      , embeddedScenarioVisible(false)
+     , embeddedScenarioTextVisible(false)
      , embeddedScenarioTranslationEnabled(false)
      , embeddedScenarioTranscodingEnabled(false)
      , embeddedNameVisible(false)
@@ -92,6 +94,7 @@ DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWi
 DEFINE_BOOL_PROPERTY(windowTranscodingEnabled, isWindowTranscodingEnabled, setWindowTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(windowTextVisible, isWindowTextVisible, setWindowTextVisible)
 DEFINE_BOOL_PROPERTY(embeddedScenarioVisible, isEmbeddedScenarioVisible, setEmbeddedScenarioVisible)
+DEFINE_BOOL_PROPERTY(embeddedScenarioTextVisible, isEmbeddedScenarioTextVisible, setEmbeddedScenarioTextVisible)
 DEFINE_BOOL_PROPERTY(embeddedScenarioTranslationEnabled, isEmbeddedScenarioTranslationEnabled, setEmbeddedScenarioTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedScenarioTranscodingEnabled, isEmbeddedScenarioTranscodingEnabled, setEmbeddedScenarioTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(embeddedNameVisible, isEmbeddedNameVisible, setEmbeddedNameVisible)
@@ -124,6 +127,7 @@ void Settings::disable()
   setEmbeddedTextEnabled(false);
 
   //setEmbeddedScenarioVisible(true);
+  //setEmbeddedScenarioTextVisible(true);
   //setEmbeddedScenarioTranslationEnabled(false);
   //setEmbeddedNameVisible(true);
   //setEmbeddedNameTextVisible(true);
@@ -167,6 +171,7 @@ void Settings::load(const QString &json)
     , H_windowTranscodingEnabled = 219567700
     , H_windowTextVisibleChange = 23360709
     , H_embeddedScenarioVisible = 207043173
+    , H_embeddedScenarioTextVisible = 241097605
     , H_embeddedScenarioTranslationEnabled = 132391348
     , H_embeddedScenarioTranscodingEnabled = 105135476
     , H_embeddedNameVisible = 180590501
@@ -193,6 +198,7 @@ void Settings::load(const QString &json)
     case H_windowTranscodingEnabled: setWindowTranscodingEnabled(bValue); break;
     case H_windowTextVisibleChange: setWindowTextVisible(bValue); break;
     case H_embeddedScenarioVisible: setEmbeddedScenarioVisible(bValue); break;
+    case H_embeddedScenarioTextVisible: setEmbeddedScenarioTextVisible(bValue); break;
     case H_embeddedScenarioTranslationEnabled: setEmbeddedScenarioTranslationEnabled(bValue); break;
     case H_embeddedScenarioTranscodingEnabled: setEmbeddedScenarioTranscodingEnabled(bValue); break;
     case H_embeddedNameVisible: setEmbeddedNameVisible(bValue); break;

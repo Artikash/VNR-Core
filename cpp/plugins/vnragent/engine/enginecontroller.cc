@@ -281,8 +281,17 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (repl.isEmpty())
     repl = text;
-  else if (role == Engine::NameRole && d_->settings->nameTextVisible && repl != text)
-    repl = QString("%1(%2)").arg(text, repl);
+  else if (repl != text)
+    switch (role) {
+    case Engine::NameRole:
+      if (d_->settings->nameTextVisible)
+        repl = QString("%1(%2)").arg(text, repl);
+      break;
+    case Engine::ScenarioRole:
+      if (d_->settings->scenarioTextVisible)
+        repl = QString("%1\n%2").arg(text, repl);
+      break;
+    }
 
   return d_->encode(repl);
 }
@@ -341,8 +350,17 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (repl.isEmpty())
     repl = text;
-  else if (role == Engine::NameRole && d_->settings->nameTextVisible && repl != text)
-    repl = QString("%1(%2)").arg(text, repl);
+  else if (repl != text)
+    switch (role) {
+    case Engine::NameRole:
+      if (d_->settings->nameTextVisible)
+        repl = QString("%1(%2)").arg(text, repl);
+      break;
+    case Engine::ScenarioRole:
+      if (d_->settings->scenarioTextVisible)
+        repl = QString("%1\n%2").arg(text, repl);
+      break;
+    }
 
   return repl;
   //return d_->encode(repl);

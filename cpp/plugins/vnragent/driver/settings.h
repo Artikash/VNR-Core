@@ -30,6 +30,7 @@ public:
   bool isWindowTranscodingEnabled() const; // Whether fix text encoding
   bool isWindowTextVisible() const; // Whether display text after the translation
   bool isEmbeddedScenarioVisible() const; // Whether disable scenario text
+  bool isEmbeddedScenarioTextVisible() const; // Whether display both scenario text and translation
   bool isEmbeddedScenarioTranslationEnabled() const; // Whether translate scenario text
   bool isEmbeddedScenarioTranscodingEnabled() const; // Whether translate scenario text
   bool isEmbeddedNameVisible() const;
@@ -57,6 +58,7 @@ public slots:
   void setWindowTranscodingEnabled(bool t);
   void setWindowTextVisible(bool t);
   void setEmbeddedScenarioVisible(bool t);
+  void setEmbeddedScenarioTextVisible(bool t);
   void setEmbeddedScenarioTranslationEnabled(bool t);
   void setEmbeddedScenarioTranscodingEnabled(bool t);
   void setEmbeddedNameVisible(bool t);
@@ -84,6 +86,7 @@ signals:
   void windowTranscodingEnabledChanged(bool t);
   void windowTextVisibleChanged(bool t);
   void embeddedScenarioVisibleChanged(bool t);
+  void embeddedScenarioTextVisibleChanged(bool t);
   void embeddedScenarioTranslationEnabledChanged(bool t);
   void embeddedScenarioTranscodingEnabledChanged(bool t);
   void embeddedNameVisibleChanged(bool t);

@@ -157,6 +157,7 @@ _SETTINGS_DICT = {
   'embeddedTextCancellableByControl': 'isEmbeddedTextCancellableByControl',
 
   'embeddedScenarioVisible': 'isEmbeddedScenarioVisible',
+  'embeddedScenarioTextVisible': 'isEmbeddedScenarioTextVisible',
   'embeddedScenarioTranslationEnabled': 'isEmbeddedScenarioTranslationEnabled',
   'embeddedScenarioTranscodingEnabled': 'isEmbeddedScenarioTranscodingEnabled',
   'embeddedNameVisible': 'isEmbeddedNameVisible',
