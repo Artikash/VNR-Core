@@ -182,6 +182,10 @@ def main():
             else:
               dwarn("failed to load font %s" % f)
 
+  ff = config.ui_font(ss.uiLanguage())
+  if ff:
+    a.setFontFamily(ff)
+
   #ff = ss.applicationFontFamily()
   #if ff:
   #  dprint("font family = %s" % ff)
@@ -438,8 +442,11 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
-    #if ss_version <= 1428816315:
-    #  ss.setValue('GrimoireHover', True) # enable automatic popup by default
+
+    if ss_version <= 1432219874:
+      ss.remove('KoreanFont') # use default korean font
+    else:
+      return
 
     if ss_version <= 1430531862:
       s = ss.value('BlockedLanguages')
@@ -447,6 +454,8 @@ def migrate(ss_version): # long ->
         ss.setValue('BlockedLanguages', ','.join(s))
       elif not isinstance(s, basestring):
         ss.setValue('BlockedLanguages', '')
+    else:
+      return
 
     if ss_version > 1428623451 and ss_version <= 1429000689: # re-align EDICT with UniDic
       path = rc.MECAB_EDICT_PATH
@@ -457,23 +466,33 @@ def migrate(ss_version): # long ->
           edict.align()
         else:
           ss.setValue('EdictEnabled', False)
+    else:
+      return
 
     if ss_version and ss_version <= 1428623451: # reset edict
       ss.setValue('EdictEnabled', False)
       path = rc.EDICT_PATH
       if os.path.exists(path):
         skfileio.removefile(path)
+    else:
+      return
 
     if ss_version <= 1428015070: # clear old terms by default
       xmlfile = rc.xml_path('terms')
       if xmlfile and os.path.exists(xmlfile):
         skfileio.removefile(xmlfile)
+    else:
+      return
 
     if ss_version <= 1423687966: # reset retranslator
       ss.setValue('Retranslator', '')
+    else:
+      return
 
     if ss_version <= 1422396934:
       ss.setValue('RubyText', True)
+    else:
+      return
 
     if ss_version <= 1421736204: # This is not really needed though
       for it in ( # delete all existing references
@@ -490,10 +509,14 @@ def migrate(ss_version): # long ->
         if os.path.exists(it):
           skfileio.removetree(it)
           skfileio.makedirs(it)
+    else:
+      return
 
     if ss_version <= 1419101101:
       xmlfile = rc.xml_path('terms')
       skfileio.removefile(xmlfile)
+    else:
+      return
 
     if ss_version <= 1418719123:
       path = rc.DIR_XML_COMMENT
@@ -503,14 +526,20 @@ def migrate(ss_version): # long ->
               os.path.join(rc.DIR_XML_COMMENT, os.path.basename(it)))
       except Exception, e:
         dwarn(e)
+    else:
+      return
 
     if ss_version <= 1418496188:
       xmlfile = rc.xml_path('gameitems')
       skfileio.removefile(xmlfile)
+    else:
+      return
 
     if ss_version <= 1413611470:
       if ss.value('FuriganaType') == 'kanji':
         ss.remove('FuriganaType')
+    else:
+      return
 
     if ss_version <= 1413181339:
       path = ss.zunkoLocation()
@@ -519,44 +548,62 @@ def migrate(ss_version): # long ->
         ss.setValue('ZunkoLocation', path)
         from sakurakit import skpaths
         skpaths.append_path(path)
+    else:
+      return
 
     if ss_version <= 1412817938:
       self.setValue('TermMarked', True) # enable underline by default
+    else:
+      return
 
     if ss_version <= 1412718122:
       ss.setValue('SubtitleVoice', False) # disable subtitle by default
       ss.setValue('SpeakGameText', True) # enable auto TTS by default
       ss.setValue('VoiceCharacter', True) # enable voice character by default
+    else:
+      return
 
     if ss_version <= 1412717706:
       ss.setValue('TTSEngine', 'baidu')
+    else:
+      return
 
     if ss_version <= 1410806479:
       path = rc.DIR_CACHE_AVATAR
       if os.path.exists(path):
         skfileio.removetree(path)
         skfileio.makedirs(path)
+    else:
+      return
 
     if ss_version <= 1409368561: # reset float illegal value
       ss.setValue('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
+    else:
+      return
 
     if ss_version <= 1406156022:
       # http://sakuradite.com/topic/337
       # Disable UniDicMJL
       if ss.value('MeCabDictionary') == 'unidic-mlj':
         ss.setValue('MeCabDictionary', '')
+    else:
+      return
 
     if ss_version <= 1404365364:
       path = rc.DIR_CACHE_SCAPE
       if os.path.exists(path):
         skfileio.removetree(path)
         skfileio.makedirs(path)
+    else:
+      return
 
     if ss_version <= 1404193846: # clean data cache
       path = rc.DIR_CACHE_DATA
       if os.path.exists(path):
         skfileio.removetree(path)
         skfileio.makedirs(path)
+    else:
+      return
 
     if ss_version <= 1403890414: # remove existing references directory
 
@@ -583,14 +630,20 @@ def migrate(ss_version): # long ->
       if os.path.exists(path):
         skfileio.removetree(path)
         skfileio.makedirs(path)
+    else:
+      return
 
     if ss_version <= 1402884913: # delete UniDic MLJ
       path = rc.DIR_CACHE_DICT + '/UniDicMJL'
       if os.path.exists(path):
         skfileio.removetree(path)
+    else:
+      return
 
     if ss_version <= 1401107220:
       ss.setValue('GameAgent', False) # disable game agent by default
+    else:
+      return
 
     if ss_version <= 1393896804: # clearn china images
       if ss.isMainlandChina():
@@ -598,16 +651,22 @@ def migrate(ss_version): # long ->
         if os.path.exists(path):
           skfileio.removetree(path)
           skfileio.makedirs(path)
+    else:
+      return
 
     if ss_version <= 1393493964:
       if ss.value("LocaleSwitchEnabled"): # disable locale switch
         ss.setValue("LocaleSwitchEnabled", False)
+    else:
+      return
 
     if ss_version <= 1393212106: # remove old mecab
       path = rc.DIR_DICT_MECAB
       if os.path.exists(path):
         skfileio.removetree(path)
         skfileio.makedirs(path)
+    else:
+      return
 
     if ss_version <= 1391988443: # disable lingoes dictionary
       for k in 'EdictEnabled', 'LingoesJaZh', 'LingoesJaKo', 'LingoesJaVi':
@@ -618,6 +677,8 @@ def migrate(ss_version): # long ->
         ):
         if os.path.exists(it):
           skfileio.removetree(it)
+    else:
+      return
 
     if ss_version <= 1390024359: # delete old tmp directories
       for it in (
@@ -627,16 +688,22 @@ def migrate(ss_version): # long ->
         ):
         if os.path.exists(it):
           skfileio.removetree(it)
+    else:
+      return
 
     if ss_version <= 1389682377: # enable baidu by default
       if lang.startswith('zh'):
         ss.setValue('BaiduEnabled', True)
+    else:
+      return
 
     if ss_version <= 1386141114: # remove old digests
       for k in 'gameitems', 'gamefiles':
         f = rc.xml_path(k)
         if os.path.exists(f):
           skfileio.removefile(f)
+    else:
+      return
 
     #if ss_version <= 1381812548:
     #  dprint("remove old digests")
@@ -646,27 +713,39 @@ def migrate(ss_version): # long ->
     #      if os.path.exists(f):
     #        os.remove(f)
     #  except Exception, e: dwarn(e)
+    #else:
+    #  return
 
     if ss_version <= 1378612993: # disable timezone by default
       ss.setValue('TimeZoneEnabled', False)
+    else:
+      return
 
     if ss_version <= 1375218632: # reset text capacity
       ss.setValue('TextCapacity', config.SETTINGS_TEXT_CAPACITY) # TextHook data capacity
+    else:
+      return
 
     if ss_version <= 1375068568: # disable springbaord lauch by default
       ss.setValue('SpringBoardLaunch', False) # SpringBoard do not launch game by default
+    else:
+      return
 
     if ss_version <= 1374863216: # reset fonts
       #ss.setValue('GrimoireShadow', False)
 
       for lang in 'English', 'Chinese', 'Korean', 'Thai', 'Vietnamese', 'Indonesian', 'German', 'French', 'Italian', 'Spanish', 'Portuguese', 'Russian':
         ss.setValue(lang + "Font", "DFGirl")
+    else:
+      return
 
     #if ss_version <= 1372534597:
     #  v = ss.value('MaleTTS')
     #  if v: ss.setValue('MaleVoiceJa', v)
     #  v = ss.value('FemaleTTS')
     #  if v: ss.setValue('FemaleVoiceJa', v)
+    #else:
+    #  return
 
     if ss_version <= 1372296306: # reset default grimoire settings
       ss.setValue('GrimoireZoomFactor', config.SETTINGS_ZOOM_FACTOR)
@@ -674,12 +753,18 @@ def migrate(ss_version): # long ->
       ss.setValue('GrimoireShadowOpacity', config.SETTINGS_SHADOW_OPACITY)
       ss.setValue('GrimoireSubtitleColor', config.SETTINGS_SUBTITLE_COLOR)
       #ss.setValue('GrimoireTranslationColor', config.SETTINGS_TRANSLATION_COLOR)
+    else:
+      return
 
     if ss_version <= 1370408692: # disable window hook by default
       ss.setValue('WindowHookEnabled', False) # disable window text translation by default
+    else:
+      return
 
     if ss_version <= 1365484274: # disable game detection by default
       ss.setValue('GameDetectionEnabled', True) # enable running game detection
+    else:
+      return
 
     if ss_version <= 1372227052 and ss.blockedLanguages(): # disable blocking Japanese
       try:
@@ -687,9 +772,13 @@ def migrate(ss_version): # long ->
         l.remove('ja')
         ss.setBlockedLanguages(l)
       except: pass
+    else:
+      return
 
     if ss_version <= 1365691951: # enable user-defined hook by default
       ss.setValue('HookCodeEnabled', True) # enable user-defined hook code
+    else:
+      return
 
   except Exception, e:
     dwarn(e)

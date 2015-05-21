@@ -50,6 +50,7 @@ class Application(QApplication):
     dprint("pass")
 
   def setFontFamily(self, family):
+    dprint(family)
     font = self.font()
     font.setFamily(family)
     self.setFont(font)

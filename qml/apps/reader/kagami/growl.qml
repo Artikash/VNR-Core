@@ -184,11 +184,13 @@ Item { id: root_
 
         selectByMouse: true
 
-        font.bold: true
         //font.family: "Helvetica"
         //font.family: "MS Mincho"
-        font.family: "YouYuan"
         //font.family: "Heiti TC"
+        //font.family: "Tahoma"
+        //font.family: "NanumBarunGothic"
+        font.family: "YouYuan"
+        font.bold: true
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 

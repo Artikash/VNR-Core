@@ -330,9 +330,13 @@ TR_LOCATIONS = map(parse_path, APP_YAML['tr']) # [unicode abspath]
 
 #FONT_DEFAULT = SHARE_YAML['fonts']['default']
 
-FONTS = SHARE_YAML['fonts']
-def lang_font(lang): # str -> str
-  return FONTS.get(lang) or FONTS['en']
+TEXT_FONTS = SHARE_YAML['fonts']['text']
+def text_font(lang): # str -> str
+  return TEXT_FONTS.get(lang) or TEXT_FONTS['*']
+
+UI_FONTS = SHARE_YAML['fonts']['ui']
+def ui_font(lang): # str -> str
+  return UI_FONTS.get(lang) or ''
 
 ## Options ##
 
@@ -470,7 +474,7 @@ TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpat
 JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspath]
 
 FONT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
-    for k,v in SHARE_YAML['font'].iteritems()}
+    for k,v in SHARE_YAML['font-family'].iteritems()}
 
 TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
     for k,v in SHARE_YAML['tahscript'].iteritems()}
