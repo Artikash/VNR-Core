@@ -161,7 +161,7 @@ def main(argv):
   #  dwarn("invalid number of parameters")
   #  usage()
   else:
-    family = argv[0]
+    family = argv[-1]
     quiet = '-q' in argv or '--quiet' in argv
     try:
       msg(family)
