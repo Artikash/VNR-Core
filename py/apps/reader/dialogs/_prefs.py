@@ -77,12 +77,12 @@ FONT_INFO = {
     'size': '46MB',
     'desc': my.tr("for uncommon CJK hanzi and radicals"),
   },
-  'nanum': {
-    'lang': 'ko',
-    'name': "Nanum Barun Gothic",
-    'size': '4MB',
-    'desc': my.tr("for Korean text to look better"),
-  },
+  #'nanum': {
+  #  'lang': 'ko',
+  #  'name': "Nanum Barun Gothic",
+  #  'size': '4MB',
+  #  'desc': my.tr("for Korean text to look better"),
+  #},
 }
 
 LINGOES_DICT_NAMES = {
@@ -2489,7 +2489,7 @@ class _TextTab(object):
         setattr(self, "_load{0}Font".format(Lang), load)
         setattr(self, "_save{0}Font".format(Lang), save)
 
-        deffont = i18n.font_family(it)
+        deffont = config.text_font(it)
         resetButton = self._createResetFontButton(deffont, partial(
             getattr(ss, "set{0}Font".format(Lang)), deffont))
 
@@ -2501,8 +2501,8 @@ class _TextTab(object):
         c += 1; grid.addWidget(resetButton, r, c)
 
         label = "<= " + tr_(Lang)
-        if it == 'ko':
-          label += " (%s %s by @mireado)" % (tr_("recommended"), "NanumBarunGothic")
+        #if it == 'ko':
+        #  label += " (%s %s by @mireado)" % (tr_("recommended"), "NanumBarunGothic")
         c += 1; grid.addWidget(QtWidgets.QLabel(label), r, c)
 
     ret = QtWidgets.QGroupBox(tr_("Font family"))
@@ -6325,31 +6325,29 @@ class _FontDownloadsTab(object):
 
   @memoizedproperty
   def fontGroup(self): # Phrase dictionaries
-    blans = settings.global_().blockedLanguages()
 
     grid = QtWidgets.QGridLayout()
 
     r = 0
 
     #blans = settings.global_().blockedLanguages()
-
-    for lang in 'ja', 'ko':
-      if lang not in blans:
-        label = "%s" % i18n.language_name(lang)
-        if lang == 'ko':
-          label += " (%s, %s)" % (
-            tr_("optional"),
-            my.tr("recommended by {0}").format('@mireado'),
-          )
-        label += ":"
-        grid.addWidget(QtWidgets.QLabel(label), r, 0, 1, 3)
-        r += 1
-        for family,info in FONT_INFO.iteritems():
-          if lang == info['lang']:
-            grid.addWidget(self.getFontButton(family), r, 0)
-            grid.addWidget(self.getFontStatusLabel(family), r, 1)
-            grid.addWidget(self.getFontIntroLabel(family), r, 2)
-            r += 1
+    #for lang in 'ja', 'ko':
+    #  if lang not in blans:
+    #label = "%s" % i18n.language_name(lang)
+    #if lang == 'ko':
+    #  label += " (%s, %s)" % (
+    #    tr_("optional"),
+    #    my.tr("recommended by {0}").format('@mireado'),
+    #  )
+    #label += ":"
+    #grid.addWidget(QtWidgets.QLabel(label), r, 0, 1, 3)
+    r += 1
+    for family,info in FONT_INFO.iteritems():
+      #if lang == info['lang']:
+      grid.addWidget(self.getFontButton(family), r, 0)
+      grid.addWidget(self.getFontStatusLabel(family), r, 1)
+      grid.addWidget(self.getFontIntroLabel(family), r, 2)
+      r += 1
 
     infoLabel = QtWidgets.QLabel('\n'.join((
       my.tr("Adding fonts require restarting VNR to take effect."),
@@ -6451,10 +6449,10 @@ class _FontDownloadsTab(object):
     return False
 
   def refresh(self):
-    blans = settings.global_().blockedLanguages()
-    for family,info in FONT_INFO.iteritems():
-      if info['lang'] not in blans:
-        self.refreshFont(family)
+    #blans = settings.global_().blockedLanguages()
+    for family in FONT_INFO:
+      #if info['lang'] not in blans:
+      self.refreshFont(family)
 
   def startRefresh(self, dic, refresh):  # dic, ->
     self._refreshTasks.append((dic, refresh))

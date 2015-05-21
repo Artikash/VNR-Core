@@ -1803,7 +1803,7 @@ class Settings(QSettings):
 
   japaneseFontChanged = Signal(unicode)
   def japaneseFont(self):
-    return self.value('JapaneseFont', config.lang_font('ja'))
+    return self.value('JapaneseFont', config.text_font('ja'))
   def setJapaneseFont(self, value):
     if value != self.japaneseFont():
       self.setValue('JapaneseFont', value)
@@ -1811,7 +1811,7 @@ class Settings(QSettings):
 
   englishFontChanged = Signal(unicode)
   def englishFont(self):
-    return self.value('EnglishFont', config.lang_font('en'))
+    return self.value('EnglishFont', config.text_font('en'))
   def setEnglishFont(self, value):
     if value != self.englishFont():
       self.setValue('EnglishFont', value)
@@ -1819,7 +1819,7 @@ class Settings(QSettings):
 
   chineseFontChanged = Signal(unicode)
   def chineseFont(self):
-    return self.value('ChineseFont', config.lang_font('zh'))
+    return self.value('ChineseFont', config.text_font('zh'))
   def setChineseFont(self, value):
     if value != self.chineseFont():
       self.setValue('ChineseFont', value)
@@ -1835,7 +1835,7 @@ class Settings(QSettings):
 
   koreanFontChanged = Signal(unicode)
   def koreanFont(self):
-    return self.value('KoreanFont', config.lang_font('ko'))
+    return self.value('KoreanFont', config.text_font('ko'))
   def setKoreanFont(self, value):
     if value != self.koreanFont():
       self.setValue('KoreanFont', value)
@@ -1843,7 +1843,7 @@ class Settings(QSettings):
 
   thaiFontChanged = Signal(unicode)
   def thaiFont(self):
-    return self.value('ThaiFont', config.lang_font('th'))
+    return self.value('ThaiFont', config.text_font('th'))
   def setThaiFont(self, value):
     if value != self.thaiFont():
       self.setValue('ThaiFont', value)
@@ -1851,7 +1851,7 @@ class Settings(QSettings):
 
   vietnameseFontChanged = Signal(unicode)
   def vietnameseFont(self):
-    return self.value('VietnameseFont', config.lang_font('vi'))
+    return self.value('VietnameseFont', config.text_font('vi'))
   def setVietnameseFont(self, value):
     if value != self.vietnameseFont():
       self.setValue('VietnameseFont', value)
@@ -1859,7 +1859,7 @@ class Settings(QSettings):
 
   malaysianFontChanged = Signal(unicode)
   def malaysianFont(self):
-    return self.value('MalaysianFont', config.lang_font('ms'))
+    return self.value('MalaysianFont', config.text_font('ms'))
   def setMalaysianFont(self, value):
     if value != self.malaysianFont():
       self.setValue('MalaysianFont', value)
@@ -1867,7 +1867,7 @@ class Settings(QSettings):
 
   indonesianFontChanged = Signal(unicode)
   def indonesianFont(self):
-    return self.value('IndonesianFont', config.lang_font('id'))
+    return self.value('IndonesianFont', config.text_font('id'))
   def setIndonesianFont(self, value):
     if value != self.indonesianFont():
       self.setValue('IndonesianFont', value)
@@ -1875,7 +1875,7 @@ class Settings(QSettings):
 
   czechFontChanged = Signal(unicode)
   def czechFont(self):
-    return self.value('CzechFont', config.lang_font('cs'))
+    return self.value('CzechFont', config.text_font('cs'))
   def setCzechFont(self, value):
     if value != self.czechFont():
       self.setValue('CzechFont', value)
@@ -1883,7 +1883,7 @@ class Settings(QSettings):
 
   danishFontChanged = Signal(unicode)
   def danishFont(self):
-    return self.value('CzechFont', config.lang_font('da'))
+    return self.value('CzechFont', config.text_font('da'))
   def setDanishFont(self, value):
     if value != self.danishFont():
       self.setValue('DanishFont', value)
@@ -1891,7 +1891,7 @@ class Settings(QSettings):
 
   greekFontChanged = Signal(unicode)
   def greekFont(self):
-    return self.value('GreekFont', config.lang_font('el'))
+    return self.value('GreekFont', config.text_font('el'))
   def setGreekFont(self, value):
     if value != self.greekFont():
       self.setValue('greekFont', value)
@@ -1899,7 +1899,7 @@ class Settings(QSettings):
 
   finnishFontChanged = Signal(unicode)
   def finnishFont(self):
-    return self.value('FinnishFont', config.lang_font('fi'))
+    return self.value('FinnishFont', config.text_font('fi'))
   def setFinnishFont(self, value):
     if value != self.finnishFont():
       self.setValue('FinnishFont', value)
@@ -1907,7 +1907,7 @@ class Settings(QSettings):
 
   hungarianFontChanged = Signal(unicode)
   def hungarianFont(self):
-    return self.value('HungarianFont', config.lang_font('hu'))
+    return self.value('HungarianFont', config.text_font('hu'))
   def setHungarianFont(self, value):
     if value != self.hungarianFont():
       self.setValue('HungarianFont', value)
@@ -1915,7 +1915,7 @@ class Settings(QSettings):
 
   norwegianFontChanged = Signal(unicode)
   def norwegianFont(self):
-    return self.value('NorwegianFont', config.lang_font('no'))
+    return self.value('NorwegianFont', config.text_font('no'))
   def setNorwegianFont(self, value):
     if value != self.norwegianFont():
       self.setValue('NorwegianFont', value)
@@ -1923,7 +1923,7 @@ class Settings(QSettings):
 
   romanianFontChanged = Signal(unicode)
   def romanianFont(self):
-    return self.value('RomanianFont', config.lang_font('ro'))
+    return self.value('RomanianFont', config.text_font('ro'))
   def setRomanianFont(self, value):
     if value != self.romanianFont():
       self.setValue('RomanianFont', value)
@@ -1931,7 +1931,7 @@ class Settings(QSettings):
 
   slovakFontChanged = Signal(unicode)
   def slovakFont(self):
-    return self.value('SlovakFont', config.lang_font('sk'))
+    return self.value('SlovakFont', config.text_font('sk'))
   def setSlovakFont(self, value):
     if value != self.slovakFont():
       self.setValue('SlovakFont', value)
@@ -1939,7 +1939,7 @@ class Settings(QSettings):
 
   swedishFontChanged = Signal(unicode)
   def swedishFont(self):
-    return self.value('SwedishFont', config.lang_font('sv'))
+    return self.value('SwedishFont', config.text_font('sv'))
   def setSwedishFont(self, value):
     if value != self.swedishFont():
       self.setValue('SwedishFont', value)
@@ -1947,7 +1947,7 @@ class Settings(QSettings):
 
   turkishFontChanged = Signal(unicode)
   def turkishFont(self):
-    return self.value('TurkishFont', config.lang_font('tr'))
+    return self.value('TurkishFont', config.text_font('tr'))
   def setTurkishFont(self, value):
     if value != self.turkishFont():
       self.setValue('TurkishFont', value)
@@ -1955,7 +1955,7 @@ class Settings(QSettings):
 
   ukrainianFontChanged = Signal(unicode)
   def ukrainianFont(self):
-    return self.value('UkrainianFont', config.lang_font('uk'))
+    return self.value('UkrainianFont', config.text_font('uk'))
   def setUkrainianFont(self, value):
     if value != self.ukrainianFont():
       self.setValue('UkrainianFont', value)
@@ -1963,7 +1963,7 @@ class Settings(QSettings):
 
   arabicFontChanged = Signal(unicode)
   def arabicFont(self):
-    return self.value('ArabicFont', config.lang_font('ar'))
+    return self.value('ArabicFont', config.text_font('ar'))
   def setArabicFont(self, value):
     if value != self.arabicFont():
       self.setValue('ArabicFont', value)
@@ -1971,7 +1971,7 @@ class Settings(QSettings):
 
   germanFontChanged = Signal(unicode)
   def germanFont(self):
-    return self.value('GermanFont', config.lang_font('de'))
+    return self.value('GermanFont', config.text_font('de'))
   def setGermanFont(self, value):
     if value != self.germanFont():
       self.setValue('GermanFont', value)
@@ -1979,7 +1979,7 @@ class Settings(QSettings):
 
   frenchFontChanged = Signal(unicode)
   def frenchFont(self):
-    return self.value('FrenchFont', config.lang_font('fr'))
+    return self.value('FrenchFont', config.text_font('fr'))
   def setFrenchFont(self, value):
     if value != self.frenchFont():
       self.setValue('FrenchFont', value)
@@ -1987,7 +1987,7 @@ class Settings(QSettings):
 
   italianFontChanged = Signal(unicode)
   def italianFont(self):
-    return self.value('ItalianFont', config.lang_font('it'))
+    return self.value('ItalianFont', config.text_font('it'))
   def setItalianFont(self, value):
     if value != self.italianFont():
       self.setValue('ItalianFont', value)
@@ -1995,7 +1995,7 @@ class Settings(QSettings):
 
   spanishFontChanged = Signal(unicode)
   def spanishFont(self):
-    return self.value('SpanishFont', config.lang_font('es'))
+    return self.value('SpanishFont', config.text_font('es'))
   def setSpanishFont(self, value):
     if value != self.spanishFont():
       self.setValue('SpanishFont', value)
@@ -2003,7 +2003,7 @@ class Settings(QSettings):
 
   portugueseFontChanged = Signal(unicode)
   def portugueseFont(self):
-    return self.value('PortugueseFont', config.lang_font('pt'))
+    return self.value('PortugueseFont', config.text_font('pt'))
   def setPortugueseFont(self, value):
     if value != self.portugueseFont():
       self.setValue('PortugueseFont', value)
@@ -2011,7 +2011,7 @@ class Settings(QSettings):
 
   russianFontChanged = Signal(unicode)
   def russianFont(self):
-    return self.value('RussianFont', config.lang_font('ru'))
+    return self.value('RussianFont', config.text_font('ru'))
   def setRussianFont(self, value):
     if value != self.russianFont():
       self.setValue('RussianFont', value)
@@ -2019,7 +2019,7 @@ class Settings(QSettings):
 
   polishFontChanged = Signal(unicode)
   def polishFont(self):
-    return self.value('PolishFont', config.lang_font('pl'))
+    return self.value('PolishFont', config.text_font('pl'))
   def setPolishFont(self, value):
     if value != self.polishFont():
       self.setValue('PolishFont', value)
@@ -2027,7 +2027,7 @@ class Settings(QSettings):
 
   dutchFontChanged = Signal(unicode)
   def dutchFont(self):
-    return self.value('DutchFont', config.lang_font('nl'))
+    return self.value('DutchFont', config.text_font('nl'))
   def setDutchFont(self, value):
     if value != self.dutchFont():
       self.setValue('DutchFont', value)
@@ -2456,63 +2456,63 @@ class SettingsProxy(QObject):
   blockedLanguagesChanged = Signal(unicode)
   blockedLanguages = unicode_property('BlockedLanguages', '', notify=blockedLanguagesChanged)
   japaneseFontChanged = Signal(unicode)
-  japaneseFont = unicode_property('JapaneseFont', config.lang_font('ja'), notify=japaneseFontChanged)
+  japaneseFont = unicode_property('JapaneseFont', config.text_font('ja'), notify=japaneseFontChanged)
   englishFontChanged = Signal(unicode)
-  englishFont = unicode_property('EnglishFont', config.lang_font('en'), notify=englishFontChanged)
+  englishFont = unicode_property('EnglishFont', config.text_font('en'), notify=englishFontChanged)
   chineseFontChanged = Signal(unicode)
-  chineseFont = unicode_property('ChineseFont', config.lang_font('zh'), notify=chineseFontChanged)
+  chineseFont = unicode_property('ChineseFont', config.text_font('zh'), notify=chineseFontChanged)
   #simplifiedChineseFontChanged = Signal(unicode)
   #simplifiedChineseFont = unicode_property('SimplifiedChineseFont', config.FONT_ZHS, notify=simplifiedChineseFontChanged)
   koreanFontChanged = Signal(unicode)
-  koreanFont = unicode_property('KoreanFont', config.lang_font('ko'), notify=koreanFontChanged)
+  koreanFont = unicode_property('KoreanFont', config.text_font('ko'), notify=koreanFontChanged)
   thaiFontChanged = Signal(unicode)
-  thaiFont = unicode_property('ThaiFont', config.lang_font('th'), notify=thaiFontChanged)
+  thaiFont = unicode_property('ThaiFont', config.text_font('th'), notify=thaiFontChanged)
   vietnameseFontChanged = Signal(unicode)
-  vietnameseFont = unicode_property('VietnameseFont', config.lang_font('vi'), notify=vietnameseFontChanged)
+  vietnameseFont = unicode_property('VietnameseFont', config.text_font('vi'), notify=vietnameseFontChanged)
   malaysianFontChanged = Signal(unicode)
-  malaysianFont = unicode_property('MalaysianFont', config.lang_font('ms'), notify=malaysianFontChanged)
+  malaysianFont = unicode_property('MalaysianFont', config.text_font('ms'), notify=malaysianFontChanged)
   indonesianFontChanged = Signal(unicode)
-  indonesianFont = unicode_property('IndonesianFont', config.lang_font('id'), notify=indonesianFontChanged)
+  indonesianFont = unicode_property('IndonesianFont', config.text_font('id'), notify=indonesianFontChanged)
   arabicFontChanged = Signal(unicode)
-  arabicFont = unicode_property('ArabicFont', config.lang_font('ar'), notify=arabicFontChanged)
+  arabicFont = unicode_property('ArabicFont', config.text_font('ar'), notify=arabicFontChanged)
   germanFontChanged = Signal(unicode)
-  germanFont = unicode_property('GermanFont', config.lang_font('de'), notify=germanFontChanged)
+  germanFont = unicode_property('GermanFont', config.text_font('de'), notify=germanFontChanged)
   frenchFontChanged = Signal(unicode)
-  frenchFont = unicode_property('FrenchFont', config.lang_font('fr'), notify=frenchFontChanged)
+  frenchFont = unicode_property('FrenchFont', config.text_font('fr'), notify=frenchFontChanged)
   italianFontChanged = Signal(unicode)
-  italianFont = unicode_property('ItalianFont', config.lang_font('it'), notify=italianFontChanged)
+  italianFont = unicode_property('ItalianFont', config.text_font('it'), notify=italianFontChanged)
   spanishFontChanged = Signal(unicode)
-  spanishFont = unicode_property('SpanishFont', config.lang_font('es'), notify=spanishFontChanged)
+  spanishFont = unicode_property('SpanishFont', config.text_font('es'), notify=spanishFontChanged)
   portugueseFontChanged = Signal(unicode)
-  portugueseFont = unicode_property('PortugueseFont', config.lang_font('pt'), notify=portugueseFontChanged)
+  portugueseFont = unicode_property('PortugueseFont', config.text_font('pt'), notify=portugueseFontChanged)
   russianFontChanged = Signal(unicode)
-  russianFont = unicode_property('RussianFont', config.lang_font('ru'), notify=russianFontChanged)
+  russianFont = unicode_property('RussianFont', config.text_font('ru'), notify=russianFontChanged)
   polishFontChanged = Signal(unicode)
-  polishFont = unicode_property('PolishFont', config.lang_font('pl'), notify=polishFontChanged)
+  polishFont = unicode_property('PolishFont', config.text_font('pl'), notify=polishFontChanged)
   dutchFontChanged = Signal(unicode)
-  dutchFont = unicode_property('DutchFont', config.lang_font('nl'), notify=dutchFontChanged)
+  dutchFont = unicode_property('DutchFont', config.text_font('nl'), notify=dutchFontChanged)
   czechFontChanged = Signal(unicode)
-  czechFont = unicode_property('CzechFont', config.lang_font('cs'), notify=czechFontChanged)
+  czechFont = unicode_property('CzechFont', config.text_font('cs'), notify=czechFontChanged)
   danishFontChanged = Signal(unicode)
-  danishFont = unicode_property('DanishFont', config.lang_font('da'), notify=danishFontChanged)
+  danishFont = unicode_property('DanishFont', config.text_font('da'), notify=danishFontChanged)
   greekFontChanged = Signal(unicode)
-  greekFont = unicode_property('GreekFont', config.lang_font('el'), notify=greekFontChanged)
+  greekFont = unicode_property('GreekFont', config.text_font('el'), notify=greekFontChanged)
   finnishFontChanged = Signal(unicode)
-  finnishFont = unicode_property('FinnishFont', config.lang_font('fi'), notify=finnishFontChanged)
+  finnishFont = unicode_property('FinnishFont', config.text_font('fi'), notify=finnishFontChanged)
   hungarianFontChanged = Signal(unicode)
-  hungarianFont = unicode_property('HungarianFont', config.lang_font('hu'), notify=hungarianFontChanged)
+  hungarianFont = unicode_property('HungarianFont', config.text_font('hu'), notify=hungarianFontChanged)
   norwegianFontChanged = Signal(unicode)
-  norwegianFont = unicode_property('NorwegianFont', config.lang_font('no'), notify=norwegianFontChanged)
+  norwegianFont = unicode_property('NorwegianFont', config.text_font('no'), notify=norwegianFontChanged)
   romanianFontChanged = Signal(unicode)
-  romanianFont = unicode_property('RomanianFont', config.lang_font('ro'), notify=romanianFontChanged)
+  romanianFont = unicode_property('RomanianFont', config.text_font('ro'), notify=romanianFontChanged)
   slovakFontChanged = Signal(unicode)
-  slovakFont = unicode_property('SlovakFont', config.lang_font('sk'), notify=slovakFontChanged)
+  slovakFont = unicode_property('SlovakFont', config.text_font('sk'), notify=slovakFontChanged)
   swedishFontChanged = Signal(unicode)
-  swedishFont = unicode_property('SwedishFont', config.lang_font('sv'), notify=swedishFontChanged)
+  swedishFont = unicode_property('SwedishFont', config.text_font('sv'), notify=swedishFontChanged)
   turkishFontChanged = Signal(unicode)
-  turkishFont = unicode_property('TurkishFont', config.lang_font('tr'), notify=turkishFontChanged)
+  turkishFont = unicode_property('TurkishFont', config.text_font('tr'), notify=turkishFontChanged)
   ukrainianFontChanged = Signal(unicode)
-  ukrainianFont = unicode_property('UkrainianFont', config.lang_font('uk'), notify=ukrainianFontChanged)
+  ukrainianFont = unicode_property('UkrainianFont', config.text_font('uk'), notify=ukrainianFontChanged)
 
   #msimeParserEnabledChanged = Signal(bool)
   #msimeParserEnabled = bool_property('MsimeParserEnabled', False, notify=msimeParserEnabledChanged)

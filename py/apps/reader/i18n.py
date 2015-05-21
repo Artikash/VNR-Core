@@ -158,9 +158,6 @@ TRANSLATOR_NAMES = { # [TranslatorTraits]
 }
 def translator_name(key): return TRANSLATOR_NAMES.get(key) or ''
 
-def font_family(lang):
-  return config.FONTS.get(lang) or ''
-
 GENDER_NAMES = {
   'm': tr_("Male"),
   'f': tr_("Female"),
