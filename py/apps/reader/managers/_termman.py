@@ -54,7 +54,7 @@ def _mutate_ko_role(role, text):
   @param  text  unicode  replacement
   @return  str not None
   """
-  if text and role in ('m', 'n'):
+  if text and role in ('m', 'n', 'pn'):
     ch = text[-1]
     if kochars.issyllable(ch):
       ch = kochars.gethangulfinal_en(ch)
