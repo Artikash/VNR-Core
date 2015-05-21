@@ -3910,7 +3910,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
     <message>
         <location filename="dialogs/_prefs.py" line="3994"/>
         <source>Display ruby below instead of above kanji</source>
-        <translation>上下颠倒汉字和读音的位置，在读音上边显示汉字</translation>
+        <translation>上下颠倒汉字和读音的位置</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5038"/>

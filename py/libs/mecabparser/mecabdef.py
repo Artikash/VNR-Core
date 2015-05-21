@@ -43,6 +43,8 @@ def rb_lang(ruby): # str -> str
 
 def rb_has_space(ruby): # str -> bool
   return ruby not in (RB_HIRA, RB_KATA)
+def rb_has_case(ruby): # str -> bool
+  return ruby in (RB_ROMAJI, RB_RU, RB_UK, RB_EL)
 def rb_is_wide(ruby): # str -> bool
   return ruby in (RB_HIRA, RB_KATA, RB_KO)
 def rb_is_thin(ruby): # str -> bool

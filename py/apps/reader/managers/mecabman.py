@@ -203,13 +203,14 @@ ROLE_COLORS = {
   mecabdef.ROLE_INTERJ: 'rgba(0,0,255,%s)'  % ROLE_COLOR_ALPHA, # = conj
   mecabdef.ROLE_PART: 'rgba(0,0,255,%s)'    % ROLE_COLOR_ALPHA, # = conj, dangling
 }
-def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, annotated=False, highlight=False, center=True, fmt=mecabformat.UNIDIC_FORMATTER):
+def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=100, rubySize=10, colorize=False, rubyInverted=False, annotated=False, highlight=False, center=True, fmt=mecabformat.UNIDIC_FORMATTER):
   """
   @param  text  unicode
   @param  rubyType  str
   @param* rubyKana  bool
   @param* charPerLine  int  maximum number of characters per line
   @param* rubySize  float
+  @param* rubyInverted  bool
   @param* colorsize  bool
   @param* annotated  bool
   @param* highlight  bool
@@ -236,17 +237,18 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     # yomi size / surface size
     yomiWidth = KANJI_YOMI_WIDTH if mecabdef.rb_is_wide(rubyType) else LATIN_YOMI_WIDTH
 
-    invertRuby = False # always disable inverting
     roundRubySize = int(round(rubySize)) or 1
-    paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
     annotSize = int(round(rubySize * ANNOT_ZOOM)) or 1
+    paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if rubyInverted else 0
 
     role = None
     roleExists = False
     rubyExists = False
-    color = last_color = None
+    color = lastColor = None
 
     for surface, yomi, feature, surface_type in q:
+      #colorChanged = False
+
       if hasfeature:
         features[surface] = feature
 
@@ -266,10 +268,13 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         else:
           color = None
       elif highlight:
-        if last_color and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX, mecabdef.ROLE_SUFFIX, mecabdef.ROLE_MARK):
-          color = last_color
+        if lastColor and role in (mecabdef.ROLE_PART, mecabdef.ROLE_AUX, mecabdef.ROLE_SUFFIX, mecabdef.ROLE_MARK):
+          color = lastColor
         else:
-          last_color = color = ROLE_COLORS.get(role)
+          lastColor = color = ROLE_COLORS.get(role)
+          #if lastColor != color:
+          #  lastColor = color
+          #  colorChanged = True
 
       width = max(
         len(surface),
@@ -292,10 +297,10 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         lineCount = 0
         roleExists = False
         rubyExists = False
-      if invertRuby and yomi:
+      if rubyInverted and yomi:
         #if surface:
         #  surface = wide2thin(surface)
-        if furiType in (defs.FURI_ROMAJI, defs.FURI_ROMAJI_RU) and len(yomi) > 2:
+        if mecabdef.rb_has_case(rubyType) and len(yomi) > 2: #or colorChanged)
           yomi = yomi.title()
         t = yomi, surface, (role if annotated else None), color
       else:

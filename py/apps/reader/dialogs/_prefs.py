@@ -4398,6 +4398,8 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.rubyHighlightButton)
     layout.addWidget(self.rubyAnnotButton)
     layout.addWidget(self.rubyKanaButton)
+    layout.addWidget(self.rubyInvertButton)
+
     layout.addWidget(self.hiraButton)
     layout.addWidget(self.kataButton)
     layout.addWidget(self.romajiButton)
@@ -4439,6 +4441,16 @@ class _DictionaryTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isJapaneseRubyKanaEnabled())
     ret.toggled.connect(ss.setJapaneseRubyKanaEnabled)
+    return ret
+
+  @memoizedproperty
+  def rubyInvertButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s" % (
+        my.tr("Display ruby below instead of above kanji"),
+        my.tr("like this"), u"かわい（可愛）い"))
+    ss = settings.global_()
+    ret.setChecked(ss.isJapaneseRubyInverted())
+    ret.toggled.connect(ss.setJapaneseRubyInverted)
     return ret
 
   @memoizedproperty

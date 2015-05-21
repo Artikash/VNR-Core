@@ -180,6 +180,7 @@ Item { id: root_
   property bool japaneseRubyHighlight
   property bool japaneseRubyAnnotated
   property bool japaneseRubyKanaEnabled
+  property bool japaneseRubyInverted
   property string japaneseRubyType
 
   function scrollBeginning() {
@@ -228,12 +229,12 @@ Item { id: root_
     return bean_.renderJapanese(text
       , root_.japaneseRubyType
       , root_.japaneseRubyKanaEnabled
-      //, Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyJaInverted ? 0.85 : 1)) // char per line
-      , Math.round(root_.width / (22 * root_._zoomFactor)) // char per line
+      , Math.round(root_.width / (22 * root_._zoomFactor) * (root_.japaneseRubyInverted ? 0.85 : 1)) // char per line
       , 10 * root_._zoomFactor // ruby size of furigana
       , colorize // colorize
       , root_.japaneseRubyHighlight
       , root_.japaneseRubyAnnotated
+      , root_.japaneseRubyInverted
       , root_.alignCenter
     )
   }
