@@ -555,12 +555,11 @@ DWORD Host_ModifyHook(DWORD pid, HookParam *hp)
 {
   ITH_SYNC_HOOK;
 
-  SendParam sp;
-  HANDLE hModify,hCmd;
-  hCmd = GetCmdHandleByPID(pid);
+  HANDLE hCmd = GetCmdHandleByPID(pid);
   if (hCmd == 0)
     return -1;
-  hModify = IthCreateEvent(ITH_MODIFYHOOK_EVENT);
+  HANDLE hModify = IthCreateEvent(ITH_MODIFYHOOK_EVENT);
+  SendParam sp;
   sp.type = HOST_COMMAND_MODIFY_HOOK;
   sp.hp = *hp;
   IO_STATUS_BLOCK ios;
