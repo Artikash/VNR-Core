@@ -13,11 +13,14 @@
 #include "winmutex/winmutex.h"
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
+#include <qt_windows.h>
 //#include "debug.h"
 
 //#define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
 #define D_LOCK win_mutex_lock<D::mutex_type> d_lock(d_->mutex)
-//#define D_LOCK (void)0
+
+// TODO: Use read-write lock instead
+//#define D_LOCK (void)0 // locking is temporarily disabled to avoid hanging
 
 #define DEBUG "EmbedManager"
 #include "sakurakit/skdebug.h"
@@ -28,22 +31,27 @@ class EmbedManagerPrivate
 {
 public:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
-  mutex_type mutex;
-
+  mutex_type mutex; // mutex to lock translations
   QHash<qint64, QString> translations;   // cached, {key:text}
 
-  int maximumSleepTime;
+  int waitTime;
 
   EmbedMemory *memory;
 
   EmbedManagerPrivate(QObject *parent)
-    : maximumSleepTime(1000) // 1 second
+    : waitTime(VNRAGENT_MEMORY_TIMEOUT)
   {
     memory = new EmbedMemory(parent);
     memory->create();
   }
 
-  static void sleep(int msecs) { ::Sleep(msecs); }
+  bool wait() // return if get signaled
+  {
+    win_event ev(VNRAGENT_MEMORY_EVENT); // create new event on each wait
+    return ev.wait(waitTime);
+  }
+
+  //static void sleep(int msecs) { ::Sleep(msecs); }
   //void notify() {}
 };
 
@@ -88,7 +96,7 @@ EmbedManager::~EmbedManager()
 }
 
 void EmbedManager::setTranslationWaitTime(int msecs)
-{ d_->maximumSleepTime = msecs; }
+{ d_->waitTime = msecs; }
 
 // - Actions -
 
@@ -136,16 +144,12 @@ QString EmbedManager::findTranslation(qint64 hash, int role) const
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 {
   D_LOCK;
-  enum { SleepInterval = 10 }; // sleep by 10 ms
 
   qint64 key = Engine::hashTextKey(hash, role);
   QString ret = d_->translations.value(key);
-  if (ret.isEmpty()) {
-    int sleepCount = d_->maximumSleepTime / SleepInterval;
-    for (int i = 0; i < sleepCount; i++) {
-      if (!d_->memory->isAttached() || d_->memory->isDataCanceled())
-        break;
-      if (d_->memory->isDataReady() && d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
+  if (ret.isEmpty())
+    for (int i = 0; i < 2; i++) { // repeat twice
+      if (d_->memory->isAttached() && d_->memory->isDataReady() && d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
         // Lock is not needed since DataReady status has been set
         //d_->memory->lock();
         ret = d_->memory->dataText();
@@ -154,167 +158,11 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
           d_->translations[key] = ret;
         break;
       }
-      D::sleep(SleepInterval);
+      if (i == 0) // wait only twice
+        d_->wait();
     }
-  }
+
   return ret;
 }
 
-  //D_LOCK;
-  //qint64 key = Engine::hashTextKey(hash, role);
-  //auto it = d_->translations.constFind(key);
-  //if (it == d_->translations.constEnd()) { // FIXME: supposed to be while
-  //while (it == d_->translations.constEnd()) {
-  //  d_->unlock();
-  //  d_->sleep();
-  //  d_->lock();
-  //  it = d_->translations.constFind(key);
-  //}
-  //return it == d_->translations.constEnd() ? QString() : it.value();
-
 // EOF
-
-/*
-  // - Tasks -
-
-  struct Task
-  {
-    QString text;
-    qint64 hash;
-    int role;
-    void *context;
-
-    Task() : hash(0), role(0), context(nullptr) {}
-    Task(const QString &text, qint64 hash, int role, void *context)
-      : text(text), hash(hash), role(role), context(context) {}
-
-    QVariantHash toVariant() const
-    {
-      QVariantHash ret;
-      ret["text"] = text;
-      ret["hash"] = hash;
-      ret["role"] = role;
-      return ret;
-    }
-
-    bool isEmpty() const { return !role; }
-    void release() const
-    {
-      if (context)
-        AbstractEngine::instance()->releaseContext(context);
-        //context = nullptr;
-    }
-  };
-
-  void setNameTask(const Task &t)
-  {
-    nameTask.release();
-    nameTask = t;
-    nameTaskDirty = true;
-  }
-
-  void setScenarioTask(const Task &t)
-  {
-    scenarioTask.release();
-    scenarioTask = t;
-    scenarioTaskDirty = true;
-  }
-
-  void addOtherTask(const Task &t)
-  {
-    otherTasks.append(t);
-  }
-
-  void clearOtherTasks()
-  {
-    if (!otherTasks.isEmpty()) {
-      foreach (const auto &it, otherTasks)
-        it.release();
-      otherTasks.clear();
-    }
-    otherTaskCleanSize = 0;
-  }
-
-  void touchTasks()
-  {
-    //refreshTaskTimer->start();
-    submitDirtyTasks();
-  }
-
-  void submitDirtyTasks()
-  {
-    QVariantList l;
-    if (scenarioTaskDirty)
-      l.append(scenarioTask.toVariant());
-    if (nameTaskDirty)
-      l.append(nameTask.toVariant());
-    if (otherTaskCleanSize < otherTasks.size())
-      for (auto p = otherTasks.constBegin() + qMax(0, otherTaskCleanSize); p != otherTasks.constEnd(); ++p)
-        l.append(p->toVariant());
-    if (!l.isEmpty()) {
-      QString json = QtJson::stringify(l);
-      q_->emit textReceived(json);
-    }
-  }
-
-  void doTask(const QString &text, qint64 hash, int role)
-  {
-    Task t;
-    switch (role) {
-    case Engine::ScenarioRole:
-      if (hash == scenarioTask.hash) {
-        t = scenarioTask;
-        scenarioTaskDirty = false;
-      } break;
-    case Engine::NameRole:
-      if (hash == nameTask.hash) {
-        t = nameTask;
-        nameTaskDirty = false;
-      } break;
-    case Engine::OtherRole:
-      if (!otherTasks.isEmpty())  {
-        auto it = otherTasks.begin();
-        int index = 0;
-        while (it != otherTasks.end()) {
-          if (it->hash == hash) {
-            t = *it;
-            it = otherTasks.erase(it);
-            if (index < otherTaskCleanSize)
-              otherTaskCleanSize--;
-          } else
-            ++it;
-          index++;
-        }
-      }
-    }
-    if (!t.isEmpty()) {
-      AbstractEngine::instance()->drawText(text.isEmpty() ? t.text : text, t.context);
-      t.release();
-    }
-  }
-*/
-
-
-  //enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
-  //enum { TranslationTimeout = 50 }; // wait for at most 5 seconds
-
-  //EmbedManagerPrivate() : blocked(false) {}
-  //bool isBlocked() const { return blocked; }
-  //void unblock() { blocked = false; }
-  // TODO: Add a timer to quit loop
-  //void block(int interval = 0) // TODO: get system time to prevent timeout
-  //{
-  //  if (!blocked) {
-  //    blocked = true;
-  //    while (blocked) // FIXME: Avoid using spin lock
-  //      qApp->processEvents(QEventLoop::AllEvents, interval);
-  //  }
-  //}
-
-  //explicit EmbedManagerPrivate(QObject *parent)
-  //  : loop(new QEventLoop(parent))
-  //{ QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit())); }
-
-  //bool isBlocked() const { return loop->isRunning(); }
-  //void block(int interval = 0) { if (!loop->isRunning()) loop->exec(); }
-  //void unblock() { if (loop->isRunning()) loop->quit(); }
