@@ -1,8 +1,16 @@
 // codepage.cc
 // 5/6/2014 jichi
 #include "util/codepage.h"
+#include "qtembedplugin/codecmanager.h"
 #include <QtCore/QString>
+#include <QtCore/QTextCodec>
 #include <qt_windows.h>
+
+QTextCodec *Util::codecForName(const char *name)
+{
+  QTextCodec *ret = QTextCodec::codecForName(name);
+  return ret ? ret : QtEmbedPlugin::CodecManager::globalInstance()->codecForName(name);
+}
 
 uint Util::codePageForEncoding(const QString &encoding)
 {
@@ -15,6 +23,8 @@ uint Util::codePageForEncoding(const QString &encoding)
     return Big5CodePage;
   if (t == ENC_KSC)
     return KscCodePage;
+  if (t == ENC_TIS)
+    return TisCodePage;
   if (t == ENC_UTF8)
     return Utf8CodePage;
   if (t == ENC_UTF16)
@@ -59,15 +69,16 @@ const char *Util::encodingForCodePage(uint cp)
 quint8 Util::charSetForCodePage(uint cp)
 {
   switch (cp) {
-  case 847: return THAI_CHARSET;
-  case 866: return RUSSIAN_CHARSET;
+  case TisCodePage:     return THAI_CHARSET;
+  case Koi8CodePage:    return RUSSIAN_CHARSET;
+  case SjisCodePage:    return SHIFTJIS_CHARSET;
+  case GbkCodePage:     return GB2312_CHARSET;
+  case Big5CodePage:    return CHINESEBIG5_CHARSET;
+  case KscCodePage:     return HANGUL_CHARSET;
 
-  case 932: return SHIFTJIS_CHARSET;
-  case 936: return GB2312_CHARSET;
-  case 949: return HANGUL_CHARSET;
-  case 950: return CHINESEBIG5_CHARSET;
-
-  case 1258: return VIETNAMESE_CHARSET;
+  case 1254:            return TURKISH_CHARSET;
+  case 1256:            return ARABIC_CHARSET;
+  case 1258:            return VIETNAMESE_CHARSET;
 
   //default: return DEFAULT_CHARSET;
   default: return 0;

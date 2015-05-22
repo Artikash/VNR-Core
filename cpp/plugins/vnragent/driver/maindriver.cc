@@ -125,6 +125,9 @@ void MainDriverPrivate::createEmbedDriver()
 
   connect(settings, SIGNAL(embeddedTextEnabledChanged(bool)), eng, SLOT(setEnabled(bool)));
 
+  connect(settings, SIGNAL(embeddedSpaceAlwaysInsertedChanged(bool)), eng, SLOT(setAlwaysInsertsSpaces(bool)));
+  connect(settings, SIGNAL(embeddedSpaceSmartInsertedChanged(bool)), eng, SLOT(setSmartInsertsSpaces(bool)));
+
   connect(settings, SIGNAL(embeddedTextCancellableByControlChanged(bool)), eng, SLOT(setDetectsControl(bool)));
   connect(settings, SIGNAL(embeddedAllTextsExtractedChanged(bool)), eng, SLOT(setExtractsAllTexts(bool)));
 
@@ -150,6 +153,9 @@ void MainDriverPrivate::createEmbedDriver()
     eng->setOtherVisible(settings->isEmbeddedOtherVisible());
     eng->setOtherTranscodingEnabled(settings->isEmbeddedOtherTranscodingEnabled());
     eng->setOtherTranslationEnabled(settings->isEmbeddedOtherTranslationEnabled());
+
+    eng->setAlwaysInsertsSpaces(settings->isEmbeddedSpaceAlwaysInserted());
+    eng->setSmartInsertsSpaces(settings->isEmbeddedSpaceSmartInserted());
 
     eng->setDetectsControl(settings->isEmbeddedTextCancellableByControl());
     eng->setExtractsAllTexts(settings->isEmbeddedAllTextsExtracted());

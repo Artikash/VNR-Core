@@ -7,11 +7,13 @@
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "hijack/hijackfuncs.h"
+#include "qtembedplugin/pluginmanager.h"
+#include "util/location.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
-#include "qtembedded/applicationrunner.h"
+#include "qtembedapp/applicationrunner.h"
 #endif // VNRAGENT_ENABLE_APPRUNNER
 
 #ifdef VNRAGENT_DEBUG
@@ -38,7 +40,7 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
 MainDriver *driver_;
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
-QtEmbedded::ApplicationRunner *appRunner_;
+QtEmbedApp::ApplicationRunner *appRunner_;
 #endif // VNRAGENT_ENABLE_APPRUNNER
 
 } // unnamed namespace
@@ -51,6 +53,9 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   QTextCodec *codec = QTextCodec::codecForName("UTF-8");
   QTextCodec::setCodecForCStrings(codec);
   QTextCodec::setCodecForTr(codec);
+
+  //::localizePluginManager();
+  QtEmbedPlugin::PluginManager::globalInstance()->setPrefix(Util::qtPrefix());
 
   ::createApplication_(hInstance);
 
@@ -69,7 +74,7 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   }
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
-  ::appRunner_ = new QtEmbedded::ApplicationRunner(qApp, QT_EVENTLOOP_INTERVAL);
+  ::appRunner_ = new QtEmbedApp::ApplicationRunner(qApp, QT_EVENTLOOP_INTERVAL);
   ::appRunner_->start();
 #else
   qApp->exec(); // block here

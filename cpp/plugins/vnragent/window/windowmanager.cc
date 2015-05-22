@@ -59,7 +59,7 @@ public:
     if (!enc)
       enc = ENC_SJIS;
     systemEncoding = enc;
-    systemCodec = QTextCodec::codecForName(enc);
+    systemCodec = Util::codecForName(enc);
   }
 
   bool isTranscodingNeeded() const
@@ -152,7 +152,7 @@ void WindowManager::setEncoding(const QString &v)
 {
   if (d_->encoding != v) {
     d_->encoding = v;
-    d_->encodingCodec = QTextCodec::codecForName(v.toAscii());
+    d_->encodingCodec = Util::codecForName(v.toAscii());
 
     DOUT("encoding =" << d_->encoding  << ", system =" << d_->systemEncoding);
 

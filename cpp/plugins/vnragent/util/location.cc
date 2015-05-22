@@ -49,6 +49,8 @@ QString Util::qtLocation()
   return ret;
 }
 
+QString Util::qtPrefix() { return ::dirname(qtLocation()); }
+
 QString Util::vnrLocation()
 {
   static QString ret;

@@ -10,9 +10,14 @@ class EngineSettings
 public:
   bool enabled          // if vnragent is enabled
      , detectsControl   // be aware if CTRL is pressed
-     , extractsAllTexts // send all texts unless not enabled
-     , scenarioTextVisible // display both translation and the original text for scenario
-     , nameTextVisible  // display both translation and the original text for names
+
+     , alwaysInsertsSpaces  // insert spaces after every character
+     , smartInsertsSpaces   // insert spaces only after undecodable characters
+
+     , extractsAllTexts     // send all texts unless not enabled
+     , scenarioTextVisible  // display both translation and the original text for scenario
+     , nameTextVisible      // display both translation and the original text for names
+
      , textVisible[Engine::RoleCount]           // if display/hide all texts
      , transcodingEnabled[Engine::RoleCount]    // if fix the encoding
      , translationEnabled[Engine::RoleCount]    // if display translation
@@ -26,9 +31,14 @@ public:
   EngineSettings()
     : enabled(false)
     , detectsControl(false)
+
+    , alwaysInsertsSpaces(false)
+    , smartInsertsSpaces(false)
+
     , extractsAllTexts(false)
     , scenarioTextVisible(false)
     , nameTextVisible(false)
+
     , scenarioSignature(0)
     , nameSignature(0)
   {

@@ -25,6 +25,8 @@ public:
      , embeddedOtherVisible
      , embeddedOtherTranslationEnabled
      , embeddedOtherTranscodingEnabled
+     , embeddedSpaceAlwaysInserted
+     , embeddedSpaceSmartInserted
      , embeddedTextEnabled
      , embeddedTextCancellableByControl
      , embeddedAllTextsExtracted
@@ -52,6 +54,8 @@ public:
      , embeddedOtherVisible(false)
      , embeddedOtherTranslationEnabled(false)
      , embeddedOtherTranscodingEnabled(false)
+     , embeddedSpaceAlwaysInserted(false)
+     , embeddedSpaceSmartInserted(false)
      , embeddedTextEnabled(false)
      , embeddedTextCancellableByControl(false)
      , embeddedAllTextsExtracted(false)
@@ -105,6 +109,9 @@ DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOt
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
 
+DEFINE_BOOL_PROPERTY(embeddedSpaceAlwaysInserted, isEmbeddedSpaceAlwaysInserted, setEmbeddedSpaceAlwaysInserted)
+DEFINE_BOOL_PROPERTY(embeddedSpaceSmartInserted, isEmbeddedSpaceSmartInserted, setEmbeddedSpaceSmartInserted)
+
 DEFINE_BOOL_PROPERTY(embeddedTextEnabled, isEmbeddedTextEnabled, setEmbeddedTextEnabled)
 DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellableByControl, setEmbeddedTextCancellableByControl)
 DEFINE_BOOL_PROPERTY(embeddedAllTextsExtracted, isEmbeddedAllTextsExtracted, setEmbeddedAllTextsExtracted)
@@ -122,18 +129,9 @@ void Settings::disable()
 {
   setWindowTranslationEnabled(false);
   setWindowTextVisible(false);
-  //setWindowTranscodingEnabled(false);
 
   setEmbeddedTextEnabled(false);
 
-  //setEmbeddedScenarioVisible(true);
-  //setEmbeddedScenarioTextVisible(true);
-  //setEmbeddedScenarioTranslationEnabled(false);
-  //setEmbeddedNameVisible(true);
-  //setEmbeddedNameTextVisible(true);
-  //setEmbeddedNameTranslationEnabled(false);
-  //setEmbeddedOtherVisible(true);
-  //setEmbeddedOtherTranslationEnabled(false);
 }
 
 bool Settings::isWindowDriverNeeded() const
@@ -181,6 +179,8 @@ void Settings::load(const QString &json)
     , H_embeddedOtherVisible = 32685349
     , H_embeddedOtherTranslationEnabled = 9290068
     , H_embeddedOtherTranscodingEnabled = 19782804
+    , H_embeddedSpaceAlwaysInserted = 241397364
+    , H_embeddedSpaceSmartInserted = 187266164
   };
 
   QVariant data = QxtJSON::parse(json);
@@ -208,6 +208,9 @@ void Settings::load(const QString &json)
     case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;
     case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
     case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
+
+    case H_embeddedSpaceAlwaysInserted: setEmbeddedSpaceAlwaysInserted(bValue); break;
+    case H_embeddedSpaceSmartInserted: setEmbeddedSpaceSmartInserted(bValue); break;
 
     case H_embeddedTextEnabled: setEmbeddedTextEnabled(bValue); break;
     case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;

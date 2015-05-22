@@ -193,7 +193,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>기본 색상 복원</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8742"/>
+        <location filename="dialogs/_prefs.py" line="8743"/>
         <source>Preferred Chinese characters</source>
         <translation>중국한자 우선</translation>
     </message>
@@ -203,7 +203,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>중국어 간체 번역문을 중국어 번체로 변환</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4760"/>
+        <location filename="dialogs/_prefs.py" line="8874"/>
         <source>like this</source>
         <translation>예시</translation>
     </message>
@@ -2935,42 +2935,42 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>이 게임은 반복제거를 사용해야 할 필요가 있습니다</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8699"/>
+        <location filename="dialogs/_prefs.py" line="8700"/>
         <source>Preferred game text extraction method</source>
         <translation>게임원문 추출방법 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8708"/>
+        <location filename="dialogs/_prefs.py" line="8709"/>
         <source>Use VNR&apos;s built-in hook instead of ITH if possible</source>
         <translation>가능하면 ITH 대신 VNR 내장 후커 사용</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8716"/>
+        <location filename="dialogs/_prefs.py" line="8717"/>
         <source>Changing the text extraction method requires restarting the game.</source>
         <translation>텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8799"/>
+        <location filename="dialogs/_prefs.py" line="8800"/>
         <source>Translation wait time</source>
         <translation>번역 대기시간</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8804"/>
+        <location filename="dialogs/_prefs.py" line="8805"/>
         <source>Embedding options</source>
         <translation>내장 텍스트 설정</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8832"/>
+        <location filename="dialogs/_prefs.py" line="8833"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>대기시간이 클수록 번역이 느릴때 게임도 같이 느려질겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8839"/>
+        <location filename="dialogs/_prefs.py" line="8840"/>
         <source>Disable text extraction when Ctrl is pressed</source>
         <translation>Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8849"/>
+        <location filename="dialogs/_prefs.py" line="8911"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -2980,7 +2980,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>내장 자막</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="245"/>
+        <location filename="managers/gameagent.py" line="249"/>
         <source>Detect game engine</source>
         <translation>게임엔진 발견</translation>
     </message>
@@ -3073,17 +3073,17 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
 이 기능때문에 게임에 팅기면, Debug VNR을 사용해서 VNR을 실행해 주세요, 그러면 vnragent.log 파일을 VNR폴더에 생성할 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8717"/>
+        <location filename="dialogs/_prefs.py" line="8718"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
         <translation>이 기능은 현재 개발중입니다. ITH의 일부 게임만을 지원합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8718"/>
+        <location filename="dialogs/_prefs.py" line="8719"/>
         <source>The current supported game engines are: {0}</source>
         <translation>현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="247"/>
+        <location filename="managers/gameagent.py" line="251"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
@@ -3607,12 +3607,12 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>FastAIT 중ㆍ영 번역기 준비됨</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8738"/>
+        <location filename="dialogs/_prefs.py" line="8739"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
         <translation>내장 번역에서는 중국어 간체를 중국어 번체나 일본어 간지로 변환합니다. 적용하지 않으면 중국어가 물음표로 표시 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8751"/>
+        <location filename="dialogs/_prefs.py" line="8752"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>중국어 번체나 일본어 간지 사용</translation>
     </message>
@@ -4681,6 +4681,26 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="126"/>
         <source>KanjiDic {0} kanji dictionary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8854"/>
+        <source>Insert spaces between overlapped texts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8862"/>
+        <source>Insert spaces after every character</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8872"/>
+        <source>Insert spaces only between overlapped characters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8882"/>
+        <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
