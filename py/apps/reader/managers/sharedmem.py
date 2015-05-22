@@ -7,7 +7,6 @@ from sakurakit.skdebug import dprint, dwarn
 from pyvnrmem import VnrSharedMemory
 import config
 
-
 class VnrAgentSharedMemory(VnrSharedMemory):
   # Must be consistent with vnragent
   STATUS_EMPTY = 0
@@ -34,5 +33,14 @@ class VnrAgentSharedMemory(VnrSharedMemory):
     if self.isAttached():
       self.setDataStatus(self.STATUS_CANCEL)
       self.detach()
+
+  # Events and locks
+
+  def notify(self): # wakeup locks
+    import win32event
+    EVENT_NAME = "vnragent_shmem" # must be consistent with vnragent's config.h
+    ev = win32event.CreateEvent(None, False, False, EVENT_NAME) # initial state = False. True does NOT work
+    win32event.SetEvent(ev)
+    ev.close()
 
 # EOF

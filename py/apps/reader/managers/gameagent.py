@@ -145,7 +145,7 @@ class GameAgent(QObject):
       m.setDataText(text)
       m.setDataStatus(m.STATUS_READY)
       #m.unlock()
-      self.__d.signalSharedMemory()
+      m.notify()
 
 _SETTINGS_DICT = {
   'windowTranslationEnabled': 'isWindowTranslationEnabled',
@@ -207,12 +207,6 @@ class _GameAgent(object):
 
     # Got this value from embeddedprefs.py
     self.extractsAllTexts = False
-
-  def signalSharedMemory(self):
-    import win32event
-    EVENT_NAME = "vnragent_shmem" # must be consistent with vnragent's config.h
-    ev = win32event.CreateEvent(None, False, True, EVENT_NAME) # initial state = True
-    ev.close()
 
   def _setTextExtractionEnabled(self, t):
     if self.textExtractionEnabled != t:
