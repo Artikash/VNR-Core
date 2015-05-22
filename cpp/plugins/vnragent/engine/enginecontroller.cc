@@ -339,11 +339,11 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     switch (role) {
     case Engine::NameRole:
       if (d_->settings->nameTextVisible)
-        repl = QString("%1(%2)").arg(text, repl);
+        repl = QString("%1 -- %2").arg(repl, text);
       break;
     case Engine::ScenarioRole:
       if (d_->settings->scenarioTextVisible)
-        repl = QString("%1\n%2").arg(text, repl);
+        repl = QString("%1\n%2").arg(repl, text);
       break;
     }
 
@@ -408,11 +408,11 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     switch (role) {
     case Engine::NameRole:
       if (d_->settings->nameTextVisible)
-        repl = QString("%1 (%2)").arg(text, repl);
+        repl = QString("%1 -- %2").arg(repl, text);
       break;
     case Engine::ScenarioRole:
       if (d_->settings->scenarioTextVisible)
-        repl = QString("%1\n%2").arg(text, repl);
+        repl = QString("%1\n%2").arg(repl, text);
       break;
     }
 
