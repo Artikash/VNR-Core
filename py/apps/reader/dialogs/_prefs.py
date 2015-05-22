@@ -8651,7 +8651,7 @@ class _EngineTab(object):
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.textGroup)
     layout.addWidget(self.spaceGroup)
-    layout.addWidget(self.optionGroup)
+    layout.addWidget(self.timeGroup)
 
     if 'zh' not in blans:
       layout.addWidget(self.chineseGroup)
@@ -8661,7 +8661,7 @@ class _EngineTab(object):
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    l = [self.textGroup, self.optionGroup]
+    l = [self.textGroup, self.spaceGroup, self.timeGroup]
     if 'zh' not in blans:
       l.append(self.chineseGroup)
     for w in l:
@@ -8788,7 +8788,7 @@ class _EngineTab(object):
   ## Options ##
 
   @memoizedproperty
-  def optionGroup(self):
+  def timeGroup(self):
     layout = QtWidgets.QVBoxLayout()
 
     # CTRL detection
@@ -8802,7 +8802,7 @@ class _EngineTab(object):
     layout.addLayout(row)
 
     layout.addWidget(self.optionInfoLabel)
-    ret = QtWidgets.QGroupBox(my.tr("Embedding options"))
+    ret = QtWidgets.QGroupBox(my.tr("Translation timeout options"))
     ret.setLayout(layout)
     return ret
 

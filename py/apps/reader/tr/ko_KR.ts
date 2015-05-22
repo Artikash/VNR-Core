@@ -238,7 +238,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>UI 테마</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="290"/>
+        <location filename="dialogs/prefs.py" line="291"/>
         <source>Application features</source>
         <translation>프로그램 기능</translation>
     </message>
@@ -2957,7 +2957,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="dialogs/_prefs.py" line="8805"/>
         <source>Embedding options</source>
-        <translation>내장 텍스트 설정</translation>
+        <translation type="obsolete">내장 텍스트 설정</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8833"/>
@@ -2975,12 +2975,12 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="272"/>
+        <location filename="dialogs/prefs.py" line="273"/>
         <source>Embedded subtitles</source>
         <translation>내장 자막</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="249"/>
+        <location filename="managers/gameagent.py" line="254"/>
         <source>Detect game engine</source>
         <translation>게임엔진 발견</translation>
     </message>
@@ -3083,7 +3083,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="251"/>
+        <location filename="managers/gameagent.py" line="256"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
@@ -3420,7 +3420,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>인터넷 연결</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="284"/>
+        <location filename="dialogs/prefs.py" line="285"/>
         <source>Internet options</source>
         <translation>인터넷 설정</translation>
     </message>
@@ -4701,6 +4701,11 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="8882"/>
         <source>Do not insert any spaces</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8805"/>
+        <source>Translation timeout options</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
