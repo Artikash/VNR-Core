@@ -147,6 +147,17 @@ class GameAgent(QObject):
       #m.unlock()
       m.notify()
 
+  def cancelEmbeddedTranslation(self):
+    """
+    @param  text  unicode
+    @param  hash  str or int64
+    @param  role  int
+    """
+    m = self.__d.mem
+    if m.isAttached():
+      m.setDataStatus(m.STATUS_CANCEL)
+      m.notify()
+
 _SETTINGS_DICT = {
   'windowTranslationEnabled': 'isWindowTranslationEnabled',
   'windowTranscodingEnabled': 'isWindowTranscodingEnabled',
