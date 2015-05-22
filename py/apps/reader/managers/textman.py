@@ -948,6 +948,7 @@ class TextManager(QObject):
   nameTranslationReceived = Signal(unicode, unicode, unicode)  # text, lang, provider
 
   agentTranslationProcessed = Signal(unicode, str, int) # text, hash, role
+  agentTranslationCancelled = Signal(unicode, str, int) # text, hash, role
 
   #def setMachineTranslator(self, value):
   #  self.__d.preferredMT = value
@@ -1110,6 +1111,8 @@ class TextManager(QObject):
         #  sub = zht2zhs(sub)
         sub = textutil.remove_html_tags(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)
+      else:
+        self.agentTranslationCancelled.emit(text, rawHash, role)
 
     d.addAgentText(text, role, needsTranslation=needsTranslation)
 

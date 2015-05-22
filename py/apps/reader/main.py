@@ -425,6 +425,7 @@ class _MainObject(object):
 
     agent = self.gameAgent
     ret.agentTranslationProcessed.connect(agent.sendEmbeddedTranslation)
+    ret.agentTranslationCancelled.connect(agent.cancelEmbeddedTranslation)
 
     grimoire = self.grimoire
 
