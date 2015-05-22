@@ -8735,7 +8735,7 @@ class _EngineTab(object):
     layout.addWidget(self.chineseEnableButton)
 
     info = QtWidgets.QLabel(my.tr(
-      "Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks."
+      "Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed."
     ))
     info.setWordWrap(True)
     layout.addWidget(info)
