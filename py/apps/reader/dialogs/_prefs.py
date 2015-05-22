@@ -8848,9 +8848,9 @@ class _EngineTab(object):
   @memoizedproperty
   def spaceGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.disableInsertsSpaceButton)
-    layout.addWidget(self.alwaysInsertsSpaceButton)
     layout.addWidget(self.smartInsertsSpaceButton)
+    layout.addWidget(self.alwaysInsertsSpaceButton)
+    layout.addWidget(self.disableInsertsSpaceButton)
     ret = QtWidgets.QGroupBox(my.tr("Insert spaces between overlapped texts"))
     ret.setLayout(layout)
     self._loadSpaceOptions()
