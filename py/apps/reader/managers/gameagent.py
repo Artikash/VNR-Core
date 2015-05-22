@@ -167,6 +167,9 @@ _SETTINGS_DICT = {
   'embeddedOtherVisible': 'isEmbeddedOtherVisible',
   'embeddedOtherTranslationEnabled': 'isEmbeddedOtherTranslationEnabled',
   'embeddedOtherTranscodingEnabled': 'isEmbeddedOtherTranscodingEnabled',
+
+  'embeddedSpaceAlwaysInserted': 'isEmbeddedSpaceAlwaysInserted',
+  'embeddedSpaceSmartInserted': 'isEmbeddedSpaceSmartInserted',
 }
 
 @Q_Q

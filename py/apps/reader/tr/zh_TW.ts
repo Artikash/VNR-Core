@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="zh_TW">
+<!DOCTYPE TS><TS version="1.1" language="zh_TW">
 <context>
     <name>my</name>
     <message>
@@ -194,7 +193,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>恢復預設的顏色</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8742"/>
+        <location filename="dialogs/_prefs.py" line="8743"/>
         <source>Preferred Chinese characters</source>
         <translation>優先的中文字符集</translation>
     </message>
@@ -204,7 +203,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>儘可能的將簡體中文翻譯轉換為繁體中文</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4760"/>
+        <location filename="dialogs/_prefs.py" line="8874"/>
         <source>like this</source>
         <translation>比如這樣</translation>
     </message>
@@ -535,7 +534,7 @@ Especially if you would like to translate this game.</source>
 如果可能的話，強烈建議你&lt;b&gt;調整遊戲文字速度到最快&lt;/b&gt;。
 特別是當你打算翻譯這個遊戲的時候。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4850"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -1027,7 +1026,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望現在就更新嗎？
 這會花費幾秒鐘來完成。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4864"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中統合辭典</translation>
@@ -1180,7 +1179,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你當前的使用者語言是相同的呢。
 如果遮蔽它，VNR會遮蔽所有與這個語言有關的設定。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="5789"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辭書</translation>
@@ -1457,7 +1456,7 @@ VNR will automatically check for updates.</source>
 資料庫可以用來幫助識別新的遊戲。
 VNR會自動檢查更新的。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1727,7 +1726,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 那麼，如果你開啟這個選項，VNR將會翻譯全部KiriKiri的文字。
 這樣將會產生大量的垃圾文字，而這不會是你想要達到的！</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2374,7 +2373,7 @@ VNR中可以共享對遊戲內容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要匯出字幕到XML檔案，可以在【字幕編輯器】中點選【匯出】按鈕。
 </translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -2883,42 +2882,42 @@ VNR預設會使用TTS讀出遊戲的原始文字。
         <translation>這個遊戲也許需要開啟去除重複的選項</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8699"/>
+        <location filename="dialogs/_prefs.py" line="8700"/>
         <source>Preferred game text extraction method</source>
         <translation>提取遊戲文字的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8708"/>
+        <location filename="dialogs/_prefs.py" line="8709"/>
         <source>Use VNR&apos;s built-in hook instead of ITH if possible</source>
         <translation>如果可能的話，用VNR自己的提取方法而不使用ITH</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8716"/>
+        <location filename="dialogs/_prefs.py" line="8717"/>
         <source>Changing the text extraction method requires restarting the game.</source>
         <translation>修改文字提取方法需要重新啟動遊戲才會生效。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8799"/>
+        <location filename="dialogs/_prefs.py" line="8800"/>
         <source>Translation wait time</source>
         <translation>翻譯超時時間</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8804"/>
+        <location filename="dialogs/_prefs.py" line="8805"/>
         <source>Embedding options</source>
         <translation>嵌入文字的選項</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8832"/>
+        <location filename="dialogs/_prefs.py" line="8833"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>當超時時間很長而你的機翻工具又很慢時，可能會讓遊戲一卡一卡的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8839"/>
+        <location filename="dialogs/_prefs.py" line="8840"/>
         <source>Disable text extraction when Ctrl is pressed</source>
         <translation>當按下Ctrl鍵時，暫停提取文字</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8849"/>
+        <location filename="dialogs/_prefs.py" line="8911"/>
         <source>Preferred text to embed in the game</source>
         <translation>要內嵌的文字</translation>
     </message>
@@ -2928,7 +2927,7 @@ VNR預設會使用TTS讀出遊戲的原始文字。
         <translation>內嵌字幕</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="245"/>
+        <location filename="managers/gameagent.py" line="249"/>
         <source>Detect game engine</source>
         <translation>檢測到遊戲引擎</translation>
     </message>
@@ -3021,17 +3020,17 @@ D. 日文無交集：泰文&lt;br/&gt;
 如果這個功能會讓你的遊戲崩潰掉，那麼可以嘗試運行Debug VNR，然後將VNR資料夾下的vnragent.log和崩潰遊戲的名字一起發給我。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8717"/>
+        <location filename="dialogs/_prefs.py" line="8718"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
         <translation>和ITH比起來現在只有很少的遊戲是支援的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8718"/>
+        <location filename="dialogs/_prefs.py" line="8719"/>
         <source>The current supported game engines are: {0}</source>
         <translation>當前支援的遊戲引擎是：{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="247"/>
+        <location filename="managers/gameagent.py" line="251"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>未知的遊戲引擎。改為使用ITH提取文字。</translation>
     </message>
@@ -3215,7 +3214,7 @@ VNR的提取方法支援內嵌翻譯到遊戲中去，但是支援的遊戲比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要啟用{0}個選定的條目嗎？</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4842"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3407,7 +3406,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <source>Text transformation settings</source>
         <translation>文字變換設定</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -3555,12 +3554,12 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;，
         <translation>載入金山快譯中英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8738"/>
+        <location filename="dialogs/_prefs.py" line="8739"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
         <translation>將簡體中文的內嵌翻譯轉換為正體中文或日本漢字。否則，一些漢字會變成問號。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8751"/>
+        <location filename="dialogs/_prefs.py" line="8752"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>使用正體中文或日本漢字</translation>
     </message>
@@ -4577,6 +4576,26 @@ The font will be installed to {1}.</source>
         <location filename="dialogs/_prefs.py" line="126"/>
         <source>KanjiDic {0} kanji dictionary</source>
         <translation>KanjiDic{0}漢字字典</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8854"/>
+        <source>Insert spaces between overlapped texts</source>
+        <translation>在重疊的文字間插入空格</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8862"/>
+        <source>Insert spaces after every character</source>
+        <translation>在每個字後都插入空格</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8872"/>
+        <source>Insert spaces only between overlapped characters</source>
+        <translation>僅在重疊的字間插入空格</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8882"/>
+        <source>Do not insert any spaces</source>
+        <translation>不插入任何空格</translation>
     </message>
 </context>
 </TS>

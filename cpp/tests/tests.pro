@@ -14,6 +14,7 @@ SUBDIRS += \
   jsontest \
   pinyintest \
   pytest \
+  qttest \
   trcodectest \
   troscripttest \
   trscripttest \

@@ -4,7 +4,7 @@
 // Motivations:
 // http://stackoverflow.com/questions/2150488/using-a-qt-based-dll-in-a-non-qt-application
 // http://stackoverflow.com/questions/1786438/qt-library-event-loop-problems
-#include "qtembedded/applicationrunner.h"
+#include "qtembedapp/applicationrunner.h"
 #ifdef WITH_LIB_WINTIMER
 # include "wintimer/wintimer.h"
 #else
@@ -15,7 +15,7 @@
 //#define DEBUG "ApplicationRunner"
 #include "sakurakit/skdebug.h"
 
-QTEMBEDDED_BEGIN_NAMESPACE
+QTEMBEDAPP_BEGIN_NAMESPACE
 
 /** Private class */
 
@@ -63,7 +63,7 @@ void ApplicationRunner::stop() { d_->timer.stop(); }
 int ApplicationRunner::interval() const { return d_->timer.interval(); }
 void ApplicationRunner::setInterval(int value) { d_->timer.setInterval(value); }
 
-QTEMBEDDED_END_NAMESPACE
+QTEMBEDAPP_END_NAMESPACE
 
 // EOF
 

@@ -1,17 +1,17 @@
-#ifndef _QTEMBEDDED_APPLICATIONRUNNER_H
-#define _QTEMBEDDED_APPLICATIONRUNNER_H
+#ifndef _QTEMBEDAPP_APPLICATIONRUNNER_H
+#define _QTEMBEDAPP_APPLICATIONRUNNER_H
 
 // applicationrunner.h
 // 2/1/2013 jichi
 
-#include "qtembedded/qtembedded.h"
+#include "qtembedapp/qtembedapp.h"
 #include "sakurakit/skglobal.h"
 #include <QtCore/QString>
 #include <QtGui/qwindowdefs.h>
 
 QT_FORWARD_DECLARE_CLASS(QCoreApplication)
 
-QTEMBEDDED_BEGIN_NAMESPACE
+QTEMBEDAPP_BEGIN_NAMESPACE
 
 class ApplicationRunnerPrivate;
 class ApplicationRunner
@@ -45,9 +45,9 @@ public:
   void stop(); // stop the timer
 };
 
-QTEMBEDDED_END_NAMESPACE
+QTEMBEDAPP_END_NAMESPACE
 
-#endif // _QTEMBEDDED_APPLICATIONRUNNER_H
+#endif // _QTEMBEDAPP_APPLICATIONRUNNER_H
 
 // EOF
 

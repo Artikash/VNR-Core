@@ -48,6 +48,9 @@ public slots:
   void setOtherTranscodingEnabled(bool t);
   void setOtherTranslationEnabled(bool t);
 
+  void setAlwaysInsertsSpaces(bool t);
+  void setSmartInsertsSpaces(bool t);
+
   void setScenarioSignature(long v);
   void setNameSignature(long v);
 

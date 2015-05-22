@@ -41,6 +41,9 @@ public:
   bool isEmbeddedOtherTranslationEnabled() const;
   bool isEmbeddedOtherTranscodingEnabled() const;
 
+  bool isEmbeddedSpaceAlwaysInserted() const;
+  bool isEmbeddedSpaceSmartInserted() const;
+
   bool isEmbeddedAllTextsExtracted() const;
   bool isEmbeddedTextEnabled() const;
   bool isEmbeddedTextCancellableByControl() const;
@@ -69,6 +72,9 @@ public slots:
   void setEmbeddedOtherTranslationEnabled(bool t);
   void setEmbeddedOtherTranscodingEnabled(bool t);
 
+  void setEmbeddedSpaceAlwaysInserted(bool t);
+  void setEmbeddedSpaceSmartInserted(bool t);
+
   void setEmbeddedAllTextsExtracted(bool t);
   void setEmbeddedTextEnabled(bool t);
   void setEmbeddedTextCancellableByControl(bool t);
@@ -96,6 +102,9 @@ signals:
   void embeddedOtherVisibleChanged(bool t);
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
+
+  void embeddedSpaceAlwaysInsertedChanged(bool t);
+  void embeddedSpaceSmartInsertedChanged(bool t);
 
   void embeddedAllTextsExtractedChanged(bool t);
   void embeddedTextEnabledChanged(bool t);

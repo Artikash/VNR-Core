@@ -528,7 +528,7 @@ class _TextManager(object):
 
     rawData = None
     if text and self.encoding:
-      try: rawData = textutil.from_unicode(text, self.encoding, errors=None)
+      try: rawData = textutil.from_unicode(text, self.encoding, errors='strict')
       except UnicodeEncodeError:
         dwarn("cannot extract raw data from text")
 

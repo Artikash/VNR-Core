@@ -8650,6 +8650,7 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.textGroup)
+    layout.addWidget(self.spaceGroup)
     layout.addWidget(self.optionGroup)
 
     if 'zh' not in blans:
@@ -8841,6 +8842,67 @@ class _EngineTab(object):
     ret.setChecked(ss.isEmbeddedTextCancellableByControl())
     ret.toggled.connect(ss.setEmbeddedTextCancellableByControl)
     return ret
+
+  ## Space ##
+
+  @memoizedproperty
+  def spaceGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.disableInsertsSpaceButton)
+    layout.addWidget(self.alwaysInsertsSpaceButton)
+    layout.addWidget(self.smartInsertsSpaceButton)
+    ret = QtWidgets.QGroupBox(my.tr("Insert spaces between overlapped texts"))
+    ret.setLayout(layout)
+    self._loadSpaceOptions()
+    return ret
+
+  @memoizedproperty
+  def alwaysInsertsSpaceButton(self):
+    ret = QtWidgets.QRadioButton("%s, %s: %s" % (
+      my.tr("Insert spaces after every character"),
+      my.tr("like this"),
+      u"目覚めた => 目 覚 め た",
+    ))
+    ret.toggled.connect(self._saveSpaceOptions)
+    return ret
+
+  @memoizedproperty
+  def smartInsertsSpaceButton(self):
+    ret = QtWidgets.QRadioButton("%s (%s), %s: %s" % (
+      my.tr("Insert spaces only between overlapped characters"),
+      tr_("default"),
+      my.tr("like this"),
+      u"目覚めた => 目覚 めた",
+    ))
+    ret.toggled.connect(self._saveSpaceOptions)
+    return ret
+
+  @memoizedproperty
+  def disableInsertsSpaceButton(self):
+    ret = QtWidgets.QRadioButton(my.tr("Do not insert any spaces"))
+    ret.toggled.connect(self._saveSpaceOptions)
+    return ret
+
+  def _loadSpaceOptions(self):
+    ss = settings.global_()
+    if ss.isEmbeddedSpaceAlwaysInserted():
+      self.alwaysInsertsSpaceButton.setChecked(True)
+    elif ss.isEmbeddedSpaceSmartInserted():
+      self.smartInsertsSpaceButton.setChecked(True)
+    else:
+      self.disableInsertsSpaceButton.setChecked(True)
+
+  def _saveSpaceOptions(self):
+    ss = settings.global_()
+    if self.disableInsertsSpaceButton.isChecked():
+      ss.setEmbeddedSpaceAlwaysInserted(False)
+      ss.setEmbeddedSpaceSmartInserted(False)
+    elif self.alwaysInsertsSpaceButton.isChecked():
+      ss.setEmbeddedSpaceAlwaysInserted(True)
+      ss.setEmbeddedSpaceSmartInserted(False)
+    elif self.smartInsertsSpaceButton.isChecked():
+      ss.setEmbeddedSpaceAlwaysInserted(False)
+      ss.setEmbeddedSpaceSmartInserted(True)
 
   ## Text ##
 

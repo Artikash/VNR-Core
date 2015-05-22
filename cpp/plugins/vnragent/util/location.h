@@ -14,6 +14,9 @@ QString desktopLocation();
 // Directory of QtCore4.dll
 QString qtLocation();
 
+// Parent directory of QtCore4.dll
+QString qtPrefix();
+
 // VNR root directory
 QString vnrLocation();
 

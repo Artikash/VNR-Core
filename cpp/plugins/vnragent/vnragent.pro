@@ -9,7 +9,8 @@ include($$LIBDIR/memdbg/memdbg.pri)
 #include($$LIBDIR/mhook/mhook.pri)
 #include($$LIBDIR/mhook-disasm/mhook-disasm.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
-#include($$LIBDIR/qtembedded/qtembedded.pri) # needed by app runner
+#include($$LIBDIR/qtembedapp/qtembedapp.pri) # needed by app runner
+include($$LIBDIR/qtembedplugin/qtembedplugin.pri)
 #include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$LIBDIR/qtjson/qtjson.pri)
 include($$LIBDIR/qtsocketsvc/qtsocketpack.pri)

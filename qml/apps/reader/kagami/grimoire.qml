@@ -1328,7 +1328,7 @@ Item { id: root_
         font.family: root_.fontFamily(model.language)
         font.bold: model.language === 'ja' && fontPixelSize < 23 // MS Gothic
                 // bold small DFGirl font for Korean, exclude NanumBarunGothic
-                || model.language === 'ko' && font.family !== 'NanumBarunGothic' && fontPixelSize < 24 && !root_.rubyInverted
+                //|| model.language === 'ko' && font.family !== 'NanumBarunGothic' && fontPixelSize < 24 && !root_.rubyInverted
 
         function renderText() {
           var t

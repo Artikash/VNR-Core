@@ -80,23 +80,77 @@ public:
   QByteArray encode(const QString &text) const
   { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
 
+  QByteArray encode(const QChar &c) const
+  { return encoder ? encoder->fromUnicode(&c, 1) : QByteArray(); }
+
   QString decode(const QByteArray &data) const
   { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
 
 private:
+  bool encodable(const QChar &c) const
+  {
+    if (!encoder || c.isNull())
+      return false;
+    //if (c.unicode() == '?')
+    if (c.unicode() <= 127) // ignore ascii characters
+      return true;
+    return encoder->fromUnicode(&c, 1) != "?";
+  }
+
+  //bool decodable(const QByteArray &c) const
+  //{
+  //  if (!decoder || c.isEmpty())
+  //    return false;
+  //  if (c == "?")
+  //    return true;
+  //  return encoder->toUnicode(c) != "?";
+  //}
+
   void finalizeCodecs()
   {
     const char *engineEncoding = Util::encodingForCodePage(codePage);
-    decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
+    decoder = engineEncoding ? Util::codecForName(engineEncoding) : nullptr;
 
     const char *systemEncoding = Util::encodingForCodePage(::GetACP());
     //systemEncoding = "gbk";
-    encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
+    //systemEncoding = ENC_KSC;
+    encoder = Util::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
 
     DOUT("encoding =" << engineEncoding  << ", system =" << systemEncoding);
   }
 
+  static QString alwaysInsertSpaces(const QString &text)
+  {
+    QString ret;
+    foreach (QChar c, text) {
+      ret.append(c);
+      if (c.unicode() >= 32) // ignore non-printable characters
+        ret.append(' '); // or insert \u3000 if needed
+    }
+    return ret;
+  }
+
+  QString smartInsertSpaces(const QString &text) const
+  {
+    QString ret;
+    foreach (const QChar &c, text) {
+      ret.append(c);
+      if (!encodable(c))
+        ret.append(' ');
+    }
+    return ret;
+  }
+
 public:
+  QString postProcessW(const QString &text) const
+  {
+    if (settings->alwaysInsertsSpaces)
+      return alwaysInsertSpaces(text);
+    else if (settings->smartInsertsSpaces && encoder)
+      return smartInsertSpaces(text);
+    else
+      return text;
+  }
 };
 
 EngineController *EngineControllerPrivate::globalInstance;
@@ -157,7 +211,7 @@ void EngineController::setCodePage(uint v)
 
     if (d_->finalized) {
       const char *encoding = Util::encodingForCodePage(v);
-      d_->decoder = encoding ? QTextCodec::codecForName(encoding) : nullptr;
+      d_->decoder = encoding ? Util::codecForName(encoding) : nullptr;
     }
   }
 }
@@ -328,7 +382,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     //return d_->settings->transcodingEnabled[role] ? d_->encode(data) : data;
   if (canceled ||
       role == Engine::OtherRole && !Util::needsTranslation(text))
-    return text;
+    return d_->postProcessW(text);
     //return d_->encode(data);
 
   QString repl = p->findTranslation(hash, role);
@@ -338,7 +392,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     if (!t.isEmpty())
       p->sendText(t, hash, signature, role, needsTranslation);
     else
-      return text;
+      return d_->postProcessW(text);
   } else
     p->sendText(text, hash, signature, role, needsTranslation);
 
@@ -349,12 +403,12 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   }
 
   if (repl.isEmpty())
-    repl = text;
+    repl = text; // prevent from deleting text
   else if (repl != text)
     switch (role) {
     case Engine::NameRole:
       if (d_->settings->nameTextVisible)
-        repl = QString("%1(%2)").arg(text, repl);
+        repl = QString("%1 (%2)").arg(text, repl);
       break;
     case Engine::ScenarioRole:
       if (d_->settings->scenarioTextVisible)
@@ -362,7 +416,8 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
       break;
     }
 
-  return repl;
+  //repl = QString::fromWCharArray(L"\u76ee\u899a");
+  return d_->postProcessW(repl); // post-process
   //return d_->encode(repl);
 }
 

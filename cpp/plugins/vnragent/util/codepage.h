@@ -6,14 +6,16 @@
 #include <QtCore/QtGlobal>
 
 QT_FORWARD_DECLARE_CLASS(QString)
+QT_FORWARD_DECLARE_CLASS(QTextCodec)
 
 #define ENC_UTF8    "utf-8"
 #define ENC_UTF16   "utf-16"
-#define ENC_SJIS    "shift-jis"
-#define ENC_GBK     "gbk"
-#define ENC_BIG5    "big5"
-#define ENC_KSC     "euc-kr"
-#define ENC_KOI8    "koi8-r" // Windows-1251
+#define ENC_SJIS    "shift-jis" // Japanese
+#define ENC_GBK     "gbk"       // Simplified Chinese
+#define ENC_BIG5    "big5"      // Traditional Chinese
+#define ENC_KSC     "cp949"     // Korean, not the same as euc-kr
+#define ENC_TIS     "tis-620"   // Thai
+#define ENC_KOI8    "koi8-r"    // Cyrillic, Windows-1251
 
 namespace Util {
 
@@ -26,6 +28,7 @@ enum CodePage {
   , GbkCodePage = 936   // GB2312
   , KscCodePage = 949   // EUC-KR
   , Big5CodePage = 950  // BIG5
+  , TisCodePage = 874   // TIS-620
   , Koi8CodePage = 866  // KOI8-R
 };
 
@@ -33,6 +36,8 @@ uint codePageForEncoding(const QString &encoding);
 const char *encodingForCodePage(uint cp);
 
 quint8 charSetForCodePage(uint cp);
+
+QTextCodec *codecForName(const char *name);
 
 } // namespace Util
 

@@ -2201,6 +2201,22 @@ class Settings(QSettings):
       self.setValue('EmbeddedOtherVisible', value)
       self.embeddedOtherVisibleChanged.emit(value)
 
+  embeddedSpaceAlwaysInsertedChanged = Signal(bool)
+  def isEmbeddedSpaceAlwaysInserted(self):
+    return to_bool(self.value('EmbeddedSpaceAlwaysInserted'))
+  def setEmbeddedSpaceAlwaysInserted(self, value):
+    if value != self.isEmbeddedSpaceAlwaysInserted():
+      self.setValue('EmbeddedSpaceAlwaysInserted', value)
+      self.embeddedSpaceAlwaysInsertedChanged.emit(value)
+
+  embeddedSpaceSmartInsertedChanged = Signal(bool)
+  def isEmbeddedSpaceSmartInserted(self):
+    return to_bool(self.value('EmbeddedSpaceSmartInserted', True))
+  def setEmbeddedSpaceSmartInserted(self, value):
+    if value != self.isEmbeddedSpaceSmartInserted():
+      self.setValue('EmbeddedSpaceSmartInserted', value)
+      self.embeddedSpaceSmartInsertedChanged.emit(value)
+
   #windowHookEnabledChanged = Signal(bool)
   #def isWindowHookEnabled(self):
   #  return to_bool(self.value('WindowHookEnabled')) # disabled by default

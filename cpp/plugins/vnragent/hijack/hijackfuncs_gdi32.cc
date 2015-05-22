@@ -94,7 +94,7 @@ BOOL WINAPI Hijack::myTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpStrin
 {
   //qDebug() << QString::fromLocal8Bit(lpString, cchString);
   //return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
-  QString t = QTextCodec::codecForName("shift-jis")->toUnicode(lpString, cchString);
+  QString t = Util::codecForName("shift-jis")->toUnicode(lpString, cchString);
   if (!t.isEmpty())
     return ::TextOutW(hdc, nXStart, nYStart, (LPCWSTR)t.utf16(), t.size());
   else
