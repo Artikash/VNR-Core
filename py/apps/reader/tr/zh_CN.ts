@@ -3552,7 +3552,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
     <message>
         <location filename="dialogs/_prefs.py" line="8739"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
-        <translation>将简体中文的内嵌翻译转换为正体中文或日本汉字。否则，一些汉字会变成问号。</translation>
+        <translation type="obsolete">将简体中文的内嵌翻译转换为正体中文或日本汉字。否则，一些汉字会变成问号。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8752"/>
@@ -4597,6 +4597,11 @@ The font will be installed to {1}.</source>
         <location filename="dialogs/_prefs.py" line="8805"/>
         <source>Translation timeout options</source>
         <translation>翻译超时设定</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8739"/>
+        <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
+        <translation>将简体中文的内嵌翻译转换为正体中文或日本汉字如果无法正常显示。</translation>
     </message>
 </context>
 </TS>
