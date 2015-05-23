@@ -532,6 +532,7 @@ class _UiTab(object):
     ret.setToolTip(tr_("Font"))
     ff = settings.global_().applicationFontFamily()
     ret.setEditText(ff or tr_('Default'))
+    ret.setCurrentFont(QtGui.QFont(ff))
     ret.editTextChanged.connect(self._refreshUiFont)
     ret.currentIndexChanged.connect(self._saveUiFont)
     return ret
@@ -555,6 +556,7 @@ class _UiTab(object):
 
   def _saveUiFont(self):
     ff = self.uiFontEdit.currentFont().family()
+    dprint(ff)
     settings.global_().setApplicationFontFamily(ff)
 
   ## Comet ##
@@ -2459,16 +2461,17 @@ class _TextTab(object):
     fontEdit = lambda: getattr(self, lang + 'FontEdit')
     def _load(this):
       getter = getattr(ss, lang + 'Font')
-      family = getter()
-      fontEdit().setCurrentFont(QtGui.QFont(family))
+      ff = getter()
+      fontEdit().setCurrentFont(QtGui.QFont(ff))
       #fontEdit().setEditText(family)
       #self.resetJapaneseButton.setVisible(
       #    QtGui.QFont(family).family().lower() != QtGui.QFont(config.FONT_JA).family().lower())
     def _save(this):
       setter = getattr(ss, "set{0}Font".format(Lang))
-      t = fontEdit().currentFont().family()
-      if t:
-        setter(t)
+      ff = fontEdit().currentFont().family()
+      #dprint(ff)
+      if ff:
+        setter(ff)
     return _load, _save
 
   @memoizedproperty
@@ -8650,8 +8653,8 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.textGroup)
-    layout.addWidget(self.spaceGroup)
     layout.addWidget(self.timeGroup)
+    layout.addWidget(self.fontGroup)
 
     if 'zh' not in blans:
       layout.addWidget(self.chineseGroup)
@@ -8661,7 +8664,7 @@ class _EngineTab(object):
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    l = [self.textGroup, self.spaceGroup, self.timeGroup]
+    l = [self.textGroup, self.fontGroup, self.timeGroup]
     if 'zh' not in blans:
       l.append(self.chineseGroup)
     for w in l:
@@ -8831,7 +8834,7 @@ class _EngineTab(object):
     ret = QtWidgets.QLabel("%s: %s\n%s" % (
       tr_("Note"),
       my.tr("A large wait time might also slow down the game when your machine translator is slow."),
-      my.tr("You can always press SHIFT or CTRL to pause embedding translation and stop slowdown."),
+      my.tr("You can always press Shift or Control to pause embedding translation and stop slowdown."),
     ))
     #ret.setWordWrap(True)
     return ret
@@ -8844,18 +8847,64 @@ class _EngineTab(object):
   #  ret.toggled.connect(ss.setEmbeddedTextCancellableByControl)
   #  return ret
 
-  ## Space ##
+  ## Font and Space ##
 
   @memoizedproperty
-  def spaceGroup(self):
+  def fontGroup(self):
     layout = QtWidgets.QVBoxLayout()
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.fontButton)
+    row.addWidget(self.fontEdit)
+    row.addStretch()
+    layout.addLayout(row)
+
     layout.addWidget(self.smartInsertsSpaceButton)
     layout.addWidget(self.alwaysInsertsSpaceButton)
     layout.addWidget(self.disableInsertsSpaceButton)
-    ret = QtWidgets.QGroupBox(my.tr("Insert spaces between overlapped texts"))
+    ret = QtWidgets.QGroupBox(my.tr("Font options"))
     ret.setLayout(layout)
     self._loadSpaceOptions()
+    self._refreshFontFamily()
     return ret
+
+  @memoizedproperty
+  def fontButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Customize game font"))
+    ret.setToolTip(my.tr("Global font for game text to override default game font"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedFontEnabled())
+    ret.toggled.connect(ss.setEmbeddedFontEnabled)
+    return ret
+
+  @memoizedproperty
+  def fontEdit(self):
+    ret = QtWidgets.QFontComboBox()
+    ret.setEditable(True)
+    ret.setMaximumWidth(150)
+    ret.setToolTip(my.tr("Game font"))
+    ss = settings.global_()
+    ret.setEnabled(ss.isEmbeddedFontEnabled())
+    ss.embeddedFontEnabledChanged.connect(ret.setEnabled)
+    ff = ss.embeddedFontFamily()
+    ret.setEditText(ff)
+    if ff:
+      ret.setCurrentFont(QtGui.QFont(ff))
+    ret.editTextChanged.connect(self._refreshFontFamily)
+    #ret.editTextChanged.connect(self._saveFontFamily)
+    ret.currentIndexChanged.connect(self._saveFontFamily)
+    return ret
+
+  def _refreshFontFamily(self):
+    w = self.fontEdit
+    t = w.currentText().strip()
+    ok = w.findText(t, Qt.MatchFixedString) >= 0 # case-insensitive match
+    skqss.class_(w, 'default' if ok else 'error')
+
+  def _saveFontFamily(self):
+    ff = self.fontEdit.currentText().strip() #or self.fontEdit.currentFont().family()
+    dprint(ff)
+    settings.global_().setEmbeddedFontFamily(ff)
 
   @memoizedproperty
   def alwaysInsertsSpaceButton(self):

@@ -73,6 +73,7 @@ HEADERS += \
   hijack/hijackfuncs.h \
   hijack/hijackfuncs_p.h \
   hijack/hijackhelper.h \
+  hijack/hijacksettings.h \
   window/windowdriver.h \
   window/windowdriver_p.h \
   window/windowhash.h \

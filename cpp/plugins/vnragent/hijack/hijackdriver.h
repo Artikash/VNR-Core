@@ -21,6 +21,7 @@ public:
 
 public slots:
   void setEncoding(const QString &v);
+  void setFontFamily(const QString &v);
 
 private slots:
   void refresh();

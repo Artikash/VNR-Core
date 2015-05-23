@@ -2136,6 +2136,12 @@ bool InsertSiglus3Hook()
   return true;
 }
 
+/** SiglusEngine4
+ *  Alternative ATcode from EGDB:
+ *  UNIKOFILTER(30),FORCEFONT(5),HOOK(SiglusEngine.exe!0x0018CF39,TRANS(EAX,UNICODE,SMSTR,ADDNULL),RETNPOS(SOURCE))
+ *  Text address is [eax]
+ */
+
 /**
  *  jichi 8/16/2013: Insert new siglus hook
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952
@@ -3198,10 +3204,6 @@ bool InsertSiglus3Hook()
  *  00B6BD10   80BB FD000000 00 CMP BYTE PTR DS:[EBX+0xFD],0x0
  *  00B6BD17   74 10            JE SHORT .00B6BD29
  *  00B6BD19   56               PUSH ESI
- *
- *  Alternative ATcode from EGDB:
- *  UNIKOFILTER(30),FORCEFONT(5),HOOK(SiglusEngine.exe!0x0018CF39,TRANS(EAX,UNICODE,SMSTR,ADDNULL),RETNPOS(SOURCE))
- *  Text address is [eax]
  */
 bool InsertSiglus2Hook()
 {

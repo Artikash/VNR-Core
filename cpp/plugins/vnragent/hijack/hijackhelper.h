@@ -5,6 +5,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 
+class HijackSettings;
 class HijackHelperPrivate;
 // Root object for all qobject
 class HijackHelper : public QObject
@@ -17,6 +18,8 @@ public:
   static Self *instance(); // needed by hijack functions
   explicit HijackHelper(QObject *parent = nullptr);
   ~HijackHelper();
+
+  HijackSettings *settings() const;
 
   void setEncoding(const QString &v);
   void setEncodingEnabled(bool t);

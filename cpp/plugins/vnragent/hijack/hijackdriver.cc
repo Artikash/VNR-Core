@@ -3,7 +3,11 @@
 #include "hijack/hijackdriver.h"
 #include "hijack/hijackhelper.h"
 #include "hijack/hijackfuncs.h"
+#include "hijack/hijacksettings.h"
 #include <QtCore/QTimer>
+
+#define DEBUG "hijackdriver"
+#include "sakurakit/skdebug.h"
 
 /** Private class */
 
@@ -38,6 +42,12 @@ HijackDriver::~HijackDriver() { delete d_; }
 
 void HijackDriver::setEncoding(const QString &v)
 { d_->helper->setEncoding(v); }
+
+void HijackDriver::setFontFamily(const QString &v)
+{
+  d_->helper->settings()->fontFamily = v;
+  DOUT(v);
+}
 
 // Actions
 

@@ -203,7 +203,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>중국어 간체 번역문을 중국어 번체로 변환</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8875"/>
+        <location filename="dialogs/_prefs.py" line="8916"/>
         <source>like this</source>
         <translation>예시</translation>
     </message>
@@ -2970,7 +2970,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8912"/>
+        <location filename="dialogs/_prefs.py" line="8953"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -2980,7 +2980,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>내장 자막</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="260"/>
+        <location filename="managers/gameagent.py" line="263"/>
         <source>Detect game engine</source>
         <translation>게임엔진 발견</translation>
     </message>
@@ -3083,7 +3083,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="262"/>
+        <location filename="managers/gameagent.py" line="265"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
@@ -4684,22 +4684,17 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8855"/>
-        <source>Insert spaces between overlapped texts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialogs/_prefs.py" line="8863"/>
+        <location filename="dialogs/_prefs.py" line="8904"/>
         <source>Insert spaces after every character</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8873"/>
+        <location filename="dialogs/_prefs.py" line="8914"/>
         <source>Insert spaces only between overlapped characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8883"/>
+        <location filename="dialogs/_prefs.py" line="8924"/>
         <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4715,7 +4710,27 @@ The font will be installed to {1}.</source>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8834"/>
-        <source>You can always press SHIFT or CTRL to pause embedding translation and stop slowdown.</source>
+        <source>You can always press Shift or Control to pause embedding translation and stop slowdown.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8862"/>
+        <source>Font options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8870"/>
+        <source>Customize game font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8871"/>
+        <source>Global font for game text to override default game font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8882"/>
+        <source>Game font</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

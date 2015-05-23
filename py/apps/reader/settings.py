@@ -2217,6 +2217,22 @@ class Settings(QSettings):
       self.setValue('EmbeddedSpaceSmartInserted', value)
       self.embeddedSpaceSmartInsertedChanged.emit(value)
 
+  embeddedFontEnabledChanged = Signal(bool)
+  def isEmbeddedFontEnabled(self):
+    return to_bool(self.value('EmbeddedFontEnabled'))
+  def setEmbeddedFontEnabled(self, value):
+    if value != self.isEmbeddedFontEnabled():
+      self.setValue('EmbeddedFontEnabled', value)
+      self.embeddedFontEnabledChanged.emit(value)
+
+  embeddedFontFamilyChanged = Signal(unicode)
+  def embeddedFontFamily(self):
+    return to_unicode(self.value('EmbeddedFontFamily'))
+  def setEmbeddedFontFamily(self, value):
+    if value != self.embeddedFontFamily():
+      self.setValue('EmbeddedFontFamily', value)
+      self.embeddedFontFamilyChanged.emit(value)
+
   #windowHookEnabledChanged = Signal(bool)
   #def isWindowHookEnabled(self):
   #  return to_bool(self.value('WindowHookEnabled')) # disabled by default

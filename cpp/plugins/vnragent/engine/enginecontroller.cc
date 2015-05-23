@@ -33,6 +33,8 @@ public:
 
   enum { ExchangeInterval = 10 };
 
+  EngineSettings settings;
+
   EngineModel *model;
 
   uint codePage;
@@ -43,7 +45,6 @@ public:
 
   Engine::address_type oldHookFun;
 
-  EngineSettings *settings;
   bool finalized;
 
 public:
@@ -52,11 +53,8 @@ public:
     , codePage(0)
     , encoder(nullptr), decoder(nullptr)
     , oldHookFun(0)
-    , settings(new EngineSettings)
     , finalized(false)
   {}
-
-  ~EngineControllerPrivate() { delete settings; }
 
   void finalize()
   {
@@ -144,9 +142,9 @@ private:
 public:
   QString postProcessW(const QString &text) const
   {
-    if (settings->alwaysInsertsSpaces)
+    if (settings.alwaysInsertsSpaces)
       return alwaysInsertSpaces(text);
-    else if (settings->smartInsertsSpaces && encoder)
+    else if (settings.smartInsertsSpaces && encoder)
       return smartInsertSpaces(text);
     else
       return text;
@@ -198,7 +196,7 @@ EngineController::EngineController(EngineModel *model)
 
 EngineController::~EngineController() { delete d_; }
 
-EngineSettings *EngineController::settings() const { return d_->settings; }
+EngineSettings *EngineController::settings() const { return &d_->settings; }
 const char *EngineController::name() const { return d_->model->name; }
 
 const char *EngineController::encoding() const
@@ -288,19 +286,19 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     return data;
 
   if (!role)
-    role = d_->settings->textRoleOf(signature);
+    role = d_->settings.textRoleOf(signature);
 
   auto p = EmbedManager::instance();
 
-  bool canceled = !d_->settings->enabled
-      || WinKey::isKeyControlPressed() //d_->settings->detectsControl &&
+  bool canceled = !d_->settings.enabled
+      || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
       || WinKey::isKeyShiftPressed();
 
   //EmbedManagerLock lock(p);
 
   qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
-  if (!canceled && !d_->settings->translationEnabled[role] &&
-      (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
+  if (!canceled && !d_->settings.translationEnabled[role] &&
+      (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)) {
     enum { NeedsTranslation = false };
     if (d_->model->textFilterFunction) {
       QString t = d_->model->textFilterFunction(text, role);
@@ -310,11 +308,11 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
       p->sendText(text, hash, signature, role, NeedsTranslation);
   }
 
-  if (!d_->settings->textVisible[role])
+  if (!d_->settings.textVisible[role])
     return QByteArray();
 
-  if (!d_->settings->translationEnabled[role])
-    return d_->settings->transcodingEnabled[role] ? d_->encode(text) : data;
+  if (!d_->settings.translationEnabled[role])
+    return d_->settings.transcodingEnabled[role] ? d_->encode(text) : data;
   if (canceled ||
       role == Engine::OtherRole && !Util::needsTranslation(text))
     return d_->encode(text);
@@ -341,13 +339,17 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   else if (repl != text)
     switch (role) {
     case Engine::NameRole:
-      if (d_->settings->nameTextVisible)
-        repl = QString("%1 -- %2").arg(repl, text);
+      if (d_->settings.nameTextVisible)
+        repl = QString("%1 / %2").arg(repl, text);
       break;
     case Engine::ScenarioRole:
-      if (d_->settings->scenarioTextVisible)
+      if (d_->settings.scenarioTextVisible)
         repl = QString("%1\n%2").arg(repl, text);
       break;
+    //case Engine::OtherRole:
+    //  if (d_->settings.otherTextVisible)
+    //    repl = QString("%1 / %2").arg(repl, text);
+    //  break;
     }
 
   return d_->encode(repl);
@@ -358,20 +360,20 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (text.isEmpty())
     return text;
   if (!role)
-    role = d_->settings->textRoleOf(signature);
+    role = d_->settings.textRoleOf(signature);
 
   auto p = EmbedManager::instance();
 
-  bool canceled = !d_->settings->enabled
-      || WinKey::isKeyControlPressed() //d_->settings->detectsControl &&
+  bool canceled = !d_->settings.enabled
+      || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
       || WinKey::isKeyShiftPressed();
 
   // FIXME: This will serialize send operation. Use queued/cached shared memory instead
   //EmbedManagerLock lock(p);
 
   qint64 hash = canceled ? 0 : Engine::hashWString(text);
-  if (!canceled && !d_->settings->translationEnabled[role] &&
-      (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
+  if (!canceled && !d_->settings.translationEnabled[role] &&
+      (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)) {
     enum { NeedsTranslation = false };
     if (d_->model->textFilterFunction) {
       QString t = d_->model->textFilterFunction(text, role);
@@ -381,12 +383,12 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
       p->sendText(text, hash, signature, role, NeedsTranslation);
   }
 
-  if (!d_->settings->textVisible[role])
+  if (!d_->settings.textVisible[role])
     return QString();
 
-  if (!d_->settings->translationEnabled[role])
+  if (!d_->settings.translationEnabled[role])
     return text;
-    //return d_->settings->transcodingEnabled[role] ? d_->encode(data) : data;
+    //return d_->settings.transcodingEnabled[role] ? d_->encode(data) : data;
   if (canceled ||
       role == Engine::OtherRole && !Util::needsTranslation(text))
     return d_->postProcessW(text);
@@ -414,11 +416,11 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   else if (repl != text)
     switch (role) {
     case Engine::NameRole:
-      if (d_->settings->nameTextVisible)
-        repl = QString("%1 -- %2").arg(repl, text);
+      if (d_->settings.nameTextVisible)
+        repl = QString("%1 / %2").arg(repl, text);
       break;
     case Engine::ScenarioRole:
-      if (d_->settings->scenarioTextVisible)
+      if (d_->settings.scenarioTextVisible)
         repl = QString("%1\n%2").arg(repl, text);
       break;
     }
