@@ -7,7 +7,7 @@ from sakurakit.skdebug import dprint, dwarn
 from pyvnrmem import VnrSharedMemory
 import config
 
-class VnrAgentSharedMemory(VnrSharedMemory):
+class VnrAgentSharedMemory:
   # Must be consistent with vnragent
   STATUS_EMPTY = 0
   STATUS_READY = 1
@@ -15,32 +15,61 @@ class VnrAgentSharedMemory(VnrSharedMemory):
   STATUS_CANCEL = 3
 
   def __init__(self, parent=None):
-    super(VnrAgentSharedMemory, self).__init__(parent)
-    self.processId = 0 # long
+    d = self.__d = VnrSharedMemory(parent)
+    d.processId = 0 # long
+    d.detach = d.detach_ # detach get renamed because of shiboken bug
+    d.index = 0 # int  current cell index
 
-  def detach(self): return self.detach_() # shiboken bug
+  def isAttached(self): return bool(self.__d.processId) and self.__d.isAttached()
 
   def attachProcess(self, pid): # long -> bool
+    d = self.__d
+    d.processId = pid
     key = config.VNRAGENT_MEMORY_KEY % pid
-    self.setKey(key)
-    readOnly = False
-    return self.attach(readOnly)
+    d.setKey(key)
+    return d.attach(False) # readOnly = false
 
   def detachProcess(self, pid): # long -> bool
-    return pid == self.processId and self.isAttached() and self.detach()
+    d = self.__d
+    ret = pid == d.processId and d.isAttached() and d.detach()
+    d.processId = 0
+    return ret
 
   def quit(self):
-    if self.isAttached():
-      self.setDataStatus(self.STATUS_CANCEL)
-      self.detach()
+    d = self.__d
+    if d.isAttached():
+      self.setAllStatus(self.STATUS_CANCEL)
+      d.detach()
 
-  # Events and locks
+  def notify(self, hash, role): # wakeup locks
+    pid = self.__d.processId
+    if pid:
+      # must be consistent with vnragent's config.h
+      eventName = "vnragent.shmem.%s.%s.%s" % (pid, role, hash)
+      eventName = eventName.replace('-', '_') # get rid of minus sign
+      import win32event
+      ev = win32event.CreateEvent(None, False, False, eventName) # initial state = False. True does NOT work
+      win32event.SetEvent(ev)
+      ev.close()
 
-  def notify(self): # wakeup locks
-    import win32event
-    EVENT_NAME = "vnragent_shmem" # must be consistent with vnragent's config.h
-    ev = win32event.CreateEvent(None, False, False, EVENT_NAME) # initial state = False. True does NOT work
-    win32event.SetEvent(ev)
-    ev.close()
+  # Set without checking if attached
+  def setAllStatus(self, v):
+    d = self.__d
+    #if d.isAttached():
+    for i in range(d.cellCount()):
+      d.setDataStatus(i, v)
+
+  def nextIndex(self): # -> int
+    d = self.__d
+    count = d.cellCount()
+    if count:
+      d.index = (d.index + 1) % count
+    return d.index
+
+  # Write-only
+  def setDataStatus(self, i, v): self.__d.setDataStatus(i, v)
+  def setDataHash(self, i, v): self.__d.setDataHash(i, v)
+  def setDataRole(self, i, v): self.__d.setDataRole(i, v)
+  def setDataText(self, i, v): self.__d.setDataText(i, v)
 
 # EOF

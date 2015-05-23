@@ -10,19 +10,15 @@
 
 // Helpers
 
-namespace { // unamed
-
-QString getMemoryKey()
+static inline QString shmem_key()
 {
   qint64 pid = QCoreApplication::applicationPid();
   return QString(VNRAGENT_MEMORY_KEY).arg(QString::number(pid));
 }
 
-} // unnamed namespace
-
 // Construction
 
-EmbedMemory::EmbedMemory(QObject *parent) : Base(::getMemoryKey(), parent) {}
+EmbedMemory::EmbedMemory(QObject *parent) : Base(::shmem_key(), parent) {}
 EmbedMemory::~EmbedMemory() {}
 
 // Management
@@ -30,7 +26,7 @@ EmbedMemory::~EmbedMemory() {}
 bool EmbedMemory::create()
 {
   enum { ReadOnly = 1 };
-  bool ok = Base::create(VNRAGENT_MEMORY_SIZE, ReadOnly);
+  bool ok = Base::create(VNRAGENT_MEMORY_SIZE, VNRAGENT_MEMORY_COUNT, ReadOnly);
   DOUT("ret =" << ok);
   return ok;
 }

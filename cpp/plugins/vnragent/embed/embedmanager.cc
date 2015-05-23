@@ -11,6 +11,7 @@
 //#include "qtjson/qtjson.h"
 #include "winevent/winevent.h"
 #include "winmutex/winmutex.h"
+#include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
 #include <qt_windows.h>
@@ -29,6 +30,15 @@
 
 class EmbedManagerPrivate
 {
+  static inline QString shmem_event_name(qint64 hash, int role)
+  {
+    qint64 pid = QCoreApplication::applicationPid();
+    return QString(VNRAGENT_MEMORY_EVENT)
+      .arg(QString::number(pid), QString::number(role), QString::number(hash))
+      .replace('-', '_') // get rid of minus sign
+    ;
+  }
+
 public:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex; // mutex to lock translations
@@ -39,15 +49,15 @@ public:
   EmbedMemory *memory;
 
   EmbedManagerPrivate(QObject *parent)
-    : waitTime(VNRAGENT_MEMORY_TIMEOUT)
+    : waitTime(VNRAGENT_MEMORY_TIMEOUT), memory(new EmbedMemory(parent))
   {
-    memory = new EmbedMemory(parent);
     memory->create();
   }
 
-  bool wait() // return if get signaled
+  bool wait(qint64 hash, int role) // return if get signaled
   {
-    win_event ev(VNRAGENT_MEMORY_EVENT); // create new event on each wait
+    QString name = shmem_event_name(hash, role);
+    win_event ev(name.toAscii());
     return ev.wait(waitTime);
   }
 
@@ -98,9 +108,9 @@ EmbedManager::~EmbedManager()
 void EmbedManager::setTranslationWaitTime(int msecs)
 { d_->waitTime = msecs; }
 
-bool EmbedManager::tryLock() { return d_->mutex.try_lock(); }
-void EmbedManager::lock() { d_->mutex.lock(); }
-void EmbedManager::unlock() { d_->mutex.unlock(); }
+//bool EmbedManager::tryLock() { return d_->mutex.try_lock(); }
+//void EmbedManager::lock() { d_->mutex.lock(); }
+//void EmbedManager::unlock() { d_->mutex.unlock(); }
 
 
 // - Actions -
@@ -141,31 +151,37 @@ void EmbedManager::sendText(const QString &text, qint64 hash, long signature, in
 
 QString EmbedManager::findTranslation(qint64 hash, int role) const
 {
-  //D_LOCK;
   qint64 key = Engine::hashTextKey(hash, role);
+  D_LOCK;
   return d_->translations.value(key);
 }
 
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 {
-  //D_LOCK;
   qint64 key = Engine::hashTextKey(hash, role);
+  d_->mutex.lock();
   QString ret = d_->translations.value(key);
-  if (ret.isEmpty())
-    for (int i = 0; i < 2; i++) { // repeat twice
-      if (d_->memory->isAttached() && d_->memory->isDataReady() && d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
-        // Lock is not needed since DataReady status has been set
-        //d_->memory->lock();
-        ret = d_->memory->dataText();
-        //d_->memory->unlock();
-        if (!ret.isEmpty())
-          d_->translations[key] = ret;
-        break;
-      }
-      if (i == 0) // wait only twice
-        d_->wait();
+  d_->mutex.unlock();
+  if (ret.isEmpty()) {
+    auto m = d_->memory;
+    for (int count = 0; count < 2 && m->isAttached(); count++) { // repeat twice
+      for (int i = 0; i < m->cellCount(); i++)
+        if (m->isDataReady(i) && m->dataHash(i) == hash && m->dataRole(i) == role) {
+          // Lock is not needed since DataReady status has been set
+          //d_->memory->lock();
+          ret = d_->memory->dataText(i);
+          //d_->memory->unlock();
+          if (!ret.isEmpty()) {
+            d_->mutex.lock();
+            d_->translations[key] = ret;
+            d_->mutex.unlock();
+          }
+          return ret;
+        }
+      if (count == 0) // wait only twice
+        d_->wait(hash, role);
     }
-
+  }
   return ret;
 }
 

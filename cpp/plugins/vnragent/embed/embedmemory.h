@@ -24,10 +24,10 @@ public:
     , CancelStatus  // The data requires is cancelled
   };
 
-  bool isDataEmpty() const { return dataStatus() == EmptyStatus; }
-  bool isDataReady() const { return dataStatus() == ReadyStatus; }
-  bool isDataBusy() const { return dataStatus() == BusyStatus; }
-  bool isDataCanceled() const { return dataStatus() == CancelStatus; }
+  bool isDataEmpty(int i) const { return dataStatus(i) == EmptyStatus; }
+  bool isDataReady(int i) const { return dataStatus(i) == ReadyStatus; }
+  bool isDataBusy(int i) const { return dataStatus(i) == BusyStatus; }
+  bool isDataCanceled(int i) const { return dataStatus(i) == CancelStatus; }
 };
 
 // EOF
