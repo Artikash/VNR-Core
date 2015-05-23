@@ -30,15 +30,6 @@
 
 class EmbedManagerPrivate
 {
-  static inline QString shmem_event_name(qint64 hash, int role)
-  {
-    qint64 pid = QCoreApplication::applicationPid();
-    return QString(VNRAGENT_MEMORY_EVENT)
-      .arg(QString::number(pid), QString::number(role), QString::number(hash))
-      .replace('-', '_') // get rid of minus sign
-    ;
-  }
-
 public:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex; // mutex to lock translations
@@ -49,16 +40,19 @@ public:
   EmbedMemory *memory;
 
   EmbedManagerPrivate(QObject *parent)
-    : waitTime(VNRAGENT_MEMORY_TIMEOUT), memory(new EmbedMemory(parent))
+    : waitTime(1000) // sleep for 1 second by default
+    , memory(new EmbedMemory(parent))
   {
     memory->create();
   }
 
-  bool wait(qint64 hash, int role) // return if get signaled
+  static inline QString createEventName(qint64 hash, int role)
   {
-    QString name = shmem_event_name(hash, role);
-    win_event ev(name.toAscii());
-    return ev.wait(waitTime);
+    qint64 pid = QCoreApplication::applicationPid();
+    return QString(VNRAGENT_MEMORY_EVENT)
+      .arg(QString::number(pid), QString::number(role), QString::number(hash))
+      .replace('-', '_') // get rid of minus sign
+    ;
   }
 
   //static void sleep(int msecs) { ::Sleep(msecs); }
@@ -162,24 +156,34 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
   d_->mutex.lock();
   QString ret = d_->translations.value(key);
   d_->mutex.unlock();
-  if (ret.isEmpty()) {
-    auto m = d_->memory;
-    for (int count = 0; count < 2 && m->isAttached(); count++) { // repeat twice
+
+  auto m = d_->memory;
+  if (ret.isEmpty() && m->isAttached()) {
+    QString eventName = D::createEventName(hash, role);
+    win_event event(eventName.toAscii());
+    enum { WaitInterval = VNRAGENT_MEMORY_TIMEOUT };
+    //int WaitInterval = d_->waitTime;
+    int waitCount = qMax(1, d_->waitTime / WaitInterval);
+
+    for (int count = 0; count <= waitCount && m->isAttached(); count++) { // repeat twice
       for (int i = 0; i < m->cellCount(); i++)
-        if (m->isDataReady(i) && m->dataHash(i) == hash && m->dataRole(i) == role) {
-          // Lock is not needed since DataReady status has been set
-          //d_->memory->lock();
-          ret = d_->memory->dataText(i);
-          //d_->memory->unlock();
-          if (!ret.isEmpty()) {
-            d_->mutex.lock();
-            d_->translations[key] = ret;
-            d_->mutex.unlock();
+        if (m->dataRole(i) == role && m->dataHash(i) == hash) {
+          if (m->isDataCanceled(i))
+            return ret;
+          if (m->isDataReady(i)) {
+            ret = d_->memory->dataText(i);
+            if (!ret.isEmpty()) {
+              d_->mutex.lock();
+              d_->translations[key] = ret;
+              d_->mutex.unlock();
+            }
+            return ret;
           }
-          return ret;
         }
-      if (count == 0) // wait only twice
-        d_->wait(hash, role);
+      if (count != waitCount) {
+        if (event.wait(WaitInterval)) // if wake up by VNR, no longer wait anymore
+          count = waitCount - 1;
+      }
     }
   }
   return ret;

@@ -28,7 +28,7 @@
  *  Shared memory event when waiting for translation
  */
 #define VNRAGENT_MEMORY_EVENT "vnragent.shmem.%1.%2.%3" // windows event name, suffix with pid, role, hash
-#define VNRAGENT_MEMORY_TIMEOUT 1000 // default timeout, can be modified by user
+#define VNRAGENT_MEMORY_TIMEOUT 100 // sleep interval
 
 /**
  *  Log qDebug message and save to a file.
