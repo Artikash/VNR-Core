@@ -2138,7 +2138,7 @@ class Settings(QSettings):
 
   embeddedScenarioTextVisibleChanged = Signal(bool)
   def isEmbeddedScenarioTextVisible(self):
-    return to_bool(self.value('EmbeddedScenarioText', True))
+    return to_bool(self.value('EmbeddedScenarioText'))
   def setEmbeddedScenarioTextVisible(self, value):
     if value != self.isEmbeddedScenarioTextVisible():
       self.setValue('EmbeddedScenarioText', value)

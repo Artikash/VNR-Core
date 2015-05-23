@@ -442,6 +442,10 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1432421787:
+      ss.remove('EmbeddedScenarioText')
+    else:
+      return
     if ss_version <= 1432306894:
       ss.remove('GameAgentConvertsKanji') # use default settings
     else:
