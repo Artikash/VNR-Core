@@ -25,19 +25,33 @@ public:
   // Interface to RPC
 signals:
   void textReceived(QString text, qint64 hash, long signature, int role, bool needsTranslation);
-public:
+public: // synchronized methods
   //void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
   void quit();
 
   // Interface to engine
-public:
+public: // unsynchronized methods
   QString findTranslation(qint64 hash, int role) const;
 
   void setTranslationWaitTime(int msecs);
   QString waitForTranslation(qint64 hash, int role) const;
 
   void sendText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation);
+
+  // Expose the internal mutex
+  bool tryLock();
+  void lock();
+  void unlock();
+};
+
+// Helper mutex locker class
+class EmbedManagerLock
+{
+  EmbedManager *mutex_;
+public:
+  explicit EmbedManagerLock(EmbedManager *m) : mutex_(m) { mutex_->lock(); }
+  ~EmbedManagerLock() { mutex_->unlock(); }
 };
 
 // EOF
