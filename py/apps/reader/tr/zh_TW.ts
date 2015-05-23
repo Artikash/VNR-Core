@@ -4605,8 +4605,8 @@ The font will be installed to {1}.</source>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8834"/>
-        <source>You can always press SHIFT or CTRL to pause embedding translation and stop slowdown.</source>
-        <translation>你可以按下SHIFT或者CTRL來暫停內嵌翻譯如果變慢。</translation>
+        <source>You can always press Shift or Ctrl to pause embedding translation and stop slowdown.</source>
+        <translation>你可以按下Shift或者Ctrl來暫停內嵌翻譯如果變慢。</translation>
     </message>
 </context>
 </TS>
