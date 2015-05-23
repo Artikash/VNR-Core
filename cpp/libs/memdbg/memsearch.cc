@@ -211,19 +211,20 @@ enum : WORD {
  *  @param  op  first half of the operator
  *  @param  arg1  the function address
  *  @param  start address
- *  @param  search range
+ *  @param  stop address
+ *  @param  offset  search after start address
+ *  @param  range  search size
  *  @return  absolute address or 0
  */
-DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD size)
+DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, DWORD range)
 {
   typedef WORD optype;
   typedef DWORD argtype;
 
-  enum { START = 0x1000 }; // leading size to skip
-  for (DWORD i = START; i < size - sizeof(argtype); i++)
+  for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
     if (op == *(optype *)(start + i)) {
       DWORD t = *(DWORD *)(start + i + sizeof(optype));
-      if (t > start && t < start + size) {
+      if (t > start && t < stop) {
         if (arg1 == *(argtype *)t)
           return start + i;
         else
@@ -246,19 +247,20 @@ enum : BYTE {
  *  @param  op  first half of the operator
  *  @param  arg1  the function address
  *  @param  start address
- *  @param  search range
+ *  @param  stop address
+ *  @param  offset  search after start address
+ *  @param  range  search size
  *  @return  absolute address or 0
  */
-DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD size)
+DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, DWORD range)
 {
   typedef BYTE optype;
   typedef DWORD argtype;
 
-  enum { START = 0x1000 }; // leading size to skip
-  for (DWORD i = START; i < size - sizeof(argtype); i++)
+  for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
     if (op == *(optype *)(start + i)) {
       DWORD t = *(DWORD *)(start + i + sizeof(optype));
-      if (t > start && t < start + size) {
+      if (t > start && t < stop) {
         if (arg1 == *(argtype *)t)
           return start + i;
         else
@@ -277,13 +279,12 @@ DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD size)
  *  @param  search range
  *  @return  absolute address or 0
  */
-//DWORD findByteOp1(BYTE op, DWORD arg1, DWORD start, DWORD size)
+//DWORD findByteOp1(BYTE op, DWORD arg1, DWORD start, DWORD size, DWORD offset)
 //{
 //  typedef BYTE optype;
 //  typedef DWORD argtype;
 //
-//  enum { START = 0x1000 }; // leading size to skip
-//  for (DWORD i = START; i < size - sizeof(argtype); i++)
+//  for (DWORD i = offset; i < size - sizeof(argtype); i++)
 //    if (op == *(optype *)(start + i)) {
 //      DWORD t = *(DWORD *)(start + i + sizeof(optype));
 //      if (t == arg1) {
@@ -299,14 +300,14 @@ DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD size)
 
 MEMDBG_BEGIN_NAMESPACE
 
-DWORD findJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findWordCall(word_jmp, funcAddr, lowerBound, upperBound - lowerBound); }
+DWORD findJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findWordCall(word_jmp, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
-DWORD findFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findWordCall(word_call, funcAddr, lowerBound, upperBound - lowerBound); }
+DWORD findFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findWordCall(word_call, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
-DWORD findNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findByteCall(byte_call, funcAddr, lowerBound, upperBound - lowerBound); }
+DWORD findNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findByteCall(byte_call, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
 DWORD findPushDwordAddress(DWORD value, DWORD lowerBound, DWORD upperBound)
 {
@@ -322,9 +323,8 @@ DWORD findPushByteAddress(BYTE value, DWORD lowerBound, DWORD upperBound)
   return findBytes(bytes, sizeof(bytes), lowerBound, upperBound);
 }
 
-DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
+DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
-  enum { Start = 0x1000 };
   enum { PatternSize = 4 };
   const DWORD size = upperBound - lowerBound - PatternSize;
   const DWORD fun = (DWORD)funcAddr;
@@ -332,7 +332,7 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
   //WCHAR str[0x40];
   const DWORD mask = sigMask(sig);
-  for (DWORD i = Start; i < size; i++)
+  for (DWORD i = offset; i < size; i++)
     if (*(WORD *)(lowerBound + i) == word_call) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
       if (t >= lowerBound && t <= upperBound - PatternSize) {
@@ -352,9 +352,8 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   return 0;
 }
 
-DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
+DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
-  enum { Start = 0x1000 };
   enum { PatternSize = 4 };
   const DWORD size = upperBound - lowerBound - PatternSize;
   const DWORD fun = (DWORD)funcAddr;
@@ -367,7 +366,7 @@ DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount,
   for (DWORD k = 0; k < sigCount; k++)
     masks[k] = sigMask(sigs[k]);
 
-  for (DWORD i = Start; i < size; i++)
+  for (DWORD i = offset; i < size; i++)
     if (*(WORD *)(lowerBound + i) == word_call) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
       if (t >= lowerBound && t <= upperBound - PatternSize) {
@@ -391,16 +390,15 @@ DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount,
   return 0;
 }
 
-DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
+DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
-  enum { Start = 0x1000 };
   enum { PatternSize = 4 };
   const DWORD size = upperBound - lowerBound - PatternSize;
   const DWORD fun = (DWORD)funcAddr;
   //WCHAR str[0x40];
   DWORD ret = 0;
   const DWORD mask = sigMask(sig);
-  for (DWORD i = Start; i < size; i++)
+  for (DWORD i = offset; i < size; i++)
     if (*(WORD *)(lowerBound + i) == word_call) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
       if (t >= lowerBound && t <= upperBound - PatternSize) {
@@ -420,17 +418,17 @@ DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD u
   return ret;
 }
 
-DWORD findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize)
+DWORD findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
 {
-  DWORD addr = findCallerAddress(funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize);
+  DWORD addr = findCallerAddress(funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
   if (addr)
     while (byte_int3 == *(BYTE *)++addr);
   return addr;
 }
 
-DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize)
+DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
 {
-  DWORD addr = findLastCallerAddress(funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize);
+  DWORD addr = findLastCallerAddress(funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
   if (addr)
     while (byte_int3 == *(BYTE *)++addr);
   return addr;

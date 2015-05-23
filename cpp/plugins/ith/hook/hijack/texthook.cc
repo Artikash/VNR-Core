@@ -23,8 +23,7 @@
 
 // 10/14/2014 jichi: disable GDI hooks
 static bool gdi_hook_disabled_ = false;
-void DisableGDIHooks()
-{ ::gdi_hook_disabled_ = true; }
+void DisableGDIHooks() { ::gdi_hook_disabled_ = true; }
 
 static bool IsGDIFunction(LPCVOID addr)
 {
