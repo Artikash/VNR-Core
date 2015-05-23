@@ -203,7 +203,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>중국어 간체 번역문을 중국어 번체로 변환</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8874"/>
+        <location filename="dialogs/_prefs.py" line="8875"/>
         <source>like this</source>
         <translation>예시</translation>
     </message>
@@ -810,12 +810,12 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>게임원문이 너무 길어서 무시됨</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1242"/>
+        <location filename="managers/textman.py" line="1245"/>
         <source>Reload user-contributed comments</source>
         <translation>사용자 댓글 다시 준비</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1381"/>
+        <location filename="managers/textman.py" line="1384"/>
         <source>No game text received yet</source>
         <translation>아직 게임원문을 받지 못함</translation>
     </message>
@@ -925,47 +925,47 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>사용자 후킹코드 적용</translation>
     </message>
     <message>
-        <location filename="main.py" line="1577"/>
+        <location filename="main.py" line="1578"/>
         <source>Please close the current game first before opening new games</source>
         <translation>새로운 게임을 열기전에, 현재 게임을 먼저 닫아주세요.</translation>
     </message>
     <message>
-        <location filename="main.py" line="1870"/>
+        <location filename="main.py" line="1871"/>
         <source>Found running game</source>
         <translation>실행중인 게임 찾음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1880"/>
+        <location filename="main.py" line="1881"/>
         <source>Found new game</source>
         <translation>새로운 게임 찾음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1665"/>
+        <location filename="main.py" line="1666"/>
         <source>File does not exist {0}</source>
         <translation>파일이 존재하지 않습니다:{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="2183"/>
+        <location filename="main.py" line="2184"/>
         <source>Update requires Internet access</source>
         <translation>업데이트를 하려면 인터넷 연결이 필요합니다</translation>
     </message>
     <message>
-        <location filename="main.py" line="2196"/>
+        <location filename="main.py" line="2197"/>
         <source>You are using the latest app</source>
         <translation>이미 최신 버전입니다</translation>
     </message>
     <message>
-        <location filename="main.py" line="2201"/>
+        <location filename="main.py" line="2202"/>
         <source>Update released</source>
         <translation>새로운 업데이트 발견</translation>
     </message>
     <message>
-        <location filename="main.py" line="2225"/>
+        <location filename="main.py" line="2226"/>
         <source>Critical update message</source>
         <translation>매우 중요한 업데이트 발견</translation>
     </message>
     <message>
-        <location filename="main.py" line="2329"/>
+        <location filename="main.py" line="2330"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>사전이 비어있습니다. 인터넷에 연결하고 새로고침 해주세요.</translation>
     </message>
@@ -1062,7 +1062,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}은 관리자 권한이 필요합니다. VNR을 관리자 권한으로 재실행 해주세요</translation>
     </message>
     <message>
-        <location filename="main.py" line="2348"/>
+        <location filename="main.py" line="2349"/>
         <source>There are no user-contributed subtitles</source>
         <translation>사용자 번역문이 없습니다</translation>
     </message>
@@ -1102,7 +1102,7 @@ It might take a couple of seconds to complete.</source>
         <translation>사용자 자막을 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="main.py" line="1995"/>
+        <location filename="main.py" line="1996"/>
         <source>Loading comment ... patient!</source>
         <translation>댓글 로딩 중…잠시만 기다리세요!</translation>
     </message>
@@ -1161,7 +1161,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>일본 표준시로 게임 실행</translation>
     </message>
     <message>
-        <location filename="main.py" line="1386"/>
+        <location filename="main.py" line="1387"/>
         <source>Analyzing data ... patient!</source>
         <translation>데이터 분석 중… 잠시만 기다려주세요!</translation>
     </message>
@@ -1384,7 +1384,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>게임 참조 찾을수 없음</translation>
     </message>
     <message>
-        <location filename="main.py" line="2055"/>
+        <location filename="main.py" line="2056"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>알 수 없는 게임. 데이터베이스를 업데이트 해주세요.</translation>
     </message>
@@ -1554,12 +1554,12 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>텍스트에서 무한 반복 무시</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="989"/>
+        <location filename="managers/textman.py" line="990"/>
         <source>Eliminate finite repetition in the text</source>
         <translation>특정하게 반복되는 텍스트를 제거</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1006"/>
+        <location filename="managers/textman.py" line="1007"/>
         <source>Keep all text threads generated from {0}</source>
         <translation>{0}에서 생성된 모든 텍스트 스레드 보관</translation>
     </message>
@@ -1604,7 +1604,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>다른 사용자에게 덮어쓰기를 허용하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main.py" line="1609"/>
+        <location filename="main.py" line="1610"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1682,7 +1682,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>마지막 저장한 설정으로 복귀</translation>
     </message>
     <message>
-        <location filename="main.py" line="1613"/>
+        <location filename="main.py" line="1614"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1730,7 +1730,7 @@ than turning on global repetition filters here.</source>
         <translation>경고: 반복이 없다면 반복필터를 켜지 말아주세요!</translation>
     </message>
     <message>
-        <location filename="main.py" line="1949"/>
+        <location filename="main.py" line="1950"/>
         <source>The feature is not available on Wine</source>
         <translation>이 기능은 Wine에서는 아직 이용할수 없습니다.</translation>
     </message>
@@ -2565,7 +2565,7 @@ VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습
         <translation>환경설정에서 위치를 다시 확인해 주세요.</translation>
     </message>
     <message>
-        <location filename="main.py" line="2025"/>
+        <location filename="main.py" line="2026"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>알 수 없는 게임. 게임 정보를 수정해 주세요.</translation>
     </message>
@@ -2967,10 +2967,10 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="dialogs/_prefs.py" line="8840"/>
         <source>Disable text extraction when Ctrl is pressed</source>
-        <translation>Ctrl을 눌러 텍스트 추출을 일시중지</translation>
+        <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8911"/>
+        <location filename="dialogs/_prefs.py" line="8912"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -2980,7 +2980,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>내장 자막</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="254"/>
+        <location filename="managers/gameagent.py" line="260"/>
         <source>Detect game engine</source>
         <translation>게임엔진 발견</translation>
     </message>
@@ -3083,7 +3083,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="256"/>
+        <location filename="managers/gameagent.py" line="262"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
@@ -3113,7 +3113,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>VNR 내장 후커는 H코드를 지원하지 않음</translation>
     </message>
     <message>
-        <location filename="main.py" line="2093"/>
+        <location filename="main.py" line="2094"/>
         <source>Unknown game engine</source>
         <translation>알 수 없는 게임 엔진</translation>
     </message>
@@ -3622,7 +3622,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>간지언어에 공백 유지하지 않기</translation>
     </message>
     <message>
-        <location filename="main.py" line="2127"/>
+        <location filename="main.py" line="2128"/>
         <source>Browse current enabled terms</source>
         <translation>현재 사용가능한 용어 찾아보기</translation>
     </message>
@@ -4684,22 +4684,22 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8854"/>
+        <location filename="dialogs/_prefs.py" line="8855"/>
         <source>Insert spaces between overlapped texts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8862"/>
+        <location filename="dialogs/_prefs.py" line="8863"/>
         <source>Insert spaces after every character</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8872"/>
+        <location filename="dialogs/_prefs.py" line="8873"/>
         <source>Insert spaces only between overlapped characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8882"/>
+        <location filename="dialogs/_prefs.py" line="8883"/>
         <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4711,6 +4711,11 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="8739"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8834"/>
+        <source>You can always press SHIFT or CTRL to pause embedding translation and stop slowdown.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

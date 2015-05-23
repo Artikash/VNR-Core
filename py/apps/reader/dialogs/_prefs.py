@@ -8792,7 +8792,7 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
 
     # CTRL detection
-    layout.addWidget(self.ctrlButton)
+    #layout.addWidget(self.ctrlButton)
 
     # Translation wait time
     row = QtWidgets.QHBoxLayout()
@@ -8828,20 +8828,21 @@ class _EngineTab(object):
 
   @memoizedproperty
   def optionInfoLabel(self):
-    ret = QtWidgets.QLabel("%s: %s" % (
+    ret = QtWidgets.QLabel("%s: %s\n%s" % (
       tr_("Note"),
       my.tr("A large wait time might also slow down the game when your machine translator is slow."),
+      my.tr("You can always press SHIFT or CTRL to pause embedding translation and stop slowdown."),
     ))
-    ret.setWordWrap(True)
+    #ret.setWordWrap(True)
     return ret
 
-  @memoizedproperty
-  def ctrlButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Disable text extraction when Ctrl is pressed"))
-    ss = settings.global_()
-    ret.setChecked(ss.isEmbeddedTextCancellableByControl())
-    ret.toggled.connect(ss.setEmbeddedTextCancellableByControl)
-    return ret
+  #@memoizedproperty
+  #def ctrlButton(self):
+  #  ret = QtWidgets.QCheckBox(my.tr("Disable text extraction when Ctrl is pressed"))
+  #  ss = settings.global_()
+  #  ret.setChecked(ss.isEmbeddedTextCancellableByControl())
+  #  ret.toggled.connect(ss.setEmbeddedTextCancellableByControl)
+  #  return ret
 
   ## Space ##
 

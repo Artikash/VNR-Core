@@ -165,7 +165,7 @@ _SETTINGS_DICT = {
   'windowTextVisible': 'isWindowTextVisible',
 
   'embeddedTranslationWaitTime': 'embeddedTranslationWaitTime',
-  'embeddedTextCancellableByControl': 'isEmbeddedTextCancellableByControl',
+  #'embeddedTextCancellableByControl': 'isEmbeddedTextCancellableByControl',
 
   'embeddedScenarioVisible': 'isEmbeddedScenarioVisible',
   'embeddedScenarioTextVisible': 'isEmbeddedScenarioTextVisible',

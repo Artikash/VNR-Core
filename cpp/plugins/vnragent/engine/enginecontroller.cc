@@ -292,8 +292,9 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   auto p = EmbedManager::instance();
 
-  bool canceled = !d_->settings->enabled ||
-      d_->settings->detectsControl && WinKey::isKeyControlPressed();
+  bool canceled = !d_->settings->enabled
+      || WinKey::isKeyControlPressed() //d_->settings->detectsControl &&
+      || WinKey::isKeyShiftPressed();
 
   //EmbedManagerLock lock(p);
 
@@ -361,8 +362,9 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   auto p = EmbedManager::instance();
 
-  bool canceled = !d_->settings->enabled ||
-      d_->settings->detectsControl && WinKey::isKeyControlPressed();
+  bool canceled = !d_->settings->enabled
+      || WinKey::isKeyControlPressed() //d_->settings->detectsControl &&
+      || WinKey::isKeyShiftPressed();
 
   // FIXME: This will serialize send operation. Use queued/cached shared memory instead
   //EmbedManagerLock lock(p);

@@ -46,7 +46,7 @@ public:
 
   bool isEmbeddedAllTextsExtracted() const;
   bool isEmbeddedTextEnabled() const;
-  bool isEmbeddedTextCancellableByControl() const;
+  //bool isEmbeddedTextCancellableByControl() const;
   int embeddedTranslationWaitTime() const;
 
   QString gameEncoding() const;
@@ -77,7 +77,7 @@ public slots:
 
   void setEmbeddedAllTextsExtracted(bool t);
   void setEmbeddedTextEnabled(bool t);
-  void setEmbeddedTextCancellableByControl(bool t);
+  //void setEmbeddedTextCancellableByControl(bool t);
   void setEmbeddedTranslationWaitTime(int v);
 
   void setGameEncoding(const QString &v);
@@ -108,7 +108,7 @@ signals:
 
   void embeddedAllTextsExtractedChanged(bool t);
   void embeddedTextEnabledChanged(bool t);
-  void embeddedTextCancellableByControlChanged(bool t);
+  //void embeddedTextCancellableByControlChanged(bool t);
   void embeddedTranslationWaitTimeChanged(int v);
 
   void gameEncodingChanged(QString v);
