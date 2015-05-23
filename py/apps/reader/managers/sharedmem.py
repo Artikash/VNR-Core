@@ -32,7 +32,9 @@ class VnrAgentSharedMemory:
   def detachProcess(self, pid): # long -> bool
     d = self.__d
     ret = pid == d.processId and d.isAttached() and d.detach()
-    d.processId = 0
+    if ret:
+      d.processId = 0
+      d.index = 0
     return ret
 
   def quit(self):
