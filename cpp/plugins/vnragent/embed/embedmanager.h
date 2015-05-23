@@ -40,18 +40,18 @@ public: // unsynchronized methods
   void sendText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation);
 
   // Expose the internal mutex
-  bool tryLock();
-  void lock();
-  void unlock();
+  //bool tryLock();
+  //void lock();
+  //void unlock();
 };
 
 // Helper mutex locker class
-class EmbedManagerLock
-{
-  EmbedManager *mutex_;
-public:
-  explicit EmbedManagerLock(EmbedManager *m) : mutex_(m) { mutex_->lock(); }
-  ~EmbedManagerLock() { mutex_->unlock(); }
-};
+//class EmbedManagerLock
+//{
+//  EmbedManager *mutex_;
+//public:
+//  explicit EmbedManagerLock(EmbedManager *m) : mutex_(m) { mutex_->lock(); }
+//  ~EmbedManagerLock() { mutex_->unlock(); }
+//};
 
 // EOF

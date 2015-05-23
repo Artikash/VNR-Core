@@ -8,7 +8,7 @@
 class VnrSharedMemoryPrivate
 {
 public:
-  struct Head {
+  struct Cell {
     qint8 status;
     qint64 hash;
     //qint32 signature;
@@ -16,21 +16,26 @@ public:
     qint32 textSize;
     wchar_t text[1];
   private:
-    Head() {} // disable constructor
+    Cell() {} // disable constructor
   };
+
+  int cellCount;
+  int cellSize; // cell size, instead of total size
 
   QSharedMemory *memory;
 
   explicit VnrSharedMemoryPrivate(QObject *parent)
-    : memory(new QSharedMemory(parent)) {}
+    : cellCount(0), cellSize(0), memory(new QSharedMemory(parent)) {}
   VnrSharedMemoryPrivate(const QString &key, QObject *parent)
     : memory(new QSharedMemory(key, parent)) {}
 
-  Head *head() { return reinterpret_cast<Head *>(memory->data()); }
-  const Head *constHead() const { return reinterpret_cast<const Head *>(memory->constData()); }
+  int textCapacity() const { return qMax<int>(0, (cellSize - sizeof(Cell)) / 2); }
 
-  int textCapacity() const
-  { return (memory->size() - sizeof(Head)) / 2; }
+  quint8 *data(int i) { return static_cast<quint8 *>(memory->data()) + cellSize * i; }
+  const quint8 *constData(int i) const { return static_cast<const quint8 *>(memory->constData()) + cellSize * i; }
+
+  Cell *cell(int i) { return reinterpret_cast<Cell *>(data(i)); }
+  const Cell *constCell(int i) const { return reinterpret_cast<const Cell *>(constData(i)); }
 };
 
 /** Public class */
@@ -47,10 +52,15 @@ VnrSharedMemory::~VnrSharedMemory() { delete d_; }
 QString VnrSharedMemory::key() const { return d_->memory->key(); }
 void VnrSharedMemory::setKey(const QString &v) { d_->memory->setKey(v); }
 
-int VnrSharedMemory::size() const { return d_->memory->size(); }
+int VnrSharedMemory::cellCount() const { return d_->cellCount; }
+int VnrSharedMemory::cellSize() const { return d_->cellSize; }
 
-bool VnrSharedMemory::create(int size, bool readOnly)
-{ return d_->memory->create(size, readOnly ? QSharedMemory::ReadOnly : QSharedMemory::ReadWrite); }
+bool VnrSharedMemory::create(int size, int count, bool readOnly)
+{
+  d_->cellSize = size;
+  d_->cellCount = count;
+  return d_->memory->create(size * count, readOnly ? QSharedMemory::ReadOnly : QSharedMemory::ReadWrite);
+}
 
 bool VnrSharedMemory::attach(bool readOnly)
 { return d_->memory->attach(readOnly ? QSharedMemory::ReadOnly : QSharedMemory::ReadWrite); }
@@ -64,89 +74,89 @@ bool VnrSharedMemory::unlock() { return d_->memory->unlock(); }
 QString VnrSharedMemory::errorString() const { return d_->memory->errorString(); }
 bool VnrSharedMemory::hasError() const { return d_->memory->error() != QSharedMemory::NoError; }
 
+int VnrSharedMemory::dataTextCapacity() const
+{ return d_->textCapacity(); }
+
 // Contents
 
-const char *VnrSharedMemory::constData() const
-{ return reinterpret_cast<const char *>(d_->memory->constData()); }
+const char *VnrSharedMemory::constData(int i) const
+{ return reinterpret_cast<const char *>(d_->constData(i)); }
 
-int VnrSharedMemory::dataTextCapacity() const
-{ return qMax(0, d_->textCapacity()); }
-
-qint64 VnrSharedMemory::dataHash() const
+qint64 VnrSharedMemory::dataHash(int i) const
 {
-  if (auto h = d_->constHead())
-    return h->hash;
+  if (auto p = d_->constCell(i))
+    return p->hash;
   else
     return 0;
 }
 
-void VnrSharedMemory::setDataHash(qint64 v)
+void VnrSharedMemory::setDataHash(int i, qint64 v)
 {
-  if (auto h = d_->head())
-    h->hash = v;
+  if (auto p = d_->cell(i))
+    p->hash = v;
 }
 
-qint8 VnrSharedMemory::dataStatus() const
+qint8 VnrSharedMemory::dataStatus(int i) const
 {
-  if (auto h = d_->constHead())
-    return h->status;
+  if (auto p = d_->constCell(i))
+    return p->status;
   else
     return 0;
 }
 
-void VnrSharedMemory::setDataStatus(qint8 v)
+void VnrSharedMemory::setDataStatus(int i, qint8 v)
 {
-  if (auto h = d_->head())
-    h->status = v;
+  if (auto p = d_->cell(i))
+    p->status = v;
 }
 
-//qint32 VnrSharedMemory::dataSignature() const
+//qint32 VnrSharedMemory::dataSignature(int i) const
 //{
-//  if (auto h = d_->constHead())
-//    return h->signature;
+//  if (auto p = d_->constCell(i))
+//    return p->signature;
 //  else
 //    return 0;
 //}
 //
 //void VnrSharedMemory::setDataSignature(qint32 v)
 //{
-//  if (auto h = d_->head())
-//    h->signature = v;
+//  if (auto p = d_->cell(i))
+//    p->signature = v;
 //}
 
-qint8 VnrSharedMemory::dataRole() const
+qint8 VnrSharedMemory::dataRole(int i) const
 {
-  if (auto h = d_->constHead())
-    return h->role;
+  if (auto p = d_->constCell(i))
+    return p->role;
   else
     return 0;
 }
 
-void VnrSharedMemory::setDataRole(qint8 v)
+void VnrSharedMemory::setDataRole(int i, qint8 v)
 {
-  if (auto h = d_->head())
-    h->role = v;
+  if (auto p = d_->cell(i))
+    p->role = v;
 }
 
-QString VnrSharedMemory::dataText() const
+QString VnrSharedMemory::dataText(int i) const
 {
-  if (auto h = d_->constHead())
-    if (h->textSize > 0 && h->textSize <= d_->textCapacity())
-      return QString::fromWCharArray(h->text, h->textSize);
+  if (auto p = d_->constCell(i))
+    if (p->textSize > 0 && p->textSize <= d_->textCapacity())
+      return QString::fromWCharArray(p->text, p->textSize);
   return QString();
 }
 
-void VnrSharedMemory::setDataText(const QString &v)
+void VnrSharedMemory::setDataText(int i, const QString &v)
 {
-  if (auto h = d_->head()) {
+  if (auto p = d_->cell(i)) {
     int limit = d_->textCapacity();
     if (v.size() <= limit) {
-      v.toWCharArray(h->text);
-      h->textSize = v.size();
+      v.toWCharArray(p->text);
+      p->textSize = v.size();
     } else {
       QString w = v.left(limit);
-      w.toWCharArray(h->text);
-      h->textSize = w.size();
+      w.toWCharArray(p->text);
+      p->textSize = w.size();
     }
   }
 }

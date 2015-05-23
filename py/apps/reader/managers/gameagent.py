@@ -139,24 +139,25 @@ class GameAgent(QObject):
     m = self.__d.mem
     if m.isAttached(): # and m.lock():
       # Due to the logic, locking is not needed
-      m.setDataStatus(m.STATUS_BUSY)
-      m.setDataHash(hash)
-      m.setDataRole(role)
-      m.setDataText(text)
-      m.setDataStatus(m.STATUS_READY)
+      index = m.nextIndex()
+      m.setDataStatus(index, m.STATUS_BUSY)
+      m.setDataHash(index, hash)
+      m.setDataRole(index, role)
+      m.setDataText(index, text)
+      m.setDataStatus(index, m.STATUS_READY)
       #m.unlock()
-      m.notify()
+      m.notify(hash, role)
 
-  def cancelEmbeddedTranslation(self):
+  def cancelEmbeddedTranslation(self, text, hash, role):
     """
-    @param  text  unicode
+    @param  text  unicode  not used
     @param  hash  str or int64
     @param  role  int
     """
     m = self.__d.mem
     if m.isAttached():
-      m.setDataStatus(m.STATUS_CANCEL)
-      m.notify()
+      m.setAllStatus(m.STATUS_CANCEL)
+      m.notify(hash, role)
 
 _SETTINGS_DICT = {
   'windowTranslationEnabled': 'isWindowTranslationEnabled',
@@ -185,7 +186,7 @@ _SETTINGS_DICT = {
 @Q_Q
 class _GameAgent(object):
   def __init__(self, q):
-    self.mem = sharedmem.VnrAgentSharedMemory()
+    self.mem = sharedmem.VnrAgentSharedMemory(q)
 
     import rpcman
     self.rpc = rpcman.manager()

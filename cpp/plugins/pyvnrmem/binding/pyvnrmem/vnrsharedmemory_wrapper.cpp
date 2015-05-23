@@ -481,7 +481,7 @@ static PyObject* Sbk_VnrSharedMemoryFunc_attach(PyObject* self, PyObject* args, 
         return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_constData(PyObject* self)
+static PyObject* Sbk_VnrSharedMemoryFunc_cellCount(PyObject* self)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -494,9 +494,79 @@ static PyObject* Sbk_VnrSharedMemoryFunc_constData(PyObject* self)
     {
 
         if (!PyErr_Occurred()) {
-            // constData()const
+            // cellCount()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            const char * cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->constData();
+            int cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->cellCount();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
+static PyObject* Sbk_VnrSharedMemoryFunc_cellSize(PyObject* self)
+{
+    VnrSharedMemoryWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // cellSize()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            int cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->cellSize();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
+static PyObject* Sbk_VnrSharedMemoryFunc_constData(PyObject* self, PyObject* pyArg)
+{
+    VnrSharedMemoryWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: constData(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // constData(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_constData_TypeError;
+
+    // Call function/method
+    {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // constData(int)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            const char * cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->constData(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<const char*>(), cppResult);
         }
@@ -507,6 +577,11 @@ static PyObject* Sbk_VnrSharedMemoryFunc_constData(PyObject* self)
         return 0;
     }
     return pyResult;
+
+    Sbk_VnrSharedMemoryFunc_constData_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.constData", overloads);
+        return 0;
 }
 
 static PyObject* Sbk_VnrSharedMemoryFunc_create(PyObject* self, PyObject* args, PyObject* kwds)
@@ -518,14 +593,14 @@ static PyObject* Sbk_VnrSharedMemoryFunc_create(PyObject* self, PyObject* args, 
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp[] = { 0, 0 };
+    PythonToCppFunc pythonToCpp[] = { 0, 0, 0 };
     SBK_UNUSED(pythonToCpp)
     int numNamedArgs = (kwds ? PyDict_Size(kwds) : 0);
     int numArgs = PyTuple_GET_SIZE(args);
-    PyObject* pyArgs[] = {0, 0};
+    PyObject* pyArgs[] = {0, 0, 0};
 
     // invalid argument lengths
-    if (numArgs + numNamedArgs > 2) {
+    if (numArgs + numNamedArgs > 3) {
         PyErr_SetString(PyExc_TypeError, "pyvnrmem.VnrSharedMemory.create(): too many arguments");
         return 0;
     } else if (numArgs < 1) {
@@ -533,17 +608,21 @@ static PyObject* Sbk_VnrSharedMemoryFunc_create(PyObject* self, PyObject* args, 
         return 0;
     }
 
-    if (!PyArg_ParseTuple(args, "|OO:create", &(pyArgs[0]), &(pyArgs[1])))
+    if (!PyArg_ParseTuple(args, "|OOO:create", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2])))
         return 0;
 
 
     // Overloaded function decisor
-    // 0: create(int,bool)
+    // 0: create(int,int,bool)
     if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))) {
         if (numArgs == 1) {
-            overloadId = 0; // create(int,bool)
-        } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1])))) {
-            overloadId = 0; // create(int,bool)
+            overloadId = 0; // create(int,int,bool)
+        } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1])))) {
+            if (numArgs == 2) {
+                overloadId = 0; // create(int,int,bool)
+            } else if ((pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2])))) {
+                overloadId = 0; // create(int,int,bool)
+            }
         }
     }
 
@@ -553,25 +632,36 @@ static PyObject* Sbk_VnrSharedMemoryFunc_create(PyObject* self, PyObject* args, 
     // Call function/method
     {
         if (kwds) {
-            PyObject* value = PyDict_GetItemString(kwds, "readOnly");
+            PyObject* value = PyDict_GetItemString(kwds, "cellCount");
             if (value && pyArgs[1]) {
-                PyErr_SetString(PyExc_TypeError, "pyvnrmem.VnrSharedMemory.create(): got multiple values for keyword argument 'readOnly'.");
+                PyErr_SetString(PyExc_TypeError, "pyvnrmem.VnrSharedMemory.create(): got multiple values for keyword argument 'cellCount'.");
                 return 0;
             } else if (value) {
                 pyArgs[1] = value;
-                if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1]))))
+                if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1]))))
+                    goto Sbk_VnrSharedMemoryFunc_create_TypeError;
+            }
+            value = PyDict_GetItemString(kwds, "readOnly");
+            if (value && pyArgs[2]) {
+                PyErr_SetString(PyExc_TypeError, "pyvnrmem.VnrSharedMemory.create(): got multiple values for keyword argument 'readOnly'.");
+                return 0;
+            } else if (value) {
+                pyArgs[2] = value;
+                if (!(pythonToCpp[2] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[2]))))
                     goto Sbk_VnrSharedMemoryFunc_create_TypeError;
             }
         }
         int cppArg0;
         pythonToCpp[0](pyArgs[0], &cppArg0);
-        bool cppArg1 = false;
+        int cppArg1 = 1;
         if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
+        bool cppArg2 = false;
+        if (pythonToCpp[2]) pythonToCpp[2](pyArgs[2], &cppArg2);
 
         if (!PyErr_Occurred()) {
-            // create(int,bool)
+            // create(int,int,bool)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = cppSelf->create(cppArg0, cppArg1);
+            bool cppResult = cppSelf->create(cppArg0, cppArg1, cppArg2);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -584,12 +674,12 @@ static PyObject* Sbk_VnrSharedMemoryFunc_create(PyObject* self, PyObject* args, 
     return pyResult;
 
     Sbk_VnrSharedMemoryFunc_create_TypeError:
-        const char* overloads[] = {"int, bool = false", 0};
+        const char* overloads[] = {"int, int = 1, bool = false", 0};
         Shiboken::setErrorAboutWrongArguments(args, "pyvnrmem.VnrSharedMemory.create", overloads);
         return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_dataHash(PyObject* self)
+static PyObject* Sbk_VnrSharedMemoryFunc_dataHash(PyObject* self, PyObject* pyArg)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -597,14 +687,28 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataHash(PyObject* self)
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: dataHash(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // dataHash(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_dataHash_TypeError;
 
     // Call function/method
     {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // dataHash()const
+            // dataHash(int)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            qint64 cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataHash();
+            qint64 cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataHash(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<qint64>(), &cppResult);
         }
@@ -615,9 +719,14 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataHash(PyObject* self)
         return 0;
     }
     return pyResult;
+
+    Sbk_VnrSharedMemoryFunc_dataHash_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.dataHash", overloads);
+        return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_dataRole(PyObject* self)
+static PyObject* Sbk_VnrSharedMemoryFunc_dataRole(PyObject* self, PyObject* pyArg)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -625,14 +734,28 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataRole(PyObject* self)
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: dataRole(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // dataRole(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_dataRole_TypeError;
 
     // Call function/method
     {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // dataRole()const
+            // dataRole(int)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            qint8 cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataRole();
+            qint8 cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataRole(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<qint8>(), &cppResult);
         }
@@ -643,9 +766,14 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataRole(PyObject* self)
         return 0;
     }
     return pyResult;
+
+    Sbk_VnrSharedMemoryFunc_dataRole_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.dataRole", overloads);
+        return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_dataStatus(PyObject* self)
+static PyObject* Sbk_VnrSharedMemoryFunc_dataStatus(PyObject* self, PyObject* pyArg)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -653,14 +781,28 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataStatus(PyObject* self)
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: dataStatus(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // dataStatus(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_dataStatus_TypeError;
 
     // Call function/method
     {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // dataStatus()const
+            // dataStatus(int)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            qint8 cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataStatus();
+            qint8 cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataStatus(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<qint8>(), &cppResult);
         }
@@ -671,9 +813,14 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataStatus(PyObject* self)
         return 0;
     }
     return pyResult;
+
+    Sbk_VnrSharedMemoryFunc_dataStatus_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.dataStatus", overloads);
+        return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_dataText(PyObject* self)
+static PyObject* Sbk_VnrSharedMemoryFunc_dataText(PyObject* self, PyObject* pyArg)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -681,14 +828,28 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataText(PyObject* self)
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: dataText(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // dataText(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_dataText_TypeError;
 
     // Call function/method
     {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // dataText()const
+            // dataText(int)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataText();
+            QString cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataText(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
@@ -699,6 +860,11 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataText(PyObject* self)
         return 0;
     }
     return pyResult;
+
+    Sbk_VnrSharedMemoryFunc_dataText_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.dataText", overloads);
+        return 0;
 }
 
 static PyObject* Sbk_VnrSharedMemoryFunc_dataTextCapacity(PyObject* self)
@@ -897,7 +1063,7 @@ static PyObject* Sbk_VnrSharedMemoryFunc_lock(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_setDataHash(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_VnrSharedMemoryFunc_setDataHash(PyObject* self, PyObject* args)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -905,13 +1071,24 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataHash(PyObject* self, PyObject* p
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
     SBK_UNUSED(pythonToCpp)
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+
+
+    if (!PyArg_UnpackTuple(args, "setDataHash", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
 
     // Overloaded function decisor
-    // 0: setDataHash(qint64)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<qint64>(), (pyArg)))) {
-        overloadId = 0; // setDataHash(qint64)
+    // 0: setDataHash(int,qint64)
+    if (numArgs == 2
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))
+        && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<qint64>(), (pyArgs[1])))) {
+        overloadId = 0; // setDataHash(int,qint64)
     }
 
     // Function signature not found.
@@ -919,13 +1096,15 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataHash(PyObject* self, PyObject* p
 
     // Call function/method
     {
-        qint64 cppArg0;
-        pythonToCpp(pyArg, &cppArg0);
+        int cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        qint64 cppArg1;
+        pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // setDataHash(qint64)
+            // setDataHash(int,qint64)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setDataHash(cppArg0);
+            cppSelf->setDataHash(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -936,12 +1115,12 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataHash(PyObject* self, PyObject* p
     Py_RETURN_NONE;
 
     Sbk_VnrSharedMemoryFunc_setDataHash_TypeError:
-        const char* overloads[] = {"long long", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.setDataHash", overloads);
+        const char* overloads[] = {"int, long long", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyvnrmem.VnrSharedMemory.setDataHash", overloads);
         return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_setDataRole(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_VnrSharedMemoryFunc_setDataRole(PyObject* self, PyObject* args)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -949,13 +1128,24 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataRole(PyObject* self, PyObject* p
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
     SBK_UNUSED(pythonToCpp)
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+
+
+    if (!PyArg_UnpackTuple(args, "setDataRole", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
 
     // Overloaded function decisor
-    // 0: setDataRole(qint8)
-    if (SbkChar_Check(pyArg) && (pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<qint8>(), (pyArg)))) {
-        overloadId = 0; // setDataRole(qint8)
+    // 0: setDataRole(int,qint8)
+    if (numArgs == 2
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))
+        && SbkChar_Check(pyArgs[1]) && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<qint8>(), (pyArgs[1])))) {
+        overloadId = 0; // setDataRole(int,qint8)
     }
 
     // Function signature not found.
@@ -963,13 +1153,15 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataRole(PyObject* self, PyObject* p
 
     // Call function/method
     {
-        qint8 cppArg0;
-        pythonToCpp(pyArg, &cppArg0);
+        int cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        qint8 cppArg1;
+        pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // setDataRole(qint8)
+            // setDataRole(int,qint8)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setDataRole(cppArg0);
+            cppSelf->setDataRole(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -980,12 +1172,12 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataRole(PyObject* self, PyObject* p
     Py_RETURN_NONE;
 
     Sbk_VnrSharedMemoryFunc_setDataRole_TypeError:
-        const char* overloads[] = {"char", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.setDataRole", overloads);
+        const char* overloads[] = {"int, char", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyvnrmem.VnrSharedMemory.setDataRole", overloads);
         return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_setDataStatus(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_VnrSharedMemoryFunc_setDataStatus(PyObject* self, PyObject* args)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -993,13 +1185,24 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataStatus(PyObject* self, PyObject*
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
     SBK_UNUSED(pythonToCpp)
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+
+
+    if (!PyArg_UnpackTuple(args, "setDataStatus", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
 
     // Overloaded function decisor
-    // 0: setDataStatus(qint8)
-    if (SbkChar_Check(pyArg) && (pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<qint8>(), (pyArg)))) {
-        overloadId = 0; // setDataStatus(qint8)
+    // 0: setDataStatus(int,qint8)
+    if (numArgs == 2
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))
+        && SbkChar_Check(pyArgs[1]) && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<qint8>(), (pyArgs[1])))) {
+        overloadId = 0; // setDataStatus(int,qint8)
     }
 
     // Function signature not found.
@@ -1007,13 +1210,15 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataStatus(PyObject* self, PyObject*
 
     // Call function/method
     {
-        qint8 cppArg0;
-        pythonToCpp(pyArg, &cppArg0);
+        int cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        qint8 cppArg1;
+        pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // setDataStatus(qint8)
+            // setDataStatus(int,qint8)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setDataStatus(cppArg0);
+            cppSelf->setDataStatus(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -1024,12 +1229,12 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataStatus(PyObject* self, PyObject*
     Py_RETURN_NONE;
 
     Sbk_VnrSharedMemoryFunc_setDataStatus_TypeError:
-        const char* overloads[] = {"char", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.setDataStatus", overloads);
+        const char* overloads[] = {"int, char", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyvnrmem.VnrSharedMemory.setDataStatus", overloads);
         return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_setDataText(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_VnrSharedMemoryFunc_setDataText(PyObject* self, PyObject* args)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -1037,13 +1242,24 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataText(PyObject* self, PyObject* p
         return 0;
     cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
     int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
     SBK_UNUSED(pythonToCpp)
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+
+
+    if (!PyArg_UnpackTuple(args, "setDataText", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
 
     // Overloaded function decisor
-    // 0: setDataText(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // setDataText(QString)
+    // 0: setDataText(int,QString)
+    if (numArgs == 2
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))
+        && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[1])))) {
+        overloadId = 0; // setDataText(int,QString)
     }
 
     // Function signature not found.
@@ -1051,13 +1267,15 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataText(PyObject* self, PyObject* p
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
-        pythonToCpp(pyArg, &cppArg0);
+        int cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        ::QString cppArg1 = ::QString();
+        pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // setDataText(QString)
+            // setDataText(int,QString)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setDataText(cppArg0);
+            cppSelf->setDataText(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -1068,8 +1286,8 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataText(PyObject* self, PyObject* p
     Py_RETURN_NONE;
 
     Sbk_VnrSharedMemoryFunc_setDataText_TypeError:
-        const char* overloads[] = {"unicode", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.setDataText", overloads);
+        const char* overloads[] = {"int, unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyvnrmem.VnrSharedMemory.setDataText", overloads);
         return 0;
 }
 
@@ -1117,34 +1335,6 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setKey(PyObject* self, PyObject* pyArg)
         return 0;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_size(PyObject* self)
-{
-    VnrSharedMemoryWrapper* cppSelf = 0;
-    SBK_UNUSED(cppSelf)
-    if (!Shiboken::Object::isValid(self))
-        return 0;
-    cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
-    PyObject* pyResult = 0;
-
-    // Call function/method
-    {
-
-        if (!PyErr_Occurred()) {
-            // size()const
-            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            int cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->size();
-            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
-        }
-    }
-
-    if (PyErr_Occurred() || !pyResult) {
-        Py_XDECREF(pyResult);
-        return 0;
-    }
-    return pyResult;
-}
-
 static PyObject* Sbk_VnrSharedMemoryFunc_unlock(PyObject* self)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
@@ -1175,12 +1365,14 @@ static PyObject* Sbk_VnrSharedMemoryFunc_unlock(PyObject* self)
 
 static PyMethodDef Sbk_VnrSharedMemory_methods[] = {
     {"attach", (PyCFunction)Sbk_VnrSharedMemoryFunc_attach, METH_VARARGS|METH_KEYWORDS},
-    {"constData", (PyCFunction)Sbk_VnrSharedMemoryFunc_constData, METH_NOARGS},
+    {"cellCount", (PyCFunction)Sbk_VnrSharedMemoryFunc_cellCount, METH_NOARGS},
+    {"cellSize", (PyCFunction)Sbk_VnrSharedMemoryFunc_cellSize, METH_NOARGS},
+    {"constData", (PyCFunction)Sbk_VnrSharedMemoryFunc_constData, METH_O},
     {"create", (PyCFunction)Sbk_VnrSharedMemoryFunc_create, METH_VARARGS|METH_KEYWORDS},
-    {"dataHash", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataHash, METH_NOARGS},
-    {"dataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataRole, METH_NOARGS},
-    {"dataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataStatus, METH_NOARGS},
-    {"dataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataText, METH_NOARGS},
+    {"dataHash", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataHash, METH_O},
+    {"dataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataRole, METH_O},
+    {"dataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataStatus, METH_O},
+    {"dataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataText, METH_O},
     {"dataTextCapacity", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataTextCapacity, METH_NOARGS},
     {"detach_", (PyCFunction)Sbk_VnrSharedMemoryFunc_detach_, METH_NOARGS},
     {"errorString", (PyCFunction)Sbk_VnrSharedMemoryFunc_errorString, METH_NOARGS},
@@ -1188,12 +1380,11 @@ static PyMethodDef Sbk_VnrSharedMemory_methods[] = {
     {"isAttached", (PyCFunction)Sbk_VnrSharedMemoryFunc_isAttached, METH_NOARGS},
     {"key", (PyCFunction)Sbk_VnrSharedMemoryFunc_key, METH_NOARGS},
     {"lock", (PyCFunction)Sbk_VnrSharedMemoryFunc_lock, METH_NOARGS},
-    {"setDataHash", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataHash, METH_O},
-    {"setDataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataRole, METH_O},
-    {"setDataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataStatus, METH_O},
-    {"setDataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataText, METH_O},
+    {"setDataHash", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataHash, METH_VARARGS},
+    {"setDataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataRole, METH_VARARGS},
+    {"setDataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataStatus, METH_VARARGS},
+    {"setDataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataText, METH_VARARGS},
     {"setKey", (PyCFunction)Sbk_VnrSharedMemoryFunc_setKey, METH_O},
-    {"size", (PyCFunction)Sbk_VnrSharedMemoryFunc_size, METH_NOARGS},
     {"unlock", (PyCFunction)Sbk_VnrSharedMemoryFunc_unlock, METH_NOARGS},
 
     {0} // Sentinel

@@ -18,15 +18,16 @@
 #define VNRAGENT_SOCKET_PIPE  "vnr.socket"
 
 /**
- *  Shared memory key and max size.
+ *  Shared memory key, size, and number of cells.
  */
 #define VNRAGENT_MEMORY_KEY "vnragent.%1" // vnragent.pid
 #define VNRAGENT_MEMORY_SIZE 4096
+#define VNRAGENT_MEMORY_COUNT 20
 
 /**
  *  Shared memory event when waiting for translation
  */
-#define VNRAGENT_MEMORY_EVENT "vnragent_shmem" // windows event name
+#define VNRAGENT_MEMORY_EVENT "vnragent.shmem.%1.%2.%3" // windows event name, suffix with pid, role, hash
 #define VNRAGENT_MEMORY_TIMEOUT 1000 // default timeout, can be modified by user
 
 /**
