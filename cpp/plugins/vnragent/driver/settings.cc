@@ -28,7 +28,7 @@ public:
      , embeddedSpaceAlwaysInserted
      , embeddedSpaceSmartInserted
      , embeddedTextEnabled
-     , embeddedTextCancellableByControl
+     //, embeddedTextCancellableByControl
      , embeddedAllTextsExtracted
      ;
 
@@ -57,7 +57,7 @@ public:
      , embeddedSpaceAlwaysInserted(false)
      , embeddedSpaceSmartInserted(false)
      , embeddedTextEnabled(false)
-     , embeddedTextCancellableByControl(false)
+     //, embeddedTextCancellableByControl(false)
      , embeddedAllTextsExtracted(false)
      , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
@@ -113,7 +113,7 @@ DEFINE_BOOL_PROPERTY(embeddedSpaceAlwaysInserted, isEmbeddedSpaceAlwaysInserted,
 DEFINE_BOOL_PROPERTY(embeddedSpaceSmartInserted, isEmbeddedSpaceSmartInserted, setEmbeddedSpaceSmartInserted)
 
 DEFINE_BOOL_PROPERTY(embeddedTextEnabled, isEmbeddedTextEnabled, setEmbeddedTextEnabled)
-DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellableByControl, setEmbeddedTextCancellableByControl)
+//DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellableByControl, setEmbeddedTextCancellableByControl)
 DEFINE_BOOL_PROPERTY(embeddedAllTextsExtracted, isEmbeddedAllTextsExtracted, setEmbeddedAllTextsExtracted)
 
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
@@ -160,7 +160,7 @@ void Settings::load(const QString &json)
     , H_gameEncoding = 156622791
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
-    , H_embeddedTextCancellableByControl = 96153884
+    //, H_embeddedTextCancellableByControl = 96153884
     , H_embeddedAllTextsExtracted = 227821172
     , H_scenarioSignature = 246832709
     , H_nameSignature = 122678949
@@ -213,7 +213,7 @@ void Settings::load(const QString &json)
     case H_embeddedSpaceSmartInserted: setEmbeddedSpaceSmartInserted(bValue); break;
 
     case H_embeddedTextEnabled: setEmbeddedTextEnabled(bValue); break;
-    case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;
+    //case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;
     case H_embeddedAllTextsExtracted: setEmbeddedAllTextsExtracted(bValue); break;
 
     case H_embeddedTranslationWaitTime: setEmbeddedTranslationWaitTime(value.toInt()); break;

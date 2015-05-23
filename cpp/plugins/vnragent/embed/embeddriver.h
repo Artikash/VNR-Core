@@ -31,7 +31,7 @@ public slots:
 
   void setEnabled(bool t);
   void setEncoding(const QString &v);
-  void setDetectsControl(bool t);
+  //void setDetectsControl(bool t);
   void setExtractsAllTexts(bool t);
   void setScenarioVisible(bool t);
   void setScenarioTextVisible(bool t);

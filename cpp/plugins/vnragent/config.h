@@ -76,13 +76,11 @@
 #endif // VNRAGENT_ENABLE_APPRUNNER
 
 /**
- *  Allow sending time-critical message using native Windows pipe bypassing Qt
+ *  Send time-critical message using native Windows pipe bypassing Qt event loops.
  *  Warning, communicate through native pipe will be fast but could contend with Qt messages
  *  as they are using different POVERLAPPED.
- *
- *  Enabling this will break CTRL detection.
  */
-//#define VNRAGENT_ENABLE_NATIVE_PIPE
+#define VNRAGENT_ENABLE_NATIVE_PIPE
 
 /**
  *  Select the function hook method within detours, mhook, and minhook

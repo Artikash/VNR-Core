@@ -9,7 +9,7 @@ class EngineSettings
 {
 public:
   bool enabled          // if vnragent is enabled
-     , detectsControl   // be aware if CTRL is pressed
+     //, detectsControl   // be aware if CTRL is pressed
 
      , alwaysInsertsSpaces  // insert spaces after every character
      , smartInsertsSpaces   // insert spaces only after undecodable characters
@@ -30,7 +30,7 @@ public:
   // Set all properties to false
   EngineSettings()
     : enabled(false)
-    , detectsControl(false)
+    //, detectsControl(false)
 
     , alwaysInsertsSpaces(false)
     , smartInsertsSpaces(false)

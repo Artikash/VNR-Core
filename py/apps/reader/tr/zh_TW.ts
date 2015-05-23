@@ -204,7 +204,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>儘可能的將簡體中文翻譯轉換為繁體中文</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8874"/>
+        <location filename="dialogs/_prefs.py" line="8875"/>
         <source>like this</source>
         <translation>比如這樣</translation>
     </message>
@@ -796,12 +796,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>忽略過長的遊戲文字</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1242"/>
+        <location filename="managers/textman.py" line="1245"/>
         <source>Reload user-contributed comments</source>
         <translation>更新其他同學的評論</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1381"/>
+        <location filename="managers/textman.py" line="1384"/>
         <source>No game text received yet</source>
         <translation>還沒有收到遊戲文字</translation>
     </message>
@@ -911,47 +911,47 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用自定義特殊碼</translation>
     </message>
     <message>
-        <location filename="main.py" line="1577"/>
+        <location filename="main.py" line="1578"/>
         <source>Please close the current game first before opening new games</source>
         <translation>開啟新遊戲前，請先關閉當前的遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1870"/>
+        <location filename="main.py" line="1871"/>
         <source>Found running game</source>
         <translation>發現運行中的遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1880"/>
+        <location filename="main.py" line="1881"/>
         <source>Found new game</source>
         <translation>發現新遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1665"/>
+        <location filename="main.py" line="1666"/>
         <source>File does not exist {0}</source>
         <translation>檔案不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="2183"/>
+        <location filename="main.py" line="2184"/>
         <source>Update requires Internet access</source>
         <translation>更新需要網路連線</translation>
     </message>
     <message>
-        <location filename="main.py" line="2196"/>
+        <location filename="main.py" line="2197"/>
         <source>You are using the latest app</source>
         <translation>已經是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="2201"/>
+        <location filename="main.py" line="2202"/>
         <source>Update released</source>
         <translation>發現軟體更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="2225"/>
+        <location filename="main.py" line="2226"/>
         <source>Critical update message</source>
         <translation>非常重要的更新資訊</translation>
     </message>
     <message>
-        <location filename="main.py" line="2329"/>
+        <location filename="main.py" line="2330"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辭書是空的。請在有網路連線時再更新吧。</translation>
     </message>
@@ -1048,7 +1048,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理員許可權。請以管理員身份重新啟動VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="2348"/>
+        <location filename="main.py" line="2349"/>
         <source>There are no user-contributed subtitles</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1088,7 +1088,7 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1995"/>
+        <location filename="main.py" line="1996"/>
         <source>Loading comment ... patient!</source>
         <translation>載入字幕中…請稍等片刻！</translation>
     </message>
@@ -1142,7 +1142,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>以日本時區啟動遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1386"/>
+        <location filename="main.py" line="1387"/>
         <source>Analyzing data ... patient!</source>
         <translation>分析資料中…請稍等片刻！</translation>
     </message>
@@ -1365,7 +1365,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>沒有找到遊戲的資訊</translation>
     </message>
     <message>
-        <location filename="main.py" line="2055"/>
+        <location filename="main.py" line="2056"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的遊戲。請更新下游戲資料庫。</translation>
     </message>
@@ -1523,12 +1523,12 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>忽略無限迴圈重複的句子</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="989"/>
+        <location filename="managers/textman.py" line="990"/>
         <source>Eliminate finite repetition in the text</source>
         <translation>去除重複有限次的文字</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1006"/>
+        <location filename="managers/textman.py" line="1007"/>
         <source>Keep all text threads generated from {0}</source>
         <translation>保留所有來自{0}的文字</translation>
     </message>
@@ -1573,7 +1573,7 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>是否允許其他人修改</translation>
     </message>
     <message>
-        <location filename="main.py" line="1609"/>
+        <location filename="main.py" line="1610"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1651,7 +1651,7 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>恢復到上次儲存的設定</translation>
     </message>
     <message>
-        <location filename="main.py" line="1613"/>
+        <location filename="main.py" line="1614"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1699,7 +1699,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：請不要開啟重複過濾的選項，除非文字中真的有重複！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1949"/>
+        <location filename="main.py" line="1950"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支援這個功能呢</translation>
     </message>
@@ -2528,7 +2528,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>請再檢查下使用偏好中程式的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="2025"/>
+        <location filename="main.py" line="2026"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的遊戲。請嘗試編輯下游戲情報。</translation>
     </message>
@@ -2910,10 +2910,10 @@ VNR預設會使用TTS讀出遊戲的原始文字。
     <message>
         <location filename="dialogs/_prefs.py" line="8840"/>
         <source>Disable text extraction when Ctrl is pressed</source>
-        <translation>當按下Ctrl鍵時，暫停提取文字</translation>
+        <translation type="obsolete">當按下Ctrl鍵時，暫停提取文字</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8911"/>
+        <location filename="dialogs/_prefs.py" line="8912"/>
         <source>Preferred text to embed in the game</source>
         <translation>要內嵌的文字</translation>
     </message>
@@ -2923,7 +2923,7 @@ VNR預設會使用TTS讀出遊戲的原始文字。
         <translation>內嵌字幕</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="254"/>
+        <location filename="managers/gameagent.py" line="260"/>
         <source>Detect game engine</source>
         <translation>檢測到遊戲引擎</translation>
     </message>
@@ -3026,7 +3026,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>當前支援的遊戲引擎是：{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="256"/>
+        <location filename="managers/gameagent.py" line="262"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>未知的遊戲引擎。改為使用ITH提取文字。</translation>
     </message>
@@ -3056,7 +3056,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>VNR的內嵌引擎不支援/H特殊碼</translation>
     </message>
     <message>
-        <location filename="main.py" line="2093"/>
+        <location filename="main.py" line="2094"/>
         <source>Unknown game engine</source>
         <translation>未知的遊戲引擎</translation>
     </message>
@@ -3565,7 +3565,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;，
         <translation>禁止為漢字語言的遊戲儲存空格</translation>
     </message>
     <message>
-        <location filename="main.py" line="2127"/>
+        <location filename="main.py" line="2128"/>
         <source>Browse current enabled terms</source>
         <translation>瀏覽當前開啟的詞條</translation>
     </message>
@@ -4574,22 +4574,22 @@ The font will be installed to {1}.</source>
         <translation>KanjiDic{0}漢字字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8854"/>
+        <location filename="dialogs/_prefs.py" line="8855"/>
         <source>Insert spaces between overlapped texts</source>
         <translation>在重疊的文字間插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8862"/>
+        <location filename="dialogs/_prefs.py" line="8863"/>
         <source>Insert spaces after every character</source>
         <translation>在每個字後都插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8872"/>
+        <location filename="dialogs/_prefs.py" line="8873"/>
         <source>Insert spaces only between overlapped characters</source>
         <translation>僅在重疊的字間插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8882"/>
+        <location filename="dialogs/_prefs.py" line="8883"/>
         <source>Do not insert any spaces</source>
         <translation>不插入任何空格</translation>
     </message>
@@ -4602,6 +4602,11 @@ The font will be installed to {1}.</source>
         <location filename="dialogs/_prefs.py" line="8739"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
         <translation>將簡體中文的內嵌翻譯轉換為正體中文或日本漢字如果無法正常顯示。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8834"/>
+        <source>You can always press SHIFT or CTRL to pause embedding translation and stop slowdown.</source>
+        <translation>你可以按下SHIFT或者CTRL來暫停內嵌翻譯如果變慢。</translation>
     </message>
 </context>
 </TS>
