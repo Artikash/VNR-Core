@@ -3623,7 +3623,7 @@ bool InsertCMVS1Hook()
   hp.offset = 0x8;
   hp.split = -0x18;
   hp.type = BIG_ENDIAN|USING_SPLIT;
-  hp.length_offset = 1 ;
+  hp.length_offset = 1;
 
   ConsoleOutput("vnreng: INSERT CMVS1");
   NewHook(hp, L"CMVS");
@@ -3743,7 +3743,7 @@ bool InsertCMVS2Hook()
   hp.address = addr + addr_offset;
   hp.offset = 0xc;
   hp.type = BIG_ENDIAN;
-  hp.length_offset = 1 ;
+  hp.length_offset = 1;
 
   ConsoleOutput("vnreng: INSERT CMVS2");
   NewHook(hp, L"CMVS2");
@@ -8932,110 +8932,6 @@ bool InsertAOSHook()
 }
 
 /**
- *  jichi 4/15/2014: Insert Adobe AIR hook
- *  Sample games:
- *  華アワセ 蛟編: /HW-C*0:D8@4D04B5:Adobe AIR.dll
- *  華アワセ 姫空木編: /HW-C*0:d8@4E69A7:Adobe AIR.dll
- *
- *  Issue: The game will hang if the hook is injected before loading
- *
- *  /HW-C*0:D8@4D04B5:ADOBE AIR.DLL
- *  - addr: 5047477 = 0x4d04b5
- *  -length_offset: 1
- *  - module: 3506957663 = 0xd107ed5f
- *  - off: 4294967280 = 0xfffffff0 = -0x10
- *  - split: 216 = 0xd8
- *  - type: 90 = 0x5a
- *
- *  0f8f0497  |. eb 69         jmp short adobe_ai.0f8f0502
- *  0f8f0499  |> 83c8 ff       or eax,0xffffffff
- *  0f8f049c  |. eb 67         jmp short adobe_ai.0f8f0505
- *  0f8f049e  |> 8b7d 0c       mov edi,dword ptr ss:[ebp+0xc]
- *  0f8f04a1  |. 85ff          test edi,edi
- *  0f8f04a3  |. 7e 5d         jle short adobe_ai.0f8f0502
- *  0f8f04a5  |. 8b55 08       mov edx,dword ptr ss:[ebp+0x8]
- *  0f8f04a8  |. b8 80000000   mov eax,0x80
- *  0f8f04ad  |. be ff030000   mov esi,0x3ff
- *  0f8f04b2  |> 0fb70a        /movzx ecx,word ptr ds:[edx]
- *  0f8f04b5  |. 8bd8          |mov ebx,eax ; jichi: hook here
- *  0f8f04b7  |. 4f            |dec edi
- *  0f8f04b8  |. 66:3bcb       |cmp cx,bx
- *  0f8f04bb  |. 73 05         |jnb short adobe_ai.0f8f04c2
- *  0f8f04bd  |. ff45 fc       |inc dword ptr ss:[ebp-0x4]
- *  0f8f04c0  |. eb 3a         |jmp short adobe_ai.0f8f04fc
- *  0f8f04c2  |> bb 00080000   |mov ebx,0x800
- *  0f8f04c7  |. 66:3bcb       |cmp cx,bx
- *  0f8f04ca  |. 73 06         |jnb short adobe_ai.0f8f04d2
- *  0f8f04cc  |. 8345 fc 02    |add dword ptr ss:[ebp-0x4],0x2
- *  0f8f04d0  |. eb 2a         |jmp short adobe_ai.0f8f04fc
- *  0f8f04d2  |> 81c1 00280000 |add ecx,0x2800
- *  0f8f04d8  |. 8bde          |mov ebx,esi
- *  0f8f04da  |. 66:3bcb       |cmp cx,bx
- *  0f8f04dd  |. 77 19         |ja short adobe_ai.0f8f04f8
- *  0f8f04df  |. 4f            |dec edi
- *  0f8f04e0  |.^78 b7         |js short adobe_ai.0f8f0499
- *  0f8f04e2  |. 42            |inc edx
- *  0f8f04e3  |. 42            |inc edx
- *  0f8f04e4  |. 0fb70a        |movzx ecx,word ptr ds:[edx]
- *  0f8f04e7  |. 81c1 00240000 |add ecx,0x2400
- *  0f8f04ed  |. 66:3bcb       |cmp cx,bx
- *  0f8f04f0  |. 77 06         |ja short adobe_ai.0f8f04f8
- *  0f8f04f2  |. 8345 fc 04    |add dword ptr ss:[ebp-0x4],0x4
- *  0f8f04f6  |. eb 04         |jmp short adobe_ai.0f8f04fc
- *  0f8f04f8  |> 8345 fc 03    |add dword ptr ss:[ebp-0x4],0x3
- *  0f8f04fc  |> 42            |inc edx
- *  0f8f04fd  |. 42            |inc edx
- *  0f8f04fe  |. 85ff          |test edi,edi
- *  0f8f0500  |.^7f b0         \jg short adobe_ai.0f8f04b2
- *  0f8f0502  |> 8b45 fc       mov eax,dword ptr ss:[ebp-0x4]
- *  0f8f0505  |> 5f            pop edi
- *  0f8f0506  |. 5e            pop esi
- *  0f8f0507  |. 5b            pop ebx
- *  0f8f0508  |. c9            leave
- *  0f8f0509  \. c3            retn
- */
-bool InsertAdobeAirHook()
-{
-  enum { module = 0xd107ed5f }; // hash of "Adobe AIR.dll"
-  DWORD base = Util::FindModuleBase(module);
-  if (!base) {
-    ConsoleOutput("vnreng:Adobe AIR: module not found");
-    return false;
-  }
-
-  const BYTE bytes[] = {
-    0x0f,0xb7,0x0a,  // 0f8f04b2  |> 0fb70a        /movzx ecx,word ptr ds:[edx]
-    0x8b,0xd8,       // 0f8f04b5  |. 8bd8          |mov ebx,eax ; jichi: hook here
-    0x4f,            // 0f8f04b7  |. 4f            |dec edi
-    0x66,0x3b,0xcb,  // 0f8f04b8  |. 66:3bcb       |cmp cx,bx
-    0x73, 0x05,      // 0f8f04bb  |. 73 05         |jnb short adobe_ai.0f8f04c2
-    0xff,0x45, 0xfc, // 0f8f04bd  |. ff45 fc       |inc dword ptr ss:[ebp-0x4]
-    0xeb, 0x3a       // 0f8f04c0  |. eb 3a         |jmp short adobe_ai.0f8f04fc
-  };
-  enum { addr_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
-  enum { range = 0x600000 }; // larger than relative addresses
-  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), base, base + range);
-  //ITH_GROWL(reladdr);
-  if (!addr) {
-    ConsoleOutput("vnreng:Adobe AIR: pattern not found");
-    return false;
-  }
-
-  HookParam hp = {};
-  hp.address = addr + addr_offset;
-  //hp.module = module;
-  hp.length_offset = 1;
-  hp.offset = -0x10;
-  hp.split = 0xd8;
-  //hp.type = USING_SPLIT|MODULE_OFFSET|USING_UNICODE|DATA_INDIRECT; // 0x5a;
-  hp.type = USING_SPLIT|USING_UNICODE|DATA_INDIRECT;
-
-  ConsoleOutput("vnreng: INSERT Adobe AIR");
-  NewHook(hp, L"Adobe AIR");
-  return true;
-}
-
-/**
  *  jichi 1/10/2014: Rai7 puk
  *  See: http://www.hongfire.com/forum/showthread.php/421909-%E3%80%90Space-Warfare-Sim%E3%80%91Rai-7-PUK/page10
  *  See: www.hongfire.com/forum/showthread.php/421909-%E3%80%90Space-Warfare-Sim%E3%80%91Rai-7-PUK/page19
@@ -11813,6 +11709,365 @@ bool InsertSyuntadaHook()
   // TextOutA will produce repeated texts
   ConsoleOutput("vnreng:Syuntada: disable GDI hooks");
   DisableGDIHooks();
+  return true;
+}
+
+/**
+ *  jichi 5/22/2015: Insert Bootup hook
+ *  Sample games:
+ *  - [090709] [PIL] 仏蘭西少女
+ *  - [110318] [Daisy2] 三国恋戦記
+ *  - [110329] [PIL/SLASH] 神学校
+ *  - [150527] [Daisy2] 絶対階級学園
+ *
+ *  Properties
+ *  - There is Bootup.dat existing in the game folder.
+ *  - lstrlenW can find text repeating once
+ *  - GetCharABCWidthsW and TextOutW can find cached text that missing characters
+ *    GetCharABCWidthsA and TextOutA for old games.
+ *  - There is only one TextOut (W for new and A for old).
+ *
+ *  Logic:
+ *  + GDI hook
+ *    - Hook to the caller of TextOut
+ *  + Lstr hook
+ *    - Find last (second) caller of the first GetCharABCWidths after int3
+ *    - Find the lstrlen function in this caller, and hook to it
+ *
+ *  Full text is in arg1, shifted one by one.
+ *  Character to paint is also in arg3
+ *
+ *  All Bootup games are slightly different
+ *  - 三国恋戦記/仏蘭西少女: text in both lstrlenA and caller of TextOutA
+ *    But I didn't find correct lstrlenA to hook. BootupLstrA find nothing for 仏蘭西少女 and name for 三国恋戦記.
+ *  - 神学校: text in both lstrlenW and TextOutW, but lstrlenW has repetition
+ *    Caller of TextOutW the same as that of TextOutA
+ *  - 絶対階級学園: text in both lstrlenW and TextOutW. But TextOutW's name has repetition
+ *    Caller of TextOutW different 神学校
+ *
+ *  Here's the beginning of caller of TextOutW in 絶対階級学園:
+ *  00B61ADD   CC               INT3
+ *  00B61ADE   CC               INT3
+ *  00B61ADF   CC               INT3
+ *  00B61AE0   55               PUSH EBP
+ *  00B61AE1   8BEC             MOV EBP,ESP
+ *  00B61AE3   81EC 98000000    SUB ESP,0x98
+ *  00B61AE9   53               PUSH EBX
+ *  00B61AEA   56               PUSH ESI
+ *  00B61AEB   57               PUSH EDI
+ *  00B61AEC   8BF2             MOV ESI,EDX
+ *  00B61AEE   8BF9             MOV EDI,ECX
+ *  00B61AF0   8975 D8          MOV DWORD PTR SS:[EBP-0x28],ESI
+ *  00B61AF3   897D E0          MOV DWORD PTR SS:[EBP-0x20],EDI
+ *  00B61AF6   E8 A5FEFFFF      CALL .00B619A0
+ *  00B61AFB   8BD8             MOV EBX,EAX
+ *  00B61AFD   895D CC          MOV DWORD PTR SS:[EBP-0x34],EBX
+ *  00B61B00   66:833B 00       CMP WORD PTR DS:[EBX],0x0
+ *  00B61B04   0F85 0B020000    JNZ .00B61D15
+ *  00B61B0A   B8 00010000      MOV EAX,0x100
+ *  00B61B0F   66:8933          MOV WORD PTR DS:[EBX],SI
+ *  00B61B12   66:3BF0          CMP SI,AX
+ *  00B61B15   72 26            JB SHORT .00B61B3D
+ *  00B61B17   8B47 3C          MOV EAX,DWORD PTR DS:[EDI+0x3C]
+ *  00B61B1A   85C0             TEST EAX,EAX
+ *  00B61B1C   74 1F            JE SHORT .00B61B3D
+ *  00B61B1E   8B57 44          MOV EDX,DWORD PTR DS:[EDI+0x44]
+ *  00B61B21   85D2             TEST EDX,EDX
+ *  00B61B23   7E 18            JLE SHORT .00B61B3D
+ *  00B61B25   33C9             XOR ECX,ECX
+ *  00B61B27   85D2             TEST EDX,EDX
+ *  00B61B29   7E 12            JLE SHORT .00B61B3D
+ *  00B61B2B   8B47 40          MOV EAX,DWORD PTR DS:[EDI+0x40]
+ *  00B61B2E   8BFF             MOV EDI,EDI
+ *  00B61B30   66:3930          CMP WORD PTR DS:[EAX],SI
+ *  00B61B33   74 6F            JE SHORT .00B61BA4
+ *  00B61B35   41               INC ECX
+ *  00B61B36   83C0 02          ADD EAX,0x2
+ *  00B61B39   3BCA             CMP ECX,EDX
+ *  00B61B3B  ^7C F3            JL SHORT .00B61B30
+ *  00B61B3D   33C0             XOR EAX,EAX
+ *  00B61B3F   66:8945 9E       MOV WORD PTR SS:[EBP-0x62],AX
+ *  00B61B43   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00B61B46   0FAF47 1C        IMUL EAX,DWORD PTR DS:[EDI+0x1C]
+ *  00B61B4A   0FAF47 1C        IMUL EAX,DWORD PTR DS:[EDI+0x1C]
+ *  00B61B4E   0FAF47 18        IMUL EAX,DWORD PTR DS:[EDI+0x18]
+ *  00B61B52   50               PUSH EAX
+ *  00B61B53   6A 00            PUSH 0x0
+ *  00B61B55   FF77 14          PUSH DWORD PTR DS:[EDI+0x14]
+ *  00B61B58   66:8975 9C       MOV WORD PTR SS:[EBP-0x64],SI
+ *  00B61B5C   E8 2FC20200      CALL .00B8DD90
+ *  00B61B61   83C4 0C          ADD ESP,0xC
+ *  00B61B64   8D45 9C          LEA EAX,DWORD PTR SS:[EBP-0x64]
+ *  00B61B67   6A 01            PUSH 0x1
+ *  00B61B69   50               PUSH EAX
+ *  00B61B6A   6A 00            PUSH 0x0
+ *  00B61B6C   6A 00            PUSH 0x0
+ *  00B61B6E   FF77 10          PUSH DWORD PTR DS:[EDI+0x10]
+ *  00B61B71   FF15 8820BB00    CALL DWORD PTR DS:[0xBB2088]             ; gdi32.TextOutW
+ *  00B61B77   8B47 1C          MOV EAX,DWORD PTR DS:[EDI+0x1C]
+ *  00B61B7A   8B57 14          MOV EDX,DWORD PTR DS:[EDI+0x14]
+ *  00B61B7D   8B7F 04          MOV EDI,DWORD PTR DS:[EDI+0x4]
+ *  00B61B80   8B73 0C          MOV ESI,DWORD PTR DS:[EBX+0xC]
+ *  00B61B83   0FAFF8           IMUL EDI,EAX
+ *  00B61B86   48               DEC EAX
+ *  00B61B87   8975 C4          MOV DWORD PTR SS:[EBP-0x3C],ESI
+ *  00B61B8A   897D C8          MOV DWORD PTR SS:[EBP-0x38],EDI
+ *
+ *  TextOutW's caller for 神学校
+ *  0113183E   CC               INT3
+ *  0113183F   CC               INT3
+ *  01131840   55               PUSH EBP
+ *  01131841   8BEC             MOV EBP,ESP
+ *  01131843   83EC 74          SUB ESP,0x74
+ *  01131846   53               PUSH EBX
+ *  01131847   56               PUSH ESI
+ *  01131848   8B75 08          MOV ESI,DWORD PTR SS:[EBP+0x8]
+ *  0113184B   57               PUSH EDI
+ *  0113184C   8B7D 0C          MOV EDI,DWORD PTR SS:[EBP+0xC]
+ *  0113184F   8BCF             MOV ECX,EDI
+ *  01131851   8BD6             MOV EDX,ESI
+ *  01131853   E8 A8FEFFFF      CALL .01131700
+ *  01131858   8BD8             MOV EBX,EAX
+ *  0113185A   66:833B 00       CMP WORD PTR DS:[EBX],0x0
+ *  0113185E   895D 90          MOV DWORD PTR SS:[EBP-0x70],EBX
+ *  01131861   0F85 700F0000    JNZ .011327D7
+ *  01131867   B8 00010000      MOV EAX,0x100
+ *  0113186C   66:893B          MOV WORD PTR DS:[EBX],DI
+ *  0113186F   66:3BF8          CMP DI,AX
+ *  01131872   72 2E            JB SHORT .011318A2
+ *  01131874   8B56 3C          MOV EDX,DWORD PTR DS:[ESI+0x3C]
+ *  01131877   85D2             TEST EDX,EDX
+ *  01131879   74 27            JE SHORT .011318A2
+ *  0113187B   8B46 44          MOV EAX,DWORD PTR DS:[ESI+0x44]
+ *  0113187E   85C0             TEST EAX,EAX
+ *  01131880   7E 20            JLE SHORT .011318A2
+ *  01131882   33FF             XOR EDI,EDI
+ *  01131884   85C0             TEST EAX,EAX
+ *  01131886   7E 1A            JLE SHORT .011318A2
+ *  01131888   8B46 40          MOV EAX,DWORD PTR DS:[ESI+0x40]
+ *  0113188B   EB 03            JMP SHORT .01131890
+ *  0113188D   8D49 00          LEA ECX,DWORD PTR DS:[ECX]
+ *  01131890   66:8B4D 0C       MOV CX,WORD PTR SS:[EBP+0xC]
+ *  01131894   66:3908          CMP WORD PTR DS:[EAX],CX
+ *  01131897   74 74            JE SHORT .0113190D
+ *  01131899   47               INC EDI
+ *  0113189A   83C0 02          ADD EAX,0x2
+ *  0113189D   3B7E 44          CMP EDI,DWORD PTR DS:[ESI+0x44]
+ *  011318A0  ^7C EE            JL SHORT .01131890
+ *  011318A2   66:8B45 0C       MOV AX,WORD PTR SS:[EBP+0xC]
+ *  011318A6   66:8945 8C       MOV WORD PTR SS:[EBP-0x74],AX
+ *  011318AA   8B46 1C          MOV EAX,DWORD PTR DS:[ESI+0x1C]
+ *  011318AD   0FAFC0           IMUL EAX,EAX
+ *  011318B0   0FAF46 18        IMUL EAX,DWORD PTR DS:[ESI+0x18]
+ *  011318B4   0FAF46 04        IMUL EAX,DWORD PTR DS:[ESI+0x4]
+ *  011318B8   8B56 14          MOV EDX,DWORD PTR DS:[ESI+0x14]
+ *  011318BB   33C9             XOR ECX,ECX
+ *  011318BD   50               PUSH EAX
+ *  011318BE   51               PUSH ECX
+ *  011318BF   52               PUSH EDX
+ *  011318C0   66:894D 8E       MOV WORD PTR SS:[EBP-0x72],CX
+ *  011318C4   E8 87060200      CALL .01151F50
+ *  011318C9   8B4E 10          MOV ECX,DWORD PTR DS:[ESI+0x10]
+ *  011318CC   83C4 0C          ADD ESP,0xC
+ *  011318CF   6A 01            PUSH 0x1
+ *  011318D1   8D45 8C          LEA EAX,DWORD PTR SS:[EBP-0x74]
+ *  011318D4   50               PUSH EAX
+ *  011318D5   6A 00            PUSH 0x0
+ *  011318D7   6A 00            PUSH 0x0
+ *  011318D9   51               PUSH ECX
+ *  011318DA   FF15 38101701    CALL DWORD PTR DS:[0x1171038]            ; gdi32.TextOutW
+ *  011318E0   8B4E 1C          MOV ECX,DWORD PTR DS:[ESI+0x1C]
+ *  011318E3   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+ *  011318E6   8B56 14          MOV EDX,DWORD PTR DS:[ESI+0x14]
+ *  011318E9   0FAFC1           IMUL EAX,ECX
+ *  011318EC   8B7B 0C          MOV EDI,DWORD PTR DS:[EBX+0xC]
+ */
+namespace { // unnamed
+bool BootupGDIHook(DWORD esp_base, HookParam *hp)
+{
+  DWORD arg2 = argof(2, esp_base);
+  if ((arg2 & 0xffff0000)) { // if arg2 high bits are there, this is new Bootup game
+    hp->type |= DATA_INDIRECT;
+    hp->offset = 4 * 3; // arg3
+    hp->split = pusha_ebx_off - 4; // use ebx value to split name out, which has repetitions
+  }
+  return false; // run once and stop hooking
+}
+bool InsertBootupGDIHook()
+{
+  bool widechar = true;
+  ULONG addr = MemDbg::findCallerAddressAfterInt3((ULONG)TextOutW, module_base_, module_limit_);
+  if (!addr) {
+    addr = MemDbg::findCallerAddressAfterInt3((ULONG)TextOutA, module_base_, module_limit_);
+    widechar = false;
+  }
+  if (!addr) {
+    ConsoleOutput("vnreng:BootupGDI: failed to find TextOut");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  hp.type = USING_SPLIT|NO_CONTEXT;   // use NO_CONTEXT to get rid of floating reladdr
+  hp.type |= widechar ? USING_UNICODE : BIG_ENDIAN; // use context as split is sufficient, but will produce floating split
+  hp.length_offset = 1; // character by character
+
+  hp.offset = 4 * 2; // arg2, character in arg2, could be modified by hook
+  if (widechar)
+    hp.split = pusha_edx_off - 4; // split name out which contains repetitions
+  else
+    hp.split = 4 * 1; // use arg1 to split name out furigana, this cause split to be floating
+  hp.hook_fun = BootupGDIHook; // adjust hook parameter at runtime
+
+  ConsoleOutput("vnreng: INSERT BootupGDI");
+  NewHook(hp, widechar ? L"BootupW" : L"BootupA");
+
+  ConsoleOutput("vnreng:BootupGDI: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
+bool InsertBootupLstrHook() // for character name
+{
+  bool widechar = true;
+  ULONG addr = MemDbg::findLastCallerAddressAfterInt3((ULONG)GetCharABCWidthsW, module_base_, module_limit_);
+  if (!addr) {
+    // Do not hook to lstrlenA, which causes text extraction to stop
+    //addr = MemDbg::findLastCallerAddressAfterInt3((ULONG)GetCharABCWidthsA, module_base_, module_limit_);
+    //widechar = false;
+  }
+  if (!addr) {
+    ConsoleOutput("vnreng:BootupLstr: failed to find GetCharABCWidths");
+    return false;
+  }
+  //ITH_GROWL_DWORD2(addr, module_base_);
+  //enum { range = 0x200 }; // 0x012A2CCB  - 0x12A2CB0 = 0x1b
+  addr = MemDbg::findCallAddress(widechar ? (ULONG)::lstrlenW : (ULONG)::lstrlenA,
+      module_base_, module_limit_,
+      addr - module_base_); //, range); // no range
+  if (!addr) {
+    ConsoleOutput("vnreng:BootupLstr: failed to find lstrlen");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  hp.type = widechar ? USING_UNICODE : USING_STRING; // use context as split is sufficient, but will produce floating split
+  //hp.type = USING_UNICODE|NO_CONTEXT|USING_SPLIT; // use text address as split
+  //hp.split = 0;
+
+  ConsoleOutput("vnreng: INSERT BootupLstr");
+  NewHook(hp, widechar ? L"BootupLstrW" : L"BootupLstrA");
+  return true;
+}
+} // unnamed namespace
+bool InsertBootupHook()
+{
+  bool ret = InsertBootupGDIHook();
+  InsertBootupLstrHook();
+  return ret;
+}
+
+/**
+ *  jichi 4/15/2014: Insert Adobe AIR hook
+ *  Sample games:
+ *  華アワセ 蛟編: /HW-C*0:D8@4D04B5:Adobe AIR.dll
+ *  華アワセ 姫空木編: /HW-C*0:d8@4E69A7:Adobe AIR.dll
+ *
+ *  Issue: The game will hang if the hook is injected before loading
+ *
+ *  /HW-C*0:D8@4D04B5:ADOBE AIR.DLL
+ *  - addr: 5047477 = 0x4d04b5
+ *  -length_offset: 1
+ *  - module: 3506957663 = 0xd107ed5f
+ *  - off: 4294967280 = 0xfffffff0 = -0x10
+ *  - split: 216 = 0xd8
+ *  - type: 90 = 0x5a
+ *
+ *  0f8f0497  |. eb 69         jmp short adobe_ai.0f8f0502
+ *  0f8f0499  |> 83c8 ff       or eax,0xffffffff
+ *  0f8f049c  |. eb 67         jmp short adobe_ai.0f8f0505
+ *  0f8f049e  |> 8b7d 0c       mov edi,dword ptr ss:[ebp+0xc]
+ *  0f8f04a1  |. 85ff          test edi,edi
+ *  0f8f04a3  |. 7e 5d         jle short adobe_ai.0f8f0502
+ *  0f8f04a5  |. 8b55 08       mov edx,dword ptr ss:[ebp+0x8]
+ *  0f8f04a8  |. b8 80000000   mov eax,0x80
+ *  0f8f04ad  |. be ff030000   mov esi,0x3ff
+ *  0f8f04b2  |> 0fb70a        /movzx ecx,word ptr ds:[edx]
+ *  0f8f04b5  |. 8bd8          |mov ebx,eax ; jichi: hook here
+ *  0f8f04b7  |. 4f            |dec edi
+ *  0f8f04b8  |. 66:3bcb       |cmp cx,bx
+ *  0f8f04bb  |. 73 05         |jnb short adobe_ai.0f8f04c2
+ *  0f8f04bd  |. ff45 fc       |inc dword ptr ss:[ebp-0x4]
+ *  0f8f04c0  |. eb 3a         |jmp short adobe_ai.0f8f04fc
+ *  0f8f04c2  |> bb 00080000   |mov ebx,0x800
+ *  0f8f04c7  |. 66:3bcb       |cmp cx,bx
+ *  0f8f04ca  |. 73 06         |jnb short adobe_ai.0f8f04d2
+ *  0f8f04cc  |. 8345 fc 02    |add dword ptr ss:[ebp-0x4],0x2
+ *  0f8f04d0  |. eb 2a         |jmp short adobe_ai.0f8f04fc
+ *  0f8f04d2  |> 81c1 00280000 |add ecx,0x2800
+ *  0f8f04d8  |. 8bde          |mov ebx,esi
+ *  0f8f04da  |. 66:3bcb       |cmp cx,bx
+ *  0f8f04dd  |. 77 19         |ja short adobe_ai.0f8f04f8
+ *  0f8f04df  |. 4f            |dec edi
+ *  0f8f04e0  |.^78 b7         |js short adobe_ai.0f8f0499
+ *  0f8f04e2  |. 42            |inc edx
+ *  0f8f04e3  |. 42            |inc edx
+ *  0f8f04e4  |. 0fb70a        |movzx ecx,word ptr ds:[edx]
+ *  0f8f04e7  |. 81c1 00240000 |add ecx,0x2400
+ *  0f8f04ed  |. 66:3bcb       |cmp cx,bx
+ *  0f8f04f0  |. 77 06         |ja short adobe_ai.0f8f04f8
+ *  0f8f04f2  |. 8345 fc 04    |add dword ptr ss:[ebp-0x4],0x4
+ *  0f8f04f6  |. eb 04         |jmp short adobe_ai.0f8f04fc
+ *  0f8f04f8  |> 8345 fc 03    |add dword ptr ss:[ebp-0x4],0x3
+ *  0f8f04fc  |> 42            |inc edx
+ *  0f8f04fd  |. 42            |inc edx
+ *  0f8f04fe  |. 85ff          |test edi,edi
+ *  0f8f0500  |.^7f b0         \jg short adobe_ai.0f8f04b2
+ *  0f8f0502  |> 8b45 fc       mov eax,dword ptr ss:[ebp-0x4]
+ *  0f8f0505  |> 5f            pop edi
+ *  0f8f0506  |. 5e            pop esi
+ *  0f8f0507  |. 5b            pop ebx
+ *  0f8f0508  |. c9            leave
+ *  0f8f0509  \. c3            retn
+ */
+bool InsertAdobeAirHook()
+{
+  enum { module = 0xd107ed5f }; // hash of "Adobe AIR.dll"
+  DWORD base = Util::FindModuleBase(module);
+  if (!base) {
+    ConsoleOutput("vnreng:Adobe AIR: module not found");
+    return false;
+  }
+
+  const BYTE bytes[] = {
+    0x0f,0xb7,0x0a,  // 0f8f04b2  |> 0fb70a        /movzx ecx,word ptr ds:[edx]
+    0x8b,0xd8,       // 0f8f04b5  |. 8bd8          |mov ebx,eax ; jichi: hook here
+    0x4f,            // 0f8f04b7  |. 4f            |dec edi
+    0x66,0x3b,0xcb,  // 0f8f04b8  |. 66:3bcb       |cmp cx,bx
+    0x73, 0x05,      // 0f8f04bb  |. 73 05         |jnb short adobe_ai.0f8f04c2
+    0xff,0x45, 0xfc, // 0f8f04bd  |. ff45 fc       |inc dword ptr ss:[ebp-0x4]
+    0xeb, 0x3a       // 0f8f04c0  |. eb 3a         |jmp short adobe_ai.0f8f04fc
+  };
+  enum { addr_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
+  enum { range = 0x600000 }; // larger than relative addresses
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), base, base + range);
+  //ITH_GROWL(reladdr);
+  if (!addr) {
+    ConsoleOutput("vnreng:Adobe AIR: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr + addr_offset;
+  //hp.module = module;
+  hp.length_offset = 1;
+  hp.offset = -0x10;
+  hp.split = 0xd8;
+  //hp.type = USING_SPLIT|MODULE_OFFSET|USING_UNICODE|DATA_INDIRECT; // 0x5a;
+  hp.type = USING_SPLIT|USING_UNICODE|DATA_INDIRECT;
+
+  ConsoleOutput("vnreng: INSERT Adobe AIR");
+  NewHook(hp, L"Adobe AIR");
   return true;
 }
 

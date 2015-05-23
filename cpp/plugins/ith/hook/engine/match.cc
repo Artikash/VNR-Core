@@ -120,6 +120,9 @@ bool DetermineEngineByFile1()
     InsertBGIHook();
     return true;
   }
+  if (IthCheckFile(L"Bootup.dat") && InsertBootupHook()) // 5/22/2015 Bootup
+    // lstrlenW can also find text with repetition though
+    return true;
   if (IthCheckFile(L"AGERC.DLL")) { // 6/1/2014 jichi: Eushully, AGE.EXE
     InsertEushullyHook();
     return true;

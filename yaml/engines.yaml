@@ -97,6 +97,8 @@ optgui:
   #- KiriKiriZ # KAGParser is better
   - SiglusEngine3 # SiglusEngine2 is better
   - Malie2 # Malie3 is better
+  - BootupLstrA # BootupA is better
+  - BootupLstrW # BootupW is better
 
 nongui:
   # PC
@@ -147,6 +149,8 @@ simple:
   - BGI
   - BGI1
   - BGI2
+  - BootupA
+  - BootupW
   - Broccoli PSP
   - CatSystem2
   - CatSystem3
@@ -273,6 +277,8 @@ norepeat:
 # Not floating address
 nofloat:
   - BANDAI PSP # could have repetitions
+  - BootupLstrA # always float, and could have repetitions
+  - BootupLstrW # always float, and could have repetitions
   - Bruns
   - Bruns2
   - Malie
@@ -353,6 +359,8 @@ char:
   - BGI
   - BGI1
   - BGI2
+  - BootupA
+  - BootupLstrA
   - Broccoli PSP
   - C4
   - CaramelBox
@@ -472,6 +480,8 @@ wchar:
   - ApRicot # renamed
   - ApRicoT
   - BALDR # removed
+  - BootupW
+  - BootupLstrW
   - Bruns
   - Bruns2
   - Cotopha
@@ -517,6 +527,10 @@ focus:
   - 5pb2
   - 5pb3
   - Adobe Flash 10
+  - BootupA
+  - BootupW
+  - BootupLstrA
+  - BootupLstrW
   - CatSystem2
   - CatSystem3
   - EAGLS
