@@ -295,6 +295,9 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   bool canceled = !d_->settings->enabled ||
       d_->settings->detectsControl && WinKey::isKeyControlPressed();
 
+  // FIXME: This will serialize send operation. Use queued/cached shared memory instead
+  EmbedManagerLock lock(p);
+
   qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
   if (!canceled && !d_->settings->translationEnabled[role] &&
       (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
@@ -361,6 +364,9 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   bool canceled = !d_->settings->enabled ||
       d_->settings->detectsControl && WinKey::isKeyControlPressed();
+
+  // FIXME: This will serialize send operation. Use queued/cached shared memory instead
+  EmbedManagerLock lock(p);
 
   qint64 hash = canceled ? 0 : Engine::hashWString(text);
   if (!canceled && !d_->settings->translationEnabled[role] &&

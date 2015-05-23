@@ -22,7 +22,7 @@
 // TODO: Use read-write lock instead
 //#define D_LOCK (void)0 // locking is temporarily disabled to avoid hanging
 
-#define DEBUG "EmbedManager"
+#define DEBUG "embedmanager"
 #include "sakurakit/skdebug.h"
 
 /** Private class */
@@ -98,6 +98,11 @@ EmbedManager::~EmbedManager()
 void EmbedManager::setTranslationWaitTime(int msecs)
 { d_->waitTime = msecs; }
 
+bool EmbedManager::tryLock() { return d_->mutex.try_lock(); }
+void EmbedManager::lock() { d_->mutex.lock(); }
+void EmbedManager::unlock() { d_->mutex.unlock(); }
+
+
 // - Actions -
 
 void EmbedManager::quit()
@@ -136,15 +141,14 @@ void EmbedManager::sendText(const QString &text, qint64 hash, long signature, in
 
 QString EmbedManager::findTranslation(qint64 hash, int role) const
 {
-  D_LOCK;
+  //D_LOCK;
   qint64 key = Engine::hashTextKey(hash, role);
   return d_->translations.value(key);
 }
 
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 {
-  D_LOCK;
-
+  //D_LOCK;
   qint64 key = Engine::hashTextKey(hash, role);
   QString ret = d_->translations.value(key);
   if (ret.isEmpty())
