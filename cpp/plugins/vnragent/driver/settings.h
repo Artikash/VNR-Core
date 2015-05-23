@@ -50,6 +50,8 @@ public:
   int embeddedTranslationWaitTime() const;
 
   QString gameEncoding() const;
+  QString gameFontFamily() const;
+
   long scenarioSignature() const;
   long nameSignature() const;
 
@@ -81,6 +83,7 @@ public slots:
   void setEmbeddedTranslationWaitTime(int v);
 
   void setGameEncoding(const QString &v);
+  void setGameFontFamily(const QString &v);
 
   void setScenarioSignature(long v);
   void setNameSignature(long v);
@@ -112,6 +115,7 @@ signals:
   void embeddedTranslationWaitTimeChanged(int v);
 
   void gameEncodingChanged(QString v);
+  void gameFontFamilyChanged(QString v);
   void scenarioSignatureChanged(long v);
   void nameSignatureChanged(long v);
 };

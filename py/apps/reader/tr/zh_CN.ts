@@ -204,7 +204,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>尽可能的将简体中文翻译转换为繁体中文</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8875"/>
+        <location filename="dialogs/_prefs.py" line="8916"/>
         <source>like this</source>
         <translation>比如这样</translation>
     </message>
@@ -2913,7 +2913,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation type="obsolete">当按下Ctrl键时，暂停提取文本</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8912"/>
+        <location filename="dialogs/_prefs.py" line="8953"/>
         <source>Preferred text to embed in the game</source>
         <translation>要内嵌的文本</translation>
     </message>
@@ -2923,7 +2923,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>内嵌字幕</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="260"/>
+        <location filename="managers/gameagent.py" line="263"/>
         <source>Detect game engine</source>
         <translation>检测到游戏引擎</translation>
     </message>
@@ -3026,7 +3026,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>当前支持的游戏引擎是：{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="262"/>
+        <location filename="managers/gameagent.py" line="265"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>未知的游戏引擎。改为使用ITH提取文本。</translation>
     </message>
@@ -4576,20 +4576,20 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="8855"/>
         <source>Insert spaces between overlapped texts</source>
-        <translation>在重叠的文字间插入空格</translation>
+        <translation type="obsolete">在重叠的文字间插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8863"/>
+        <location filename="dialogs/_prefs.py" line="8904"/>
         <source>Insert spaces after every character</source>
         <translation>在每个字后都插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8873"/>
+        <location filename="dialogs/_prefs.py" line="8914"/>
         <source>Insert spaces only between overlapped characters</source>
         <translation>仅在重叠的字间插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8883"/>
+        <location filename="dialogs/_prefs.py" line="8924"/>
         <source>Do not insert any spaces</source>
         <translation>不插入任何空格</translation>
     </message>
@@ -4605,8 +4605,28 @@ The font will be installed to {1}.</source>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8834"/>
-        <source>You can always press Shift or Ctrl to pause embedding translation and stop slowdown.</source>
-        <translation>你可以按下Shift或者Ctrl来暂停内嵌翻译如果变慢。</translation>
+        <source>You can always press Shift or Control to pause embedding translation and stop slowdown.</source>
+        <translation>你可以按下Shift或者Control来暂停内嵌翻译如果变慢。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8862"/>
+        <source>Font options</source>
+        <translation>字体选项</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8870"/>
+        <source>Customize game font</source>
+        <translation>自定义游戏字体</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8871"/>
+        <source>Global font for game text to override default game font</source>
+        <translation>替换游戏的全局字体</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8882"/>
+        <source>Game font</source>
+        <translation>游戏字体</translation>
     </message>
 </context>
 </TS>

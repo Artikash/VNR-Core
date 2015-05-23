@@ -54,7 +54,7 @@ QString WindowDriverPrivate::transformText(const QString &text, qint64 hash) con
     //  if (enabled)
     //    manager->requestTranslation(text, hash);
     if (textVisible && !ret.isEmpty() && ret != text)
-      ret = QString("%1 -- %2").arg(ret, text);
+      ret = QString("%1 / %2").arg(ret, text);
   }
   if (ret.isEmpty())
     ret = text;

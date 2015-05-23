@@ -2,14 +2,15 @@
 // 4/30/2014 jichi
 #include "hijack/hijackfuncs_p.h"
 #include "hijack/hijackhelper.h"
+#include "hijack/hijacksettings.h"
 #include "util/codepage.h"
 
 #define DEBUG "hijackfuncs_gdi32"
 #include "sakurakit/skdebug.h"
 
 //#define FONT_ZHS "楷体_GB2312"
-#define FONT_ZHS_A "KaiTi_GB2312"
-#define FONT_ZHS_W L"KaiTi_GB2312"
+//#define FONT_ZHS_A "KaiTi_GB2312"
+//#define FONT_ZHS_W L"KaiTi_GB2312"
 
 #define HIJACK_GDI32 // only for debugging purpose
 
@@ -22,11 +23,11 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 #ifdef HIJACK_GDI32
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
-      if (p->isTranscodingNeeded() && lplf) {
+      if (lplf && charSet != lplf->lfCharSet && p->isTranscodingNeeded()) {
         LOGFONTA f(*lplf);
         f.lfCharSet = charSet;
-        //::strcpy(f.lfFaceName, FONT_ZHS_A);
-        //f.lfCharSet = GB2312_CHARSET;
+        if (!p->settings()->fontFamily.isEmpty())
+           qstrcpy(f.lfFaceName, p->settings()->fontFamily.toLocal8Bit());
         ret = ::CreateFontIndirectA(&f);
       }
 #endif // HIJACK_GDI32
@@ -42,10 +43,11 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 #ifdef HIJACK_GDI32
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
-      if (p->isTranscodingNeeded() && lplf) {
+      if (lplf && charSet != lplf->lfCharSet && p->isTranscodingNeeded()) {
         LOGFONTW f(*lplf);
         f.lfCharSet = charSet;
-        //::wcscpy(f.lfFaceName, FONT_ZHS_W);
+        if (!p->settings()->fontFamily.isEmpty())
+          p->settings()->fontFamily.toWCharArray(f.lfFaceName);
         ret = ::CreateFontIndirectW(&f);
       }
 #endif // HIJACK_GDI32
@@ -58,13 +60,15 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
 {
 #ifdef HIJACK_GDI32
   //DOUT("pass");
+  QByteArray ff;
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded()) {
         fdwCharSet = charSet;
-
-        //static const char face[] = FONT_ZHS_A;
-        //lpszFace = face;
+        if (!p->settings()->fontFamily.isEmpty()) {
+          ff = p->settings()->fontFamily.toLocal8Bit();
+          lpszFace = ff.constData();
+        }
       }
 #endif // HIJACK_GDI32
   return ::CreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
@@ -78,9 +82,8 @@ HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded()) {
         fdwCharSet = charSet;
-
-        //static const wchar_t face[] = FONT_ZHS_W;
-        //lpszFace = face;
+        if (!p->settings()->fontFamily.isEmpty())
+          lpszFace = (LPCWSTR)p->settings()->fontFamily.utf16();
       }
 #endif // HIJACK_GDI32
   return ::CreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);

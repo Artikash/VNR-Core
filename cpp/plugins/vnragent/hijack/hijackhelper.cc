@@ -1,6 +1,7 @@
 // hijackhelper.cc
 // 5/1/2014 jichi
 #include "hijack/hijackhelper.h"
+#include "hijack/hijacksettings.h"
 #include "util/codepage.h"
 #include <qt_windows.h>
 
@@ -9,6 +10,8 @@
 class HijackHelperPrivate
 {
 public:
+  HijackSettings settings;
+
   uint systemCodePage;
   quint8 systemCharSet;
 
@@ -42,8 +45,9 @@ HijackHelper::~HijackHelper()
 
 // - Properties -
 
-quint8 HijackHelper::systemCharSet() const
-{ return d_->systemCharSet; }
+HijackSettings *HijackHelper::settings() const { return &d_->settings; }
+
+quint8 HijackHelper::systemCharSet() const { return d_->systemCharSet; }
 
 void HijackHelper::setEncoding(const QString &v)
 {

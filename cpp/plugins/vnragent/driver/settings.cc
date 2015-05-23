@@ -34,7 +34,8 @@ public:
 
   int embeddedTranslationWaitTime;
 
-  QString gameEncoding;
+  QString gameEncoding,
+          gameFontFamily;
 
   long scenarioSignature,
        nameSignature;
@@ -119,6 +120,7 @@ DEFINE_BOOL_PROPERTY(embeddedAllTextsExtracted, isEmbeddedAllTextsExtracted, set
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
+DEFINE_STRING_PROPERTY(gameFontFamily, gameFontFamily, setGameFontFamily)
 
 DEFINE_LONG_PROPERTY(scenarioSignature, scenarioSignature, setScenarioSignature)
 DEFINE_LONG_PROPERTY(nameSignature, nameSignature, setNameSignature)
@@ -158,6 +160,7 @@ void Settings::load(const QString &json)
   enum {
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
+    , H_gameFontFamily = 146246649
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
     //, H_embeddedTextCancellableByControl = 96153884
@@ -222,6 +225,7 @@ void Settings::load(const QString &json)
     case H_nameSignature: setNameSignature(value.toLong()); break;
 
     case H_gameEncoding: setGameEncoding(value); break;
+    case H_gameFontFamily: setGameFontFamily(value); break;
 
     case H_debug:
       if (bValue)

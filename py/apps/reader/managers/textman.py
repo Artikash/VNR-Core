@@ -1102,9 +1102,9 @@ class TextManager(QObject):
         if d.language.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()
           # Enforce Traditional Chinese encoding
-          if convertsKanji and d.language == 'zhs':
-            sub = zhs2zht(sub)
           if convertsKanji:
+            if d.language == 'zhs':
+              sub = zhs2zht(sub)
             from kanjiconv.zhja import zht2ja # this is the only place this library is used
             sub = zht2ja(sub)
         #elif d.language == 'zhs' and lang.startswith('zh'):
