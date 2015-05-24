@@ -47,8 +47,6 @@ void EmbedDriver::setEncoding(const QString &v)  { if (d_->engine) d_->engine->s
 void EmbedDriver::setEnabled(bool t)  { if (d_->engine) d_->engine->settings()->enabled = t; }
 //void EmbedDriver::setDetectsControl(bool t) { if (d_->engine) d_->engine->settings()->detectsControl = t; }
 void EmbedDriver::setExtractsAllTexts(bool t) { if (d_->engine) d_->engine->settings()->extractsAllTexts = t; }
-void EmbedDriver::setScenarioTextVisible(bool t) { if (d_->engine) d_->engine->settings()->scenarioTextVisible = t; }
-void EmbedDriver::setNameTextVisible(bool t) { if (d_->engine) d_->engine->settings()->nameTextVisible = t; }
 
 void EmbedDriver::setAlwaysInsertsSpaces(bool t) { if (d_->engine) d_->engine->settings()->alwaysInsertsSpaces = t; }
 void EmbedDriver::setSmartInsertsSpaces(bool t) { if (d_->engine) d_->engine->settings()->smartInsertsSpaces = t; }
@@ -57,14 +55,17 @@ void EmbedDriver::setScenarioSignature(long v) { if (d_->engine) d_->engine->set
 void EmbedDriver::setNameSignature(long v) { if (d_->engine) d_->engine->settings()->nameSignature = v; }
 
 void EmbedDriver::setScenarioVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::ScenarioRole] = t; }
+void EmbedDriver::setScenarioTextVisible(bool t) { if (d_->engine) d_->engine->settings()->scenarioTextVisible = t; }
 void EmbedDriver::setScenarioExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::ScenarioRole] = t; }
 void EmbedDriver::setScenarioTranscodingEnabled(bool t) { if (d_->engine) d_->engine->settings()->transcodingEnabled[Engine::ScenarioRole] = t; }
 void EmbedDriver::setScenarioTranslationEnabled(bool t) { if (d_->engine) d_->engine->settings()->translationEnabled[Engine::ScenarioRole] = t; }
 void EmbedDriver::setNameVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::NameRole] = t; }
+void EmbedDriver::setNameTextVisible(bool t) { if (d_->engine) d_->engine->settings()->nameTextVisible = t; }
 void EmbedDriver::setNameExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::NameRole] = t; }
 void EmbedDriver::setNameTranscodingEnabled(bool t) { if (d_->engine) d_->engine->settings()->transcodingEnabled[Engine::NameRole] = t; }
 void EmbedDriver::setNameTranslationEnabled(bool t) { if (d_->engine) d_->engine->settings()->translationEnabled[Engine::NameRole] = t; }
 void EmbedDriver::setOtherVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::OtherRole] = t; }
+void EmbedDriver::setOtherTextVisible(bool t) { if (d_->engine) d_->engine->settings()->otherTextVisible = t; }
 void EmbedDriver::setOtherExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::OtherRole] = t; }
 void EmbedDriver::setOtherTranscodingEnabled(bool t) { if (d_->engine) d_->engine->settings()->transcodingEnabled[Engine::OtherRole] = t; }
 void EmbedDriver::setOtherTranslationEnabled(bool t) { if (d_->engine) d_->engine->settings()->translationEnabled[Engine::OtherRole] = t; }

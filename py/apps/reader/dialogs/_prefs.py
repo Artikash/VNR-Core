@@ -9129,6 +9129,10 @@ class _EngineTab(object):
         "%s (%s)" % (tr_("Translate"), tr_("slow")))
     ret.addButton(self.otherTranslateButton)
 
+    self.otherVisibleButton = QtWidgets.QRadioButton(
+        "%s (%s)" % (tr_("Both"), tr_("slow")))
+    ret.addButton(self.otherVisibleButton)
+
     #self.otherHideButton = QtWidgets.QRadioButton(tr_("Hide"))
     #ret.addButton(self.otherHideButton)
 
@@ -9140,7 +9144,9 @@ class _EngineTab(object):
     ss = settings.global_()
     #if not ss.isEmbeddedOtherVisible():
     #  self.otherHideButton.setChecked(True)
-    if ss.isEmbeddedOtherTranslationEnabled():
+    if ss.isEmbeddedOtherTextVisible():
+      self.otherVisibleButton.setChecked(True)
+    elif ss.isEmbeddedOtherTranslationEnabled():
       self.otherTranslateButton.setChecked(True)
     elif ss.isEmbeddedOtherTranscodingEnabled():
       self.otherTranscodeButton.setChecked(True)
@@ -9149,18 +9155,26 @@ class _EngineTab(object):
 
   def _saveOtherTextGroup(self):
     ss = settings.global_()
-    if self.otherTranslateButton.isChecked():
+    if self.otherVisibleButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
       ss.setEmbeddedOtherTranscodingEnabled(True)
       ss.setEmbeddedOtherTranslationEnabled(True)
+      ss.setEmbeddedOtherTextVisible(True)
+    elif self.otherTranslateButton.isChecked():
+      ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(True)
+      ss.setEmbeddedOtherTranslationEnabled(True)
+      ss.setEmbeddedOtherTextVisible(False)
     elif self.otherTranscodeButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
       ss.setEmbeddedOtherTranscodingEnabled(True)
       ss.setEmbeddedOtherTranslationEnabled(False)
+      ss.setEmbeddedOtherTextVisible(False)
     elif self.otherDisableButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
       ss.setEmbeddedOtherTranscodingEnabled(False)
       ss.setEmbeddedOtherTranslationEnabled(False)
+      ss.setEmbeddedOtherTextVisible(False)
     #elif self.otherHideButton.isChecked():
     #  ss.setEmbeddedOtherVisible(False)
     #  ss.setEmbeddedOtherTranscodingEnabled(False)

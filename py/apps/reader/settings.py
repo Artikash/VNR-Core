@@ -2176,6 +2176,14 @@ class Settings(QSettings):
       self.setValue('EmbeddedNameVisible', value)
       self.embeddedNameVisibleChanged.emit(value)
 
+  embeddedOtherTextVisibleChanged = Signal(bool)
+  def isEmbeddedOtherTextVisible(self):
+    return to_bool(self.value('EmbeddedOtherText'))
+  def setEmbeddedOtherTextVisible(self, value):
+    if value != self.isEmbeddedOtherTextVisible():
+      self.setValue('EmbeddedOtherText', value)
+      self.embeddedOtherTextVisibleChanged.emit(value)
+
   embeddedOtherTranslationEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranslationEnabled(self):
     return to_bool(self.value('EmbeddedOtherTranslation', False))

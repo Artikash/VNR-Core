@@ -23,6 +23,7 @@ public:
      , embeddedNameTranslationEnabled
      , embeddedNameTranscodingEnabled
      , embeddedOtherVisible
+     , embeddedOtherTextVisible
      , embeddedOtherTranslationEnabled
      , embeddedOtherTranscodingEnabled
      , embeddedSpaceAlwaysInserted
@@ -53,6 +54,7 @@ public:
      , embeddedNameTranslationEnabled(false)
      , embeddedNameTranscodingEnabled(false)
      , embeddedOtherVisible(false)
+     , embeddedOtherTextVisible(false)
      , embeddedOtherTranslationEnabled(false)
      , embeddedOtherTranscodingEnabled(false)
      , embeddedSpaceAlwaysInserted(false)
@@ -107,6 +109,7 @@ DEFINE_BOOL_PROPERTY(embeddedNameTextVisible, isEmbeddedNameTextVisible, setEmbe
 DEFINE_BOOL_PROPERTY(embeddedNameTranslationEnabled, isEmbeddedNameTranslationEnabled, setEmbeddedNameTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedNameTranscodingEnabled, isEmbeddedNameTranscodingEnabled, setEmbeddedNameTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
+DEFINE_BOOL_PROPERTY(embeddedOtherTextVisible, isEmbeddedOtherTextVisible, setEmbeddedOtherTextVisible)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
 
@@ -180,6 +183,7 @@ void Settings::load(const QString &json)
     , H_embeddedNameTranslationEnabled = 239147220
     , H_embeddedNameTranscodingEnabled = 266409492
     , H_embeddedOtherVisible = 32685349
+    , H_embeddedOtherTextVisible = 151359621
     , H_embeddedOtherTranslationEnabled = 9290068
     , H_embeddedOtherTranscodingEnabled = 19782804
     , H_embeddedSpaceAlwaysInserted = 241397364
@@ -209,6 +213,7 @@ void Settings::load(const QString &json)
     case H_embeddedNameTranslationEnabled: setEmbeddedNameTranslationEnabled(bValue); break;
     case H_embeddedNameTranscodingEnabled: setEmbeddedNameTranscodingEnabled(bValue); break;
     case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;
+    case H_embeddedOtherTextVisible: setEmbeddedOtherTextVisible(bValue); break;
     case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
     case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
 
