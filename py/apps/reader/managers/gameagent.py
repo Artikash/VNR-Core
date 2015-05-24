@@ -176,6 +176,7 @@ _SETTINGS_DICT = {
   'embeddedNameTranslationEnabled': 'isEmbeddedNameTranslationEnabled',
   'embeddedNameTranscodingEnabled': 'isEmbeddedNameTranscodingEnabled',
   'embeddedOtherVisible': 'isEmbeddedOtherVisible',
+  'embeddedOtherTextVisible': 'isEmbeddedOtherTextVisible',
   'embeddedOtherTranslationEnabled': 'isEmbeddedOtherTranslationEnabled',
   'embeddedOtherTranscodingEnabled': 'isEmbeddedOtherTranscodingEnabled',
 

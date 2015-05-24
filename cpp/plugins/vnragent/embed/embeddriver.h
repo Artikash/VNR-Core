@@ -44,6 +44,7 @@ public slots:
   void setNameTranscodingEnabled(bool t);
   void setNameTranslationEnabled(bool t);
   void setOtherVisible(bool t);
+  void setOtherTextVisible(bool t);
   void setOtherExtractionEnabled(bool t);
   void setOtherTranscodingEnabled(bool t);
   void setOtherTranslationEnabled(bool t);

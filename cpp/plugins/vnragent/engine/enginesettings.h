@@ -17,12 +17,13 @@ public:
      , extractsAllTexts     // send all texts unless not enabled
      , scenarioTextVisible  // display both translation and the original text for scenario
      , nameTextVisible      // display both translation and the original text for names
+     , otherTextVisible     // display both translation and the original text for other texts
 
      , textVisible[Engine::RoleCount]           // if display/hide all texts
      , transcodingEnabled[Engine::RoleCount]    // if fix the encoding
      , translationEnabled[Engine::RoleCount]    // if display translation
      , extractionEnabled[Engine::RoleCount]     // if send text
-     ;
+  ;
 
   long scenarioSignature,
        nameSignature;
@@ -38,6 +39,7 @@ public:
     , extractsAllTexts(false)
     , scenarioTextVisible(false)
     , nameTextVisible(false)
+    , otherTextVisible(false)
 
     , scenarioSignature(0)
     , nameSignature(0)

@@ -38,6 +38,7 @@ public:
   bool isEmbeddedNameTranslationEnabled() const;
   bool isEmbeddedNameTranscodingEnabled() const;
   bool isEmbeddedOtherVisible() const;
+  bool isEmbeddedOtherTextVisible() const;
   bool isEmbeddedOtherTranslationEnabled() const;
   bool isEmbeddedOtherTranscodingEnabled() const;
 
@@ -71,6 +72,7 @@ public slots:
   void setEmbeddedNameTranslationEnabled(bool t);
   void setEmbeddedNameTranscodingEnabled(bool t);
   void setEmbeddedOtherVisible(bool t);
+  void setEmbeddedOtherTextVisible(bool t);
   void setEmbeddedOtherTranslationEnabled(bool t);
   void setEmbeddedOtherTranscodingEnabled(bool t);
 
@@ -103,6 +105,7 @@ signals:
   void embeddedNameTranslationEnabledChanged(bool t);
   void embeddedNameTranscodingEnabledChanged(bool t);
   void embeddedOtherVisibleChanged(bool t);
+  void embeddedOtherTextVisibleChanged(bool t);
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
 

@@ -338,18 +338,18 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     repl = text;
   else if (repl != text)
     switch (role) {
-    case Engine::NameRole:
-      if (d_->settings.nameTextVisible)
-        repl = QString("%1 / %2").arg(repl, text);
-      break;
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
         repl = QString("%1\n%2").arg(repl, text);
       break;
-    //case Engine::OtherRole:
-    //  if (d_->settings.otherTextVisible)
-    //    repl = QString("%1 / %2").arg(repl, text);
-    //  break;
+    case Engine::NameRole:
+      if (d_->settings.nameTextVisible)
+        repl = QString("%1 / %2").arg(repl, text);
+      break;
+    case Engine::OtherRole:
+      if (d_->settings.otherTextVisible)
+        repl = QString("%1 / %2").arg(repl, text);
+      break;
     }
 
   return d_->encode(repl);
@@ -415,13 +415,17 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     repl = text; // prevent from deleting text
   else if (repl != text)
     switch (role) {
+    case Engine::ScenarioRole:
+      if (d_->settings.scenarioTextVisible)
+        repl = QString("%1\n%2").arg(repl, text);
+      break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
         repl = QString("%1 / %2").arg(repl, text);
       break;
-    case Engine::ScenarioRole:
-      if (d_->settings.scenarioTextVisible)
-        repl = QString("%1\n%2").arg(repl, text);
+    case Engine::OtherRole:
+      if (d_->settings.otherTextVisible)
+        repl = QString("%1 / %2").arg(repl, text);
       break;
     }
 
