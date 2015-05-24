@@ -895,7 +895,8 @@ class _TextManager(object):
     for h, context in self.windowTexts.iteritems():
       if not h in self.windowTranslation:
         context = textutil.remove_illegal_text(context)
-        sub, lang, provider = translateOne(context, async=True, online=True, mark=False)
+        sub, lang, provider = translateOne(context, self.gameLanguage,
+            async=True, online=True, mark=False)
         if sub:
           changedTranslation[h] = sub
     if changedTranslation:
@@ -1097,7 +1098,8 @@ class TextManager(QObject):
         sub = d.querySharedTranslation(hash=hash, text=text)
       if not sub:
         async = role == OTHER_THREAD_TYPE
-        sub, lang, provider = trman.manager().translateOne(text, async=async, online=True, mark=False)
+        sub, lang, provider = trman.manager().translateOne(text, self.gameLanguage,
+            async=async, online=True, mark=False)
       if sub:
         if d.language.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()
@@ -1110,6 +1112,8 @@ class TextManager(QObject):
         #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
         sub = textutil.remove_html_tags(sub)
+        if config.is_reversed_language(lang):
+          sub = sub[::-1]
         self.agentTranslationProcessed.emit(sub, rawHash, role)
       else:
         self.agentTranslationCancelled.emit(text, rawHash, role)

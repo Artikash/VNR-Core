@@ -791,7 +791,7 @@ class TranslatorManager(QObject):
     """
     return self.translateOne(*args, **kwargs)[0]
 
-  def translateTest(self, text, fr='ja', engine='', ehndEnabled=None, async=False):
+  def translateTest(self, text, fr='ja', to='', engine='', ehndEnabled=None, async=False):
     """
     @param  text  unicode
     @param* fr  unicode  language
@@ -806,7 +806,8 @@ class TranslatorManager(QObject):
     #text = d.normalizeText(text)
     it = d.findTranslator(engine)
     if it:
-      to = d.language
+      if not to:
+        to = d.language
       kw = {
         'fr': fr,
         'to': to,
@@ -817,7 +818,7 @@ class TranslatorManager(QObject):
         kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
       return it.translateTest(text, **kw)
 
-  def translateOne(self, text, fr='ja', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None, ehndEnabled=None):
+  def translateOne(self, text, fr='ja', to='', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None, ehndEnabled=None):
     """Translate using any translator
     @param  text  unicode
     @param* fr  unicode  language
@@ -836,7 +837,8 @@ class TranslatorManager(QObject):
     it = d.findTranslator(engine)
     if it:
       text = d.normalizeText(text)
-      to = d.language
+      if not to:
+        to = d.language
       kw = {
         'fr': fr,
         'to': to,
@@ -862,7 +864,7 @@ class TranslatorManager(QObject):
         ) or (None, None, None)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja', mark=None, scriptEnabled=None, ehndEnabled=None, **kwargs):
+  def translateApply(self, func, text, fr='ja', to='', mark=None, scriptEnabled=None, ehndEnabled=None, **kwargs):
     """Specialized for textman
     @param  func  function(unicode sub, unicode lang, unicode provider)
     @param  text  unicode
@@ -873,7 +875,8 @@ class TranslatorManager(QObject):
     if not features.MACHINE_TRANSLATION or not text:
       return
     d = self.__d
-    to = d.language
+    if not to:
+      to = d.language
 
     text = d.normalizeText(text)
     if mark is None:
