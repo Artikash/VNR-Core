@@ -2227,7 +2227,7 @@ class Settings(QSettings):
 
   embeddedSpacePolicyEncodingChanged = Signal(unicode)
   def embeddedSpacePolicyEncoding(self):
-    return self.value('EmbeddedSpacePolicyEncoding')
+    return self.value('EmbeddedSpacePolicyEncoding', '')
   def setEmbeddedSpacePolicyEncoding(self, value):
     if value != self.embeddedSpacePolicyEncoding():
       self.setValue('EmbeddedSpacePolicyEncoding', value)
