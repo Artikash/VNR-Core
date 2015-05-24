@@ -2104,7 +2104,7 @@ class Settings(QSettings):
   # Whether fix window translation encoding
   windowTranscodingEnabledChanged = Signal(bool)
   def isWindowTranscodingEnabled(self):
-    return to_bool(self.value('WindowTranscoding', True))
+    return to_bool(self.value('WindowTranscoding'))
   def setWindowTranscodingEnabled(self, value):
     if value != self.isWindowTranscodingEnabled():
       self.setValue('WindowTranscoding', value)

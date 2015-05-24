@@ -9291,7 +9291,7 @@ class _EngineTab(object):
       ss.setWindowTextVisible(True)
     elif self.windowTranslateButton.isChecked():
       #ss.setWindowVisible(True)
-      ss.setWindowTranscodingEnabled(True)
+      ss.setWindowTranscodingEnabled(False) # Transcoding disabled
       ss.setWindowTranslationEnabled(True)
       ss.setWindowTextVisible(False)
     elif self.windowTranscodeButton.isChecked():
