@@ -20,7 +20,7 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
   HFONT ret = nullptr;
 #ifdef HIJACK_GDI32
-  //DOUT("pass");
+  DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
@@ -47,7 +47,7 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 {
   HFONT ret = nullptr;
 #ifdef HIJACK_GDI32
-  //DOUT("pass");
+  DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
@@ -59,8 +59,10 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
         if (charSet)
           f.lfCharSet = charSet;
       }
-      if (!s->fontFamily.isEmpty())
+      if (!s->fontFamily.isEmpty()) {
+        f.lfFaceName[s->fontFamily.size()] = 0;
         s->fontFamily.toWCharArray(f.lfFaceName);
+      }
       ret = ::CreateFontIndirectW(&f);
     }
   }
@@ -73,7 +75,7 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
 #ifdef HIJACK_GDI32
-  //DOUT("pass");
+  DOUT("pass");
   QByteArray ff;
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
@@ -98,7 +100,7 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
 HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
 {
 #ifdef HIJACK_GDI32
-  //DOUT("pass");
+  DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (s->fontCharSetEnabled || !s->fontFamily.isEmpty()) {
