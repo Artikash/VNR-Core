@@ -2085,7 +2085,7 @@ class Settings(QSettings):
   # This implies transcoding enabled
   windowTranslationEnabledChanged = Signal(bool)
   def isWindowTranslationEnabled(self):
-    return to_bool(self.value('WindowTranslation', False))
+    return to_bool(self.value('WindowTranslation', True))
   def setWindowTranslationEnabled(self, value):
     if value != self.isWindowTranslationEnabled():
       self.setValue('WindowTranslation', value)
@@ -2095,7 +2095,7 @@ class Settings(QSettings):
   # This implies translation enabled
   windowTextVisibleChanged = Signal(bool)
   def isWindowTextVisible(self):
-    return to_bool(self.value('WindowTextVisible', False))
+    return to_bool(self.value('WindowTextVisible', True))
   def setWindowTextVisible(self, value):
     if value != self.isWindowTextVisible():
       self.setValue('WindowTextVisible', value)
@@ -2104,7 +2104,7 @@ class Settings(QSettings):
   # Whether fix window translation encoding
   windowTranscodingEnabledChanged = Signal(bool)
   def isWindowTranscodingEnabled(self):
-    return to_bool(self.value('WindowTranscoding'))
+    return to_bool(self.value('WindowTranscoding', False)) # disable window transcoding by default
   def setWindowTranscodingEnabled(self, value):
     if value != self.isWindowTranscodingEnabled():
       self.setValue('WindowTranscoding', value)
@@ -2178,7 +2178,7 @@ class Settings(QSettings):
 
   embeddedOtherTextVisibleChanged = Signal(bool)
   def isEmbeddedOtherTextVisible(self):
-    return to_bool(self.value('EmbeddedOtherText'))
+    return to_bool(self.value('EmbeddedOtherText', True))
   def setEmbeddedOtherTextVisible(self, value):
     if value != self.isEmbeddedOtherTextVisible():
       self.setValue('EmbeddedOtherText', value)
@@ -2186,7 +2186,7 @@ class Settings(QSettings):
 
   embeddedOtherTranslationEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedOtherTranslation'))
+    return to_bool(self.value('EmbeddedOtherTranslation', True))
   def setEmbeddedOtherTranslationEnabled(self, value):
     if value != self.isEmbeddedOtherTranslationEnabled():
       self.setValue('EmbeddedOtherTranslation', value)
@@ -2194,7 +2194,7 @@ class Settings(QSettings):
 
   embeddedOtherTranscodingEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranscodingEnabled(self):
-    return to_bool(self.value('EmbeddedOtherTranscoding'))
+    return to_bool(self.value('EmbeddedOtherTranscoding', True))
   def setEmbeddedOtherTranscodingEnabled(self, value):
     if value != self.isEmbeddedOtherTranscodingEnabled():
       self.setValue('EmbeddedOtherTranscoding', value)
