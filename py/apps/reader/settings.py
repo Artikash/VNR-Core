@@ -2219,7 +2219,7 @@ class Settings(QSettings):
 
   embeddedSpaceSmartInsertedChanged = Signal(bool)
   def isEmbeddedSpaceSmartInserted(self):
-    return to_bool(self.value('EmbeddedSpaceSmartInserted', True))
+    return to_bool(self.value('EmbeddedSpaceSmartInserted'))
   def setEmbeddedSpaceSmartInserted(self, value):
     if value != self.isEmbeddedSpaceSmartInserted():
       self.setValue('EmbeddedSpaceSmartInserted', value)
