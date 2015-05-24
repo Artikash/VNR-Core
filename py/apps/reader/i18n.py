@@ -5,6 +5,7 @@
 from datetime import datetime
 from itertools import imap
 from sakurakit.sktr import tr_, utr_
+from windefs import winlocale
 from mecabparser import mecabdef
 from mytr import my, mytr_
 import config, defs
@@ -112,6 +113,30 @@ def encoding_desc(enc):
   @return  unicode
   """
   return ENCODING_DESCS.get(enc) or enc.upper()
+
+WIN_CHARSET_DESCS = {
+  winlocale.SHIFTJIS_CHARSET:   tr_("Japanese"),
+  winlocale.GB2312_CHARSET:     tr_("Simplified Chinese"),
+  winlocale.CHINESEBIG5_CHARSET: tr_("Traditional Chinese"),
+  winlocale.HANGUL_CHARSET:     tr_("Korean"),
+  winlocale.VIETNAMESE_CHARSET: tr_("Vietnamese"),
+  winlocale.THAI_CHARSET:       tr_("Thai"),
+  winlocale.GREEK_CHARSET:      tr_("Greek"),
+  winlocale.ARABIC_CHARSET:     tr_("Arabic"),
+  winlocale.HEBREW_CHARSET:     tr_("Hebrew"),
+  winlocale.TURKISH_CHARSET:    tr_("Turkish"),
+  winlocale.BALTIC_CHARSET:     my.tr("North Europe"),
+  winlocale.EASTEUROPE_CHARSET: my.tr("Central and Eastern Europe"),
+  winlocale.RUSSIAN_CHARSET:    tr_("Cyrillic"),
+  winlocale.DEFAULT_CHARSET:    "(%s)" % tr_("System default"),
+}
+def win_charset_desc(charset):
+  """
+  @param  charset  int
+  @return  unicode
+  """
+  desc = WIN_CHARSET_DESCS.get(charset) or my.tr("Unknown charSet")
+  return "%s (0x%x)" % (desc, charset)
 
 def topic_type_name(type):
   """

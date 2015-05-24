@@ -681,7 +681,6 @@ my.tr("But Drag-and-Drop does not work when VNR has admin privilege T_T"),
     ret = QtWidgets.QCheckBox(my.tr(
       "Customize mouse cursor"
     ))
-
     ss = settings.global_()
     ret.setChecked(ss.isCursorThemeEnabled())
     ret.toggled.connect(ss.setCursorThemeEnabled)
@@ -8851,12 +8850,24 @@ class _EngineTab(object):
 
   @memoizedproperty
   def fontGroup(self):
-    layout = QtWidgets.QVBoxLayout()
+
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+
+    grid.addWidget(self.charSetButton, r, 1)
+    grid.addWidget(self.charSetEdit, r, 2)
+    r += 1
+
+    grid.addWidget(self.fontButton, r, 1)
+    grid.addWidget(self.fontEdit, r, 2)
+    r += 1
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.fontButton)
-    row.addWidget(self.fontEdit)
-    row.addStretch()
+    row.addLayout(grid)
+    row.addStretch() # use a row to patch stretch
+
+    layout = QtWidgets.QVBoxLayout()
     layout.addLayout(row)
 
     layout.addWidget(self.smartInsertsSpaceButton)
@@ -8893,6 +8904,31 @@ class _EngineTab(object):
     ret.editTextChanged.connect(self._refreshFontFamily)
     #ret.editTextChanged.connect(self._saveFontFamily)
     ret.currentIndexChanged.connect(self._saveFontFamily)
+    return ret
+
+  @memoizedproperty
+  def charSetButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Enforce font character set"))
+    ret.setToolTip(my.tr("Character set hint for selecting fonts"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedCharSetEnabled())
+    ret.toggled.connect(ss.setEmbeddedCharSetEnabled)
+    return ret
+
+  @memoizedproperty
+  def charSetEdit(self):
+    L = defs.gameagent_charsets()
+    ss = settings.global_()
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.win_charset_desc, L))
+    ret.setMaxVisibleItems(ret.count())
+    try: ret.setCurrentIndex(L.index(ss.embeddedCharSet()))
+    except ValueError: pass
+    ret.currentIndexChanged[int].connect(lambda index:
+        ss.setEmbeddedCharSet(L[index]))
+    ret.setEnabled(ss.isEmbeddedCharSetEnabled())
+    ss.embeddedCharSetEnabledChanged.connect(ret.setEnabled)
     return ret
 
   def _refreshFontFamily(self):

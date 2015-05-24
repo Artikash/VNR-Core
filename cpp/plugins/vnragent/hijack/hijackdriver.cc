@@ -43,6 +43,12 @@ HijackDriver::~HijackDriver() { delete d_; }
 void HijackDriver::setEncoding(const QString &v)
 { d_->helper->setEncoding(v); }
 
+void HijackDriver::setFontCharSet(int v)
+{
+  d_->helper->settings()->fontCharSet = (quint8)v;
+  DOUT(v);
+}
+
 void HijackDriver::setFontFamily(const QString &v)
 {
   d_->helper->settings()->fontFamily = v;

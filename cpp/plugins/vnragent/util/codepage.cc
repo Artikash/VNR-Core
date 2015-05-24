@@ -46,25 +46,29 @@ const char *Util::encodingForCodePage(uint cp)
   }
 }
 
-// #define ANSI_CHARSET            0
-// #define DEFAULT_CHARSET         1
-// #define SYMBOL_CHARSET          2
-// #define SHIFTJIS_CHARSET        128
-// #define HANGEUL_CHARSET         129
-// #define HANGUL_CHARSET          129
-// #define GB2312_CHARSET          134
-// #define CHINESEBIG5_CHARSET     136
-// #define OEM_CHARSET             255
-// #if(WINVER >= 0x0400)
-// #define JOHAB_CHARSET           130
-// #define HEBREW_CHARSET          177
-// #define ARABIC_CHARSET          178
-// #define GREEK_CHARSET           161
-// #define TURKISH_CHARSET         162
-// #define VIETNAMESE_CHARSET      163
-// #define THAI_CHARSET            222
-// #define EASTEUROPE_CHARSET      238
-// #define RUSSIAN_CHARSET         204
+// https://msdn.microsoft.com/en-us/library/cc250412.aspx
+// typedef enum // BYTE
+// {
+//   ANSI_CHARSET = 0x00000000,
+//   DEFAULT_CHARSET = 0x00000001,
+//   SYMBOL_CHARSET = 0x00000002,
+//   MAC_CHARSET = 0x0000004D,
+//   SHIFTJIS_CHARSET = 0x00000080,
+//   HANGUL_CHARSET = 0x00000081,
+//   JOHAB_CHARSET = 0x00000082,
+//   GB2312_CHARSET = 0x00000086,
+//   CHINESEBIG5_CHARSET = 0x00000088,
+//   GREEK_CHARSET = 0x000000A1,
+//   TURKISH_CHARSET = 0x000000A2,
+//   VIETNAMESE_CHARSET = 0x000000A3,
+//   HEBREW_CHARSET = 0x000000B1,
+//   ARABIC_CHARSET = 0x000000B2,
+//   BALTIC_CHARSET = 0x000000BA,
+//   RUSSIAN_CHARSET = 0x000000CC,
+//   THAI_CHARSET = 0x000000DE,
+//   EASTEUROPE_CHARSET = 0x000000EE,
+//   OEM_CHARSET = 0x000000FF
+// } CharacterSet;
 
 quint8 Util::charSetForCodePage(uint cp)
 {
@@ -74,10 +78,20 @@ quint8 Util::charSetForCodePage(uint cp)
   case SjisCodePage:    return SHIFTJIS_CHARSET;
   case GbkCodePage:     return GB2312_CHARSET;
   case Big5CodePage:    return CHINESEBIG5_CHARSET;
-  case KscCodePage:     return HANGUL_CHARSET;
 
+  case KscCodePage:     return HANGUL_CHARSET;
+  case 1361:            return JOHAB_CHARSET; // alternative Korean character set
+
+  case 1250:            return EASTEUROPE_CHARSET;
+  case 1251:            return RUSSIAN_CHARSET; // cyrillic
+  case 1253:            return GREEK_CHARSET;
   case 1254:            return TURKISH_CHARSET;
+
+  case 862:             return HEBREW_CHARSET; // obsolete
+  case 1255:            return HEBREW_CHARSET;
+
   case 1256:            return ARABIC_CHARSET;
+  case 1257:            return BALTIC_CHARSET;
   case 1258:            return VIETNAMESE_CHARSET;
 
   //default: return DEFAULT_CHARSET;
