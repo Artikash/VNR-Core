@@ -2186,7 +2186,7 @@ class Settings(QSettings):
 
   embeddedOtherTranslationEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedOtherTranslation', False))
+    return to_bool(self.value('EmbeddedOtherTranslation'))
   def setEmbeddedOtherTranslationEnabled(self, value):
     if value != self.isEmbeddedOtherTranslationEnabled():
       self.setValue('EmbeddedOtherTranslation', value)
@@ -2194,7 +2194,7 @@ class Settings(QSettings):
 
   embeddedOtherTranscodingEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranscodingEnabled(self):
-    return to_bool(self.value('EmbeddedOtherTranscoding', True))
+    return to_bool(self.value('EmbeddedOtherTranscoding'))
   def setEmbeddedOtherTranscodingEnabled(self, value):
     if value != self.isEmbeddedOtherTranscodingEnabled():
       self.setValue('EmbeddedOtherTranscoding', value)
@@ -2203,7 +2203,7 @@ class Settings(QSettings):
   # This method is not used, though
   embeddedOtherVisibleChanged = Signal(bool)
   def isEmbeddedOtherVisible(self):
-    return to_bool(self.value('EmbeddedOtherVisible', True))
+    return to_bool(self.value('EmbeddedOtherVisible'))
   def setEmbeddedOtherVisible(self, value):
     if value != self.isEmbeddedOtherVisible():
       self.setValue('EmbeddedOtherVisible', value)
