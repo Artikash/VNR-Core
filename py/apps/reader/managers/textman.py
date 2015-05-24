@@ -1096,20 +1096,21 @@ class TextManager(QObject):
       if role == SCENARIO_THREAD_TYPE:
         hash = long(rawHash)
         sub = d.querySharedTranslation(hash=hash, text=text)
+      lang = d.language
       if not sub:
         async = role == OTHER_THREAD_TYPE
         sub, lang, provider = trman.manager().translateOne(text, d.gameLanguage,
             async=async, online=True, mark=False)
       if sub:
-        if d.language.startswith('zh'):
+        if lang.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()
           # Enforce Traditional Chinese encoding
           if convertsKanji:
-            if d.language == 'zhs':
+            if lang == 'zhs':
               sub = zhs2zht(sub)
             from kanjiconv.zhja import zht2ja # this is the only place this library is used
             sub = zht2ja(sub)
-        #elif d.language == 'zhs' and lang.startswith('zh'):
+        #elif lang == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
         sub = textutil.remove_html_tags(sub)
         if config.is_reversed_language(lang):
