@@ -8860,13 +8860,12 @@ class _EngineTab(object):
     grid = QtWidgets.QGridLayout()
 
     r = 0
+    grid.addWidget(self.fontButton, r, 1)
+    grid.addWidget(self.fontEdit, r, 2)
+    r += 1
 
     grid.addWidget(self.charSetButton, r, 1)
     grid.addWidget(self.charSetEdit, r, 2)
-    r += 1
-
-    grid.addWidget(self.fontButton, r, 1)
-    grid.addWidget(self.fontEdit, r, 2)
     r += 1
 
     row = QtWidgets.QHBoxLayout()
