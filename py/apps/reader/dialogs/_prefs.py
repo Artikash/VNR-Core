@@ -11,7 +11,7 @@ from PySide import QtCore, QtGui
 from Qt5 import QtWidgets
 from sakurakit import skevents, skpaths, skqss, skstr, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_, notr_
 from mecabparser import mecabdef
 import voiceroid.online as vrapi
@@ -8870,9 +8870,15 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(row)
 
-    layout.addWidget(self.smartInsertsSpaceButton)
+    layout.addWidget(QtWidgets.QLabel(my.tr("Insert spaces between overlapped characters") + ":"))
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.smartInsertsSpaceButton)
+    row.addWidget(self.spaceEncodingEdit)
+    row.addStretch() # use a row to patch stretch
+    layout.addLayout(row)
     layout.addWidget(self.alwaysInsertsSpaceButton)
     layout.addWidget(self.disableInsertsSpaceButton)
+
     ret = QtWidgets.QGroupBox(my.tr("Font options"))
     ret.setLayout(layout)
     self._loadSpaceOptions()
@@ -8944,22 +8950,13 @@ class _EngineTab(object):
 
   @memoizedproperty
   def alwaysInsertsSpaceButton(self):
-    ret = QtWidgets.QRadioButton("%s, %s: %s" % (
-      my.tr("Insert spaces after every character"),
-      my.tr("like this"),
-      u"目覚めた => 目 覚 め た",
-    ))
+    ret = QtWidgets.QRadioButton(my.tr("Insert spaces after every character"))
     ret.toggled.connect(self._saveSpaceOptions)
     return ret
 
   @memoizedproperty
   def smartInsertsSpaceButton(self):
-    ret = QtWidgets.QRadioButton("%s (%s), %s: %s" % (
-      my.tr("Insert spaces only between overlapped characters"),
-      tr_("default"),
-      my.tr("like this"),
-      u"目覚めた => 目覚 めた",
-    ))
+    ret = QtWidgets.QRadioButton(my.tr("Insert spaces after unencodable characters"))
     ret.toggled.connect(self._saveSpaceOptions)
     return ret
 
@@ -8989,6 +8986,35 @@ class _EngineTab(object):
     elif self.smartInsertsSpaceButton.isChecked():
       ss.setEmbeddedSpaceAlwaysInserted(False)
       ss.setEmbeddedSpaceSmartInserted(True)
+
+  @memoizedproperty
+  def spaceEncodingEdit(self):
+    L = [it for it in config.ENCODINGS if it not in ('utf-8', 'utf-16')]
+    L.insert(0, '') # use the first one as the default
+    items = map(i18n.encoding_desc, L)
+    items[0] = "(%s)" % tr_("System default")
+
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.setToolTip(tr_("Text encoding"))
+    ret.setStatusTip(tr_("Text encoding"))
+    ret.addItems(items)
+    ret.setMaxVisibleItems(ret.count())
+
+    ss = settings.global_()
+    ret.setEnabled(ss.isEmbeddedSpaceSmartInserted())
+    ss.embeddedSpaceSmartInsertedChanged.connect(ret.setEnabled)
+
+    enc = ss.embeddedSpacePolicyEncoding()
+    if enc not in L:
+      dwarn("remove unsupported space encoding: %s" % enc)
+      ss.setEmbeddedSpacePolicyEncoding('')
+    else:
+      ret.setCurrentIndex(L.index(enc))
+
+    ret.currentIndexChanged[int].connect(lambda index:
+        ss.setEmbeddedSpacePolicyEncoding(L[index]))
+    return ret
 
   ## Text ##
 

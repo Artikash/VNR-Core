@@ -811,17 +811,19 @@ BOOL IthInitSystemService()
 
   ::page = peb->InitAnsiCodePageData;
 
+  enum { CP932 = 932 };
+
   // jichi 9/23/2013: Access violation on Wine
   if (IthIsWine())
     // One wine, there is no C_932.nls
     //page_locale = 0x4e4; // 1252, English
     //page_locale = GetACP(); // This will return 932 when LC_ALL=ja_JP.UTF-8 on wine
     // Always set locale to CP932 on Wine, since C_932.nls could be missing.
-    ::page_locale = 0x3a4; // = 932
+    ::page_locale = CP932;
   else
     ::page_locale = *(DWORD *)page >> 16;
 
-  if (::page_locale == 0x3a4) {
+  if (::page_locale == CP932) {
     oa.hRootDirectory = ::root_obj;
     oa.uAttributes |= OBJ_OPENIF;
   } else { // Unreachable or wine

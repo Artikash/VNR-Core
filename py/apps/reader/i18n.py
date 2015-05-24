@@ -135,7 +135,7 @@ def win_charset_desc(charset):
   @param  charset  int
   @return  unicode
   """
-  desc = WIN_CHARSET_DESCS.get(charset) or my.tr("Unknown charSet")
+  desc = WIN_CHARSET_DESCS.get(charset) or "(%s)" % my.tr("Unknown charSet")
   return "%s (0x%x)" % (desc, charset)
 
 def topic_type_name(type):

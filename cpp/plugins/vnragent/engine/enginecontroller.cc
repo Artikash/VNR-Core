@@ -41,7 +41,8 @@ public:
   //Q::RequiredAttributes attributes;
 
   QTextCodec *encoder,
-             *decoder;
+             *decoder,
+             *spaceCodec;
 
   Engine::address_type oldHookFun;
 
@@ -51,7 +52,7 @@ public:
   EngineControllerPrivate(EngineModel *model)
     : model(model)
     , codePage(0)
-    , encoder(nullptr), decoder(nullptr)
+    , encoder(nullptr), decoder(nullptr), spaceCodec(nullptr)
     , oldHookFun(0)
     , finalized(false)
   {}
@@ -85,25 +86,6 @@ public:
   { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
 
 private:
-  bool encodable(const QChar &c) const
-  {
-    if (!encoder || c.isNull())
-      return false;
-    //if (c.unicode() == '?')
-    if (c.unicode() <= 127) // ignore ascii characters
-      return true;
-    return encoder->fromUnicode(&c, 1) != "?";
-  }
-
-  //bool decodable(const QByteArray &c) const
-  //{
-  //  if (!decoder || c.isEmpty())
-  //    return false;
-  //  if (c == "?")
-  //    return true;
-  //  return encoder->toUnicode(c) != "?";
-  //}
-
   void finalizeCodecs()
   {
     const char *engineEncoding = Util::encodingForCodePage(codePage);
@@ -128,12 +110,12 @@ private:
     return ret;
   }
 
-  QString smartInsertSpaces(const QString &text) const
+  static QString insertSpacesAfterUnencodable(const QString &text, const QTextCodec *codec)
   {
     QString ret;
     foreach (const QChar &c, text) {
       ret.append(c);
-      if (!encodable(c))
+      if (!Util::charEncodable(c, codec))
         ret.append(' ');
     }
     return ret;
@@ -144,10 +126,12 @@ public:
   {
     if (settings.alwaysInsertsSpaces)
       return alwaysInsertSpaces(text);
-    else if (settings.smartInsertsSpaces && encoder)
-      return smartInsertSpaces(text);
-    else
-      return text;
+    if (settings.smartInsertsSpaces) {
+      auto codec = spaceCodec ? spaceCodec : encoder;
+      if (codec)
+        return insertSpacesAfterUnencodable(text, codec);
+    }
+    return text;
   }
 };
 
@@ -219,6 +203,9 @@ void EngineController::setEncoding(const QString &v)
 
 bool EngineController::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
+
+void EngineController::setSpacePolicyEncoding(const QString &v)
+{ d_->spaceCodec = v.isEmpty() ? nullptr : Util::codecForName(v.toAscii()); }
 
 // - Attach -
 

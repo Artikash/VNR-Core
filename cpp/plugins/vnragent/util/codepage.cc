@@ -3,11 +3,51 @@
 #include "util/codepage.h"
 #include "qtembedplugin/codecmanager.h"
 #include <QtCore/QString>
+#include <QtCore/QSettings>
 #include <QtCore/QTextCodec>
 #include <qt_windows.h>
+// Get real ACP from registry
+uint Util::codePageFromRegistry()
+{
+  static uint ret;
+  if (!ret)
+    ret =
+      QSettings("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Nls\\CodePage", QSettings::NativeFormat)
+      .value("ACP")
+      .toUInt()
+    ;
+    // For registry API, see: http://stackoverflow.com/questions/34065/how-to-read-a-value-from-the-windows-registry
+    //HKEY hk;
+    //if (0 == ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Nls\\CodePage", 0, KEY_READ, &hk)) {
+    //  DWORD size = sizeof(ret);
+    //  auto err = ::RegQueryValueExA(hk , "ACP" , 0 , nullptr , reinterpret_cast<LPBYTE>(&ret) , &size); //== 0
+    //  qDebug() << "9999:"<<err << ":" << ret << ":" << size;
+    //}
+  return ret;
+}
+
+bool Util::charEncodable(const QChar &ch, const QTextCodec *codec)
+{
+  if (!codec)
+    return false;
+  if (ch.unicode() <= 127) // ignore ascii characters
+    return true;
+  return codec->fromUnicode(&ch, 1) != "?";
+}
+
+//bool Util::charDecodable(const QByteArray &c) const
+//{
+//  if (!decoder || c.isEmpty())
+//    return false;
+//  if (c == "?")
+//    return true;
+//  return encoder->toUnicode(c) != "?";
+//}
 
 QTextCodec *Util::codecForName(const char *name)
 {
+  if (!name)
+    return nullptr;
   QTextCodec *ret = QTextCodec::codecForName(name);
   return ret ? ret : QtEmbedPlugin::CodecManager::globalInstance()->codecForName(name);
 }

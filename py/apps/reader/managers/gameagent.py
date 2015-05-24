@@ -182,6 +182,7 @@ _SETTINGS_DICT = {
 
   'embeddedSpaceAlwaysInserted': 'isEmbeddedSpaceAlwaysInserted',
   'embeddedSpaceSmartInserted': 'isEmbeddedSpaceSmartInserted',
+  'embeddedSpacePolicyEncoding': 'embeddedSpacePolicyEncoding',
 }
 
 @Q_Q

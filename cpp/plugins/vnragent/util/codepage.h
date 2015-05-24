@@ -5,6 +5,7 @@
 
 #include <QtCore/QtGlobal>
 
+QT_FORWARD_DECLARE_CLASS(QChar)
 QT_FORWARD_DECLARE_CLASS(QString)
 QT_FORWARD_DECLARE_CLASS(QTextCodec)
 
@@ -38,6 +39,10 @@ const char *encodingForCodePage(uint cp);
 quint8 charSetForCodePage(uint cp);
 
 QTextCodec *codecForName(const char *name);
+
+bool charEncodable(const QChar &ch, const QTextCodec *codec);
+
+uint codePageFromRegistry();
 
 } // namespace Util
 

@@ -51,6 +51,7 @@ public slots:
 
   void setAlwaysInsertsSpaces(bool t);
   void setSmartInsertsSpaces(bool t);
+  void setSpacePolicyEncoding(const QString &v);
 
   void setScenarioSignature(long v);
   void setNameSignature(long v);

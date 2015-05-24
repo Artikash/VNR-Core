@@ -50,6 +50,7 @@ void EmbedDriver::setExtractsAllTexts(bool t) { if (d_->engine) d_->engine->sett
 
 void EmbedDriver::setAlwaysInsertsSpaces(bool t) { if (d_->engine) d_->engine->settings()->alwaysInsertsSpaces = t; }
 void EmbedDriver::setSmartInsertsSpaces(bool t) { if (d_->engine) d_->engine->settings()->smartInsertsSpaces = t; }
+void EmbedDriver::setSpacePolicyEncoding(const QString &v) { if (d_->engine) d_->engine->setSpacePolicyEncoding(v); }
 
 void EmbedDriver::setScenarioSignature(long v) { if (d_->engine) d_->engine->settings()->scenarioSignature = v; }
 void EmbedDriver::setNameSignature(long v) { if (d_->engine) d_->engine->settings()->nameSignature = v; }

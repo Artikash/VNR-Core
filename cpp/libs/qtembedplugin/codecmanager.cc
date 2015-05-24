@@ -10,9 +10,37 @@
 
 //#define DEBUG "embedplugin::codecmanager"
 //#include "sakurakit/skdebug.h"
-#include <QDebug>
+//#include <QDebug>
 
 using namespace boost::assign;
+
+// Helper functions
+namespace { // unnamed
+
+// Return if two code names are equal. Normalize to lowercase and replace '_' by '-'.
+inline char _normalize_codec_char(char ch)
+{
+  if (ch == '_')
+    ch = '-';
+  else if ('A' <= ch && ch <= 'Z')
+    ch += 'a' - 'A';
+  return ch;
+}
+
+inline bool eqcodec(const char *x, const char *y)
+{
+  if (x == y)
+    return true;
+  if (!x || !y)
+    return false;
+  for (;; x++, y++) {
+    if (_normalize_codec_char(*x) != _normalize_codec_char(*y))
+      return false;
+    if (*x == 0)
+      return true;
+  }
+}
+} // unnamed namespace
 
 QTEMBEDPLUGIN_BEGIN_NAMESPACE
 
@@ -37,7 +65,7 @@ public:
     if (plugin)
       for (int pluginIndex = 0; pluginIndex < CodecPluginCount; pluginIndex++)
         BOOST_FOREACH (const char *key, pluginNames[pluginIndex])
-          if (qstricmp(name, key) == 0) // case-insensitive
+          if (eqcodec(name, key)) // case-insensitive
             if (QObject *p = plugin->loadPlugin(pluginFiles[pluginIndex]))
               return static_cast<QTextCodecPlugin *>(p)->createForName(key);
     return nullptr;
