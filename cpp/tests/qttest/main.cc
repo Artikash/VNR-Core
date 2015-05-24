@@ -16,7 +16,9 @@ int main()
 {
   QString t = QString::fromStdWString(L"\u76ee");
   //QString t = QString::fromStdWString(L"\u899a");
-  QTextCodec *c = QTextCodec::codecForName("euc-kr");
+  //QTextCodec *c = QTextCodec::codecForName("euc-kr");
+  QTextCodec *c = QTextCodec::codecForName("latin1");
+  qDebug() << c;
   //QTextEncoder *e = c->makeEncoder(QTextCodec::ConvertInvalidToNull);
   QTextEncoder *e = c->makeEncoder();
   QByteArray b = e->fromUnicode(t);

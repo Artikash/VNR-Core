@@ -45,8 +45,9 @@ QT      -= gui
 
 #LIBS    += -lkernel32
 #LIBS    += -luser32 -lpsapi
-LIBS    += -lgdi32   # needed by game engines
-LIBS    += -lshell32 # needed by get system path
+#LIBS    += -ladvapi32   # needed by RegQueryValueEx
+LIBS    += -lgdi32      # needed by game engines
+LIBS    += -lshell32    # needed by get system path
 
 ## Sources
 

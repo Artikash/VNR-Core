@@ -128,7 +128,7 @@ bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int buf
     repl = transformText(e.text, e.hash);
   else if (enabled && h && sz) {
     QByteArray data((const char *)buffer, sz * 2);
-    repl = manager->decodeText(data, TextRole);
+    repl = manager->decodeText(data);
     manager->addEntry(data, repl, h, anchor, TextRole);
   }
 
@@ -182,7 +182,7 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
         else if (enabled && h && sz) {
           QByteArray data((const char *)buffer, sz * 2);
           QString t = QString::fromWCharArray(buffer, sz);
-          repl = manager->decodeText(data, TextRole);
+          repl = manager->decodeText(data);
           manager->addEntry(data, repl, h, anchor, TextRole);
         }
 
@@ -229,7 +229,7 @@ bool WindowDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferS
       repl = transformText(e.text, e.hash);
     else if (enabled && h && sz) {
       QByteArray data((const char *)buffer, sz * 2);
-      repl = manager->decodeText(data, TextRole);
+      repl = manager->decodeText(data);
       manager->addEntry(data, repl, h, anchor, TextRole);
     }
 
@@ -279,7 +279,7 @@ bool WindowDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSiz
       repl = transformText(e.text, e.hash);
     else if (enabled && h && sz) {
       QByteArray data((const char *)buffer, sz * 2);
-      repl = manager->decodeText(data, TextRole);
+      repl = manager->decodeText(data);
       manager->addEntry(data, repl, h, anchor, TextRole);
     }
 

@@ -83,6 +83,14 @@ if skos.WIN:
     """
     return skpyapi.pycobj_from_lp(hwnd)
 
+  ## Code page ##
+
+  def get_code_page():
+    """
+    @return  int
+    """
+    return skwinapi.GetACP()
+
   ## Path ##
 
   def to_short_path(path):

@@ -49,8 +49,7 @@ public:
 
   // Queries:
 
-  // Buffer is optional. Enable it for performance reason
-  QString decodeText(const QByteArray &data, uint role) const;
+  QString decodeText(const QByteArray &data) const;
 
   const TextEntry &findEntryWithAnchor(ulong anchor) const;
   QString findTranslationWithHash(qint64 hash) const;

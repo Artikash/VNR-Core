@@ -44,6 +44,7 @@ public:
 
   bool isEmbeddedSpaceAlwaysInserted() const;
   bool isEmbeddedSpaceSmartInserted() const;
+  QString embeddedSpacePolicyEncoding() const;
 
   bool isEmbeddedAllTextsExtracted() const;
   bool isEmbeddedTextEnabled() const;
@@ -79,6 +80,7 @@ public slots:
 
   void setEmbeddedSpaceAlwaysInserted(bool t);
   void setEmbeddedSpaceSmartInserted(bool t);
+  void setEmbeddedSpacePolicyEncoding(const QString &v);
 
   void setEmbeddedAllTextsExtracted(bool t);
   void setEmbeddedTextEnabled(bool t);
@@ -113,6 +115,7 @@ signals:
 
   void embeddedSpaceAlwaysInsertedChanged(bool t);
   void embeddedSpaceSmartInsertedChanged(bool t);
+  void embeddedSpacePolicyEncodingChanged(QString v);
 
   void embeddedAllTextsExtractedChanged(bool t);
   void embeddedTextEnabledChanged(bool t);

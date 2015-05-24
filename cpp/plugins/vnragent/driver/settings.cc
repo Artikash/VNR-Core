@@ -35,6 +35,7 @@ public:
 
   int embeddedTranslationWaitTime;
 
+  QString embeddedSpacePolicyEncoding;
   QString gameEncoding,
           gameFontFamily;
   int gameFontCharSet;
@@ -117,6 +118,7 @@ DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscoding
 
 DEFINE_BOOL_PROPERTY(embeddedSpaceAlwaysInserted, isEmbeddedSpaceAlwaysInserted, setEmbeddedSpaceAlwaysInserted)
 DEFINE_BOOL_PROPERTY(embeddedSpaceSmartInserted, isEmbeddedSpaceSmartInserted, setEmbeddedSpaceSmartInserted)
+DEFINE_STRING_PROPERTY(embeddedSpacePolicyEncoding, embeddedSpacePolicyEncoding, setEmbeddedSpacePolicyEncoding)
 
 DEFINE_BOOL_PROPERTY(embeddedTextEnabled, isEmbeddedTextEnabled, setEmbeddedTextEnabled)
 //DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellableByControl, setEmbeddedTextCancellableByControl)
@@ -139,7 +141,6 @@ void Settings::disable()
   setWindowTextVisible(false);
 
   setEmbeddedTextEnabled(false);
-
 }
 
 bool Settings::isWindowDriverNeeded() const
@@ -192,6 +193,7 @@ void Settings::load(const QString &json)
     , H_embeddedOtherTranscodingEnabled = 19782804
     , H_embeddedSpaceAlwaysInserted = 241397364
     , H_embeddedSpaceSmartInserted = 187266164
+    , H_embeddedSpacePolicyEncoding = 213320263
   };
 
   QVariant data = QxtJSON::parse(json);
@@ -223,6 +225,7 @@ void Settings::load(const QString &json)
 
     case H_embeddedSpaceAlwaysInserted: setEmbeddedSpaceAlwaysInserted(bValue); break;
     case H_embeddedSpaceSmartInserted: setEmbeddedSpaceSmartInserted(bValue); break;
+    case H_embeddedSpacePolicyEncoding: setEmbeddedSpacePolicyEncoding(value); break;
 
     case H_embeddedTextEnabled: setEmbeddedTextEnabled(bValue); break;
     //case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;

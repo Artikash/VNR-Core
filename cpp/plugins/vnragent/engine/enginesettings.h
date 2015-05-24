@@ -12,7 +12,7 @@ public:
      //, detectsControl   // be aware if CTRL is pressed
 
      , alwaysInsertsSpaces  // insert spaces after every character
-     , smartInsertsSpaces   // insert spaces only after undecodable characters
+     , smartInsertsSpaces  // insert spaces after every character
 
      , extractsAllTexts     // send all texts unless not enabled
      , scenarioTextVisible  // display both translation and the original text for scenario
@@ -31,7 +31,6 @@ public:
   // Set all properties to false
   EngineSettings()
     : enabled(false)
-    //, detectsControl(false)
 
     , alwaysInsertsSpaces(false)
     , smartInsertsSpaces(false)

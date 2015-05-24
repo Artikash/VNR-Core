@@ -55,11 +55,16 @@ public:
     refreshTextsTimer_->setInterval(RefreshInterval);
     q->connect(refreshTextsTimer_, SIGNAL(timeout()), SLOT(sendDirtyTexts()));
 
-    const char *enc = Util::encodingForCodePage(::GetACP());
+    //auto cp = ::GetACP();
+    auto cp = Util::codePageFromRegistry();
+    if (!cp)
+      cp = ::GetACP();
+    const char *enc = Util::encodingForCodePage(cp);
     if (!enc)
       enc = ENC_SJIS;
     systemEncoding = enc;
     systemCodec = Util::codecForName(enc);
+    DOUT("codepage =" << cp << ", encoding =" << enc);
   }
 
   bool isTranscodingNeeded() const
@@ -80,6 +85,17 @@ public:
     touchTexts();
   }
 
+  QString decodeText(const QByteArray &data) const
+  {
+    const wchar_t *ws = (LPCWSTR)data.constData();
+    const int wsSize = data.size() / 2;
+    if (!wsSize || !isTranscodingNeeded()) //|| role == Window::MenuTextRole
+      return QString::fromWCharArray(ws, wsSize);
+    return encodingCodec->toUnicode(
+        systemCodec->fromUnicode(
+            QString::fromWCharArray(ws, wsSize)));
+  }
+
   void invalidateTexts()
   {
     if (entries.isEmpty())
@@ -87,19 +103,8 @@ public:
     //foreach (auto &e, entries)
     //  e.text = decodeText(e.data);
     for (auto p = entries.begin(); p != entries.end(); ++p)
-      p->text = decodeText(p->data, p->role);
+      p->text = decodeText(p->data);
     clearTranslation();
-  }
-
-  QString decodeText(const QByteArray &data, uint role) const
-  {
-    const wchar_t *ws = (LPCWSTR)data.constData();
-    const int wsSize = data.size() / 2;
-    if (!wsSize || role == Window::MenuTextRole || !isTranscodingNeeded())
-      return QString::fromWCharArray(ws, wsSize);
-    return encodingCodec->toUnicode(
-        systemCodec->fromUnicode(
-            QString::fromWCharArray(ws, wsSize)));
   }
 };
 
@@ -170,8 +175,8 @@ void WindowManager::setEncodingEnabled(bool t)
 
 // - Queries -
 
-QString WindowManager::decodeText(const QByteArray &data, uint role) const
-{ return d_->decodeText(data, role); }
+QString WindowManager::decodeText(const QByteArray &data) const
+{ return d_->decodeText(data); }
 
 const WindowManager::TextEntry &WindowManager::findEntryWithAnchor(ulong anchor) const
 {

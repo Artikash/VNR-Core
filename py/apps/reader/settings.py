@@ -2225,6 +2225,14 @@ class Settings(QSettings):
       self.setValue('EmbeddedSpaceSmartInserted', value)
       self.embeddedSpaceSmartInsertedChanged.emit(value)
 
+  embeddedSpacePolicyEncodingChanged = Signal(unicode)
+  def embeddedSpacePolicyEncoding(self):
+    return self.value('EmbeddedSpacePolicyEncoding')
+  def setEmbeddedSpacePolicyEncoding(self, value):
+    if value != self.embeddedSpacePolicyEncoding():
+      self.setValue('EmbeddedSpacePolicyEncoding', value)
+      self.embeddedSpacePolicyEncodingChanged.emit(value)
+
   embeddedFontEnabledChanged = Signal(bool)
   def isEmbeddedFontEnabled(self):
     return to_bool(self.value('EmbeddedFontEnabled'))
