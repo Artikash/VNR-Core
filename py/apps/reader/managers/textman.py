@@ -1098,7 +1098,7 @@ class TextManager(QObject):
         sub = d.querySharedTranslation(hash=hash, text=text)
       if not sub:
         async = role == OTHER_THREAD_TYPE
-        sub, lang, provider = trman.manager().translateOne(text, self.gameLanguage,
+        sub, lang, provider = trman.manager().translateOne(text, d.gameLanguage,
             async=async, online=True, mark=False)
       if sub:
         if d.language.startswith('zh'):
