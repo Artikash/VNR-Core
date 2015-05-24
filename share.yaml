@@ -465,6 +465,8 @@ languages:
   - ar
   - ko
   - th
+  reversed: # right-to-left
+  - ar
   ocr: # The order is consistent with modiocr's definition
   - ja  # 1041: Japanese - Japan
   - zhs # 2052: Chinese (Simplified) - People's Republic of China

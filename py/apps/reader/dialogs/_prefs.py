@@ -8877,13 +8877,13 @@ class _EngineTab(object):
     layout.addLayout(row)
 
     layout.addWidget(QtWidgets.QLabel(my.tr("Insert spaces between overlapped characters") + ":"))
+    layout.addWidget(self.disableInsertsSpaceButton)
+    layout.addWidget(self.alwaysInsertsSpaceButton)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.smartInsertsSpaceButton)
     row.addWidget(self.spaceEncodingEdit)
     row.addStretch() # use a row to patch stretch
     layout.addLayout(row)
-    layout.addWidget(self.alwaysInsertsSpaceButton)
-    layout.addWidget(self.disableInsertsSpaceButton)
 
     ret = QtWidgets.QGroupBox(my.tr("Font options"))
     ret.setLayout(layout)

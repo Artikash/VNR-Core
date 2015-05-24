@@ -390,6 +390,9 @@ def is_kanji_language(lang): return lang in KANJI_LANGUAGE_SET
 
 OCR_LANGUAGES = SHARE_YAML['languages']['ocr']  # [str lang]
 
+REVERSED_LANGUAGES = SHARE_YAML['languages']['reversed']  # [str lang]
+def is_reversed_language(lang): return lang in REVERSED_LANGUAGES
+
 LANGUAGE_SET = frozenset(LANGUAGES)
 def is_valid_language(lang):
   return lang in LANGUAGE_SET
