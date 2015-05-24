@@ -442,9 +442,10 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
-    if ss_version <= 1432483464:
+    if ss_version <= 1432484120:
       ss.remove('EmbeddedScenarioText') # reset scenario text visibility
       ss.remove('WindowTranscoding') # disable transcoding by default
+      ss.remove('EmbeddedScenarioText') # enable charset detection by default
     else:
       return
     if ss_version <= 1432306894:

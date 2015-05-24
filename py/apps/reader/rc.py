@@ -480,7 +480,7 @@ def wiki_url(name, language=''):
   @return  str  URL
   """
   topic = name.replace(' ', '_')
-  lang2 = 'zh' if language and language[:2].startswith('zh') else 'en'
+  lang2 = 'zh' if language and language.startswith('zh') else 'en'
   locale = 'zh_CN' if language == 'zhs' else 'zh_TW' if language == 'zht' else lang2
   #import features
   #host = '210.175.54.32' if features.MAINLAND_CHINA else 'sakuradite.com'

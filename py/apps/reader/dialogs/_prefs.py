@@ -8658,7 +8658,8 @@ class _EngineTab(object):
     if 'zh' not in blans:
       layout.addWidget(self.chineseGroup)
 
-    layout.addWidget(self.infoEdit)
+    #layout.addWidget(self.infoEdit) # help information removed for being outdated
+
     layout.addStretch()
     q.setLayout(layout)
 
@@ -8715,19 +8716,24 @@ class _EngineTab(object):
 
   @memoizedproperty
   def agentInfoLabel(self):
-    ret = QtWidgets.QLabel('\n'.join((
-      my.tr("Changing the text extraction method requires restarting the game."),
-      my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
-      my.tr("The current supported game engines are: {0}").format(', '.join(config.EMBEDDED_GAME_ENGINES)),
-    )))
-    skqss.class_(ret, 'text-error')
-    ret.setWordWrap(True)
+    wiki = 'VNR/Embedded Translation'
+    link = '<a href="#">%s</a>' % wiki
+    ret = QtWidgets.QLabel(my.tr("See {0}").format(link))
+    ret.setToolTip(wiki)
+    import main
+    ret.linkActivated.connect(lambda: main.manager().openWiki(wiki))
+    return ret
+
+    #ret = QtWidgets.QLabel('\n'.join((
+    #  my.tr("Changing the text extraction method requires restarting the game."),
+    #  my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
+    #  my.tr("The current supported game engines are: {0}").format(', '.join(config.EMBEDDED_GAME_ENGINES)),
+    #)))
+    #skqss.class_(ret, 'text-error')
+    #ret.setWordWrap(True)
     #ret.setOpenExternalLinks(True)
 
     #import main
-    #m = main.manager()
-    #ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
-    return ret
 
   ## Chinese ##
 
@@ -8917,24 +8923,28 @@ class _EngineTab(object):
     ret = QtWidgets.QCheckBox(my.tr("Enforce font character set"))
     ret.setToolTip(my.tr("Character set hint for selecting fonts"))
     ss = settings.global_()
-    ret.setChecked(ss.isEmbeddedCharSetEnabled())
-    ret.toggled.connect(ss.setEmbeddedCharSetEnabled)
+    ret.setChecked(ss.isEmbeddedFontCharSetEnabled())
+    ret.toggled.connect(ss.setEmbeddedFontCharSetEnabled)
     return ret
 
   @memoizedproperty
   def charSetEdit(self):
-    L = defs.gameagent_charsets()
+    L = list(defs.gameagent_charsets())
+    L.insert(0, 0) # 0 by default
+    items = map(i18n.win_charset_desc, L)
+    items[0] = "(%s)" % tr_("Automatic")
+
     ss = settings.global_()
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
-    ret.addItems(map(i18n.win_charset_desc, L))
+    ret.addItems(items)
     ret.setMaxVisibleItems(ret.count())
-    try: ret.setCurrentIndex(L.index(ss.embeddedCharSet()))
+    try: ret.setCurrentIndex(L.index(ss.embeddedFontCharSet()))
     except ValueError: pass
     ret.currentIndexChanged[int].connect(lambda index:
-        ss.setEmbeddedCharSet(L[index]))
-    ret.setEnabled(ss.isEmbeddedCharSetEnabled())
-    ss.embeddedCharSetEnabledChanged.connect(ret.setEnabled)
+        ss.setEmbeddedFontCharSet(L[index]))
+    ret.setEnabled(ss.isEmbeddedFontCharSetEnabled())
+    ss.embeddedFontCharSetEnabledChanged.connect(ret.setEnabled)
     return ret
 
   def _refreshFontFamily(self):
@@ -8992,7 +9002,7 @@ class _EngineTab(object):
     L = [it for it in config.ENCODINGS if it not in ('utf-8', 'utf-16')]
     L.insert(0, '') # use the first one as the default
     items = map(i18n.encoding_desc, L)
-    items[0] = "(%s)" % tr_("System default")
+    items[0] = "(%s)" % tr_("Automatic")
 
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)

@@ -2,7 +2,6 @@
 # tray.py
 # 10/8/2012 jichi
 
-from functools import partial
 from PySide.QtCore import QCoreApplication, QObject
 from Qt5.QtWidgets import QMenu, QSystemTrayIcon, QWidget
 from sakurakit import skos
@@ -61,7 +60,7 @@ class _TrayIcon:
     menu.addSeparator()
     menu.addAction(tr_("Check for updates")).triggered.connect(m.checkUpdate)
     menu.addAction(tr_("About")).triggered.connect(m.about)
-    menu.addAction(tr_("Wiki")).triggered.connect(partial(m.openWiki, 'VNR'))
+    menu.addAction(tr_("Wiki")).triggered.connect(lambda: m.openWiki('VNR'))
     menu.addAction(tr_("Credits")).triggered.connect(m.showCredits)
     menu.addSeparator()
     menu.addAction(tr_("Restart")).triggered.connect(m.restart)

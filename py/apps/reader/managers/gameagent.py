@@ -183,6 +183,9 @@ _SETTINGS_DICT = {
   'embeddedSpaceAlwaysInserted': 'isEmbeddedSpaceAlwaysInserted',
   'embeddedSpaceSmartInserted': 'isEmbeddedSpaceSmartInserted',
   'embeddedSpacePolicyEncoding': 'embeddedSpacePolicyEncoding',
+
+  'embeddedFontCharSetEnabled': 'isEmbeddedFontCharSetEnabled',
+  'embeddedFontCharSet': 'embeddedFontCharSet',
 }
 
 @Q_Q
@@ -217,9 +220,6 @@ class _GameAgent(object):
 
     for sig in ss.embeddedFontEnabledChanged, ss.embeddedFontFamilyChanged:
       sig.connect(self._sendFontSettings)
-
-    for sig in ss.embeddedCharSetEnabledChanged, ss.embeddedCharSetChanged:
-      sig.connect(self._sendCharSetSettings)
 
     import textman
     self.textExtractionEnabled = textman.manager().isEnabled()
@@ -280,7 +280,7 @@ class _GameAgent(object):
     data['nameSignature'] = self.nameSignature
 
     data['gameFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
-    data['gameFontCharSet'] = ss.embeddedCharSet() if ss.isEmbeddedCharSetEnabled() else 0
+    #data['gameFontCharSet'] = ss.embeddedFontCharSet() if ss.isEmbeddedFontCharSetEnabled() else 0
     self.rpc.setAgentSettings(data)
 
   def sendSetting(self, k, v):
@@ -293,10 +293,10 @@ class _GameAgent(object):
     data = {'gameFontFamily':v}
     self.rpc.setAgentSettings(data)
 
-  def _sendCharSetSettings(self):
-    ss = settings.global_()
-    v = ss.embeddedCharSet() if ss.isEmbeddedCharSetEnabled() else 0
-    data = {'gameFontCharSet':v}
-    self.rpc.setAgentSettings(data)
+  #def _sendCharSetSettings(self):
+  #  ss = settings.global_()
+  #  v = ss.embeddedFontCharSet() if ss.isEmbeddedFontCharSetEnabled() else 0
+  #  data = {'gameFontCharSet':v}
+  #  self.rpc.setAgentSettings(data)
 
 # EOF

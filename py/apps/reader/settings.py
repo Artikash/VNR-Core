@@ -2249,21 +2249,21 @@ class Settings(QSettings):
       self.setValue('EmbeddedFontFamily', value)
       self.embeddedFontFamilyChanged.emit(value)
 
-  embeddedCharSetEnabledChanged = Signal(bool)
-  def isEmbeddedCharSetEnabled(self):
-    return to_bool(self.value('EmbeddedCharSetEnabled'))
-  def setEmbeddedCharSetEnabled(self, value):
-    if value != self.isEmbeddedCharSetEnabled():
-      self.setValue('EmbeddedCharSetEnabled', value)
-      self.embeddedCharSetEnabledChanged.emit(value)
+  embeddedFontCharSetEnabledChanged = Signal(bool)
+  def isEmbeddedFontCharSetEnabled(self):
+    return to_bool(self.value('EmbeddedFontCharSetEnabled', True))
+  def setEmbeddedFontCharSetEnabled(self, value):
+    if value != self.isEmbeddedFontCharSetEnabled():
+      self.setValue('EmbeddedFontCharSetEnabled', value)
+      self.embeddedFontCharSetEnabledChanged.emit(value)
 
-  embeddedCharSetChanged = Signal(int)
-  def embeddedCharSet(self):
-    return to_int(self.value('EmbeddedCharSet', 0x80)) # 0x80 is sjis character set
-  def setEmbeddedCharSet(self, value):
-    if value != self.embeddedCharSet():
-      self.setValue('EmbeddedCharSet', value)
-      self.embeddedCharSetChanged.emit(value)
+  embeddedFontCharSetChanged = Signal(int)
+  def embeddedFontCharSet(self):
+    return to_int(self.value('EmbeddedFontCharSet'))
+  def setEmbeddedFontCharSet(self, value):
+    if value != self.embeddedFontCharSet():
+      self.setValue('EmbeddedFontCharSet', value)
+      self.embeddedFontCharSetChanged.emit(value)
 
   #windowHookEnabledChanged = Signal(bool)
   #def isWindowHookEnabled(self):

@@ -23,6 +23,7 @@ public slots:
   void setEncoding(const QString &v);
   void setFontFamily(const QString &v);
   void setFontCharSet(int v);
+  void setFontCharSetEnabled(bool t);
 
 private slots:
   void refresh();

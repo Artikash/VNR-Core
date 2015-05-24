@@ -41,7 +41,16 @@ HijackDriver::~HijackDriver() { delete d_; }
 // Properties
 
 void HijackDriver::setEncoding(const QString &v)
-{ d_->helper->setEncoding(v); }
+{
+  d_->helper->setEncoding(v);
+  DOUT(v);
+}
+
+void HijackDriver::setFontCharSetEnabled(bool t)
+{
+  d_->helper->settings()->fontCharSetEnabled = t;
+  DOUT(t);
+}
 
 void HijackDriver::setFontCharSet(int v)
 {
