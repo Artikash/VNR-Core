@@ -37,6 +37,7 @@ public:
 
   QString gameEncoding,
           gameFontFamily;
+  int gameFontCharSet;
 
   long scenarioSignature,
        nameSignature;
@@ -64,6 +65,7 @@ public:
      , embeddedAllTextsExtracted(false)
      , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
+     , gameFontCharSet(0)
      , scenarioSignature(0)
      , nameSignature(0)
   {}
@@ -122,6 +124,7 @@ DEFINE_BOOL_PROPERTY(embeddedAllTextsExtracted, isEmbeddedAllTextsExtracted, set
 
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
+DEFINE_INT_PROPERTY(gameFontCharSet, gameFontCharSet, setGameFontCharSet)
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 DEFINE_STRING_PROPERTY(gameFontFamily, gameFontFamily, setGameFontFamily)
 
@@ -163,6 +166,7 @@ void Settings::load(const QString &json)
   enum {
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
+    , H_gameFontCharSet = 248710340
     , H_gameFontFamily = 146246649
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
@@ -231,6 +235,7 @@ void Settings::load(const QString &json)
 
     case H_gameEncoding: setGameEncoding(value); break;
     case H_gameFontFamily: setGameFontFamily(value); break;
+    case H_gameFontCharSet: setGameFontCharSet(value.toInt()); break;
 
     case H_debug:
       if (bValue)

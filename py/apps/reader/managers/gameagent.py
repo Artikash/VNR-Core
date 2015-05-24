@@ -215,7 +215,10 @@ class _GameAgent(object):
       , k))
 
     for sig in ss.embeddedFontEnabledChanged, ss.embeddedFontFamilyChanged:
-      sig.connect(self.sendFontSettings)
+      sig.connect(self._sendFontSettings)
+
+    for sig in ss.embeddedCharSetEnabledChanged, ss.embeddedCharSetChanged:
+      sig.connect(self._sendCharSetSettings)
 
     import textman
     self.textExtractionEnabled = textman.manager().isEnabled()
@@ -275,18 +278,24 @@ class _GameAgent(object):
     data['scenarioSignature'] = self.scenarioSignature
     data['nameSignature'] = self.nameSignature
 
-    ff = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
-    data['gameFontFamily'] = ff
+    data['gameFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
+    data['gameFontCharSet'] = ss.embeddedCharSet() if ss.isEmbeddedCharSetEnabled() else 0
     self.rpc.setAgentSettings(data)
 
   def sendSetting(self, k, v):
     data = {k:v}
     self.rpc.setAgentSettings(data)
 
-  def sendFontSettings(self):
+  def _sendFontSettings(self):
     ss = settings.global_()
-    ff = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
-    data = {'gameFontFamily':ff}
+    v = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
+    data = {'gameFontFamily':v}
+    self.rpc.setAgentSettings(data)
+
+  def _sendCharSetSettings(self):
+    ss = settings.global_()
+    v = ss.embeddedCharSet() if ss.isEmbeddedCharSetEnabled() else 0
+    data = {'gameFontCharSet':v}
     self.rpc.setAgentSettings(data)
 
 # EOF

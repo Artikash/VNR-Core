@@ -47,6 +47,7 @@ class sakurakit(QObject):
       self.tr("Malaysian"),
       self.tr("Indonesian"),
       self.tr("Arabic"),
+      self.tr("Hebrew"),
 
       self.tr("Czech"),
       self.tr("Danish"),
@@ -97,6 +98,8 @@ class sakurakit(QObject):
       self.tr("sv"),
       self.tr("tr"),
       self.tr("uk"),
+
+      self.tr("he"), # Hebrew
 
       # Actions
       self.tr("Show {0}"),
@@ -477,6 +480,8 @@ class sakurakit(QObject):
       self.tr("Found"),
       self.tr("Not found"),
       self.tr("Not specified"), self.tr("not specified"),
+
+      self.tr("System default"),
 
       self.tr("Invalid"),
 

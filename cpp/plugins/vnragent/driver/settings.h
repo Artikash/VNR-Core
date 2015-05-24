@@ -52,6 +52,7 @@ public:
 
   QString gameEncoding() const;
   QString gameFontFamily() const;
+  int gameFontCharSet() const;
 
   long scenarioSignature() const;
   long nameSignature() const;
@@ -86,6 +87,7 @@ public slots:
 
   void setGameEncoding(const QString &v);
   void setGameFontFamily(const QString &v);
+  void setGameFontCharSet(int v);
 
   void setScenarioSignature(long v);
   void setNameSignature(long v);
@@ -119,6 +121,7 @@ signals:
 
   void gameEncodingChanged(QString v);
   void gameFontFamilyChanged(QString v);
+  void gameFontCharSetChanged(int v);
   void scenarioSignatureChanged(long v);
   void nameSignatureChanged(long v);
 };

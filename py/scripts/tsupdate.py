@@ -71,6 +71,8 @@ ESCAPE = frozenset((
   'tr',
   'uk',
 
+  'he', # Hebrew
+
   'UI',
   'Asc', 'Desc',
   'Python', 'BBCode', 'Javascript',

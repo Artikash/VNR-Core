@@ -237,4 +237,27 @@ def threadtype(name):
       CUI_THREAD_TYPE if name in config.OPT_GUI_TEXT_THREADS or name in config.NON_GUI_TEXT_THREADS or name.startswith("mono_") else
       ENGINE_THREAD_TYPE)
 
+GAMEAGENT_CHARSETS = None
+def gameagent_charsets():
+  global GAMEAGENT_CHARSETS
+  if not GAMEAGENT_CHARSETS:
+    from windefs import winlocale
+    GAMEAGENT_CHARSETS = (
+      winlocale.SHIFTJIS_CHARSET,     # ja
+      winlocale.GB2312_CHARSET,       # zhs
+      winlocale.CHINESEBIG5_CHARSET,  # zht
+      winlocale.HANGUL_CHARSET,       # ko
+      winlocale.VIETNAMESE_CHARSET,   # vi
+      winlocale.THAI_CHARSET,         # th
+      winlocale.GREEK_CHARSET,        # el
+      winlocale.ARABIC_CHARSET,       # ar
+      winlocale.HEBREW_CHARSET,       # he
+      winlocale.TURKISH_CHARSET,      # tr
+      winlocale.EASTEUROPE_CHARSET,
+      winlocale.BALTIC_CHARSET,
+      winlocale.RUSSIAN_CHARSET,      # cyril
+      winlocale.DEFAULT_CHARSET,
+    )
+  return GAMEAGENT_CHARSETS
+
 # EOF

@@ -2241,6 +2241,22 @@ class Settings(QSettings):
       self.setValue('EmbeddedFontFamily', value)
       self.embeddedFontFamilyChanged.emit(value)
 
+  embeddedCharSetEnabledChanged = Signal(bool)
+  def isEmbeddedCharSetEnabled(self):
+    return to_bool(self.value('EmbeddedCharSetEnabled'))
+  def setEmbeddedCharSetEnabled(self, value):
+    if value != self.isEmbeddedCharSetEnabled():
+      self.setValue('EmbeddedCharSetEnabled', value)
+      self.embeddedCharSetEnabledChanged.emit(value)
+
+  embeddedCharSetChanged = Signal(int)
+  def embeddedCharSet(self):
+    return to_int(self.value('EmbeddedCharSet', 0x80)) # 0x80 is sjis character set
+  def setEmbeddedCharSet(self, value):
+    if value != self.embeddedCharSet():
+      self.setValue('EmbeddedCharSet', value)
+      self.embeddedCharSetChanged.emit(value)
+
   #windowHookEnabledChanged = Signal(bool)
   #def isWindowHookEnabled(self):
   #  return to_bool(self.value('WindowHookEnabled')) # disabled by default
