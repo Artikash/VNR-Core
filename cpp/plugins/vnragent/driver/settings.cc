@@ -33,12 +33,14 @@ public:
      , embeddedAllTextsExtracted
      ;
 
-  int embeddedTranslationWaitTime;
+  bool embeddedFontCharSetEnabled;
+  int embeddedFontCharSet;
 
   QString embeddedSpacePolicyEncoding;
   QString gameEncoding,
           gameFontFamily;
-  int gameFontCharSet;
+
+  int embeddedTranslationWaitTime;
 
   long scenarioSignature,
        nameSignature;
@@ -64,9 +66,10 @@ public:
      , embeddedTextEnabled(false)
      //, embeddedTextCancellableByControl(false)
      , embeddedAllTextsExtracted(false)
-     , embeddedTranslationWaitTime(1000) // 1 second
+     , embeddedFontCharSetEnabled(false)
+     , embeddedFontCharSet(0)
      , gameEncoding("shift-jis")
-     , gameFontCharSet(0)
+     , embeddedTranslationWaitTime(1000) // 1 second
      , scenarioSignature(0)
      , nameSignature(0)
   {}
@@ -126,7 +129,9 @@ DEFINE_BOOL_PROPERTY(embeddedAllTextsExtracted, isEmbeddedAllTextsExtracted, set
 
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
-DEFINE_INT_PROPERTY(gameFontCharSet, gameFontCharSet, setGameFontCharSet)
+DEFINE_BOOL_PROPERTY(embeddedFontCharSetEnabled, isEmbeddedFontCharSetEnabled, setEmbeddedFontCharSetEnabled)
+DEFINE_INT_PROPERTY(embeddedFontCharSet, embeddedFontCharSet, setEmbeddedFontCharSet)
+
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 DEFINE_STRING_PROPERTY(gameFontFamily, gameFontFamily, setGameFontFamily)
 
@@ -167,8 +172,9 @@ void Settings::load(const QString &json)
   enum {
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
-    , H_gameFontCharSet = 248710340
     , H_gameFontFamily = 146246649
+    , H_embeddedFontCharSet = 235985668
+    , H_embeddedFontCharSetEnabled = 173862964
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
     //, H_embeddedTextCancellableByControl = 96153884
@@ -236,9 +242,10 @@ void Settings::load(const QString &json)
     case H_scenarioSignature: setScenarioSignature(value.toLong()); break;
     case H_nameSignature: setNameSignature(value.toLong()); break;
 
+    case H_embeddedFontCharSet: setEmbeddedFontCharSet(value.toInt()); break;
+    case H_embeddedFontCharSetEnabled: setEmbeddedFontCharSetEnabled(bValue); break;
     case H_gameEncoding: setGameEncoding(value); break;
     case H_gameFontFamily: setGameFontFamily(value); break;
-    case H_gameFontCharSet: setGameFontCharSet(value.toInt()); break;
 
     case H_debug:
       if (bValue)

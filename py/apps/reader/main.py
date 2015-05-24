@@ -2143,7 +2143,7 @@ class MainObject(QObject):
   def openWiki(self, text, language=''):
     """
     @param  text  unicode
-    @param* language  unicode
+    @param* language  str
     """
     if not language:
       language = self.__d.dataManager.user().language

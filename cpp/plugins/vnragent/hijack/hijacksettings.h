@@ -9,6 +9,7 @@ class HijackSettings
 public:
   QString fontFamily; // font face
   quint8 fontCharSet; // font character set
+  bool fontCharSetEnabled; // whether modify font char set
 
   HijackSettings() : fontCharSet(0) {}
 };

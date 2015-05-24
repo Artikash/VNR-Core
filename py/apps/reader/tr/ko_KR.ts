@@ -193,7 +193,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>기본 색상 복원</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8745"/>
+        <location filename="dialogs/_prefs.py" line="8749"/>
         <source>Preferred Chinese characters</source>
         <translation>중국한자 우선</translation>
     </message>
@@ -203,7 +203,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>중국어 간체 번역문을 중국어 번체로 변환</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8955"/>
+        <location filename="dialogs/_prefs.py" line="4762"/>
         <source>like this</source>
         <translation>예시</translation>
     </message>
@@ -2935,22 +2935,22 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>이 게임은 반복제거를 사용해야 할 필요가 있습니다</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8702"/>
+        <location filename="dialogs/_prefs.py" line="8703"/>
         <source>Preferred game text extraction method</source>
         <translation>게임원문 추출방법 선택</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8711"/>
+        <location filename="dialogs/_prefs.py" line="8712"/>
         <source>Use VNR&apos;s built-in hook instead of ITH if possible</source>
         <translation>가능하면 ITH 대신 VNR 내장 후커 사용</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8719"/>
         <source>Changing the text extraction method requires restarting the game.</source>
-        <translation>텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
+        <translation type="obsolete">텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8802"/>
+        <location filename="dialogs/_prefs.py" line="8806"/>
         <source>Translation wait time</source>
         <translation>번역 대기시간</translation>
     </message>
@@ -2960,7 +2960,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">내장 텍스트 설정</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8835"/>
+        <location filename="dialogs/_prefs.py" line="8839"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>대기시간이 클수록 번역이 느릴때 게임도 같이 느려질겁니다.</translation>
     </message>
@@ -2970,7 +2970,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9027"/>
+        <location filename="dialogs/_prefs.py" line="9031"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -3075,12 +3075,12 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
     <message>
         <location filename="dialogs/_prefs.py" line="8720"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
-        <translation>이 기능은 현재 개발중입니다. ITH의 일부 게임만을 지원합니다.</translation>
+        <translation type="obsolete">이 기능은 현재 개발중입니다. ITH의 일부 게임만을 지원합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8721"/>
         <source>The current supported game engines are: {0}</source>
-        <translation>현재 지원하는 게임 엔진은:{0}</translation>
+        <translation type="obsolete">현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
         <location filename="managers/gameagent.py" line="270"/>
@@ -3612,7 +3612,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation type="obsolete">내장 번역에서는 중국어 간체를 중국어 번체나 일본어 간지로 변환합니다. 적용하지 않으면 중국어가 물음표로 표시 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8754"/>
+        <location filename="dialogs/_prefs.py" line="8758"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>중국어 번체나 일본어 간지 사용</translation>
     </message>
@@ -4684,52 +4684,52 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8954"/>
+        <location filename="dialogs/_prefs.py" line="8961"/>
         <source>Insert spaces after every character</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8969"/>
+        <location filename="dialogs/_prefs.py" line="8973"/>
         <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8807"/>
+        <location filename="dialogs/_prefs.py" line="8811"/>
         <source>Translation timeout options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8741"/>
+        <location filename="dialogs/_prefs.py" line="8745"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8836"/>
+        <location filename="dialogs/_prefs.py" line="8840"/>
         <source>You can always press Shift or Control to pause embedding translation and stop slowdown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8882"/>
+        <location filename="dialogs/_prefs.py" line="8886"/>
         <source>Font options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8890"/>
+        <location filename="dialogs/_prefs.py" line="8894"/>
         <source>Customize game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8891"/>
+        <location filename="dialogs/_prefs.py" line="8895"/>
         <source>Global font for game text to override default game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8902"/>
+        <location filename="dialogs/_prefs.py" line="8906"/>
         <source>Game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8917"/>
+        <location filename="dialogs/_prefs.py" line="8921"/>
         <source>Enforce font character set</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4739,18 +4739,23 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8918"/>
+        <location filename="dialogs/_prefs.py" line="8922"/>
         <source>Character set hint for selecting fonts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8873"/>
+        <location filename="dialogs/_prefs.py" line="8877"/>
         <source>Insert spaces between overlapped characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8963"/>
+        <location filename="dialogs/_prefs.py" line="8967"/>
         <source>Insert spaces after unencodable characters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8721"/>
+        <source>See {0}</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

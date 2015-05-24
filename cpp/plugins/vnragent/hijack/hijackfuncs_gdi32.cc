@@ -18,19 +18,22 @@
 // See: http://i.watashi.me/archives/1.html
 HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
-  //DOUT("pass");
   HFONT ret = nullptr;
 #ifdef HIJACK_GDI32
+  //DOUT("pass");
   if (auto p = HijackHelper::instance()) {
-    auto charSet = p->systemCharSet();
-    if (lplf && (!charSet || charSet != lplf->lfCharSet) && p->isTranscodingNeeded()) {
+    auto s = p->settings();
+    if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
       LOGFONTA f(*lplf);
-      if (auto v = p->settings()->fontCharSet)
-        charSet = v;
-      if (charSet)
-        f.lfCharSet = charSet;
-      if (!p->settings()->fontFamily.isEmpty())
-         qstrcpy(f.lfFaceName, p->settings()->fontFamily.toLocal8Bit());
+      if (s->fontCharSetEnabled) {
+        auto charSet = s->fontCharSet;
+        if (!charSet)
+          charSet = p->systemCharSet();
+        if (charSet)
+          f.lfCharSet = charSet;
+      }
+      if (!s->fontFamily.isEmpty())
+        qstrcpy(f.lfFaceName, s->fontFamily.toLocal8Bit());
       ret = ::CreateFontIndirectA(&f);
     }
   }
@@ -42,19 +45,22 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 
 HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 {
-  //DOUT("pass");
   HFONT ret = nullptr;
 #ifdef HIJACK_GDI32
+  //DOUT("pass");
   if (auto p = HijackHelper::instance()) {
-    auto charSet = p->systemCharSet();
-    if (lplf && (!charSet || charSet != lplf->lfCharSet) && p->isTranscodingNeeded()) {
+    auto s = p->settings();
+    if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
       LOGFONTW f(*lplf);
-      if (auto v = p->settings()->fontCharSet)
-        charSet = v;
-      if (charSet)
-        f.lfCharSet = charSet;
-      if (!p->settings()->fontFamily.isEmpty())
-        p->settings()->fontFamily.toWCharArray(f.lfFaceName);
+      if (s->fontCharSetEnabled) {
+        auto charSet = s->fontCharSet;
+        if (!charSet)
+          charSet = p->systemCharSet();
+        if (charSet)
+          f.lfCharSet = charSet;
+      }
+      if (!s->fontFamily.isEmpty())
+        s->fontFamily.toWCharArray(f.lfFaceName);
       ret = ::CreateFontIndirectW(&f);
     }
   }
@@ -70,14 +76,17 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
   //DOUT("pass");
   QByteArray ff;
   if (auto p = HijackHelper::instance()) {
-    auto charSet = p->systemCharSet();
-    if ((!charSet || charSet != fdwCharSet) && p->isTranscodingNeeded()) {
-      if (auto v = p->settings()->fontCharSet)
-        charSet = v;
-      if (charSet)
-        fdwCharSet = charSet;
-      if (!p->settings()->fontFamily.isEmpty()) {
-        ff = p->settings()->fontFamily.toLocal8Bit();
+    auto s = p->settings();
+    if (s->fontCharSetEnabled || !s->fontFamily.isEmpty()) {
+      if (s->fontCharSetEnabled) {
+        auto charSet = s->fontCharSet;
+        if (!charSet)
+          charSet = p->systemCharSet();
+        if (charSet)
+          fdwCharSet = charSet;
+      }
+      if (!s->fontFamily.isEmpty()) {
+        ff = s->fontFamily.toLocal8Bit();
         lpszFace = ff.constData();
       }
     }
@@ -91,14 +100,17 @@ HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int
 #ifdef HIJACK_GDI32
   //DOUT("pass");
   if (auto p = HijackHelper::instance()) {
-    auto charSet = p->systemCharSet();
-    if ((!charSet || charSet != fdwCharSet) && p->isTranscodingNeeded()) {
-      if (auto v = p->settings()->fontCharSet)
-        charSet = v;
-      if (charSet)
-        fdwCharSet = charSet;
-      if (!p->settings()->fontFamily.isEmpty())
-        lpszFace = (LPCWSTR)p->settings()->fontFamily.utf16();
+    auto s = p->settings();
+    if (s->fontCharSetEnabled || !s->fontFamily.isEmpty()) {
+      if (s->fontCharSetEnabled) {
+        auto charSet = s->fontCharSet;
+        if (!charSet)
+          charSet = p->systemCharSet();
+        if (charSet)
+          fdwCharSet = charSet;
+      }
+      if (!s->fontFamily.isEmpty())
+        lpszFace = (LPCWSTR)s->fontFamily.utf16();
     }
   }
 #endif // HIJACK_GDI32

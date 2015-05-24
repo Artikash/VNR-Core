@@ -154,8 +154,7 @@ class _TermInput(object):
     skqss.class_(ret, 'btn btn-default')
 
     import main
-    ret.clicked.connect(partial(main.manager().openWiki,
-        "VNR/Shared Dictionary"))
+    ret.clicked.connect(lambda: main.manager().openWiki("VNR/Shared Dictionary"))
     return ret
 
   @memoizedproperty

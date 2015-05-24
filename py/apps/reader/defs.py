@@ -243,6 +243,7 @@ def gameagent_charsets():
   if not GAMEAGENT_CHARSETS:
     from windefs import winlocale
     GAMEAGENT_CHARSETS = (
+      winlocale.DEFAULT_CHARSET,
       winlocale.SHIFTJIS_CHARSET,     # ja
       winlocale.GB2312_CHARSET,       # zhs
       winlocale.CHINESEBIG5_CHARSET,  # zht
@@ -256,7 +257,6 @@ def gameagent_charsets():
       winlocale.EASTEUROPE_CHARSET,
       winlocale.BALTIC_CHARSET,
       winlocale.RUSSIAN_CHARSET,      # cyril
-      winlocale.DEFAULT_CHARSET,
     )
   return GAMEAGENT_CHARSETS
 
