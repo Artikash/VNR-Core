@@ -5,6 +5,7 @@
 #include "engine/engineutil.h"
 #include "detoursutil/detoursutil.h"
 #include "ntinspect/ntinspect.h"
+//#include "windbg/util.h"
 #include <QtCore/QDir>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFileInfo>
@@ -27,12 +28,13 @@ bool existsPath(const QString &path)
 
 Engine::address_type Engine::replaceFunction(address_type old_addr, const_address_type new_addr)
 {
+  //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
 #ifdef VNRAGENT_ENABLE_DETOURS
   return detours::replace(old_addr, new_addr);
 #endif // VNRAGENT_ENABLE_DETOURS
 #ifdef VNRAGENT_ENABLE_MHOOK
   DWORD addr = old_addr;
-  return Mhook_SetHook (&addr, new_addr) ? addr : 0;
+  return Mhook_SetHook(&addr, new_addr) ? addr : 0;
 #endif // VNRAGENT_ENABLE_MHOOK
 }
 
@@ -40,6 +42,7 @@ Engine::address_type Engine::replaceFunction(address_type old_addr, const_addres
 //Engine::address_type Engine::restoreFunction(address_type restore_addr, const_address_type old_addr)
 //{
 //#ifdef VNRAGENT_ENABLE_DETOURS
+//  WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
 //  return detours::restore(restore_addr, old_addr);
 //#endif // VNRAGENT_ENABLE_DETOURS
 //}

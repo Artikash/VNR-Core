@@ -11,6 +11,7 @@
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
+//#include "windbg/util.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
 //#include "mhook/mhook.h" // must after windows.h
@@ -149,16 +150,19 @@ EngineModel::hook_function EngineControllerPrivate::globalDispatchFun;
 
 __declspec(naked) static int newHookFun()
 {
+  // The push order must be consistent with struct HookStack in enginemodel.h
   //static DWORD lastArg2;
   __asm // consistent with struct HookStack
   {
-    pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
-    pushfd              // eflags
-    push esp            // arg1
+    pushfd      // 5/25/2015: need to pushfd twice according to ith, not sure if it is really needed
+    pushad      // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
+    pushfd      // eflags
+    push esp    // arg1
     call EngineControllerPrivate::globalDispatchFun
-    add esp,4           // pop esp
+    add esp,4   // pop esp
     popfd
     popad
+    popfd
     // TODO: instead of jmp, allow modify the stack after calling the function
     jmp EngineControllerPrivate::globalOldHookFun
   }
@@ -224,6 +228,7 @@ bool EngineController::attach()
   //ulong addr = 0x41af90; // レミニセンス function address
   if (addr) {
     DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
+    //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
     d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
     return true;
   }

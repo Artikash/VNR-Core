@@ -44,7 +44,6 @@ struct ScenarioArgument // first argument of the scenario hook
  */
 void System4Engine::hook(HookStack *stack)
 {
-  return;
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
   auto arg = (ScenarioArgument *)stack->args[0]; // arg1

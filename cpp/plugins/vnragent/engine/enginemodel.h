@@ -40,7 +40,7 @@ public:
   // Hijacked function
   struct HookStack
   {
-    ulong eflags;  // pushaf
+    ulong eflags1; // pushaf
     ulong edi,     // pushad
           esi,
           ebp,
@@ -49,8 +49,9 @@ public:
           edx,
           ecx,     // this
           eax;     // 0x24
-    ulong retaddr; // 0x28, &retaddr == esp
-    ulong args[1]; // 0x2c
+    ulong eflags2; // pushaf
+    ulong retaddr; // 0x2c, &retaddr == esp
+    ulong args[1]; // 0x2e
   };
   typedef void (* hook_function)(HookStack *);
   hook_function hookFunction; ///< callback of hooked function
