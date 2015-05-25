@@ -4657,13 +4657,97 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  004EEB6D   CC               INT3
  *  004EEB6E   CC               INT3
  *
+ *  005C70EE   CC               INT3
+ *  005C70EF   CC               INT3
+ *  005C70F0   83EC 18          SUB ESP,0x18
+ *  005C70F3   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  005C70F8   33C4             XOR EAX,ESP
+ *  005C70FA   894424 14        MOV DWORD PTR SS:[ESP+0x14],EAX
+ *  005C70FE   53               PUSH EBX
+ *  005C70FF   8B5C24 20        MOV EBX,DWORD PTR SS:[ESP+0x20]
+ *  005C7103   55               PUSH EBP
+ *  005C7104   8B6C24 2C        MOV EBP,DWORD PTR SS:[ESP+0x2C]
+ *  005C7108   8B45 1C          MOV EAX,DWORD PTR SS:[EBP+0x1C]
+ *  005C710B   56               PUSH ESI
+ *  005C710C   8BF2             MOV ESI,EDX
+ *  005C710E   57               PUSH EDI
+ *  005C710F   8BF9             MOV EDI,ECX
+ *  005C7111   897424 10        MOV DWORD PTR SS:[ESP+0x10],ESI
+ *  005C7115   83F8 44          CMP EAX,0x44
+ *  005C7118   77 7A            JA SHORT .005C7194
+ *  005C711A   0FB680 7C735C00  MOVZX EAX,BYTE PTR DS:[EAX+0x5C737C]
+ *  005C7121   FF2485 60735C00  JMP DWORD PTR DS:[EAX*4+0x5C7360]
+ *  005C7128   8B4B 0C          MOV ECX,DWORD PTR DS:[EBX+0xC]
+ *  005C712B   8B4424 30        MOV EAX,DWORD PTR SS:[ESP+0x30]
+ *  005C712F   C1E9 02          SHR ECX,0x2
+ *  005C7132   3BC1             CMP EAX,ECX
+ *  005C7134   73 5E            JNB SHORT .005C7194
+ *  005C7136   837B 0C 00       CMP DWORD PTR DS:[EBX+0xC],0x0
+ *  005C713A   75 1C            JNZ SHORT .005C7158
+ *  005C713C   33DB             XOR EBX,EBX
+ *  005C713E   5F               POP EDI
+ *  005C713F   893483           MOV DWORD PTR DS:[EBX+EAX*4],ESI
+ *  005C7142   5E               POP ESI
+ *  005C7143   5D               POP EBP
+ *  005C7144   B0 01            MOV AL,0x1
+ *  005C7146   5B               POP EBX
+ *  005C7147   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  005C714B   33CC             XOR ECX,ESP
+ *  005C714D   E8 B3500C00      CALL .0068C205
+ *  005C7152   83C4 18          ADD ESP,0x18
+ *  005C7155   C2 0C00          RETN 0xC
+ *  005C7158   8B5B 08          MOV EBX,DWORD PTR DS:[EBX+0x8]
+ *  005C715B   5F               POP EDI
+ *  005C715C   893483           MOV DWORD PTR DS:[EBX+EAX*4],ESI
+ *  005C715F   5E               POP ESI
+ *  005C7160   5D               POP EBP
+ *  005C7161   B0 01            MOV AL,0x1
+ *  005C7163   5B               POP EBX
+ *  005C7164   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  005C7168   33CC             XOR ECX,ESP
+ *  005C716A   E8 96500C00      CALL .0068C205
+ *  005C716F   83C4 18          ADD ESP,0x18
+ *  005C7172   C2 0C00          RETN 0xC
+ *  005C7175   F3:0F104424 10   MOVSS XMM0,DWORD PTR SS:[ESP+0x10]
+ *  005C717B   51               PUSH ECX
+ *  005C717C   8B4C24 34        MOV ECX,DWORD PTR SS:[ESP+0x34]
+ *  005C7180   8BC3             MOV EAX,EBX
+ *  005C7182   F3:0F110424      MOVSS DWORD PTR SS:[ESP],XMM0
+ *  005C7187   E8 14C7FFFF      CALL .005C38A0
+ *  005C718C   84C0             TEST AL,AL
+ *  005C718E   0F85 B2010000    JNZ .005C7346
+ *  005C7194   5F               POP EDI
+ *  005C7195   5E               POP ESI
+ *  005C7196   5D               POP EBP
+ *  005C7197   32C0             XOR AL,AL
+ *  005C7199   5B               POP EBX
+ *  005C719A   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  005C719E   33CC             XOR ECX,ESP
+ *  005C71A0   E8 60500C00      CALL .0068C205
+ *  005C71A5   83C4 18          ADD ESP,0x18
+ *  005C71A8   C2 0C00          RETN 0xC
+ *  005C71AB   8B4C24 30        MOV ECX,DWORD PTR SS:[ESP+0x30]
+ *  005C71AF   8D5424 10        LEA EDX,DWORD PTR SS:[ESP+0x10]
+ *  005C71B3   52               PUSH EDX
+ *  005C71B4   8BC3             MOV EAX,EBX
+ *  005C71B6   E8 25C7FFFF      CALL .005C38E0
+ *  005C71BB   84C0             TEST AL,AL
+ *  005C71BD  ^74 D5            JE SHORT .005C7194
+ *  005C71BF   8B4C24 10        MOV ECX,DWORD PTR SS:[ESP+0x10]
+ *  005C71C3   8BC7             MOV EAX,EDI
+ *  005C71C5   E8 D6F0FFFF      CALL .005C62A0
+ *  005C71CA   8BD8             MOV EBX,EAX
+ *  005C71CC   8BCE             MOV ECX,ESI
+ *  005C71CE   8BC7             MOV EAX,EDI
+ *  005C71D0   E8 CBF0FFFF      CALL .005C62A0
  *  005C71D5   85DB             TEST EBX,EBX
  *  005C71D7  ^74 BB            JE SHORT .005C7194
  *  005C71D9   85C0             TEST EAX,EAX
  *  005C71DB  ^74 B7            JE SHORT .005C7194
  *  005C71DD   50               PUSH EAX
  *  005C71DE   8BC3             MOV EAX,EBX
- *  005C71E0   E9 482F1400      JMP .0070A12D   ; jichi: here hookpoint#3, text is modified here, text in [[esp]+0x8]], length in [esp]+0xc
+ *  005C71E0   E8 2BCFFFFF      CALL .005C4110  ; original function call
+ *  //005C71E0   E9 482F1400      JMP .0070A12D   ; jichi: here hookpoint#3, text is modified here, text in [[esp]+0x8]], length in [esp]+0xc
  *  005C71E5  ^EB A5            JMP SHORT .005C718C
  *  005C71E7   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
  *  005C71EA   8B4F 0C          MOV ECX,DWORD PTR DS:[EDI+0xC]
@@ -4738,7 +4822,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005B64C7   CC               INT3
  *  005B64C8   CC               INT3
  *
- *  The function get called to paint string:
+ *  The function get called to paint string of names for hookpoint #2, text in arg1:
  *  0050B69E   CC               INT3
  *  0050B69F   CC               INT3
  *  0050B6A0   55               PUSH EBP
@@ -4804,6 +4888,70 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  0050B74A   CC               INT3
  *  0050B74B   CC               INT3
  *  0050B74C   CC               INT3
+ *
+ *  Function get called for hookpoint #3, text in [arg1+0x10], length in arg1+0xc, only for scenario, function call is looped
+ *  005C410D   CC               INT3
+ *  005C410E   CC               INT3
+ *  005C410F   CC               INT3
+ *  005C4110   53               PUSH EBX
+ *  005C4111   8B5C24 08        MOV EBX,DWORD PTR SS:[ESP+0x8]
+ *  005C4115   837B 0C 00       CMP DWORD PTR DS:[EBX+0xC],0x0
+ *  005C4119   56               PUSH ESI
+ *  005C411A   57               PUSH EDI
+ *  005C411B   8BF0             MOV ESI,EAX
+ *  005C411D   74 07            JE SHORT .005C4126
+ *  005C411F   8B43 08          MOV EAX,DWORD PTR DS:[EBX+0x8]
+ *  005C4122   85C0             TEST EAX,EAX
+ *  005C4124   75 04            JNZ SHORT .005C412A
+ *  005C4126   33C0             XOR EAX,EAX
+ *  005C4128   EB 0F            JMP SHORT .005C4139
+ *  005C412A   8D50 01          LEA EDX,DWORD PTR DS:[EAX+0x1]
+ *  005C412D   8D49 00          LEA ECX,DWORD PTR DS:[ECX]
+ *  005C4130   8A08             MOV CL,BYTE PTR DS:[EAX]
+ *  005C4132   40               INC EAX
+ *  005C4133   84C9             TEST CL,CL
+ *  005C4135  ^75 F9            JNZ SHORT .005C4130
+ *  005C4137   2BC2             SUB EAX,EDX
+ *  005C4139   8D78 01          LEA EDI,DWORD PTR DS:[EAX+0x1]
+ *  005C413C   3B7E 0C          CMP EDI,DWORD PTR DS:[ESI+0xC]
+ *  005C413F   76 0F            JBE SHORT .005C4150
+ *  005C4141   E8 FAF7FFFF      CALL .005C3940
+ *  005C4146   84C0             TEST AL,AL
+ *  005C4148   75 06            JNZ SHORT .005C4150
+ *  005C414A   5F               POP EDI
+ *  005C414B   5E               POP ESI
+ *  005C414C   5B               POP EBX
+ *  005C414D   C2 0400          RETN 0x4
+ *  005C4150   837B 0C 00       CMP DWORD PTR DS:[EBX+0xC],0x0
+ *  005C4154   75 04            JNZ SHORT .005C415A
+ *  005C4156   33C9             XOR ECX,ECX
+ *  005C4158   EB 03            JMP SHORT .005C415D
+ *  005C415A   8B4B 08          MOV ECX,DWORD PTR DS:[EBX+0x8]
+ *  005C415D   837E 0C 00       CMP DWORD PTR DS:[ESI+0xC],0x0
+ *  005C4161   75 15            JNZ SHORT .005C4178
+ *  005C4163   57               PUSH EDI
+ *  005C4164   33C0             XOR EAX,EAX
+ *  005C4166   51               PUSH ECX
+ *  005C4167   50               PUSH EAX
+ *  005C4168   E8 33400D00      CALL .006981A0
+ *  005C416D   83C4 0C          ADD ESP,0xC
+ *  005C4170   5F               POP EDI
+ *  005C4171   5E               POP ESI
+ *  005C4172   B0 01            MOV AL,0x1
+ *  005C4174   5B               POP EBX
+ *  005C4175   C2 0400          RETN 0x4
+ *  005C4178   8B46 08          MOV EAX,DWORD PTR DS:[ESI+0x8]
+ *  005C417B   57               PUSH EDI
+ *  005C417C   51               PUSH ECX
+ *  005C417D   50               PUSH EAX
+ *  005C417E   E8 1D400D00      CALL .006981A0
+ *  005C4183   83C4 0C          ADD ESP,0xC
+ *  005C4186   5F               POP EDI
+ *  005C4187   5E               POP ESI
+ *  005C4188   B0 01            MOV AL,0x1
+ *  005C418A   5B               POP EBX
+ *  005C418B   C2 0400          RETN 0x4
+ *  005C418E   CC               INT3
  */
 static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
 {

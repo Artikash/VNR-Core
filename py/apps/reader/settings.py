@@ -2050,12 +2050,6 @@ class Settings(QSettings):
       self.setValue('GameAgentConvertsKanji', value)
       self.gameAgentConvertsKanjiChanged.emit(value)
 
-  def isGameAgentLauncherNeeded(self):
-    return self.isGameAgentEnabled() and (
-        self.isEmbeddedScenarioTranslationEnabled() or
-        self.isEmbeddedNameTranslationEnabled() or
-        self.isEmbeddedOtherTranslationEnabled())
-
   # Whether use game agent over texthook
   gameAgentEnabledChanged = Signal(bool)
   def isGameAgentEnabled(self):
@@ -2064,6 +2058,13 @@ class Settings(QSettings):
     if value != self.isGameAgentEnabled():
       self.setValue('GameAgent', value)
       self.gameAgentEnabledChanged.emit(value)
+
+  isGameAgentLauncherNeeded = isGameAgentEnabled # alias for historical reason
+  #def isGameAgentLauncherNeeded(self):
+  #  return self.isGameAgentEnabled() and (
+  #      self.isEmbeddedScenarioTranslationEnabled() or
+  #      self.isEmbeddedNameTranslationEnabled() or
+  #      self.isEmbeddedOtherTranslationEnabled())
 
   embeddedTranslationWaitTimeChanged = Signal(int)
   def embeddedTranslationWaitTime(self):
