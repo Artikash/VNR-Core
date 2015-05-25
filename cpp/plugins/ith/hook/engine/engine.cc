@@ -4394,6 +4394,11 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  ATcode: FORCEFONT(5),ENCODEKOR,FONT(Malgun Gothic,-13),HOOK(0x0070A10F,TRANS([[ESP]+0x8],LEN([ESP]+0XC),PTRCHEAT),RETNPOS(COPY)),HOOK(0x0070A11E,TRANS([ESP],SMSTR(IGNORE)),RETNPOS(COPY)),HOOK(0x0070A19A,TRANS([[ESP]+0x8],LEN([ESP]+0XC),PTRCHEAT),RETNPOS(COPY))
  *  FilterCode: DenyWord{CUT(2)},FixLine{},KoFilter{},DumpText{},CustomDic{CDic},CustomScript{Write,Pass(-1),Cache}
  *
+ *  The second hooked address pointed to the text address.
+ *  The logic here is simplify buffer the read text, and replace the text by zero
+ *  Then translate/paint them together.
+ *  Several variables near the text address is used to check if the text is finished or not.
+ *
  *  Function immediately before patched code:
  *  0070A09E   CC               INT3
  *  0070A09F   CC               INT3
@@ -4442,9 +4447,9 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  0070A120   90               NOP
  *  0070A121   90               NOP
  *  0070A122   90               NOP
- *  0070A123   E8 7815E0FF      CALL .0050B6A0
- *  0070A128  ^E9 0C4ADEFF      JMP .004EEB39
- *  0070A12D   50               PUSH EAX
+ *  0070A123   E8 7815E0FF      CALL .0050B6A0                  ; jichi: call the original function for hookpoint #2
+ *  0070A128  ^E9 0C4ADEFF      JMP .004EEB39                   ; jichi: come back to hookpoint#2
+ *  0070A12D   50               PUSH EAX    ; jichi: this is for hookpoint #3, translate the text before send it to paint
  *  0070A12E   8B87 B0000000    MOV EAX,DWORD PTR DS:[EDI+0xB0]
  *  0070A134   66:8138 8400     CMP WORD PTR DS:[EAX],0x84
  *  0070A139   75 0E            JNZ SHORT .0070A149
@@ -4455,40 +4460,40 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  0070A147  ^EB C6            JMP SHORT .0070A10F
  *  0070A149   58               POP EAX
  *  0070A14A  ^EB C8            JMP SHORT .0070A114
- *  0070A14C   50               PUSH EAX
+ *  0070A14C   50               PUSH EAX                        ; jichi: hookpoint#2 jmp here, text address is in [esp]
  *  0070A14D   52               PUSH EDX
- *  0070A14E   BA E00B7A00      MOV EDX,.007A0BE0
- *  0070A153   60               PUSHAD
- *  0070A154   89D7             MOV EDI,EDX
- *  0070A156   8B74E4 28        MOV ESI,DWORD PTR SS:[ESP+0x28]
- *  0070A15A   B9 06000000      MOV ECX,0x6
- *  0070A15F   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
- *  0070A161   61               POPAD
- *  0070A162   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]
- *  0070A166   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10]
- *  0070A169   85C0             TEST EAX,EAX
- *  0070A16B   74 29            JE SHORT .0070A196
- *  0070A16D   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]
- *  0070A171   8B40 14          MOV EAX,DWORD PTR DS:[EAX+0x14]
- *  0070A174   83F8 0F          CMP EAX,0xF
- *  0070A177   75 08            JNZ SHORT .0070A181
- *  0070A179   8954E4 08        MOV DWORD PTR SS:[ESP+0x8],EDX
+ *  0070A14E   BA E00B7A00      MOV EDX,.007A0BE0               ; jichi: 007A0BE0 points to unused zeroed memory
+ *  0070A153   60               PUSHAD                          ; jichi esp -= 0x20, now, esp[0x28] is text address, esp[0x24] = eax, and esp[0x20] = edx
+ *  0070A154   89D7             MOV EDI,EDX                     ; set 007A0BE0 as the target buffer to save text, edx is never modified
+ *  0070A156   8B74E4 28        MOV ESI,DWORD PTR SS:[ESP+0x28] ; set source text as target
+ *  0070A15A   B9 06000000      MOV ECX,0x6                     ; move for 6 bytes
+ *  0070A15F   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
+ *  0070A161   61               POPAD   ; finished saving text, now [esp] is old edx, esp[0x4] is old eax, esp[0x8] is old text address
+ *  0070A162   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]  ; eax = original text address
+ *  0070A166   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10] ; eax = byte text[0x20], *2 since DWORD PTR used
+ *  0070A169   85C0             TEST EAX,EAX                    ; if end of text,
+ *  0070A16B   74 29            JE SHORT .0070A196              ; jump if eax is zero, comeback to hookpoint and ignore it
+ *  0070A16D   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]  ; otherwise, if eax is not zero
+ *  0070A171   8B40 14          MOV EAX,DWORD PTR DS:[EAX+0x14] ; eax = byte text[0x28]
+ *  0070A174   83F8 0F          CMP EAX,0xF                     ; jichi: compare text[0x28] with 0xf
+ *  0070A177   75 08            JNZ SHORT .0070A181             ; jump if not zero leaving text not modified, other continue and modify the text
+ *  0070A179   8954E4 08        MOV DWORD PTR SS:[ESP+0x8],EDX  ; override esp+8 with edx, i.e. override text address by new text address and do translation
  *  0070A17D   5A               POP EDX
- *  0070A17E   58               POP EAX
- *  0070A17F  ^EB 9D            JMP SHORT .0070A11E
- *  0070A181   8D42 20          LEA EAX,DWORD PTR DS:[EDX+0x20]
- *  0070A184   60               PUSHAD
- *  0070A185   89C7             MOV EDI,EAX
- *  0070A187   8B32             MOV ESI,DWORD PTR DS:[EDX]
+ *  0070A17E   58               POP EAX                         ; jichi: restore edx and eax, now esp is back to normal. [esp] is the new text address
+ *  0070A17F  ^EB 9D            JMP SHORT .0070A11E             ; jichi: jump to the top of the hooked place (nop) and do translation before coming back
+ *  0070A181   8D42 20          LEA EAX,DWORD PTR DS:[EDX+0x20] ; text is not modified, esp[0x8] is the text address, edx is the modified buffer, eax = buffer[0x20] address
+ *  0070A184   60               PUSHAD                          ; jichi: esp[0x28] is now the text address
+ *  0070A185   89C7             MOV EDI,EAX                     ; jichi: edx[0x20] is the target
+ *  0070A187   8B32             MOV ESI,DWORD PTR DS:[EDX]      ; jichi: edx is the source
  *  0070A189   8B4A 14          MOV ECX,DWORD PTR DS:[EDX+0x14]
- *  0070A18C   83C1 09          ADD ECX,0x9
- *  0070A18F   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[>
- *  0070A191   61               POPAD
- *  0070A192   8902             MOV DWORD PTR DS:[EDX],EAX
- *  0070A194  ^EB E3            JMP SHORT .0070A179
+ *  0070A18C   83C1 09          ADD ECX,0x9                     ; move for [edx+0x14]+0x9 time
+ *  0070A18F   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[ESI]    ; jichi: shift text by 0x14 dword ptr
+ *  0070A191   61               POPAD                           ; jichi: now esp[0x8] is the text address
+ *  0070A192   8902             MOV DWORD PTR DS:[EDX],EAX      ; eax is the new text address (edx+0x20), move the address to beginning of buffer ([edx]), i.e. edx is pointed to zero memory now
+ *  0070A194  ^EB E3            JMP SHORT .0070A179             ; come bback to modify the text address
  *  0070A196   5A               POP EDX
  *  0070A197   58               POP EAX
- *  0070A198  ^EB 89            JMP SHORT .0070A123
+ *  0070A198  ^EB 89            JMP SHORT .0070A123             ; jichi: come back to call
  *  0070A19A   90               NOP
  *  0070A19B   90               NOP
  *  0070A19C   90               NOP
@@ -4527,7 +4532,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005E3935   57               PUSH EDI
  *  005E3936   8B7D 0C          MOV EDI,DWORD PTR SS:[EBP+0xC]
  *  005E3939   8BF0             MOV ESI,EAX
- *  005E393B   EB 67            JMP SHORT .005E39A4 ; jichi: here#1
+ *  005E393B   EB 67            JMP SHORT .005E39A4 ; jichi: here modified point#1, change to always jump to 5e39a4
  *  005E393D   8D4424 28        LEA EAX,DWORD PTR SS:[ESP+0x28]
  *  005E3941   50               PUSH EAX
  *  005E3942   8D4C24 30        LEA ECX,DWORD PTR SS:[ESP+0x30]
@@ -4599,7 +4604,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  004EEB2F   50               PUSH EAX
  *  004EEB30   8BCF             MOV ECX,EDI
  *  004EEB32   881E             MOV BYTE PTR DS:[ESI],BL
- *  004EEB34   E9 13B62100      JMP .0070A14C   ; jichi: here #2, scenario and names are here accessed char by char on the top of the stack
+ *  004EEB34   E9 13B62100      JMP .0070A14C   ; jichi: here hookpoint#2, scenario and names are here accessed char by char on the top of the stack
  *  004EEB39   396C24 28        CMP DWORD PTR SS:[ESP+0x28],EBP
  *  004EEB3D   72 0D            JB SHORT .004EEB4C
  *  004EEB3F   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
@@ -4628,7 +4633,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005C71DB  ^74 B7            JE SHORT .005C7194
  *  005C71DD   50               PUSH EAX
  *  005C71DE   8BC3             MOV EAX,EBX
- *  005C71E0   E9 482F1400      JMP .0070A12D   ; jichi: here #3
+ *  005C71E0   E9 482F1400      JMP .0070A12D   ; jichi: here hookpoint#3
  *  005C71E5  ^EB A5            JMP SHORT .005C718C
  *  005C71E7   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
  *  005C71EA   8B4F 0C          MOV ECX,DWORD PTR DS:[EDI+0xC]
@@ -4681,7 +4686,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005B6491   5B               POP EBX
  *  005B6492   C3               RETN
  *  005B6493   52               PUSH EDX
- *  005B6494   E9 103D1500      JMP .0070A1A9   ; jichi: here #4
+ *  005B6494   E9 103D1500      JMP .0070A1A9   ; jichi: here hookpoint#4
  *  005B6499   84C0             TEST AL,AL
  *  005B649B   75 16            JNZ SHORT .005B64B3
  *  005B649D   68 D4757200      PUSH .007275D4
