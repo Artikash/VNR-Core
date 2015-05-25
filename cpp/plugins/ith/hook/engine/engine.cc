@@ -4844,7 +4844,8 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
 
 bool InsertSystem43Hook()
 {
-  bool patched = IthCheckFile(L"AliceRunPatch.dll");
+  //bool patched = IthCheckFile(L"AliceRunPatch.dll");
+  bool patched = ::GetModuleHandleA("AliceRunPatch.dll");
   ULONG startAddress, stopAddress;
   if (patched ?
       !NtInspect::getModuleMemoryRange(L"AliceRunPatch.dll", &startAddress, &stopAddress) :

@@ -50,15 +50,16 @@ gc:
   - Vanillaware GC
 
 embed:
-  #- AMUSE CRAFT
-  - BGI
-  - Elf
-  - CIRCUS
-  - Eushully
-  - Majiro
-  - Majiro2
-  - SideB
   - SiglusEngine2
+  - System43+
+  #- AMUSE CRAFT
+  #- BGI
+  #- Elf
+  #- CIRCUS
+  #- Eushully
+  #- Majiro
+  #- Majiro2
+  #- SideB
 
 gui:
   # User32

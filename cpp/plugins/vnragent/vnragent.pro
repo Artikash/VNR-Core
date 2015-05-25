@@ -117,24 +117,26 @@ SOURCES += \
 
 # Engine models
 HEADERS += \
-  engine/model/bgi.h \
-  engine/model/circus.h \
-  engine/model/elf.h \
-  engine/model/eushully.h \
-  engine/model/majiro.h \
-  engine/model/sideb.h \
+  engine/model/system4.h \
   engine/model/siglus.h
-  #engine/model/nexas.h
+  #engine/model/bgi.h
+  #engine/model/circus.h
+  #engine/model/elf.h
+  #engine/model/eushully.h \
+  #engine/model/majiro.h \
+  #engine/model/sideb.h \
+  ##engine/model/nexas.h
   #engine/model/rejet.h
   #engine/model/test.h
 SOURCES += \
-  engine/model/bgi.cc \
-  engine/model/circus.cc \
-  engine/model/elf.cc \
-  engine/model/eushully.cc \
-  engine/model/majiro.cc \
-  engine/model/sideb.cc \
+  engine/model/system4.cc \
   engine/model/siglus.cc
+  #engine/model/bgi.cc
+  #engine/model/circus.cc
+  #engine/model/elf.cc
+  #engine/model/eushully.cc
+  #engine/model/majiro.cc
+  #engine/model/sideb.cc
   #engine/model/nexas.cc
   #engine/model/rejet.cc
   #engine/model/test.cc
