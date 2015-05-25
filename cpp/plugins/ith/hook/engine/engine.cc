@@ -2033,7 +2033,7 @@ namespace { // unnamed
  *  Insert old first. As the pattern could also be found in the old engine.
  */
 
-/** jichi 10/25/2014: new SiglusEngine2 that can extract character name
+/** jichi 10/25/2014: new SiglusEngine3 that can extract character name
  *
  *  Sample game: リア充クラスメイト孕ませ催眠 -- /HW-4@F67DC:SiglusEngine.exe
  *  The character is in [edx+ecx*2]. Text in edx, and offset in ecx.
@@ -2136,11 +2136,59 @@ bool InsertSiglus3Hook()
   return true;
 }
 
-/** SiglusEngine4
+/** SiglusEngine4 5/23/2015
  *  Alternative ATcode from EGDB:
  *  UNIKOFILTER(30),FORCEFONT(5),HOOK(SiglusEngine.exe!0x0018CF39,TRANS(EAX,UNICODE,SMSTR,ADDNULL),RETNPOS(SOURCE))
  *  Text address is [eax]
+ *
+ *  0042CEFD   CC               INT3
+ *  0042CEFE   CC               INT3
+ *  0042CEFF   CC               INT3
+ *  0042CF00   55               PUSH EBP
+ *  0042CF01   8BEC             MOV EBP,ESP
+ *  0042CF03   51               PUSH ECX
+ *  0042CF04   A1 005E8A00      MOV EAX,DWORD PTR DS:[0x8A5E00]
+ *  0042CF09   53               PUSH EBX
+ *  0042CF0A   56               PUSH ESI
+ *  0042CF0B   57               PUSH EDI
+ *  0042CF0C   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10]
+ *  0042CF0F   8BF9             MOV EDI,ECX
+ *  0042CF11   33C9             XOR ECX,ECX
+ *  0042CF13   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  0042CF1A   6A FF            PUSH -0x1
+ *  0042CF1C   51               PUSH ECX
+ *  0042CF1D   83E8 18          SUB EAX,0x18
+ *  0042CF20   C747 14 07000000 MOV DWORD PTR DS:[EDI+0x14],0x7
+ *  0042CF27   C747 10 00000000 MOV DWORD PTR DS:[EDI+0x10],0x0
+ *  0042CF2E   66:890F          MOV WORD PTR DS:[EDI],CX
+ *  0042CF31   8BCF             MOV ECX,EDI
+ *  0042CF33   50               PUSH EAX
+ *  0042CF34   E8 E725F6FF      CALL .0038F520
+ *  0042CF39   8B1D 005E8A00    MOV EBX,DWORD PTR DS:[0x8A5E00] ; jichi: ATcode hooked here
+ *  0042CF3F   8B73 10          MOV ESI,DWORD PTR DS:[EBX+0x10]
+ *  0042CF42   837E FC 08       CMP DWORD PTR DS:[ESI-0x4],0x8
+ *  0042CF46   72 0B            JB SHORT .0042CF53
+ *  0042CF48   FF76 E8          PUSH DWORD PTR DS:[ESI-0x18]
+ *  0042CF4B   E8 EA131300      CALL .0055E33A
+ *  0042CF50   83C4 04          ADD ESP,0x4
+ *  0042CF53   33C0             XOR EAX,EAX
+ *  0042CF55   C746 FC 07000000 MOV DWORD PTR DS:[ESI-0x4],0x7
+ *  0042CF5C   C746 F8 00000000 MOV DWORD PTR DS:[ESI-0x8],0x0
+ *  0042CF63   66:8946 E8       MOV WORD PTR DS:[ESI-0x18],AX
+ *  0042CF67   8BC7             MOV EAX,EDI
+ *  0042CF69   8343 10 E8       ADD DWORD PTR DS:[EBX+0x10],-0x18
+ *  0042CF6D   5F               POP EDI
+ *  0042CF6E   5E               POP ESI
+ *  0042CF6F   5B               POP EBX
+ *  0042CF70   8BE5             MOV ESP,EBP
+ *  0042CF72   5D               POP EBP
+ *  0042CF73   C3               RETN
+ *  0042CF74   CC               INT3
+ *  0042CF75   CC               INT3
+ *  0042CF76   CC               INT3
+ *  0042CF77   CC               INT3
  */
+// This function is not implemented
 
 /**
  *  jichi 8/16/2013: Insert new siglus hook

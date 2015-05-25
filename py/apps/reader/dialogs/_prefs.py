@@ -8805,7 +8805,7 @@ class _EngineTab(object):
     # Translation wait time
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.translationWaitTimeButton)
-    row.addWidget(QtWidgets.QLabel("<= %s" % my.tr("Translation wait time")))
+    row.addWidget(QtWidgets.QLabel("<= %s (sec)" % my.tr("Translation wait time")))
     row.addStretch()
     layout.addLayout(row)
 
