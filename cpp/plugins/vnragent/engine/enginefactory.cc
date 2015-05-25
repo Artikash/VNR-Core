@@ -4,14 +4,15 @@
 
 #include "engine/enginecontroller.h"
 #include "engine/enginefactory.h"
-#include "engine/model/bgi.h"
-#include "engine/model/circus.h"
-#include "engine/model/elf.h"
-#include "engine/model/eushully.h"
-#include "engine/model/majiro.h"
+//#include "engine/model/bgi.h"
+//#include "engine/model/circus.h"
+//#include "engine/model/elf.h"
+//#include "engine/model/eushully.h"
+//#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
-#include "engine/model/sideb.h"
+//#include "engine/model/sideb.h"
 #include "engine/model/siglus.h"
+#include "engine/model/system4.h"
 #include <boost/foreach.hpp>
 
 #define DEBUG "enginefactory"
@@ -22,13 +23,14 @@
 EngineController *EngineFactory::createEngine()
 {
   static EngineModel *models[] = {
-   new BGIEngine
-   , new CircusEngine
-   , new ElfEngine
-   , new EushullyEngine
-   , new MajiroEngine
-   , new SideBEngine
-   , new SiglusEngine
+    new SiglusEngine
+    , new System4Engine
+    //, new BGIEngine
+    //, new CircusEngine
+    //, new ElfEngine
+    //, new EushullyEngine
+    //, new MajiroEngine
+    //, new SideBEngine
   };
   BOOST_FOREACH (EngineModel *m, models) {
     auto p = new EngineController(m);

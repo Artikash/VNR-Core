@@ -50,15 +50,16 @@ gc:
   - Vanillaware GC
 
 embed:
-  #- AMUSE CRAFT
-  - BGI
-  - Elf
-  - CIRCUS
-  - Eushully
-  - Majiro
-  - Majiro2
-  - SideB
   - SiglusEngine2
+  - System43+
+  #- AMUSE CRAFT
+  #- BGI
+  #- Elf
+  #- CIRCUS
+  #- Eushully
+  #- Majiro
+  #- Majiro2
+  #- SideB
 
 gui:
   # User32
@@ -215,6 +216,7 @@ simple:
   - SolfaSoft # renamed
   - StuffScriptEngine
   - SystemC
+  - System4     # the embed engine
   - System43
   - System43+
   - SystemAoi
@@ -420,6 +422,7 @@ char:
   - SolfaSoft # renamed
   - StudioRyokucha
   - StuffScriptEngine
+  - System4
   - System40
   - System43
   - System43+
