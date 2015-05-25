@@ -4387,6 +4387,423 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  004EEB6C   C3               RETN
  *  004EEB6D   CC               INT3
  *  004EEB6E   CC               INT3
+ *
+ *  Actual binary patch for Evenicle exe: http://capita.tistory.com/m/post/256
+ *  {005E393B(EB), 004EEB34(E9 13 B6 21 00), 005C71E0(E9 48 2F 14 00), 005B6494(E9 10 3D 15 00), 0070A10F(90 90 90 90 90 E8 F7 9F EB FF E9 C7 D0 EB FF 90 90 90 90 90 E8 78 15 E0 FF E9 0C 4A DE FF 50 8B 87 B0 00 00 00 66 81 38 84 00 75 0E 83 78 EA 5B 75 08 E8 A2 00 00 00 58 EB C6 58 EB C8 50 52 BA E0 0B 7A 00 60 89 D7 8B 74 E4 28 B9 06 00 00 00 F3 A5 61 8B 44 E4 08 8B 40 10 85 C0 74 29 8B 44 E4 08 8B 40 14 83 F8 0F 75 08 89 54 E4 08 5A 58 EB 9D 8D 42 20 60 89 C7 8B 32 8B 4A 14 83 C1 09 F3 A4 61 89 02 EB E3 5A 58 EB 89 90 90 90 90 90 E8 6C 9F EB FF E9 F0 C2 EA FF 50 8B 44 E4 04 83 78 0C 01 76 31 8B 87 84 02 00 00 66 83 78 FC 46 75 24 83 78 F8 22 74 16 83 78 F8 13 75 18 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 E8 06 00 00 00 58 EB B5 58 EB B7 60 8B 74 E4 28 BF E0 0B 7A 00 89 7C E4 28 B9 0C 00 00 00 F3 A5 61 C3)}
+ *
+ *  ATcode: FORCEFONT(5),ENCODEKOR,FONT(Malgun Gothic,-13),HOOK(0x0070A10F,TRANS([[ESP]+0x8],LEN([ESP]+0XC),PTRCHEAT),RETNPOS(COPY)),HOOK(0x0070A11E,TRANS([ESP],SMSTR(IGNORE)),RETNPOS(COPY)),HOOK(0x0070A19A,TRANS([[ESP]+0x8],LEN([ESP]+0XC),PTRCHEAT),RETNPOS(COPY))
+ *  FilterCode: DenyWord{CUT(2)},FixLine{},KoFilter{},DumpText{},CustomDic{CDic},CustomScript{Write,Pass(-1),Cache}
+ *
+ *  The second hooked address pointed to the text address.
+ *  The logic here is simplify buffer the read text, and replace the text by zero
+ *  Then translate/paint them together.
+ *  Several variables near the text address is used to check if the text is finished or not.
+ *
+ *  Function immediately before patched code:
+ *  0070A09E   CC               INT3
+ *  0070A09F   CC               INT3
+ *  0070A0A0   6A FF            PUSH -0x1
+ *  0070A0A2   68 358A7000      PUSH .00708A35
+ *  0070A0A7   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  0070A0AD   50               PUSH EAX
+ *  0070A0AE   51               PUSH ECX
+ *  0070A0AF   56               PUSH ESI
+ *  0070A0B0   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  0070A0B5   33C4             XOR EAX,ESP
+ *  0070A0B7   50               PUSH EAX
+ *  0070A0B8   8D4424 0C        LEA EAX,DWORD PTR SS:[ESP+0xC]
+ *  0070A0BC   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  0070A0C2   C74424 14 000000>MOV DWORD PTR SS:[ESP+0x14],0x0
+ *  0070A0CA   A1 54D17900      MOV EAX,DWORD PTR DS:[0x79D154]
+ *  0070A0CF   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  0070A0D1   50               PUSH EAX
+ *  0070A0D2   51               PUSH ECX
+ *  0070A0D3   8D7424 10        LEA ESI,DWORD PTR SS:[ESP+0x10]
+ *  0070A0D7   E8 6416F8FF      CALL .0068B740
+ *  0070A0DC   A1 54D17900      MOV EAX,DWORD PTR DS:[0x79D154]
+ *  0070A0E1   50               PUSH EAX
+ *  0070A0E2   E8 A426F8FF      CALL .0068C78B
+ *  0070A0E7   83C4 04          ADD ESP,0x4
+ *  0070A0EA   8B4C24 0C        MOV ECX,DWORD PTR SS:[ESP+0xC]
+ *  0070A0EE   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  0070A0F5   59               POP ECX
+ *  0070A0F6   5E               POP ESI
+ *  0070A0F7   83C4 10          ADD ESP,0x10
+ *  0070A0FA   C3               RETN
+ *  0070A0FB   C705 C4C17900 64>MOV DWORD PTR DS:[0x79C1C4],.0070B664
+ *  0070A105   B9 C4C17900      MOV ECX,.0079C1C4
+ *  0070A10A  ^E9 0722F8FF      JMP .0068C316
+ *
+ *  Patched code:
+ *  0070A10F   90               NOP ; jichi: ATcode hooked here
+ *  0070A110   90               NOP
+ *  0070A111   90               NOP
+ *  0070A112   90               NOP
+ *  0070A113   90               NOP
+ *  0070A114   E8 F79FEBFF      CALL .005C4110
+ *  0070A119  ^E9 C7D0EBFF      JMP .005C71E5
+ *  0070A11E   90               NOP
+ *  0070A11F   90               NOP
+ *  0070A120   90               NOP
+ *  0070A121   90               NOP
+ *  0070A122   90               NOP
+ *  0070A123   E8 7815E0FF      CALL .0050B6A0                  ; jichi: call the original function for hookpoint #2
+ *  0070A128  ^E9 0C4ADEFF      JMP .004EEB39                   ; jichi: come back to hookpoint#2
+ *  0070A12D   50               PUSH EAX    ; jichi: this is for hookpoint #3, translate the text before send it to paint
+ *  0070A12E   8B87 B0000000    MOV EAX,DWORD PTR DS:[EDI+0xB0]
+ *  0070A134   66:8138 8400     CMP WORD PTR DS:[EAX],0x84
+ *  0070A139   75 0E            JNZ SHORT .0070A149
+ *  0070A13B   8378 EA 5B       CMP DWORD PTR DS:[EAX-0x16],0x5B
+ *  0070A13F   75 08            JNZ SHORT .0070A149
+ *  0070A141   E8 A2000000      CALL .0070A1E8
+ *  0070A146   58               POP EAX
+ *  0070A147  ^EB C6            JMP SHORT .0070A10F
+ *  0070A149   58               POP EAX
+ *  0070A14A  ^EB C8            JMP SHORT .0070A114
+ *  0070A14C   50               PUSH EAX                        ; jichi: hookpoint#2 jmp here, text address is in [esp]
+ *  0070A14D   52               PUSH EDX
+ *  0070A14E   BA E00B7A00      MOV EDX,.007A0BE0               ; jichi: 007A0BE0 points to unused zeroed memory
+ *  0070A153   60               PUSHAD                          ; jichi esp -= 0x20, now, esp[0x28] is text address, esp[0x24] = eax, and esp[0x20] = edx
+ *  0070A154   89D7             MOV EDI,EDX                     ; set 007A0BE0 as the target buffer to save text, edx is never modified
+ *  0070A156   8B74E4 28        MOV ESI,DWORD PTR SS:[ESP+0x28] ; set source text as target
+ *  0070A15A   B9 06000000      MOV ECX,0x6                     ; move for 6 bytes
+ *  0070A15F   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
+ *  0070A161   61               POPAD   ; finished saving text, now [esp] is old edx, esp[0x4] is old eax, esp[0x8] is old text address
+ *  0070A162   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]  ; eax = original text address
+ *  0070A166   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10] ; eax = text[0x10]
+ *  0070A169   85C0             TEST EAX,EAX                    ; if end of text,
+ *  0070A16B   74 29            JE SHORT .0070A196              ; jump if eax is zero, comeback to hookpoint and ignore it
+ *  0070A16D   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]  ; otherwise, if eax is not zero
+ *  0070A171   8B40 14          MOV EAX,DWORD PTR DS:[EAX+0x14] ; eax = text[0x14]
+ *  0070A174   83F8 0F          CMP EAX,0xF                     ; jichi: compare text[0x28] with 0xf
+ *  0070A177   75 08            JNZ SHORT .0070A181             ; jump if not zero leaving text not modified, other continue and modify the text
+ *  0070A179   8954E4 08        MOV DWORD PTR SS:[ESP+0x8],EDX  ; override esp+8 with edx, i.e. override text address by new text address and do translation
+ *  0070A17D   5A               POP EDX
+ *  0070A17E   58               POP EAX                         ; jichi: restore edx and eax, now esp is back to normal. [esp] is the new text address
+ *  0070A17F  ^EB 9D            JMP SHORT .0070A11E             ; jichi: jump to the top of the hooked place (nop) and do translation before coming back
+ *  0070A181   8D42 20          LEA EAX,DWORD PTR DS:[EDX+0x20] ; text is not modified, esp[0x8] is the text address, edx is the modified buffer, eax = buffer[0x20] address
+ *  0070A184   60               PUSHAD                          ; jichi: esp[0x28] is now the text address
+ *  0070A185   89C7             MOV EDI,EAX                     ; jichi: edx[0x20] is the target
+ *  0070A187   8B32             MOV ESI,DWORD PTR DS:[EDX]      ; jichi: edx is the source
+ *  0070A189   8B4A 14          MOV ECX,DWORD PTR DS:[EDX+0x14]
+ *  0070A18C   83C1 09          ADD ECX,0x9                     ; move for [edx+0x14]+0x9 time
+ *  0070A18F   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[ESI]    ; jichi: shift text by 0x14 dword ptr
+ *  0070A191   61               POPAD                           ; jichi: now esp[0x8] is the text address
+ *  0070A192   8902             MOV DWORD PTR DS:[EDX],EAX      ; eax is the new text address (edx+0x20), move the address to beginning of buffer ([edx]), i.e. edx is pointed to zero memory now
+ *  0070A194  ^EB E3            JMP SHORT .0070A179             ; come bback to modify the text address
+ *  0070A196   5A               POP EDX
+ *  0070A197   58               POP EAX
+ *  0070A198  ^EB 89            JMP SHORT .0070A123             ; jichi: come back to call
+ *  0070A19A   90               NOP
+ *  0070A19B   90               NOP
+ *  0070A19C   90               NOP
+ *  0070A19D   90               NOP
+ *  0070A19E   90               NOP
+ *  0070A19F   E8 6C9FEBFF      CALL .005C4110
+ *  0070A1A4  ^E9 F0C2EAFF      JMP .005B6499
+ *  0070A1A9   50               PUSH EAX                        ; jichi: from hookpoint $4
+ *  0070A1AA   8B44E4 04        MOV EAX,DWORD PTR SS:[ESP+0x4]  ; jichi: move top of the old stack address to eax
+ *  0070A1AE   8378 0C 01       CMP DWORD PTR DS:[EAX+0xC],0x1
+ *  0070A1B2   76 31            JBE SHORT .0070A1E5             ; jichi: jump to leave if text[0xc] <= 0x1
+ *  0070A1B4   8B87 84020000    MOV EAX,DWORD PTR DS:[EDI+0x284]
+ *  0070A1BA   66:8378 FC 46    CMP WORD PTR DS:[EAX-0x4],0x46
+ *  0070A1BF   75 24            JNZ SHORT .0070A1E5
+ *  0070A1C1   8378 F8 22       CMP DWORD PTR DS:[EAX-0x8],0x22
+ *  0070A1C5   74 16            JE SHORT .0070A1DD
+ *  0070A1C7   8378 F8 13       CMP DWORD PTR DS:[EAX-0x8],0x13
+ *  0070A1CB   75 18            JNZ SHORT .0070A1E5
+ *  0070A1CD   90               NOP
+ *  0070A1CE   90               NOP
+ *  0070A1CF   90               NOP
+ *  0070A1D0   90               NOP
+ *  0070A1D1   90               NOP
+ *  0070A1D2   90               NOP
+ *  0070A1D3   90               NOP
+ *  0070A1D4   90               NOP
+ *  0070A1D5   90               NOP
+ *  0070A1D6   90               NOP
+ *  0070A1D7   90               NOP
+ *  0070A1D8   90               NOP
+ *  0070A1D9   90               NOP
+ *  0070A1DA   90               NOP
+ *  0070A1DB   90               NOP
+ *  0070A1DC   90               NOP
+ *  0070A1DD   E8 06000000      CALL .0070A1E8
+ *  0070A1E2   58               POP EAX
+ *  0070A1E3  ^EB B5            JMP SHORT .0070A19A
+ *  0070A1E5   58               POP EAX
+ *  0070A1E6  ^EB B7            JMP SHORT .0070A19F
+ *  0070A1E8   60               PUSHAD
+ *  0070A1E9   8B74E4 28        MOV ESI,DWORD PTR SS:[ESP+0x28]
+ *  0070A1ED   BF E00B7A00      MOV EDI,.007A0BE0
+ *  0070A1F2   897CE4 28        MOV DWORD PTR SS:[ESP+0x28],EDI
+ *  0070A1F6   B9 0C000000      MOV ECX,0xC
+ *  0070A1FB   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
+ *  0070A1FD   61               POPAD
+ *  0070A1FE   C3               RETN
+ *  0070A1FF   0000             ADD BYTE PTR DS:[EAX],AL
+ *  0070A201   0000             ADD BYTE PTR DS:[EAX],AL
+ *  0070A203   0000             ADD BYTE PTR DS:[EAX],AL
+ *
+ *  Modified places:
+ *
+ *  005E391C   CC               INT3
+ *  005E391D   CC               INT3
+ *  005E391E   CC               INT3
+ *  005E391F   CC               INT3
+ *  005E3920   55               PUSH EBP
+ *  005E3921   8BEC             MOV EBP,ESP
+ *  005E3923   83E4 C0          AND ESP,0xFFFFFFC0
+ *  005E3926   83EC 34          SUB ESP,0x34
+ *  005E3929   53               PUSH EBX
+ *  005E392A   8B5D 08          MOV EBX,DWORD PTR SS:[EBP+0x8]
+ *  005E392D   817B 04 00010000 CMP DWORD PTR DS:[EBX+0x4],0x100
+ *  005E3934   56               PUSH ESI
+ *  005E3935   57               PUSH EDI
+ *  005E3936   8B7D 0C          MOV EDI,DWORD PTR SS:[EBP+0xC]
+ *  005E3939   8BF0             MOV ESI,EAX
+ *  005E393B   EB 67            JMP SHORT .005E39A4 ; jichi: here modified point#1, change to always jump to 5e39a4, when enabled it will change font size
+ *  005E393D   8D4424 28        LEA EAX,DWORD PTR SS:[ESP+0x28]
+ *  005E3941   50               PUSH EAX
+ *  005E3942   8D4C24 30        LEA ECX,DWORD PTR SS:[ESP+0x30]
+ *
+ *  004EEA6E   CC               INT3
+ *  004EEA6F   CC               INT3
+ *  004EEA70   6A FF            PUSH -0x1
+ *  004EEA72   68 E8267000      PUSH .007026E8
+ *  004EEA77   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  004EEA7D   50               PUSH EAX
+ *  004EEA7E   83EC 20          SUB ESP,0x20
+ *  004EEA81   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  004EEA86   33C4             XOR EAX,ESP
+ *  004EEA88   894424 1C        MOV DWORD PTR SS:[ESP+0x1C],EAX
+ *  004EEA8C   53               PUSH EBX
+ *  004EEA8D   55               PUSH EBP
+ *  004EEA8E   56               PUSH ESI
+ *  004EEA8F   57               PUSH EDI
+ *  004EEA90   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  004EEA95   33C4             XOR EAX,ESP
+ *  004EEA97   50               PUSH EAX
+ *  004EEA98   8D4424 34        LEA EAX,DWORD PTR SS:[ESP+0x34]
+ *  004EEA9C   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  004EEAA2   8B4424 44        MOV EAX,DWORD PTR SS:[ESP+0x44]
+ *  004EEAA6   8BF1             MOV ESI,ECX
+ *  004EEAA8   E8 8346FBFF      CALL .004A3130
+ *  004EEAAD   8BE8             MOV EBP,EAX
+ *  004EEAAF   33DB             XOR EBX,EBX
+ *  004EEAB1   3BEB             CMP EBP,EBX
+ *  004EEAB3   75 07            JNZ SHORT .004EEABC
+ *  004EEAB5   32C0             XOR AL,AL
+ *  004EEAB7   E9 92000000      JMP .004EEB4E
+ *  004EEABC   8B06             MOV EAX,DWORD PTR DS:[ESI]
+ *  004EEABE   8B10             MOV EDX,DWORD PTR DS:[EAX]
+ *  004EEAC0   8BCE             MOV ECX,ESI
+ *  004EEAC2   FFD2             CALL EDX
+ *  004EEAC4   8BC8             MOV ECX,EAX
+ *  004EEAC6   C74424 28 0F0000>MOV DWORD PTR SS:[ESP+0x28],0xF
+ *  004EEACE   895C24 24        MOV DWORD PTR SS:[ESP+0x24],EBX
+ *  004EEAD2   885C24 14        MOV BYTE PTR SS:[ESP+0x14],BL
+ *  004EEAD6   8D71 01          LEA ESI,DWORD PTR DS:[ECX+0x1]
+ *  004EEAD9   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  004EEAE0   8A11             MOV DL,BYTE PTR DS:[ECX]
+ *  004EEAE2   41               INC ECX
+ *  004EEAE3   3AD3             CMP DL,BL
+ *  004EEAE5  ^75 F9            JNZ SHORT .004EEAE0
+ *  004EEAE7   2BCE             SUB ECX,ESI
+ *  004EEAE9   50               PUSH EAX
+ *  004EEAEA   8BF9             MOV EDI,ECX
+ *  004EEAEC   8D7424 18        LEA ESI,DWORD PTR SS:[ESP+0x18]
+ *  004EEAF0   E8 CB27F1FF      CALL .004012C0
+ *  004EEAF5   8B7C24 48        MOV EDI,DWORD PTR SS:[ESP+0x48]
+ *  004EEAF9   895C24 3C        MOV DWORD PTR SS:[ESP+0x3C],EBX
+ *  004EEAFD   8B75 3C          MOV ESI,DWORD PTR SS:[EBP+0x3C]
+ *  004EEB00   E8 1B4A0100      CALL .00503520
+ *  004EEB05   8BF8             MOV EDI,EAX
+ *  004EEB07   8DB7 E4000000    LEA ESI,DWORD PTR DS:[EDI+0xE4]
+ *  004EEB0D   8D4424 14        LEA EAX,DWORD PTR SS:[ESP+0x14]
+ *  004EEB11   8BD6             MOV EDX,ESI
+ *  004EEB13   E8 985CF1FF      CALL .004047B0
+ *  004EEB18   BD 10000000      MOV EBP,0x10
+ *  004EEB1D   84C0             TEST AL,AL
+ *  004EEB1F   75 18            JNZ SHORT .004EEB39
+ *  004EEB21   895E 10          MOV DWORD PTR DS:[ESI+0x10],EBX
+ *  004EEB24   396E 14          CMP DWORD PTR DS:[ESI+0x14],EBP
+ *  004EEB27   72 02            JB SHORT .004EEB2B
+ *  004EEB29   8B36             MOV ESI,DWORD PTR DS:[ESI]
+ *  004EEB2B   8D4424 14        LEA EAX,DWORD PTR SS:[ESP+0x14]
+ *  004EEB2F   50               PUSH EAX
+ *  004EEB30   8BCF             MOV ECX,EDI
+ *  004EEB32   881E             MOV BYTE PTR DS:[ESI],BL
+ *  004EEB34   E9 13B62100      JMP .0070A14C   ; jichi: here hookpoint#2, name is modified here, scenario and names are here accessed char by char on the top of the stack
+ *  004EEB39   396C24 28        CMP DWORD PTR SS:[ESP+0x28],EBP
+ *  004EEB3D   72 0D            JB SHORT .004EEB4C
+ *  004EEB3F   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  004EEB43   51               PUSH ECX
+ *  004EEB44   E8 42DC1900      CALL .0068C78B
+ *  004EEB49   83C4 04          ADD ESP,0x4
+ *  004EEB4C   B0 01            MOV AL,0x1
+ *  004EEB4E   8B4C24 34        MOV ECX,DWORD PTR SS:[ESP+0x34]
+ *  004EEB52   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  004EEB59   59               POP ECX
+ *  004EEB5A   5F               POP EDI
+ *  004EEB5B   5E               POP ESI
+ *  004EEB5C   5D               POP EBP
+ *  004EEB5D   5B               POP EBX
+ *  004EEB5E   8B4C24 1C        MOV ECX,DWORD PTR SS:[ESP+0x1C]
+ *  004EEB62   33CC             XOR ECX,ESP
+ *  004EEB64   E8 9CD61900      CALL .0068C205
+ *  004EEB69   83C4 2C          ADD ESP,0x2C
+ *  004EEB6C   C3               RETN
+ *  004EEB6D   CC               INT3
+ *  004EEB6E   CC               INT3
+ *
+ *  005C71D5   85DB             TEST EBX,EBX
+ *  005C71D7  ^74 BB            JE SHORT .005C7194
+ *  005C71D9   85C0             TEST EAX,EAX
+ *  005C71DB  ^74 B7            JE SHORT .005C7194
+ *  005C71DD   50               PUSH EAX
+ *  005C71DE   8BC3             MOV EAX,EBX
+ *  005C71E0   E9 482F1400      JMP .0070A12D   ; jichi: here hookpoint#3, text is modified here, text in [[esp]+0x8]], length in [esp]+0xc
+ *  005C71E5  ^EB A5            JMP SHORT .005C718C
+ *  005C71E7   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
+ *  005C71EA   8B4F 0C          MOV ECX,DWORD PTR DS:[EDI+0xC]
+ *
+ *  005B640E   CC               INT3
+ *  005B640F   CC               INT3
+ *  005B6410   53               PUSH EBX
+ *  005B6411   56               PUSH ESI
+ *  005B6412   B9 FCFFFFFF      MOV ECX,-0x4
+ *  005B6417   57               PUSH EDI
+ *  005B6418   8BF8             MOV EDI,EAX
+ *  005B641A   018F B0020000    ADD DWORD PTR DS:[EDI+0x2B0],ECX
+ *  005B6420   8B87 B0020000    MOV EAX,DWORD PTR DS:[EDI+0x2B0]
+ *  005B6426   8B30             MOV ESI,DWORD PTR DS:[EAX]
+ *  005B6428   018F B0020000    ADD DWORD PTR DS:[EDI+0x2B0],ECX
+ *  005B642E   8B87 B0020000    MOV EAX,DWORD PTR DS:[EDI+0x2B0]
+ *  005B6434   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  005B6436   8B87 E0010000    MOV EAX,DWORD PTR DS:[EDI+0x1E0]
+ *  005B643C   2B87 DC010000    SUB EAX,DWORD PTR DS:[EDI+0x1DC]
+ *  005B6442   C1F8 02          SAR EAX,0x2
+ *  005B6445   3BF0             CMP ESI,EAX
+ *  005B6447   73 0D            JNB SHORT .005B6456
+ *  005B6449   8B87 DC010000    MOV EAX,DWORD PTR DS:[EDI+0x1DC]
+ *  005B644F   8B14B0           MOV EDX,DWORD PTR DS:[EAX+ESI*4]
+ *  005B6452   85D2             TEST EDX,EDX
+ *  005B6454   75 13            JNZ SHORT .005B6469
+ *  005B6456   68 70757200      PUSH .00727570
+ *  005B645B   8BCF             MOV ECX,EDI
+ *  005B645D   E8 AEC9FFFF      CALL .005B2E10
+ *  005B6462   83C4 04          ADD ESP,0x4
+ *  005B6465   5F               POP EDI
+ *  005B6466   5E               POP ESI
+ *  005B6467   5B               POP EBX
+ *  005B6468   C3               RETN
+ *  005B6469   8B9F E0010000    MOV EBX,DWORD PTR DS:[EDI+0x1E0]
+ *  005B646F   2BD8             SUB EBX,EAX
+ *  005B6471   C1FB 02          SAR EBX,0x2
+ *  005B6474   3BCB             CMP ECX,EBX
+ *  005B6476   73 07            JNB SHORT .005B647F
+ *  005B6478   8B0488           MOV EAX,DWORD PTR DS:[EAX+ECX*4]
+ *  005B647B   85C0             TEST EAX,EAX
+ *  005B647D   75 14            JNZ SHORT .005B6493
+ *  005B647F   51               PUSH ECX
+ *  005B6480   68 A0757200      PUSH .007275A0
+ *  005B6485   8BCF             MOV ECX,EDI
+ *  005B6487   E8 84C9FFFF      CALL .005B2E10
+ *  005B648C   83C4 08          ADD ESP,0x8
+ *  005B648F   5F               POP EDI
+ *  005B6490   5E               POP ESI
+ *  005B6491   5B               POP EBX
+ *  005B6492   C3               RETN
+ *  005B6493   52               PUSH EDX
+ *  005B6494   E9 103D1500      JMP .0070A1A9   ; jichi: here hookpoint#4
+ *  005B6499   84C0             TEST AL,AL
+ *  005B649B   75 16            JNZ SHORT .005B64B3
+ *  005B649D   68 D4757200      PUSH .007275D4
+ *  005B64A2   B9 F0757200      MOV ECX,.007275F0                        ; ASCII "S_ASSIGN"
+ *  005B64A7   E8 84C8FFFF      CALL .005B2D30
+ *  005B64AC   83C4 04          ADD ESP,0x4
+ *  005B64AF   5F               POP EDI
+ *  005B64B0   5E               POP ESI
+ *  005B64B1   5B               POP EBX
+ *  005B64B2   C3               RETN
+ *  005B64B3   8B8F B0020000    MOV ECX,DWORD PTR DS:[EDI+0x2B0]
+ *  005B64B9   8931             MOV DWORD PTR DS:[ECX],ESI
+ *  005B64BB   8387 B0020000 04 ADD DWORD PTR DS:[EDI+0x2B0],0x4
+ *  005B64C2   5F               POP EDI
+ *  005B64C3   5E               POP ESI
+ *  005B64C4   5B               POP EBX
+ *  005B64C5   C3               RETN
+ *  005B64C6   CC               INT3
+ *  005B64C7   CC               INT3
+ *  005B64C8   CC               INT3
+ *
+ *  The function get called to paint string:
+ *  0050B69E   CC               INT3
+ *  0050B69F   CC               INT3
+ *  0050B6A0   55               PUSH EBP
+ *  0050B6A1   8BEC             MOV EBP,ESP
+ *  0050B6A3   83E4 F8          AND ESP,0xFFFFFFF8
+ *  0050B6A6   6A FF            PUSH -0x1
+ *  0050B6A8   68 F8277000      PUSH .007027F8
+ *  0050B6AD   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  0050B6B3   50               PUSH EAX
+ *  0050B6B4   83EC 18          SUB ESP,0x18
+ *  0050B6B7   53               PUSH EBX
+ *  0050B6B8   56               PUSH ESI
+ *  0050B6B9   57               PUSH EDI
+ *  0050B6BA   A1 DCC47700      MOV EAX,DWORD PTR DS:[0x77C4DC]
+ *  0050B6BF   33C4             XOR EAX,ESP
+ *  0050B6C1   50               PUSH EAX
+ *  0050B6C2   8D4424 28        LEA EAX,DWORD PTR SS:[ESP+0x28]
+ *  0050B6C6   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  0050B6CC   8BF9             MOV EDI,ECX
+ *  0050B6CE   57               PUSH EDI
+ *  0050B6CF   E8 5CEAFFFF      CALL .0050A130
+ *  0050B6D4   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  0050B6D7   6A FF            PUSH -0x1
+ *  0050B6D9   33DB             XOR EBX,EBX
+ *  0050B6DB   53               PUSH EBX
+ *  0050B6DC   8DB7 E4000000    LEA ESI,DWORD PTR DS:[EDI+0xE4]
+ *  0050B6E2   50               PUSH EAX
+ *  0050B6E3   E8 886BEFFF      CALL .00402270
+ *  0050B6E8   895C24 14        MOV DWORD PTR SS:[ESP+0x14],EBX
+ *  0050B6EC   895C24 18        MOV DWORD PTR SS:[ESP+0x18],EBX
+ *  0050B6F0   895C24 1C        MOV DWORD PTR SS:[ESP+0x1C],EBX
+ *  0050B6F4   56               PUSH ESI
+ *  0050B6F5   8D4C24 18        LEA ECX,DWORD PTR SS:[ESP+0x18]
+ *  0050B6F9   51               PUSH ECX
+ *  0050B6FA   57               PUSH EDI
+ *  0050B6FB   895C24 3C        MOV DWORD PTR SS:[ESP+0x3C],EBX
+ *  0050B6FF   E8 6C290000      CALL .0050E070
+ *  0050B704   8D5424 14        LEA EDX,DWORD PTR SS:[ESP+0x14]
+ *  0050B708   8BCF             MOV ECX,EDI
+ *  0050B70A   E8 B1010000      CALL .0050B8C0
+ *  0050B70F   8B7424 14        MOV ESI,DWORD PTR SS:[ESP+0x14]
+ *  0050B713   C687 E0000000 01 MOV BYTE PTR DS:[EDI+0xE0],0x1
+ *  0050B71A   3BF3             CMP ESI,EBX
+ *  0050B71C   74 14            JE SHORT .0050B732
+ *  0050B71E   8B7C24 18        MOV EDI,DWORD PTR SS:[ESP+0x18]
+ *  0050B722   8BC6             MOV EAX,ESI
+ *  0050B724   E8 7751F0FF      CALL .004108A0
+ *  0050B729   56               PUSH ESI
+ *  0050B72A   E8 5C101800      CALL .0068C78B
+ *  0050B72F   83C4 04          ADD ESP,0x4
+ *  0050B732   8B4C24 28        MOV ECX,DWORD PTR SS:[ESP+0x28]
+ *  0050B736   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  0050B73D   59               POP ECX
+ *  0050B73E   5F               POP EDI
+ *  0050B73F   5E               POP ESI
+ *  0050B740   5B               POP EBX
+ *  0050B741   8BE5             MOV ESP,EBP
+ *  0050B743   5D               POP EBP
+ *  0050B744   C2 0400          RETN 0x4
+ *  0050B747   CC               INT3
+ *  0050B748   CC               INT3
+ *  0050B749   CC               INT3
+ *  0050B74A   CC               INT3
+ *  0050B74B   CC               INT3
+ *  0050B74C   CC               INT3
  */
 static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
 {
@@ -4406,9 +4823,17 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
     return false;
   }
 
+  //addr = *(DWORD *)(addr+1) + addr + 5; // change to hook to the actual address of function being called
+
   HookParam hp = {};
-  hp.address = addr + addr_offset;
-  hp.type = NO_CONTEXT|USING_STRING|FIXING_SPLIT;
+  hp.address = addr;
+  hp.type = NO_CONTEXT|USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
+  //hp.type = NO_CONTEXT|USING_STRING|FIXING_SPLIT;
+  hp.split_index = 0x10; // use [[esp]+0x10] to differentiate name and thread
+  //hp.offset = 4 * 1; // text in arg1
+
+  // Only name can be modified here, where the value of split is 0x2
+
   ConsoleOutput("vnreng: INSERT System43+");
   NewHook(hp, hookName);
 
