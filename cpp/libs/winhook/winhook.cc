@@ -1,9 +1,24 @@
 // winhook.cc
 // 5/25/2015 jichi
 #include "winhook/winhook.h"
+#include "winasm/winasmdef.h"
+#include <unordered_map>
 #include <windows.h>
 
 namespace { // unnamed
+
+// Assembled binaries
+
+const BYTE hook_template[] = {
+  s1_pushad
+  , s1_pushfd
+  , s1_push_esp
+  , s1_push_0d      // push hooked address
+  , s1_mov_ecx_0d   // ecx = $this
+  , s1_call_0d      // call @hook
+  , s1_popfd
+  , s1_popad
+};
 
 // Helper functions
 
@@ -31,9 +46,25 @@ bool protected_memcpy(void *dst, const void *src, size_t size)
 
 // Hook manager
 
+struct HookRecord
+{
+  const BYTE *originalCode; // original code data being modified
+  size_t originalCodeSize;  // size of the original code data
+};
+
 class HookManager
 {
+  std::unordered_map<DWORD, HookRecord *> m_;
 public:
+  HookManager() {}
+  ~HookManager() {}
+
+  HookRecord *lookupHook(DWORD address) const
+  {
+    auto p = m_.find(address);
+    return p == m_.end() ? nullptr : p->second;
+  }
+
   bool unhook(DWORD address)
   {
     // Not implemented

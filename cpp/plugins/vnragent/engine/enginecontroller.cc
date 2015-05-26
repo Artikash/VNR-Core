@@ -159,7 +159,7 @@ __declspec(naked) static int newHookFun()
     pushfd      // eflags
     push esp    // arg1
     call EngineControllerPrivate::globalDispatchFun
-    add esp,4   // pop esp
+    //add esp,4   // pop esp
     popfd
     popad
     //popfd
