@@ -24,6 +24,8 @@ ulong System4Engine::search(ulong startAddress, ulong stopAddress)
   //};
   //enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
   //return MemDbg::findMultiCallerAddress((ulong)::TextOutA, funcs, FuncCount, startAddress, stopAddress);
+
+  // Pattern matching is not implemented
   return 0x005C4110;    // FIXME: hook to this function will cause game to crash
 }
 
