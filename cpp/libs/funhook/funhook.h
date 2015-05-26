@@ -1,6 +1,6 @@
 #pragma once
 
-// funchook.h
+// funhook.h
 // 1/27/2013
 
 #include "funhook/funhookdef.h"

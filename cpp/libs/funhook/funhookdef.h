@@ -4,10 +4,10 @@
 // 1/27/2013 jichi
 
 #ifndef FUNHOOK_BEGIN_NAMESPACE
-# define FUNHOOK_BEGIN_NAMESPACE namespace WinHook {
+# define FUNHOOK_BEGIN_NAMESPACE namespace FunHook {
 #endif
 #ifndef FUNHOOK_END_NAMESPACE
-# define FUNHOOK_END_NAMESPACE   } // namespace WinHook
+# define FUNHOOK_END_NAMESPACE   } // namespace FunHook
 #endif
 
 FUNHOOK_BEGIN_NAMESPACE

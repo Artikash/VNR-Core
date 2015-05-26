@@ -11,10 +11,10 @@ LIBS += -lkernel32 -luser32
 DEPENDPATH += $$PWD
 
 HEADERS += \
-  $$PWD/funchook.h \
+  $$PWD/funhook.h \
   $$PWD/funhookdef.h
 SOURCES += \
-   $$PWD/funchook.cc
+   $$PWD/funhook.cc
 }
 
 # EOF
