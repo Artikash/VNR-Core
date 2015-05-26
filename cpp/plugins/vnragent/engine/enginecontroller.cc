@@ -154,7 +154,7 @@ __declspec(naked) static int newHookFun()
   //static DWORD lastArg2;
   __asm // consistent with struct HookStack
   {
-    pushfd      // 5/25/2015: need to pushfd twice according to ith, not sure if it is really needed
+    //pushfd      // 5/25/2015: pushfd twice according to ith, not sure if it is really needed
     pushad      // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
     pushfd      // eflags
     push esp    // arg1
@@ -162,7 +162,7 @@ __declspec(naked) static int newHookFun()
     add esp,4   // pop esp
     popfd
     popad
-    popfd
+    //popfd
     // TODO: instead of jmp, allow modify the stack after calling the function
     jmp EngineControllerPrivate::globalOldHookFun
   }

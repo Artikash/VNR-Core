@@ -40,7 +40,7 @@ public:
   // Hijacked function
   struct HookStack
   {
-    ulong eflags1; // pushaf
+    ulong eflags;  // pushaf
     ulong edi,     // pushad
           esi,
           ebp,
@@ -49,7 +49,6 @@ public:
           edx,
           ecx,     // this
           eax;     // 0x24
-    ulong eflags2; // pushaf
     ulong retaddr; // 0x2c, &retaddr == esp
     ulong args[1]; // 0x2e
   };
