@@ -69,7 +69,7 @@ const BYTE common_hook[] = {
   0x9c, // pushfd
   0x8d,0x54,0x24,0x28, // lea edx,[esp+0x28] ; esp value
   0x8b,0x32,     // mov esi,[edx] ; return address
-  0xb9, 0,0,0,0, // mov ecx, $ ; pointer to TexHhook
+  0xb9, 0,0,0,0, // mov ecx, $ ; pointer to TextHook
   0xe8, 0,0,0,0, // call @hook
   0x9d, // popfd
   0x61, // popad
