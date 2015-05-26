@@ -4,6 +4,11 @@
 
 WINHOOK_BEGIN_NAMESPACE
 
+bool hook(ulong address, hook_fun_t callback)
+{
+  return true;
+}
+
 WINHOOK_END_NAMESPACE
 
 // EOF

@@ -3,11 +3,16 @@
 // funhook.h
 // 1/27/2013
 
-#include "funhook/funhookdef.h"
-
 #ifdef _MSC_VER
 # include <cstddef> // for wchar_t
 #endif // _MSC_VER
+
+#ifndef FUNHOOK_BEGIN_NAMESPACE
+# define FUNHOOK_BEGIN_NAMESPACE namespace funhook {
+#endif
+#ifndef FUNHOOK_END_NAMESPACE
+# define FUNHOOK_END_NAMESPACE   } // namespace funhook
+#endif
 
 FUNHOOK_BEGIN_NAMESPACE
 

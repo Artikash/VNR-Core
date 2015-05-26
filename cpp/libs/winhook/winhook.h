@@ -5,9 +5,44 @@
 
 #include "winhook/winhookdef.h"
 
+#ifndef WINHOOK_BEGIN_NAMESPACE
+# define WINHOOK_BEGIN_NAMESPACE namespace winhook {
+#endif
+#ifndef WINHOOK_END_NAMESPACE
+# define WINHOOK_END_NAMESPACE   } // namespace winhook
+#endif
+
 WINHOOK_BEGIN_NAMESPACE
 
-int replace(dword_t addr, dword_t jump);
+// Basic types
+typedef unsigned long ulong;
+
+// Structs
+struct hook_stack
+{
+  ulong address;    // the input hooked address
+  ulong eflags;     // pushaf
+  ulong edi,        // pushad
+        esi,
+        ebp,
+        esp,
+        ebx,
+        edx,
+        ecx,        // this
+        eax;        // 0x28
+  ulong stack[1];   // beginning of the runtime stack
+};
+
+// Function parameters
+typedef void (* hook_fun_t)(hook_stack *);
+
+/**
+ *  Replace the instruction at address with a jump, invoke callback, and then return back.
+ *  @param  address  address to insert jump
+ *  @param  callback  the function call to replace
+ *  @return  if succeed
+ */
+bool hook(ulong address, hook_fun_t callback);
 
 WINHOOK_END_NAMESPACE
 
