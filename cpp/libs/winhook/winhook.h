@@ -3,8 +3,6 @@
 // winhook.h
 // 5/25/2015
 
-#include "winhook/winhookdef.h"
-
 #ifndef WINHOOK_BEGIN_NAMESPACE
 # define WINHOOK_BEGIN_NAMESPACE namespace winhook {
 #endif
@@ -43,6 +41,13 @@ typedef void (* hook_fun_t)(hook_stack *);
  *  @return  if succeed
  */
 bool hook(ulong address, hook_fun_t callback);
+
+/**
+ *  Restore hooked instruction
+ *  @param  address  address where jump is inserted
+ *  @return  if succeed
+ */
+bool unhook(ulong address);
 
 WINHOOK_END_NAMESPACE
 
