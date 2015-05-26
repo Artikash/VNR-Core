@@ -18,6 +18,13 @@ namespace { // unnamed
 
 // Assembled binaries
 
+enum { max_inst_size = 8 }; // maximum individual instruction size
+
+const BYTE jmp_tmpl[] = {
+  s1_jmp_0d
+};
+enum { jmp_tmpl_size = sizeof(hook_tmpl) };
+
 const BYTE hook_tmpl[] = {
   s1_int3   // 1
   , s1_int3 // 2
@@ -142,6 +149,15 @@ bool HookManager::hook(DWORD address, const winhook::hook_function &callback)
 {
   auto p = new HookRecord;
   p->hookFunction = callback;
+
+  BYTE jumpCode[max_inst_size] = { s1_jmp_0d };
+  int instSize = 0;
+  int jumpCodeSize = max(instSize, jmp_tmpl_size);
+
+  if (!protected_memcpy(address, jumpCode, jumpCodeSize)) {
+    delete p;
+    return false;
+  }
   m_[address] = p;
   return true;
 }
