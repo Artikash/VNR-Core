@@ -86,6 +86,10 @@ bool protected_memcpy(void *dst, const void *src, size_t size)
   return true;
 }
 
+// Type-cast helper
+//inline bool protected_memcpy(DWORD dst, DWORD src, DWORD size)
+//{ return protected_memcpy((LPVOID)dst, (LPCVOID)src, size); }
+
 // Hook manager
 
 // TODO:
@@ -97,6 +101,7 @@ struct HookRecord
   BYTE *originalCode; // original code data being modified
   size_t originalCodeSize;  // size of the original code data
   BYTE hookCode[hook_tmpl_size]; // code data to jump to
+  winhook::hook_function hookFunction;
 };
 
 class HookManager
@@ -112,32 +117,40 @@ public:
   HookManager() {}
   ~HookManager() {} // HookRecord on heap are not deleted
 
+  bool hook(DWORD address, const winhook::hook_function &callback);
+  bool unhook(DWORD address);
+
+private:
   HookRecord *lookupHook(DWORD address) const
   {
     auto p = m_.find(address);
     return p == m_.end() ? nullptr : p->second;
-  }
-
-  bool unhook(DWORD address)
-  {
-    // Not implemented
-    return false;
-  }
-
-  bool hook(DWORD address, winhook::hook_fun_t callback)
-  {
-    return true;
   }
 };
 
 HookManager *hookManager;
 HookManager *createHookManager() { return new HookManager; }
 
+bool HookManager::unhook(DWORD address)
+{
+  if (auto p = lookupHook(address))
+    return protected_memcpy((LPVOID)address, (LPCVOID)p->originalCode, p->originalCodeSize);
+  return false;
+}
+
+bool HookManager::hook(DWORD address, const winhook::hook_function &callback)
+{
+  auto p = new HookRecord;
+  p->hookFunction = callback;
+  m_[address] = p;
+  return true;
+}
+
 } // unnamed namespace
 
 WINHOOK_BEGIN_NAMESPACE
 
-bool hook(ulong address, hook_fun_t callback)
+bool hook(ulong address, const hook_function &callback)
 {
   if (!::hookManager)
     ::hookManager = ::createHookManager();

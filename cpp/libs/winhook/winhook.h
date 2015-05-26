@@ -3,6 +3,8 @@
 // winhook.h
 // 5/25/2015
 
+#include <functional>
+
 #ifndef WINHOOK_BEGIN_NAMESPACE
 # define WINHOOK_BEGIN_NAMESPACE namespace winhook {
 #endif
@@ -32,7 +34,7 @@ struct hook_stack
 };
 
 // Function parameters
-typedef void (* hook_fun_t)(hook_stack *);
+typedef std::function<void (hook_stack *)> hook_function;
 
 /**
  *  Replace the instruction at address with a jump, invoke callback, and then return back.
@@ -40,7 +42,7 @@ typedef void (* hook_fun_t)(hook_stack *);
  *  @param  callback  the function call to replace
  *  @return  if succeed
  */
-bool hook(ulong address, hook_fun_t callback);
+bool hook(ulong address, const hook_function &callback);
 
 /**
  *  Restore hooked instruction
