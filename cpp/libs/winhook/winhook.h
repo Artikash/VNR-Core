@@ -20,7 +20,7 @@ typedef unsigned long ulong;
 // Structs
 struct hook_stack
 {
-  ulong address;    // the input hooked address
+  //ulong address;    // the input hooked address
   ulong eflags;     // pushaf
   ulong edi,        // pushad
         esi,

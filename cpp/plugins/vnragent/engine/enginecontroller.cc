@@ -12,6 +12,7 @@
 #include "util/codepage.h"
 #include "util/textutil.h"
 //#include "windbg/util.h"
+#include "winhook/winhook.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
 //#include "mhook/mhook.h" // must after windows.h
@@ -28,8 +29,8 @@ class EngineControllerPrivate
   typedef EngineController Q;
 
   static Engine::address_type globalOldHookFun;
-  static EngineModel::hook_function globalDispatchFun;
 public:
+  static EngineModel::hook_function globalDispatchFun;
   static Q *globalInstance;
 
   enum { ExchangeInterval = 10 };
@@ -228,8 +229,14 @@ bool EngineController::attach()
   //ulong addr = 0x41af90; // レミニセンス function address
   if (addr) {
     DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
+    auto fun = d_->globalDispatchFun;
+    auto callback = [addr, fun](winhook::hook_stack *s) {
+      fun((EngineModel::HookStack *)s);
+    };
+    winhook::hook(addr, callback);
+
     //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
-    d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
+    //d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
     return true;
   }
   return false;

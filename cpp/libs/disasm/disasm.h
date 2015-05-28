@@ -4,7 +4,7 @@
 
 // Include typedef of BYTE
 //#include <windef.h>
-#include <windows.h>
+//#include <windows.h>
 
 //#ifdef QT_CORE_LIB
 //# include <qt_windows.h>
@@ -20,7 +20,7 @@
 #endif
 
 DISASM_BEGIN_NAMESPACE
-int disasm(const BYTE *opcode0); // return: op length if success, 0 if error
+int disasm(const void *opcode0); // return: op length if success, 0 if error
 DISASM_END_NAMESPACE
 
 // EOF

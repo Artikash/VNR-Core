@@ -4,6 +4,7 @@
 CONFIG += noqtgui dll
 include(../../../config.pri)
 include($$LIBDIR/detoursutil/detoursutil.pri)
+include($$LIBDIR/disasm/disasm.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 #include($$LIBDIR/mhook/mhook.pri)
@@ -29,7 +30,6 @@ include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/winsinglemutex/winsinglemutex.pri)
 
-#include($$LIBDIR/disasm/disasm.pri)
 #include($$LIBDIR/vnragent/vnragent.pri)
 
 # Services

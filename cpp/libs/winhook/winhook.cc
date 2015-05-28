@@ -2,8 +2,9 @@
 // 5/25/2015 jichi
 #include "winhook/winhook.h"
 #include "winasm/winasmdef.h"
-#include <unordered_map>
+#include "disasm/disasm.h"
 #include <windows.h>
+#include <vector>
 
 //#define WINHOOK_THREADSAFE // lock hook/unhook functions
 
@@ -18,55 +19,56 @@ namespace { // unnamed
 
 // Assembled binaries
 
-enum { max_inst_size = 8 }; // maximum individual instruction size
+enum { max_ins_size = 8 }; // maximum individual instruction size
 
-const BYTE jmp_tmpl[] = {
-  s1_jmp_0d
-};
-enum { jmp_tmpl_size = sizeof(hook_tmpl) };
+//const BYTE jmp_tpl[] = {
+//  s1_jmp_0d
+//};
+//enum { jmp_tpl_size = sizeof(hook_tpl) };
 
-const BYTE hook_tmpl[] = {
-  s1_int3   // 1
-  , s1_int3 // 2
-  , s1_int3 // 3
-  , s1_int3 // 4
-  , s1_int3 // 5
-  , s1_int3 // 6
-  , s1_int3 // 7
-  , s1_int3 // 8
+enum { jmp_size = 5 };
+/**
+ *  @param  tpl  template code data
+ *  @param  address  target address to jump to
+ */
+inline void set_jmp_address(BYTE *tpl, DWORD address)
+{ *(DWORD *)(tpl + 1) = address - (DWORD)tpl - jmp_size; }
 
-  , s1_pushad
-  , s1_pushfd
-  , s1_push_esp
-  , s1_push_0d      // -22  push hooked address
-  , s1_mov_ecx_0d   // -17  ecx = $this
-  , s1_call_0d      // -12  call @hook
-  , s1_popfd        // -7
-  , s1_popad        // -6
-  , s1_jmp_0d       // -5   jmp after the hooked address
-};
-enum { hook_tmpl_size = sizeof(hook_tmpl) };
+//inline DWORD compute_jmp_operand(DWORD src, DWORD dst)
+//{ return dst - src - jmp_size; }
+
+#define hook_tpl_init \
+    s1_pushad       /* 0 */ \
+  , s1_pushfd       /* 1 */ \
+  , s1_push_esp     /* 2 */ \
+  , s1_mov_ecx_0d   /* 3    ecx = $this */ \
+  , s1_call_0d      /* 8    call @hook */ \
+  , s1_popfd        /* 13 */ \
+  , s1_popad        /* 14 */ \
+  , s1_jmp_0d       /* 15   jmp after the hooked address  */
+
+const BYTE hook_tpl[] = { hook_tpl_init }; // used to calculate code size
+enum { hook_tpl_size = sizeof(hook_tpl) };
 
 /**
- *  @param  tmpl  template code data
+ *  @param  tpl  template code data
  *  @param  address  the address to jump to
  *  @param  method  class method
  *  @param  self  class pointer or null
  *  @param  argument  the second argument to push after esp, supposed to be hooked address
  */
-inline void set_hook_tmpl(BYTE *tmpl, DWORD address, DWORD method, DWORD self = 0, DWORD argument = 0)
+inline void set_hook_tpl(BYTE *tpl, DWORD address, DWORD method, DWORD self = 0)
 {
   enum {
-    hook_tmpl_push_offset = hook_tmpl_size -22    // offset of s1_push_0d
-    , hook_tmpl_ecx_offset = hook_tmpl_size -17   // offset of s1_mov_ecx_0d
-    , hook_tmpl_call_offset = hook_tmpl_size -12  // offset of s1_call_0d
-    , hook_tmpl_jmp_offset = hook_tmpl_size -5    // offset of s1_jmp_0d
+    hook_tpl_ecx_offset = 3 + 1     // offset of s1_mov_ecx_0d
+    , hook_tpl_call_offset = 8 + 1  // offset of s1_call_0d
+    , hook_tpl_jmp_offset = 15 + 1  // offset of s1_jmp_0d
   };
 
-  *(DWORD *)(tmpl + hook_tmpl_push_offset) = argument;
-  *(DWORD *)(tmpl + hook_tmpl_call_offset) = method;
-  *(DWORD *)(tmpl + hook_tmpl_ecx_offset) = self;
-  *(DWORD *)(tmpl + hook_tmpl_jmp_offset) = address;
+  //*(DWORD *)(tpl + hook_tpl_push_offset) = argument;
+  *(DWORD *)(tpl + hook_tpl_call_offset) = method;
+  *(DWORD *)(tpl + hook_tpl_ecx_offset) = self;
+  *(DWORD *)(tpl + hook_tpl_jmp_offset) = address - (DWORD)tpl - hook_tpl_size;
 }
 
 // Helper functions
@@ -82,7 +84,7 @@ bool protected_memcpy(void *dst, const void *src, size_t size)
 {
   DWORD pid = ::GetCurrentProcessId();
   DWORD oldProtect;
-  HANDLE hProc = ::OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, FALSE, pid);
+  HANDLE hProc = ::OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, false, pid);
   if (!hProc)
     return false;
   if (!::VirtualProtectEx(hProc, dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
@@ -91,6 +93,15 @@ bool protected_memcpy(void *dst, const void *src, size_t size)
   DWORD newProtect;
   ::VirtualProtectEx(hProc, dst, size, oldProtect, &newProtect); // the error code is not checked for this function
   return true;
+}
+
+/**
+ *  @param  address  instruction address
+ *  @return  size of the instruction at the address
+ */
+size_t get_ins_size(DWORD address)
+{
+  return disasm((LPCVOID)address);
 }
 
 // Type-cast helper
@@ -103,17 +114,42 @@ bool protected_memcpy(void *dst, const void *src, size_t size)
 // 1. Add win_mutex<CRITICAL_SECTON> to hook/unhook functions, add define/undefine for whether enable it
 // 2. finish hook function
 // 3. finish unhook function
+
 struct HookRecord
 {
-  BYTE *originalCode; // original code data being modified
-  size_t originalCodeSize;  // size of the original code data
-  BYTE hookCode[hook_tmpl_size]; // code data to jump to
+  typedef HookRecord Self;
+
+  DWORD address; // the address being hooked
+  size_t instructionSize;  // actual size of the instruction at the address
+  BYTE code[hook_tpl_size + max_ins_size]; // code data to jump to
   winhook::hook_function hookFunction;
+
+  //static void __fastcall callback(void *ecx, void *edx, DWORD esp);
+  static void __thiscall callback(Self *self, DWORD esp)
+  { self->hookFunction((winhook::hook_stack *)esp); }
+
+  /**
+   *  @param  address   address to hook
+   *  @param  instructionSize  size of the instruction at address
+   *  @param  fun   hook function
+   */
+  HookRecord(DWORD address, DWORD instructionSize, const winhook::hook_function &fun)
+    : address(address)
+    , instructionSize(instructionSize)
+    , hookFunction(fun)
+  {
+    ::memcpy(code, hook_tpl, hook_tpl_size);
+    ::memcpy(code + hook_tpl_size, (LPCVOID)address, instructionSize);
+    ::memset(code + hook_tpl_size + instructionSize, s1_int3, max_ins_size - instructionSize);
+
+    // Next instruction to jump to is address + addressSize
+    set_hook_tpl(code, address + instructionSize, (DWORD)&Self::callback, (DWORD)this);
+  }
 };
 
 class HookManager
 {
-  std::unordered_map<DWORD, HookRecord *> m_;
+  std::vector<HookRecord *> hooks_;
 
 public:
 #ifdef WINHOOK_THREADSAFE
@@ -124,43 +160,42 @@ public:
   HookManager() {}
   ~HookManager() {} // HookRecord on heap are not deleted
 
-  bool hook(DWORD address, const winhook::hook_function &callback);
-  bool unhook(DWORD address);
-
-private:
-  HookRecord *lookupHook(DWORD address) const
+  bool hook(DWORD address, const winhook::hook_function &callback)
   {
-    auto p = m_.find(address);
-    return p == m_.end() ? nullptr : p->second;
+    size_t instructionSize = get_ins_size(address);
+    if (!instructionSize)
+      return false;
+    HookRecord *h = new HookRecord(address, instructionSize, callback);
+
+    BYTE jumpCode[max_ins_size] = { s1_jmp_0d };
+    int jumpCodeSize = max(instructionSize, jmp_size);
+    set_jmp_address(jumpCode, address);
+
+    if (!protected_memcpy((LPVOID)address, jumpCode, jumpCodeSize)) {
+      delete h;
+      return false;
+    }
+    hooks_.push_back(h);
+    return true;
+  }
+
+  bool unhook(DWORD address)
+  {
+    for (auto it = hooks_.begin(); it != hooks_.end(); ++it) {
+      HookRecord *p = *it;
+      if (p->address == address) {
+        bool ret = protected_memcpy((LPVOID)address, p->code + hook_tpl_size, p->instructionSize);
+        hooks_.erase(it);
+        delete p; // this will crash if the hook code is being executed
+        return ret;
+      }
+    }
+    return false;
   }
 };
 
+// Global variable
 HookManager *hookManager;
-HookManager *createHookManager() { return new HookManager; }
-
-bool HookManager::unhook(DWORD address)
-{
-  if (auto p = lookupHook(address))
-    return protected_memcpy((LPVOID)address, (LPCVOID)p->originalCode, p->originalCodeSize);
-  return false;
-}
-
-bool HookManager::hook(DWORD address, const winhook::hook_function &callback)
-{
-  auto p = new HookRecord;
-  p->hookFunction = callback;
-
-  BYTE jumpCode[max_inst_size] = { s1_jmp_0d };
-  int instSize = 0;
-  int jumpCodeSize = max(instSize, jmp_tmpl_size);
-
-  if (!protected_memcpy(address, jumpCode, jumpCodeSize)) {
-    delete p;
-    return false;
-  }
-  m_[address] = p;
-  return true;
-}
 
 } // unnamed namespace
 
@@ -169,7 +204,7 @@ WINHOOK_BEGIN_NAMESPACE
 bool hook(ulong address, const hook_function &callback)
 {
   if (!::hookManager)
-    ::hookManager = ::createHookManager();
+    ::hookManager = new HookManager;
   HOOK_MANAGER_LOCK;
   return ::hookManager->hook(address, callback);
 }
