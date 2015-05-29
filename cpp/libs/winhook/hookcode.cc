@@ -1,6 +1,6 @@
-// winhook.cc
+// hookcode.cc
 // 5/25/2015 jichi
-#include "winhook/winhook.h"
+#include "winhook/hookcode.h"
 #include "winasm/winasmdef.h"
 #include "disasm/disasm.h"
 #include <windows.h>
@@ -151,8 +151,7 @@ BYTE *HookRecord::create_code(DWORD address, DWORD method, DWORD self, DWORD ins
   , s1_mov_ecx_0d   /* 3    ecx = $this */ \
   , s1_call_0d      /* 8    call @hook */ \
   , s1_popfd        /* 13 */ \
-  , s1_popad        /* 14 */ \
-  //, s1_jmp_0d       /* 15   jmp after the hooked address  */
+  , s1_popad        /* 14 */
   enum {
     prolog_ecx_offset = 3 + 1     // offset of s1_mov_ecx_0d
     , prolog_call_offset = 8 + 1  // offset of s1_call_0d

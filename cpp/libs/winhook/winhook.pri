@@ -10,8 +10,11 @@ DEFINES += WITH_LIB_WINHOOK
 
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/winhook.h
-SOURCES += $$PWD/winhook.cc
+HEADERS += \
+  $$PWD/hookcode.h \
+  $$PWD/hookdef.h
+SOURCES += \
+  $$PWD/hookcode.cc
 }
 
 # EOF

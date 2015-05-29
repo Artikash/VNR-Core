@@ -1,21 +1,12 @@
 #pragma once
 
-// winhook.h
+// hookcode.h
 // 5/25/2015
 
+#include "winhook/hookdef.h"
 #include <functional>
 
-#ifndef WINHOOK_BEGIN_NAMESPACE
-# define WINHOOK_BEGIN_NAMESPACE namespace winhook {
-#endif
-#ifndef WINHOOK_END_NAMESPACE
-# define WINHOOK_END_NAMESPACE   } // namespace winhook
-#endif
-
 WINHOOK_BEGIN_NAMESPACE
-
-// Basic types
-typedef unsigned long ulong;
 
 // Structs
 struct hook_stack
