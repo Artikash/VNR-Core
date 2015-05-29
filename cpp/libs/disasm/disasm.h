@@ -21,7 +21,7 @@
 
 DISASM_BEGIN_NAMESPACE
 /**
- *  Get the length of the instruction.
+ *  This function can do more, but currently only used to estimate the length of an instruction.
  *  Warning: The current implementation is stateful and hence not thread-safe.
  *  @param  address of the instruction to look at
  *  @return  length of the instruction at the address or 0 if failed
