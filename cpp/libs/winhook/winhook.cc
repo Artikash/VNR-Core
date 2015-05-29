@@ -123,13 +123,15 @@ public:
   bool hook() const // assume is valid
   {
     //assert(valid());
-    BYTE jmpCode[max_ins_size];
     int jmpCodeSize = max(instructionSize_, jmp_ins_size);
+    BYTE *jmpCode = new BYTE[jmpCodeSize];
     jmpCode[0] = s1_jmp_;
     *(DWORD *)(jmpCode + 1) = address_ + instructionOffset_ - ((DWORD)jmpCode + jmp_ins_size);
     ::memset(jmpCode, s1_int3, jmpCodeSize - jmp_ins_size);
 
-    return protected_memcpy((LPVOID)address_, jmpCode, jmpCodeSize);
+    bool ret = protected_memcpy((LPVOID)address_, jmpCode, jmpCodeSize);
+    delete jmpCode;
+    return ret;
   }
 
   bool unhook() const // assume is valid
@@ -205,9 +207,13 @@ public:
 
   bool hook(DWORD address, const winhook::hook_function &callback)
   {
-    size_t instructionSize = get_ins_size(address);
-    if (!instructionSize)
-      return false;
+    size_t instructionSize = 0;
+    while (instructionSize < jmp_ins_size) {
+      size_t size = get_ins_size(address);
+      if (!size) // failed to decode instruction
+        return false;
+      instructionSize += size;
+    }
     HookRecord *h = new HookRecord(address, instructionSize, callback);
     if (!h->isValid() || !h->hook()) {
       delete h;
