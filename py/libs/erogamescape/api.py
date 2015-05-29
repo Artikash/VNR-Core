@@ -193,10 +193,12 @@ if __name__ == '__main__':
   api = GameTableApi()
   t = 20042
   t = 11825
+  t = 22083
   def test_game():
     q = api.query(t)
     #print q
     for it in q:
+      print it['sellday']
       print it['dmm']
       print it['furigana']
       print it['digiket']
@@ -225,7 +227,7 @@ if __name__ == '__main__':
     s = proxyrequests.Session(site, session=s, allows_caching=True)
     GameTableApi.session = s
 
-  enable_proxy()
+  #enable_proxy()
   test_game()
 
 # EOF

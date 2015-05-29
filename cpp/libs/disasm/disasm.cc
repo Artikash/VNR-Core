@@ -43,7 +43,7 @@ BYTE disasm_seg     // CS DS ES SS FS GS
 } // unnamed namespace
 
 // return: length if success, 0 if error
-int disasm(const void *opcode0)
+size_t disasm(const void *opcode0)
 {
   const BYTE *opcode = (const BYTE *)opcode0;
 

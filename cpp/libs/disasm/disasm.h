@@ -20,7 +20,13 @@
 #endif
 
 DISASM_BEGIN_NAMESPACE
-int disasm(const void *opcode0); // return: op length if success, 0 if error
+/**
+ *  Get the length of the instruction.
+ *  Warning: The current implementation is stateful and hence not thread-safe.
+ *  @param  address of the instruction to look at
+ *  @return  length of the instruction at the address or 0 if failed
+ */
+size_t disasm(const void *address);
 DISASM_END_NAMESPACE
 
 // EOF
