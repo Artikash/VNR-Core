@@ -1838,7 +1838,7 @@ class MainObject(QObject):
       #  dprint("update translate scripts later")
       #  skevents.runlater(dm.updateTranslationScripts)
 
-    self.showReferenceView(35391)
+    #self.showReferenceView()
     #return
 
     #dprint("warm up translators")
