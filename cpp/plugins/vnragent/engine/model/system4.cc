@@ -107,7 +107,7 @@ public:
 bool System4Engine::attach()
 {
   DWORD addr = 0x005C71E0;
-  ScenarioHook *h = new ScenarioHook;
+  ScenarioHook *h = new ScenarioHook; // FIXME: this variable is never deleted
   return winhook::hook_both(addr
     , std::bind(&ScenarioHook::hookBefore, h, std::placeholders::_1)
     , std::bind(&ScenarioHook::hookAfter, h, std::placeholders::_1)
