@@ -28,9 +28,7 @@ class EngineControllerPrivate
 {
   typedef EngineController Q;
 
-  static Engine::address_type globalOldHookFun;
 public:
-  static EngineModel::hook_function globalDispatchFun;
   static Q *globalInstance;
 
   enum { ExchangeInterval = 10 };
@@ -46,16 +44,12 @@ public:
              *decoder,
              *spaceCodec;
 
-  Engine::address_type oldHookFun;
-
   bool finalized;
 
-public:
   EngineControllerPrivate(EngineModel *model)
     : model(model)
     , codePage(0)
     , encoder(nullptr), decoder(nullptr), spaceCodec(nullptr)
-    , oldHookFun(0)
     , finalized(false)
   {}
 
@@ -63,10 +57,6 @@ public:
   {
     if (!finalized) {
       finalizeCodecs();
-
-      globalOldHookFun = oldHookFun;
-      globalDispatchFun = model->hookFunction;
-
       finalized = true;
     }
   }
@@ -138,36 +128,6 @@ public:
 };
 
 EngineController *EngineControllerPrivate::globalInstance;
-Engine::address_type EngineControllerPrivate::globalOldHookFun;
-EngineModel::hook_function EngineControllerPrivate::globalDispatchFun;
-
-/**
- *  The stack must be consistent with struct HookStack
- *
- *  Note for detours
- *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
- *  - oldHookFun is the address to a code segment that jmp back to the original function
- */
-
-__declspec(naked) static int newHookFun()
-{
-  // The push order must be consistent with struct HookStack in enginemodel.h
-  //static DWORD lastArg2;
-  __asm // consistent with struct HookStack
-  {
-    //pushfd      // 5/25/2015: pushfd twice according to ith, not sure if it is really needed
-    pushad      // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
-    pushfd      // eflags
-    push esp    // arg1
-    call EngineControllerPrivate::globalDispatchFun
-    //add esp,4   // pop esp
-    popfd
-    popad
-    //popfd
-    // TODO: instead of jmp, allow modify the stack after calling the function
-    jmp EngineControllerPrivate::globalOldHookFun
-  }
-}
 
 /** Public class */
 
@@ -218,30 +178,32 @@ bool EngineController::attach()
 {
   if (d_->model->attachFunction)
     return d_->model->attachFunction();
-  if (!d_->model->searchFunction)
-    return false;
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
-  ulong addr = d_->model->searchFunction(startAddress, stopAddress);
-  //ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
-  //ulong addr = 0x41af90; // レミニセンス function address
-  if (addr) {
-    DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
-    auto d = d_;
-    auto callback = [addr, d](winhook::hook_stack *s) -> bool {
-      if (d->globalDispatchFun)
-        d->globalDispatchFun((EngineModel::HookStack *)s);
-      return true;
-    };
-    return winhook::hook_before(addr, callback);
-
-    //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
-    //d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
-    return true;
-  }
   return false;
+
+  //if (!d_->model->searchFunction)
+  //  return false;
+  //ulong startAddress,
+  //      stopAddress;
+  //if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  //  return false;
+  //ulong addr = d_->model->searchFunction(startAddress, stopAddress);
+  ////ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
+  ////ulong addr = 0x41af90; // レミニセンス function address
+  //if (addr) {
+  //  DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
+  //  auto d = d_;
+  //  auto callback = [addr, d](winhook::hook_stack *s) -> bool {
+  //    if (d->globalDispatchFun)
+  //      d->globalDispatchFun((EngineModel::HookStack *)s);
+  //    return true;
+  //  };
+  //  return winhook::hook_before(addr, callback);
+
+  //  //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
+  //  //d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
+  //  return true;
+  //}
+  //return false;
 }
 
 bool EngineController::load()
@@ -506,4 +468,33 @@ int WINAPI newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCh
 }
     ::oldMultiByteToWideChar = Engine::replaceFunction<MultiByteToWideCharFun>(addr, ::newMultiByteToWideChar);
     ::oldWideCharToMultiByte = Engine::replaceFunction<WideCharToMultiByteFun>(addr, ::newWideCharToMultiByte);
+*/
+
+/**
+ *  The stack must be consistent with struct HookStack
+ *
+ *  Note for detours
+ *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
+ *  - oldHookFun is the address to a code segment that jmp back to the original function
+ */
+/*
+__declspec(naked) static int newHookFun()
+{
+  // The push order must be consistent with struct HookStack in enginemodel.h
+  //static DWORD lastArg2;
+  __asm // consistent with struct HookStack
+  {
+    //pushfd      // 5/25/2015: pushfd twice according to ith, not sure if it is really needed
+    pushad      // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
+    pushfd      // eflags
+    push esp    // arg1
+    call EngineControllerPrivate::globalDispatchFun
+    //add esp,4   // pop esp
+    popfd
+    popad
+    //popfd
+    // TODO: instead of jmp, allow modify the stack after calling the function
+    jmp EngineControllerPrivate::globalOldHookFun
+  }
+}
 */

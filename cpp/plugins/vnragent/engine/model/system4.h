@@ -9,13 +9,12 @@
 class System4Engine : public EngineModel
 {
   SK_EXTEND_CLASS(System4Engine, EngineModel)
-  //static ulong search(ulong startAddress, ulong stopAddress);
-  //static void hook(HookStack *stack);
   static bool attach();
 public:
   System4Engine()
   {
     name = "System4";
+    wideChar = false;
     matchFiles << "AliceStart.ini";
     attachFunction = &Self::attach;
     //searchFunction = &Self::search;
