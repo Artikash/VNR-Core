@@ -59,7 +59,7 @@ void System4Engine::hook(HookStack *stack)
   //if (*(WORD *)testAddr != 0x84 || // compare [[edi+0xb0]] with 0x84
   //    *(DWORD *)(testAddr - 0x16) != 0x5b)   // compare [[edi+0xb0]- 0x16] with 0x5b ('[')
   //  return;
-  enum : DWORD { ScenarioSplit = 0x27f2 };
+  enum : WORD { ScenarioSplit = 0x27f2 };
   DWORD split = *(WORD *)(stack->edi + 0xb0);
   if (split != ScenarioSplit) // only translate the scenario thread
     return;
@@ -77,10 +77,8 @@ void System4Engine::hook(HookStack *stack)
   //int size = arg->size; // size not used as not needed
   data_ = EngineController::instance()->dispatchTextA(text, sig, role);
 
-  QByteArray *data = new QByteArray(data_);
-
-  arg->text = data->constData(); // reset arg3
-  arg->size = data->size() + 1; // +1 for the nullptr
+  arg->text = data_.constData(); // reset arg3
+  arg->size = data_.size() + 1; // +1 for the nullptr
 }
 
 // EOF
