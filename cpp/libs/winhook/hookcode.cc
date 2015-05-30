@@ -17,76 +17,95 @@ class HookRecord
 {
   typedef HookRecord Self;
 
-  DWORD address_;           // the address being hooked
-  BYTE *code_;              // code data to jump to, allocated with VirtualAlloc
-  DWORD instructionSize_,   // actual size of the instruction at the address
-        instructionOffset_; // index of the instruction to the code
-  winhook::hook_function callback_; // hook callback
+  DWORD address_,        // the address being hooked
+        originalSize_;   // actual size of the instruction at the address
+  BYTE *originalCode_,   // original code data as backup, allocated using new
+       *hookCode_;       // code data to jump to, allocated with VirtualAlloc
+  winhook::hook_function before_, // called before instruction
+                         after_;  // called after instruction
 
   //static void __thiscall callback(Self *self, DWORD esp) // callback from the function
-  static void __fastcall callback(Self *ecx, void *edx, DWORD esp)
+  static void __fastcall callBefore(Self *ecx, void *edx, DWORD esp)
   {
     CC_UNUSED(edx);
-    ecx->callback_((winhook::hook_stack *)esp);
+    if (ecx->before_)
+      ecx->before_((winhook::hook_stack *)esp);
+  }
+
+  static void __fastcall callAfter(Self *ecx, void *edx, DWORD esp)
+  {
+    CC_UNUSED(edx);
+    if (ecx->after_)
+      ecx->after_((winhook::hook_stack *)esp);
   }
 
   /**
    *  @param  address  instruction to hook
-   *  @param  method  callback method
+   *  @param  originalSize  total size of the instruction to replace
    *  @param  self  callback ecx
-   *  @param  instructionSize
-   *  @param[out]  instructionOffset  index of the instruction from the beginning of the code
+   *  @param  before  callback before
+   *  @param  after  callback after
    *  @return  code data created using VirtualAlloc
    */
-  static BYTE *create_code(DWORD address, DWORD method, DWORD self, DWORD instructionSize, DWORD *instructionOffset);
+  static BYTE *create_hook_code(DWORD address, DWORD originalSize, DWORD self, DWORD before, DWORD after);
 
 public:
   /**
    *  @param  address   address to hook
-   *  @param  instructionSize  size of the instruction at address
-   *  @param  fun   hook function
+   *  @param  before   hook function
+   *  @param  after   hook function
    */
-  HookRecord(DWORD address, DWORD instructionSize, const winhook::hook_function &fun)
+  HookRecord(DWORD address, const winhook::hook_function &before, const winhook::hook_function &after)
     : address_(address)
-    , instructionSize_(instructionSize)
-    , callback_(fun)
-  { code_ = create_code(address, (DWORD)&Self::callback, (DWORD)this, instructionSize, &instructionOffset_); }
+    , originalSize_(0)
+    , originalCode_(nullptr)
+    , hookCode_(nullptr)
+    , before_(before)
+    , after_(after)
+  {
+    while (originalSize_ < jmp_ins_size) {
+      size_t size = ::disasm(LPCVOID(address + originalSize_));
+      if (!size) // failed to decode instruction
+        return;
+      originalSize_ += size;
+    }
+    originalCode_ = new BYTE[originalSize_];
+    ::memcpy(originalCode_, (LPCVOID)address, originalSize_);
+    hookCode_ = create_hook_code(address, originalSize_, (DWORD)this, (DWORD)&Self::callBefore, (DWORD)&Self::callAfter);
+  }
 
-  ~HookRecord() { if (code_) ::VirtualFree(code_, 0, MEM_RELEASE); }
+  ~HookRecord()
+  {
+    if (originalCode_) delete originalCode_;
+    if (hookCode_) ::VirtualFree(hookCode_, 0, MEM_RELEASE);
+  }
 
-  bool isValid() const { return code_ && address_ && instructionSize_ && instructionOffset_; }
+  bool isValid() const { return address_ && hookCode_; }
 
   DWORD address() const { return address_; }
 
   bool hook() const // assume is valid
   {
     //assert(valid());
-    BYTE *jmpCode = new BYTE[instructionSize_];
+    BYTE *jmpCode = new BYTE[originalSize_];
     jmpCode[0] = s1_jmp_;
-    *(DWORD *)(jmpCode + 1) = (DWORD)code_ - (address_ + jmp_ins_size);
-    if (instructionSize_ > jmp_ins_size)
-      ::memset(jmpCode, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
+    *(DWORD *)(jmpCode + 1) = (DWORD)hookCode_ - (address_ + jmp_ins_size);
+    if (originalSize_ > jmp_ins_size)
+      ::memset(jmpCode, s1_nop, originalSize_ - jmp_ins_size); // patch nop
 
-    bool ret = detail::protected_memcpy((LPVOID)address_, jmpCode, instructionSize_);
+    bool ret = detail::protected_memcpy((LPVOID)address_, jmpCode, originalSize_);
     delete jmpCode;
     return ret;
   }
 
   bool unhook() const // assume is valid
-  {
-    BYTE *instructionCode = new BYTE[instructionSize_];
-    ::memcpy(instructionCode, code_ + instructionOffset_, instructionSize_);
-    detail::move_code(instructionCode, instructionSize_, (DWORD)code_ + instructionOffset_, address_);
-    bool ret = detail::protected_memcpy((LPVOID)address_, instructionCode, instructionSize_);
-    delete instructionCode;
-    return ret;
-  }
+  { return detail::protected_memcpy((LPVOID)address_, originalCode_, originalSize_); }
 };
 
-BYTE *HookRecord::create_code(DWORD address, DWORD method, DWORD self, DWORD instructionSize, DWORD *instructionOffset)
+BYTE *HookRecord::create_hook_code(DWORD address, DWORD originalSize, DWORD self, DWORD before, DWORD after)
 {
 // Beginning of the hooked code
-#define prolog_init \
+#define tpl_init \
     s1_pushad       /* 0 */ \
   , s1_pushfd       /* 1 */ \
   , s1_push_esp     /* 2 */ \
@@ -95,41 +114,55 @@ BYTE *HookRecord::create_code(DWORD address, DWORD method, DWORD self, DWORD ins
   , s1_popfd        /* 13 */ \
   , s1_popad        /* 14 */
   enum {
-    prolog_ecx_offset = 3       // offset of s1_mov_ecx_0d
-    , prolog_call_offset = 8    // offset of s1_call_0d
+    tpl_ecx_offset = 3       // offset of s1_mov_ecx_0d
+    , tpl_call_offset = 8    // offset of s1_call_0d
   };
 
 // Ending of the hooked code, with the original instruction in the middle
 //#define epilog_init
 //  s1_jmp_0d // jmp 0,0,0,0
 
-  static const BYTE prolog[] = { prolog_init };
-  //static const BYTE epilog[] = { epilog_init };
-  enum { prolog_size = sizeof(prolog) };  // size of the prolog code
-  enum { epilog_size = jmp_ins_size };    // size of the epilog code
-  *instructionOffset = prolog_size; // output
+  DWORD instructionSize = ::disasm((LPVOID)address);
 
-  size_t codeSize = prolog_size + instructionSize + epilog_size;
+  static const BYTE tpl[] = { tpl_init };
+  enum { tpl_size = sizeof(tpl) };  // size of the tpl code
+
+  size_t codeSize = tpl_size + originalSize + tpl_size + jmp_ins_size;
   if (codeSize % 2)
     codeSize++; // round code size to 2, patch int3
 
   BYTE *code = (BYTE *)::VirtualAlloc(nullptr, codeSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 
-  ::memcpy(code, prolog, prolog_size);
-  detail::set_call_ins(code + prolog_call_offset, method);
-  *(DWORD *)(code + prolog_ecx_offset + 1) = self;
+  ::memcpy(code, tpl, tpl_size);
+  *(DWORD *)(code + tpl_ecx_offset + 1) = self;
+  detail::set_call_ins(code + tpl_call_offset, before);
 
-  ::memcpy(code + prolog_size, (LPCVOID)address, instructionSize);
-  detail::move_code(code + prolog_size, instructionSize, address, (DWORD)code + prolog_size);
+  {
+    BYTE *data = code + tpl_size;
+    ::memcpy(data, (LPCVOID)address, instructionSize);
+    detail::move_code(data, instructionSize, address, (DWORD)data);
+  }
 
-  detail::set_jmp_ins(code + prolog_size + instructionSize, address + instructionSize);
+  {
+    BYTE *data = code + tpl_size + instructionSize;
+    ::memcpy(data, tpl, tpl_size);
+    *(DWORD *)(data + tpl_ecx_offset + 1) = self;
+    detail::set_call_ins(data + tpl_call_offset, after);
+  }
+
+  if (instructionSize < originalSize) {
+    BYTE *data = code + tpl_size + instructionSize + tpl_size;
+    ::memcpy(data, (LPCVOID)(address + instructionSize), originalSize - instructionSize);
+    detail::move_code(data, originalSize - instructionSize, address, (DWORD)data);
+  }
+
+  detail::set_jmp_ins(code + tpl_size + originalSize + tpl_size, address + originalSize);
 
   if (codeSize % 2)
     code[codeSize - 1] = s1_nop; // patch the last byte with int3 to be aligned;
 
   return code;
-#undef prolog_init
-//#undef epilog_init
+#undef tpl_init
 }
 
 class HookManager
@@ -140,16 +173,9 @@ public:
   HookManager() {}
   ~HookManager() {} // HookRecord on heap are not deleted
 
-  bool hook(DWORD address, const winhook::hook_function &callback)
+  bool hook(DWORD address, const winhook::hook_function &before, const winhook::hook_function &after)
   {
-    size_t instructionSize = 0;
-    while (instructionSize < jmp_ins_size) {
-      size_t size = ::disasm((LPCVOID)address);
-      if (!size) // failed to decode instruction
-        return false;
-      instructionSize += size;
-    }
-    HookRecord *h = new HookRecord(address, instructionSize, callback);
+    HookRecord *h = new HookRecord(address, before, after);
     if (!h->isValid() || !h->hook()) {
       delete h;
       return false;
@@ -180,11 +206,24 @@ HookManager *hookManager;
 
 WINHOOK_BEGIN_NAMESPACE
 
-bool hook(ulong address, const hook_function &callback)
+bool hook_before(ulong address, const hook_function &before)
+{
+  hook_function after;
+  return hook_both(address, before, after);
+}
+
+bool hook_after(ulong address, const hook_function &after)
+{
+  hook_function before;
+  return hook_both(address, before, after);
+}
+
+bool hook_both(ulong address, const hook_function &before, const hook_function &after)
 {
   if (!::hookManager)
     ::hookManager = new HookManager;
-  return ::hookManager->hook(address, callback);
+  //return ::hookManager->hook(address, callback);
+  return ::hookManager->hook(address, before, after);
 }
 
 bool unhook(ulong address)

@@ -5,7 +5,8 @@
 #include "winhook/hookdef.h"
 #include "winasm/winasmdef.h"
 
-enum { max_ins_size = 8 }; // maximum individual instruction size
+// http://stackoverflow.com/questions/14698350/x86-64-asm-maximum-bytes-for-an-instruction
+enum { max_ins_size = 15 }; // maximum individual instruction size
 enum { jmp_ins_size = 5 }; // total size of jmp ????
 
 WINHOOK_BEGIN_NAMESPACE

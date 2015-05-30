@@ -117,7 +117,7 @@ public:
   {
     size_t instructionSize = 0;
     while (instructionSize < jmp_ins_size) {
-      size_t size = ::disasm((LPCVOID)address);
+      size_t size = ::disasm(LPCVOID(address + instructionSize));
       if (!size) // failed to decode instruction
         return 0;
       instructionSize += size;

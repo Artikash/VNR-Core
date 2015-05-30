@@ -24,6 +24,7 @@ WINHOOK_BEGIN_NAMESPACE
 //  ulong args[1];    // first argument at runtime
 //};
 
+// FIXME: move_code not invoked, and hence the first a few instruction of the function cannot be jmp/call
 /**
  *  Replace the old function with the new one
  *  @param  oldfun  address to insert jump

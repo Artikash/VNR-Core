@@ -230,11 +230,12 @@ bool EngineController::attach()
   if (addr) {
     DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
     auto d = d_;
-    auto callback = [addr, d](winhook::hook_stack *s) {
+    auto callback = [addr, d](winhook::hook_stack *s) -> bool {
       if (d->globalDispatchFun)
         d->globalDispatchFun((EngineModel::HookStack *)s);
+      return true;
     };
-    return winhook::hook(addr, callback);
+    return winhook::hook_before(addr, callback);
 
     //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
     //d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
