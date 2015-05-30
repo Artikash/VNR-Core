@@ -5,6 +5,7 @@
 
 #define s1_0d           0,0,0,0 // 0x0000
 #define s1_int3         0xcc    // int3
+#define s1_nop          0x90    // nop
 
 #define s1_call_        0xe8            // call,incomplete
 #define s1_call_0d      s1_call_, s1_0d // call 0x0000

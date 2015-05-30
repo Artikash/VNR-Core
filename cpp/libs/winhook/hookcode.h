@@ -1,7 +1,7 @@
 #pragma once
 
 // hookcode.h
-// 5/25/2015
+// 5/25/2015 jichi
 
 #include "winhook/hookdef.h"
 #include <functional>

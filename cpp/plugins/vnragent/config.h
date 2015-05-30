@@ -87,7 +87,7 @@
  *
  *  mhook seems only work for system functions.
  */
-#define VNRAGENT_ENABLE_DETOURS
+//#define VNRAGENT_ENABLE_DETOURS
 //#define VNRAGENT_ENABLE_MHOOK
 //#define VNRAGENT_ENABLE_MINHOOK
 

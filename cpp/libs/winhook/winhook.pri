@@ -12,9 +12,13 @@ DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/hookcode.h \
-  $$PWD/hookdef.h
+  $$PWD/hookdef.h \
+  $$PWD/hookfun.h \
+  $$PWD/hookutil_p.h
 SOURCES += \
-  $$PWD/hookcode.cc
+  $$PWD/hookcode.cc \
+  $$PWD/hookfun.cc \
+  $$PWD/hookutil_p.cc
 }
 
 # EOF

@@ -5,6 +5,7 @@
 #include "engine/engineutil.h"
 #include "detoursutil/detoursutil.h"
 #include "ntinspect/ntinspect.h"
+#include "winhook/hookfun.h"
 //#include "windbg/util.h"
 #include <QtCore/QDir>
 #include <QtCore/QCoreApplication>
@@ -16,10 +17,10 @@
 
 namespace { // unnamed
 
-bool globsDir(const QDir &dir, const QString &filter)
+inline bool globsDir(const QDir &dir, const QString &filter)
 { return !dir.entryList(QStringList(filter)).isEmpty(); }
 
-bool existsPath(const QString &path)
+inline bool existsPath(const QString &path)
 { return QFileInfo(path).exists(); }
 
 } // unnamed namespace
@@ -28,7 +29,6 @@ bool existsPath(const QString &path)
 
 Engine::address_type Engine::replaceFunction(address_type old_addr, const_address_type new_addr)
 {
-  //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
 #ifdef VNRAGENT_ENABLE_DETOURS
   return detours::replace(old_addr, new_addr);
 #endif // VNRAGENT_ENABLE_DETOURS
@@ -36,6 +36,9 @@ Engine::address_type Engine::replaceFunction(address_type old_addr, const_addres
   DWORD addr = old_addr;
   return Mhook_SetHook(&addr, new_addr) ? addr : 0;
 #endif // VNRAGENT_ENABLE_MHOOK
+  // Use my own function hook instead, which might not be thread-safe
+  //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
+  return (address_type)winhook::replace_fun((DWORD)old_addr, (DWORD)new_addr);
 }
 
 // Not used

@@ -186,8 +186,7 @@ ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
   }
 
   if (!addr) {
-    // 81fe0c300000
-    const BYTE bytes2[] = {
+    const BYTE bytes2[] = { // 81fe0c300000
       0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
     };
     addr = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);

@@ -1,7 +1,7 @@
 #pragma once
 
 // hookdef.h
-// 5/25/2015
+// 5/25/2015 jichi
 
 #ifndef WINHOOK_BEGIN_NAMESPACE
 # define WINHOOK_BEGIN_NAMESPACE namespace winhook {
@@ -13,6 +13,7 @@
 WINHOOK_BEGIN_NAMESPACE
 
 // Basic types
+typedef unsigned char byte;
 typedef unsigned long ulong;
 
 WINHOOK_END_NAMESPACE
