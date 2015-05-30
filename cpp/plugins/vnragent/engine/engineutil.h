@@ -3,7 +3,13 @@
 // engineutil.h
 // 4/20/2014 jichi
 
+#include "memdbg/memsearch.h"
 #include <QtCore/QString>
+
+enum : quint8 { XX = MemDbg::WidecardByte }; // 0x11
+#define XX2 XX,XX       // WORD
+#define XX4 XX2,XX2     // DWORD
+#define XX8 XX4,XX4     // QWORD
 
 namespace Engine {
 

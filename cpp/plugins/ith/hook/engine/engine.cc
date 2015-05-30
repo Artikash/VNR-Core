@@ -4751,6 +4751,13 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005C71E5  ^EB A5            JMP SHORT .005C718C
  *  005C71E7   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
  *  005C71EA   8B4F 0C          MOV ECX,DWORD PTR DS:[EDI+0xC]
+ *  005C71ED   2BC8             SUB ECX,EAX
+ *  005C71EF   C1F9 02          SAR ECX,0x2
+ *  005C71F2   3BF1             CMP ESI,ECX
+ *  005C71F4  ^73 9E            JNB SHORT .005C7194
+ *  005C71F6   8B34B0           MOV ESI,DWORD PTR DS:[EAX+ESI*4]
+ *  005C71F9   85F6             TEST ESI,ESI
+ *  005C71FB  ^74 97            JE SHORT .005C7194
  *
  *  005B640E   CC               INT3
  *  005B640F   CC               INT3
@@ -4956,7 +4963,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
 static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
 {
   const BYTE bytes[] = {
-    0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here
+    0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here, text on the top of the stack
     0x39,0x6c,0x24, 0x28,   // 004eeb39   396c24 28        cmp dword ptr ss:[esp+0x28],ebp
     0x72, 0x0d,             // 004eeb3d   72 0d            jb short .004eeb4c
     0x8b,0x4c,0x24, 0x14,   // 004eeb3f   8b4c24 14        mov ecx,dword ptr ss:[esp+0x14]
@@ -4980,7 +4987,7 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
   hp.split_index = 0x10; // use [[esp]+0x10] to differentiate name and thread
   //hp.offset = 4 * 1; // text in arg1
 
-  // Only name can be modified here, where the value of split is 0x2
+  // Only name can be modified here, where the value of split is 0x6, and text in 0x2
 
   ConsoleOutput("vnreng: INSERT System43+");
   NewHook(hp, hookName);

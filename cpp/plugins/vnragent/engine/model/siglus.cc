@@ -7,7 +7,6 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-#include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
 //#define DEBUG "siglus"

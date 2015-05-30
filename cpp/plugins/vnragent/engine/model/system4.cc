@@ -5,7 +5,7 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-#include "memdbg/memsearch.h"
+#include "ntinspect/ntinspect.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 
@@ -17,21 +17,44 @@
  *  See: http://capita.tistory.com/m/post/256
  *
  */
-//ulong System4Engine::search(ulong startAddress, ulong stopAddress)
-//{
-//  //const DWORD funcs[] = { // caller patterns
-//  //  0xec81,     // sub esp = 0x81,0xec byte old majiro
-//  //  0x83ec8b55  // mov ebp,esp, sub esp,*  new majiro
-//  //};
-//  //enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
-//  //return MemDbg::findMultiCallerAddress((ulong)::TextOutA, funcs, FuncCount, startAddress, stopAddress);
-//
-//  // Pattern matching is not implemented
-//  return 0x005C71E0;
-//  //return 0x005C4110;    // FIXME: hook to this function will cause game to crash
-//}
-
 namespace { // unnamed
+
+// - Search -
+
+bool getMemoryRange(ulong *startAddress, ulong *stopAddress)
+{
+  //bool patched = IthCheckFile(L"AliceRunPatch.dll");
+  bool patched = ::GetModuleHandleA("AliceRunPatch.dll");
+  return patched ?
+      NtInspect::getModuleMemoryRange(L"AliceRunPatch.dll", startAddress, stopAddress) :
+      NtInspect::getCurrentMemoryRange(startAddress, stopAddress);
+}
+
+ulong searchScenarioAddress(ulong startAddress, ulong stopAddress)
+{
+  const BYTE bytes[] = {
+    0xe8, XX4,              // 005c71e0   e8 2bcfffff      call .005c4110  ; original function call
+    0xeb, 0xa5,             // 005c71e5  ^eb a5            jmp short .005c718c
+    0x8b,0x47, 0x08,        // 005c71e7   8b47 08          mov eax,dword ptr ds:[edi+0x8]
+    0x8b,0x4f, 0x0c         // 005c71ea   8b4f 0c          mov ecx,dword ptr ds:[edi+0xc]
+  };
+  return MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+}
+
+ulong searchNameAddress(ulong startAddress, ulong stopAddress)
+{
+  const BYTE bytes[] = {
+    0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here
+    0x39,0x6c,0x24, 0x28,   // 004eeb39   396c24 28        cmp dword ptr ss:[esp+0x28],ebp
+    0x72, 0x0d,             // 004eeb3d   72 0d            jb short .004eeb4c
+    0x8b,0x4c,0x24, 0x14,   // 004eeb3f   8b4c24 14        mov ecx,dword ptr ss:[esp+0x14]
+    0x51,                   // 004eeb43   51               push ecx
+    0xe8 //, XX4,           // 004eeb44   e8 42dc1900      call .0068c78b
+  };
+  return MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+}
+
+// - Hook -
 
 class ScenarioHook
 {
@@ -72,7 +95,7 @@ public:
     if (split != ScenarioSplit) // only translate the scenario thread
       return true;
 
-    auto arg = (ScenarioArgument *)s->stack[0]; // arg1
+    auto arg = (ScenarioArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
     if (!text || !*text)
       return true;
@@ -102,17 +125,58 @@ public:
   }
 };
 
+bool nameHook(winhook::hook_stack *s)
+{
+  enum { NameSize = 0x10 };
+  struct NameArgument // first argument of the name hook
+  {
+    char text[NameSize];
+    DWORD split; // use [[esp]+0x10] as split
+  };
+
+  auto arg = (NameArgument *)s->stack[0];
+
+  enum : DWORD { NameSplit = 0x6, ScenarioSplit = 0x2 };
+  if (arg->split != NameSplit) // only translate the name thread
+    return true;
+
+  char *text = arg->text;
+  if (!text || !*text)
+    return true;
+
+  enum { role = Engine::NameRole };
+  enum { sig = Engine::NameThreadSignature };
+
+  QByteArray buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
+
+  ::strncpy(text, buffer_.constData(), NameSize - 1);
+  text[NameSize - 1] = 0;
+  return true;
+}
+
 } // unnamed namespace
 
 bool System4Engine::attach()
 {
-  DWORD addr = 0x005C71E0;
-  ScenarioHook *h = new ScenarioHook; // FIXME: this variable is never deleted
-  return winhook::hook_both(addr
-    , std::bind(&ScenarioHook::hookBefore, h, std::placeholders::_1)
-    , std::bind(&ScenarioHook::hookAfter, h, std::placeholders::_1)
-  );
-}
+  ulong startAddress, stopAddress;
+  if (!::getMemoryRange(&startAddress, &stopAddress))
+    return false;
 
+  //ulong addr = 0x005c71e0;
+  ulong addr = ::searchScenarioAddress(startAddress, stopAddress);
+  if (!addr)
+    return false;
+  ScenarioHook *h = new ScenarioHook;
+  if (!winhook::hook_both(addr,
+        std::bind(&ScenarioHook::hookBefore, h, std::placeholders::_1),
+        std::bind(&ScenarioHook::hookAfter, h, std::placeholders::_1))) {
+    delete h;
+    return false;
+  }
+
+  if (ulong addr = ::searchNameAddress(startAddress, stopAddress))
+    winhook::hook_before(addr, ::nameHook);
+  return true;
+}
 
 // EOF
