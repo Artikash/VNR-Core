@@ -8,6 +8,7 @@
 
 namespace { // unnamed
 
+namespace detail = winhook::detail; // import detail namespace
 
 // Hook manager
 
@@ -58,7 +59,7 @@ public:
     if (instructionSize_ > jmp_ins_size)
       ::memset(jmpCode, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
 
-    bool ok = winhook::detail::protected_memcpy((LPVOID)address_, jmpCode, instructionSize_);
+    bool ok = detail::protected_memcpy((LPVOID)address_, jmpCode, instructionSize_);
     delete jmpCode;
     return ok;
   }
@@ -66,7 +67,7 @@ public:
   bool unhook() const // assume is valid
   {
     //assert(valid());
-    return winhook::detail::protected_memcpy((LPVOID)address_, code_ + jmp_ins_size, instructionSize_);
+    return detail::protected_memcpy((LPVOID)address_, code_ + jmp_ins_size, instructionSize_);
   }
 };
 
@@ -93,8 +94,8 @@ BYTE *HookRecord::create_code(DWORD address, DWORD callback, DWORD instructionSi
 
   ::memcpy(code + jmp_ins_size, (LPCVOID)address, instructionSize);
 
-  winhook::detail::set_jmp_ins(code, callback); // prologue
-  winhook::detail::set_jmp_ins(code + jmp_ins_size + instructionSize, address + instructionSize); // epilogue
+  detail::set_jmp_ins(code, callback); // prologue
+  detail::set_jmp_ins(code + jmp_ins_size + instructionSize, address + instructionSize); // epilogue
 
   if (codeSize % 2)
     code[codeSize - 1] = s1_nop; // patch the last byte with int3 to be aligned;

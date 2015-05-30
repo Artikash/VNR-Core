@@ -12,7 +12,7 @@
 #include "util/codepage.h"
 #include "util/textutil.h"
 //#include "windbg/util.h"
-//#include "winhook/winhook.h"
+#include "winhook/hookcode.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
 //#include "mhook/mhook.h" // must after windows.h
@@ -229,14 +229,15 @@ bool EngineController::attach()
   //ulong addr = 0x41af90; // レミニセンス function address
   if (addr) {
     DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
-    //auto fun = d_->globalDispatchFun;
-    //auto callback = [addr, fun](winhook::hook_stack *s) {
-    //  fun((EngineModel::HookStack *)s);
-    //};
-    //winhook::hook(addr, callback);
+    auto d = d_;
+    auto callback = [addr, d](winhook::hook_stack *s) {
+      if (d->globalDispatchFun)
+        d->globalDispatchFun((EngineModel::HookStack *)s);
+    };
+    return winhook::hook(addr, callback);
 
     //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
-    d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
+    //d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
     return true;
   }
   return false;

@@ -13,6 +13,26 @@ WINHOOK_BEGIN_NAMESPACE
 namespace detail {
 
 /**
+ *  @param  data  code data
+ *  @param  address  the absolute address to jump to
+ */
+inline void set_jmp_ins(byte *data, ulong address)
+{
+  data[0] = s1_jmp_;
+  *(ulong *)(data + 1) = address - ((ulong)data + jmp_ins_size);
+}
+
+/**
+ *  @param  data  code data
+ *  @param  address  the absolute address to jump to
+ */
+inline void set_call_ins(byte *data, ulong address)
+{
+  data[0] = s1_call_;
+  *(ulong *)(data + 1) = address - ((ulong)data + jmp_ins_size);
+}
+
+/**
  *  Overwrite data at the target with the source data in the code region.
  *  @param  dst  target address to modify
  *  @param  src  address of the source data to copy
@@ -22,14 +42,13 @@ namespace detail {
 bool protected_memcpy(void *dst, const void *src, size_t size);
 
 /**
- *  @param  data  code data
- *  @param  address  the absolute address to jump to
+ *  Fix the jump and all instructionsin code originally at oldaddr to newaddr.
+ *  @param  code  code data to modify
+ *  @param  codesize  number of bytes in code
+ *  @param  oldaddr  old address
+ *  @param  newaddr  new address
  */
-inline void set_jmp_ins(byte *data, ulong address)
-{
-  data[0] = s1_jmp_;
-  *(ulong *)(data + 1) = address - ((ulong)data + jmp_ins_size);
-}
+void move_code(void *code, size_t codesize, ulong oldaddr, ulong newaddr);
 
 } // namespace detail
 

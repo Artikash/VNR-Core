@@ -9,8 +9,8 @@
   wideChar: true
   exist: Siglus*.exe
 
-#- name: System4 # 5/25/2015, compatible with System43+
-#  exist: AliceStart.ini
+- name: System4 # 5/25/2015, compatible with System43+
+  exist: AliceStart.ini
 
 # EOF
 
