@@ -17,8 +17,6 @@ public:
     wideChar = false;
     matchFiles << "AliceStart.ini";
     attachFunction = &Self::attach;
-    //searchFunction = &Self::search;
-    //hookFunction = &Self::hook;
   }
 };
 
