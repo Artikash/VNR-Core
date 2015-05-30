@@ -16,8 +16,13 @@
   , { "gdi32.dll", "CreateFontA", ::CreateFontA, Hijack::myCreateFontA } \
   , { "gdi32.dll", "CreateFontW", ::CreateFontW, Hijack::myCreateFontW } \
   , { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA } \
-  , { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW }
+  , { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW } \
   //{ "gdi32.dll", "TextOutA", ::TextOutA, Hijack::myTextOutA }
+  //{ "gdi32.dll", "ExtTextOutA", ::ExtTextOutA, Hijack::myExtTextOutA }
+  //{ "gdi32.dll", "GetTextExtentPoint32A", ::GetTextExtentPoint32A, Hijack::myGetTextExtentPoint32A }
+  //{ "gdi32.dll", "GetGlyphOutlineA", ::GetGlyphOutlineA, Hijack::myGetGlyphOutlineA }
+  //{ "user32.dll", "DrawTextA", ::DrawTextA, Hijack::myDrawTextA }
+  //{ "user32.dll", "DrawTextExA", ::DrawTextExA, Hijack::myDrawTextExA }
   //{ "kernel32.dll", "MultiByteToWideChar", ::MultiByteToWideChar, Hijack::myMultiByteToWideChar }
   //{ "kernel32.dll", "WideCharToMultiByte", ::WideCharToMultiByte, Hijack::myWideCharToMultiByte }
 
@@ -90,6 +95,7 @@ BOOL WINAPI myTrackPopupMenu(
   _In_ HWND hWnd,
   _In_opt_ CONST RECT *prcRect
 );
+
 BOOL WINAPI myTrackPopupMenuEx(
   _In_ HMENU hMenu,
   _In_ UINT uFlags,
@@ -99,7 +105,43 @@ BOOL WINAPI myTrackPopupMenuEx(
   _In_opt_ LPTPMPARAMS lptpm
 );
 
-// - GDI32 -
+/*
+int WINAPI myDrawTextA(
+  _In_     HDC hDC,
+  _Inout_  LPCSTR lpchText,
+  _In_     int nCount,
+  _Inout_  LPRECT lpRect,
+  _In_     UINT uFormat
+);
+
+//int WINAPI myDrawTextW(
+//  _In_    HDC hDC,
+//  _Inout_ LPCWSTR lpchText,
+//  _In_    int nCount,
+//  _Inout_ LPRECT lpRect,
+//  _In_    UINT uFormat
+//);
+
+int WINAPI myDrawTextExA(
+  _In_    HDC hdc,
+  _Inout_ LPSTR lpchText,
+  _In_    int cchText,
+  _Inout_ LPRECT lprc,
+  _In_    UINT dwDTFormat,
+  _In_    LPDRAWTEXTPARAMS lpDTParams
+);
+
+//int WINAPI myDrawTextExW(
+//  _In_    HDC hdc,
+//  _Inout_ LPWSTR lpchText,
+//  _In_    int cchText,
+//  _Inout_ LPRECT lprc,
+//  _In_    UINT dwDTFormat,
+//  _In_    LPDRAWTEXTPARAMS lpDTParams
+//);
+*/
+
+// - GDI32 (font) -
 
 HFONT WINAPI myCreateFontIndirectA(
   _In_  const LOGFONTA *lplf
@@ -108,7 +150,6 @@ HFONT WINAPI myCreateFontIndirectA(
 HFONT WINAPI myCreateFontIndirectW(
   _In_  const LOGFONTW *lplf
 );
-
 
 HFONT WINAPI myCreateFontA(
   _In_  int nHeight,
@@ -144,11 +185,9 @@ HFONT WINAPI myCreateFontW(
   _In_  LPCWSTR lpszFace
 );
 
-} // namespace Hijack
-
-// EOF
-
 /*
+// - GDI32 (text) -
+
 BOOL WINAPI myTextOutA(
   _In_  HDC hdc,
   _In_  int nXStart,
@@ -156,14 +195,76 @@ BOOL WINAPI myTextOutA(
   _In_  LPCSTR lpString,
   _In_  int cchString
 );
-BOOL WINAPI myTextOutW(
+
+//BOOL WINAPI myTextOutW(
+//  _In_  HDC hdc,
+//  _In_  int nXStart,
+//  _In_  int nYStart,
+//  _In_  LPCWSTR lpString,
+//  _In_  int cchString
+//);
+
+BOOL WINAPI myExtTextOutA(
   _In_  HDC hdc,
-  _In_  int nXStart,
-  _In_  int nYStart,
-  _In_  LPCWSTR lpString,
-  _In_  int cchString
+  _In_  int X,
+  _In_  int Y,
+  _In_  UINT fuOptions,
+  _In_  const RECT *lprc,
+  _In_  LPCSTR lpString,
+  _In_  UINT cbCount,
+  _In_  const INT *lpDx
 );
 
+//BOOL WINAPI myExtTextOutW(
+//  _In_  HDC hdc,
+//  _In_  int X,
+//  _In_  int Y,
+//  _In_  UINT fuOptions,
+//  _In_  const RECT *lprc,
+//  _In_  LPCWSTR lpString,
+//  _In_  UINT cbCount,
+//  _In_  const INT *lpDx
+//);
+
+BOOL WINAPI myGetTextExtentPoint32A(
+  _In_  HDC hdc,
+  _In_  LPCSTR lpString,
+  _In_  int cchString,
+  _Out_ LPSIZE lpSize
+);
+
+//BOOL WINAPI myGetTextExtentPoint32W(
+//  _In_  HDC hdc,
+//  _In_  LPCWSTR lpString,
+//  _In_  int cchString,
+//  _Out_ LPSIZE lpSize
+//);
+
+DWORD WINAPI myGetGlyphOutlineA(
+  _In_  HDC hdc,
+  _In_  UINT uChar,
+  _In_  UINT uFormat,
+  _Out_ LPGLYPHMETRICS lpgm,
+  _In_  DWORD cbBuffer,
+  _Out_ LPVOID lpvBuffer,
+  _In_  const MAT2 *lpmat2
+);
+
+DWORD WINAPI myGetGlyphOutlineW(
+  _In_  HDC hdc,
+  _In_  UINT uChar,
+  _In_  UINT uFormat,
+  _Out_ LPGLYPHMETRICS lpgm,
+  _In_  DWORD cbBuffer,
+  _Out_ LPVOID lpvBuffer,
+  _In_  const MAT2 *lpmat2
+);
+*/
+
+} // namespace Hijack
+// EOF
+
+/*
 int WINAPI MyMessageBoxA(
   _In_opt_ HWND hWnd,
   _In_opt_ LPCSTR lpText,
