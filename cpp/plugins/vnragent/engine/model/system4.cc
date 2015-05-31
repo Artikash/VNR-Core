@@ -84,6 +84,9 @@ ulong searchOtherAddress(ulong startAddress, ulong stopAddress)
 
 // - Hook -
 
+inline bool is_sys_text(const char *text) // return true if skip text
+{ return ::strchr(text, '/') || ::strchr(text, '\\'); } // skip text containing '/' or '\\' in it
+
 struct TextHookBase
 {
   struct TextArgument // first argument of the scenario hook
@@ -143,7 +146,7 @@ public:
 
     auto arg = (TextArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
-    if (arg->size <= 1 || !text || !*text)
+    if (arg->size <= 1 || !text || !*text || is_sys_text(text))
       return true;
 
     enum { role = Engine::ScenarioRole };
@@ -181,15 +184,12 @@ public:
     DWORD splitBase = *(DWORD *)(s->edi + 0x284), // [edi + 0x284]
           split1 = *(WORD *)(splitBase - 0x4), // word [[edi + 0x284] - 0x4]
           split2 = *(WORD *)(splitBase - 0x8); // word [[edi + 0x284] - 0x8]
-    if (split1 != OtherSplit || split2 <= 5) // split internal system messages
+    if (split1 != OtherSplit || split2 <= 2) // split internal system messages
       return true;
 
     auto arg = (TextArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
-    if (arg->size <= 1 || !text || !*text)
-      return true;
-
-    if (::strchr(text, '/') || ::strchr(text, '\\')) // skip text containing '/' or '\\' in it
+    if (arg->size <= 1 || !text || !*text || is_sys_text(text))
       return true;
 
     enum { role = Engine::OtherRole };
@@ -232,7 +232,7 @@ bool nameHook(winhook::hook_stack *s)
     return true;
 
   char *text = arg->text;
-  if (!text || !*text)
+  if (!text || !*text || is_sys_text(text))
     return true;
 
   int role;
