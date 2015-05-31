@@ -283,6 +283,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
       width = max(
         len(surface),
         (len(yomi) * yomiWidth + (1 if rubyInverted else 0)) if yomi else 0, # +1 when inverted for paddingSize
+        len(surface) * yomiWidth + 1 if rubyInverted else 0, # in case yomi is empty
         (len(role) + 1) * ANNOT_WIDTH if annotated and role else 0,
       )
       if width + lineCount <= charPerLine:
