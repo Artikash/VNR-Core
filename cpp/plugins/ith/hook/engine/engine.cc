@@ -2109,7 +2109,7 @@ bool InsertSiglus3Hook()
   enum { addr_offset = sizeof(bytes) - 4 };
   ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  if (!addr) { // jichi 8/17/2013: Add "== 0" check to prevent breaking new games
+  if (!addr) {
     //ConsoleOutput("Unknown SiglusEngine");
     ConsoleOutput("vnreng:Siglus3: pattern not found");
     return false;
@@ -2136,7 +2136,9 @@ bool InsertSiglus3Hook()
   return true;
 }
 
+#if 0 // this hook is disabled as it might only work for AngleBeats. the same pattern might not exist in all other games
 /** SiglusEngine4 5/23/2015
+ *  Sample game: AngleBeats trial
  *  Alternative ATcode from EGDB:
  *  UNIKOFILTER(30),FORCEFONT(5),HOOK(SiglusEngine.exe!0x0018CF39,TRANS(EAX,UNICODE,SMSTR,ADDNULL),RETNPOS(SOURCE))
  *  Text address is [eax]
@@ -2164,7 +2166,7 @@ bool InsertSiglus3Hook()
  *  0042CF31   8BCF             MOV ECX,EDI
  *  0042CF33   50               PUSH EAX
  *  0042CF34   E8 E725F6FF      CALL .0038F520
- *  0042CF39   8B1D 005E8A00    MOV EBX,DWORD PTR DS:[0x8A5E00] ; jichi: ATcode hooked here
+ *  0042CF39   8B1D 005E8A00    MOV EBX,DWORD PTR DS:[0x8A5E00] ; jichi: ATcode hooked here, text sometimes in eax sometimes address in eax, size in [eax+0x16]
  *  0042CF3F   8B73 10          MOV ESI,DWORD PTR DS:[EBX+0x10]
  *  0042CF42   837E FC 08       CMP DWORD PTR DS:[ESI-0x4],0x8
  *  0042CF46   72 0B            JB SHORT .0042CF53
@@ -2188,7 +2190,72 @@ bool InsertSiglus3Hook()
  *  0042CF76   CC               INT3
  *  0042CF77   CC               INT3
  */
-// This function is not implemented
+void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD s0 = retof(esp_base);
+  DWORD eax = regof(eax, esp_base); // text
+  if (!eax || !*(const BYTE *)eax) // empty data
+    return;
+  DWORD size = *(DWORD *)(eax + 0x10);
+  if (!size)
+    return;
+  if (size < 8)
+    *data = eax;
+  else
+    *data = *(DWORD *)eax;
+  *len = size * 2; // UTF-16
+  if (s0 <= 0xff) // scenario text
+    *split = FIXED_SPLIT_VALUE;
+  else {
+    *split = *(DWORD *)s0;
+    if (*split == 0x54)
+      *split = FIXED_SPLIT_VALUE * 2;
+  }
+}
+bool InsertSiglus4Hook()
+{
+  const BYTE bytes[] = {
+    0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
+    0xc7,0x47, 0x10, 0x00,0x00,0x00,0x00,   // 0042cf27   c747 10 00000000 mov dword ptr ds:[edi+0x10],0x0
+    0x66,0x89,0x0f,                         // 0042cf2e   66:890f          mov word ptr ds:[edi],cx
+    0x8b,0xcf,                              // 0042cf31   8bcf             mov ecx,edi
+    0x50,                                   // 0042cf33   50               push eax
+    0xe8 //XX4                              // 0042cf34   e8 e725f6ff      call .0038f520
+    // hook here
+  };
+  enum { addr_offset = sizeof(bytes) + 4 }; // +4 for the call address
+  ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  //ULONG addr = module_base_ + 0x0018cf39;
+  if (!addr) {
+    //ConsoleOutput("Unknown SiglusEngine");
+    ConsoleOutput("vnreng:Siglus4: pattern not found");
+    return false;
+  }
+
+  //addr = MemDbg::findEnclosingAlignedFunction(addr, 50); // 0x002667dc - 0x002667c0 = 28
+  //if (!addr) {
+  //  ConsoleOutput("vnreng:Siglus3: enclosing function not found");
+  //  return false;
+  //}
+
+  HookParam hp = {};
+  hp.address = addr + addr_offset;
+  hp.type = NO_CONTEXT;
+  hp.text_fun = SpecialHookSiglus4;
+  //hp.offset = pusha_eax_off - 4;
+  //hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|NO_CONTEXT;
+  //hp.type = USING_UNICODE|USING_SPLIT|NO_CONTEXT;
+  //hp.split = pusha_edx_off - 4;
+
+  ConsoleOutput("vnreng: INSERT Siglus4");
+  NewHook(hp, L"SiglusEngine4");
+
+  ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
+#endif // 0
 
 /**
  *  jichi 8/16/2013: Insert new siglus hook
@@ -3357,6 +3424,7 @@ bool InsertSiglus1Hook()
 // jichi 8/17/2013: Insert old first. As the pattern could also be found in the old engine.
 bool InsertSiglusHook()
 {
+  //return InsertSiglus4Hook();
   if (InsertSiglus1Hook())
     return true;
   bool ok = InsertSiglus2Hook();
