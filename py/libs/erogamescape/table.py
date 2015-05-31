@@ -72,7 +72,7 @@ def t_date(t):
   @param  t  str  such as '2014-07-01'
   @return  datetime or None
   """
-  if t:
+  if t and t != '2030-01-01':
     try: return datetime.strptime(t, '%Y-%m-%d')
     except: pass
     #except ValueError: pass

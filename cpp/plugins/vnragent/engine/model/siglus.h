@@ -10,15 +10,13 @@ class SiglusEngine : public EngineModel
 {
   SK_EXTEND_CLASS(SiglusEngine, EngineModel)
   static bool attach();
-  static ulong search(ulong startAddress, ulong stopAddress, int *type);
 public:
   SiglusEngine()
   {
-    name = "SiglusEngine";
-    wideChar = true; // UTF-16
+    name = "EmbedSiglusEngine";
+    wideChar = true;
     matchFiles << "SiglusEngine.exe";
     attachFunction = &Self::attach;
-    //searchFunction = &Self::search; // not used
   }
 };
 

@@ -7,7 +7,6 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-#include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
 //#define DEBUG "siglus"
@@ -143,10 +142,6 @@ int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
   return ret;
 }
 
-} // unnamed namespace
-
-/** Public class */
-
 /**
  *  jichi 8/16/2013: Insert new siglus hook
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952
@@ -171,10 +166,14 @@ int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
  *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
  *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
  */
-ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
+ulong search(int *type)
 {
-  ulong addr;
+  ulong startAddress,
+        stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return 0;
 
+  ulong addr;
   {
     const BYTE bytes1[] = {
       0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
@@ -184,17 +183,14 @@ ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
     if (addr && type)
       *type = Type1;
   }
-
   if (!addr) {
-    // 81fe0c300000
-    const BYTE bytes2[] = {
+    const BYTE bytes2[] = { // 81fe0c300000
       0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
     };
     addr = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);
     if (addr && type)
       *type = Type2;
   }
-
   if (!addr)
     return 0;
 
@@ -214,16 +210,13 @@ ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
   //return addr;
 }
 
+} // unnamed namespace
+
+/** Public class */
+
 bool SiglusEngine::attach()
 {
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
-  ulong addr = search(startAddress, stopAddress, &type_);
-  //ulong addr = startAddress + 0xdb140; // 聖娼女
-  //ulong addr = startAddress + 0xdaf32; // 聖娼女 体験版
-  //dmsg(addr - startAddress);
+  ulong addr = ::search(&type_);
   if (!addr)
     return false;
   return ::oldHookFun = Engine::replaceFunction<hook_fun_t>(addr, ::newHookFun);

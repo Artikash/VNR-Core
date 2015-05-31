@@ -4475,7 +4475,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  0070A16B   74 29            JE SHORT .0070A196              ; jump if eax is zero, comeback to hookpoint and ignore it
  *  0070A16D   8B44E4 08        MOV EAX,DWORD PTR SS:[ESP+0x8]  ; otherwise, if eax is not zero
  *  0070A171   8B40 14          MOV EAX,DWORD PTR DS:[EAX+0x14] ; eax = text[0x14]
- *  0070A174   83F8 0F          CMP EAX,0xF                     ; jichi: compare text[0x28] with 0xf
+ *  0070A174   83F8 0F          CMP EAX,0xF                     ; jichi: compare text[0x14] with 0xf
  *  0070A177   75 08            JNZ SHORT .0070A181             ; jump if not zero leaving text not modified, other continue and modify the text
  *  0070A179   8954E4 08        MOV DWORD PTR SS:[ESP+0x8],EDX  ; override esp+8 with edx, i.e. override text address by new text address and do translation
  *  0070A17D   5A               POP EDX
@@ -4501,7 +4501,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  0070A19E   90               NOP
  *  0070A19F   E8 6C9FEBFF      CALL .005C4110
  *  0070A1A4  ^E9 F0C2EAFF      JMP .005B6499
- *  0070A1A9   50               PUSH EAX                        ; jichi: from hookpoint $4
+ *  0070A1A9   50               PUSH EAX                        ; jichi: from hookpoint #4
  *  0070A1AA   8B44E4 04        MOV EAX,DWORD PTR SS:[ESP+0x4]  ; jichi: move top of the old stack address to eax
  *  0070A1AE   8378 0C 01       CMP DWORD PTR DS:[EAX+0xC],0x1
  *  0070A1B2   76 31            JBE SHORT .0070A1E5             ; jichi: jump to leave if text[0xc] <= 0x1
@@ -4751,6 +4751,13 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005C71E5  ^EB A5            JMP SHORT .005C718C
  *  005C71E7   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
  *  005C71EA   8B4F 0C          MOV ECX,DWORD PTR DS:[EDI+0xC]
+ *  005C71ED   2BC8             SUB ECX,EAX
+ *  005C71EF   C1F9 02          SAR ECX,0x2
+ *  005C71F2   3BF1             CMP ESI,ECX
+ *  005C71F4  ^73 9E            JNB SHORT .005C7194
+ *  005C71F6   8B34B0           MOV ESI,DWORD PTR DS:[EAX+ESI*4]
+ *  005C71F9   85F6             TEST ESI,ESI
+ *  005C71FB  ^74 97            JE SHORT .005C7194
  *
  *  005B640E   CC               INT3
  *  005B640F   CC               INT3
@@ -4800,7 +4807,8 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005B6491   5B               POP EBX
  *  005B6492   C3               RETN
  *  005B6493   52               PUSH EDX
- *  005B6494   E9 103D1500      JMP .0070A1A9   ; jichi: here hookpoint#4
+ *  005B6494   E8 77DC0000      CALL .005C4110
+ *  //005B6494   E9 103D1500      JMP .0070A1A9   ; jichi: here hookpoint#4
  *  005B6499   84C0             TEST AL,AL
  *  005B649B   75 16            JNZ SHORT .005B64B3
  *  005B649D   68 D4757200      PUSH .007275D4
@@ -4821,6 +4829,38 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005B64C6   CC               INT3
  *  005B64C7   CC               INT3
  *  005B64C8   CC               INT3
+ *
+ *  Slightly modified #4 in AliceRunPatch.dll
+ *  101B6C10   5B               POP EBX
+ *  101B6C11   59               POP ECX
+ *  101B6C12   C3               RETN
+ *  101B6C13   52               PUSH EDX
+ *  101B6C14   8BC1             MOV EAX,ECX
+ *  101B6C16   E9 4E7D1600      JMP .1031E969   ; jichi: hook here
+ *  101B6C1B   84C0             TEST AL,AL
+ *  101B6C1D   75 18            JNZ SHORT .101B6C37
+ *  101B6C1F   68 FCB53310      PUSH .1033B5FC
+ *  101B6C24   B9 18B63310      MOV ECX,.1033B618                        ; ASCII "S_ASSIGN"
+ *  101B6C29   E8 92B8FFFF      CALL .101B24C0
+ *  101B6C2E   83C4 04          ADD ESP,0x4
+ *  101B6C31   5F               POP EDI
+ *  101B6C32   5E               POP ESI
+ *  101B6C33   5D               POP EBP
+ *  101B6C34   5B               POP EBX
+ *  101B6C35   59               POP ECX
+ *  101B6C36   C3               RETN
+ *  101B6C37   53               PUSH EBX
+ *  101B6C38   56               PUSH ESI
+ *  101B6C39   E8 E29C0100      CALL .101D0920
+ *  101B6C3E   5F               POP EDI
+ *  101B6C3F   5E               POP ESI
+ *  101B6C40   5D               POP EBP
+ *  101B6C41   5B               POP EBX
+ *  101B6C42   59               POP ECX
+ *  101B6C43   C3               RETN
+ *  101B6C44   CC               INT3
+ *  101B6C45   CC               INT3
+ *  101B6C46   CC               INT3
  *
  *  The function get called to paint string of names for hookpoint #2, text in arg1:
  *  0050B69E   CC               INT3
@@ -4956,7 +4996,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
 static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
 {
   const BYTE bytes[] = {
-    0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here
+    0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here, text on the top of the stack
     0x39,0x6c,0x24, 0x28,   // 004eeb39   396c24 28        cmp dword ptr ss:[esp+0x28],ebp
     0x72, 0x0d,             // 004eeb3d   72 0d            jb short .004eeb4c
     0x8b,0x4c,0x24, 0x14,   // 004eeb3f   8b4c24 14        mov ecx,dword ptr ss:[esp+0x14]
@@ -4980,7 +5020,7 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
   hp.split_index = 0x10; // use [[esp]+0x10] to differentiate name and thread
   //hp.offset = 4 * 1; // text in arg1
 
-  // Only name can be modified here, where the value of split is 0x2
+  // Only name can be modified here, where the value of split is 0x6, and text in 0x2
 
   ConsoleOutput("vnreng: INSERT System43+");
   NewHook(hp, hookName);

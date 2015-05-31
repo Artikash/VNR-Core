@@ -109,6 +109,7 @@ dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumF
  *  @exception  illegal memory access
  */
 dword_t findBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
+//dword_t reverseFindBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
 
 /**
  *  jichi 2/5/2014: The same as findBytes except it uses widecard to match everything.

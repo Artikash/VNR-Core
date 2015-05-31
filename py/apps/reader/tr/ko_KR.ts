@@ -193,7 +193,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>기본 색상 복원</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8749"/>
+        <location filename="dialogs/_prefs.py" line="8751"/>
         <source>Preferred Chinese characters</source>
         <translation>중국한자 우선</translation>
     </message>
@@ -810,12 +810,12 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>게임원문이 너무 길어서 무시됨</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1245"/>
+        <location filename="managers/textman.py" line="1250"/>
         <source>Reload user-contributed comments</source>
         <translation>사용자 댓글 다시 준비</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1384"/>
+        <location filename="managers/textman.py" line="1389"/>
         <source>No game text received yet</source>
         <translation>아직 게임원문을 받지 못함</translation>
     </message>
@@ -1554,12 +1554,12 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>텍스트에서 무한 반복 무시</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="990"/>
+        <location filename="managers/textman.py" line="991"/>
         <source>Eliminate finite repetition in the text</source>
         <translation>특정하게 반복되는 텍스트를 제거</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1007"/>
+        <location filename="managers/textman.py" line="1008"/>
         <source>Keep all text threads generated from {0}</source>
         <translation>{0}에서 생성된 모든 텍스트 스레드 보관</translation>
     </message>
@@ -2625,22 +2625,22 @@ You can select only the resources you need to download here.</source>
         <translation>Excite.co.jp 다국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="531"/>
+        <location filename="dialogs/terminput.py" line="530"/>
         <source>Missing pattern</source>
         <translation>일치하는 원문 없음</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="554"/>
+        <location filename="dialogs/terminput.py" line="553"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>원문이 너무 짧습니다. 시리즈 특정 옵션을 켜실 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="572"/>
+        <location filename="dialogs/terminput.py" line="571"/>
         <source>Everything looks OK</source>
         <translation>상태가 양호합니다</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="666"/>
+        <location filename="dialogs/terminput.py" line="665"/>
         <source>Create dictionary entry</source>
         <translation>사전용어 생성</translation>
     </message>
@@ -2654,7 +2654,7 @@ The dictionary will be installed to {1}.</source>
 사전은 {1}에 설치 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="557"/>
+        <location filename="dialogs/terminput.py" line="556"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>번역이 지정되지 않음. VNR이 원문과 일치하는 텍스트를 제거합니다.</translation>
     </message>
@@ -2751,7 +2751,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>JMDict 일ㆍ네덜란드어 사전</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="497"/>
+        <location filename="dialogs/terminput.py" line="496"/>
         <source>Add new term</source>
         <translation>새 용어 추가</translation>
     </message>
@@ -2806,7 +2806,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
         <translation>글로벌 게임 단축키</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="225"/>
+        <location filename="dialogs/terminput.py" line="224"/>
         <source>a title after names</source>
         <translation>일본어 이름 표기 후 제목</translation>
     </message>
@@ -2950,7 +2950,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8806"/>
+        <location filename="dialogs/_prefs.py" line="8808"/>
         <source>Translation wait time</source>
         <translation>번역 대기시간</translation>
     </message>
@@ -2960,7 +2960,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">내장 텍스트 설정</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8839"/>
+        <location filename="dialogs/_prefs.py" line="8841"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>대기시간이 클수록 번역이 느릴때 게임도 같이 느려질겁니다.</translation>
     </message>
@@ -2970,7 +2970,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9031"/>
+        <location filename="dialogs/_prefs.py" line="9032"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -3000,12 +3000,12 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>윈도우 텍스트 번역 중…</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="902"/>
+        <location filename="managers/textman.py" line="903"/>
         <source>Updating window text ...</source>
         <translation>윈도우 텍스트 업데이트 중…</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="906"/>
+        <location filename="managers/textman.py" line="907"/>
         <source>Not found machine translation</source>
         <translation>기계 번역을 찾을 수 없음</translation>
     </message>
@@ -3093,7 +3093,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>작동하려면 경로에 ASCII가 아닌 문자가 존재하면 안됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="787"/>
+        <location filename="dialogs/embedprefs.py" line="793"/>
         <source>Engine: VNR</source>
         <translation>텍스트 추출:VNR</translation>
     </message>
@@ -3110,7 +3110,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
     <message>
         <location filename="dialogs/embedprefs.py" line="340"/>
         <source>H-code is not supported by VNR&apos;s embedded text hook</source>
-        <translation>VNR 내장 후커는 H코드를 지원하지 않음</translation>
+        <translation type="obsolete">VNR 내장 후커는 H코드를 지원하지 않음</translation>
     </message>
     <message>
         <location filename="main.py" line="2094"/>
@@ -3400,17 +3400,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 같은 항목을 복제하는 것은 관리가 힘들어 질 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="540"/>
+        <location filename="dialogs/terminput.py" line="539"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>원문과 번역문이 일치하여 유용성이 없습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="560"/>
+        <location filename="dialogs/terminput.py" line="559"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>원문이 너무 잛고 뜻이 모호 할 수 있는 히라가나로만 이루어져있습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="563"/>
+        <location filename="dialogs/terminput.py" line="562"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>원문이 너무 깁니다. 공유사전에 문장을 추가하지 말아주세요.</translation>
     </message>
@@ -3540,7 +3540,7 @@ VNR에서는 공백 뒤 내용은 무시됩니다.
         <translation>게임 창의 스크린샷을 찍기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="235"/>
+        <location filename="dialogs/terminput.py" line="234"/>
         <source>reusable regular expression pattern</source>
         <translation>재사용 가능한 정규 표현식 원문</translation>
     </message>
@@ -3612,7 +3612,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation type="obsolete">내장 번역에서는 중국어 간체를 중국어 번체나 일본어 간지로 변환합니다. 적용하지 않으면 중국어가 물음표로 표시 될 겁니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8758"/>
+        <location filename="dialogs/_prefs.py" line="8760"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>중국어 번체나 일본어 간지 사용</translation>
     </message>
@@ -3627,7 +3627,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation>현재 사용가능한 용어 찾아보기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="221"/>
+        <location filename="dialogs/terminput.py" line="220"/>
         <source>a character name</source>
         <translation>캐릭터 이름</translation>
     </message>
@@ -3642,32 +3642,32 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
         <translation type="obsolete">공유사전의 게임용어를 적용하여 게임원문 고치기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="215"/>
+        <location filename="dialogs/terminput.py" line="214"/>
         <source>translate text from input to text language</source>
         <translation>입력한 텍스트를 번역해서 출력</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="219"/>
+        <location filename="dialogs/terminput.py" line="218"/>
         <source>transform text in output language after translation</source>
         <translation>번역한 후 출력할 언어를 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="217"/>
+        <location filename="dialogs/terminput.py" line="216"/>
         <source>transform text in input langauge before translation</source>
         <translation>번역하기 전 입력 언어를 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="233"/>
+        <location filename="dialogs/terminput.py" line="232"/>
         <source>transform extracted game text</source>
         <translation>추출된 게임원문을 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="229"/>
+        <location filename="dialogs/terminput.py" line="228"/>
         <source>transform text before TTS</source>
         <translation>TTS음성합성 전에 교정</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="231"/>
+        <location filename="dialogs/terminput.py" line="230"/>
         <source>transform text after OCR</source>
         <translation>OCR광학인식 후 교정</translation>
     </message>
@@ -3975,7 +3975,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>사용자 자막 업데이트</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="223"/>
+        <location filename="dialogs/terminput.py" line="222"/>
         <source>katagana or hiragana of a name</source>
         <translation>히라가나·가타카나 이름표기</translation>
     </message>
@@ -4007,7 +4007,7 @@ Enabling proxy might make it better.</source>
 프록시를 활성화할 시 문제가 개선됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="301"/>
+        <location filename="dialogs/terminput.py" line="300"/>
         <source>Only visible to yourself</source>
         <translation>자신에게만 보이기</translation>
     </message>
@@ -4032,12 +4032,12 @@ Enabling proxy might make it better.</source>
         <translation>공유 사전에 일본어 이름 가져오기</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="316"/>
+        <location filename="dialogs/terminput.py" line="315"/>
         <source>Yomigana of translation</source>
         <translation>번역문에 요미가나</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="325"/>
+        <location filename="dialogs/terminput.py" line="324"/>
         <source>Guessed kanji of pattern using MSIME</source>
         <translation>MSIME를 사용해서 원문 간지를 추측함</translation>
     </message>
@@ -4074,7 +4074,7 @@ Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation>한국어에 루비문자 표시</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="551"/>
+        <location filename="dialogs/terminput.py" line="550"/>
         <source>Parentheses in the regular expression might not match.</source>
         <translation>정규식 표현의 괄호는 일치하지 않습니다.</translation>
     </message>
@@ -4200,12 +4200,12 @@ Power Translator는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트�
         <translation>공유사전 처리중</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="282"/>
+        <location filename="dialogs/terminput.py" line="281"/>
         <source>Match phrase boundary</source>
         <translation>구문 경계에 일치</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="227"/>
+        <location filename="dialogs/terminput.py" line="226"/>
         <source>a title before names</source>
         <translation>이름 앞에 붙이는 칭호</translation>
     </message>
@@ -4291,27 +4291,27 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
         <translation>&lt;span style=&quot;color:red&quot;&gt;TransCAT은 &lt;b&gt;쓰기권한&lt;/b&gt;이 있는 폴더에 넣어야합니다.&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="237"/>
+        <location filename="dialogs/terminput.py" line="236"/>
         <source>delegate translation for specific role</source>
         <translation>지정된 역할이 위임된 번역문</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="534"/>
+        <location filename="dialogs/terminput.py" line="533"/>
         <source>Missing translation or role.</source>
         <translation>번역문이나 역할을 찾을 수 없음.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="543"/>
+        <location filename="dialogs/terminput.py" line="542"/>
         <source>Guest user is not allowed to create rules in such type.</source>
         <translation>손님계정은 해당 종류의 규칙을 생성할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="569"/>
+        <location filename="dialogs/terminput.py" line="568"/>
         <source>Proxy term is private by default. Please debug it again and again before make it public.</source>
         <translation>기본값으로 프록시 용어는 비공개 설정되었습니다. 부디 공개로 하기전에 여러번 오류를 검토해주세요.</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="334"/>
+        <location filename="dialogs/terminput.py" line="333"/>
         <source>Such as x (Phrase) or m (Name)</source>
         <translation>x(문장)이나 m(이름)같이</translation>
     </message>
@@ -4376,7 +4376,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
         <translation>Youdao.com 중국어 번역 서비스</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="537"/>
+        <location filename="dialogs/terminput.py" line="536"/>
         <source>Invalid translation role.</source>
         <translation>올바르지 않은 번역문 역할.</translation>
     </message>
@@ -4684,52 +4684,52 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8961"/>
+        <location filename="dialogs/_prefs.py" line="8962"/>
         <source>Insert spaces after every character</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8973"/>
+        <location filename="dialogs/_prefs.py" line="8974"/>
         <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8811"/>
+        <location filename="dialogs/_prefs.py" line="8813"/>
         <source>Translation timeout options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8745"/>
+        <location filename="dialogs/_prefs.py" line="8747"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8840"/>
+        <location filename="dialogs/_prefs.py" line="8842"/>
         <source>You can always press Shift or Control to pause embedding translation and stop slowdown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8886"/>
+        <location filename="dialogs/_prefs.py" line="8887"/>
         <source>Font options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8894"/>
+        <location filename="dialogs/_prefs.py" line="8895"/>
         <source>Customize game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8895"/>
+        <location filename="dialogs/_prefs.py" line="8896"/>
         <source>Global font for game text to override default game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8906"/>
+        <location filename="dialogs/_prefs.py" line="8907"/>
         <source>Game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8921"/>
+        <location filename="dialogs/_prefs.py" line="8922"/>
         <source>Enforce font character set</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4739,23 +4739,28 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8922"/>
+        <location filename="dialogs/_prefs.py" line="8923"/>
         <source>Character set hint for selecting fonts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8877"/>
+        <location filename="dialogs/_prefs.py" line="8878"/>
         <source>Insert spaces between overlapped characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8967"/>
+        <location filename="dialogs/_prefs.py" line="8968"/>
         <source>Insert spaces after unencodable characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8721"/>
         <source>See {0}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/embedprefs.py" line="346"/>
+        <source>All settings are read-only.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

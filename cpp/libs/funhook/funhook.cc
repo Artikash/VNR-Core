@@ -1,7 +1,7 @@
-// funchook.cc
+// funhook.cc
 // 1/30/2013 jichi
 // TODO: cleanup the mess in this file
-#include "winhook/funchook.h"
+#include "funhook/funhook.h"
 #ifdef WITH_LIB_DISASM
 # include "disasm/disasm.h"
 #else
@@ -197,16 +197,16 @@ static int HookFunction(wchar_t *module, wchar_t *fxn, void *param, HookFxn *hoo
   return 0;
 }
 
-int HookAddress(void *vaddr, wchar_t *id, void *param, HookFxn *hookFxn, int type) {
+int HookAddress(void *vaddr, wchar_t *id, void *param, HookFxn *hookFxn, int type)
+{
   static DWORD pageSize = 0;
   static int stubLen = 0;
-  unsigned char* stubBase = (unsigned char*)PreCallStub;
-  if (HOOK_AFTER == type) {
-    stubBase = (unsigned char*)PostStdCallStub;
-  }
 
-  if (!pageSize)
-  {
+  unsigned char *stubBase = (unsigned char *)PreCallStub;
+  if (HOOK_AFTER == type)
+    stubBase = (unsigned char*)PostStdCallStub;
+
+  if (!pageSize) {
     SYSTEM_INFO info;
     GetSystemInfo(&info);
     pageSize = info.dwPageSize;
@@ -261,7 +261,7 @@ int HookAddress(void *vaddr, wchar_t *id, void *param, HookFxn *hookFxn, int typ
     mem++;
   }
   if (mem == numHookMem) {
-    hookMem = (HookMem*) realloc(hookMem, sizeof(HookMem) * (numHookMem+1));
+    hookMem = (HookMem *)realloc(hookMem, sizeof(HookMem) * (numHookMem+1));
     memset(hookMem + numHookMem, 0, sizeof(HookMem));
     hookMem->base = (unsigned char*) VirtualAlloc(0, pageSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     if (!hookMem->base) return 0;
@@ -361,7 +361,7 @@ int HookAddress(void *vaddr, wchar_t *id, void *param, HookFxn *hookFxn, int typ
   return 1;
 }
 
-WINHOOK_BEGIN_NAMESPACE
+FUNHOOK_BEGIN_NAMESPACE
 
 int hookAfterFunction(void *addr, wchar_t *id, void *param, void *hookFxn)
 { return HookAddress(addr, id, param, reinterpret_cast<HookFxn *>(hookFxn), HOOK_AFTER); }
@@ -370,7 +370,7 @@ int hookAfterFunction(void *addr, wchar_t *id, void *param, void *hookFxn)
 int hookRawAddress(void *addr, wchar_t *id, void *param, void *hookFxn)
 { return HookAddress(addr, id, param, reinterpret_cast<HookFxn *>(hookFxn), HOOK_BEFORE); }
 
-WINHOOK_END_NAMESPACE
+FUNHOOK_END_NAMESPACE
 
 // EOF
 

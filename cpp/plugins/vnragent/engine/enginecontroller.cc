@@ -11,6 +11,8 @@
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
+//#include "windbg/util.h"
+#include "winhook/hookcode.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
 //#include "mhook/mhook.h" // must after windows.h
@@ -26,8 +28,6 @@ class EngineControllerPrivate
 {
   typedef EngineController Q;
 
-  static Engine::address_type globalOldHookFun;
-  static EngineModel::hook_function globalDispatchFun;
 public:
   static Q *globalInstance;
 
@@ -44,16 +44,12 @@ public:
              *decoder,
              *spaceCodec;
 
-  Engine::address_type oldHookFun;
-
   bool finalized;
 
-public:
   EngineControllerPrivate(EngineModel *model)
     : model(model)
     , codePage(0)
     , encoder(nullptr), decoder(nullptr), spaceCodec(nullptr)
-    , oldHookFun(0)
     , finalized(false)
   {}
 
@@ -61,10 +57,6 @@ public:
   {
     if (!finalized) {
       finalizeCodecs();
-
-      globalOldHookFun = oldHookFun;
-      globalDispatchFun = model->hookFunction;
-
       finalized = true;
     }
   }
@@ -136,33 +128,6 @@ public:
 };
 
 EngineController *EngineControllerPrivate::globalInstance;
-Engine::address_type EngineControllerPrivate::globalOldHookFun;
-EngineModel::hook_function EngineControllerPrivate::globalDispatchFun;
-
-/**
- *  The stack must be consistent with struct HookStack
- *
- *  Note for detours
- *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
- *  - oldHookFun is the address to a code segment that jmp back to the original function
- */
-
-__declspec(naked) static int newHookFun()
-{
-  //static DWORD lastArg2;
-  __asm // consistent with struct HookStack
-  {
-    pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
-    pushfd              // eflags
-    push esp            // arg1
-    call EngineControllerPrivate::globalDispatchFun
-    add esp,4           // pop esp
-    popfd
-    popad
-    // TODO: instead of jmp, allow modify the stack after calling the function
-    jmp EngineControllerPrivate::globalOldHookFun
-  }
-}
 
 /** Public class */
 
@@ -213,21 +178,32 @@ bool EngineController::attach()
 {
   if (d_->model->attachFunction)
     return d_->model->attachFunction();
-  if (!d_->model->searchFunction)
-    return false;
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
-  ulong addr = d_->model->searchFunction(startAddress, stopAddress);
-  //ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
-  //ulong addr = 0x41af90; // レミニセンス function address
-  if (addr) {
-    DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
-    d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
-    return true;
-  }
   return false;
+
+  //if (!d_->model->searchFunction)
+  //  return false;
+  //ulong startAddress,
+  //      stopAddress;
+  //if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  //  return false;
+  //ulong addr = d_->model->searchFunction(startAddress, stopAddress);
+  ////ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
+  ////ulong addr = 0x41af90; // レミニセンス function address
+  //if (addr) {
+  //  DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
+  //  auto d = d_;
+  //  auto callback = [addr, d](winhook::hook_stack *s) -> bool {
+  //    if (d->globalDispatchFun)
+  //      d->globalDispatchFun((EngineModel::HookStack *)s);
+  //    return true;
+  //  };
+  //  return winhook::hook_before(addr, callback);
+
+  //  //WinDbg::ThreadsSuspender suspendedThreads; // lock all threads to prevent crashing
+  //  //d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
+  //  return true;
+  //}
+  //return false;
 }
 
 bool EngineController::load()
@@ -271,21 +247,30 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
-
   if (!role)
     role = d_->settings.textRoleOf(signature);
 
-  auto p = EmbedManager::instance();
-
-  bool canceled = !d_->settings.enabled
+  if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed();
+      || WinKey::isKeyShiftPressed())
+    return data;
 
-  //EmbedManagerLock lock(p);
+  auto p = EmbedManager::instance();
+  qint64 hash = Engine::hashByteArray(data);
+  QString repl;
+  if (role == Engine::OtherRole) { // skip sending text
+    if (!d_->settings.textVisible[role])
+      return QByteArray();
+    if (!d_->settings.translationEnabled[role])
+      return data;
+    if (!Util::needsTranslation(text))
+      return data;
+    repl = p->findTranslation(hash, role);
+  }
 
-  qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
-  if (!canceled && !d_->settings.translationEnabled[role] &&
-      (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)) {
+  if (!d_->settings.translationEnabled[role]
+      && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
+      && (role != Engine::OtherRole || repl.isEmpty())) {
     enum { NeedsTranslation = false };
     if (d_->model->textFilterFunction) {
       QString t = d_->model->textFilterFunction(text, role);
@@ -297,14 +282,11 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (!d_->settings.textVisible[role])
     return QByteArray();
-
   if (!d_->settings.translationEnabled[role])
     return d_->settings.transcodingEnabled[role] ? d_->encode(text) : data;
-  if (canceled ||
-      role == Engine::OtherRole && !Util::needsTranslation(text))
-    return d_->encode(text);
 
-  QString repl = p->findTranslation(hash, role);
+  if (repl.isEmpty())
+    repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   if (d_->model->textFilterFunction) {
     QString t = d_->model->textFilterFunction(text, role);
@@ -349,18 +331,28 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (!role)
     role = d_->settings.textRoleOf(signature);
 
-  auto p = EmbedManager::instance();
-
-  bool canceled = !d_->settings.enabled
+  // Canceled
+  if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed();
+      || WinKey::isKeyShiftPressed())
+    return d_->postProcessW(text);
 
-  // FIXME: This will serialize send operation. Use queued/cached shared memory instead
-  //EmbedManagerLock lock(p);
+  auto p = EmbedManager::instance();
+  qint64 hash = Engine::hashWString(text);
+  QString repl;
+  if (role == Engine::OtherRole) { // skip sending text
+    if (!d_->settings.textVisible[role])
+      return QString();
+    if (!d_->settings.translationEnabled[role])
+      return text;
+    if (!Util::needsTranslation(text))
+      return d_->postProcessW(text);
+    repl = p->findTranslation(hash, role);
+  }
 
-  qint64 hash = canceled ? 0 : Engine::hashWString(text);
-  if (!canceled && !d_->settings.translationEnabled[role] &&
-      (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)) {
+  if (!d_->settings.translationEnabled[role]
+      && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
+      && (role != Engine::OtherRole || repl.isEmpty())) {
     enum { NeedsTranslation = false };
     if (d_->model->textFilterFunction) {
       QString t = d_->model->textFilterFunction(text, role);
@@ -372,16 +364,11 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (!d_->settings.textVisible[role])
     return QString();
-
   if (!d_->settings.translationEnabled[role])
     return text;
-    //return d_->settings.transcodingEnabled[role] ? d_->encode(data) : data;
-  if (canceled ||
-      role == Engine::OtherRole && !Util::needsTranslation(text))
-    return d_->postProcessW(text);
-    //return d_->encode(data);
 
-  QString repl = p->findTranslation(hash, role);
+  if (repl.isEmpty())
+    repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   if (d_->model->textFilterFunction) {
     QString t = d_->model->textFilterFunction(text, role);
@@ -492,4 +479,33 @@ int WINAPI newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCh
 }
     ::oldMultiByteToWideChar = Engine::replaceFunction<MultiByteToWideCharFun>(addr, ::newMultiByteToWideChar);
     ::oldWideCharToMultiByte = Engine::replaceFunction<WideCharToMultiByteFun>(addr, ::newWideCharToMultiByte);
+*/
+
+/**
+ *  The stack must be consistent with struct HookStack
+ *
+ *  Note for detours
+ *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
+ *  - oldHookFun is the address to a code segment that jmp back to the original function
+ */
+/*
+__declspec(naked) static int newHookFun()
+{
+  // The push order must be consistent with struct HookStack in enginemodel.h
+  //static DWORD lastArg2;
+  __asm // consistent with struct HookStack
+  {
+    //pushfd      // 5/25/2015: pushfd twice according to ith, not sure if it is really needed
+    pushad      // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
+    pushfd      // eflags
+    push esp    // arg1
+    call EngineControllerPrivate::globalDispatchFun
+    //add esp,4   // pop esp
+    popfd
+    popad
+    //popfd
+    // TODO: instead of jmp, allow modify the stack after calling the function
+    jmp EngineControllerPrivate::globalOldHookFun
+  }
+}
 */

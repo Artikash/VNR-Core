@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="zh_CN">
+<!DOCTYPE TS><TS version="1.1" language="zh_CN">
 <context>
     <name>my</name>
     <message>
@@ -194,7 +193,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>恢复默认的颜色</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8749"/>
+        <location filename="dialogs/_prefs.py" line="8751"/>
         <source>Preferred Chinese characters</source>
         <translation>优先的中文字符集</translation>
     </message>
@@ -535,7 +534,7 @@ Especially if you would like to translate this game.</source>
 如果可能的话，强烈建议你&lt;b&gt;调整游戏文本速度到最快&lt;/b&gt;。
 特别是当你打算翻译这个游戏的时候。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4852"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -796,12 +795,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>忽略过长的游戏文本</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1245"/>
+        <location filename="managers/textman.py" line="1250"/>
         <source>Reload user-contributed comments</source>
         <translation>更新其他同学的评论</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1384"/>
+        <location filename="managers/textman.py" line="1389"/>
         <source>No game text received yet</source>
         <translation>还没有收到游戏文本</translation>
     </message>
@@ -1027,7 +1026,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望现在就更新吗？
 这会花费几秒钟来完成。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4866"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中统合辞典</translation>
@@ -1180,7 +1179,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你当前的用户语言是相同的呢。
 如果屏蔽它，VNR会屏蔽所有与这个语言有关的设定。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="5791"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辞书</translation>
@@ -1457,7 +1456,7 @@ VNR will automatically check for updates.</source>
 数据库可以用来帮助识别新的游戏。
 VNR会自动检查更新的。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1523,12 +1522,12 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>忽略无限循环重复的句子</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="990"/>
+        <location filename="managers/textman.py" line="991"/>
         <source>Eliminate finite repetition in the text</source>
         <translation>去除重复有限次的文字</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1007"/>
+        <location filename="managers/textman.py" line="1008"/>
         <source>Keep all text threads generated from {0}</source>
         <translation>保留所有来自{0}的文本</translation>
     </message>
@@ -1727,7 +1726,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 那么，如果你打开这个选项，VNR将会翻译全部KiriKiri的文本。
 这样将会产生大量的垃圾文本，而这不会是你想要达到的！</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2374,7 +2373,7 @@ VNR中可以共享对游戏内容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要导出字幕到XML文件，可以在【字幕编辑器】中点击【导出】按钮。
 </translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -2588,22 +2587,22 @@ You can select only the resources you need to download here.</source>
         <translation>Excite.co.jp的多国语言翻译服务</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="531"/>
+        <location filename="dialogs/terminput.py" line="530"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="554"/>
+        <location filename="dialogs/terminput.py" line="553"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把词条设定为系列专用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="572"/>
+        <location filename="dialogs/terminput.py" line="571"/>
         <source>Everything looks OK</source>
         <translation>看起来还好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="666"/>
+        <location filename="dialogs/terminput.py" line="665"/>
         <source>Create dictionary entry</source>
         <translation>创建词条</translation>
     </message>
@@ -2617,7 +2616,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辞书会被安装到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="557"/>
+        <location filename="dialogs/terminput.py" line="556"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>没有指定翻译。这样的话VNR会删掉匹配的文本。</translation>
     </message>
@@ -2709,7 +2708,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>JMDict日文-荷兰文辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="497"/>
+        <location filename="dialogs/terminput.py" line="496"/>
         <source>Add new term</source>
         <translation>添加词条</translation>
     </message>
@@ -2754,7 +2753,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>全局的游戏快捷键</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="225"/>
+        <location filename="dialogs/terminput.py" line="224"/>
         <source>a title after names</source>
         <translation>这是日文名字后的称谓</translation>
     </message>
@@ -2898,17 +2897,17 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation type="obsolete">修改文本提取方法需要重新启动游戏才会生效。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8806"/>
+        <location filename="dialogs/_prefs.py" line="8808"/>
         <source>Translation wait time</source>
         <translation>翻译超时时间</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8839"/>
+        <location filename="dialogs/_prefs.py" line="8841"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>当超时时间很长而你的机翻工具又很慢时，可能会让游戏一卡一卡的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9031"/>
+        <location filename="dialogs/_prefs.py" line="9032"/>
         <source>Preferred text to embed in the game</source>
         <translation>要内嵌的文本</translation>
     </message>
@@ -2938,12 +2937,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>正在翻译窗口的文字...</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="902"/>
+        <location filename="managers/textman.py" line="903"/>
         <source>Updating window text ...</source>
         <translation>正在刷新窗口的文字...</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="906"/>
+        <location filename="managers/textman.py" line="907"/>
         <source>Not found machine translation</source>
         <translation>没有找到机器翻译</translation>
     </message>
@@ -3031,7 +3030,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>在路径中不可以有中文之类的非ASCII字符才好呢</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="787"/>
+        <location filename="dialogs/embedprefs.py" line="793"/>
         <source>Engine: VNR</source>
         <translation>文本提取：VNR</translation>
     </message>
@@ -3048,7 +3047,7 @@ D. 日文无交集：泰文&lt;br/&gt;
     <message>
         <location filename="dialogs/embedprefs.py" line="340"/>
         <source>H-code is not supported by VNR&apos;s embedded text hook</source>
-        <translation>VNR的内嵌引擎不支持/H特殊码</translation>
+        <translation type="obsolete">VNR的内嵌引擎不支持/H特殊码</translation>
     </message>
     <message>
         <location filename="main.py" line="2094"/>
@@ -3205,7 +3204,7 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要启用{0}个选定的条目吗？</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4844"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3338,17 +3337,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆会产生重复的条目，管理起来会更加困难。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="540"/>
+        <location filename="dialogs/terminput.py" line="539"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文本和替换的文本相同，这样子做没有意义。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="560"/>
+        <location filename="dialogs/terminput.py" line="559"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，这样很容易产生歧义。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="563"/>
+        <location filename="dialogs/terminput.py" line="562"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>匹配的文本很长。请不要把人工字幕加入共享辞书。</translation>
     </message>
@@ -3397,7 +3396,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <source>Text transformation settings</source>
         <translation>文本变换设定</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -3478,7 +3477,7 @@ Check this wiki for what to do if there is no correct text.
         <translation>对游戏窗口截取图片</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="235"/>
+        <location filename="dialogs/terminput.py" line="234"/>
         <source>reusable regular expression pattern</source>
         <translation>可重用的正则表达式定义</translation>
     </message>
@@ -3545,7 +3544,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
         <translation>加载金山快译中英翻译引擎</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8758"/>
+        <location filename="dialogs/_prefs.py" line="8760"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>使用正体中文或日本汉字</translation>
     </message>
@@ -3560,37 +3559,37 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
         <translation>浏览当前开启的词条</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="221"/>
+        <location filename="dialogs/terminput.py" line="220"/>
         <source>a character name</source>
         <translation>人物的姓名</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="215"/>
+        <location filename="dialogs/terminput.py" line="214"/>
         <source>translate text from input to text language</source>
         <translation>翻译输入语言到输出语言</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="219"/>
+        <location filename="dialogs/terminput.py" line="218"/>
         <source>transform text in output language after translation</source>
         <translation>在翻译后修正输出的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="217"/>
+        <location filename="dialogs/terminput.py" line="216"/>
         <source>transform text in input langauge before translation</source>
         <translation>在翻译前修正输入的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="233"/>
+        <location filename="dialogs/terminput.py" line="232"/>
         <source>transform extracted game text</source>
         <translation>修正从游戏中提取到的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="229"/>
+        <location filename="dialogs/terminput.py" line="228"/>
         <source>transform text before TTS</source>
         <translation>修正语音合成前的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="231"/>
+        <location filename="dialogs/terminput.py" line="230"/>
         <source>transform text after OCR</source>
         <translation>修正光学识别后的文字</translation>
     </message>
@@ -3888,7 +3887,7 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>更新共享字幕</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="223"/>
+        <location filename="dialogs/terminput.py" line="222"/>
         <source>katagana or hiragana of a name</source>
         <translation>日文姓名的平假名或片假名</translation>
     </message>
@@ -3920,7 +3919,7 @@ Enabling proxy might make it better.</source>
 开启代理也许可以变好一些。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="301"/>
+        <location filename="dialogs/terminput.py" line="300"/>
         <source>Only visible to yourself</source>
         <translation>只有你自己看得到</translation>
     </message>
@@ -3945,12 +3944,12 @@ Enabling proxy might make it better.</source>
         <translation>导入日文的名字到共享辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="316"/>
+        <location filename="dialogs/terminput.py" line="315"/>
         <source>Yomigana of translation</source>
         <translation>翻译的读法</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="325"/>
+        <location filename="dialogs/terminput.py" line="324"/>
         <source>Guessed kanji of pattern using MSIME</source>
         <translation>使用微软日文输入法猜测的汉字</translation>
     </message>
@@ -3987,7 +3986,7 @@ Japanese romanization can be adjusted in the dictionary tab instead.</source>
         <translation>韩文注音的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="551"/>
+        <location filename="dialogs/terminput.py" line="550"/>
         <source>Parentheses in the regular expression might not match.</source>
         <translation>正则表达式的括号可能不匹配。</translation>
     </message>
@@ -4113,12 +4112,12 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/s
         <translation>处理共享辞书中</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="282"/>
+        <location filename="dialogs/terminput.py" line="281"/>
         <source>Match phrase boundary</source>
         <translation>匹配短语边界</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="227"/>
+        <location filename="dialogs/terminput.py" line="226"/>
         <source>a title before names</source>
         <translation>这是日文名字前的前缀</translation>
     </message>
@@ -4199,27 +4198,27 @@ TransCAT是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;�
         <translation>&lt;span style=&quot;color:red&quot;&gt;TransCAT所在的文件夹一定要是&lt;b&gt;可写&lt;/b&gt;的。&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="237"/>
+        <location filename="dialogs/terminput.py" line="236"/>
         <source>delegate translation for specific role</source>
         <translation>代理翻译的Role</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="534"/>
+        <location filename="dialogs/terminput.py" line="533"/>
         <source>Missing translation or role.</source>
         <translation>缺少翻译或者Role。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="543"/>
+        <location filename="dialogs/terminput.py" line="542"/>
         <source>Guest user is not allowed to create rules in such type.</source>
         <translation>匿名账户不可以创建指定类型的词条。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="569"/>
+        <location filename="dialogs/terminput.py" line="568"/>
         <source>Proxy term is private by default. Please debug it again and again before make it public.</source>
         <translation>代理词条默认是非公开的。请在提交词条后反复调试再公开。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="334"/>
+        <location filename="dialogs/terminput.py" line="333"/>
         <source>Such as x (Phrase) or m (Name)</source>
         <translation>比如x（词组）或者m（姓名）</translation>
     </message>
@@ -4249,7 +4248,7 @@ TransCAT是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;�
         <translation>有道中文翻译服务</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="537"/>
+        <location filename="dialogs/terminput.py" line="536"/>
         <source>Invalid translation role.</source>
         <translation>翻译Role包含不允许的字符。</translation>
     </message>
@@ -4564,52 +4563,52 @@ The font will be installed to {1}.</source>
         <translation>KanjiDic{0}汉字字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8961"/>
+        <location filename="dialogs/_prefs.py" line="8962"/>
         <source>Insert spaces after every character</source>
         <translation>在每个字后都插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8973"/>
+        <location filename="dialogs/_prefs.py" line="8974"/>
         <source>Do not insert any spaces</source>
         <translation>不插入任何空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8811"/>
+        <location filename="dialogs/_prefs.py" line="8813"/>
         <source>Translation timeout options</source>
         <translation>翻译超时设定</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8745"/>
+        <location filename="dialogs/_prefs.py" line="8747"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
         <translation>将简体中文的内嵌翻译转换为正体中文或日本汉字如果无法正常显示。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8840"/>
+        <location filename="dialogs/_prefs.py" line="8842"/>
         <source>You can always press Shift or Control to pause embedding translation and stop slowdown.</source>
         <translation>你可以按下Shift或者Control来暂停内嵌翻译如果变慢。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8886"/>
+        <location filename="dialogs/_prefs.py" line="8887"/>
         <source>Font options</source>
         <translation>字体选项</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8894"/>
+        <location filename="dialogs/_prefs.py" line="8895"/>
         <source>Customize game font</source>
         <translation>自定义游戏字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8895"/>
+        <location filename="dialogs/_prefs.py" line="8896"/>
         <source>Global font for game text to override default game font</source>
         <translation>替换游戏的全局字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8906"/>
+        <location filename="dialogs/_prefs.py" line="8907"/>
         <source>Game font</source>
         <translation>游戏字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8921"/>
+        <location filename="dialogs/_prefs.py" line="8922"/>
         <source>Enforce font character set</source>
         <translation>设定字体字符集</translation>
     </message>
@@ -4619,17 +4618,17 @@ The font will be installed to {1}.</source>
         <translation>未知字符集</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8922"/>
+        <location filename="dialogs/_prefs.py" line="8923"/>
         <source>Character set hint for selecting fonts</source>
         <translation>选择字体时的字符集参数</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8877"/>
+        <location filename="dialogs/_prefs.py" line="8878"/>
         <source>Insert spaces between overlapped characters</source>
         <translation>在重叠显示的字间插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8967"/>
+        <location filename="dialogs/_prefs.py" line="8968"/>
         <source>Insert spaces after unencodable characters</source>
         <translation>仅在无法编码的字后插入空格</translation>
     </message>
@@ -4637,6 +4636,11 @@ The font will be installed to {1}.</source>
         <location filename="dialogs/_prefs.py" line="8721"/>
         <source>See {0}</source>
         <translation>参看{0}</translation>
+    </message>
+    <message>
+        <location filename="dialogs/embedprefs.py" line="346"/>
+        <source>All settings are read-only.</source>
+        <translation>所有设定都是只读的。</translation>
     </message>
 </context>
 </TS>

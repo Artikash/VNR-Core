@@ -1,20 +1,24 @@
 # winhook.pri
-# 7/20/2011 jichi
+# 5/25/2015 jichi
 win32 {
 
 # This library requires disasm
 
 DEFINES += WITH_LIB_WINHOOK
 
-LIBS += -lkernel32 -luser32
+#LIBS += -lkernel32 -luser32
 
 DEPENDPATH += $$PWD
 
 HEADERS += \
-  $$PWD/funchook.h \
-  $$PWD/winhook.h
+  $$PWD/hookcode.h \
+  $$PWD/hookdef.h \
+  $$PWD/hookfun.h \
+  $$PWD/hookutil_p.h
 SOURCES += \
-   $$PWD/funchook.cc
+  $$PWD/hookcode.cc \
+  $$PWD/hookfun.cc \
+  $$PWD/hookutil_p.cc
 }
 
 # EOF

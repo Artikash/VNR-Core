@@ -37,7 +37,7 @@ EngineController *EngineFactory::createEngine()
     if (p->match()) {
       DOUT("matched, engine =" << p->name());
       if (p->load()) {
-        DOUT("ret = true, ngine =" << p->name());
+        DOUT("ret = true, engine =" << p->name());
         return p;
       }
       DOUT("load failed, engine =" << p->name());

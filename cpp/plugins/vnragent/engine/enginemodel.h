@@ -16,8 +16,6 @@ public:
     , matchFunction(nullptr)
     , attachFunction(nullptr)
     , detachFunction(nullptr)
-    , searchFunction(nullptr)
-    , hookFunction(nullptr)
     , textFilterFunction(nullptr)
     , translationFilterFunction(nullptr)
   {}
@@ -33,32 +31,32 @@ public:
                  attachFunction, // override searchFunction and hookFunction
                  detachFunction; // not used
 
-  // Memory search function
-  typedef ulong (* search_function)(ulong startAddress, ulong stopAddress);
-  search_function searchFunction; ///< return the hook address
-
-  // Hijacked function
-  struct HookStack
-  {
-    ulong eflags;  // pushaf
-    ulong edi,     // pushad
-          esi,
-          ebp,
-          esp,
-          ebx,
-          edx,
-          ecx,     // this
-          eax;     // 0x24
-    ulong retaddr; // 0x28, &retaddr == esp
-    ulong args[1]; // 0x2c
-  };
-  typedef void (* hook_function)(HookStack *);
-  hook_function hookFunction; ///< callback of hooked function
-
   // Filter functions
   typedef QString (* filter_function)(const QString &text, int role);
   filter_function textFilterFunction,        ///< modify game text
                   translationFilterFunction; ///< modify translation
 };
+
+  // Memory search function
+  //typedef ulong (* search_function)(ulong startAddress, ulong stopAddress);
+  //search_function searchFunction; ///< return the hook address
+
+  //// Hijacked function
+  //struct HookStack
+  //{
+  //  ulong eflags;  // pushaf
+  //  ulong edi,     // pushad
+  //        esi,
+  //        ebp,
+  //        esp,
+  //        ebx,
+  //        edx,
+  //        ecx,     // this
+  //        eax;     // 0x24
+  //  ulong retaddr; // 0x2c, &retaddr == esp
+  //  ulong args[1]; // 0x2e
+  //};
+  //typedef void (* hook_function)(HookStack *);
+  //hook_function hookFunction; ///< callback of hooked function
 
 // EOF
