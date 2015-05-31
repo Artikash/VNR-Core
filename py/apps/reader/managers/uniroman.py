@@ -168,11 +168,11 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   # yomi size / surface size
 
   romajiRuby = language.startswith('zh') # use romaji width only for pinyin
-  yomiWidth = LATIN_YOMI_WIDTH if romajiRuby else KANJI_YOMI_WIDTH
 
   roundRubySize = int(round(rubySize)) or 1
   paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 # at least 1 pixel
 
+  yomiWidth = LATIN_YOMI_WIDTH if romajiRuby else KANJI_YOMI_WIDTH
   if invertRuby:
     paddingSize *= 2 # increase padding size when invert
     yomiWidth *= 1.2 # increase yomi font size when invert
@@ -195,7 +195,10 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
         #else:
         #  color = None
 
-      width = max(len(surface), len(yomi)*yomiWidth if yomi else 0)
+      width = max(
+        len(surface),
+        (len(yomi)*yomiWidth + (1 if invertRuby else 0)) if yomi else 0,
+      )
       if width + lineCount <= charPerLine:
         pass
       elif line:

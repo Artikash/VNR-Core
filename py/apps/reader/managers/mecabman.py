@@ -235,6 +235,10 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     ANNOT_ZOOM = 0.9
     ANNOT_WIDTH = LATIN_YOMI_WIDTH * ANNOT_ZOOM
     # yomi size / surface size
+
+    #if rubyInverted:
+    #  yomiWidth = 1 if mecabdef.rb_is_wide(rubyType) else 0.8
+    #else:
     yomiWidth = KANJI_YOMI_WIDTH if mecabdef.rb_is_wide(rubyType) else LATIN_YOMI_WIDTH
 
     roundRubySize = int(round(rubySize)) or 1
@@ -278,7 +282,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
 
       width = max(
         len(surface),
-        len(yomi)*yomiWidth if yomi else 0,
+        (len(yomi) * yomiWidth + (1 if rubyInverted else 0)) if yomi else 0, # +1 when inverted for paddingSize
         (len(role) + 1) * ANNOT_WIDTH if annotated and role else 0,
       )
       if width + lineCount <= charPerLine:

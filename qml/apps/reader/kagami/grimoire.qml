@@ -229,7 +229,7 @@ Item { id: root_
     return bean_.renderJapanese(text
       , root_.japaneseRubyType
       , root_.japaneseRubyKanaEnabled
-      , Math.round(root_.width / (22 * root_._zoomFactor) * (root_.japaneseRubyInverted ? 0.85 : 1)) // char per line
+      , Math.round(root_.width / (22 * root_._zoomFactor)) // * (root_.japaneseRubyInverted ? 0.85 : 1)) // char per line
       , 10 * root_._zoomFactor // ruby size of furigana
       , colorize // colorize
       , root_.japaneseRubyHighlight
@@ -243,7 +243,7 @@ Item { id: root_
     var chwidth = lang == 'ko' ? 13 : 18 // Korean : Chinese
                 //: lang === 'ja' ? 22
                 //: lang.indexOf('zh') === 0 ? 18
-    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
+    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor)) // * (root_.rubyInverted ? 0.85 : 1)) // char per line
     if (lang == 'ko')
       return bean_.renderKoreanRuby(text
         , chperline

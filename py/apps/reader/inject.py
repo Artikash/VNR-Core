@@ -20,7 +20,7 @@ if skos.WIN:
     for dllpath in config.VNRAGENT_DLLS:
       #dllpath = os.path.abspath(dllpath)
       dllpath = skpaths.abspath(dllpath)
-      assert os.path.exists(dllpath), "needed dll does not exist"
+      assert os.path.exists(dllpath), "needed dll does not exist: %s" % dllpath
       ret = skwinsec.injectdll(dllpath, **kwargs) and ret
     dprint("leave: ret = %s" % ret)
     return ret
@@ -36,7 +36,7 @@ if skos.WIN:
     for dllpath in config.VNRLOCALE_DLLS:
       #dllpath = os.path.abspath(dllpath)
       dllpath = skpaths.abspath(dllpath)
-      assert os.path.exists(dllpath), "needed dll does not exist"
+      assert os.path.exists(dllpath), "needed dll does not exist: %s" % dllpath
       ret = skwinsec.injectdll(dllpath, **kwargs) and ret
     dprint("leave: ret = %s" % ret)
     return ret
