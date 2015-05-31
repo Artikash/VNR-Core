@@ -106,14 +106,16 @@ struct TextHookBase
     DWORD size; // text data size, length = size - 1
   };
 
-  bool editable_; // for debugging only, whether text is not read-only
+  bool enabled_,
+       editable_; // for debugging only, whether text is not read-only
   QByteArray buffer_; // persistent storage, which makes this function not thread-safe
   TextArgument *arg_; // last argument
   LPCSTR text_; // last text
   DWORD size_; // last size
 
   TextHookBase()
-    : editable_(true)
+    : enabled_(true)
+    , editable_(true)
     , arg_(nullptr)
     , text_(nullptr)
     , size_(0)
@@ -131,27 +133,28 @@ public:
     // 0070A139   75 0E            JNZ SHORT .0070A149
     // 0070A13B   8378 EA 5B       CMP DWORD PTR DS:[EAX-0x16],0x5B
     // 0070A13F   75 08            JNZ SHORT .0070A149
-    //DWORD testAddr = *(DWORD *)(stack->edi + 0xb0);
-    //if (*(WORD *)testAddr != 0x84 || // compare [[edi+0xb0]] with 0x84
-    //    *(DWORD *)(testAddr - 0x16) != 0x5b)   // compare [[edi+0xb0]- 0x16] with 0x5b ('[')
-    //  return;
-    enum : WORD { ScenarioSplit = 0x27f2 };
     DWORD split = *(WORD *)(s->edi + 0xb0);
-
-    // Stack structure
-    // 0012F4BC   07EAFD48 ; text address
-    // 0012F4C0   000002EC ; use this value as split
-    // 0012F4C4   00000011
-    // 0012F4C8   0012F510
-    // 0012F4CC   00000012
-    // 0012F4D0   00001BAA
-    // 0012F4D4   00000012
-    // 0012F4D8   06D2E24C
-    // 0012F4DC   00581125  RETURN to .00581125 from .0057DC30
-    //enum : WORD { ScenarioSplit = 0x84 };
-    //DWORD split = s->stack[2];
-    if (split != ScenarioSplit) // only translate the scenario thread
+    if (split && split != 0x27f2) // new System43 after Evenicle
       return true;
+    if (!split) { // old System43 before Evenicle where edi split is zero
+      split = s->stack[1];
+      if (split != 0x84)
+        return true;
+      // Stack structure observed from 武想少女隊
+      // 0012F4BC   07EAFD48 ; text address
+      // 0012F4C0   000002EC ; use this value as split
+      // 0012F4C4   00000011
+      // 0012F4C8   0012F510
+      // 0012F4CC   00000012
+      // 0012F4D0   00001BAA
+      // 0012F4D4   00000012
+      // 0012F4D8   06D2E24C
+      // 0012F4DC   00581125  RETURN to .00581125 from .0057DC30
+      //if (s->stack[1] != 0x84)
+      //  return true;
+      //if (s->stack[2] != 0x3)
+      //  return true;
+    }
 
     auto arg = (TextArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
@@ -189,10 +192,17 @@ class OtherHook : protected TextHookBase
 public:
   bool hookBefore(winhook::hook_stack *s)
   {
-    enum : WORD { OtherSplit = 0x46 }; // 0x440046 if use dword split
-    DWORD splitBase = *(DWORD *)(s->edi + 0x284), // [edi + 0x284]
-          split1 = *(WORD *)(splitBase - 0x4), // word [[edi + 0x284] - 0x4]
+    if (!enabled_)
+      return true;
+    DWORD splitBase = *(DWORD *)(s->edi + 0x284); // [edi + 0x284]
+    if (::IsBadReadPtr((LPCVOID)splitBase, 4)) { // 4 = sizeof(DWORD)
+      enabled_ = false;
+      DOUT("ILLEGAL ACCESS and stop modifying other text");
+      return true;
+    }
+    DWORD split1 = *(WORD *)(splitBase - 0x4), // word [[edi + 0x284] - 0x4]
           split2 = *(WORD *)(splitBase - 0x8); // word [[edi + 0x284] - 0x8]
+    enum : WORD { OtherSplit = 0x46 }; // 0x440046 if use dword split
     if (split1 != OtherSplit || split2 <= 2) // split internal system messages
       return true;
 
@@ -226,17 +236,18 @@ public:
   }
 };
 
-bool nameHook(winhook::hook_stack *s)
+// Text with fixed size
+bool fixedTextHook(winhook::hook_stack *s)
 {
-  enum { NameSize = 0x10 };
-  struct NameArgument // first argument of the name hook
+  enum { FixedSize = 0x10 };
+  struct FixedArgument // first argument of the name hook
   {
-    char text[NameSize]; // 0x10
+    char text[FixedSize]; // 0x10
     DWORD type, // [[esp]+0x10]
           type2; // [[esp]+0x14]
   };
 
-  auto arg = (NameArgument *)s->stack[0];
+  auto arg = (FixedArgument *)s->stack[0];
   if (arg->type2 != 0xf) // non 0xf is garbage text
     return true;
 
@@ -257,8 +268,8 @@ bool nameHook(winhook::hook_stack *s)
   }
 
   QByteArray buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
-  ::strncpy(text, buffer_.constData(), NameSize - 1);
-  text[NameSize - 1] = 0;
+  ::strncpy(text, buffer_.constData(), FixedSize - 1);
+  text[FixedSize - 1] = 0;
   return true;
 }
 
@@ -298,7 +309,7 @@ bool System4Engine::attach()
   }
 
   if (ulong addr = ::searchNameAddress(startAddress, stopAddress)) {
-    if (winhook::hook_before(addr, ::nameHook))
+    if (winhook::hook_before(addr, ::fixedTextHook))
       DOUT("name text address" << QString::number(addr, 16));
     else
       DOUT("name text NOT FOUND");
