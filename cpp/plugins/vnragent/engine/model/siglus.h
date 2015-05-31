@@ -13,7 +13,7 @@ class SiglusEngine : public EngineModel
 public:
   SiglusEngine()
   {
-    name = "SiglusEngine";
+    name = "EmbedSiglusEngine";
     wideChar = true;
     matchFiles << "SiglusEngine.exe";
     attachFunction = &Self::attach;

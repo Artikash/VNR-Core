@@ -12,6 +12,7 @@ rename:
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
   SystemAoi5: SystemAoi2
+  System4: EmbedSystem43
   User-defined: H-code
 
 gc:
@@ -163,6 +164,8 @@ simple:
   - Debonosu
   - EAGLS
   - Elf
+  - EmbedSiglusEngine
+  - EmbedSystem43
   - Eushully
   - FELISTELLA PSP
   - GXP
@@ -216,7 +219,7 @@ simple:
   - SolfaSoft # renamed
   - StuffScriptEngine
   - SystemC
-  - System4     # the embed engine
+  - System4 # renamed
   - System43
   - System43+
   - SystemAoi
@@ -337,6 +340,8 @@ char:
   - sceCccStrlenSJIS
   - sceCccSJIStoUTF8
   - sceCccSJIStoUTF16
+  # Embed
+  - EmbedSystem43
   # Engines
   - 2RM
   - 5pb PSP
@@ -422,7 +427,7 @@ char:
   - SolfaSoft # renamed
   - StudioRyokucha
   - StuffScriptEngine
-  - System4
+  - System4 # renamed
   - System40
   - System43
   - System43+
@@ -477,6 +482,8 @@ wchar:
   - sceFontGetCharGlyphImage_Clip
   - sceFontGetShadowGlyphImage
   - sceFontGetShadowGlyphImage_Clip
+  # Embed
+  - EmbedSiglusEngine
   # Engines
   - Adobe AIR
   - Adobe Flash 10
@@ -537,6 +544,7 @@ focus:
   - CatSystem2
   - CatSystem3
   - EAGLS
+  - EmbedSiglusEngine
   - FocasLens
   - HorkEye
   - KAGParser

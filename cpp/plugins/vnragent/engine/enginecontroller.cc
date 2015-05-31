@@ -247,21 +247,30 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
-
   if (!role)
     role = d_->settings.textRoleOf(signature);
 
-  auto p = EmbedManager::instance();
-
-  bool canceled = !d_->settings.enabled
+  if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed();
+      || WinKey::isKeyShiftPressed())
+    return data;
 
-  //EmbedManagerLock lock(p);
+  auto p = EmbedManager::instance();
+  qint64 hash = Engine::hashByteArray(data);
+  QString repl;
+  if (role == Engine::OtherRole) { // skip sending text
+    if (!d_->settings.textVisible[role])
+      return QByteArray();
+    if (!d_->settings.translationEnabled[role])
+      return data;
+    if (!Util::needsTranslation(text))
+      return data;
+    repl = p->findTranslation(hash, role);
+  }
 
-  qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
-  if (!canceled && !d_->settings.translationEnabled[role] &&
-      (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)) {
+  if (!d_->settings.translationEnabled[role]
+      && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
+      && (role != Engine::OtherRole || repl.isEmpty())) {
     enum { NeedsTranslation = false };
     if (d_->model->textFilterFunction) {
       QString t = d_->model->textFilterFunction(text, role);
@@ -273,14 +282,11 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (!d_->settings.textVisible[role])
     return QByteArray();
-
   if (!d_->settings.translationEnabled[role])
     return d_->settings.transcodingEnabled[role] ? d_->encode(text) : data;
-  if (canceled ||
-      role == Engine::OtherRole && !Util::needsTranslation(text))
-    return d_->encode(text);
 
-  QString repl = p->findTranslation(hash, role);
+  if (repl.isEmpty())
+    repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   if (d_->model->textFilterFunction) {
     QString t = d_->model->textFilterFunction(text, role);
@@ -325,18 +331,28 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (!role)
     role = d_->settings.textRoleOf(signature);
 
-  auto p = EmbedManager::instance();
-
-  bool canceled = !d_->settings.enabled
+  // Canceled
+  if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed();
+      || WinKey::isKeyShiftPressed())
+    return d_->postProcessW(text);
 
-  // FIXME: This will serialize send operation. Use queued/cached shared memory instead
-  //EmbedManagerLock lock(p);
+  auto p = EmbedManager::instance();
+  qint64 hash = Engine::hashWString(text);
+  QString repl;
+  if (role == Engine::OtherRole) { // skip sending text
+    if (!d_->settings.textVisible[role])
+      return QString();
+    if (!d_->settings.translationEnabled[role])
+      return text;
+    if (!Util::needsTranslation(text))
+      return d_->postProcessW(text);
+    repl = p->findTranslation(hash, role);
+  }
 
-  qint64 hash = canceled ? 0 : Engine::hashWString(text);
-  if (!canceled && !d_->settings.translationEnabled[role] &&
-      (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)) {
+  if (!d_->settings.translationEnabled[role]
+      && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
+      && (role != Engine::OtherRole || repl.isEmpty())) {
     enum { NeedsTranslation = false };
     if (d_->model->textFilterFunction) {
       QString t = d_->model->textFilterFunction(text, role);
@@ -348,16 +364,11 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (!d_->settings.textVisible[role])
     return QString();
-
   if (!d_->settings.translationEnabled[role])
     return text;
-    //return d_->settings.transcodingEnabled[role] ? d_->encode(data) : data;
-  if (canceled ||
-      role == Engine::OtherRole && !Util::needsTranslation(text))
-    return d_->postProcessW(text);
-    //return d_->encode(data);
 
-  QString repl = p->findTranslation(hash, role);
+  if (repl.isEmpty())
+    repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   if (d_->model->textFilterFunction) {
     QString t = d_->model->textFilterFunction(text, role);

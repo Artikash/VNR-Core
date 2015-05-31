@@ -45,6 +45,8 @@ SS_TEXTEDIT_HOOK_IGNORED = SS_TEXTEDIT_HOOK
 #  defs.NULL_THREAD_TYPE: "",   # should never happen!
 #}
 
+READONLY = True
+
 def _gameprofile():
   """
   @return  gameman.GameProfile
@@ -160,11 +162,13 @@ class _TextThreadView(object):
     #    skqss.toggleclass(b, 'btn-info', value),
     #    b))
 
-    b = self.buttonRow.addButton(tr_("ignore"),
-        tip=my.tr("Don't translate the text")) # ignored
+    #b = self.buttonRow.addButton(tr_("ignore"),
+    #    tip=my.tr("Don't translate the text")) # ignored
+    b = self.buttonRow.addButton(tr_("other"),
+        tip=my.tr("This is extra scenario"))   # other
     skqss.class_(b, 'btn btn-default btn-sm')
     b.toggled.connect(partial(lambda b, value:
-        skqss.toggleclass(b, 'btn-danger', value),
+        skqss.toggleclass(b, 'btn-info', value),
         b))
     self.buttonRow.setCurrentIndex(_TextThreadView.IGNORE_BUTTON_ROW)
     self.buttonRow.currentIndexChanged.connect(self._onSelectedRoleChanged)
@@ -314,11 +318,14 @@ class _TextTab(object):
 
     layout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.saveButton)
+    if not READONLY:
+      row.addWidget(self.saveButton)
+
     #row.addWidget(hookPrefsButton)
     row.addWidget(self.resetButton)
     #row.addWidget(wikiButton)
-    row.addWidget(helpButton)
+    if not READONLY:
+      row.addWidget(helpButton)
     #row.addWidget(QtWidgets.QLabel(
     #  " <= " + my.tr("click help if you have questions")
     #))
@@ -337,8 +344,8 @@ class _TextTab(object):
 
     msg = QtWidgets.QLabel("%s: %s" % (
         tr_("Note"),
-        my.tr("H-code is not supported by VNR's embedded text hook")))
-    #skqss.class_(msg, "text-info")
+        my.tr("All settings are read-only.")))
+    skqss.class_(msg, "text-error")
     layout.addWidget(msg)
 
     #buttons = QtWidgets.QHBoxLayout()

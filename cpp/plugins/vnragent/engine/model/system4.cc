@@ -12,6 +12,8 @@
 #define DEBUG "system4"
 #include "sakurakit/skdebug.h"
 
+using namespace std::placeholders; // for _1
+
 /**
  *  Sample game: Evenicle
  *  See: http://capita.tistory.com/m/post/256
@@ -54,11 +56,37 @@ ulong searchNameAddress(ulong startAddress, ulong stopAddress)
   return MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
 }
 
+ulong searchOtherAddress(ulong startAddress, ulong stopAddress)
+{
+  const char *pattern = "S_ASSIGN";
+  BYTE bytes[] = {
+    //0xc3,       // 005b6492   c3               retn
+    //0x52,       // 005b6493   52               push edx
+    0xe8, XX4,    // 005b6494   e8 77dc0000      call .005c4110     ; jichi: hook here
+    0x84,0xc0,    // 005b6499   84c0             test al,al
+    0x75, XX,     // 005b649b   75 16            jnz short .005b64b3
+    0x68, XX4,    // 005b649d   68 d4757200      push .007275d4
+    0xb9 //, XX4, // 005b64a2   b9 f0757200      mov ecx,.007275f0  ; ascii "S_ASSIGN"
+    //0xe8, XX4   // 005b64a7   e8 84c8ffff      call .005b2d30
+  };
+
+  for (ulong addr = startAddress; addr < stopAddress;) {
+    addr = MemDbg::matchBytes(bytes, sizeof(bytes), addr, stopAddress);
+    if (!addr)
+      return 0;
+    addr += sizeof(bytes);
+    DWORD ecx = *(DWORD *)addr;
+    if (::strcmp((LPCSTR)ecx, pattern) == 0)
+      return addr - sizeof(bytes);
+  };
+  return 0;
+}
+
 // - Hook -
 
-class ScenarioHook
+struct TextHookBase
 {
-  struct ScenarioArgument // first argument of the scenario hook
+  struct TextArgument // first argument of the scenario hook
   {
     DWORD unknown1,
           unknown2;
@@ -66,18 +94,23 @@ class ScenarioHook
     DWORD size; // text data size, length = size - 1
   };
 
+  bool editable_; // for debugging only, whether text is not read-only
   QByteArray buffer_; // persistent storage, which makes this function not thread-safe
-  ScenarioArgument *arg_; // last argument
+  TextArgument *arg_; // last argument
   LPCSTR text_; // last text
   DWORD size_; // last size
 
-public:
-  ScenarioHook()
-    : arg_(nullptr)
+  TextHookBase()
+    : editable_(true)
+    , arg_(nullptr)
     , text_(nullptr)
     , size_(0)
   {}
+};
 
+class ScenarioHook : protected TextHookBase
+{
+public:
   bool hookBefore(winhook::hook_stack *s)
   {
     // See ATcode patch:
@@ -92,25 +125,81 @@ public:
     //  return;
     enum : WORD { ScenarioSplit = 0x27f2 };
     DWORD split = *(WORD *)(s->edi + 0xb0);
+
+    // Stack structure
+    // 0012F4BC   07EAFD48 ; text address
+    // 0012F4C0   000002EC ; use this value as split
+    // 0012F4C4   00000011
+    // 0012F4C8   0012F510
+    // 0012F4CC   00000012
+    // 0012F4D0   00001BAA
+    // 0012F4D4   00000012
+    // 0012F4D8   06D2E24C
+    // 0012F4DC   00581125  RETURN to .00581125 from .0057DC30
+    //enum : WORD { ScenarioSplit = 0x84 };
+    //DWORD split = s->stack[2];
     if (split != ScenarioSplit) // only translate the scenario thread
       return true;
 
-    auto arg = (ScenarioArgument *)s->stack[0]; // top of the stack
+    auto arg = (TextArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
-    if (!text || !*text)
+    if (arg->size <= 1 || !text || !*text)
       return true;
 
     enum { role = Engine::ScenarioRole };
-    enum { sig = Engine::ScenarioThreadSignature };
-
+    DWORD sig = Engine::hashThreadSignature(role, split);
     //int size = arg->size; // size not used as not needed
     buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
 
-    arg_ = arg;
-    text_ = arg->text;
-    size_ = arg->size;
-    arg->text = buffer_.constData(); // reset arg3
-    arg->size = buffer_.size() + 1; // +1 for the nullptr
+    if (editable_) {
+      arg_ = arg;
+      text_ = arg->text;
+      size_ = arg->size;
+      arg->text = buffer_.constData(); // reset arg3
+      arg->size = buffer_.size() + 1; // +1 for the nullptr
+    }
+    return true;
+  }
+
+  bool hookAfter(winhook::hook_stack *)
+  {
+    if (arg_) {
+      arg_->text = text_;
+      arg_->size = size_;
+      arg_ = nullptr;
+    }
+    return true;
+  }
+};
+
+class OtherHook : protected TextHookBase
+{
+public:
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    enum : WORD { OtherSplit = 0x46 }; // 0x440046 if use dword split
+    DWORD splitBase = *(DWORD *)(s->edi + 0x284), // [edi + 0x284]
+          split1 = *(WORD *)(splitBase - 0x4), // word [[edi + 0x284] - 0x4]
+          split2 = *(WORD *)(splitBase - 0x8); // word [[edi + 0x284] - 0x8]
+    if (split1 != OtherSplit || split2 <= 2) // split internal system messages
+      return true;
+
+    auto arg = (TextArgument *)s->stack[0]; // top of the stack
+    LPCSTR text = arg->text;
+    if (arg->size <= 1 || !text || !*text)
+      return true;
+
+    enum { role = Engine::OtherRole };
+    DWORD sig = Engine::hashThreadSignature(role, split2);
+    buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
+
+    if (editable_) {
+      arg_ = arg;
+      text_ = arg->text;
+      size_ = arg->size;
+      arg->text = buffer_.constData(); // reset arg3
+      arg->size = buffer_.size() + 1; // +1 for the nullptr
+    }
     return true;
   }
 
@@ -130,25 +219,32 @@ bool nameHook(winhook::hook_stack *s)
   enum { NameSize = 0x10 };
   struct NameArgument // first argument of the name hook
   {
-    char text[NameSize];
-    DWORD split; // use [[esp]+0x10] as split
+    char text[NameSize]; // 0x10
+    DWORD type, // [[esp]+0x10]
+          type2; // [[esp]+0x14]
   };
 
   auto arg = (NameArgument *)s->stack[0];
-
-  enum : DWORD { NameSplit = 0x6, ScenarioSplit = 0x2 };
-  if (arg->split != NameSplit) // only translate the name thread
+  if (arg->type2 != 0xf) // non 0xf is garbage text
     return true;
 
   char *text = arg->text;
   if (!text || !*text)
     return true;
 
-  enum { role = Engine::NameRole };
-  enum { sig = Engine::NameThreadSignature };
+  int role;
+  long sig;
+  if (arg->type == 0x6 || arg->type == 0xc) {
+    role = Engine::NameRole;
+    sig = Engine::NameThreadSignature;
+  } else if (::strlen(text) <= 2)  // skip translating very short other text
+    return true;
+  else {
+    role = Engine::OtherRole;
+    sig = Engine::hashThreadSignature(role, arg->type);
+  }
 
   QByteArray buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
-
   ::strncpy(text, buffer_.constData(), NameSize - 1);
   text[NameSize - 1] = 0;
   return true;
@@ -162,20 +258,41 @@ bool System4Engine::attach()
   if (!::getMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  //ulong addr = 0x005c71e0;
-  ulong addr = ::searchScenarioAddress(startAddress, stopAddress);
-  if (!addr)
-    return false;
-  ScenarioHook *h = new ScenarioHook;
-  if (!winhook::hook_both(addr,
-        std::bind(&ScenarioHook::hookBefore, h, std::placeholders::_1),
-        std::bind(&ScenarioHook::hookAfter, h, std::placeholders::_1))) {
-    delete h;
-    return false;
+  {
+    //ulong addr = 0x005c71e0;
+    ulong addr = ::searchScenarioAddress(startAddress, stopAddress);
+    if (!addr)
+      return false;
+    auto h = new ScenarioHook;
+    if (!winhook::hook_both(addr,
+        std::bind(&ScenarioHook::hookBefore, h, _1),
+        std::bind(&ScenarioHook::hookAfter, h, _1))) {
+      delete h;
+      return false;
+    }
+    DOUT("text thread address" << QString::number(addr, 16));
   }
 
-  if (ulong addr = ::searchNameAddress(startAddress, stopAddress))
-    winhook::hook_before(addr, ::nameHook);
+  if (ulong addr = ::searchOtherAddress(startAddress, stopAddress)) {
+    auto h = new OtherHook;
+    if (!winhook::hook_both(addr,
+        std::bind(&OtherHook::hookBefore, h, _1),
+        std::bind(&OtherHook::hookAfter, h, _1))) {
+      DOUT("other text NOT FOUND");
+      delete h;
+    } else {
+      DOUT("other text address" << QString::number(addr, 16));
+    }
+
+  }
+
+  if (ulong addr = ::searchNameAddress(startAddress, stopAddress)) {
+    if (winhook::hook_before(addr, ::nameHook))
+      DOUT("name text address" << QString::number(addr, 16));
+    else
+      DOUT("name text NOT FOUND");
+  }
+
   return true;
 }
 

@@ -198,6 +198,81 @@ finish:
   }
 }
 
+#if 0
+/**
+ *  Search from stopAddress back to startAddress - range
+ *  This function is not well debugged
+ */
+DWORD reverseSearchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
+{
+  __asm
+  {
+    mov eax,search_length
+alloc:
+    push 0
+    sub eax,1
+    jnz alloc
+
+    mov edi,search
+    mov edx,search_length
+    mov ecx,1
+    xor esi,esi
+build_table:
+    mov al,byte ptr [edi+esi]
+    cmp al,byte ptr [edi+ecx]
+    sete al
+    test esi,esi
+    jz pre
+    test al,al
+    jnz pre
+    mov esi,[esp+esi*4-4]
+    jmp build_table
+pre:
+    test al,al
+    jz write_table
+    inc esi
+write_table:
+    mov [esp+ecx*4],esi
+
+    inc ecx
+    cmp ecx,edx
+    jb build_table
+
+    mov esi,base
+    xor edx,edx
+    mov ecx,edx
+matcher:
+    mov al,byte ptr [edi+ecx]
+    cmp al,byte ptr [esi-edx] // jichi 6/1/2014: The only place that is modified
+    sete al
+    test ecx,ecx
+    jz match
+    test al,al
+    jnz match
+    mov ecx, [esp+ecx*4-4]
+    jmp matcher
+match:
+    test al,al
+    jz pre2
+    inc ecx
+    cmp ecx,search_length
+    je finish
+pre2:
+    inc edx
+    cmp edx,base_length // search_length
+    jb matcher
+    mov edx,search_length
+    dec edx
+finish:
+    mov ecx,search_length
+    sub edx,ecx
+    lea eax,[edx+1]
+    lea ecx,[ecx*4]
+    add esp,ecx
+  }
+}
+#endif // 0
+
 // Modified from ITH findCallOrJmpAbs
 // Example call:
 // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
@@ -476,6 +551,12 @@ DWORD matchBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD
   return reladdr ? lowerBound + reladdr : 0;
 }
 
+//DWORD reverseFindBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
+//{
+//  DWORD reladdr = reverseSearchPattern(lowerBound, upperBound - lowerBound, pattern, patternSize);
+//  return reladdr ? lowerBound + reladdr : 0;
+//}
+
 #if 0 // not used
 DWORD findBytesInPages(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, SearchType search)
 {
@@ -550,81 +631,3 @@ DWORD matchBytesInPages(const void *pattern, DWORD patternSize, DWORD lowerBound
 MEMDBG_END_NAMESPACE
 
 // EOF
-
-#if 0 // disabled
-
-/**
- *  Search from stopAddres back to startAddress - range
- *  This function is not well debugged
- */
-DWORD reverseSearchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
-{
-  __asm
-  {
-    mov eax,search_length
-alloc:
-    push 0
-    sub eax,1
-    jnz alloc
-
-    mov edi,search
-    mov edx,search_length
-    mov ecx,1
-    xor esi,esi
-build_table:
-    mov al,byte ptr [edi+esi]
-    cmp al,byte ptr [edi+ecx]
-    sete al
-    test esi,esi
-    jz pre
-    test al,al
-    jnz pre
-    mov esi,[esp+esi*4-4]
-    jmp build_table
-pre:
-    test al,al
-    jz write_table
-    inc esi
-write_table:
-    mov [esp+ecx*4],esi
-
-    inc ecx
-    cmp ecx,edx
-    jb build_table
-
-    mov esi,base
-    xor edx,edx
-    mov ecx,edx
-matcher:
-    mov al,byte ptr [edi+ecx]
-    cmp al,byte ptr [esi-edx] // jichi 6/1/2014: The only place that is modified
-    sete al
-    test ecx,ecx
-    jz match
-    test al,al
-    jnz match
-    mov ecx, [esp+ecx*4-4]
-    jmp matcher
-match:
-    test al,al
-    jz pre2
-    inc ecx
-    cmp ecx,search_length
-    je finish
-pre2:
-    inc edx
-    cmp edx,base_length // search_length
-    jb matcher
-    mov edx,search_length
-    dec edx
-finish:
-    mov ecx,search_length
-    sub edx,ecx
-    lea eax,[edx+1]
-    lea ecx,[ecx*4]
-    add esp,ecx
-  }
-}
-
-#endif // 0, disabled
-

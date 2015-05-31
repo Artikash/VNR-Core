@@ -5,11 +5,11 @@
 # - wideChar: false  game has UTF-16 encoding or not
 # - regionLocked: false  game require Japanese locale or not
 
-- name: SiglusEngine # 5/25/2014, supposed to be SiglusEngine2
+- name: EmbedSiglusEngine # 5/25/2014, supposed to be SiglusEngine2
   wideChar: true
   exist: Siglus*.exe
 
-- name: System4 # 5/25/2015, compatible with System43+
+- name: EmbedSystem43 # 5/25/2015, compatible with System43+
   exist: AliceStart.ini
 
 # EOF

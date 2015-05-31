@@ -2204,7 +2204,7 @@ class Settings(QSettings):
   # This method is not used, though
   embeddedOtherVisibleChanged = Signal(bool)
   def isEmbeddedOtherVisible(self):
-    return to_bool(self.value('EmbeddedOtherVisible'))
+    return to_bool(self.value('EmbeddedOtherVisible', True))
   def setEmbeddedOtherVisible(self, value):
     if value != self.isEmbeddedOtherVisible():
       self.setValue('EmbeddedOtherVisible', value)

@@ -13,7 +13,7 @@ class System4Engine : public EngineModel
 public:
   System4Engine()
   {
-    name = "System4";
+    name = "EmbedSystem43";
     wideChar = false;
     matchFiles << "AliceStart.ini";
     attachFunction = &Self::attach;

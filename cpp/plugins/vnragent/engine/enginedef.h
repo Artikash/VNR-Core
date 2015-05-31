@@ -12,8 +12,9 @@ enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole, ChoiceRole 
 // Dummy fixed signature the same as ITH for single text thread
 enum {
   SingleThreadSignatureBase = 0x10000
-  , ScenarioThreadSignature = SingleThreadSignatureBase + ScenarioRole
-  , NameThreadSignature = SingleThreadSignatureBase + NameRole
+  , ScenarioThreadSignature = SingleThreadSignatureBase
+  , NameThreadSignature = SingleThreadSignatureBase << 1
+  , OtherThreadSignature = SingleThreadSignatureBase << 2
 };
 
 // Emperical maximum memory range of an application
