@@ -104,6 +104,7 @@ struct TextHookBase
           unknown2;
     LPCSTR text;
     DWORD size; // text data size, length = size - 1
+    //DWORD split; // not a good split to distinguish translable text out
   };
 
   bool enabled_,
