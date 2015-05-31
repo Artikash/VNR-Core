@@ -84,8 +84,17 @@ ulong searchOtherAddress(ulong startAddress, ulong stopAddress)
 
 // - Hook -
 
+inline bool all_ascii(const char *text)
+{
+  while (*text)
+    if ((BYTE)*text++ >= 128)
+      return false;
+  return true;
+}
+
 inline bool is_sys_text(const char *text) // return true if skip text
-{ return ::strchr(text, '/') || ::strchr(text, '\\'); } // skip text containing '/' or '\\' in it
+{ return all_ascii(text); }
+//{ return ::strchr(text, '/') || ::strchr(text, '\\') || all_ascii(text); } // skip text containing '/' or '\\' in it
 
 struct TextHookBase
 {
