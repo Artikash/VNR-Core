@@ -57,6 +57,8 @@ struct TextArgument
 
 namespace ScenarioHook {
 
+namespace Private {
+
 enum Type {
   Type1    // Old SiglusEngine2, arg in ecx
   , Type2  // New SiglusENgine2, arg in arg1, since リア充クラスメイト孕ませ催眠 in 9/26/2014
@@ -220,17 +222,20 @@ ulong search(int *type)
   //return addr;
 }
 
+} // namespace Private
+
 bool attach() // attach scenario
 {
-  ulong addr = search(&type_);
+  ulong addr = Private::search(&type_);
   if (!addr)
     return false;
-  return oldHookFun = (hook_fun_t)winhook::replace_fun(addr, (ulong)newHookFun);
+  return Private::oldHookFun = (hook_fun_t)winhook::replace_fun(addr, (ulong)Private::newHookFun);
 }
 
 } // namespace ScenarioHook
 
 namespace OtherHook {
+namespace Private {
 
 TextArgument *arg_;
 LPCWSTR oldText0_;
@@ -311,12 +316,14 @@ ulong search()
   return addr + addr_offset;
 }
 
+} // namespace Private
+
 bool attach()
 {
-  ulong addr = search();
+  ulong addr = Private::search();
   if (!addr)
     return false;
-  return winhook::hook_both(addr, hookBefore, hookAfter);
+  return winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
 }
 
 } // namespace OtherHook
