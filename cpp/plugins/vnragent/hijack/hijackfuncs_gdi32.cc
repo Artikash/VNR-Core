@@ -4,6 +4,7 @@
 #include "hijack/hijackhelper.h"
 #include "hijack/hijacksettings.h"
 #include "util/codepage.h"
+#include "util/textutil.h"
 
 #define DEBUG "hijackfuncs_gdi32"
 #include "sakurakit/skdebug.h"
@@ -16,38 +17,44 @@
 #define HIJACK_GDI_FONT
 //#define HIJACK_GDI_TEXT
 
-// FIXME 6/16/2014: Why should I use 0x86 for charSet?
-// See: http://i.watashi.me/archives/1.html
+// http://forums.codeguru.com/showthread.php?500522-Need-clarification-about-CreateFontIndirect
+// The font creation functions will never fail
 HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
-  HFONT ret = nullptr;
 #ifdef HIJACK_GDI_FONT
   DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
-      LOGFONTA f(*lplf);
+      union {
+        LOGFONTA a;
+        LOGFONTW w;
+      } f = {*lplf}; // only initialize the first member of LOGFONTA
       if (s->fontCharSetEnabled) {
         auto charSet = s->fontCharSet;
         if (!charSet)
           charSet = p->systemCharSet();
         if (charSet)
-          f.lfCharSet = charSet;
+          f.a.lfCharSet = charSet;
       }
-      if (!s->fontFamily.isEmpty())
-        qstrcpy(f.lfFaceName, s->fontFamily.toLocal8Bit());
-      ret = ::CreateFontIndirectA(&f);
+      if (!s->fontFamily.isEmpty()) {
+        if (Util::allAscii(s->fontFamily))
+          qstrcpy(f.a.lfFaceName, s->fontFamily.toLocal8Bit());
+        else {
+          f.w.lfFaceName[s->fontFamily.size()] = 0;
+          s->fontFamily.toWCharArray(f.w.lfFaceName);
+          return ::CreateFontIndirectW(&f.w);
+        }
+      }
+      return ::CreateFontIndirectA(&f.a);
     }
   }
 #endif // HIJACK_GDI_FONT
-  if (!ret)
-    ret = ::CreateFontIndirectA(lplf);
-  return ret;
+  return ::CreateFontIndirectA(lplf);
 }
 
 HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 {
-  HFONT ret = nullptr;
 #ifdef HIJACK_GDI_FONT
   DOUT("pass");
   if (auto p = HijackHelper::instance()) {
@@ -65,20 +72,17 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
         f.lfFaceName[s->fontFamily.size()] = 0;
         s->fontFamily.toWCharArray(f.lfFaceName);
       }
-      ret = ::CreateFontIndirectW(&f);
+      return ::CreateFontIndirectW(&f);
     }
   }
 #endif // HIJACK_GDI_FONT
-  if (!ret)
-    ret = ::CreateFontIndirectW(lplf);
-  return ret;
+  return ::CreateFontIndirectW(lplf);
 }
 
 HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
 #ifdef HIJACK_GDI_FONT
   DOUT("pass");
-  QByteArray ff;
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (s->fontCharSetEnabled || !s->fontFamily.isEmpty()) {
@@ -90,8 +94,14 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
           fdwCharSet = charSet;
       }
       if (!s->fontFamily.isEmpty()) {
-        ff = s->fontFamily.toLocal8Bit();
-        lpszFace = ff.constData();
+        if (Util::allAscii(s->fontFamily)) {
+          QByteArray ff = s->fontFamily.toLocal8Bit();
+          lpszFace = ff.constData();
+          return ::CreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+        } else {
+          auto lpszFace = (LPCWSTR)s->fontFamily.utf16();
+          return ::CreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+        }
       }
     }
   }

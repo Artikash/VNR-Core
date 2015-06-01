@@ -3,9 +3,7 @@
 // textutil.h
 // 5/7/2014 jichi
 
-#include <QtCore/QtGlobal>
-
-QT_FORWARD_DECLARE_CLASS(QString)
+#include <QtCore/QString>
 
 namespace Util {
 
@@ -20,6 +18,16 @@ inline bool allAscii(const char *text)
   return true;
 }
 
+inline bool allAscii(const wchar_t *text)
+{
+  while (*text)
+    if (*text++ >= 128)
+      return false;
+  return true;
+}
+
+inline bool allAscii(const QString &text)
+{ return allAscii(static_cast<const wchar_t *>(text.utf16())); }
 
 } // namespace Util
 
