@@ -36,9 +36,9 @@ public:
   bool embeddedFontCharSetEnabled;
   int embeddedFontCharSet;
 
+  QString embeddedFontFamily;
   QString embeddedSpacePolicyEncoding;
-  QString gameEncoding,
-          gameFontFamily;
+  QString gameEncoding;
 
   int embeddedTranslationWaitTime;
 
@@ -134,11 +134,11 @@ DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, se
 
 DEFINE_INT_PROPERTY(embeddedScenarioWidth, embeddedScenarioWidth, setEmbeddedScenarioWidth)
 
+DEFINE_STRING_PROPERTY(embeddedFontFamily, embeddedFontFamily, setEmbeddedFontFamily)
 DEFINE_BOOL_PROPERTY(embeddedFontCharSetEnabled, isEmbeddedFontCharSetEnabled, setEmbeddedFontCharSetEnabled)
 DEFINE_INT_PROPERTY(embeddedFontCharSet, embeddedFontCharSet, setEmbeddedFontCharSet)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
-DEFINE_STRING_PROPERTY(gameFontFamily, gameFontFamily, setGameFontFamily)
 
 DEFINE_LONG_PROPERTY(scenarioSignature, scenarioSignature, setScenarioSignature)
 DEFINE_LONG_PROPERTY(nameSignature, nameSignature, setNameSignature)
@@ -177,7 +177,7 @@ void Settings::load(const QString &json)
   enum {
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
-    , H_gameFontFamily = 146246649
+    , H_embeddedFontFamily = 112965145
     , H_embeddedFontCharSet = 235985668
     , H_embeddedFontCharSetEnabled = 173862964
     , H_embeddedScenarioWidth = 28091752
@@ -249,10 +249,10 @@ void Settings::load(const QString &json)
     case H_scenarioSignature: setScenarioSignature(value.toLong()); break;
     case H_nameSignature: setNameSignature(value.toLong()); break;
 
+    case H_embeddedFontFamily: setEmbeddedFontFamily(value); break;
     case H_embeddedFontCharSet: setEmbeddedFontCharSet(value.toInt()); break;
     case H_embeddedFontCharSetEnabled: setEmbeddedFontCharSetEnabled(bValue); break;
     case H_gameEncoding: setGameEncoding(value); break;
-    case H_gameFontFamily: setGameFontFamily(value); break;
 
     case H_debug:
       if (bValue)

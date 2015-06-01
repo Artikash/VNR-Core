@@ -51,11 +51,11 @@ public:
   //bool isEmbeddedTextCancellableByControl() const;
   int embeddedTranslationWaitTime() const;
 
+  QString embeddedFontFamily() const;
   int embeddedFontCharSet() const;
   bool isEmbeddedFontCharSetEnabled() const;
 
   QString gameEncoding() const;
-  QString gameFontFamily() const;
 
   int embeddedScenarioWidth() const;
 
@@ -93,11 +93,11 @@ public slots:
 
   void setEmbeddedScenarioWidth(int v);
 
+  void setEmbeddedFontFamily(const QString &v);
   void setEmbeddedFontCharSetEnabled(bool t);
   void setEmbeddedFontCharSet(int v);
 
   void setGameEncoding(const QString &v);
-  void setGameFontFamily(const QString &v);
 
   void setScenarioSignature(long v);
   void setNameSignature(long v);
@@ -132,11 +132,11 @@ signals:
   //void embeddedTextCancellableByControlChanged(bool t);
   void embeddedTranslationWaitTimeChanged(int v);
 
+  void embeddedFontFamilyChanged(QString v);
   void embeddedFontCharSetChanged(int v);
   void embeddedFontCharSetEnabledChanged(bool t);
 
   void gameEncodingChanged(QString v);
-  void gameFontFamilyChanged(QString v);
   void scenarioSignatureChanged(long v);
   void nameSignatureChanged(long v);
 };

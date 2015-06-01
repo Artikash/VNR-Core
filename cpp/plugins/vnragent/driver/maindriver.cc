@@ -65,11 +65,11 @@ void MainDriverPrivate::createHijackDriver()
     return;
   hijack = new HijackDriver(this);
   hijack->setEncoding(settings->gameEncoding());
-  hijack->setFontFamily(settings->gameFontFamily());
+  hijack->setFontFamily(settings->embeddedFontFamily());
   hijack->setFontCharSet(settings->embeddedFontCharSet());
   hijack->setFontCharSetEnabled(settings->isEmbeddedFontCharSetEnabled());
   connect(settings, SIGNAL(gameEncodingChanged(QString)), hijack, SLOT(setEncoding(QString)));
-  connect(settings, SIGNAL(gameFontFamilyChanged(QString)), hijack, SLOT(setFontFamily(QString)));
+  connect(settings, SIGNAL(embeddedFontFamilyChanged(QString)), hijack, SLOT(setFontFamily(QString)));
   connect(settings, SIGNAL(embeddedFontCharSetChanged(int)), hijack, SLOT(setFontCharSet(int)));
   connect(settings, SIGNAL(embeddedFontCharSetEnabledChanged(bool)), hijack, SLOT(setFontCharSetEnabled(bool)));
 }

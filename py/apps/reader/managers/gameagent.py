@@ -284,7 +284,7 @@ class _GameAgent(object):
 
     data['embeddedScenarioWidth'] = ss.embeddedScenarioWidth() if ss.isEmbeddedScenarioWidthEnabled() else 0
 
-    data['gameFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
+    data['embeddedFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
     #data['gameFontCharSet'] = ss.embeddedFontCharSet() if ss.isEmbeddedFontCharSetEnabled() else 0
     self.rpc.setAgentSettings(data)
 
@@ -295,7 +295,7 @@ class _GameAgent(object):
   def _sendFontSettings(self):
     ss = settings.global_()
     v = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
-    data = {'gameFontFamily':v}
+    data = {'embeddedFontFamily':v}
     self.rpc.setAgentSettings(data)
 
   def _sendScenarioWidth(self):
