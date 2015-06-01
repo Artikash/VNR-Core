@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_CN">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_CN">
 <context>
     <name>my</name>
     <message>
@@ -534,7 +535,7 @@ Especially if you would like to translate this game.</source>
 如果可能的话，强烈建议你&lt;b&gt;调整游戏文本速度到最快&lt;/b&gt;。
 特别是当你打算翻译这个游戏的时候。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="4852"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -655,27 +656,27 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>等待游戏开始</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1132"/>
+        <location filename="managers/gameman.py" line="1131"/>
         <source>Cannot find game process. Please retry after game start.</source>
         <translation>没有找到游戏进程。请在游戏开始后重试。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1181"/>
+        <location filename="managers/gameman.py" line="1180"/>
         <source>Cannot sync with game. Try restarting the game or using Game Wizard to set up connection</source>
         <translation>无法与游戏同步。请重新启动游戏，或者使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1191"/>
+        <location filename="managers/gameman.py" line="1190"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
         <translation>没有找到游戏文本。请使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1207"/>
+        <location filename="managers/gameman.py" line="1206"/>
         <source>Failed to apply hook code</source>
         <translation>载入特殊码失败</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1209"/>
+        <location filename="managers/gameman.py" line="1208"/>
         <source>Try adjusting it in Text Settings</source>
         <translation>请在文本设定中调整</translation>
     </message>
@@ -685,12 +686,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>从Dashboard移除这个游戏吗？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1658"/>
+        <location filename="managers/gameman.py" line="1657"/>
         <source>Game removed</source>
         <translation>游戏移除</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1668"/>
+        <location filename="managers/gameman.py" line="1667"/>
         <source>Location does not exist</source>
         <translation>位置不存在</translation>
     </message>
@@ -1026,7 +1027,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望现在就更新吗？
 这会花费几秒钟来完成。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="4866"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中统合辞典</translation>
@@ -1179,7 +1180,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你当前的用户语言是相同的呢。
 如果屏蔽它，VNR会屏蔽所有与这个语言有关的设定。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="5791"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辞书</translation>
@@ -1456,7 +1457,7 @@ VNR will automatically check for updates.</source>
 数据库可以用来帮助识别新的游戏。
 VNR会自动检查更新的。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1726,7 +1727,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 那么，如果你打开这个选项，VNR将会翻译全部KiriKiri的文本。
 这样将会产生大量的垃圾文本，而这不会是你想要达到的！</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2373,7 +2374,7 @@ VNR中可以共享对游戏内容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要导出字幕到XML文件，可以在【字幕编辑器】中点击【导出】按钮。
 </translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -2862,22 +2863,22 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>VNR的游戏设定（%s）损坏了呢。恢复到过去备份的设定。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1309"/>
+        <location filename="managers/gameman.py" line="1308"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
         <translation>这个游戏要求文本速度必须是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1314"/>
+        <location filename="managers/gameman.py" line="1313"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>这个游戏要求一定要在先载入游戏，再打开VNR</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1311"/>
+        <location filename="managers/gameman.py" line="1310"/>
         <source>This game requires the text speed to be Fast to work</source>
         <translation>这个游戏要求文本速度必须是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1306"/>
+        <location filename="managers/gameman.py" line="1305"/>
         <source>This game might need turning on repetition elimination</source>
         <translation>这个游戏也许需要打开去除重复的选项</translation>
     </message>
@@ -2907,7 +2908,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>当超时时间很长而你的机翻工具又很慢时，可能会让游戏一卡一卡的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9032"/>
+        <location filename="dialogs/_prefs.py" line="9060"/>
         <source>Preferred text to embed in the game</source>
         <translation>要内嵌的文本</translation>
     </message>
@@ -2917,12 +2918,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>内嵌字幕</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="268"/>
+        <location filename="managers/gameagent.py" line="271"/>
         <source>Detect game engine</source>
         <translation>检测到游戏引擎</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1154"/>
+        <location filename="managers/gameman.py" line="1153"/>
         <source>Use VNR&apos;s built-in hook instead of ITH</source>
         <translation>用VNR自己的文本提取方法而不使用ITH</translation>
     </message>
@@ -3020,7 +3021,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation type="obsolete">当前支持的游戏引擎是：{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="270"/>
+        <location filename="managers/gameagent.py" line="273"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>未知的游戏引擎。改为使用ITH提取文本。</translation>
     </message>
@@ -3030,7 +3031,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>在路径中不可以有中文之类的非ASCII字符才好呢</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="793"/>
+        <location filename="dialogs/embedprefs.py" line="794"/>
         <source>Engine: VNR</source>
         <translation>文本提取：VNR</translation>
     </message>
@@ -3204,7 +3205,7 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要启用{0}个选定的条目吗？</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="4844"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3396,7 +3397,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <source>Text transformation settings</source>
         <translation>文本变换设定</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -4563,12 +4564,12 @@ The font will be installed to {1}.</source>
         <translation>KanjiDic{0}汉字字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8962"/>
+        <location filename="dialogs/_prefs.py" line="8969"/>
         <source>Insert spaces after every character</source>
         <translation>在每个字后都插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8974"/>
+        <location filename="dialogs/_prefs.py" line="8981"/>
         <source>Do not insert any spaces</source>
         <translation>不插入任何空格</translation>
     </message>
@@ -4588,27 +4589,27 @@ The font will be installed to {1}.</source>
         <translation>你可以按下Shift或者Control来暂停内嵌翻译如果变慢。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8887"/>
+        <location filename="dialogs/_prefs.py" line="8894"/>
         <source>Font options</source>
         <translation>字体选项</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8895"/>
+        <location filename="dialogs/_prefs.py" line="8902"/>
         <source>Customize game font</source>
         <translation>自定义游戏字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8896"/>
+        <location filename="dialogs/_prefs.py" line="8903"/>
         <source>Global font for game text to override default game font</source>
         <translation>替换游戏的全局字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8907"/>
+        <location filename="dialogs/_prefs.py" line="8914"/>
         <source>Game font</source>
         <translation>游戏字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8922"/>
+        <location filename="dialogs/_prefs.py" line="8929"/>
         <source>Enforce font character set</source>
         <translation>设定字体字符集</translation>
     </message>
@@ -4618,17 +4619,17 @@ The font will be installed to {1}.</source>
         <translation>未知字符集</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8923"/>
+        <location filename="dialogs/_prefs.py" line="8930"/>
         <source>Character set hint for selecting fonts</source>
         <translation>选择字体时的字符集参数</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8878"/>
+        <location filename="dialogs/_prefs.py" line="8885"/>
         <source>Insert spaces between overlapped characters</source>
         <translation>在重叠显示的字间插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8968"/>
+        <location filename="dialogs/_prefs.py" line="8975"/>
         <source>Insert spaces after unencodable characters</source>
         <translation>仅在无法编码的字后插入空格</translation>
     </message>
@@ -4638,9 +4639,24 @@ The font will be installed to {1}.</source>
         <translation>参看{0}</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="346"/>
+        <location filename="dialogs/embedprefs.py" line="347"/>
         <source>All settings are read-only.</source>
         <translation>所有设定都是只读的。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="9037"/>
+        <source>Limit scenario width</source>
+        <translation>限制对白文本宽度</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="9046"/>
+        <source>Maximum number of thin characters in a line</source>
+        <translation>每行窄字符的最大数量</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8878"/>
+        <source>Limit maximum text width by truncating or inserting new lines</source>
+        <translation>通过重新分行来限制文字宽度</translation>
     </message>
 </context>
 </TS>

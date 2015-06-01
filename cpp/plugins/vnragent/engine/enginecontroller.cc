@@ -113,7 +113,31 @@ private:
     return ret;
   }
 
+
 public:
+  static QString limitTextWidth(const QString &text, int limit)
+  {
+    if (limit <= 0 || text.size() <= limit)
+      return text;
+
+    QString ret;
+    int width = 0;
+    foreach (const QChar &ch, text) {
+      ret.append(ch);
+
+      wchar_t w = ch.unicode();
+      width += 1 + (w >= 128); // assume wide character to have double width
+      if (width >= limit) {
+        width = 0;
+        if (w != '\n')
+          ret.append('\n');
+      }
+      //else if (w == '\n')
+      //  ret[ret.size() - 1] = ' '; // replace '\n' by ' '
+    }
+    return ret;
+  }
+
   QString postProcessW(const QString &text) const
   {
     if (settings.alwaysInsertsSpaces)
@@ -321,6 +345,9 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
       break;
     }
 
+  if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
+    repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+
   return d_->encode(repl);
 }
 
@@ -402,6 +429,9 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
         repl = QString("%1 / %2").arg(repl, text);
       break;
     }
+
+  if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
+    repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
 
   //repl = QString::fromWCharArray(L"\u76ee\u899a");
   return d_->postProcessW(repl); // post-process

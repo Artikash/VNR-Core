@@ -57,6 +57,8 @@ public:
   QString gameEncoding() const;
   QString gameFontFamily() const;
 
+  int embeddedScenarioWidth() const;
+
   long scenarioSignature() const;
   long nameSignature() const;
 
@@ -89,6 +91,8 @@ public slots:
   //void setEmbeddedTextCancellableByControl(bool t);
   void setEmbeddedTranslationWaitTime(int v);
 
+  void setEmbeddedScenarioWidth(int v);
+
   void setEmbeddedFontCharSetEnabled(bool t);
   void setEmbeddedFontCharSet(int v);
 
@@ -116,6 +120,8 @@ signals:
   void embeddedOtherTextVisibleChanged(bool t);
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
+
+  void embeddedScenarioWidthChanged(int v);
 
   void embeddedSpaceAlwaysInsertedChanged(bool t);
   void embeddedSpaceSmartInsertedChanged(bool t);

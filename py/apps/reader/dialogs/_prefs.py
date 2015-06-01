@@ -8884,6 +8884,13 @@ class _EngineTab(object):
     row.addStretch() # use a row to patch stretch
     layout.addLayout(row)
 
+    layout.addWidget(QtWidgets.QLabel(my.tr("Limit maximum text width by truncating or inserting new lines") + ":"))
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.scenarioWidthButton)
+    row.addWidget(self.scenarioWidthEdit)
+    row.addStretch() # use a row to patch stretch
+    layout.addLayout(row)
+
     ret = QtWidgets.QGroupBox(my.tr("Font options"))
     ret.setLayout(layout)
     self._loadSpaceOptions()
@@ -9023,6 +9030,27 @@ class _EngineTab(object):
 
     ret.currentIndexChanged[int].connect(lambda index:
         ss.setEmbeddedSpacePolicyEncoding(L[index]))
+    return ret
+
+  @memoizedproperty
+  def scenarioWidthButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Limit scenario width"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedScenarioWidthEnabled())
+    ret.toggled.connect(ss.setEmbeddedScenarioWidthEnabled)
+    return ret
+
+  @memoizedproperty
+  def scenarioWidthEdit(self):
+    ret = QtWidgets.QSpinBox()
+    ret.setToolTip(my.tr("Maximum number of thin characters in a line"))
+    ret.setRange(1, 1000)
+    ret.setSingleStep(1)
+    ss = settings.global_()
+    ret.setValue(ss.embeddedScenarioWidth())
+    ret.valueChanged[int].connect(ss.setEmbeddedScenarioWidth)
+    ret.setEnabled(ss.isEmbeddedScenarioWidthEnabled())
+    ss.embeddedScenarioWidthEnabledChanged.connect(ret.setEnabled)
     return ret
 
   ## Text ##
