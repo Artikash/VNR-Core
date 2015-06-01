@@ -138,7 +138,7 @@ int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
   if (newText.isEmpty())
     return arg->size * 2; // estimated painted bytes
 
-  auto oldText0 = arg->texts[0];
+  auto oldText = arg->texts[0];
   auto oldSize = arg->size;
   auto oldCapacity = arg->capacity;
   arg->texts[0] = (LPCWSTR)newText.utf16(); // lack trailing null character
@@ -148,7 +148,7 @@ int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
   int ret = oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
   // Restoring is indispensible, and as a result, the default hook does not work
-  arg->texts[0] = oldText0;
+  arg->texts[0] = oldText;
   arg->size = oldSize;
   arg->capacity = oldCapacity;
   return ret;
@@ -238,7 +238,7 @@ namespace OtherHook {
 namespace Private {
 
 TextArgument *arg_;
-LPCWSTR oldText0_;
+LPCWSTR oldText_;
 DWORD oldSize_;
 DWORD oldCapacity_;
 
@@ -272,7 +272,7 @@ bool hookBefore(winhook::hook_stack *s)
     return true;
 
   arg_ = arg;
-  oldText0_ = arg->texts[0];
+  oldText_ = arg->texts[0];
   oldSize_ = arg->size;
   oldCapacity_ = arg->capacity;
 
@@ -287,7 +287,7 @@ bool hookBefore(winhook::hook_stack *s)
 bool hookAfter(winhook::hook_stack *)
 {
   if (arg_) {
-    arg_->texts[0]=oldText0_;
+    arg_->texts[0] = oldText_;
     arg_->size = oldSize_;
     arg_->capacity= oldCapacity_ ;
     arg_ = nullptr;
