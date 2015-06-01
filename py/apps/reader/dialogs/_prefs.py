@@ -8875,19 +8875,19 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(row)
 
-    layout.addWidget(QtWidgets.QLabel(my.tr("Limit maximum text width by truncating or inserting new lines") + ":"))
-    row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.scenarioWidthButton)
-    row.addWidget(self.scenarioWidthEdit)
-    row.addStretch() # use a row to patch stretch
-    layout.addLayout(row)
-
     layout.addWidget(QtWidgets.QLabel(my.tr("Insert spaces between overlapped characters") + ":"))
     layout.addWidget(self.disableInsertsSpaceButton)
     layout.addWidget(self.alwaysInsertsSpaceButton)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.smartInsertsSpaceButton)
     row.addWidget(self.spaceEncodingEdit)
+    row.addStretch() # use a row to patch stretch
+    layout.addLayout(row)
+
+    layout.addWidget(QtWidgets.QLabel(my.tr("Limit maximum text width by truncating or inserting new lines") + ":"))
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.scenarioWidthButton)
+    row.addWidget(self.scenarioWidthEdit)
     row.addStretch() # use a row to patch stretch
     layout.addLayout(row)
 
