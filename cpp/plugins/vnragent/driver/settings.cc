@@ -36,6 +36,9 @@ public:
   bool embeddedFontCharSetEnabled;
   int embeddedFontCharSet;
 
+  int embeddedFontWeight;
+  float embeddedFontScale;
+
   QString embeddedFontFamily;
   QString embeddedSpacePolicyEncoding;
   QString gameEncoding;
@@ -70,6 +73,8 @@ public:
      , embeddedAllTextsExtracted(false)
      , embeddedFontCharSetEnabled(false)
      , embeddedFontCharSet(0)
+     , embeddedFontWeight(0)
+     , embeddedFontScale(0)
      , gameEncoding("shift-jis")
      , embeddedTranslationWaitTime(1000) // 1 second
      , embeddedScenarioWidth(0)
@@ -104,6 +109,7 @@ Settings::~Settings()
 #define DEFINE_BOOL_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, getter, setter, bool, bool)
 #define DEFINE_INT_PROPERTY(property, getter, setter)       DEFINE_PROPERTY(property, getter, setter, int, int)
 #define DEFINE_LONG_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, getter, setter, long, long)
+#define DEFINE_FLOAT_PROPERTY(property, getter, setter)     DEFINE_PROPERTY(property, getter, setter, float, float)
 #define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, getter, setter, QString, const QString &)
 
 DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
@@ -137,6 +143,9 @@ DEFINE_INT_PROPERTY(embeddedScenarioWidth, embeddedScenarioWidth, setEmbeddedSce
 DEFINE_STRING_PROPERTY(embeddedFontFamily, embeddedFontFamily, setEmbeddedFontFamily)
 DEFINE_BOOL_PROPERTY(embeddedFontCharSetEnabled, isEmbeddedFontCharSetEnabled, setEmbeddedFontCharSetEnabled)
 DEFINE_INT_PROPERTY(embeddedFontCharSet, embeddedFontCharSet, setEmbeddedFontCharSet)
+
+DEFINE_INT_PROPERTY(embeddedFontWeight, embeddedFontWeight, setEmbeddedFontWeight)
+DEFINE_FLOAT_PROPERTY(embeddedFontScale, embeddedFontScale, setEmbeddedFontScale)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 
@@ -180,6 +189,8 @@ void Settings::load(const QString &json)
     , H_embeddedFontFamily = 112965145
     , H_embeddedFontCharSet = 235985668
     , H_embeddedFontCharSetEnabled = 173862964
+    , H_embeddedFontScale = 25063557
+    , H_embeddedFontWeight = 128219092
     , H_embeddedScenarioWidth = 28091752
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
@@ -252,6 +263,8 @@ void Settings::load(const QString &json)
     case H_embeddedFontFamily: setEmbeddedFontFamily(value); break;
     case H_embeddedFontCharSet: setEmbeddedFontCharSet(value.toInt()); break;
     case H_embeddedFontCharSetEnabled: setEmbeddedFontCharSetEnabled(bValue); break;
+    case H_embeddedFontWeight: setEmbeddedFontWeight(value.toInt()); break;
+    case H_embeddedFontScale: setEmbeddedFontScale(value.toFloat()); break;
     case H_gameEncoding: setGameEncoding(value); break;
 
     case H_debug:

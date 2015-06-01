@@ -22,6 +22,8 @@ public:
 public slots:
   void setEncoding(const QString &v);
   void setFontFamily(const QString &v);
+  void setFontScale(float v);
+  void setFontWeight(int v);
   void setFontCharSet(int v);
   void setFontCharSetEnabled(bool t);
 

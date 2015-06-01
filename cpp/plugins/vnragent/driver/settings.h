@@ -52,6 +52,8 @@ public:
   int embeddedTranslationWaitTime() const;
 
   QString embeddedFontFamily() const;
+  float embeddedFontScale() const;
+  int embeddedFontWeight() const;
   int embeddedFontCharSet() const;
   bool isEmbeddedFontCharSetEnabled() const;
 
@@ -96,6 +98,8 @@ public slots:
   void setEmbeddedFontFamily(const QString &v);
   void setEmbeddedFontCharSetEnabled(bool t);
   void setEmbeddedFontCharSet(int v);
+  void setEmbeddedFontWeight(int v);
+  void setEmbeddedFontScale(float v);
 
   void setGameEncoding(const QString &v);
 
@@ -135,6 +139,8 @@ signals:
   void embeddedFontFamilyChanged(QString v);
   void embeddedFontCharSetChanged(int v);
   void embeddedFontCharSetEnabledChanged(bool t);
+  void embeddedFontWeightChanged(int v);
+  void embeddedFontScaleChanged(float v);
 
   void gameEncodingChanged(QString v);
   void scenarioSignatureChanged(long v);

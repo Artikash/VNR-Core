@@ -40,8 +40,8 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
       if (s->fontWeight)
         f.a.lfWeight = s->fontWeight;
       if (s->isFontScaled()) {
-        f.a.lfWidth *= s->fontScaleFactor;
-        f.a.lfHeight *= s->fontScaleFactor;
+        f.a.lfWidth *= s->fontScale;
+        f.a.lfHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty()) {
         if (Util::allAscii(s->fontFamily))
@@ -78,8 +78,8 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
       if (s->fontWeight)
         f.lfWeight = s->fontWeight;
       if (s->isFontScaled()) {
-        f.lfWidth *= s->fontScaleFactor;
-        f.lfHeight *= s->fontScaleFactor;
+        f.lfWidth *= s->fontScale;
+        f.lfHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty()) {
         f.lfFaceName[s->fontFamily.size()] = 0;
@@ -109,8 +109,8 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
       if (s->fontWeight)
         fnWeight = s->fontWeight;
       if (s->isFontScaled()) {
-        nWidth *= s->fontScaleFactor;
-        nHeight *= s->fontScaleFactor;
+        nWidth *= s->fontScale;
+        nHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty()) {
         if (Util::allAscii(s->fontFamily)) {
@@ -145,8 +145,8 @@ HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int
       if (s->fontWeight)
         fnWeight = s->fontWeight;
       if (s->isFontScaled()) {
-        nWidth *= s->fontScaleFactor;
-        nHeight *= s->fontScaleFactor;
+        nWidth *= s->fontScale;
+        nHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty())
         lpszFace = (LPCWSTR)s->fontFamily.utf16();
