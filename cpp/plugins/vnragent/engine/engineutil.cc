@@ -25,6 +25,11 @@ inline bool existsPath(const QString &path)
 
 } // unnamed namespace
 
+// - Memory -
+
+bool Engine::isAddressReadable(const ulong *p)
+{ return p && !::IsBadReadPtr(p, sizeof(*p)); }
+
 // - Detours -
 
 Engine::address_type Engine::replaceFunction(address_type old_addr, const_address_type new_addr)

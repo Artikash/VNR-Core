@@ -11,11 +11,13 @@ DEFINES += WITH_LIB_WINHOOK
 DEPENDPATH += $$PWD
 
 HEADERS += \
+  $$PWD/hookcall.h \
   $$PWD/hookcode.h \
   $$PWD/hookdef.h \
   $$PWD/hookfun.h \
   $$PWD/hookutil_p.h
 SOURCES += \
+  $$PWD/hookcall.cc \
   $$PWD/hookcode.cc \
   $$PWD/hookfun.cc \
   $$PWD/hookutil_p.cc
