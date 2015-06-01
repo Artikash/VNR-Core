@@ -8888,6 +8888,9 @@ class _EngineTab(object):
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.scenarioWidthButton)
     row.addWidget(self.scenarioWidthEdit)
+    row.addWidget(QtWidgets.QLabel("%s: %s" % (
+       my.tr("like this"), r"hello => hel\nlo"
+    )))
     row.addStretch() # use a row to patch stretch
     layout.addLayout(row)
 
@@ -9044,7 +9047,7 @@ class _EngineTab(object):
   def scenarioWidthEdit(self):
     ret = QtWidgets.QSpinBox()
     ret.setToolTip(my.tr("Maximum number of thin characters in a line"))
-    ret.setRange(1, 1000)
+    ret.setRange(0, 1000)
     ret.setSingleStep(1)
     ss = settings.global_()
     ret.setValue(ss.embeddedScenarioWidth())

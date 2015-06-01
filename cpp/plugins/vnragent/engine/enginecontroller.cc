@@ -333,7 +333,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
-        repl = QString("%1\n%2").arg(repl, text);
+        repl = QString("%1 \n%2").arg(repl, text);
       break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)

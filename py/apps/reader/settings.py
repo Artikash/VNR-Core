@@ -2068,7 +2068,7 @@ class Settings(QSettings):
 
   embeddedScenarioWidthChanged = Signal(int)
   def embeddedScenarioWidth(self):
-    return to_int(self.value('EmbeddedScenarioWidth', 100))
+    return to_int(self.value('EmbeddedScenarioWidth'))
   def setEmbeddedScenarioWidth(self, value):
     if value != self.embeddedScenarioWidth():
       self.setValue('EmbeddedScenarioWidth', value)
