@@ -25,6 +25,8 @@ public:
      , extractionEnabled[Engine::RoleCount]     // if send text
   ;
 
+  int scenarioWidth; // maximum thin character in a text line
+
   long scenarioSignature,
        nameSignature;
 
@@ -39,6 +41,8 @@ public:
     , scenarioTextVisible(false)
     , nameTextVisible(false)
     , otherTextVisible(false)
+
+    , scenarioWidth(0)
 
     , scenarioSignature(0)
     , nameSignature(0)

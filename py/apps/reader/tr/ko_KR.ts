@@ -655,27 +655,27 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>게임이 시작하길 기다리는 중</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1132"/>
+        <location filename="managers/gameman.py" line="1131"/>
         <source>Cannot find game process. Please retry after game start.</source>
         <translation>게임 프로세스 찾을 수 없음. 게임이 시작한 뒤 재시도 해보세요.</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1181"/>
+        <location filename="managers/gameman.py" line="1180"/>
         <source>Cannot sync with game. Try restarting the game or using Game Wizard to set up connection</source>
         <translation>게임과 동기화 할 수 없습니다. 게임을 다시 시작하거나, 게임 마법사를 사용해 설정을 해보세요.</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1191"/>
+        <location filename="managers/gameman.py" line="1190"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
         <translation>게임 스레드를 찾을 수 없습니다. 게임 마법사를 사용해 설정을 해보세요.</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1207"/>
+        <location filename="managers/gameman.py" line="1206"/>
         <source>Failed to apply hook code</source>
         <translation>후킹코드 적용 실패</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1209"/>
+        <location filename="managers/gameman.py" line="1208"/>
         <source>Try adjusting it in Text Settings</source>
         <translation>텍스트 설정에서 조정해보세요</translation>
     </message>
@@ -685,12 +685,12 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
         <translation>Dashboard에서 게임을 제거하시겠습니까？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1658"/>
+        <location filename="managers/gameman.py" line="1657"/>
         <source>Game removed</source>
         <translation>게임 제거됨</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1668"/>
+        <location filename="managers/gameman.py" line="1667"/>
         <source>Location does not exist</source>
         <translation>경로 존재하지 않음</translation>
     </message>
@@ -2915,22 +2915,22 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>VNR의 게임 설정（%s）이 손상되었습니다. 백업으로부터 복구되었습니다.</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1309"/>
+        <location filename="managers/gameman.py" line="1308"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
         <translation>이 게임은 텍스트 속도를 빠름 대신에 중간이나 느림설정하셔야합니다.</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1314"/>
+        <location filename="managers/gameman.py" line="1313"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>이 게임은 시작하거나 로딩된 뒤에 VNR을 실행해야합니다.</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1311"/>
+        <location filename="managers/gameman.py" line="1310"/>
         <source>This game requires the text speed to be Fast to work</source>
         <translation>이 게임은 원활한 작동을 위해 텍스트 속도를 Fast(빠름)로 설정해야합니다</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1306"/>
+        <location filename="managers/gameman.py" line="1305"/>
         <source>This game might need turning on repetition elimination</source>
         <translation>이 게임은 반복제거를 사용해야 할 필요가 있습니다</translation>
     </message>
@@ -2970,7 +2970,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9032"/>
+        <location filename="dialogs/_prefs.py" line="9060"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -2980,12 +2980,12 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>내장 자막</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="268"/>
+        <location filename="managers/gameagent.py" line="271"/>
         <source>Detect game engine</source>
         <translation>게임엔진 발견</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1154"/>
+        <location filename="managers/gameman.py" line="1153"/>
         <source>Use VNR&apos;s built-in hook instead of ITH</source>
         <translation>ITH 대신에 VNR 내장 hook 사용</translation>
     </message>
@@ -3083,7 +3083,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation type="obsolete">현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="270"/>
+        <location filename="managers/gameagent.py" line="273"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
@@ -3093,7 +3093,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation>작동하려면 경로에 ASCII가 아닌 문자가 존재하면 안됩니다.</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="793"/>
+        <location filename="dialogs/embedprefs.py" line="794"/>
         <source>Engine: VNR</source>
         <translation>텍스트 추출:VNR</translation>
     </message>
@@ -4684,12 +4684,12 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8962"/>
+        <location filename="dialogs/_prefs.py" line="8969"/>
         <source>Insert spaces after every character</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8974"/>
+        <location filename="dialogs/_prefs.py" line="8981"/>
         <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4709,27 +4709,27 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8887"/>
+        <location filename="dialogs/_prefs.py" line="8894"/>
         <source>Font options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8895"/>
+        <location filename="dialogs/_prefs.py" line="8902"/>
         <source>Customize game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8896"/>
+        <location filename="dialogs/_prefs.py" line="8903"/>
         <source>Global font for game text to override default game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8907"/>
+        <location filename="dialogs/_prefs.py" line="8914"/>
         <source>Game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8922"/>
+        <location filename="dialogs/_prefs.py" line="8929"/>
         <source>Enforce font character set</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4739,17 +4739,17 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8923"/>
+        <location filename="dialogs/_prefs.py" line="8930"/>
         <source>Character set hint for selecting fonts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8878"/>
+        <location filename="dialogs/_prefs.py" line="8885"/>
         <source>Insert spaces between overlapped characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8968"/>
+        <location filename="dialogs/_prefs.py" line="8975"/>
         <source>Insert spaces after unencodable characters</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4759,8 +4759,23 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="346"/>
+        <location filename="dialogs/embedprefs.py" line="347"/>
         <source>All settings are read-only.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="9037"/>
+        <source>Limit scenario width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="9046"/>
+        <source>Maximum number of thin characters in a line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8878"/>
+        <source>Limit maximum text width by truncating or inserting new lines</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

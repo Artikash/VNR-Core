@@ -42,6 +42,8 @@ public:
 
   int embeddedTranslationWaitTime;
 
+  int embeddedScenarioWidth;
+
   long scenarioSignature,
        nameSignature;
 
@@ -70,6 +72,7 @@ public:
      , embeddedFontCharSet(0)
      , gameEncoding("shift-jis")
      , embeddedTranslationWaitTime(1000) // 1 second
+     , embeddedScenarioWidth(0)
      , scenarioSignature(0)
      , nameSignature(0)
   {}
@@ -129,6 +132,8 @@ DEFINE_BOOL_PROPERTY(embeddedAllTextsExtracted, isEmbeddedAllTextsExtracted, set
 
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
+DEFINE_INT_PROPERTY(embeddedScenarioWidth, embeddedScenarioWidth, setEmbeddedScenarioWidth)
+
 DEFINE_BOOL_PROPERTY(embeddedFontCharSetEnabled, isEmbeddedFontCharSetEnabled, setEmbeddedFontCharSetEnabled)
 DEFINE_INT_PROPERTY(embeddedFontCharSet, embeddedFontCharSet, setEmbeddedFontCharSet)
 
@@ -175,6 +180,7 @@ void Settings::load(const QString &json)
     , H_gameFontFamily = 146246649
     , H_embeddedFontCharSet = 235985668
     , H_embeddedFontCharSetEnabled = 173862964
+    , H_embeddedScenarioWidth = 28091752
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
     //, H_embeddedTextCancellableByControl = 96153884
@@ -237,6 +243,7 @@ void Settings::load(const QString &json)
     //case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;
     case H_embeddedAllTextsExtracted: setEmbeddedAllTextsExtracted(bValue); break;
 
+    case H_embeddedScenarioWidth: setEmbeddedScenarioWidth(value.toInt()); break;
     case H_embeddedTranslationWaitTime: setEmbeddedTranslationWaitTime(value.toInt()); break;
 
     case H_scenarioSignature: setScenarioSignature(value.toLong()); break;

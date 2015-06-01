@@ -2066,6 +2066,22 @@ class Settings(QSettings):
   #      self.isEmbeddedNameTranslationEnabled() or
   #      self.isEmbeddedOtherTranslationEnabled())
 
+  embeddedScenarioWidthChanged = Signal(int)
+  def embeddedScenarioWidth(self):
+    return to_int(self.value('EmbeddedScenarioWidth', 100))
+  def setEmbeddedScenarioWidth(self, value):
+    if value != self.embeddedScenarioWidth():
+      self.setValue('EmbeddedScenarioWidth', value)
+      self.embeddedScenarioWidthChanged.emit(value)
+
+  embeddedScenarioWidthEnabledChanged = Signal(bool)
+  def isEmbeddedScenarioWidthEnabled(self):
+    return to_bool(self.value('EmbeddedScenarioWidthEnabled'))
+  def setEmbeddedScenarioWidthEnabled(self, value):
+    if value != self.isEmbeddedScenarioWidthEnabled():
+      self.setValue('EmbeddedScenarioWidthEnabled', value)
+      self.embeddedScenarioWidthEnabledChanged.emit(value)
+
   embeddedTranslationWaitTimeChanged = Signal(int)
   def embeddedTranslationWaitTime(self):
     return to_int(self.value('EmbeddedTranslationWaitTime', 2000)) # 2 seconds by default

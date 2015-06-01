@@ -221,6 +221,9 @@ class _GameAgent(object):
     for sig in ss.embeddedFontEnabledChanged, ss.embeddedFontFamilyChanged:
       sig.connect(self._sendFontSettings)
 
+    for sig in ss.embeddedScenarioWidthChanged, ss.embeddedScenarioWidthEnabledChanged:
+      sig.connect(self._sendScenarioWidth)
+
     import textman
     self.textExtractionEnabled = textman.manager().isEnabled()
     textman.manager().enabledChanged.connect(self._setTextExtractionEnabled)
@@ -279,6 +282,8 @@ class _GameAgent(object):
     data['scenarioSignature'] = self.scenarioSignature
     data['nameSignature'] = self.nameSignature
 
+    data['embeddedScenarioWidth'] = ss.embeddedScenarioWidth() if ss.isEmbeddedScenarioWidthEnabled() else 0
+
     data['gameFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
     #data['gameFontCharSet'] = ss.embeddedFontCharSet() if ss.isEmbeddedFontCharSetEnabled() else 0
     self.rpc.setAgentSettings(data)
@@ -291,6 +296,12 @@ class _GameAgent(object):
     ss = settings.global_()
     v = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
     data = {'gameFontFamily':v}
+    self.rpc.setAgentSettings(data)
+
+  def _sendScenarioWidth(self):
+    ss = settings.global_()
+    v = ss.embeddedScenarioWidth() if ss.isEmbeddedScenarioWidthEnabled() else 0
+    data = {'embeddedScenarioWidth':v}
     self.rpc.setAgentSettings(data)
 
   #def _sendCharSetSettings(self):

@@ -53,6 +53,8 @@ public slots:
   void setSmartInsertsSpaces(bool t);
   void setSpacePolicyEncoding(const QString &v);
 
+  void setScenarioWidth(int v);
+
   void setScenarioSignature(long v);
   void setNameSignature(long v);
 
