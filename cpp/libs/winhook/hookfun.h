@@ -26,7 +26,7 @@ WINHOOK_BEGIN_NAMESPACE
 
 // FIXME: move_code not invoked, and hence the first a few instruction of the function cannot be jmp/call
 /**
- *  Replace the old function with the new one
+ *  Replace the old function definition with the new one
  *  @param  oldfun  address to insert jump
  *  @param  newfun  the function call to replace
  *  @return  entry point to access the old function or 0 if failed

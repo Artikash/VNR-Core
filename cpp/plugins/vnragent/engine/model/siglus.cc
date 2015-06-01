@@ -7,22 +7,59 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
+#include "util/textutil.h"
+#include "winhook/hookcode.h"
+#include "winhook/hookfun.h"
 #include <qt_windows.h>
 
-//#define DEBUG "siglus"
+#define DEBUG "siglus"
 #include "sakurakit/skdebug.h"
 
 // Used to get function's return address
 // http://stackoverflow.com/questions/8797943/finding-a-functions-address-in-c
 //#pragma intrinsic(_ReturnAddress)
 
-/** Private data */
-
 namespace { // unnamed
 
+struct TextArgument
+{
+  enum { DataCapacity = 8 };
+
+  union {
+    LPCWSTR texts[4]; // 0x0
+    WCHAR data[8];    // 0x0
+  };
+  DWORD size,         // 0x10
+        capacity;     // 0x14
+
+  // 01140f8d   56               push esi
+  // 01140f8e   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
+  // 01140f94   e8 67acfcff      call .0110bc00
+  // 01140f99   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
+  // 01140f9d   72 04            jb short .01140fa3
+  // 01140f9f   8b37             mov esi,dword ptr ds:[edi]
+  // 01140fa1   eb 02            jmp short .01140fa5
+  //
+  // According to the assembly code, this[0x14] should be larger than 8
+  // 004DACFA   mov     edx, [edi+14h] ; sub_4DAC70+130 ...
+  // 004DACFD   cmp     edx, 8
+  //            jb      short loc_4DAD06
+  LPCWSTR text() const
+  { return capacity < DataCapacity ? data : texts[0]; }
+
+  void setText(LPCWSTR text, DWORD length)
+  {
+    texts[0] = text;
+    size = length;
+    capacity = max(DataCapacity, length);
+  }
+};
+
+namespace scenehook {
+
 enum Type {
-  Type1    // Old SiglusEngine2, self in ecx
-  , Type2  // New SiglusENgine2, self in arg1, since リア充クラスメイト孕ませ催眠 in 9/26/2014
+  Type1    // Old SiglusEngine2, arg in ecx
+  , Type2  // New SiglusENgine2, arg in arg1, since リア充クラスメイト孕ませ催眠 in 9/26/2014
 };
 int type_; // static
 
@@ -76,31 +113,6 @@ typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD); // the first pointer
 //typedef int (__fastcall *hook_fun_t)(void *, void *, DWORD, DWORD);
 hook_fun_t oldHookFun;
 
-struct HookStruct
-{
-  union {
-    LPCWSTR texts[4]; // 0x0
-    WCHAR data[8];    // 0x0
-  };
-  DWORD size,         // 0x10
-        capacity;     // 0x14
-
-  // 01140f8d   56               push esi
-  // 01140f8e   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
-  // 01140f94   e8 67acfcff      call .0110bc00
-  // 01140f99   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
-  // 01140f9d   72 04            jb short .01140fa3
-  // 01140f9f   8b37             mov esi,dword ptr ds:[edi]
-  // 01140fa1   eb 02            jmp short .01140fa5
-  //
-  // According to the assembly code, this[0x14] should be larger than 8
-  // 004DACFA   mov     edx, [edi+14h] ; sub_4DAC70+130 ...
-  // 004DACFD   cmp     edx, 8
-  //            jb      short loc_4DAD06
-  LPCWSTR text() const
-  { return capacity < 8 ? data : texts[0]; }
-};
-
 /**
  *  Hooking thiscall using fastcall: http://tresp4sser.wordpress.com/2012/10/06/how-to-hook-thiscall-functions/
  *  - thiscall: this is in ecx and the first argument
@@ -109,36 +121,34 @@ struct HookStruct
 int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
-  HookStruct *self = reinterpret_cast<HookStruct *>(
+  TextArgument *arg = reinterpret_cast<TextArgument *>(
       type_ == Type1 ? (DWORD)ecx : arg1);
-  if (!self)
+  if (!arg)
     return oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
-  enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
-  //return oldHookFun(self, arg1, arg2);
-  auto q = EngineController::instance();
+  enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+  //return oldHookFun(arg, arg1, arg2);
 
-  QString text = QString::fromWCharArray(self->text(), self->size);
-#ifdef DEBUG
-  qDebug() << self->size << ":" << text;
-#endif // DEBUG
-  text = q->dispatchTextW(text, signature, role);
-  if (text.isEmpty())
-    return self->size * 2; // estimated painted bytes
+  QString oldText = QString::fromWCharArray(arg->text(), arg->size),
+          newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+  if (newText == oldText)
+    return oldHookFun(ecx, arg1, arg2); // ret = size * 2
+  if (newText.isEmpty())
+    return arg->size * 2; // estimated painted bytes
 
-  auto oldText0 = self->texts[0];
-  auto oldSize = self->size;
-  auto oldCapacity = self->capacity;
-  self->texts[0] = (LPCWSTR)text.utf16(); // lack trailing null character
-  self->size = text.size();
-  self->capacity = max(8, text.size()); // prevent using smaller size
+  auto oldText0 = arg->texts[0];
+  auto oldSize = arg->size;
+  auto oldCapacity = arg->capacity;
+  arg->texts[0] = (LPCWSTR)newText.utf16(); // lack trailing null character
+  arg->size = newText.size();
+  arg->capacity = max(8, newText.size()); // prevent using smaller size
 
   int ret = oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
   // Restoring is indispensible, and as a result, the default hook does not work
-  self->texts[0] = oldText0;
-  self->size = oldSize;
-  self->capacity = oldCapacity;
+  arg->texts[0] = oldText0;
+  arg->size = oldSize;
+  arg->capacity = oldCapacity;
   return ret;
 }
 
@@ -210,16 +220,120 @@ ulong search(int *type)
   //return addr;
 }
 
+bool attach() // attach scenario
+{
+  ulong addr = search(&type_);
+  if (!addr)
+    return false;
+  return oldHookFun = (hook_fun_t)winhook::replace_fun(addr, (ulong)newHookFun);
+}
+
+} // namespace scenehook
+
+namespace otherhook {
+
+TextArgument *arg_;
+LPCWSTR oldText0_;
+DWORD oldSize_;
+DWORD oldCapacity_;
+bool hookBefore(winhook::hook_stack *s)
+{
+  auto arg = reinterpret_cast<TextArgument *>(s->stack[0]);
+
+  LPCWSTR text = arg->text();
+  if (!text || !*text || Util::allAscii((LPCSTR)text))
+    return true;
+
+  int role;
+  long sig;
+  DWORD split = s->stack[3];
+  if (split <= 0xffff || ::IsBadReadPtr((LPCVOID)split, 4)) { // skip modifying scenario thread
+    role = Engine::ScenarioRole;
+    sig = Engine::ScenarioThreadSignature;
+    return true;
+  } else {
+    split = *(DWORD *)split;
+    if (split == 0x54)
+      role = Engine::NameRole;
+    else
+      role = Engine::OtherRole;
+    sig = Engine::hashThreadSignature(role, split);
+  }
+
+  QString oldText = QString::fromWCharArray(text, arg->size),
+          newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+  if (oldText == newText)
+    return true;
+
+  arg_ = arg;
+  oldText0_ = arg->texts[0];
+  oldSize_ = arg->size;
+  oldCapacity_ = arg->capacity;
+
+  static QString text_;
+  text_ = newText;
+  arg->texts[0] = (LPCWSTR)text_.utf16(); // lack trailing null character
+  arg->size = newText.size();
+  arg->capacity = max(8, newText.size()); // prevent using smaller size
+  return true;
+}
+
+bool hookAfter(winhook::hook_stack *)
+{
+  if (arg_) {
+    arg_->texts[0]=oldText0_;
+    arg_->size = oldSize_;
+    arg_->capacity= oldCapacity_ ;
+    arg_ = nullptr;
+  }
+  return true;
+}
+
+ulong search()
+{
+  ulong startAddress,
+        stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return 0;
+  const BYTE bytes[] = {
+    0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
+    0xc7,0x47, 0x10, 0x00,0x00,0x00,0x00,   // 0042cf27   c747 10 00000000 mov dword ptr ds:[edi+0x10],0x0
+    0x66,0x89,0x0f,                         // 0042cf2e   66:890f          mov word ptr ds:[edi],cx
+    0x8b,0xcf,                              // 0042cf31   8bcf             mov ecx,edi
+    0x50,                                   // 0042cf33   50               push eax
+    0xe8 //XX4                              // 0042cf34   e8 e725f6ff      call .0038f520 ; jichi: hook here
+  };
+  enum { addr_offset = sizeof(bytes) - 1 }; // +4 for the call address
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return 0;
+  return addr + addr_offset;
+}
+
+bool attach()
+{
+  ulong addr = search();
+  if (!addr)
+    return false;
+  return winhook::hook_both(addr, hookBefore, hookAfter);
+}
+
+} // namespace otherhook
+
 } // unnamed namespace
 
 /** Public class */
 
 bool SiglusEngine::attach()
 {
-  ulong addr = ::search(&type_);
-  if (!addr)
-    return false;
-  return ::oldHookFun = Engine::replaceFunction<hook_fun_t>(addr, ::newHookFun);
+  if (scenehook::attach()) {
+    if (otherhook::attach())
+      DOUT("other hook found");
+    else
+      DOUT("other hook NOT FOUND");
+    return true;
+  }
+  return false;
 }
 
 // EOF
