@@ -5,7 +5,7 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-#include "ntinspect/ntinspect.h"
+#include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 
@@ -28,8 +28,8 @@ bool getMemoryRange(ulong *startAddress, ulong *stopAddress)
   //bool patched = IthCheckFile(L"AliceRunPatch.dll");
   bool patched = ::GetModuleHandleA("AliceRunPatch.dll");
   return patched ?
-      NtInspect::getModuleMemoryRange(L"AliceRunPatch.dll", startAddress, stopAddress) :
-      NtInspect::getCurrentMemoryRange(startAddress, stopAddress);
+      Engine::getMemoryRange(L"AliceRunPatch.dll", startAddress, stopAddress) :
+      Engine::getCurrentMemoryRange(startAddress, stopAddress);
 }
 
 ulong searchScenarioAddress(ulong startAddress, ulong stopAddress)
@@ -83,18 +83,6 @@ ulong searchOtherAddress(ulong startAddress, ulong stopAddress)
 }
 
 // - Hook -
-
-inline bool all_ascii(const char *text)
-{
-  while (*text)
-    if ((BYTE)*text++ >= 128)
-      return false;
-  return true;
-}
-
-inline bool is_sys_text(const char *text) // return true if skip text
-{ return all_ascii(text); }
-//{ return ::strchr(text, '/') || ::strchr(text, '\\') || all_ascii(text); } // skip text containing '/' or '\\' in it
 
 struct TextHookBase
 {
@@ -159,7 +147,7 @@ public:
 
     auto arg = (TextArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
-    if (arg->size <= 1 || !text || !*text || is_sys_text(text))
+    if (arg->size <= 1 || !text || !*text || Util::allAscii(text))
       return true;
 
     enum { role = Engine::ScenarioRole };
@@ -209,7 +197,7 @@ public:
 
     auto arg = (TextArgument *)s->stack[0]; // top of the stack
     LPCSTR text = arg->text;
-    if (arg->size <= 1 || !text || !*text || is_sys_text(text))
+    if (arg->size <= 1 || !text || !*text || Util::allAscii(text))
       return true;
 
     enum { role = Engine::OtherRole };
@@ -253,7 +241,7 @@ bool fixedTextHook(winhook::hook_stack *s)
     return true;
 
   char *text = arg->text;
-  if (!text || !*text || is_sys_text(text))
+  if (!text || !*text || Util::allAscii(text))
     return true;
 
   int role;

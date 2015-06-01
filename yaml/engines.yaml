@@ -165,7 +165,6 @@ simple:
   - EAGLS
   - Elf
   - EmbedSiglusEngine
-  - EmbedSiglusEngine2
   - EmbedSystem43
   - Eushully
   - FELISTELLA PSP
@@ -485,7 +484,6 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Embed
   - EmbedSiglusEngine
-  - EmbedSiglusEngine2
   # Engines
   - Adobe AIR
   - Adobe Flash 10
@@ -547,7 +545,6 @@ focus:
   - CatSystem3
   - EAGLS
   - EmbedSiglusEngine
-  - EmbedSiglusEngine2
   - FocasLens
   - HorkEye
   - KAGParser

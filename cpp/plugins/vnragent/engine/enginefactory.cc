@@ -22,9 +22,9 @@
 // http://stackoverflow.com/questions/1883862/c-oop-list-of-classes-class-types-and-creating-instances-of-them
 EngineController *EngineFactory::createEngine()
 {
-  static EngineModel *models[] = {
-    new SiglusEngine
-    , new System4Engine
+  static EngineModel *models[] = { // sort reversely
+    new System4Engine
+    , new SiglusEngine
     //, new BGIEngine
     //, new CircusEngine
     //, new ElfEngine

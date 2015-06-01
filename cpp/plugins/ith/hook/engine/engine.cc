@@ -2192,7 +2192,6 @@ bool InsertSiglus3Hook()
  */
 void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD s0 = retof(esp_base);
   DWORD eax = regof(eax, esp_base); // text
   if (!eax || !*(const BYTE *)eax) // empty data
     return;
@@ -2204,6 +2203,7 @@ void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD 
   else
     *data = *(DWORD *)eax;
   *len = size * 2; // UTF-16
+  DWORD s0 = retof(esp_base);
   if (s0 <= 0xff) // scenario text
     *split = FIXED_SPLIT_VALUE;
   else {
