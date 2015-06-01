@@ -229,7 +229,7 @@ bool attach() // attach scenario
   ulong addr = Private::search(&type_);
   if (!addr)
     return false;
-  return Private::oldHookFun = (hook_fun_t)winhook::replace_fun(addr, (ulong)Private::newHookFun);
+  return Private::oldHookFun = (Private::hook_fun_t)winhook::replace_fun(addr, (ulong)Private::newHookFun);
 }
 
 } // namespace ScenarioHook
