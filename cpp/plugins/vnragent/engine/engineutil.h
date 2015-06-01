@@ -53,6 +53,8 @@ inline bool getCurrentMemoryRange(unsigned long *startAddress, unsigned long *st
 // This function might be cached and hence not thread-safe
 unsigned long getModuleFunction(const char *moduleName, const char *funcName);
 
+bool isAddressReadable(const ulong *p);
+
 } // namespace Engine
 
 // EOF

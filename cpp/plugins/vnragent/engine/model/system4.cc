@@ -184,7 +184,7 @@ public:
     if (!enabled_)
       return true;
     DWORD splitBase = *(DWORD *)(s->edi + 0x284); // [edi + 0x284]
-    if (::IsBadReadPtr((LPCVOID)splitBase, 4)) { // 4 = sizeof(DWORD)
+    if (!Engine::isAddressReadable((LPDWORD)splitBase)) {
       enabled_ = false;
       DOUT("ILLEGAL ACCESS and stop modifying other text");
       return true;

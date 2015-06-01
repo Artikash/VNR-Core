@@ -55,7 +55,7 @@ struct TextArgument
   }
 };
 
-namespace scenehook {
+namespace ScenarioHook {
 
 enum Type {
   Type1    // Old SiglusEngine2, arg in ecx
@@ -228,14 +228,15 @@ bool attach() // attach scenario
   return oldHookFun = (hook_fun_t)winhook::replace_fun(addr, (ulong)newHookFun);
 }
 
-} // namespace scenehook
+} // namespace ScenarioHook
 
-namespace otherhook {
+namespace OtherHook {
 
 TextArgument *arg_;
 LPCWSTR oldText0_;
 DWORD oldSize_;
 DWORD oldCapacity_;
+
 bool hookBefore(winhook::hook_stack *s)
 {
   auto arg = reinterpret_cast<TextArgument *>(s->stack[0]);
@@ -247,7 +248,7 @@ bool hookBefore(winhook::hook_stack *s)
   int role;
   long sig;
   DWORD split = s->stack[3];
-  if (split <= 0xffff || ::IsBadReadPtr((LPCVOID)split, 4)) { // skip modifying scenario thread
+  if (split <= 0xffff || !Engine::isAddressReadable((LPDWORD)split)) { // skip modifying scenario thread
     role = Engine::ScenarioRole;
     sig = Engine::ScenarioThreadSignature;
     return true;
@@ -318,7 +319,7 @@ bool attach()
   return winhook::hook_both(addr, hookBefore, hookAfter);
 }
 
-} // namespace otherhook
+} // namespace OtherHook
 
 } // unnamed namespace
 
@@ -326,8 +327,8 @@ bool attach()
 
 bool SiglusEngine::attach()
 {
-  if (scenehook::attach()) {
-    if (otherhook::attach())
+  if (ScenarioHook::attach()) {
+    if (OtherHook::attach())
       DOUT("other hook found");
     else
       DOUT("other hook NOT FOUND");
