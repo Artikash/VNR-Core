@@ -120,6 +120,17 @@ PINYIN_TONE = 'pinyin' # pinyin with tone
 PINYIN_ROMAJI = 'romaji' # pinyin without tone
 PINYIN_VI = 'vi' # Phiên âm
 
+EXE_BINARY_SUFFICES = (
+  '000',
+  'bin',
+  'exp',
+)
+def recover_exe_bin_suffix(path): # unicode -> unicode or None
+  if path:
+    suf = path.rpartition('.')[-1].lower()
+    if suf in EXE_BINARY_SUFFICES:
+      return path[:-len(suf)] + "exe"
+
 # Upload
 UPLOAD_IMAGE_SUFFICES = (
   'jpg',

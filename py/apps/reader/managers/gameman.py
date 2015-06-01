@@ -1069,9 +1069,8 @@ class GameManager(QtCore.QObject):
       keepsSpace = bool(keepsSpace)
       loader = game.loader if game else ""
 
-      if path and not launchPath and (path.endswith(".000") or path.lower().endswith(".bin")):
-        #launchPath = re.sub(r"\.000$", ".exe", path)
-        launchPath = path[:-3] + "exe"
+      if path and not launchPath:
+        launchPath = defs.recover_exe_bin_suffix(path) or ''
 
       g = GameProfile(parent=self,
           wid=wid, pid=pid, path=path, launchPath=launchPath, linkName=linkName,
@@ -1220,8 +1219,8 @@ class GameManager(QtCore.QObject):
         if not md5: # This happens when game path does not exist in the beginning
           md5 = g.md5()
 
-      if g.path and not g.launchPath and (g.path.endswith(".000") or g.path.lower().endswith(".bin")):
-        g.launchPath = g.path[:-3] + "exe"
+      if g.path and not g.launchPath:
+        g.launchPath = defs.recover_exe_bin_suffix(g.path) or ''
 
       d.game = g
 
