@@ -394,7 +394,7 @@ class Settings(QSettings):
       self.ocrLanguagesChanged.emit(value)
 
   ocrRefreshIntervalChanged = Signal(int)
-  def ocrRefreshInterval(self): return to_int(self.value('OCRRefreshInterval', 2000)) # 2 seconds by default
+  def ocrRefreshInterval(self): return to_int(self.value('OCRRefreshInterval', 1000)) # 1 second by default
   def setOcrRefreshInterval(self, value):
     if value != self.ocrRefreshInterval():
       self.setValue('OCRRefreshInterval', value)
