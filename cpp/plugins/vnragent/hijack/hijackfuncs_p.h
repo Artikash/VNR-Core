@@ -283,6 +283,7 @@ int WINAPI MyMessageBoxW(
 
 // See: http://stackoverflow.com/questions/1994676/hooking-directx-endscene-from-an-injected-dll
 // See: http://www.rohitab.com/discuss/topic/35950-directx9-base-hook/
+// See: http://bbs.pediy.com/showthread.php?t=85368
 //#include <d3d9.h>
 //IDirect3D9* WINAPI MyDirect3DCreate9(
 //  UINT SDKVersion
