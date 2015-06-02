@@ -203,7 +203,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>중국어 간체 번역문을 중국어 번체로 변환</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4762"/>
+        <location filename="dialogs/_prefs.py" line="8900"/>
         <source>like this</source>
         <translation>예시</translation>
     </message>
@@ -1652,22 +1652,22 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
         <translation>필요시 일본 시각으로 게임을 실행합니다</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="324"/>
+        <location filename="i18n.py" line="338"/>
         <source>Text thread from Windows Non-GUI function</source>
         <translation>윈도우 비GUI환경으로부터 텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="325"/>
+        <location filename="i18n.py" line="339"/>
         <source>Text thread from Windows GUI function</source>
         <translation>윈도우 GUI환경으로부터 텍스트 스레드</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="326"/>
+        <location filename="i18n.py" line="340"/>
         <source>Text thread from game-specific engine</source>
         <translation>게임 지정 엔진으로부터 게임 스레드</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="323"/>
+        <location filename="i18n.py" line="337"/>
         <source>Text thread from user-defined H-code</source>
         <translation>사용자 H코드로부터 텍스트 스레드</translation>
     </message>
@@ -2970,7 +2970,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9060"/>
+        <location filename="dialogs/_prefs.py" line="9115"/>
         <source>Preferred text to embed in the game</source>
         <translation>게임에 내장할 텍스트 선택</translation>
     </message>
@@ -2980,7 +2980,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
         <translation>내장 자막</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="271"/>
+        <location filename="managers/gameagent.py" line="274"/>
         <source>Detect game engine</source>
         <translation>게임엔진 발견</translation>
     </message>
@@ -3083,7 +3083,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
         <translation type="obsolete">현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="273"/>
+        <location filename="managers/gameagent.py" line="276"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>인식할수 없는 게임 엔진. ITH텍스트 후커를 사용합니다.</translation>
     </message>
@@ -4684,12 +4684,12 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8969"/>
+        <location filename="dialogs/_prefs.py" line="9024"/>
         <source>Insert spaces after every character</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8981"/>
+        <location filename="dialogs/_prefs.py" line="9036"/>
         <source>Do not insert any spaces</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4709,27 +4709,27 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8894"/>
+        <location filename="dialogs/_prefs.py" line="8905"/>
         <source>Font options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8902"/>
+        <location filename="dialogs/_prefs.py" line="8913"/>
         <source>Customize game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8903"/>
+        <location filename="dialogs/_prefs.py" line="8914"/>
         <source>Global font for game text to override default game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8914"/>
+        <location filename="dialogs/_prefs.py" line="8925"/>
         <source>Game font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8929"/>
+        <location filename="dialogs/_prefs.py" line="8940"/>
         <source>Enforce font character set</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4739,17 +4739,17 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8930"/>
+        <location filename="dialogs/_prefs.py" line="8941"/>
         <source>Character set hint for selecting fonts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8885"/>
+        <location filename="dialogs/_prefs.py" line="8886"/>
         <source>Insert spaces between overlapped characters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8975"/>
+        <location filename="dialogs/_prefs.py" line="9030"/>
         <source>Insert spaces after unencodable characters</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4764,18 +4764,28 @@ The font will be installed to {1}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9037"/>
+        <location filename="dialogs/_prefs.py" line="9092"/>
         <source>Limit scenario width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9046"/>
+        <location filename="dialogs/_prefs.py" line="9101"/>
         <source>Maximum number of thin characters in a line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8878"/>
+        <location filename="dialogs/_prefs.py" line="8895"/>
         <source>Limit maximum text width by truncating or inserting new lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8969"/>
+        <source>Change font weight</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8991"/>
+        <source>Change font size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

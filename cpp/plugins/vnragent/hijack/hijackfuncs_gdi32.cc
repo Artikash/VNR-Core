@@ -23,9 +23,10 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
 #ifdef HIJACK_GDI_FONT
   DOUT("pass");
+  //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
-    if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
+    if (lplf && s->isFontCustomized()) {
       union {
         LOGFONTA a;
         LOGFONTW w;
@@ -36,6 +37,12 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
           charSet = p->systemCharSet();
         if (charSet)
           f.a.lfCharSet = charSet;
+      }
+      if (s->fontWeight)
+        f.a.lfWeight = s->fontWeight;
+      if (s->isFontScaled()) {
+        f.a.lfWidth *= s->fontScale;
+        f.a.lfHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty()) {
         if (Util::allAscii(s->fontFamily))
@@ -57,9 +64,10 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 {
 #ifdef HIJACK_GDI_FONT
   DOUT("pass");
+  //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
-    if (lplf && (s->fontCharSetEnabled || !s->fontFamily.isEmpty())) {
+    if (lplf && s->isFontCustomized()) {
       LOGFONTW f(*lplf);
       if (s->fontCharSetEnabled) {
         auto charSet = s->fontCharSet;
@@ -67,6 +75,12 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
           charSet = p->systemCharSet();
         if (charSet)
           f.lfCharSet = charSet;
+      }
+      if (s->fontWeight)
+        f.lfWeight = s->fontWeight;
+      if (s->isFontScaled()) {
+        f.lfWidth *= s->fontScale;
+        f.lfHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty()) {
         f.lfFaceName[s->fontFamily.size()] = 0;
@@ -85,13 +99,19 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
   DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
-    if (s->fontCharSetEnabled || !s->fontFamily.isEmpty()) {
+    if (s->isFontCustomized()) {
       if (s->fontCharSetEnabled) {
         auto charSet = s->fontCharSet;
         if (!charSet)
           charSet = p->systemCharSet();
         if (charSet)
           fdwCharSet = charSet;
+      }
+      if (s->fontWeight)
+        fnWeight = s->fontWeight;
+      if (s->isFontScaled()) {
+        nWidth *= s->fontScale;
+        nHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty()) {
         if (Util::allAscii(s->fontFamily)) {
@@ -115,13 +135,19 @@ HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int
   DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
-    if (s->fontCharSetEnabled || !s->fontFamily.isEmpty()) {
+    if (s->isFontCustomized()) {
       if (s->fontCharSetEnabled) {
         auto charSet = s->fontCharSet;
         if (!charSet)
           charSet = p->systemCharSet();
         if (charSet)
           fdwCharSet = charSet;
+      }
+      if (s->fontWeight)
+        fnWeight = s->fontWeight;
+      if (s->isFontScaled()) {
+        nWidth *= s->fontScale;
+        nHeight *= s->fontScale;
       }
       if (!s->fontFamily.isEmpty())
         lpszFace = (LPCWSTR)s->fontFamily.utf16();

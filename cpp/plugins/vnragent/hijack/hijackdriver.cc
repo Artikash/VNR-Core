@@ -58,6 +58,18 @@ void HijackDriver::setFontCharSet(int v)
   DOUT(v);
 }
 
+void HijackDriver::setFontWeight(int v)
+{
+  d_->helper->settings()->fontWeight = v;
+  DOUT(v);
+}
+
+void HijackDriver::setFontScale(float v)
+{
+  d_->helper->settings()->fontScale = v;
+  DOUT(v);
+}
+
 void HijackDriver::setFontFamily(const QString &v)
 {
   d_->helper->settings()->fontFamily = v;

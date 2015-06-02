@@ -8868,6 +8868,14 @@ class _EngineTab(object):
     grid.addWidget(self.charSetEdit, r, 2)
     r += 1
 
+    grid.addWidget(self.fontScaleButton, r, 1)
+    grid.addWidget(self.fontScaleEdit, r, 2)
+    r += 1
+
+    grid.addWidget(self.fontWeightButton, r, 1)
+    grid.addWidget(self.fontWeightEdit, r, 2)
+    r += 1
+
     row = QtWidgets.QHBoxLayout()
     row.addLayout(grid)
     row.addStretch() # use a row to patch stretch
@@ -8954,6 +8962,50 @@ class _EngineTab(object):
         ss.setEmbeddedFontCharSet(L[index]))
     ret.setEnabled(ss.isEmbeddedFontCharSetEnabled())
     ss.embeddedFontCharSetEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def fontWeightButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Change font weight"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedFontWeightEnabled())
+    ret.toggled.connect(ss.setEmbeddedFontWeightEnabled)
+    return ret
+
+  @memoizedproperty
+  def fontWeightEdit(self):
+    ss = settings.global_()
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(i18n.FONT_WEIGHT_DESCS)
+    ret.setMaxVisibleItems(ret.count())
+    try: ret.setCurrentIndex(ss.embeddedFontWeight())
+    except ValueError: pass
+    ret.currentIndexChanged[int].connect(ss.setEmbeddedFontWeight)
+    ret.setEnabled(ss.isEmbeddedFontWeightEnabled())
+    ss.embeddedFontWeightEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def fontScaleButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Change font size"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedFontScaleEnabled())
+    ret.toggled.connect(ss.setEmbeddedFontScaleEnabled)
+    return ret
+
+  @memoizedproperty
+  def fontScaleEdit(self):
+    ret = QtWidgets.QDoubleSpinBox()
+    ret.setRange(0.1, 10.0)
+    ret.setSingleStep(0.1)
+    ret.setDecimals(1) # 0.1
+    ret.setPrefix("x ")
+    ss = settings.global_()
+    ret.setValue(ss.embeddedFontScale())
+    ret.valueChanged[float].connect(ss.setEmbeddedFontScale)
+    ret.setEnabled(ss.isEmbeddedFontScaleEnabled())
+    ss.embeddedFontScaleEnabledChanged.connect(ret.setEnabled)
     return ret
 
   def _refreshFontFamily(self):

@@ -218,11 +218,14 @@ class _GameAgent(object):
         self.connectedPid and self.sendSetting(k, t)
       , k))
 
-    for sig in ss.embeddedFontEnabledChanged, ss.embeddedFontFamilyChanged:
-      sig.connect(self._sendFontSettings)
-
     for sig in ss.embeddedScenarioWidthChanged, ss.embeddedScenarioWidthEnabledChanged:
       sig.connect(self._sendScenarioWidth)
+    for sig in ss.embeddedFontFamilyChanged, ss.embeddedFontEnabledChanged:
+      sig.connect(self._sendFontFamily)
+    for sig in ss.embeddedFontScaleChanged, ss.embeddedFontScaleEnabledChanged:
+      sig.connect(self._sendFontScale)
+    for sig in ss.embeddedFontWeightChanged, ss.embeddedFontWeightEnabledChanged:
+      sig.connect(self._sendFontWeight)
 
     import textman
     self.textExtractionEnabled = textman.manager().isEnabled()
@@ -283,19 +286,13 @@ class _GameAgent(object):
     data['nameSignature'] = self.nameSignature
 
     data['embeddedScenarioWidth'] = ss.embeddedScenarioWidth() if ss.isEmbeddedScenarioWidthEnabled() else 0
-
-    data['gameFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
-    #data['gameFontCharSet'] = ss.embeddedFontCharSet() if ss.isEmbeddedFontCharSetEnabled() else 0
+    data['embeddedFontFamily'] = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
+    data['embeddedFontScale'] = ss.embeddedFontScale() if ss.isEmbeddedFontScaleEnabled() else 0
+    data['embeddedFontWeight'] = ss.embeddedFontWeight() * 100 if ss.isEmbeddedFontWeightEnabled() else 0
     self.rpc.setAgentSettings(data)
 
   def sendSetting(self, k, v):
     data = {k:v}
-    self.rpc.setAgentSettings(data)
-
-  def _sendFontSettings(self):
-    ss = settings.global_()
-    v = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
-    data = {'gameFontFamily':v}
     self.rpc.setAgentSettings(data)
 
   def _sendScenarioWidth(self):
@@ -304,10 +301,22 @@ class _GameAgent(object):
     data = {'embeddedScenarioWidth':v}
     self.rpc.setAgentSettings(data)
 
-  #def _sendCharSetSettings(self):
-  #  ss = settings.global_()
-  #  v = ss.embeddedFontCharSet() if ss.isEmbeddedFontCharSetEnabled() else 0
-  #  data = {'gameFontCharSet':v}
-  #  self.rpc.setAgentSettings(data)
+  def _sendFontFamily(self):
+    ss = settings.global_()
+    v = ss.embeddedFontFamily() if ss.isEmbeddedFontEnabled() else ''
+    data = {'embeddedFontFamily':v}
+    self.rpc.setAgentSettings(data)
+
+  def _sendFontWeight(self):
+    ss = settings.global_()
+    v = ss.embeddedFontWeight() * 100 if ss.isEmbeddedFontWeightEnabled() else 0
+    data = {'embeddedFontWeight':v}
+    self.rpc.setAgentSettings(data)
+
+  def _sendFontScale(self):
+    ss = settings.global_()
+    v = ss.embeddedFontScale() if ss.isEmbeddedFontScaleEnabled() else 0
+    data = {'embeddedFontScale':v}
+    self.rpc.setAgentSettings(data)
 
 # EOF

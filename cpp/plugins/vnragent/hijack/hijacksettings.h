@@ -7,11 +7,31 @@
 class HijackSettings
 {
 public:
-  QString fontFamily; // font face
-  quint8 fontCharSet; // font character set
-  bool fontCharSetEnabled; // whether modify font char set
+  QString fontFamily;       // font face
+  float fontScale;          // zoom font width and height
+  int fontWeight;           // fw font weight
+  quint8 fontCharSet;       // font character set
+  bool fontCharSetEnabled;  // whether modify font char set
 
-  HijackSettings() : fontCharSet(0) {}
+  HijackSettings()
+    : fontScale(0)
+    , fontWeight(0)
+    , fontCharSet(0)
+    , fontCharSetEnabled(true)
+  {}
+
+  // true if fontScale is not 0 and 1
+  bool isFontScaled() const
+  { return !qFuzzyCompare(1, fontScale) && !qFuzzyCompare(1, 1 + fontScale); }
+
+  bool isFontCustomized() const
+  {
+    return fontCharSetEnabled
+        || fontWeight
+        || !fontFamily.isEmpty()
+        || isFontScaled()
+        ;
+  }
 };
 
 // EOF

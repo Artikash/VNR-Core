@@ -204,7 +204,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>尽可能的将简体中文翻译转换为繁体中文</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4762"/>
+        <location filename="dialogs/_prefs.py" line="8900"/>
         <source>like this</source>
         <translation>比如这样</translation>
     </message>
@@ -1621,22 +1621,22 @@ User privilege describes what you can do to other users&apos; efforts (like subs
         <translation>如你所愿以日本时间启动游戏</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="324"/>
+        <location filename="i18n.py" line="338"/>
         <source>Text thread from Windows Non-GUI function</source>
         <translation>文本来自非图形界面的函数</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="325"/>
+        <location filename="i18n.py" line="339"/>
         <source>Text thread from Windows GUI function</source>
         <translation>文本来自图形界面的函数</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="326"/>
+        <location filename="i18n.py" line="340"/>
         <source>Text thread from game-specific engine</source>
         <translation>文本来自游戏引擎</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="323"/>
+        <location filename="i18n.py" line="337"/>
         <source>Text thread from user-defined H-code</source>
         <translation>文本来自自定义的特殊码</translation>
     </message>
@@ -2908,7 +2908,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>当超时时间很长而你的机翻工具又很慢时，可能会让游戏一卡一卡的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9060"/>
+        <location filename="dialogs/_prefs.py" line="9115"/>
         <source>Preferred text to embed in the game</source>
         <translation>要内嵌的文本</translation>
     </message>
@@ -2918,7 +2918,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>内嵌字幕</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="271"/>
+        <location filename="managers/gameagent.py" line="274"/>
         <source>Detect game engine</source>
         <translation>检测到游戏引擎</translation>
     </message>
@@ -3021,7 +3021,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation type="obsolete">当前支持的游戏引擎是：{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="273"/>
+        <location filename="managers/gameagent.py" line="276"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>未知的游戏引擎。改为使用ITH提取文本。</translation>
     </message>
@@ -4564,12 +4564,12 @@ The font will be installed to {1}.</source>
         <translation>KanjiDic{0}汉字字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8969"/>
+        <location filename="dialogs/_prefs.py" line="9024"/>
         <source>Insert spaces after every character</source>
         <translation>在每个字后都插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8981"/>
+        <location filename="dialogs/_prefs.py" line="9036"/>
         <source>Do not insert any spaces</source>
         <translation>不插入任何空格</translation>
     </message>
@@ -4589,27 +4589,27 @@ The font will be installed to {1}.</source>
         <translation>你可以按下Shift或者Control来暂停内嵌翻译如果变慢。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8894"/>
+        <location filename="dialogs/_prefs.py" line="8905"/>
         <source>Font options</source>
         <translation>字体选项</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8902"/>
+        <location filename="dialogs/_prefs.py" line="8913"/>
         <source>Customize game font</source>
         <translation>自定义游戏字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8903"/>
+        <location filename="dialogs/_prefs.py" line="8914"/>
         <source>Global font for game text to override default game font</source>
         <translation>替换游戏的全局字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8914"/>
+        <location filename="dialogs/_prefs.py" line="8925"/>
         <source>Game font</source>
         <translation>游戏字体</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8929"/>
+        <location filename="dialogs/_prefs.py" line="8940"/>
         <source>Enforce font character set</source>
         <translation>设定字体字符集</translation>
     </message>
@@ -4619,17 +4619,17 @@ The font will be installed to {1}.</source>
         <translation>未知字符集</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8930"/>
+        <location filename="dialogs/_prefs.py" line="8941"/>
         <source>Character set hint for selecting fonts</source>
         <translation>选择字体时的字符集参数</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8885"/>
+        <location filename="dialogs/_prefs.py" line="8886"/>
         <source>Insert spaces between overlapped characters</source>
         <translation>在重叠显示的字间插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8975"/>
+        <location filename="dialogs/_prefs.py" line="9030"/>
         <source>Insert spaces after unencodable characters</source>
         <translation>仅在无法编码的字后插入空格</translation>
     </message>
@@ -4644,19 +4644,29 @@ The font will be installed to {1}.</source>
         <translation>所有设定都是只读的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9037"/>
+        <location filename="dialogs/_prefs.py" line="9092"/>
         <source>Limit scenario width</source>
         <translation>限制对白文本宽度</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="9046"/>
+        <location filename="dialogs/_prefs.py" line="9101"/>
         <source>Maximum number of thin characters in a line</source>
         <translation>每行窄字符的最大数量</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="8878"/>
+        <location filename="dialogs/_prefs.py" line="8895"/>
         <source>Limit maximum text width by truncating or inserting new lines</source>
         <translation>通过重新分行来限制文字宽度</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8969"/>
+        <source>Change font weight</source>
+        <translation>修改字体粗细</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="8991"/>
+        <source>Change font size</source>
+        <translation>修改字体大小</translation>
     </message>
 </context>
 </TS>
