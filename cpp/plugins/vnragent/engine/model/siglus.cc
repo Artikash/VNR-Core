@@ -248,24 +248,23 @@ namespace Private {
     auto arg = reinterpret_cast<TextArgument *>(s->stack[0]);
 
     LPCWSTR text = arg->text();
-    if (!text || !*text || Util::allAscii((LPCSTR)text))
+    if (!text || !*text || Util::allAscii(text))
       return true;
 
-    int role;
-    long sig;
+    int role = Engine::OtherRole;
     DWORD split = s->stack[3];
     if (split <= 0xffff || !Engine::isAddressReadable((LPDWORD)split)) { // skip modifying scenario thread
-      role = Engine::ScenarioRole;
-      sig = Engine::ScenarioThreadSignature;
+      //role = Engine::ScenarioRole;
       return true;
     } else {
       split = *(DWORD *)split;
-      if (split == 0x54)
+      switch (split) {
+      case 0x54:
+      case 0x26:
         role = Engine::NameRole;
-      else
-        role = Engine::OtherRole;
-      sig = Engine::hashThreadSignature(role, split);
+      }
     }
+    long sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text, arg->size),
             newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
