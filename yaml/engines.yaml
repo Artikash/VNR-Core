@@ -6,6 +6,7 @@ rename:
   AliceRunPatch: AliceRunPatch43
   AUEngine: Tenco
   ApRicot: ApRicoT
+  Eushully: ARCGameEngine
   MAJIRO: Majiro
   Pencil: Pensil
   Silkys: Elf
@@ -145,6 +146,7 @@ simple:
   - AOS
   - ApRicot # renamed
   - ApRicoT
+  - ARCGameEngine
   - Atelier KAGUYA
   - AUEngine # renamed
   - BANDAI Name PSP
@@ -166,7 +168,7 @@ simple:
   - Elf
   - EmbedSiglusEngine
   - EmbedSystem43
-  - Eushully
+  - Eushully # renamed
   - FELISTELLA PSP
   - GXP
   - GXP2
@@ -244,7 +246,8 @@ simple:
 single: # single thread
   # PC
   - AB2Try
-  - Eushully
+  - ARCGameEngine
+  - Eushully # renamed
   - FocasLens
   - GXP
   - GXP2
@@ -358,6 +361,7 @@ char:
   - AMUSE CRAFT
   - Anex86
   - AOS
+  - ARCGameEngine
   - Artemis
   - Atelier KAGUYA
   - AUEngine # removed
@@ -381,7 +385,7 @@ char:
   - EAGLS
   - Elf
   - EmonEngine
-  - Eushully
+  - Eushully # renamed
   - EXP
   - FocasLens
   - Gesen18

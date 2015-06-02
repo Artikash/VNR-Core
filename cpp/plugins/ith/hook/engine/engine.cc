@@ -10181,7 +10181,7 @@ bool InsertEushullyHook()
   hp.type = USING_STRING|FIXING_SPLIT; // merging all threads
   hp.offset = arg2_lpString; // arg2 = 0x4 * 2
   ConsoleOutput("vnreng: INSERT Eushully");
-  NewHook(hp, L"Eushully");
+  NewHook(hp, L"ARCGameEngine");
   return true;
 }
 
