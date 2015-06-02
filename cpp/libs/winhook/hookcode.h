@@ -24,6 +24,22 @@ struct hook_stack
   ulong stack[1];   // beginning of the runtime stack
 };
 
+struct fun_stack
+{
+  //ulong address;    // the input hooked address
+  ulong eflags;     // pushaf
+  ulong edi,        // pushad
+        esi,
+        ebp,
+        esp,
+        ebx,
+        edx,
+        ecx,        // this
+        eax;        // 0x28
+  ulong retaddr;    // return address
+  ulong args[1];    // first argument at runtime
+};
+
 // Return false if skip the next instruction.
 typedef std::function<bool (hook_stack *)> hook_function;
 

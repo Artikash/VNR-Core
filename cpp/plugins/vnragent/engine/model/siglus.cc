@@ -60,7 +60,6 @@ struct TextArgument
 };
 
 namespace ScenarioHook {
-
 namespace Private {
 
   enum Type {
@@ -181,8 +180,7 @@ namespace Private {
    */
   ulong search(Type *type)
   {
-    ulong startAddress,
-          stopAddress;
+    ulong startAddress, stopAddress;
     if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
       return 0;
 

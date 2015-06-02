@@ -11,6 +11,11 @@
 
 - name: EmbedSystem43 # 5/25/2015, compatible with System43+
   exist: AliceStart.ini
+  wideChar: false
+
+#- name: EmbedARCGameEngine # 6/2/2015, compatible with ARCGameEngine
+#  exist: AGERC.DLL
+#  wideChar: false
 
 # EOF
 

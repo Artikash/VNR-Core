@@ -118,6 +118,7 @@ SOURCES += \
 
 # Engine models
 HEADERS += \
+  engine/model/age.h \
   engine/model/system4.h \
   engine/model/siglus.h
   #engine/model/bgi.h
@@ -130,6 +131,7 @@ HEADERS += \
   #engine/model/rejet.h
   #engine/model/test.h
 SOURCES += \
+  engine/model/age.cc \
   engine/model/system4.cc \
   engine/model/siglus.cc
   #engine/model/bgi.cc
