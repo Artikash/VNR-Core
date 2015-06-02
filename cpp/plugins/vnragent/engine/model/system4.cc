@@ -4,6 +4,7 @@
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
+#include "engine/enginesettings.h"
 #include "engine/engineutil.h"
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
@@ -196,13 +197,15 @@ public:
       return true;
 
     auto arg = (TextArgument *)s->stack[0]; // top of the stack
+
+    auto g = EngineController::instance();
     LPCSTR text = arg->text;
-    if (arg->size <= 1 || !text || !*text || Util::allAscii(text))
+    if (arg->size <= 1 || !text || !*text || ::strlen(text) > g->settings()->otherCapacity || Util::allAscii(text))
       return true;
 
     enum { role = Engine::OtherRole };
     DWORD sig = Engine::hashThreadSignature(role, split2);
-    buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    buffer_ = g->dispatchTextA(text, sig, role);
 
     if (editable_) {
       arg_ = arg;

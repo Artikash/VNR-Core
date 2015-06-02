@@ -6,6 +6,7 @@
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
+#include "engine/enginesettings.h"
 #include "engine/engineutil.h"
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
@@ -248,7 +249,8 @@ namespace Private {
     auto arg = reinterpret_cast<TextArgument *>(s->stack[0]);
 
     LPCWSTR text = arg->text();
-    if (!text || !*text || Util::allAscii(text))
+    auto g = EngineController::instance();
+    if (!text || !*text || ::wcslen(text) > g->settings()->otherCapacity || Util::allAscii(text)) // there could be garbage
       return true;
 
     int role = Engine::OtherRole;
@@ -267,7 +269,7 @@ namespace Private {
     long sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text, arg->size),
-            newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+            newText = g->dispatchTextW(oldText, sig, role);
     if (oldText == newText)
       return true;
 
