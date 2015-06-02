@@ -57,6 +57,8 @@ BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int c
 
 // - D3D -
 
+// See: http://stackoverflow.com/questions/1994676/hooking-directx-endscene-from-an-injected-dll
+// See: http://www.rohitab.com/discuss/topic/35950-directx9-base-hook/
 //IDirect3D9* WINAPI MyDirect3DCreate9(UINT SDKVersion)
 //{
 //  growl::warn("d3d");
