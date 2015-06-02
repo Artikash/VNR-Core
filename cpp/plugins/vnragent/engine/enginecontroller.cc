@@ -360,9 +360,10 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
 
+  QByteArray ret = d_->encode(repl);
   if (role == Engine::OtherRole)
-    d_->addTextHash(Engine::hashWString(repl));
-  return d_->encode(repl);
+    d_->addTextHash(Engine::hashByteArray(ret));
+  return ret;
 }
 
 QString EngineController::dispatchTextW(const QString &text, long signature, int role)
