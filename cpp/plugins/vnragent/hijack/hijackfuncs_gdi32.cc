@@ -23,6 +23,7 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
 #ifdef HIJACK_GDI_FONT
   DOUT("pass");
+  //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (lplf && s->isFontCustomized()) {
