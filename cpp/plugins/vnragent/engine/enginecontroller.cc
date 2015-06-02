@@ -18,6 +18,7 @@
 //#include "mhook/mhook.h" // must after windows.h
 #include <QtCore/QTimer>
 #include <QtCore/QTextCodec>
+#include <unordered_set>
 
 #define DEBUG "enginecontroller"
 #include "sakurakit/skdebug.h"
@@ -45,6 +46,8 @@ public:
              *spaceCodec;
 
   bool finalized;
+
+  std::unordered_set<qint64> textHashes_; // hashes of rendered text
 
   EngineControllerPrivate(EngineModel *model)
     : model(model)
@@ -76,6 +79,12 @@ public:
 
   QString decode(const QByteArray &data) const
   { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
+
+  bool containsTextHash(qint64 hash) const
+  { return textHashes_.find(hash) != textHashes_.end(); }
+
+  void addTextHash(qint64 hash)
+  { textHashes_.insert(hash); }
 
 private:
   void finalizeCodecs()
@@ -271,8 +280,12 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
+
   if (!role)
     role = d_->settings.textRoleOf(signature);
+  qint64 hash = Engine::hashByteArray(data);
+  if (role == Engine::OtherRole && d_->containsTextHash(hash))
+    return data;
 
   if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
@@ -280,7 +293,6 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     return data;
 
   auto p = EmbedManager::instance();
-  qint64 hash = Engine::hashByteArray(data);
   QString repl;
   if (role == Engine::OtherRole) { // skip sending text
     if (!d_->settings.textVisible[role])
@@ -348,6 +360,8 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
 
+  if (role == Engine::OtherRole)
+    d_->addTextHash(Engine::hashWString(repl));
   return d_->encode(repl);
 }
 
@@ -355,17 +369,20 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 {
   if (text.isEmpty())
     return text;
+
   if (!role)
     role = d_->settings.textRoleOf(signature);
+  qint64 hash = Engine::hashWString(text);
+  if (role == Engine::OtherRole && d_->containsTextHash(hash))
+    return text;
 
   // Canceled
   if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
       || WinKey::isKeyShiftPressed())
-    return d_->postProcessW(text);
+    return text;
 
   auto p = EmbedManager::instance();
-  qint64 hash = Engine::hashWString(text);
   QString repl;
   if (role == Engine::OtherRole) { // skip sending text
     if (!d_->settings.textVisible[role])
@@ -433,9 +450,10 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
 
-  //repl = QString::fromWCharArray(L"\u76ee\u899a");
-  return d_->postProcessW(repl); // post-process
-  //return d_->encode(repl);
+  repl = d_->postProcessW(repl);
+  if (role == Engine::OtherRole)
+    d_->addTextHash(Engine::hashWString(repl));
+  return repl;
 }
 
 // EOF

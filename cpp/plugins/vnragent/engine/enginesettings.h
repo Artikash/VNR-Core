@@ -10,7 +10,6 @@ class EngineSettings
 public:
   bool enabled          // if vnragent is enabled
      //, detectsControl   // be aware if CTRL is pressed
-
      , alwaysInsertsSpaces  // insert spaces after every character
      , smartInsertsSpaces  // insert spaces after every character
 
@@ -24,6 +23,10 @@ public:
      , translationEnabled[Engine::RoleCount]    // if display translation
      , extractionEnabled[Engine::RoleCount]     // if send text
   ;
+
+  size_t scenarioCapacity, // maximum size of scenario
+         nameCapacity,     // maximum size of name
+         otherCapacity;    // maximum size of other text
 
   int scenarioWidth; // maximum thin character in a text line
 
@@ -41,6 +44,10 @@ public:
     , scenarioTextVisible(false)
     , nameTextVisible(false)
     , otherTextVisible(false)
+
+    , scenarioCapacity(500)
+    , nameCapacity(100)
+    , otherCapacity(200)
 
     , scenarioWidth(0)
 
