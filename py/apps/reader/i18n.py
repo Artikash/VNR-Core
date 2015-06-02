@@ -138,6 +138,20 @@ def win_charset_desc(charset):
   desc = WIN_CHARSET_DESCS.get(charset) or "(%s)" % my.tr("Unknown charSet")
   return "%s (0x%x)" % (desc, charset)
 
+# https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037%28v=vs.85%29.aspx
+FONT_WEIGHT_DESCS = (
+  "0. %s" % tr_("Default"), # FW_DONTCARE
+  "1. Ultralight",  # FW_THIN
+  "2. Light",       # FW_EXTRALIGHT, FW_ULTRALIGHT
+  "3. Semilight",   # FW_LIGHT
+  "4. Regular",     # FW_REGULAR, FW_NORMAL
+  "5. Medium",      # FW_MEDIUM
+  "6. Semibold",    # FW_SEMIBOLD, FW_DEMIBOLD
+  "7. Bold",        # FW_BOLD
+  "8. Ultrabold",   # FW_EXTRABOLD, FW_ULTRABOLD
+  "9. Black",       # FW_HEAVY, FW_BLACK
+)
+
 def topic_type_name(type):
   """
   @param  type  str

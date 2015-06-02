@@ -14,14 +14,15 @@ public:
   bool fontCharSetEnabled;  // whether modify font char set
 
   HijackSettings()
-    : fontZoomFactor(0)
+    : fontScale(0)
     , fontWeight(0)
-    , fontCharSet(0),
+    , fontCharSet(0)
     , fontCharSetEnabled(true)
   {}
 
-  // true if fontScale is not zero
-  bool isFontScaled() const { return !qFuzzyCompare(1, 1 + fontScale); }
+  // true if fontScale is not 0 and 1
+  bool isFontScaled() const
+  { return !qFuzzyCompare(1, fontScale) && !qFuzzyCompare(1, 1 + fontScale); }
 
   bool isFontCustomized() const
   {

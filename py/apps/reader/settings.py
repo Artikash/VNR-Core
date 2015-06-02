@@ -2266,6 +2266,38 @@ class Settings(QSettings):
       self.setValue('EmbeddedFontFamily', value)
       self.embeddedFontFamilyChanged.emit(value)
 
+  embeddedFontWeightEnabledChanged = Signal(bool)
+  def isEmbeddedFontWeightEnabled(self):
+    return to_bool(self.value('EmbeddedFontWeightEnabled'))
+  def setEmbeddedFontWeightEnabled(self, value):
+    if value != self.isEmbeddedFontWeightEnabled():
+      self.setValue('EmbeddedFontWeightEnabled', value)
+      self.embeddedFontWeightEnabledChanged.emit(value)
+
+  embeddedFontWeightChanged = Signal(int)
+  def embeddedFontWeight(self):
+    return to_int(self.value('EmbeddedFontWeight'))
+  def setEmbeddedFontWeight(self, value):
+    if value != self.embeddedFontWeight():
+      self.setValue('EmbeddedFontWeight', value)
+      self.embeddedFontWeightChanged.emit(value)
+
+  embeddedFontScaleEnabledChanged = Signal(bool)
+  def isEmbeddedFontScaleEnabled(self):
+    return to_bool(self.value('EmbeddedFontScaleEnabled'))
+  def setEmbeddedFontScaleEnabled(self, value):
+    if value != self.isEmbeddedFontScaleEnabled():
+      self.setValue('EmbeddedFontScaleEnabled', value)
+      self.embeddedFontScaleEnabledChanged.emit(value)
+
+  embeddedFontScaleChanged = Signal(float)
+  def embeddedFontScale(self):
+    return to_float(self.value('EmbeddedFontScale', 1.0))
+  def setEmbeddedFontScale(self, value):
+    if value != self.embeddedFontScale():
+      self.setValue('EmbeddedFontScale', value)
+      self.embeddedFontScaleChanged.emit(value)
+
   embeddedFontCharSetEnabledChanged = Signal(bool)
   def isEmbeddedFontCharSetEnabled(self):
     return to_bool(self.value('EmbeddedFontCharSetEnabled', True))
