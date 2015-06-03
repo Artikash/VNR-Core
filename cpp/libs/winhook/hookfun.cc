@@ -1,6 +1,7 @@
 // hookfun.cc
 // 5/29/2015 jichi
 #include "winhook/hookfun.h"
+#include "winhook/hookutil.h"
 #include "winhook/hookutil_p.h"
 #include "disasm/disasm.h"
 #include <windows.h>
@@ -59,7 +60,7 @@ public:
     if (instructionSize_ > jmp_ins_size)
       ::memset(jmpCode, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
 
-    bool ok = detail::protected_memcpy((LPVOID)address_, jmpCode, instructionSize_);
+    bool ok = winhook::protected_memcpy((LPVOID)address_, jmpCode, instructionSize_);
     delete jmpCode;
     return ok;
   }
@@ -67,7 +68,7 @@ public:
   bool unhook() const // assume is valid
   {
     //assert(valid());
-    return detail::protected_memcpy((LPVOID)address_, code_ + jmp_ins_size, instructionSize_);
+    return winhook::protected_memcpy((LPVOID)address_, code_ + jmp_ins_size, instructionSize_);
   }
 };
 

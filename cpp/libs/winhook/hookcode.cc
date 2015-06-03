@@ -1,6 +1,7 @@
 // hookcode.cc
 // 5/25/2015 jichi
 #include "winhook/hookcode.h"
+#include "winhook/hookutil.h"
 #include "winhook/hookutil_p.h"
 #include "disasm/disasm.h"
 #include "ccutil/ccmacro.h"
@@ -93,13 +94,13 @@ public:
     if (originalSize_ > jmp_ins_size)
       ::memset(jmpCode, s1_nop, originalSize_ - jmp_ins_size); // patch nop
 
-    bool ret = detail::protected_memcpy((LPVOID)address_, jmpCode, originalSize_);
+    bool ret = winhook::protected_memcpy((LPVOID)address_, jmpCode, originalSize_);
     delete jmpCode;
     return ret;
   }
 
   bool unhook() const // assume is valid
-  { return detail::protected_memcpy((LPVOID)address_, originalCode_, originalSize_); }
+  { return winhook::protected_memcpy((LPVOID)address_, originalCode_, originalSize_); }
 };
 
 BYTE *HookRecord::create_hook_code(DWORD address, DWORD originalSize, DWORD self, DWORD before, DWORD after)
