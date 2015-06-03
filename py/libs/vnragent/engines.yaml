@@ -13,9 +13,9 @@
   exist: AliceStart.ini
   wideChar: false
 
-#- name: EmbedARCGameEngine # 6/2/2015, compatible with ARCGameEngine
-#  exist: AGERC.DLL
-#  wideChar: false
+- name: EmbedARCGameEngine # 6/2/2015, compatible with ARCGameEngine
+  exist: AGERC.DLL
+  wideChar: false
 
 # EOF
 

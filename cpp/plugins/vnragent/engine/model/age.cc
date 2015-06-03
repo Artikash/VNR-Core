@@ -1,7 +1,7 @@
 // age.cc
 // 6/1/2014 jichi
 // See: http://bbs.sumisora.org/read.php?tid=11044256
-// See ATCode: http://capita.tistory.com/m/post/255
+// See also ATCode: http://capita.tistory.com/m/post/255
 #include "engine/model/age.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
@@ -70,9 +70,14 @@ bool attach() // attach scenario
 
 /** Public class */
 
-bool ARCGameEngine::attach()
+bool ARCGameEngine::attach() { return ScenarioHook::attach(); }
+
+QString ARCGameEngine::textFilter(const QString &text, int role)
 {
-  return ScenarioHook::attach();
+  Q_UNUSED(role);
+  QString ret = text;
+  ret = ret.replace(L'\ufffd', L'\u2015');
+  return ret;
 }
 
 // EOF

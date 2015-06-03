@@ -9,12 +9,14 @@ class ARCGameEngine : public EngineModel
 {
   SK_EXTEND_CLASS(ARCGameEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
 public:
   ARCGameEngine() //BlockingAttribute|SingleThreadAttribute)
   {
     name = "EmbedARCGameEngine";
     matchFiles << "AGERC.DLL"; // the process name is AGE.EXE.
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
   }
 };
 
