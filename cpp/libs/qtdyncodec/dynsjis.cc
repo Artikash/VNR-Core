@@ -14,6 +14,7 @@ class DynamicShiftJISCodecPrivate
 {
 public:
   QTextCodec *codec; // sjis codec
+  QString text; // already saved characters
 
   explicit DynamicShiftJISCodecPrivate(QTextCodec *codec)
     : codec(codec)
@@ -22,10 +23,21 @@ public:
       codec = QTextCodec::codecForName("Shift_JIS");
   }
 
-  void clear()
-  {
-  }
+  QByteArray encode(const QString &text);
+  QString decode(const QByteArray &data) const;
 };
+
+QByteArray DynamicShiftJISCodecPrivate::encode(const QString &text)
+{
+  QByteArray ret;
+  return ret;
+}
+
+QString DynamicShiftJISCodecPrivate::decode(const QByteArray &data) const
+{
+  QString ret;
+  return ret;
+}
 
 /** Public class */
 
@@ -36,30 +48,18 @@ DynamicShiftJISCodec::DynamicShiftJISCodec(QTextCodec *codec)
 DynamicShiftJISCodec::~DynamicShiftJISCodec() { delete d_; }
 
 int DynamicShiftJISCodec::size() const
-{
-  return 0;
-}
+{ return d_->text.size(); }
 
 bool DynamicShiftJISCodec::isEmpty() const
-{
-  return true;
-}
+{ return d_->text.isEmpty(); }
 
 void DynamicShiftJISCodec::clear()
-{
-}
+{ d_->text.clear(); }
 
 QByteArray DynamicShiftJISCodec::encode(const QString &text) const
-{
-  QByteArray ret;
-  return ret;
-}
+{ return d_->encode(text); }
 
 QString DynamicShiftJISCodec::decode(const QByteArray &data) const
-{
-  QString ret;
-  return ret;
-}
-
+{ return d_->decode(data); }
 
 // EOF
