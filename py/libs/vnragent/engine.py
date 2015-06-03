@@ -11,14 +11,6 @@ import os
 from glob import glob
 from sakurakit.skdebug import dprint
 
-# TODO: Apply this transformation for all paths at Python side
-def _complete_path(path):
-  """Repair remote path by padding leading '\\'
-  @param  path  unicode
-  @return  unicode  path
-  """
-  return '\\' + path if path and path[0] == '\\' else path
-
 class Engine:
   def __init__(self, name='', wideChar=False, regionLocked=False, vnrlocale=False, **kwargs):
     self.name = name # str
@@ -68,13 +60,13 @@ class EngineFinder:
     @param  relpath  unicode
     @return  bool
     """
-    return bool(self.dirpath and glob(_complete_path(os.path.join(self.dirpath, relpath))))
+    return bool(self.dirpath and glob(os.path.join(self.dirpath, relpath)))
 
   def _exists(self, relpath):
     """
     @param  relpath  unicode
     @return  bool
     """
-    return bool(self.dirpath) and os.path.exists(_complete_path(os.path.join(self.dirpath, relpath)))
+    return bool(self.dirpath) and os.path.exists(os.path.join(self.dirpath, relpath))
 
 # EOF
