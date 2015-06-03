@@ -1574,9 +1574,9 @@ class MainObject(QObject):
   def openRunningGame(self, verbose=True):
     d = self.__d
     gm = d.gameManager
-    if gm.currentGame():
-      growl.warn(my.tr("Please close the current game first before opening new games"))
-      return
+    #if gm.currentGame():
+    #  growl.warn(my.tr("Please close the current game first before opening new games"))
+    #  return
     g = gm.findRunningGame()
     if g:
       dprint("find running game")
