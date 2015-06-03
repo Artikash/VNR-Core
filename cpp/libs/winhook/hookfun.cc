@@ -58,9 +58,9 @@ public:
     jmpCode[0] = s1_jmp_;
     *(DWORD *)(jmpCode + 1) = (DWORD)code_ - (address_ + jmp_ins_size);
     if (instructionSize_ > jmp_ins_size)
-      ::memset(jmpCode, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
+      ::memset(jmpCode + jmp_ins_size, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
 
-    bool ok = winhook::protected_memcpy((LPVOID)address_, jmpCode, instructionSize_);
+    bool ok = winhook::csmemcpy((LPVOID)address_, jmpCode, instructionSize_);
     delete jmpCode;
     return ok;
   }
@@ -68,7 +68,7 @@ public:
   bool unhook() const // assume is valid
   {
     //assert(valid());
-    return winhook::protected_memcpy((LPVOID)address_, code_ + jmp_ins_size, instructionSize_);
+    return winhook::csmemcpy((LPVOID)address_, code_ + jmp_ins_size, instructionSize_);
   }
 };
 

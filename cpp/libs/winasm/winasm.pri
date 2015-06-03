@@ -6,7 +6,10 @@ DEFINES += WITH_LIB_WINASM
 
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/winasmdef.h
+HEADERS += \
+  $$PWD/winasm.h \
+  $$PWD/winasmdef.h \
+  $$PWD/winasmutil.h
 #SOURCES += $$PWD/winasm.cc
 }
 

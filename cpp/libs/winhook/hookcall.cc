@@ -11,7 +11,7 @@ ulong replace_call(ulong addr, ulong newop)
 {
   ulong oldop = addr + jmp_ins_size + *(DWORD *)addr;
   DWORD val = newop - addr - jmp_ins_size;
-  if (!protected_memcpy((LPVOID)addr, &val, sizeof(DWORD)))
+  if (!csmemcpy((LPVOID)addr, &val, sizeof(DWORD)))
     return 0;
   return oldop;
 }
