@@ -3,7 +3,6 @@
 // http://en.wikipedia.org/wiki/Shift_JIS
 #include "qtdyncodec/dynsjis.h"
 #include <QtCore/QTextCodec>
-#include <QDebug>
 
 #ifdef __clang__
 # pragma GCC diagnostic ignored "-Wlogical-op-parentheses"
@@ -177,7 +176,6 @@ wchar_t DynamicShiftJISCodecPrivate::decodeChar(wchar_t ch1, wchar_t ch2) const
     i = (ch1 - 0xf0) * 255 + ch2 - 1
       + 47 * (4 * 16 + 4 - 1)
       + 255 * 2;
-
   if (i != std::wstring::npos && i < text.size())
     return text[i];
   return 0;

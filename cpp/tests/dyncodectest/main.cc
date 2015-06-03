@@ -16,15 +16,16 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 int main()
 {
   DynamicShiftJISCodec codec;
-  QString t = QString::fromStdWString(L"可爱");
+  QString t = QString::fromWCharArray(L"可爱");
   QByteArray d = codec.encode(t);
   qDebug() << "encode:";
   qDebug() << t;
   qDebug() << d.size();
   qDebug() << d.toHex();
-  t = codec.decode(d);
+  QString s = codec.decode(d);
   qDebug() << "decode:";
-  qDebug() << t.size();
-  qDebug() << t;
+  qDebug() << s.size();
+  qDebug() << s;
+  qDebug() << (t == s);
   return 0;
 }
