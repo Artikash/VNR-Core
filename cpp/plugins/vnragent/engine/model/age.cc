@@ -7,7 +7,11 @@
 #include "engine/enginedef.h"
 #include "engine/engineutil.h"
 #include "memdbg/memsearch.h"
+#include "disasm/disasm.h"
+#include "winasm/winasmdef.h"
+#include "winasm/winasmutil.h"
 #include "winhook/hookcode.h"
+#include "winhook/hookfun.h"
 #include <qt_windows.h>
 
 #define DEBUG "age"
@@ -66,11 +70,144 @@ bool attach() // attach scenario
 }
 
 } // namespace ScenarioHook
+
+namespace Patch
+{
+
+/**
+ *  Disable annoying message box popups
+ *  Sample game: 神のラプソディ
+ *  Example popup images: http://capita.tistory.com/108
+ *
+ *  My logic:
+ *  1. Find the address of the first sjis message.
+ *  2. Find the address when it is used as parameter of push
+ *  3. Find the second call after the push
+ *  4. Find the function being called
+ *  5. Hijack the called function with a dummy msgbox
+ *
+ *  Sample code region for messages:
+ *
+ *  - Search: データが壊れています
+ *    SJIS: 8366815b835e82aa89f382ea82c482a282dc82b7
+ *  Found two matches.
+ *  The second match is right, which is after zeros
+ *  006162F8  54 2E 42 49 4E 00 00 00 00 00 00 00 00 00 00 00  T.BIN...........
+ *  00616308  83 66 81 5B 83 5E 82 AA 89 F3 82 EA 82 C4 82 A2  データが壊れてい
+ *  00616318  82 DC 82 B7 81 44 0A 8D C4 83 43 83 93 83 58 83  ます．.再インス・
+ *  00616328  67 81 5B 83 8B 82 B5 82 C4 82 AD 82 BE 82 B3 82  gールしてくださ・
+ *  00616338  A2 81 44 0A 0A 00 00 00 45 78 69 74 0D 0A 00 00  ｢．.....Exit....
+ *
+ *  0061840B  5B 28 32 2D 31 29 0D 0A 00 8A D6 90 94 81 46 4C  [(2-1)...関数：L
+ *  0061841B  6F 61 64 44 61 74 61 20 83 47 83 89 81 5B 81 46  oadData エラー：
+ *  0061842B  83 66 81 5B 83 5E 82 AA 89 F3 82 EA 82 C4 82 A2  データが壊れてい
+ *  0061843B  82 DC 82 B7 81 44 0D 0A 00 8A D6 90 94 81 46 4C  ます．...関数：L
+ *  0061844B  6F 61 64 44 61 74 61 20 83 47 83 89 81 5B 81 46  oadData エラー：
+ *  0061845B  43 52 43 83 47 83 89 81 5B 28 31 2D 32 29 0D 0A  CRCエラー(1-2)..
+ *  0061846B  00 8A D6 90 94 81 46 4C 6F 61 64 44 61 74 61 20  .関数：LoadData
+ *  0061847B  83 47 83 89 81 5B 81 46 43 52 43 83 47 83 89 81  エラー：CRCエラ・
+ *  0061848B  5B 28 31 2D 31 29 0D 0A 00 00 00 00 00 8A D6 90  [(1-1).......関・
+ *  0061849B  94 81 46 4C 6F 61 64 44 61 74 61 20 83 47 83 89  煤FLoadData エラ
+ *
+ *  - Search: プログラムを続行しますか？
+ *    SJIS: 8376838d834f8389838082f091b18d7382b582dc82b782a98148
+ *  0061599E  83 76 83 8D 83 4F 83 89 83 80 82 F0 91 B1 8D 73  プログラムを続行
+ *  006159AE  82 B5 82 DC 82 B7 82 A9 81 48 0A 0A 92 86 8E 7E  しますか？..中止
+ *  006159BE  81 46 83 76 83 8D 83 4F 83 89 83 80 82 F0 8F 49  ：プログラムを終
+ *  006159CE  97 B9 82 B5 82 DC 82 B7 81 44 0A 8D C4 8E 8E 8D  了します．.再試・
+ *  006159DE  73 81 46 82 E0 82 A4 88 EA 93 78 82 B1 82 CC 83  s：もう一度この・
+ *  006159EE  52 83 7D 83 93 83 68 82 F0 8E C0 8D 73 82 B5 82  Rマンドを実行し・
+ *  006159FE  DC 82 B7 81 44 0A 20 20 20 20 20 20 20 20 28 82  ﾜす．.        (・
+ *
+ *  00411DA9   8D7E 08          LEA EDI,DWORD PTR DS:[ESI+0x8]
+ *  00411DAC   68 08636100      PUSH .00616308  ; jichi: msg pushed here
+ *  00411DB1   68 00040000      PUSH 0x400
+ *  00411DB6   57               PUSH EDI
+ *  00411DB7   E8 945EFFFF      CALL .00407C50
+ *  00411DBC   83C4 0C          ADD ESP,0xC
+ *  00411DBF   6A 05            PUSH 0x5
+ *  00411DC1   57               PUSH EDI
+ *  00411DC2   8B96 64EA0500    MOV EDX,DWORD PTR DS:[ESI+0x5EA64]
+ *  00411DC8   52               PUSH EDX
+ *  00411DC9   8BCE             MOV ECX,ESI
+ *  00411DCB   E8 2017FFFF      CALL .004034F0  ; jichi: popup done here
+ *  00411DD0   8985 A4F8FFFF    MOV DWORD PTR SS:[EBP-0x75C],EAX
+ *  00411DD6   83F8 01          CMP EAX,0x1
+ *  00411DD9   75 1F            JNZ SHORT .00411DFA
+ *  00411DDB   33C0             XOR EAX,EAX
+ *  00411DDD   8985 F8F7FFFF    MOV DWORD PTR SS:[EBP-0x808],EAX
+ *  00411DE3   8985 7CF8FFFF    MOV DWORD PTR SS:[EBP-0x784],EAX
+ */
+namespace Private {
+
+  // My own msgbox function to hook
+  int msgbox(const char *text, const char *caption, uint type)
+  {
+    Q_UNUSED(text);
+    Q_UNUSED(caption);
+    if (type == MB_RETRYCANCEL)
+      return IDRETRY;
+    return 0;
+  }
+
+  // Return the second call address between start and stop addresses
+  ulong find_call(ulong start, ulong stop)
+  {
+    for (ulong addr = start, size = ::disasm((LPCVOID)start); size && addr < stop; addr += size) {
+      if (*(BYTE *)addr == s1_call_)
+        return addr;
+      size = ::disasm((LPCVOID)addr);
+    }
+    return 0;
+  };
+} // namespace Private
+bool removePopups()
+{
+  ulong startAddress, stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return false;
+
+  // hexstr: データが壊れています．
+  // Prepend 00 at the beginning
+  const char *msg = "\x00\x83\x66\x81\x5b\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xa2\x82\xdc\x82\xb7\x81\x44";
+  ulong addr = MemDbg::findBytes(msg, 1 + ::strlen(msg+1), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr++; // skip the leading zero
+
+  addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
+  if (!addr)
+    return false;
+
+  ulong limit = addr + 100;  // 0x00411DCB - 0x00411DAC = 31
+  addr = Private::find_call(addr, limit);
+  if (!addr)
+    return false;
+  addr += ::disasm((LPCVOID)addr); // skip the current call instruction
+  addr = Private::find_call(addr, limit); // find second call
+  if (!addr)
+    return false;
+
+  addr = winasm::get_jmp_absaddr(addr);
+  return winhook::replace_fun(addr, (ulong)Private::msgbox);
+}
+
+} // namespace Patch
+
 } // unnamed namespace
 
 /** Public class */
 
-bool ARCGameEngine::attach() { return ScenarioHook::attach(); }
+bool ARCGameEngine::attach()
+{
+  if (!ScenarioHook::attach())
+    return false;
+  if (Patch::removePopups())
+    DOUT("remove popups succeed");
+  else
+    DOUT("remove popups FAILED");
+  return true;
+}
 
 QString ARCGameEngine::textFilter(const QString &text, int role)
 {

@@ -15,11 +15,13 @@ HEADERS += \
   $$PWD/hookcode.h \
   $$PWD/hookdef.h \
   $$PWD/hookfun.h \
+  $$PWD/hookutil.h \
   $$PWD/hookutil_p.h
 SOURCES += \
   $$PWD/hookcall.cc \
   $$PWD/hookcode.cc \
   $$PWD/hookfun.cc \
+  $$PWD/hookutil.cc \
   $$PWD/hookutil_p.cc
 }
 

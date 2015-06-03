@@ -34,15 +34,6 @@ inline void set_call_ins(byte *data, ulong address)
 }
 
 /**
- *  Overwrite data at the target with the source data in the code region.
- *  @param  dst  target address to modify
- *  @param  src  address of the source data to copy
- *  @param  size  size of the source data to copy
- *  @return   if success
- */
-bool protected_memcpy(void *dst, const void *src, size_t size);
-
-/**
  *  Fix the jump and all instructionsin code originally at oldaddr to newaddr.
  *  @param  code  code data to modify
  *  @param  codesize  number of bytes in code
