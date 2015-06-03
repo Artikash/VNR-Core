@@ -19,7 +19,7 @@ class TahScriptManager
 
   // - Construction -
 public:
-  explicit TahScriptManager();
+  TahScriptManager();
   ~TahScriptManager();
 
   // Initialization

@@ -8,6 +8,7 @@ SUBDIRS += test
 SUBDIRS += \
   avtest \
   cctest \
+  dyncodectest \
   hanjatest \
   hanviettest \
   hashtest \

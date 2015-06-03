@@ -17,7 +17,7 @@ class HanVietPhraseDictionary
 
   // - Construction -
 public:
-  explicit HanVietPhraseDictionary();
+  HanVietPhraseDictionary();
   ~HanVietPhraseDictionary();
 
   // Initialization

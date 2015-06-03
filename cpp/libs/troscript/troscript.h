@@ -16,7 +16,7 @@ class TranslationOutputScriptPerformer
 
   // - Construction -
 public:
-  explicit TranslationOutputScriptPerformer();
+  TranslationOutputScriptPerformer();
   ~TranslationOutputScriptPerformer();
 
   // Initialization

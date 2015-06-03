@@ -19,7 +19,7 @@ class HanjaConverter
 public:
   typedef std::function<void (size_t start, size_t len, const wchar_t *hanja)> collect_fun_t;
 
-  explicit HanjaConverter();
+  HanjaConverter();
   ~HanjaConverter();
 
   // Initialization

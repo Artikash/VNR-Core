@@ -21,7 +21,7 @@ class AVRecorder
 public:
   static bool init();
 
-  explicit AVRecorder();
+  AVRecorder();
   ~AVRecorder();
   AVRecorderSettings *settings() const;
 

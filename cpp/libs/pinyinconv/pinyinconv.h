@@ -16,7 +16,7 @@ class PinyinConverter
 
   // - Construction -
 public:
-  explicit PinyinConverter();
+  PinyinConverter();
   ~PinyinConverter();
 
   // Initialization

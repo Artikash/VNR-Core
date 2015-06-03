@@ -16,7 +16,7 @@ class TranslationDecoder
 
   // - Construction -
 public:
-  explicit TranslationDecoder();
+  TranslationDecoder();
   ~TranslationDecoder();
 
   // Initialization
