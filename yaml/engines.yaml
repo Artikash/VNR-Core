@@ -52,13 +52,13 @@ gc:
   - Vanillaware GC
 
 embed:
+  - ARCGameEngine
   - SiglusEngine2
   - System43+
   #- AMUSE CRAFT
   #- BGI
   #- Elf
   #- CIRCUS
-  #- Eushully
   #- Majiro
   #- Majiro2
   #- SideB
@@ -166,6 +166,7 @@ simple:
   - Debonosu
   - EAGLS
   - Elf
+  - EmbedARCGameEngine
   - EmbedSiglusEngine
   - EmbedSystem43
   - Eushully # renamed
@@ -344,6 +345,7 @@ char:
   - sceCccSJIStoUTF8
   - sceCccSJIStoUTF16
   # Embed
+  - EmbedARCGameEngine
   - EmbedSystem43
   # Engines
   - 2RM
@@ -541,6 +543,7 @@ focus:
   - 5pb2
   - 5pb3
   - Adobe Flash 10
+  - ARCGameEngine
   - BootupA # not for 仏蘭西少女 though
   - BootupW
   - BootupLstrA
@@ -548,6 +551,7 @@ focus:
   - CatSystem2
   - CatSystem3
   - EAGLS
+  - EmbedARCGameEngine
   - EmbedSiglusEngine
   - FocasLens
   - HorkEye

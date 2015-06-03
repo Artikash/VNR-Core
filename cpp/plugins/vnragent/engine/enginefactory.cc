@@ -11,6 +11,7 @@
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
 //#include "engine/model/sideb.h"
+#include "engine/model/age.h"
 #include "engine/model/siglus.h"
 #include "engine/model/system4.h"
 #include <boost/foreach.hpp>
@@ -25,6 +26,7 @@ EngineController *EngineFactory::createEngine()
   static EngineModel *models[] = { // sort reversely
     new System4Engine
     , new SiglusEngine
+    , new ARCGameEngine
     //, new BGIEngine
     //, new CircusEngine
     //, new ElfEngine

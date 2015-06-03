@@ -7,23 +7,6 @@
 
 WINHOOK_BEGIN_NAMESPACE
 
-// Helper structs
-//struct fun_stack
-//{
-//  //ulong address;    // the input hooked address
-//  ulong eflags;     // pushaf
-//  ulong edi,        // pushad
-//        esi,
-//        ebp,
-//        esp,
-//        ebx,
-//        edx,
-//        ecx,        // this
-//        eax;        // 0x28
-//  ulong retaddr;    // return address
-//  ulong args[1];    // first argument at runtime
-//};
-
 // FIXME: move_code not invoked, and hence the first a few instruction of the function cannot be jmp/call
 /**
  *  Replace the old function definition with the new one
