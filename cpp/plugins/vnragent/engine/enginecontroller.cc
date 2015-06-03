@@ -173,7 +173,11 @@ EngineController *EngineController::instance() { return D::globalInstance; }
 EngineController::EngineController(EngineModel *model)
   : d_(new D(model))
 {
-  setEncoding(model->wideChar ? ENC_UTF16 : ENC_SJIS);
+  switch (model->encoding) {
+  case EngineModel::Utf16Encoding: setEncoding(ENC_UTF16); break;
+  case EngineModel::Utf8Encoding: setEncoding(ENC_UTF8); break;
+  default: setEncoding(ENC_SJIS);
+  }
 }
 
 EngineController::~EngineController() { delete d_; }

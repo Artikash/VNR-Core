@@ -14,6 +14,7 @@ public:
   ARCGameEngine() //BlockingAttribute|SingleThreadAttribute)
   {
     name = "EmbedARCGameEngine";
+    dynamicEncoding = true;
     matchFiles << "AGERC.DLL"; // the process name is AGE.EXE.
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;

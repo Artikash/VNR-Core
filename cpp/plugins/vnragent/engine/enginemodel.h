@@ -10,18 +10,26 @@ class EngineModel
 {
   SK_CLASS(EngineModel)
 public:
+  enum Encoding {
+    AsciiEncoding = 0,
+    Utf16Encoding,
+    Utf8Encoding,
+  };
+
   EngineModel()
     : name(nullptr)
-    , wideChar(false)
-    , matchFunction(nullptr)
-    , attachFunction(nullptr)
-    , detachFunction(nullptr)
-    , textFilterFunction(nullptr)
-    , translationFilterFunction(nullptr)
+    , encoding(AsciiEncoding)   // scenario thread encoding
+    , dynamicEncoding(false)    // whether use dynamic codec to fix ascii text
+    , matchFunction(nullptr)    // determine whether apply engine
+    , attachFunction(nullptr)   // apply the engine
+    , detachFunction(nullptr)   // remove the applied engine
+    , textFilterFunction(nullptr)   // fix scenario text before sending out
+    , translationFilterFunction(nullptr)    // fix translation text before sending out
   {}
 
   const char *name;
-  bool wideChar;
+  Encoding encoding;
+  bool  dynamicEncoding;
 
   QStringList matchFiles; // files existing in the game directory
 
