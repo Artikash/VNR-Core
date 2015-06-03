@@ -427,6 +427,34 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   return 0;
 }
 
+bool iterCallerAddress(const address_fun_t &callback, DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
+{
+  enum { PatternSize = 4 };
+  const DWORD size = upperBound - lowerBound - PatternSize;
+  const DWORD fun = (DWORD)funcAddr;
+  // Example function call:
+  // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
+  //WCHAR str[0x40];
+  const DWORD mask = sigMask(sig);
+  for (DWORD i = offset; i < size; i++)
+    if (*(WORD *)(lowerBound + i) == word_call) {
+      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      if (t >= lowerBound && t <= upperBound - PatternSize) {
+        if (*(DWORD *)t == fun)
+          //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
+          //OutputConsole(str);
+          for (DWORD j = i ; j > i - reverseLength; j--)
+            if ((*(DWORD *)(lowerBound + j) & mask) == sig
+                && !callback(lowerBound + j))
+              return false;
+
+      } else
+        i += 6;
+    }
+  //OutputConsole(L"Find call and entry failed.");
+  return true;
+}
+
 DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
   enum { PatternSize = 4 };
@@ -499,6 +527,15 @@ DWORD findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t u
   if (addr)
     while (byte_int3 == *(BYTE *)++addr);
   return addr;
+}
+
+bool iterCallerAddressAfterInt3(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  auto callback = [&fun](dword_t addr) -> bool {
+    while (byte_int3 == *(BYTE *)++addr); // skip leading int3
+    return fun(addr);
+  };
+  return iterCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
 }
 
 DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)

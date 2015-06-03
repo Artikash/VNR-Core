@@ -5,6 +5,7 @@
 // 4/20/2014 jichi
 
 #include "memdbg/memdbg.h"
+#include <functional>
 
 MEMDBG_BEGIN_NAMESPACE
 
@@ -13,6 +14,9 @@ enum { MaximumFunctionSize = 0x800 };
 
 /// Offset added to the beginning of the searched address
 enum { MemoryPaddingOffset = 0x1000 };
+
+///  Iterate address and return false if abort iteration.
+typedef std::function<bool (dword_t)> address_fun_t;
 
 /**
  *  Return the absolute address of the caller function
@@ -36,6 +40,10 @@ dword_t findLastCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerB
 dword_t findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 
 dword_t findMultiCallerAddress(dword_t funcAddr, const dword_t funcInsts[], dword_t funcInstCount, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+
+// Return false if return early, and true if iterate all elements
+bool iterCallerAddress(const address_fun_t &fun, dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+bool iterCallerAddressAfterInt3(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 
 /**
  *  Return the absolute address of the long jump (not short jump) instruction address.
