@@ -21,9 +21,12 @@ public:
   explicit DynamicShiftJISCodec(QTextCodec *sjis = nullptr);
   ~DynamicShiftJISCodec();
 
+  static int capacity(); // maximum allowed number of characters
+
   ///  Return the number of current characters
   int size() const;
   bool isEmpty() const;
+  bool isFull() const;
 
   // Clear cached codec
   void clear();

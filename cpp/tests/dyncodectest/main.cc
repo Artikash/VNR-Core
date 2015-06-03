@@ -16,21 +16,15 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 int main()
 {
   DynamicShiftJISCodec codec;
-
-  QString t = QString::fromStdWString(L"\u76ee");
-  //QString t = QString::fromStdWString(L"\u899a");
-  //QTextCodec *c = QTextCodec::codecForName("euc-kr");
-  QTextCodec *c = QTextCodec::codecForName("latin1");
-  qDebug() << c;
-  //QTextEncoder *e = c->makeEncoder(QTextCodec::ConvertInvalidToNull);
-  QTextEncoder *e = c->makeEncoder();
-  QByteArray b = e->fromUnicode(t);
+  QString t = QString::fromStdWString(L"可爱");
+  QByteArray d = codec.encode(t);
+  qDebug() << "encode:";
   qDebug() << t;
-  qDebug() << b.size();
-  qDebug() << QString(b);
-  qDebug() << encodable(t[0], e);
-
-  QChar ch(0x76ee);
-  qDebug() << QTextCodec::codecForName("euc-kr")->makeEncoder()->fromUnicode(&ch, 1);
+  qDebug() << d.size();
+  qDebug() << d.toHex();
+  t = codec.decode(d);
+  qDebug() << "decode:";
+  qDebug() << t.size();
+  qDebug() << t;
   return 0;
 }
