@@ -71,6 +71,104 @@ bool attach() // attach scenario
 
 } // namespace ScenarioHook
 
+namespace OtherHook {
+namespace Private {
+  /**
+   *  Find the caller of two GetGlyphOutlineA in the middle.
+   *  Sample game: 神のラプソディ
+   *
+   *  0046E173   FF15 2C406100    CALL DWORD PTR DS:[0x61402C]             ; gdi32.GetGlyphOutlineA
+   *  0046E1F8   FF15 2C406100    CALL DWORD PTR DS:[0x61402C]             ; gdi32.GetGlyphOutlineA
+   *
+   *  The two GetGlyphOutlineA are in the same function that are at the end of all GetGlyphOutlineA
+   *
+   *  0046DBCE   CC               INT3
+   *  0046DBCF   CC               INT3
+   *  0046DBD0   55               PUSH EBP
+   *  0046DBD1   8BEC             MOV EBP,ESP
+   *  0046DBD3   81EC 98000000    SUB ESP,0x98
+   *  0046DBD9   A1 80D36600      MOV EAX,DWORD PTR DS:[0x66D380]
+   *  0046DBDE   33C5             XOR EAX,EBP
+   *  0046DBE0   8945 FC          MOV DWORD PTR SS:[EBP-0x4],EAX
+   *  0046DBE3   53               PUSH EBX
+   *  0046DBE4   56               PUSH ESI
+   *  0046DBE5   8B75 1C          MOV ESI,DWORD PTR SS:[EBP+0x1C]
+   *  0046DBE8   8BD9             MOV EBX,ECX
+   *  0046DBEA   8B83 0C040000    MOV EAX,DWORD PTR DS:[EBX+0x40C]
+   *  0046DBF0   57               PUSH EDI
+   *  0046DBF1   33FF             XOR EDI,EDI
+   *  0046DBF3   33D2             XOR EDX,EDX
+   *  0046DBF5   33C9             XOR ECX,ECX
+   *
+   *  Regsiters:
+   *  EAX 00000002
+   *  ECX 01F54C9C
+   *  EDX 00000002
+   *  EBX 028BDD10  ; jichi: text is here in ebx
+   *  ESP 0012F240
+   *  EBP 0012F2A8
+   *  ESI 01F54C9C
+   *  EDI 00000092
+   *  EIP 0046DBD0 .0046DBD0
+   *
+   *  Runtime stack:
+   *  0012F240   00454A3A  RETURN to .00454A3A from .0046DBD0
+   *  0012F244   00000092
+   *  0012F248   00000002
+   *  0012F24C   00000002
+   *  0012F250   FFFFFFF5
+   *  0012F254   00000013
+   *  0012F258   028BDD10   ; jichi: text is here
+   *  0012F25C   00000001
+   *  0012F260   00000000
+   *  0012F264   01F40020
+   *  0012F268   00000000
+   *  0012F26C   00000016
+   *  0012F270   00000013
+   */
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QByteArray data_; // persistent storage, which makes this function not thread-safe
+
+    // All threads including character names are linked together
+    enum { role = Engine::OtherRole, sig = Engine::OtherThreadSignature };
+
+    LPCSTR text = (LPCSTR)s->stack[6]; // arg6
+
+    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    s->stack[6] = (ulong)data_.constData(); // arg2
+    return true;
+  }
+  ulong search()
+  {
+    ulong startAddress, stopAddress;
+    if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+      return 0;
+    ulong ret = 0,
+          lastCall = 0;
+    auto fun = [&ret, &lastCall](ulong caller, ulong call) -> bool {
+      if (call - lastCall == 133) { // 0x0046e1f8 - 0x0046e173 = 133
+        ret = caller;
+        return false; // stop iteration
+      }
+      lastCall = call;
+      return true; // continue iteration
+    };
+    MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetGlyphOutlineA, startAddress, stopAddress);
+    return ret;
+  }
+
+} // namespace Private
+
+bool attach() // attach scenario
+{
+  ulong addr = Private::search();
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+}
+} // namespace OtherHook
+
 namespace Patch
 {
 
@@ -202,6 +300,10 @@ bool ARCGameEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
+  if (OtherHook::attach())
+    DOUT("other text found");
+  else
+    DOUT("other text NOT FOUND");
   if (Patch::removePopups())
     DOUT("remove popups succeed");
   else
