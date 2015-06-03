@@ -144,13 +144,15 @@ namespace Private {
     ulong startAddress, stopAddress;
     if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
       return 0;
-    ulong ret = 0;
-    ulong lastAddr = 0;
-    auto fun = [&lastAddr, &ret](ulong addr) -> bool {
-      if (lastAddr == addr)
-        ret = addr;
-      lastAddr = addr;
-      return true; // iterate all elements
+    ulong ret = 0,
+          lastCall = 0;
+    auto fun = [&ret, &lastCall](ulong caller, ulong call) -> bool {
+      if (call - lastCall == 133) { // 0x0046e1f8 - 0x0046e173 = 133
+        ret = caller;
+        return false; // stop iteration
+      }
+      lastCall = call;
+      return true; // continue iteration
     };
     MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetGlyphOutlineA, startAddress, stopAddress);
     return ret;

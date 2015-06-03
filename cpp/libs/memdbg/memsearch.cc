@@ -427,7 +427,7 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   return 0;
 }
 
-bool iterCallerAddress(const address_fun_t &callback, DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
+bool iterCallerAddress(const address2_fun_t &callback, DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
   enum { PatternSize = 4 };
   const DWORD size = upperBound - lowerBound - PatternSize;
@@ -444,9 +444,11 @@ bool iterCallerAddress(const address_fun_t &callback, DWORD funcAddr, DWORD sig,
           //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
           //OutputConsole(str);
           for (DWORD j = i ; j > i - reverseLength; j--)
-            if ((*(DWORD *)(lowerBound + j) & mask) == sig
-                && !callback(lowerBound + j))
-              return false;
+            if ((*(DWORD *)(lowerBound + j) & mask) == sig) {
+              if (!callback(lowerBound + j, lowerBound + i))
+                return false;
+              break;
+            }
 
       } else
         i += 6;
@@ -509,10 +511,12 @@ DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD u
           //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
           //OutputConsole(str);
           for (DWORD j = i ; j > i - reverseLength; j--)
-            if ((*(DWORD *)(lowerBound + j) & mask) == sig) // Fun entry 1.
+            if ((*(DWORD *)(lowerBound + j) & mask) == sig) { // Fun entry 1.
               //swprintf(str,L"Entry: 0x%.8X",lowerBound + j);
               //OutputConsole(str);
               ret = lowerBound + j;
+              break;
+            }
 
       } else
         i += 6;
@@ -529,11 +533,11 @@ DWORD findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t u
   return addr;
 }
 
-bool iterCallerAddressAfterInt3(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
 {
-  auto callback = [&fun](dword_t addr) -> bool {
+  auto callback = [&fun](dword_t addr, dword_t call) -> bool {
     while (byte_int3 == *(BYTE *)++addr); // skip leading int3
-    return fun(addr);
+    return fun(addr, call);
   };
   return iterCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
 }
