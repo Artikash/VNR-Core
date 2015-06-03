@@ -13,6 +13,16 @@ from sakurakit.skdebug import dprint
 
 ENGINE_YAML = os.path.join(os.path.dirname(__file__), 'engines.yaml')
 
+# TODO: Apply this transformation for all paths at Python side
+def _complete_path(path):
+  """Repair remote path by padding leading '\\'
+  @param  path  unicode
+  @return  unicode  path
+  """
+  if path and len(path) > 2 and path[0] == '\\' and path[1] != '\\':
+    path = '\\' + path
+  return path
+
 @memoized
 def get_engine_data():
   import yaml
@@ -25,6 +35,7 @@ def match(pid=0, path=''):
   @return  Engine or None
   """
   from engine import Engine, EngineFinder
+  path = _complete_path(path)
   finder = EngineFinder(pid=pid, exepath=path)
   for eng in get_engine_data():
     if finder.eval(eng['exist']):
