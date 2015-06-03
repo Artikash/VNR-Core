@@ -16,7 +16,8 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 int main()
 {
   DynamicShiftJISCodec codec;
-  QString t = QString::fromWCharArray(L"可爱");
+  char data[] = "\x80\x10\x00\x00";
+  QString t = QString::fromWCharArray((wchar_t *)data);
   QByteArray d = codec.encode(t);
   qDebug() << "encode:";
   qDebug() << t;
