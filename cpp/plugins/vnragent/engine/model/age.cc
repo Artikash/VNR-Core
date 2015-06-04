@@ -138,6 +138,8 @@ namespace Private {
     enum { role = Engine::OtherRole, sig = Engine::OtherThreadSignature };
 
     LPCSTR text = (LPCSTR)s->stack[6]; // arg6
+    if (!text || ::strlen(text) <= 2) // skip single character
+      return true;
 
     data_ = EngineController::instance()->dispatchTextA(text, sig, role);
     s->stack[6] = (ulong)data_.constData(); // arg2
