@@ -7,6 +7,7 @@
 #include "engine/enginedef.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackfuns.h"
+#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "disasm/disasm.h"
 #include "winasm/winasmdef.h"
@@ -315,6 +316,7 @@ bool ARCGameEngine::attach()
     DOUT("remove popups succeed");
   else
     DOUT("remove popups FAILED");
+  HijackManager::instance()->attachFunction((DWORD)::CreateFontIndirectA);
   return true;
 }
 
