@@ -7,50 +7,26 @@
 
 namespace Hijack {
 
-// Function type definitions
-typedef DWORD (WINAPI * GetGlyphOutlineA_fun_t)(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
-typedef BOOL (WINAPI * GetTextExtentPoint32A_fun_t)(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize);
+#define DEF_FUN(_fun, _return, ...) \
+  typedef _return (WINAPI *_fun##_fun_t)(__VA_ARGS__); \
+  extern _fun##_fun_t old##_fun; \
+  _return WINAPI new##_fun(__VA_ARGS__);
+
+  DEF_FUN(CreateFontIndirectA, HFONT, const LOGFONTA *lplf)
+  DEF_FUN(CreateFontIndirectW, HFONT, const LOGFONTW *lplf)
+
+  DEF_FUN(CreateFontA, HFONT, int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
+  DEF_FUN(CreateFontW, HFONT, int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
+
+  DEF_FUN(GetGlyphOutlineA, DWORD, HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
+  DEF_FUN(GetGlyphOutlineW, DWORD, HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
+
+  DEF_FUN(GetTextExtentPoint32A, BOOL, HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
+  DEF_FUN(GetTextExtentPoint32W, BOOL, HDC hdc, LPCWSTR lpString, int cchString, LPSIZE lpSize)
+
+#undef DEF_FUN
 
 // Global variables
-extern GetGlyphOutlineA_fun_t oldGetGlyphOutlineA;
-extern GetTextExtentPoint32A_fun_t oldGetTextExtentPoint32A;
-
-// - GDI32 (text) -
-
-DWORD WINAPI newGetGlyphOutlineA(
-  _In_  HDC hdc,
-  _In_  UINT uChar,
-  _In_  UINT uFormat,
-  _Out_ LPGLYPHMETRICS lpgm,
-  _In_  DWORD cbBuffer,
-  _Out_ LPVOID lpvBuffer,
-  _In_  const MAT2 *lpmat2
-);
-
-//DWORD WINAPI newGetGlyphOutlineW(
-//  _In_  HDC hdc,
-//  _In_  UINT uChar,
-//  _In_  UINT uFormat,
-//  _Out_ LPGLYPHMETRICS lpgm,
-//  _In_  DWORD cbBuffer,
-//  _Out_ LPVOID lpvBuffer,
-//  _In_  const MAT2 *lpmat2
-//);
-
-BOOL WINAPI newGetTextExtentPoint32A(
-  _In_  HDC hdc,
-  _In_  LPCSTR lpString,
-  _In_  int cchString,
-  _Out_ LPSIZE lpSize
-);
-
-//BOOL WINAPI newGetTextExtentPoint32W(
-//  _In_  HDC hdc,
-//  _In_  LPCWSTR lpString,
-//  _In_  int cchString,
-//  _Out_ LPSIZE lpSize
-//);
-//
 
 } // namespace Hijack
 

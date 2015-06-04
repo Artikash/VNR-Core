@@ -33,8 +33,14 @@ public:
 HijackManagerPrivate::HijackManagerPrivate()
 {
 #define ADD_FUN(_f) funs[(ulong)::_f] = FunctionInfo(#_f, (ulong *)&Hijack::old##_f, (ulong)Hijack::new##_f);
+  ADD_FUN(CreateFontA)
+  ADD_FUN(CreateFontW)
+  ADD_FUN(CreateFontIndirectA)
+  ADD_FUN(CreateFontIndirectW)
   ADD_FUN(GetGlyphOutlineA)
+  //ADD_FUN(GetGlyphOutlineW)
   ADD_FUN(GetTextExtentPoint32A)
+  //ADD_FUN(GetTextExtentPoint32W)
 #undef ADD_FUN
 }
 

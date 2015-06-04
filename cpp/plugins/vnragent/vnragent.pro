@@ -107,7 +107,6 @@ SOURCES += \
   hijack/hijackfuns.cc \
   hijack/hijackmanager.cc \
   hijack/hijackmodule.cc \
-  hijack/hijackmodule_gdi32.cc \
   hijack/hijackmodule_kernel32.cc \
   hijack/hijackmodule_user32.cc \
   hijack/hijackhelper.cc \
