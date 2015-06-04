@@ -78,6 +78,8 @@ gui:
   - GetGlyphOutlineW
   - GetTextExtentPoint32A
   - GetTextExtentPoint32W
+  - GetTextExtentExPointA
+  - GetTextExtentExPointW
   - TextOutA
   - TextOutW
   - TabbedTextOutA
@@ -333,6 +335,7 @@ char:
   - GetCharABCWidthsA
   - GetGlyphOutlineA
   - GetTextExtentPoint32A
+  - GetTextExtentExPointA
   - TextOutA
   - TabbedTextOutA
   - lstrlenA
@@ -466,6 +469,7 @@ wchar:
   - GetCharABCWidthsW
   - GetGlyphOutlineW
   - GetTextExtentPoint32W
+  - GetTextExtentExPointW
   - TextOutW
   - TabbedTextOutW
   - lstrlenW
