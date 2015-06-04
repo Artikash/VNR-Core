@@ -427,6 +427,7 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   return 0;
 }
 
+#ifndef MEMDBG_NO_STL
 bool iterCallerAddress(const address2_fun_t &callback, DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
   enum { PatternSize = 4 };
@@ -456,6 +457,15 @@ bool iterCallerAddress(const address2_fun_t &callback, DWORD funcAddr, DWORD sig
   //OutputConsole(L"Find call and entry failed.");
   return true;
 }
+bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  auto callback = [&fun](dword_t addr, dword_t call) -> bool {
+    while (byte_int3 == *(BYTE *)++addr); // skip leading int3
+    return fun(addr, call);
+  };
+  return iterCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
+}
+#endif // MEMDBG_NO_STL
 
 DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
@@ -531,15 +541,6 @@ DWORD findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t u
   if (addr)
     while (byte_int3 == *(BYTE *)++addr);
   return addr;
-}
-
-bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
-{
-  auto callback = [&fun](dword_t addr, dword_t call) -> bool {
-    while (byte_int3 == *(BYTE *)++addr); // skip leading int3
-    return fun(addr, call);
-  };
-  return iterCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
 }
 
 DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)

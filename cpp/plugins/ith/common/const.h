@@ -11,6 +11,7 @@
 enum HookFunType {
   HF_Null = -1
   , HF_GetTextExtentPoint32A
+  , HF_GetTextExtentExPointA
   , HF_GetGlyphOutlineA
   , HF_ExtTextOutA
   , HF_TextOutA
@@ -20,6 +21,7 @@ enum HookFunType {
   , HF_DrawTextExA
   //, HF_lstrlenA
   , HF_GetTextExtentPoint32W
+  , HF_GetTextExtentExPointW
   , HF_GetGlyphOutlineW
   , HF_ExtTextOutW
   , HF_TextOutW
@@ -34,12 +36,14 @@ enum HookFunType {
 // jichi 10/14/2014
 #define HOOK_GDI_FUNCTION_LIST \
   GetTextExtentPoint32A \
+  , GetTextExtentExPointA \
   , GetGlyphOutlineA \
   , ExtTextOutA \
   , TextOutA \
   , TabbedTextOutA \
   , GetCharABCWidthsA \
   , GetTextExtentPoint32W \
+  , GetTextExtentExPointW \
   , GetGlyphOutlineW \
   , ExtTextOutW \
   , TextOutW \

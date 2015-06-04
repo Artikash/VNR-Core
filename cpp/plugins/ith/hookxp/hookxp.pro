@@ -22,6 +22,8 @@ INCLUDEPATH += ../hook
 #DEFINES += ITH_WINE
 #DEFINES += ITH_SYNC_PIPE
 
+DEFINES += MEMDBG_NO_STL
+
 ## Libraries
 
 LIBS    += -lkernel32 -luser32 -lgdi32
