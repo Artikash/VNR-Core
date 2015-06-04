@@ -1,5 +1,5 @@
 #pragma once
-// hijackfuncs.h
+// hijackmodule.h
 // 1/27/2013 jichi
 
 namespace Hijack {

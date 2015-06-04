@@ -2,7 +2,7 @@
 // 5/1/2014 jichi
 #include "hijack/hijackdriver.h"
 #include "hijack/hijackhelper.h"
-#include "hijack/hijackfuncs.h"
+#include "hijack/hijackmodule.h"
 #include "hijack/hijacksettings.h"
 #include <QtCore/QTimer>
 

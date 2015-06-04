@@ -32,8 +32,8 @@ public:
 
   bool isFull() const { return text.size() == Capacity; }
 
-  QByteArray encode(const wchar_t *text, size_t length);
-  QString decode(const char *data, size_t length) const;
+  QByteArray encode(const wchar_t *text, size_t length, bool *dynamic);
+  QString decode(const char *data, size_t length, bool *dynamic) const;
 
 private:
   QByteArray encodeChar(wchar_t ch);
@@ -42,7 +42,7 @@ private:
 
 // Encode
 
-QByteArray DynamicShiftJISCodecPrivate::encode(const wchar_t *text, size_t length)
+QByteArray DynamicShiftJISCodecPrivate::encode(const wchar_t *text, size_t length, bool *dynamic)
 {
   QByteArray ret;
   for (size_t i = 0; i < length; i++) {
@@ -52,8 +52,11 @@ QByteArray DynamicShiftJISCodecPrivate::encode(const wchar_t *text, size_t lengt
     else {
       QChar qch(ch);
       QByteArray data = codec->fromUnicode(&qch, 1);
-      if (data.size() == 1 && (!data[0] || data[0] == '?')) // failed to decode
+      if (data.size() == 1 && (!data[0] || data[0] == '?')) { // failed to decode
         data = encodeChar(ch);
+        if (!data.isEmpty() && dynamic)
+          *dynamic = true;
+      }
       ret.append(data);
     }
   }
@@ -123,7 +126,7 @@ QByteArray DynamicShiftJISCodecPrivate::encodeChar(wchar_t ch)
 
 // Decode
 
-QString DynamicShiftJISCodecPrivate::decode(const char *data, size_t length) const
+QString DynamicShiftJISCodecPrivate::decode(const char *data, size_t length, bool *dynamic) const
 {
   QString ret;
   for (size_t i = 0; i < length; i++) {
@@ -140,8 +143,12 @@ QString DynamicShiftJISCodecPrivate::decode(const char *data, size_t length) con
           && (ch2 != 0x7f && ch2 >= 0x40 && ch2 <= 0xfc)) {
         ret.append(codec->toUnicode(data + i - 1, 2));
       }
-      else if (wchar_t c = decodeChar(ch, ch2))
+      else if (wchar_t c = decodeChar(ch, ch2)) {
         ret.push_back(c);
+        if (dynamic)
+          *dynamic = true;
+      } else
+        ret.push_back(ch2 + (wchar_t(ch) << 8)); // preserve the original character
     }
   }
   return ret;
@@ -204,18 +211,22 @@ bool DynamicShiftJISCodec::isFull() const
 void DynamicShiftJISCodec::clear()
 { d_->text.clear(); }
 
-QByteArray DynamicShiftJISCodec::encode(const QString &text) const
+QByteArray DynamicShiftJISCodec::encode(const QString &text, bool *dynamic) const
 {
+  if (dynamic)
+    *dynamic = false;
   if (!d_->codec)
     return text.toLocal8Bit();
-  return d_->encode(reinterpret_cast<const wchar_t *>(text.utf16()), text.size());
+  return d_->encode(reinterpret_cast<const wchar_t *>(text.utf16()), text.size(), dynamic);
 }
 
-QString DynamicShiftJISCodec::decode(const QByteArray &data) const
+QString DynamicShiftJISCodec::decode(const QByteArray &data, bool *dynamic) const
 {
+  if (dynamic)
+    *dynamic = false;
   if (!d_->codec)
     return QString::fromLocal8Bit(data);
-  return d_->decode(data.constData(), data.size());
+  return d_->decode(data.constData(), data.size(), dynamic);
 }
 
 // EOF

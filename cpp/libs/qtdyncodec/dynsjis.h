@@ -31,8 +31,19 @@ public:
   // Clear cached codec
   void clear();
 
-  QByteArray encode(const QString &text) const;
-  QString decode(const QByteArray &data) const;
+  /**
+   *  @param  text
+   *  @param* dynamic  whether there are unencodable character
+   *  @return  data
+   */
+  QByteArray encode(const QString &text, bool *dynamic = nullptr) const;
+
+  /**
+   *  @param  data
+   *  @param* dynamic  whether there are undecodable character
+   *  @return  text
+   */
+  QString decode(const QByteArray &data, bool *dynamic = nullptr) const;
 };
 
 #endif // DYNSJIS_H

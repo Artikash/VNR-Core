@@ -49,6 +49,9 @@ protected:
   uint codePage() const;
   void setCodePage(uint cp);
 
+  bool isDynamicEncodingEnabled() const;
+  void setDynamicEncodingEnabled(bool t);
+
   bool attach(); ///< Invoked by load
   //bool detach(); ///< Invoked by unload
 

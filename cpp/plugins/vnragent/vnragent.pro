@@ -73,8 +73,10 @@ HEADERS += \
   engine/enginesettings.h \
   engine/engineutil.h \
   hijack/hijackdriver.h \
-  hijack/hijackfuncs.h \
-  hijack/hijackfuncs_p.h \
+  hijack/hijackfuns.h \
+  hijack/hijackmanager.h \
+  hijack/hijackmodule.h \
+  hijack/hijackmodule_p.h \
   hijack/hijackhelper.h \
   hijack/hijacksettings.h \
   window/windowdriver.h \
@@ -82,6 +84,7 @@ HEADERS += \
   window/windowhash.h \
   window/windowmanager.h \
   util/codepage.h \
+  util/dyncodec.h \
   util/location.h \
   util/msghandler.h \
   util/textutil.h \
@@ -101,15 +104,18 @@ SOURCES += \
   engine/enginefactory.cc \
   engine/engineutil.cc \
   hijack/hijackdriver.cc \
-  hijack/hijackfuncs.cc \
-  hijack/hijackfuncs_gdi32.cc \
-  hijack/hijackfuncs_kernel32.cc \
-  hijack/hijackfuncs_user32.cc \
+  hijack/hijackfuns.cc \
+  hijack/hijackmanager.cc \
+  hijack/hijackmodule.cc \
+  hijack/hijackmodule_gdi32.cc \
+  hijack/hijackmodule_kernel32.cc \
+  hijack/hijackmodule_user32.cc \
   hijack/hijackhelper.cc \
   window/windowdriver.cc \
   window/windowdriver_p.cc \
   window/windowmanager.cc \
   util/codepage.cc \
+  util/dyncodec.cc \
   util/location.cc \
   util/msghandler.cc \
   util/textutil.cc \
