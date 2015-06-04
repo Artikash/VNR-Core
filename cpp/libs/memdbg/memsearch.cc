@@ -277,7 +277,7 @@ finish:
 // Example call:
 // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
 enum : WORD {
-  word_jmp = 0x25ff
+  word_jmp = 0x25ff    // long call
   , word_call = 0x15ff // far call
 };
 /***
@@ -409,7 +409,7 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   const DWORD mask = sigMask(sig);
   for (DWORD i = offset; i < size; i++)
     if (*(WORD *)(lowerBound + i) == word_call) {
-      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      DWORD t = *(DWORD *)(lowerBound + i + 2); // 2 = sizeof(word)
       if (t >= lowerBound && t <= upperBound - PatternSize) {
         if (*(DWORD *)t == fun)
           //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
@@ -438,7 +438,7 @@ bool iterCallerAddress(const address2_fun_t &callback, DWORD funcAddr, DWORD sig
   const DWORD mask = sigMask(sig);
   for (DWORD i = offset; i < size; i++)
     if (*(WORD *)(lowerBound + i) == word_call) {
-      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      DWORD t = *(DWORD *)(lowerBound + i + 2); // 2 = sizeof(word)
       if (t >= lowerBound && t <= upperBound - PatternSize) {
         if (*(DWORD *)t == fun)
           //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
@@ -473,7 +473,7 @@ DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount,
 
   for (DWORD i = offset; i < size; i++)
     if (*(WORD *)(lowerBound + i) == word_call) {
-      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      DWORD t = *(DWORD *)(lowerBound + i + 2); // 2 = sizeof(word)
       if (t >= lowerBound && t <= upperBound - PatternSize) {
         if (*(DWORD *)t == fun)
           //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);

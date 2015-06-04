@@ -69,7 +69,7 @@ bool attach() // attach scenario
     return false;
   if (!winhook::hook_before(lastCaller, Private::hookBefore))
     return false;
-  winhook::replace_call(lastCall, (ulong)Hijack::newGetTextExtentPoint32A);
+  winhook::replace_near_call(lastCall, (ulong)Hijack::newGetTextExtentPoint32A);
   return true;
 }
 
@@ -168,8 +168,8 @@ bool attach() // attach scenario
     return false;
   if (!winhook::hook_before(thisCaller, Private::hookBefore))
     return false;
-  winhook::replace_call(thisCall, (ulong)Hijack::newGetGlyphOutlineA);
-  winhook::replace_call(prevCall, (ulong)Hijack::newGetGlyphOutlineA);
+  winhook::replace_near_call(thisCall, (ulong)Hijack::newGetGlyphOutlineA);
+  winhook::replace_near_call(prevCall, (ulong)Hijack::newGetGlyphOutlineA);
   return true;
 }
 } // namespace OtherHook
