@@ -1,10 +1,10 @@
-// hijackfuncs_user32.cc
+// hijackmodule_user32.cc
 // 1/27/2013 jichi
-#include "hijack/hijackfuncs_p.h"
+#include "hijack/hijackmodule_p.h"
 #include "window/windowdriver_p.h"
 
 // FIXME: This function is not thread-safe
-BOOL WINAPI Hijack::myTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT *prcRect)
+BOOL WINAPI Hijack::newTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT *prcRect)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
@@ -14,7 +14,7 @@ BOOL WINAPI Hijack::myTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int
 }
 
 // FIXME: This function is not thread-safe
-BOOL WINAPI Hijack::myTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm)
+BOOL WINAPI Hijack::newTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
@@ -29,7 +29,7 @@ BOOL WINAPI Hijack::myTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, H
 /*
 #include "growl.h"
 static int i = 0;
-BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
+BOOL WINAPI newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
 {
   //growl::warn(QString("%1, %2").arg(QString::number(nXStart), QString::number(nYStart)));
   int j = i++;
@@ -49,7 +49,7 @@ BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int c
 }
 */
 
-//BOOL WINAPI MyTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpString, int cchString)
+//BOOL WINAPI newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpString, int cchString)
 //{
 //  growl::warn("TextOutW");
 //  return ::TextOutW(hdc, nXStart, nYStart, lpString, cchString);
@@ -60,7 +60,7 @@ BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int c
 // See: http://stackoverflow.com/questions/1994676/hooking-directx-endscene-from-an-injected-dll
 // See: http://www.rohitab.com/discuss/topic/35950-directx9-base-hook/
 // See: http://bbs.pediy.com/showthread.php?t=85368
-//IDirect3D9* WINAPI MyDirect3DCreate9(UINT SDKVersion)
+//IDirect3D9* WINAPI newDirect3DCreate9(UINT SDKVersion)
 //{
 //  growl::warn("d3d");
 //  return ::Direct3DCreate9(SDKVersion);
@@ -69,7 +69,7 @@ BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int c
 // EOF
 
 /*
-HRESULT MyD3DXCreateFontA(
+HRESULT newD3DXCreateFontA(
   _In_ LPDIRECT3DDEVICE9 pDevice,
   _In_ INT Height,
   _In_ UINT Width,
@@ -87,7 +87,7 @@ HRESULT MyD3DXCreateFontA(
   growl::warn(L"message A");
   return ::D3DXCreateFontA(pDevice, Height, Width, Weight, MipLevels, Italic, CharSet, OutputPrecision, Quality, PitchAndFamily, pFacename, ppFont);
 }
-HRESULT MyD3DXCreateFontW(
+HRESULT newD3DXCreateFontW(
   _In_ LPDIRECT3DDEVICE9 pDevice,
   _In_ INT Height,
   _In_ UINT Width,
@@ -285,19 +285,19 @@ HRESULT MyD3DXCreateFontW(
     return TRUE;
   }
 
-int WINAPI MyMessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) {
+int WINAPI newMessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) {
   //int len = -1;
   //wchar_t *uni1 = StringToUnicode(lpText, len);
   //len = -1;
   //wchar_t *uni2 = StringToUnicode(lpCaption, len);
-  //int res = MyMessageBoxW(hWnd, uni1, uni2, uType);
+  //int res = newMessageBoxW(hWnd, uni1, uni2, uType);
   //free(uni1);
   //free(uni2);
   //return res;
   return MessageBoxA(hWnd, lpText, lpCaption, uType);
 }
 
-int WINAPI MyMessageBoxW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+int WINAPI newMessageBoxW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
 {
   //int ret = 0;
   ////if (AtlasIsLoaded()) {

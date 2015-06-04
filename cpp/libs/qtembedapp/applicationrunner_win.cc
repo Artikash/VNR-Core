@@ -26,7 +26,7 @@ public:
   QCoreApplication *app;
   WinTimer timer;
 
-  explicit ApplicationRunnerPrivate() : app(nullptr)
+  ApplicationRunnerPrivate() : app(nullptr)
   {
     timer.setSingleShot(false); // repeat
     timer.setMethod(this, &Self::processEvents);

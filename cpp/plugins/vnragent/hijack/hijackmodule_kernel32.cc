@@ -1,6 +1,6 @@
-// hijackfuncs_kernel32.cc
+// hijackmodule_kernel32.cc
 // 1/27/2013 jichi
-#include "hijack/hijackfuncs_p.h"
+#include "hijack/hijackmodule_p.h"
 
 #ifdef _MSC_VER
 # pragma warning(disable:4800) // C4800: forcing value to bool
@@ -8,7 +8,7 @@
 
 // Libraries and processes
 
-HMODULE WINAPI Hijack::myLoadLibraryA(_In_ LPCSTR lpFileName)
+HMODULE WINAPI Hijack::newLoadLibraryA(_In_ LPCSTR lpFileName)
 {
   bool loaded = ::GetModuleHandleA(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryA(lpFileName);
@@ -17,7 +17,7 @@ HMODULE WINAPI Hijack::myLoadLibraryA(_In_ LPCSTR lpFileName)
   return ret;
 }
 
-HMODULE WINAPI Hijack::myLoadLibraryW(_In_ LPCWSTR lpFileName)
+HMODULE WINAPI Hijack::newLoadLibraryW(_In_ LPCWSTR lpFileName)
 {
   bool loaded = ::GetModuleHandleW(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryW(lpFileName);
@@ -26,7 +26,7 @@ HMODULE WINAPI Hijack::myLoadLibraryW(_In_ LPCWSTR lpFileName)
   return ret;
 }
 
-HMODULE WINAPI Hijack::myLoadLibraryExA(_In_ LPCSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
+HMODULE WINAPI Hijack::newLoadLibraryExA(_In_ LPCSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
 {
   bool loaded = ::GetModuleHandleA(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryExA(lpFileName, hFile, dwFlags);
@@ -35,7 +35,7 @@ HMODULE WINAPI Hijack::myLoadLibraryExA(_In_ LPCSTR lpFileName, __reserved HANDL
   return ret;
 }
 
-HMODULE WINAPI Hijack::myLoadLibraryExW(_In_ LPCWSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
+HMODULE WINAPI Hijack::newLoadLibraryExW(_In_ LPCWSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
 {
   bool loaded = ::GetModuleHandleW(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryExW(lpFileName, hFile, dwFlags);
@@ -44,26 +44,26 @@ HMODULE WINAPI Hijack::myLoadLibraryExW(_In_ LPCWSTR lpFileName, __reserved HAND
   return ret;
 }
 
-LPVOID WINAPI Hijack::myGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
+LPVOID WINAPI Hijack::newGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
   if (LPVOID ret = getOverridingFunctionAddress(hModule, lpProcName))
     return ret;
   return ::GetProcAddress(hModule, lpProcName);
 }
 
-// Strings
-
 // EOF
 
 /*
+// Strings
+
 // Hijacking MultiByteToWideChar etc does not work
-int WINAPI Hijack::myMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
+int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
 {
   //CodePage = 936;
   return ::MultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
 }
 
-int WINAPI Hijack::myWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
+int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
 {
   //CodePage = 936;
   return ::WideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);

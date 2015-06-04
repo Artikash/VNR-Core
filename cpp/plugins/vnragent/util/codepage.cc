@@ -32,7 +32,9 @@ bool Util::charEncodable(const QChar &ch, const QTextCodec *codec)
     return false;
   if (ch.unicode() <= 127) // ignore ascii characters
     return true;
-  return codec->fromUnicode(&ch, 1) != "?";
+  QByteArray data = codec->fromUnicode(&ch, 1);
+  // Encodable if data is not '\0' and not '?'
+  return data.size() != 1 || (data[0] && data[0] != '?');
 }
 
 //bool Util::charDecodable(const QByteArray &c) const

@@ -6,7 +6,7 @@
 #include "driver/maindriver.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
-#include "hijack/hijackfuncs.h"
+#include "hijack/hijackmodule.h"
 #include "qtembedplugin/pluginmanager.h"
 #include "util/location.h"
 #include <QtCore/QCoreApplication>

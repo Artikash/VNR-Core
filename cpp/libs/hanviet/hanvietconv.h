@@ -19,7 +19,7 @@ class HanVietConverter
 
   // - Construction -
 public:
-  explicit HanVietConverter();
+  HanVietConverter();
   ~HanVietConverter();
 
   HanVietWordDictionary *wordDicionary() const;

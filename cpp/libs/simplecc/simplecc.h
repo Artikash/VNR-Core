@@ -16,7 +16,7 @@ class SimpleChineseConverter
 
   // - Construction -
 public:
-  explicit SimpleChineseConverter();
+  SimpleChineseConverter();
   ~SimpleChineseConverter();
 
   // Initialization

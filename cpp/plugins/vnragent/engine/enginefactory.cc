@@ -14,6 +14,7 @@
 #include "engine/model/age.h"
 #include "engine/model/siglus.h"
 #include "engine/model/system4.h"
+#include "windbg/util.h"
 #include <boost/foreach.hpp>
 
 #define DEBUG "enginefactory"
@@ -38,6 +39,7 @@ EngineController *EngineFactory::createEngine()
     auto p = new EngineController(m);
     if (p->match()) {
       DOUT("matched, engine =" << p->name());
+      WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
       if (p->load()) {
         DOUT("ret = true, engine =" << p->name());
         return p;

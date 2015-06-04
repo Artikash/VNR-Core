@@ -14,7 +14,6 @@ public:
   System4Engine()
   {
     name = "EmbedSystem43";
-    wideChar = false;
     matchFiles << "AliceStart.ini";
     attachFunction = &Self::attach;
   }

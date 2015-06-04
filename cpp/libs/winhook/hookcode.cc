@@ -1,5 +1,6 @@
 // hookcode.cc
 // 5/25/2015 jichi
+// Note: FlushInstructionCache is not invoked, which seems is not needed
 #include "winhook/hookcode.h"
 #include "winhook/hookutil.h"
 #include "winhook/hookutil_p.h"

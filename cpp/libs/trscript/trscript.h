@@ -16,7 +16,7 @@ class TranslationScriptPerformer
 
   // - Construction -
 public:
-  explicit TranslationScriptPerformer();
+  TranslationScriptPerformer();
   ~TranslationScriptPerformer();
 
   // Initialization

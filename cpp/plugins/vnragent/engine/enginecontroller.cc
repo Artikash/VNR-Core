@@ -10,6 +10,7 @@
 #include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
+#include "util/dyncodec.h"
 #include "util/textutil.h"
 //#include "windbg/util.h"
 #include "winhook/hookcode.h"
@@ -45,6 +46,9 @@ public:
              *decoder,
              *spaceCodec;
 
+  bool dynamicEncodingEnabled;
+  DynamicCodec *dynamicCodec;
+
   bool finalized;
 
   std::unordered_set<qint64> textHashes_; // hashes of rendered text
@@ -53,8 +57,16 @@ public:
     : model(model)
     , codePage(0)
     , encoder(nullptr), decoder(nullptr), spaceCodec(nullptr)
+    , dynamicEncodingEnabled(true)
+    , dynamicCodec(nullptr)
     , finalized(false)
   {}
+
+  ~EngineControllerPrivate()
+  {
+    if (dynamicCodec)
+      delete dynamicCodec;
+  }
 
   void finalize()
   {
@@ -96,6 +108,9 @@ private:
     //systemEncoding = "gbk";
     //systemEncoding = ENC_KSC;
     encoder = Util::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
+
+    if (model->dynamicEncoding && dynamicEncodingEnabled)
+      dynamicCodec = new DynamicCodec;
 
     DOUT("encoding =" << engineEncoding  << ", system =" << systemEncoding);
   }
@@ -147,7 +162,7 @@ public:
     return ret;
   }
 
-  QString postProcessW(const QString &text) const
+  QString adjustSpaces(const QString &text) const
   {
     if (settings.alwaysInsertsSpaces)
       return alwaysInsertSpaces(text);
@@ -173,7 +188,11 @@ EngineController *EngineController::instance() { return D::globalInstance; }
 EngineController::EngineController(EngineModel *model)
   : d_(new D(model))
 {
-  setEncoding(model->wideChar ? ENC_UTF16 : ENC_SJIS);
+  switch (model->encoding) {
+  case EngineModel::Utf16Encoding: setEncoding(ENC_UTF16); break;
+  case EngineModel::Utf8Encoding: setEncoding(ENC_UTF8); break;
+  default: setEncoding(ENC_SJIS);
+  }
 }
 
 EngineController::~EngineController() { delete d_; }
@@ -183,6 +202,18 @@ const char *EngineController::name() const { return d_->model->name; }
 
 const char *EngineController::encoding() const
 { return Util::encodingForCodePage(d_->codePage); }
+
+bool EngineController::isDynamicEncodingEnabled() const
+{ return d_->dynamicEncodingEnabled; }
+
+void EngineController::setDynamicEncodingEnabled(bool t)
+{
+  if (d_->dynamicEncodingEnabled != t) {
+    d_->dynamicEncodingEnabled = t;
+    if (t && !d_->dynamicCodec && d_->finalized && d_->model->dynamicEncoding)
+      d_->dynamicCodec = new DynamicCodec;
+  }
+}
 
 void EngineController::setCodePage(uint v)
 {
@@ -297,9 +328,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (role == Engine::OtherRole) { // skip sending text
     if (!d_->settings.textVisible[role])
       return QByteArray();
-    if (!d_->settings.translationEnabled[role])
-      return data;
-    if (!Util::needsTranslation(text))
+    if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(text))
       return data;
     repl = p->findTranslation(hash, role);
   }
@@ -359,8 +388,10 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  repl = d_->adjustSpaces(repl);
 
-  QByteArray ret = d_->encode(repl);
+  QByteArray ret = (d_->dynamicEncodingEnabled && d_->dynamicCodec) ? d_->dynamicCodec->encode(repl)
+                 : d_->encode(repl);
   if (role == Engine::OtherRole)
     d_->addTextHash(Engine::hashByteArray(ret));
   return ret;
@@ -388,10 +419,8 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (role == Engine::OtherRole) { // skip sending text
     if (!d_->settings.textVisible[role])
       return QString();
-    if (!d_->settings.translationEnabled[role])
-      return text;
-    if (!Util::needsTranslation(text))
-      return d_->postProcessW(text);
+    if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(text))
+      return d_->adjustSpaces(text);
     repl = p->findTranslation(hash, role);
   }
 
@@ -410,7 +439,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (!d_->settings.textVisible[role])
     return QString();
   if (!d_->settings.translationEnabled[role])
-    return text;
+    return d_->adjustSpaces(text);
 
   if (repl.isEmpty())
     repl = p->findTranslation(hash, role);
@@ -420,7 +449,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     if (!t.isEmpty())
       p->sendText(t, hash, signature, role, needsTranslation);
     else
-      return d_->postProcessW(text);
+      return d_->adjustSpaces(text);
   } else
     p->sendText(text, hash, signature, role, needsTranslation);
 
@@ -450,8 +479,8 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  repl = d_->adjustSpaces(repl);
 
-  repl = d_->postProcessW(repl);
   if (role == Engine::OtherRole)
     d_->addTextHash(Engine::hashWString(repl));
   return repl;

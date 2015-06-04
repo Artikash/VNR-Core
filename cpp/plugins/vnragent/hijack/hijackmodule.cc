@@ -1,7 +1,7 @@
-// hijackfuncs.cc
+// hijackmodule.cc
 // 1/27/2013 jichi
-#include "hijack/hijackfuncs.h"
-#include "hijack/hijackfuncs_p.h"
+#include "hijack/hijackmodule.h"
+#include "hijack/hijackmodule_p.h"
 #include "windbg/hijack.h"
 #include "winiter/winiterps.h"
 #include "cpputil/cpppath.h"
@@ -76,6 +76,7 @@ void Hijack::overrideModuleFunctions(HMODULE hModule)
       //dmsg(fn.functionName); // success
     }
 }
+
 
 void Hijack::restoreModuleFunctions(HMODULE hModule)
 {

@@ -6,12 +6,14 @@
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/engineutil.h"
+#include "hijack/hijackfuns.h"
 #include "memdbg/memsearch.h"
 #include "disasm/disasm.h"
 #include "winasm/winasmdef.h"
 #include "winasm/winasmutil.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
+#include "winhook/hookcall.h"
 #include <qt_windows.h>
 
 #define DEBUG "age"
@@ -47,26 +49,29 @@ namespace Private {
     return true;
   }
 
-  /**
-   *  Find the last function call of GetTextExtentPoint32A
-   *  The function call must after int3
-   */
-  inline ulong search()
-  {
-    ulong startAddress, stopAddress;
-    if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-      return 0;
-    return MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
-  }
-
 } // namespace Private
 
-bool attach() // attach scenario
+bool attach(bool hijackGDI) // attach scenario
 {
-  ulong addr = Private::search();
-  if (!addr)
+  ulong startAddress, stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return 0;
+
+  ulong lastCaller = 0,
+        lastCall = 0;
+  auto fun = [&lastCaller, &lastCall](ulong caller, ulong call) -> bool {
+    lastCaller = caller;
+    lastCall = call;
+    return true; // find last caller && call
+  };
+  MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
+  if (!lastCaller)
     return false;
-  return winhook::hook_before(addr, Private::hookBefore);
+  if (!winhook::hook_before(lastCaller, Private::hookBefore))
+    return false;
+  if (hijackGDI)
+    winhook::replace_near_call(lastCall, (ulong)Hijack::newGetTextExtentPoint32A);
+  return true;
 }
 
 } // namespace ScenarioHook
@@ -134,38 +139,43 @@ namespace Private {
     enum { role = Engine::OtherRole, sig = Engine::OtherThreadSignature };
 
     LPCSTR text = (LPCSTR)s->stack[6]; // arg6
+    if (!text || ::strlen(text) <= 2) // skip single character
+      return true;
 
     data_ = EngineController::instance()->dispatchTextA(text, sig, role);
     s->stack[6] = (ulong)data_.constData(); // arg2
     return true;
   }
-  ulong search()
-  {
-    ulong startAddress, stopAddress;
-    if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-      return 0;
-    ulong ret = 0,
-          lastCall = 0;
-    auto fun = [&ret, &lastCall](ulong caller, ulong call) -> bool {
-      if (call - lastCall == 133) { // 0x0046e1f8 - 0x0046e173 = 133
-        ret = caller;
-        return false; // stop iteration
-      }
-      lastCall = call;
-      return true; // continue iteration
-    };
-    MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetGlyphOutlineA, startAddress, stopAddress);
-    return ret;
-  }
 
 } // namespace Private
 
-bool attach() // attach scenario
+bool attach(bool hijackGDI) // attach scenario
 {
-  ulong addr = Private::search();
-  if (!addr)
+  ulong startAddress, stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return 0;
+  ulong thisCaller = 0,
+        thisCall = 0,
+        prevCall = 0;
+  auto fun = [&thisCaller, &thisCall, &prevCall](ulong caller, ulong call) -> bool {
+    if (call - prevCall == 133) { // 0x0046e1f8 - 0x0046e173 = 133
+      thisCaller = caller;
+      thisCall = call;
+      return false; // stop iteration
+    }
+    prevCall = call;
+    return true; // continue iteration
+  };
+  MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetGlyphOutlineA, startAddress, stopAddress);
+  if (!thisCaller)
     return false;
-  return winhook::hook_before(addr, Private::hookBefore);
+  if (!winhook::hook_before(thisCaller, Private::hookBefore))
+    return false;
+  if (hijackGDI) {
+    winhook::replace_near_call(thisCall, (ulong)Hijack::newGetGlyphOutlineA);
+    winhook::replace_near_call(prevCall, (ulong)Hijack::newGetGlyphOutlineA);
+  }
+  return true;
 }
 } // namespace OtherHook
 
@@ -298,9 +308,10 @@ bool removePopups()
 
 bool ARCGameEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  enum { DynamicEncoding = true };
+  if (!ScenarioHook::attach(DynamicEncoding))
     return false;
-  if (OtherHook::attach())
+  if (OtherHook::attach(DynamicEncoding))
     DOUT("other text found");
   else
     DOUT("other text NOT FOUND");

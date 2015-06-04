@@ -16,7 +16,7 @@ class TranslationEncoder
 
   // - Construction -
 public:
-  explicit TranslationEncoder();
+  TranslationEncoder();
   ~TranslationEncoder();
 
   // Initialization
