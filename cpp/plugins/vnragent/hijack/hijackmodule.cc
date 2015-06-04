@@ -2,6 +2,7 @@
 // 1/27/2013 jichi
 #include "hijack/hijackmodule.h"
 #include "hijack/hijackmodule_p.h"
+#include "hijack/hijackfuns.h"
 #include "windbg/hijack.h"
 #include "winiter/winiterps.h"
 #include "cpputil/cpppath.h"

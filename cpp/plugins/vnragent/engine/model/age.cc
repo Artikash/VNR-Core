@@ -7,6 +7,7 @@
 #include "engine/enginedef.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackfuns.h"
+#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "disasm/disasm.h"
 #include "winasm/winasmdef.h"
@@ -65,9 +66,7 @@ bool attach(bool hijackGDI) // attach scenario
     return true; // find last caller && call
   };
   MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
-  if (!lastCaller)
-    return false;
-  if (!winhook::hook_before(lastCaller, Private::hookBefore))
+  if (!lastCaller || !winhook::hook_before(lastCaller, Private::hookBefore))
     return false;
   if (hijackGDI)
     winhook::replace_near_call(lastCall, (ulong)Hijack::newGetTextExtentPoint32A);
@@ -167,9 +166,7 @@ bool attach(bool hijackGDI) // attach scenario
     return true; // continue iteration
   };
   MemDbg::iterCallerAddressAfterInt3(fun, (ulong)::GetGlyphOutlineA, startAddress, stopAddress);
-  if (!thisCaller)
-    return false;
-  if (!winhook::hook_before(thisCaller, Private::hookBefore))
+  if (!thisCaller || !winhook::hook_before(thisCaller, Private::hookBefore))
     return false;
   if (hijackGDI) {
     winhook::replace_near_call(thisCall, (ulong)Hijack::newGetGlyphOutlineA);
@@ -319,6 +316,7 @@ bool ARCGameEngine::attach()
     DOUT("remove popups succeed");
   else
     DOUT("remove popups FAILED");
+  HijackManager::instance()->attachFunction((DWORD)::CreateFontIndirectA);
   return true;
 }
 
