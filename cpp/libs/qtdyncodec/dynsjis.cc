@@ -226,6 +226,8 @@ QString DynamicShiftJISCodec::decode(const QByteArray &data, bool *dynamic) cons
     *dynamic = false;
   if (!d_->codec)
     return QString::fromLocal8Bit(data);
+  if (d_->text.empty())
+    return d_->codec->toUnicode(data);
   return d_->decode(data.constData(), data.size(), dynamic);
 }
 

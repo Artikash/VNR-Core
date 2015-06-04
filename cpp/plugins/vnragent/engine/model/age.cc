@@ -51,7 +51,7 @@ namespace Private {
 
 } // namespace Private
 
-bool attach() // attach scenario
+bool attach(bool hijackGDI) // attach scenario
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
@@ -69,7 +69,8 @@ bool attach() // attach scenario
     return false;
   if (!winhook::hook_before(lastCaller, Private::hookBefore))
     return false;
-  winhook::replace_near_call(lastCall, (ulong)Hijack::newGetTextExtentPoint32A);
+  if (hijackGDI)
+    winhook::replace_near_call(lastCall, (ulong)Hijack::newGetTextExtentPoint32A);
   return true;
 }
 
@@ -148,7 +149,7 @@ namespace Private {
 
 } // namespace Private
 
-bool attach() // attach scenario
+bool attach(bool hijackGDI) // attach scenario
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
@@ -170,8 +171,10 @@ bool attach() // attach scenario
     return false;
   if (!winhook::hook_before(thisCaller, Private::hookBefore))
     return false;
-  winhook::replace_near_call(thisCall, (ulong)Hijack::newGetGlyphOutlineA);
-  winhook::replace_near_call(prevCall, (ulong)Hijack::newGetGlyphOutlineA);
+  if (hijackGDI) {
+    winhook::replace_near_call(thisCall, (ulong)Hijack::newGetGlyphOutlineA);
+    winhook::replace_near_call(prevCall, (ulong)Hijack::newGetGlyphOutlineA);
+  }
   return true;
 }
 } // namespace OtherHook
@@ -305,9 +308,10 @@ bool removePopups()
 
 bool ARCGameEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  enum { DynamicEncoding = true };
+  if (!ScenarioHook::attach(DynamicEncoding))
     return false;
-  if (OtherHook::attach())
+  if (OtherHook::attach(DynamicEncoding))
     DOUT("other text found");
   else
     DOUT("other text NOT FOUND");
