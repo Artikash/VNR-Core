@@ -98,6 +98,7 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
   lf.lfUnderline = tm.tmUnderlined;
   lf.lfStrikeOut = tm.tmStruckOut;
   lf.lfCharSet = tm.tmCharSet;
+  lf.lfPitchAndFamily = tm.tmPitchAndFamily;
 
   customizeLogFontW(&lf);
 
