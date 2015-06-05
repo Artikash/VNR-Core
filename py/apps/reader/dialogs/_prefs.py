@@ -9033,7 +9033,9 @@ class _EngineTab(object):
 
   @memoizedproperty
   def disableInsertsSpaceButton(self):
-    ret = QtWidgets.QRadioButton(my.tr("Do not insert any spaces"))
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+        my.tr("Do not insert any spaces"),
+        tr_("default")))
     ret.toggled.connect(self._saveSpaceOptions)
     return ret
 
