@@ -630,9 +630,14 @@ class _MainObject(object):
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
+    from jaconv import jaconv
+    jaconv.setopt(macron=ss.isRomajiMacronEnabled())
+    ss.romajiMacronEnabledChanged.connect(lambda t: jaconv.setopt(macron=t))
+
     for sig in (
         ss.userIdChanged, ss.userLanguageChanged,
         ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        ss.romajiMacronEnabledChanged,
         #ss.translationSyntaxEnabledChanged,
         self.gameManager.processChanged,
         self.dataManager.termsChanged,
@@ -840,6 +845,7 @@ class _MainObject(object):
         ss.termEnabledChanged,
         ss.yueEnabledChanged,
         ss.chineseVariantChanged,
+        ss.romajiMacronEnabledChanged,
       ):
       sig.connect(ret.clearCache)
 

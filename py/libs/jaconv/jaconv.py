@@ -7,9 +7,23 @@ if __name__ == '__main__':
   sys.path.append("..")
 
 import re
+from sakurakit.skdebug import dprint
 from sakurakit.skstr import multireplacer
 from unitraits.uniconv import hira2kata
 import kanadef
+
+# Global settings
+
+OPT_NAME_MACRON = True # enable macron for English
+
+def setopt(**kwargs):
+  dprint(kwargs)
+  v = kwargs.get('macron')
+  if v is not None:
+    global OPT_NAME_MACRON
+    OPT_NAME_MACRON = v
+
+# Cached converters
 
 def _makeconverter(fr, to):
   """
@@ -118,19 +132,19 @@ def _repair_ru(text): # unicode -> unicode  repair xtu
 # http://en.wikipedia.org/wiki/Ukrainian_alphabet
 _uk_i_vowel = _ru_i_vowel + u'еї' # vowel except "і"
 _uk_consonant = _ru_consonant + u'ґ'
-_re_uk_tsu = re.compile(ur"っ([%s])" % _uk_consonant)
-_re_uk_i = re.compile(ur"(?<=[%s])і" % _uk_i_vowel)
-_re_uk_ii = re.compile(ur"[ії](і+)")
+_re_macron_uk_tsu = re.compile(ur"っ([%s])" % _uk_consonant)
+_re_macron_uk_i = re.compile(ur"(?<=[%s])і" % _uk_i_vowel)
+_re_macron_uk_ii = re.compile(ur"[ії](і+)")
 def _repair_uk(text): # unicode -> unicode  repair xtu
   """
   @param  text
   @return  unicode
   """
   if u'っ' in text:
-    text = _re_uk_tsu.sub(r'\1\1', text)
+    text = _re_macron_uk_tsu.sub(r'\1\1', text)
   if u'і' in text:
-    text = _re_uk_i.sub(u'ї', text)
-    text = _re_uk_ii.sub(ur'\1ї', text) # push i to the end
+    text = _re_macron_uk_i.sub(u'ї', text)
+    text = _re_macron_uk_ii.sub(ur'\1ї', text) # push i to the end
   return text
 
 # http://en.wikipedia.org/wiki/Greek_alphabet
@@ -235,10 +249,11 @@ def _repair_ko(text):
 
 # Names
 
-def kana2reading(text, lang):
+def kana2reading(text, lang, capital=True):
   """
   @param  text  unicode
   @param  lang  str
+  @param* capital  bool
   @return  unicode or None
   """
   if lang == 'ko':
@@ -264,11 +279,30 @@ def kana2reading(text, lang):
     text = kana2el(text)
   else:
     text = kana2romaji(text)
-  return capitalizeromaji(text)
+  if capital:
+    text = capitalizeromaji(text)
+  return text
 
-def kana2name(text, lang):
-  text = simplify_kana_name(text)
-  return kana2reading(text, lang)
+def lang_has_capital(lang): # str -> bool
+  return lang not in ('ar', 'ko', 'th')
+
+def kana2name(text, lang, macron=None):
+  """
+  @param  text  unicode
+  @param  lang  str
+  @param* macron  bool
+  @return  unicode
+  """
+  macron = lang == 'en' and (OPT_NAME_MACRON if macron is None else macron)
+  if macron:
+    text = _convert_macron_before(text)
+  text = _remove_macron(text)
+  text = kana2reading(text, lang, capital=False)
+  if macron:
+    text = _convert_macron_after(text)
+  if lang_has_capital(lang):
+    text = capitalizeromaji(text)
+  return text
 
 _re_capitalize = multireplacer({
   #' Da ': ' da ',
@@ -288,26 +322,70 @@ def capitalizeromaji(text):
   """
   return _re_capitalize(text.title())
 
-_u_prefix = u"\
+_macron_u_prefix = u"\
 おこそとのほもよろを\
 ごぞどぼぽ\
 ょ\
 ゅ\
 "
-_re_u = re.compile(ur"(?<=[%s])う" % _u_prefix)
-_o_prefix = u"とど"
-_re_o = re.compile(ur"(?<=[%s])お" % _o_prefix)
-def simplify_kana_name(text):
+_re_macron_u = re.compile(ur"(?<=[%s])う" % _macron_u_prefix)
+_macron_o_prefix = u"とど"
+_re_macron_o = re.compile(ur"(?<=[%s])お" % _macron_o_prefix)
+def _remove_macron(text):
   """
   @param  text  unicode
   @return  unicode
   """
   text = text.replace(u"ー", '')
   if text and len(text) > 3 and u'う' in text:
-    text = _re_u.sub('', text)
+    text = _re_macron_u.sub('', text)
   if text and len(text) > 3 and u'お' in text:
-    text = _re_o.sub('', text)
+    text = _re_macron_o.sub('', text)
   return text
+
+# http://en.wikipedia.org/wiki/Romanization_of_Japanese
+# http://en.wikipedia.org/wiki/Hepburn_romanization
+# http://en.wikipedia.org/wiki/Macron
+#
+# Use '〜' as intermediate character for long sound
+def _convert_macron_before(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if not text:
+    return text
+  text = text.replace(u"ー", u'〜') or text
+  if u'う' in text:
+    text = _re_macron_u.sub(u'〜', text)
+  if u'お' in text:
+    text = _re_macron_o.sub(u'〜', text)
+  return text
+
+def _make_latin_macrons():
+  ret = {
+    'a': u'ā',
+    'e': u'ē',
+    'i': u'ī',
+    'o': u'ō',
+    'u': u'ū',
+  }
+  for k,v in ret.items():
+    ret[k.upper()] = v.upper()
+  return ret
+LATIN_MACRONS = _make_latin_macrons()
+_re_macron_vowel = re.compile(u'[aeiouAEIOU]〜')
+def _re_macron_vowel_repl(m):
+  return LATIN_MACRONS[m.group()[0]]
+def _convert_macron_after(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if u'〜' not in text:
+    return text
+  text = _re_macron_vowel.sub(_re_macron_vowel_repl, text)
+  return text.replace(u'〜', '') or text
 
 if __name__ == '__main__':
   #t = u"ウェブサイトツール"
@@ -350,8 +428,19 @@ if __name__ == '__main__':
     (u'ぐりぐり', u'guriguri'),
   ]
   for k,v in l:
-    print k, kana2romaji(k), v
-    assert kana2romaji(k) == v
+    print k, kana2en(k), v
+    assert kana2en(k) == v
+
+  # Romaji with Macron
+  l = [
+    (u'さとう', u'Satō'),
+    (u'りゅうくん', u'Ryūkun'),
+    (u'ゆうま', u'Yuuma'),
+  ]
+  for k,v in l:
+    t = kana2name(k, 'en')
+    print k, t, v
+    assert t == v
 
   # Russian
   l = [
