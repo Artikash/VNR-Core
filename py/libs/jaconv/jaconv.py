@@ -7,13 +7,21 @@ if __name__ == '__main__':
   sys.path.append("..")
 
 import re
+from sakurakit.skdebug import dprint
 from sakurakit.skstr import multireplacer
 from unitraits.uniconv import hira2kata
 import kanadef
 
 # Global settings
 
-OPTION_NAME_MACRON = True # enable macron for English
+OPT_NAME_MACRON = True # enable macron for English
+
+def setopt(**kwargs):
+  dprint(kwargs)
+  v = kwargs.get('macron')
+  if v is not None:
+    global OPT_NAME_MACRON
+    OPT_NAME_MACRON = v
 
 # Cached converters
 
@@ -285,7 +293,7 @@ def kana2name(text, lang, macron=None):
   @param* macron  bool
   @return  unicode
   """
-  macron = lang == 'en' and (OPTION_NAME_MACRON if macron is None else macron)
+  macron = lang == 'en' and (OPT_NAME_MACRON if macron is None else macron)
   if macron:
     text = _convert_macron_before(text)
   text = _remove_macron(text)
@@ -425,8 +433,9 @@ if __name__ == '__main__':
 
   # Romaji with Macron
   l = [
-    (u'さいとう', u'Saitō'),
+    (u'さとう', u'Satō'),
     (u'りゅうくん', u'Ryūkun'),
+    (u'ゆうま', u'Yuuma'),
   ]
   for k,v in l:
     t = kana2name(k, 'en')

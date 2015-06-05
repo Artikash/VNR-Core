@@ -254,6 +254,14 @@ class Settings(QSettings):
 
   ## Romanization for Japanese ##
 
+  romajiMacronEnabledChanged = Signal(bool)
+  def isRomajiMacronEnabled(self):
+    return to_bool(self.value('RomajiMacron', True))
+  def setRomajiMacronEnabled(self, value):
+    if value != self.isRomajiMacronEnabled():
+      self.setValue('RomajiMacron', value)
+      self.romajiMacronEnabledChanged.emit(value)
+
   japaneseRubyInvertedChanged = Signal(bool)
   def isJapaneseRubyInverted(self):
     return to_bool(self.value('JapaneseInvertRuby'))

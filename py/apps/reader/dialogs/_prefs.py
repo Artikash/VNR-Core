@@ -2813,18 +2813,10 @@ class _MachineTranslationTab(object):
     self._createUi(q)
 
   def _createUi(self, q):
-    blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
 
+    layout.addWidget(self.optionGroup)
     layout.addWidget(self.honyakuGroup)
-    #layout.addWidget(self.correctionGroup)
-    #if 'en' not in blans:
-    #  layout.addWidget(self.tahGroup)
-
-    for lang in config.ALPHABET_LANGUAGES:
-      if lang not in blans:
-        layout.addWidget(self.optionGroup)
-        break
 
     layout.addStretch()
     q.setLayout(layout)
@@ -2911,10 +2903,27 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def optionGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.alphabetButton)
+
+    layout.addWidget(self.macronButton)
+
+    blans = settings.global_().blockedLanguages()
+    for lang in config.ALPHABET_LANGUAGES:
+      if lang not in blans:
+        layout.addWidget(self.alphabetButton)
+        break
 
     ret = QtWidgets.QGroupBox(my.tr("Machine translation options"))
     ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def macronButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s" % (
+        my.tr("Display macron during Japanese name romajization"),
+        my.tr("like this"),
+        u"佐藤（◯ Satō, ☓ Satou）"))
+    ret.setChecked(settings.global_().isRomajiMacronEnabled())
+    ret.toggled.connect(settings.global_().setRomajiMacronEnabled)
     return ret
 
   @memoizedproperty
