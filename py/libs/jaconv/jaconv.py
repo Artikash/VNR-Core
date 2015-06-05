@@ -355,7 +355,7 @@ def _convert_macron_before(text):
   @param  text  unicode
   @return  unicode
   """
-  if not text:
+  if len(text) <= 2:
     return text
   text = text.replace(u"ー", u'〜') or text
   if u'う' in text:
@@ -438,6 +438,8 @@ if __name__ == '__main__':
     (u'さとう', u'Satō'),
     (u'りゅうくん', u'Ryūkun'),
     (u'ゆうま', u'Yuuma'),
+    (u'そう', u'Sou'),
+    (u'そう', u'Sou'),
   ]
   for k,v in l:
     t = kana2name(k, 'en')
