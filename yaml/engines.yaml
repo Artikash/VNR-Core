@@ -131,6 +131,10 @@ nongui:
 
 # no repeat & no float
 simple:
+  #- EmbedARCGameEngine
+  #- EmbedBGI
+  #- EmbedSiglusEngine
+  #- EmbedSystem43
   - 2RM
   - 5pb PSP
   - 5pb1
@@ -168,9 +172,6 @@ simple:
   - Debonosu
   - EAGLS
   - Elf
-  - EmbedARCGameEngine
-  - EmbedSiglusEngine
-  - EmbedSystem43
   - Eushully # renamed
   - FELISTELLA PSP
   - GXP
@@ -349,6 +350,7 @@ char:
   - sceCccSJIStoUTF16
   # Embed
   - EmbedARCGameEngine
+  - EmbedBGI
   - EmbedSystem43
   # Engines
   - 2RM
