@@ -23,6 +23,11 @@ def setopt(**kwargs):
     global OPT_NAME_MACRON
     OPT_NAME_MACRON = v
 
+def _lang_has_capital(lang): # str -> bool
+  return lang not in ('ar', 'ko', 'th')
+def _lang_is_latin(lang): # str -> bool
+  return lang not in ('ko', 'th', 'ar', 'ru', 'uk', 'el')
+
 # Cached converters
 
 def _makeconverter(fr, to):
@@ -283,9 +288,6 @@ def kana2reading(text, lang, capital=True):
     text = capitalizeromaji(text)
   return text
 
-def lang_has_capital(lang): # str -> bool
-  return lang not in ('ar', 'ko', 'th')
-
 def kana2name(text, lang, macron=None):
   """
   @param  text  unicode
@@ -293,14 +295,14 @@ def kana2name(text, lang, macron=None):
   @param* macron  bool
   @return  unicode
   """
-  macron = lang == 'en' and (OPT_NAME_MACRON if macron is None else macron)
+  macron = _lang_is_latin(lang) and (OPT_NAME_MACRON if macron is None else macron)
   if macron:
     text = _convert_macron_before(text)
   text = _remove_macron(text)
   text = kana2reading(text, lang, capital=False)
   if macron:
     text = _convert_macron_after(text)
-  if lang_has_capital(lang):
+  if _lang_has_capital(lang):
     text = capitalizeromaji(text)
   return text
 

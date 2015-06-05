@@ -41,6 +41,7 @@ mirage.qml: ..
 share.yaml: baidu
 reader.yaml: ..
 hostcombobox.qml: .., plus the menuItems
+jaconv.py lang_
 share/mt
   mtinfo.py: ..
 reader:
