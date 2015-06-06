@@ -112,6 +112,9 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
 
   customizeLogFontW(&lf);
 
+  if (s->fontFamily.isEmpty())
+    ::GetTextFaceW(hdc_, LF_FACESIZE, lf.lfFaceName);
+
   newFont_ = Hijack::oldCreateFontIndirectW(&lf);
   oldFont_ = (HFONT)SelectObject(hdc_, newFont_);
   //DOUT("pass");
