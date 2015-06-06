@@ -71,27 +71,39 @@ void PcHooks::hookGDIFunctions()
   // 7/26/2014 jichi: Why there is no USING_SPLIT type?
 
   // gdi32.dll
-  NEW_HOOK(GetTextExtentPoint32A, s_arg2, 0,s_arg1,0, USING_STRING,  3) // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
-  NEW_HOOK(GetTextExtentExPointA, s_arg2, 0,s_arg1,0, USING_STRING,  3) // BOOL GetTextExtentExPoint(HDC hdc, LPCTSTR lpszStr, int cchString, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize);
-  NEW_HOOK(GetGlyphOutlineA,      s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
-  NEW_HOOK(ExtTextOutA,           s_arg6, 0,s_arg1,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
-  NEW_HOOK(TextOutA,              s_arg4, 0,s_arg1,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
-  NEW_HOOK(TabbedTextOutA,        s_arg4, 0,s_arg1,0, USING_STRING,  5) // LONG TabbedTextOut(HDC hDC, int X, int Y, LPCTSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin);
-  NEW_HOOK(GetCharABCWidthsA,     s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
+  NEW_HOOK(GetTextExtentPoint32A,  s_arg2, 0,s_arg1,0, USING_STRING,  3) // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
+  NEW_HOOK(GetTextExtentExPointA,  s_arg2, 0,s_arg1,0, USING_STRING,  3) // BOOL GetTextExtentExPoint(HDC hdc, LPCTSTR lpszStr, int cchString, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize);
+  NEW_HOOK(GetTabbedTextExtentA,   s_arg2, 0,s_arg1,0, USING_STRING,  3) // DWORD GetTabbedTextExtent(HDC hDC, LPCTSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions);
+  NEW_HOOK(GetCharacterPlacementA, s_arg2, 0,s_arg1,0, USING_STRING,  3) //  DWORD GetCharacterPlacement(HDC hdc, LPCTSTR lpString, int nCount, int nMaxExtent, LPGCP_RESULTS lpResults, DWORD dwFlags);
+  NEW_HOOK(GetGlyphIndicesA,       s_arg2, 0,s_arg1,0, USING_STRING,  3) // DWORD GetGlyphIndices( HDC hdc, LPCTSTR lpstr, int c, LPWORD pgi, DWORD fl);
+  NEW_HOOK(GetGlyphOutlineA,       s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
+  NEW_HOOK(ExtTextOutA,            s_arg6, 0,s_arg1,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
+  NEW_HOOK(TextOutA,               s_arg4, 0,s_arg1,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
+  NEW_HOOK(TabbedTextOutA,         s_arg4, 0,s_arg1,0, USING_STRING,  5) // LONG TabbedTextOut(HDC hDC, int X, int Y, LPCTSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin);
+  NEW_HOOK(GetCharABCWidthsA,      s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
+  NEW_HOOK(GetCharABCWidthsFloatA, s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidthsFloat(HDC hdc, UINT iFirstChar, UINT iLastChar, LPABCFLOAT lpABCF);
+  NEW_HOOK(GetCharWidth32A,        s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharWidth32(HDC hdc, UINT iFirstChar, UINT iLastChar, LPINT lpBuffer);
+  NEW_HOOK(GetCharWidthFloatA,     s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharWidthFloat(HDC hdc, UINT iFirstChar, UINT iLastChar, PFLOAT pxBuffer);
 
-  NEW_HOOK(GetTextExtentPoint32W, s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
-  NEW_HOOK(GetTextExtentExPointW, s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
-  NEW_HOOK(GetGlyphOutlineW,      s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
-  NEW_HOOK(ExtTextOutW,           s_arg6, 0,s_arg1,0, USING_UNICODE|USING_STRING, 7)
-  NEW_HOOK(TextOutW,              s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
-  NEW_HOOK(TabbedTextOutW,        s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
-  NEW_HOOK(GetCharABCWidthsW,     s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
+  NEW_HOOK(GetTextExtentPoint32W,  s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(GetTextExtentExPointW,  s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(GetTabbedTextExtentW,   s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(GetCharacterPlacementW, s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(GetGlyphIndicesW,       s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(GetGlyphOutlineW,       s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
+  NEW_HOOK(ExtTextOutW,            s_arg6, 0,s_arg1,0, USING_UNICODE|USING_STRING, 7)
+  NEW_HOOK(TextOutW,               s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
+  NEW_HOOK(TabbedTextOutW,         s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
+  NEW_HOOK(GetCharABCWidthsW,      s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
+  NEW_HOOK(GetCharABCWidthsFloatW, s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
+  NEW_HOOK(GetCharWidth32A,        s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
+  NEW_HOOK(GetCharWidthFloatA,     s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
 
   // user32.dll
-  NEW_HOOK(DrawTextA,             s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawText(HDC hDC, LPCTSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat);
-  NEW_HOOK(DrawTextExA,           s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
-  NEW_HOOK(DrawTextW,             s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
-  NEW_HOOK(DrawTextExW,           s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(DrawTextA,              s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawText(HDC hDC, LPCTSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat);
+  NEW_HOOK(DrawTextExA,            s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
+  NEW_HOOK(DrawTextW,              s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  NEW_HOOK(DrawTextExW,            s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
 //#undef _
   DPRINT("leave");
 }

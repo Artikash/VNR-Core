@@ -75,14 +75,26 @@ gui:
   # GDI32
   - ExtTextOutA
   - ExtTextOutW
+  - GetCharacterPlacementA
+  - GetCharacterPlacementW
+  - GetCharWidth32A
+  - GetCharWidth32W
+  - GetCharWidthFloatA
+  - GetCharWidthFloatW
   - GetCharABCWidthsA
   - GetCharABCWidthsW
+  - GetCharABCWidthsFloatA
+  - GetCharABCWidthsFloatW
+  - GetGlyphIndicesA
+  - GetGlyphIndicesW
   - GetGlyphOutlineA
   - GetGlyphOutlineW
   - GetTextExtentPoint32A
   - GetTextExtentPoint32W
   - GetTextExtentExPointA
   - GetTextExtentExPointW
+  - GetTabbedTextExtentA
+  - GetTabbedTextExtentW
   - TextOutA
   - TextOutW
   - TabbedTextOutA
@@ -336,8 +348,14 @@ char:
   - DrawTextA
   - DrawTextExA
   - ExtTextOutA
+  - GetCharWidth32A
+  - GetCharWidthFloatA
+  - GetCharacterPlacementA
   - GetCharABCWidthsA
+  - GetCharABCWidthsFloatA
+  - GetGlyphIndicesA
   - GetGlyphOutlineA
+  - GetTabbedTextExtentA
   - GetTextExtentPoint32A
   - GetTextExtentExPointA
   - TextOutA
@@ -471,8 +489,14 @@ wchar:
   - DrawTextW
   - DrawTextExW
   - ExtTextOutW
+  - GetCharacterPlacementW
   - GetCharABCWidthsW
+  - GetCharABCWidthsFloatW
+  - GetCharWidth32W
+  - GetCharWidthFloatW
+  - GetGlyphIndicesW
   - GetGlyphOutlineW
+  - GetTabbedTextExtentW
   - GetTextExtentPoint32W
   - GetTextExtentExPointW
   - TextOutW
