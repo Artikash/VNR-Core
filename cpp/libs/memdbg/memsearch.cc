@@ -280,8 +280,18 @@ enum : WORD {
   word_jmp = 0x25ff    // long call
   , word_call = 0x15ff // far call
 };
+
+// Modified from ITH findCallOrJmpAbs
+enum : BYTE {
+  byte_jmp = 0xe9 // long call
+  , byte_call = 0xe8 // near call
+  , byte_push_small = 0x6a // push byte operand
+  , byte_push_large = 0x68 // push operand > 0xff
+};
+
 /***
  *  Return the absolute address of op. Op takes 1 parameter.
+ *  DWORD call with absolute address.
  *
  *  @param  op  first half of the operator
  *  @param  arg1  the function address
@@ -300,7 +310,7 @@ DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, D
     if (op == *(optype *)(start + i)) {
       DWORD t = *(DWORD *)(start + i + sizeof(optype));
       if (t > start && t < stop) {
-        if (arg1 == *(argtype *)t)
+        if (arg1 == *(argtype *)t) // absolute address
           return start + i;
         else
           i += sizeof(optype) + sizeof(argtype) - 1; // == 5
@@ -309,38 +319,31 @@ DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, D
   return 0;
 }
 
-// Modified from ITH findCallOrJmpAbs
-enum : BYTE {
-  byte_call = 0xe8 // near call
-  , byte_push_small = 0x6a // push byte operand
-  , byte_push_large = 0x68 // push operand > 0xff
-};
-
 /***
  *  Return the absolute address of op. Op takes 1 address parameter.
+ *  BYTE call with relative address.
  *
  *  @param  op  first half of the operator
  *  @param  arg1  the function address
  *  @param  start address
- *  @param  stop address
  *  @param  offset  search after start address
  *  @param  range  search size
  *  @return  absolute address or 0
  */
-DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, DWORD range)
+DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD range)
 {
   typedef BYTE optype;
   typedef DWORD argtype;
 
   for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
     if (op == *(optype *)(start + i)) {
-      DWORD t = *(DWORD *)(start + i + sizeof(optype));
-      if (t > start && t < stop) {
-        if (arg1 == *(argtype *)t)
-          return start + i;
-        else
-          i += sizeof(optype) + sizeof(argtype) - 1; // == 4
-      }
+      DWORD t = *(argtype *)(start + i + sizeof(optype));
+      //if (t > start && t < stop) {
+      if (arg1 == t + start + i + sizeof(optype) + sizeof(argtype)) // relative address
+        return start + i;
+      else
+        i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+      //}
     }
   return 0;
 }
@@ -375,14 +378,17 @@ DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, D
 
 MEMDBG_BEGIN_NAMESPACE
 
-DWORD findJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+DWORD findLongJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
 { return findWordCall(word_jmp, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+DWORD findShortJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findByteCall(byte_jmp, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
 DWORD findFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
 { return findWordCall(word_call, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
 DWORD findNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
-{ return findByteCall(byte_call, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+{ return findByteCall(byte_call, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
 DWORD findPushDwordAddress(DWORD value, DWORD lowerBound, DWORD upperBound)
 {
@@ -428,6 +434,43 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
 }
 
 #ifndef MEMDBG_NO_STL
+
+bool iterWordCall(const address_fun_t &callback, WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, DWORD range)
+{
+  typedef WORD optype;
+  typedef DWORD argtype;
+
+  for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
+    if (op == *(optype *)(start + i)) {
+      DWORD t = *(DWORD *)(start + i + sizeof(optype));
+      if (t > start && t < stop) {
+        if (arg1 == *(argtype *)t // absolute address
+            && !callback(start + i))
+          return false;
+        i += sizeof(optype) + sizeof(argtype) - 1; // == 5
+      }
+    }
+  return true;
+}
+
+bool iterByteCall(const address_fun_t &callback, BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD range)
+{
+  typedef BYTE optype;
+  typedef DWORD argtype;
+
+  for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
+    if (op == *(optype *)(start + i)) {
+      DWORD t = *(argtype *)(start + i + sizeof(optype));
+      //if (t > start && t < stop) {
+      if (arg1 == t + start + i + sizeof(optype) + sizeof(argtype) // relative address
+          && !callback(start + i))
+        return false;
+      i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+      //}
+    }
+  return true;
+}
+
 bool iterCallerAddress(const address2_fun_t &callback, DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
 {
   enum { PatternSize = 4 };
@@ -465,6 +508,19 @@ bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dwo
   };
   return iterCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
 }
+
+bool iterLongJumpAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return iterWordCall(fun, word_jmp, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+bool iterShortJumpAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return iterByteCall(fun, byte_jmp, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+bool iterFarCallAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return iterWordCall(fun, word_call, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+bool iterNearCallAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return iterByteCall(fun, byte_call, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
 #endif // MEMDBG_NO_STL
 
 DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)

@@ -9,6 +9,7 @@ class ElfEngine : public EngineModel
 {
   SK_EXTEND_CLASS(ElfEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
 public:
   ElfEngine() //: Base("Elf", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute) // Need restore the old text to be freed using FreeHeap
   {
@@ -19,6 +20,7 @@ public:
     // mes.arc is the scenario
     matchFiles << "data.arc" << "effect.arc" << "mes.arc";
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
   }
 };
 

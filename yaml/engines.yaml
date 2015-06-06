@@ -583,7 +583,6 @@ focus:
   - CatSystem3
   - EAGLS
   - EmbedARCGameEngine
-  - EmbedELf
   - EmbedSiglusEngine
   - FocasLens
   - HorkEye
@@ -600,6 +599,7 @@ focus:
 # No focus:
   #- AliceRunPatch43
   #- AOS
+  #- Elf
   #- LunaSoft
   #- Majiro
   #- Malie2

@@ -29,6 +29,16 @@ typedef std::function<bool (dword_t, dword_t)> address2_fun_t;
  */
 bool iterCallerAddress(const address2_fun_t &fun, dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+
+/**
+ *  Iterate all call and caller addresses
+ *  @param  fun  the parameter is the address of the call
+ *  @return  false if return early, and true if iterate all elements
+ */
+bool iterFarCallAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
+bool iterNearCallAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
+bool iterLongJumpAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
+bool iterShortJumpAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
 #endif // MEMDBG_NO_STL
 
 /**
@@ -65,7 +75,8 @@ dword_t findMultiCallerAddress(dword_t funcAddr, const dword_t funcInsts[], dwor
  *  @param* range  the relative size to search, use lowerBound - upperBound when zero
  *  @return  the call instruction address if succeed or 0 if fail
  */
-dword_t findJumpAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
+dword_t findLongJumpAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
+dword_t findShortJumpAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
 
 /**
  *  Return the absolute address of the far call (inter-module) instruction address.
@@ -86,6 +97,10 @@ dword_t findNearCallAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperB
 ///  Default to far call
 inline dword_t findCallAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0)
 { return findFarCallAddress(funcAddr, lowerBound, upperBound, offset, range); }
+
+///  Default to long jump
+inline dword_t findJumpAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0)
+{ return findLongJumpAddress(funcAddr, lowerBound, upperBound, offset, range); }
 
 ///  Push value >= 0xff
 dword_t findPushDwordAddress(dword_t value, dword_t lowerBound, dword_t upperBound);
