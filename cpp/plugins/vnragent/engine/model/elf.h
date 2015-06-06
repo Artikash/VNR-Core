@@ -9,15 +9,18 @@ class ElfEngine : public EngineModel
 {
   SK_EXTEND_CLASS(ElfEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
 public:
   ElfEngine() //: Base("Elf", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute) // Need restore the old text to be freed using FreeHeap
   {
-    name = "Elf";
+    name = "EmbedElf";
+    dynamicEncoding = true;
     // "Silkys.exe" or AI6WIN.exe might not exist
     // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
     // mes.arc is the scenario
     matchFiles << "data.arc" << "effect.arc" << "mes.arc";
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
   }
 };
 

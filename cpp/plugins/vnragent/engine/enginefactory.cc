@@ -4,16 +4,16 @@
 
 #include "engine/enginecontroller.h"
 #include "engine/enginefactory.h"
+#include "engine/model/age.h"
+#include "engine/model/bgi.h"
+#include "engine/model/elf.h"
+#include "engine/model/siglus.h"
+#include "engine/model/system4.h"
 //#include "engine/model/circus.h"
-//#include "engine/model/elf.h"
 //#include "engine/model/eushully.h"
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
 //#include "engine/model/sideb.h"
-#include "engine/model/age.h"
-#include "engine/model/bgi.h"
-#include "engine/model/siglus.h"
-#include "engine/model/system4.h"
 #include "windbg/util.h"
 #include <boost/foreach.hpp>
 
@@ -27,6 +27,7 @@ EngineController *EngineFactory::createEngine()
   static EngineModel *models[] = { // sort reversely
     new System4Engine
     , new SiglusEngine
+    , new ElfEngine
     , new BGIEngine
     , new ARCGameEngine
     //, new CircusEngine

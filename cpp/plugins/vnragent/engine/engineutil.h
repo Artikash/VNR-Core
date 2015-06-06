@@ -54,6 +54,8 @@ inline bool getCurrentMemoryRange(unsigned long *startAddress, unsigned long *st
 unsigned long getModuleFunction(const char *moduleName, const char *funcName);
 
 bool isAddressReadable(const ulong *p);
+bool isAddressReadable(const char *p);
+bool isAddressReadable(const wchar_t *p);
 
 } // namespace Engine
 

@@ -10016,12 +10016,12 @@ static void SpecialHookElf(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD
         arg2_chara = arg1 + 4*10;
   DWORD text; //= 0; // This variable will be killed
   if (*(DWORD *)arg2_scene == 0) {
-    text = *(DWORD *)(arg2_scene + 0xc);
+    text = *(DWORD *)(arg2_scene + 4*3);
     if (!text || ::IsBadReadPtr((LPCVOID)text, 1)) // Text from scenario could be bad when open backlog while the character is speaking
       return;
     *split = 1;
   } else if (*(DWORD *)arg2_chara == 0) {
-    text = arg2_chara + 0xc;
+    text = arg2_chara + 4*3;
     *split = 2;
   } else
     return;

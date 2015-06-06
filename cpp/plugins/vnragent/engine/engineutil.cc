@@ -30,6 +30,12 @@ inline bool existsPath(const QString &path)
 bool Engine::isAddressReadable(const ulong *p)
 { return p && !::IsBadReadPtr(p, sizeof(*p)); }
 
+bool Engine::isAddressReadable(const char *p)
+{ return p && !::IsBadReadPtr(p, sizeof(*p)); }
+
+bool Engine::isAddressReadable(const wchar_t *p)
+{ return p && !::IsBadReadPtr(p, sizeof(*p)); }
+
 // - Detours -
 
 Engine::address_type Engine::replaceFunction(address_type old_addr, const_address_type new_addr)

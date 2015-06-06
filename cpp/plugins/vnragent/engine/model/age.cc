@@ -57,7 +57,6 @@ bool attach(bool hijackGDI) // attach scenario
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return 0;
-
   ulong lastCaller = 0,
         lastCall = 0;
   auto fun = [&lastCaller, &lastCall](ulong caller, ulong call) -> bool {
@@ -266,6 +265,7 @@ namespace Private {
     return 0;
   };
 } // namespace Private
+
 bool removePopups()
 {
   ulong startAddress, stopAddress;

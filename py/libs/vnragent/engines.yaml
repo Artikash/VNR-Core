@@ -19,6 +19,14 @@
   #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
   #vnrlocale: true # TODO: need a better name
 
+- name: EmbedElf # 5/31/2014
+  exist:
+    - data.arc
+    - effect.arc
+    - mes.arc
+  #encoding: sjis
+  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
+
 - name: EmbedSystem43 # 5/25/2015, compatible with System43+
   exist: AliceStart.ini
   #encoding: sjis
@@ -28,13 +36,6 @@
 #-
 #  name: CIRCUS  # 6/5/2014
 #  exist: advdata/grp/names.dat
-#  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
-#-
-#  name: Elf     # 5/31/2014
-#  exist:
-#    - data.arc
-#    - effect.arc
-#    - mes.arc
 #  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 #-
 #  name: Eushully # 6/1/2014
