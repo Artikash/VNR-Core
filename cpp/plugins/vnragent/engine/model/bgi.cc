@@ -18,7 +18,8 @@ namespace { // unnamed
 namespace ScenarioHook {
 
 namespace Private {
-  int textArgumentIndex_; // the i-th of argument on the stack holding the text
+  enum { Type1 = 1, Type2, Type3 } type_;
+  int textIndex_; // the i-th of argument on the stack holding the text
 
   /**
    *  Type 1: Sample game: FORTUNE ARTERIAL, 0x4207E0
@@ -61,18 +62,50 @@ namespace Private {
   {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
-    LPCSTR text3 = (LPCSTR)s->stack[textArgumentIndex_]; // arg2 or arg3
+    LPCSTR text = (LPCSTR)s->stack[textIndex_]; // arg2 or arg3
+    if (!text || !*text)
+      return true;
 
     // In Type 1, split = arg8
     // In Type 2, there is no arg8. However, arg8 seems to be a good split that can differenciate choice and character name
     //DWORD split = stack->args[3]; // arg4
-    DWORD split = s->stack[8]; // arg8
+    //DWORD split = s->stack[8]; // arg8
+    //auto sig = Engine::hashThreadSignature(s->stack[0], split);
+    //enum { role = Engine::UnknownRole };
 
-    auto sig = Engine::hashThreadSignature(s->stack[0], split);
-    enum { role = Engine::UnknownRole };
+    //DWORD split = s->stack[8]; // this is a good split, but usually game-specific
+    DWORD split = s->stack[0]; // retaddr
+    int role = Engine::OtherRole;
+    switch (type_) {
+    case Type3:
+      switch (s->stack[textIndex_+1]) {
+      case 1: role = Engine::ScenarioRole; break;
+      case 0:
+        if (s->stack[10] == 0x00ffffff && s->stack[10 - 3] == 1)
+         role = Engine::NameRole;
+        break;
+      } break;
+    case Type2:
+      switch (s->stack[textIndex_+1]) {
+      case 1: role = Engine::ScenarioRole; break;
+      case 0:
+        if (s->stack[12] == 0x00ffffff && s->stack[12 - 3] == 2)
+         role = Engine::NameRole;
+        break;
+      } break;
+    case Type1:
+      switch (s->stack[textIndex_+1]) {
+      case 1: role = Engine::ScenarioRole; break;
+      case 0:
+        if (s->stack[12] == 0x00ffffff && s->stack[12 - 3] == 1)
+         role = Engine::NameRole;
+        break;
+      } break;
+    }
 
-    data_ = EngineController::instance()->dispatchTextA(text3, sig, role);
-    s->stack[textArgumentIndex_] = (DWORD)data_.constData();
+    auto sig = Engine::hashThreadSignature(role, split);
+    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    s->stack[textIndex_] = (DWORD)data_.constData();
     return true;
   }
 
@@ -197,7 +230,7 @@ namespace Private {
     //};
     //enum { hook_offset = 0x4207e0 - 0x420822 }; // distance to the beginning of the function
 
-    const BYTE bytes[] = {
+    const BYTE bytes[] = { // 0fafcbf7e9c1fa058bc2c1e81f03d08bfa85ff
        0x0f,0xaf,0xcb,   // 004208de  |. 0fafcb         imul ecx,ebx
        0xf7,0xe9,        // 004208e1  |. f7e9           imul ecx
        0xc1,0xfa, 0x05,  // 004208e3  |. c1fa 05        sar edx,0x5
@@ -319,7 +352,7 @@ namespace Private {
   static ulong search2(ulong startAddress, ulong stopAddress)
   {
     //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
-    const BYTE bytes[] = {
+    const BYTE bytes[] = { // 3c207d750fbec083c0fe83f806776a
       0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
       0x7d, 0x75,      // 011d4d33  |. 7d 75          jge short sekachu.011d4daa
       0x0f,0xbe,0xc0,  // 011d4d35  |. 0fbec0         movsx eax,al
@@ -500,7 +533,7 @@ namespace Private {
   static ulong search3(ulong startAddress, ulong stopAddress)
   {
     //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
-    const BYTE bytes[] = {
+    const BYTE bytes[] = { // 3c207d580fbec083c0fe83f806774d
       0x3c, 0x20,       // 01312d8e   3c 20          cmp al,0x20     ; jichi: pattern starts
       0x7d, 0x58,       // 01312d90   7d 58          jge short 蒼の彼方.01312dea
       0x0f,0xbe,0xc0,   // 01312d92   0fbec0         movsx eax,al
@@ -530,17 +563,21 @@ bool attach()
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return 0;
   ulong addr = Private::search3(startAddress, stopAddress);
-  if (addr)
-    Private::textArgumentIndex_ = 2; // use arg2, name = "BGI2";
-  else if (addr = Private::search2(startAddress, stopAddress))
-    Private::textArgumentIndex_ = 3; // use arg3, name = "BGI2";
-  else if (addr = Private::search1(startAddress, stopAddress))
-    Private::textArgumentIndex_ = 3; // use arg3, name = "BGI";
-  else
+  if (addr) {
+    Private::type_ = Private::Type3;
+    Private::textIndex_ = 2; // use arg2, name = "BGI2";
+  } else if (addr = Private::search2(startAddress, stopAddress)) {
+    Private::type_ = Private::Type2;
+    Private::textIndex_ = 3; // use arg3, name = "BGI2";
+  } else if (addr = Private::search1(startAddress, stopAddress)) {
+    Private::type_ = Private::Type1;
+    Private::textIndex_ = 3; // use arg3, name = "BGI";
+  } else
     return false;
   if (!winhook::hook_before(addr, Private::hookBefore))
     return false;
   HijackManager::instance()->attachFunction((DWORD)::TextOutA);
+  DOUT("type =" << Private::type_);
   return true;
 }
 } // namespace ScenarioHook

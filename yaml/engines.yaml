@@ -53,6 +53,7 @@ gc:
 
 embed:
   - ARCGameEngine
+  - BGI
   - BGI2
   - SiglusEngine2
   - SiglusEngine3
