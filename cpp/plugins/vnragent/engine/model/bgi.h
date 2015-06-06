@@ -13,6 +13,7 @@ public:
   BGIEngine()
   {
     name = "EmbedBGI";
+    dynamicEncoding = true;
     matchFiles << "BGI.*";
     attachFunction = &Self::attach;
   }

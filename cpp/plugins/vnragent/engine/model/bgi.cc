@@ -5,9 +5,13 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
+#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+
+#define DEBUG "bgi"
+#include "sakurakit/skdebug.h"
 
 namespace { // unnamed
 
@@ -68,7 +72,7 @@ namespace Private {
     enum { role = Engine::UnknownRole };
 
     data_ = EngineController::instance()->dispatchTextA(text3, sig, role);
-    s->stack[1 + textArgumentIndex_] = (DWORD)data_.constData();
+    s->stack[textArgumentIndex_] = (DWORD)data_.constData();
     return true;
   }
 
@@ -533,8 +537,11 @@ bool attach()
   else if (addr = Private::search1(startAddress, stopAddress))
     Private::textArgumentIndex_ = 3; // use arg3, name = "BGI";
   else
-    return 0;
-  return winhook::hook_before(addr, Private::hookBefore);
+    return false;
+  if (!winhook::hook_before(addr, Private::hookBefore))
+    return false;
+  HijackManager::instance()->attachFunction((DWORD)::TextOutA);
+  return true;
 }
 } // namespace ScenarioHook
 } // unnamed namespace

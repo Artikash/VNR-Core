@@ -53,7 +53,9 @@ gc:
 
 embed:
   - ARCGameEngine
+  - BGI2
   - SiglusEngine2
+  - SiglusEngine3
   - System43+
   #- AMUSE CRAFT
   #- BGI

@@ -41,6 +41,16 @@ HijackManagerPrivate::HijackManagerPrivate()
   //ADD_FUN(GetGlyphOutlineW)
   ADD_FUN(GetTextExtentPoint32A)
   //ADD_FUN(GetTextExtentPoint32W)
+  //ADD_FUN(GetTextExtentExPointA)
+  //ADD_FUN(GetTextExtentExPointW)
+  //ADD_FUN(GetCharABCWidthsA)
+  //ADD_FUN(GetCharABCWidthsW)
+  ADD_FUN(TextOutA)
+  //ADD_FUN(TextOutW)
+  //ADD_FUN(ExtTextOutA)
+  //ADD_FUN(ExtTextOutW)
+  //ADD_FUN(TabbedTextOutA)
+  //ADD_FUN(TabbedTextOutW)
 #undef ADD_FUN
 }
 

@@ -22,6 +22,16 @@
   DEF_FUN(GetGlyphOutlineW)
   DEF_FUN(GetTextExtentPoint32A)
   DEF_FUN(GetTextExtentPoint32W)
+  DEF_FUN(GetTextExtentExPointA)
+  DEF_FUN(GetTextExtentExPointW)
+  DEF_FUN(GetCharABCWidthsA)
+  DEF_FUN(GetCharABCWidthsW)
+  DEF_FUN(TextOutA)
+  DEF_FUN(TextOutW)
+  DEF_FUN(ExtTextOutA)
+  DEF_FUN(ExtTextOutW)
+  //DEF_FUN(TabbedTextOutA)
+  //DEF_FUN(TabbedTextOutW)
 #undef DEF_FUN
 
 /** Helper */
@@ -225,37 +235,61 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 /** Text */
 
+#define DECODE_TEXT(lpString, cchString, ...) \
+{ \
+  /*DCFontSwitcher fs(hdc);*/ \
+  if(cchString > 1) \
+    if (auto p = DynamicCodec::instance()) { \
+      bool dynamic; \
+      QByteArray data(lpString, cchString); \
+      QString text = p->decode(data, &dynamic); \
+      if (dynamic && !text.isEmpty()) { \
+        LPCWSTR lpString = (LPCWSTR)text.utf16(); \
+        cchString = text.size(); \
+        return (__VA_ARGS__); \
+      } \
+    } \
+}
+
+#define DECODE_CHAR(uChar, ...) \
+{ \
+  /*DCFontSwitcher fs(hdc);*/ \
+  if (uChar > 0xff) \
+    if (auto p = DynamicCodec::instance()) { \
+      bool dynamic; \
+      UINT ch = p->decodeChar(uChar, &dynamic); \
+      if (dynamic && ch) { \
+        uChar = ch; \
+        return (__VA_ARGS__); \
+      } \
+    } \
+}
+
 DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
 {
-  //DCFontSwitcher fs(hdc);
+  //DOUT("pass");
 #ifdef HIJACK_GDI_TEXT
-  if (uChar > 0xff)
-    if (auto p = DynamicCodec::instance()) {
-      bool dynamic;
-      UINT ch = p->decodeChar(uChar, &dynamic);
-      if (dynamic && ch)
-        return oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
-    }
+  DECODE_CHAR(uChar, oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2))
 #endif // HIJACK_GDI_TEXT
   return oldGetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
 }
 
 BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
 {
-  //DCFontSwitcher fs(hdc);
-#ifdef HIJACK_GDI_TEXT
   //DOUT("pass");
-  if(cchString > 1)
-    if (auto p = DynamicCodec::instance()) {
-      bool dynamic;
-      QByteArray data(lpString, cchString);
-      QString text = p->decode(data, &dynamic);
-      if (dynamic && !text.isEmpty())
-        return oldGetTextExtentPoint32W(hdc, (LPCWSTR)text.utf16(), text.size(), lpSize);
-    }
+#ifdef HIJACK_GDI_TEXT
+  DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
 #endif // HIJACK_GDI_TEXT
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
 }
 
-// EOF
+BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
+{
+  //DOUT("pass");
+#ifdef HIJACK_GDI_TEXT
+  DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
+#endif // HIJACK_GDI_TEXT
+  return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
+}
 
+// EOF
