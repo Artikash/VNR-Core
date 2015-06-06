@@ -12,9 +12,8 @@ from glob import glob
 from sakurakit.skdebug import dprint
 
 class Engine:
-  def __init__(self, name='', wideChar=False, regionLocked=False, vnrlocale=False, **kwargs):
+  def __init__(self, name='', regionLocked=False, vnrlocale=False, **kwargs):
     self.name = name # str
-    self.wideChar = wideChar # bool
     self.regionLocked = regionLocked # bool
     self.vnrlocale = vnrlocale # bool
 

@@ -85,6 +85,11 @@ class _TranslatorManager(object):
 
   normalizeText = staticmethod(textutil.normalize_punct)
 
+  def clearCache(self):
+    for it in self.allTranslators:
+      it.clearCache()
+    dprint("pass")
+
   def getAlignEnabled(self, key): return self.alignEnabled.get(key) or False # str -> bool
   def setAlignEnabled(self, key, t): self.alignEnabled[key] = t # str, bool ->
 
@@ -128,11 +133,13 @@ class _TranslatorManager(object):
         self.retransSettings[engine] = s
         s[key] = value
         settings.global_().setRetranslatorSettings(self.retransSettings)
+        #self.clearCache()
     except:
       s = self._createDefaultRetransSettings(engine)
       s[key] = value
       self.retransSettings[engine] = s
       settings.global_().setRetranslatorSettings(self.retransSettings)
+      #self.clearCache()
 
   def postprocessCharacterset(self, text, language):
     if self.yueEnabled and language.startswith('zh') and self.online:
@@ -499,9 +506,7 @@ class TranslatorManager(QObject):
     #  sig.emit()
 
   def clearCache(self):
-    for it in self.__d.allTranslators:
-      it.clearCache()
-    dprint("pass")
+    self.__d.clearCache()
 
   ## Properties ##
 

@@ -6,22 +6,22 @@
 # - regionLocked: false  game require Japanese locale or not
 
 - name: EmbedARCGameEngine # 6/2/2015, compatible with ARCGameEngine
-  wideChar: false
   exist: AGERC.DLL
+  #encoding: sjis
 
 - name: EmbedSiglusEngine # 5/25/2014, supposed to be SiglusEngine2
-  wideChar: true
   exist: Siglus*.exe
+  #encoding: utf16
 
 - name: EmbedBGI # 5/11/2014 jichi
-  wideChar: false
   exist: BGI.*
+  #encoding: sjis
   #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
   #vnrlocale: true # TODO: need a better name
 
 - name: EmbedSystem43 # 5/25/2015, compatible with System43+
-  wideChar: false
   exist: AliceStart.ini
+  #encoding: sjis
 
 # EOF
 
