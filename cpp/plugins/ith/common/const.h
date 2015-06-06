@@ -10,25 +10,37 @@
 // I need to recompile all of the dlls to modify the order.
 enum HookFunType {
   HF_Null = -1
-  , HF_GetTextExtentPoint32A
-  , HF_GetTextExtentExPointA
-  , HF_GetGlyphOutlineA
-  , HF_ExtTextOutA
-  , HF_TextOutA
-  , HF_TabbedTextOutA // 4/30/2015: Added to support とある人妻のネトラレ事情
-  , HF_GetCharABCWidthsA
   , HF_DrawTextA
   , HF_DrawTextExA
+  , HF_ExtTextOutA
+  , HF_GetCharABCWidthsA
+  , HF_GetCharABCWidthsFloatA
+  , HF_GetCharWidth32A
+  , HF_GetCharWidthFloatA
+  , HF_GetCharacterPlacementA
+  , HF_GetGlyphIndicesA
+  , HF_GetGlyphOutlineA
+  , HF_GetTabbedTextExtentA
+  , HF_GetTextExtentPoint32A
+  , HF_GetTextExtentExPointA
+  , HF_TabbedTextOutA // 4/30/2015: Added to support とある人妻のネトラレ事情
+  , HF_TextOutA
   //, HF_lstrlenA
-  , HF_GetTextExtentPoint32W
-  , HF_GetTextExtentExPointW
-  , HF_GetGlyphOutlineW
-  , HF_ExtTextOutW
-  , HF_TextOutW
-  , HF_TabbedTextOutW
-  , HF_GetCharABCWidthsW
   , HF_DrawTextW
   , HF_DrawTextExW
+  , HF_ExtTextOutW
+  , HF_GetCharABCWidthsW
+  , HF_GetCharABCWidthsFloatW
+  , HF_GetCharWidth32W
+  , HF_GetCharWidthFloatW
+  , HF_GetCharacterPlacementW
+  , HF_GetTabbedTextExtentW
+  , HF_GetGlyphIndicesW
+  , HF_GetGlyphOutlineW
+  , HF_GetTextExtentPoint32W
+  , HF_GetTextExtentExPointW
+  , HF_TabbedTextOutW
+  , HF_TextOutW
   //, HF_lstrlenW
   , HookFunCount // 14
 };
