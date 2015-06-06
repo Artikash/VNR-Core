@@ -471,7 +471,7 @@ class _MainObject(object):
         #dm.gameFilesChanged, # duplicate with gameItemsChanged
         dm.gameItemsChanged,
         #self.gameManager.processChanged,   # this would cause recursion
-        ):
+      ):
       sig.connect(ret.clearTranslationCache)
 
     # These should be moved to dataManager. Put here to avoid recursion, moved to gameman
