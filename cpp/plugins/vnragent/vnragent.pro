@@ -125,9 +125,9 @@ SOURCES += \
 # Engine models
 HEADERS += \
   engine/model/age.h \
+  engine/model/bgi.h \
   engine/model/system4.h \
   engine/model/siglus.h
-  #engine/model/bgi.h
   #engine/model/circus.h
   #engine/model/elf.h
   #engine/model/eushully.h \
@@ -138,9 +138,9 @@ HEADERS += \
   #engine/model/test.h
 SOURCES += \
   engine/model/age.cc \
+  engine/model/bgi.cc \
   engine/model/system4.cc \
   engine/model/siglus.cc
-  #engine/model/bgi.cc
   #engine/model/circus.cc
   #engine/model/elf.cc
   #engine/model/eushully.cc

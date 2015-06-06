@@ -22,7 +22,102 @@
   DEF_FUN(GetGlyphOutlineW)
   DEF_FUN(GetTextExtentPoint32A)
   DEF_FUN(GetTextExtentPoint32W)
+  DEF_FUN(GetTextExtentExPointA)
+  DEF_FUN(GetTextExtentExPointW)
+  DEF_FUN(GetCharABCWidthsA)
+  DEF_FUN(GetCharABCWidthsW)
+  DEF_FUN(TextOutA)
+  DEF_FUN(TextOutW)
+  DEF_FUN(ExtTextOutA)
+  DEF_FUN(ExtTextOutW)
+  //DEF_FUN(TabbedTextOutA)
+  //DEF_FUN(TabbedTextOutW)
 #undef DEF_FUN
+
+/** Helper */
+
+namespace { // unnamed
+
+void customizeLogFontA(LOGFONTA *lplf)
+{
+  auto p = HijackHelper::instance();
+  auto s = p->settings();
+  if (s->fontCharSetEnabled) {
+    auto charSet = s->fontCharSet;
+    if (!charSet)
+      charSet = p->systemCharSet();
+    if (charSet)
+      lplf->lfCharSet = charSet;
+  }
+  if (s->fontWeight)
+    lplf->lfWeight = s->fontWeight;
+  if (s->isFontScaled()) {
+    lplf->lfWidth *= s->fontScale;
+    lplf->lfHeight *= s->fontScale;
+  }
+}
+
+void customizeLogFontW(LOGFONTW *lplf)
+{
+  customizeLogFontA((LOGFONTA *)lplf);
+
+  auto p = HijackHelper::instance();
+  auto s = p->settings();
+  if (!s->fontFamily.isEmpty()) {
+    lplf->lfFaceName[s->fontFamily.size()] = 0;
+    s->fontFamily.toWCharArray(lplf->lfFaceName);
+  }
+}
+
+class DCFontSwitcher
+{
+  HDC hdc_;
+  HFONT oldFont_,
+        newFont_;
+public:
+  explicit DCFontSwitcher(HDC hdc);
+  ~DCFontSwitcher();
+};
+
+DCFontSwitcher::~DCFontSwitcher()
+{
+  if (oldFont_)
+    ::SelectObject(hdc_, oldFont_);
+  if (newFont_)
+    ::DeleteObject(newFont_);
+}
+
+DCFontSwitcher::DCFontSwitcher(HDC hdc)
+  : hdc_(hdc), oldFont_(nullptr), newFont_(nullptr)
+{
+  TEXTMETRIC tm;
+  if (!::GetTextMetrics(hdc, &tm))
+    return;
+
+  auto p = HijackHelper::instance();
+  if (!p)
+    return;
+  auto s = p->settings();
+  if (!s->isFontCustomized())
+    return;
+
+  LOGFONTW lf = {};
+  lf.lfHeight = tm.tmHeight;
+  lf.lfWeight = tm.tmWeight;
+  lf.lfItalic = tm.tmItalic;
+  lf.lfUnderline = tm.tmUnderlined;
+  lf.lfStrikeOut = tm.tmStruckOut;
+  lf.lfCharSet = tm.tmCharSet;
+  lf.lfPitchAndFamily = tm.tmPitchAndFamily;
+
+  customizeLogFontW(&lf);
+
+  newFont_ = Hijack::oldCreateFontIndirectW(&lf);
+  oldFont_ = (HFONT)SelectObject(hdc_, newFont_);
+  //DOUT("pass");
+}
+
+} // unnamed namespace
 
 /** Fonts */
 
@@ -39,30 +134,18 @@ HFONT WINAPI Hijack::newCreateFontIndirectA(const LOGFONTA *lplf)
       union {
         LOGFONTA a;
         LOGFONTW w;
-      } f = {*lplf}; // only initialize the first member of LOGFONTA
-      if (s->fontCharSetEnabled) {
-        auto charSet = s->fontCharSet;
-        if (!charSet)
-          charSet = p->systemCharSet();
-        if (charSet)
-          f.a.lfCharSet = charSet;
-      }
-      if (s->fontWeight)
-        f.a.lfWeight = s->fontWeight;
-      if (s->isFontScaled()) {
-        f.a.lfWidth *= s->fontScale;
-        f.a.lfHeight *= s->fontScale;
-      }
+      } lf = {*lplf}; // only initialize the first member of LOGFONTA
+      customizeLogFontA(&lf.a);
       if (!s->fontFamily.isEmpty()) {
         if (Util::allAscii(s->fontFamily))
-          ::strcpy(f.a.lfFaceName, s->fontFamily.toLocal8Bit());
+          ::strcpy(lf.a.lfFaceName, s->fontFamily.toLocal8Bit());
         else {
-          f.w.lfFaceName[s->fontFamily.size()] = 0;
-          s->fontFamily.toWCharArray(f.w.lfFaceName);
-          return oldCreateFontIndirectW(&f.w);
+          lf.w.lfFaceName[s->fontFamily.size()] = 0;
+          s->fontFamily.toWCharArray(lf.w.lfFaceName);
+          return oldCreateFontIndirectW(&lf.w);
         }
       }
-      return oldCreateFontIndirectA(&f.a);
+      return oldCreateFontIndirectA(&lf.a);
     }
   }
 #endif // HIJACK_GDI_FONT
@@ -77,25 +160,9 @@ HFONT WINAPI Hijack::newCreateFontIndirectW(const LOGFONTW *lplf)
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (lplf && s->isFontCustomized()) {
-      LOGFONTW f(*lplf);
-      if (s->fontCharSetEnabled) {
-        auto charSet = s->fontCharSet;
-        if (!charSet)
-          charSet = p->systemCharSet();
-        if (charSet)
-          f.lfCharSet = charSet;
-      }
-      if (s->fontWeight)
-        f.lfWeight = s->fontWeight;
-      if (s->isFontScaled()) {
-        f.lfWidth *= s->fontScale;
-        f.lfHeight *= s->fontScale;
-      }
-      if (!s->fontFamily.isEmpty()) {
-        f.lfFaceName[s->fontFamily.size()] = 0;
-        s->fontFamily.toWCharArray(f.lfFaceName);
-      }
-      return oldCreateFontIndirectW(&f);
+      LOGFONTW lf(*lplf);
+      customizeLogFontW(&lf);
+      return oldCreateFontIndirectW(&lf);
     }
   }
 #endif // HIJACK_GDI_FONT
@@ -168,35 +235,61 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 /** Text */
 
+#define DECODE_TEXT(lpString, cchString, ...) \
+{ \
+  /*DCFontSwitcher fs(hdc);*/ \
+  if(cchString > 1) \
+    if (auto p = DynamicCodec::instance()) { \
+      bool dynamic; \
+      QByteArray data(lpString, cchString); \
+      QString text = p->decode(data, &dynamic); \
+      if (dynamic && !text.isEmpty()) { \
+        LPCWSTR lpString = (LPCWSTR)text.utf16(); \
+        cchString = text.size(); \
+        return (__VA_ARGS__); \
+      } \
+    } \
+}
+
+#define DECODE_CHAR(uChar, ...) \
+{ \
+  /*DCFontSwitcher fs(hdc);*/ \
+  if (uChar > 0xff) \
+    if (auto p = DynamicCodec::instance()) { \
+      bool dynamic; \
+      UINT ch = p->decodeChar(uChar, &dynamic); \
+      if (dynamic && ch) { \
+        uChar = ch; \
+        return (__VA_ARGS__); \
+      } \
+    } \
+}
+
 DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
 {
+  //DOUT("pass");
 #ifdef HIJACK_GDI_TEXT
-  if (uChar > 0xff)
-    if (auto p = DynamicCodec::instance()) {
-      bool dynamic;
-      UINT ch = p->decodeChar(uChar, &dynamic);
-      if (dynamic && ch)
-        return oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
-    }
+  DECODE_CHAR(uChar, oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2))
 #endif // HIJACK_GDI_TEXT
   return oldGetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
 }
 
 BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
 {
-#ifdef HIJACK_GDI_TEXT
   //DOUT("pass");
-  if(cchString > 1)
-    if (auto p = DynamicCodec::instance()) {
-      bool dynamic;
-      QByteArray data(lpString, cchString);
-      QString text = p->decode(data, &dynamic);
-      if (dynamic && !text.isEmpty())
-        return oldGetTextExtentPoint32W(hdc, (LPCWSTR)text.utf16(), text.size(), lpSize);
-    }
+#ifdef HIJACK_GDI_TEXT
+  DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
 #endif // HIJACK_GDI_TEXT
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
 }
 
-// EOF
+BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
+{
+  //DOUT("pass");
+#ifdef HIJACK_GDI_TEXT
+  DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
+#endif // HIJACK_GDI_TEXT
+  return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
+}
 
+// EOF

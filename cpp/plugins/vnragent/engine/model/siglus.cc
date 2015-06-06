@@ -252,7 +252,7 @@ namespace Private {
       return true;
 
     int role = Engine::OtherRole;
-    DWORD split = s->stack[3];
+    ulong split = s->stack[3];
     if (split <= 0xffff || !Engine::isAddressReadable((LPDWORD)split)) { // skip modifying scenario thread
       //role = Engine::ScenarioRole;
       return true;
@@ -264,7 +264,7 @@ namespace Private {
         role = Engine::NameRole;
       }
     }
-    long sig = Engine::hashThreadSignature(role, split);
+    auto sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text, arg->size),
             newText = g->dispatchTextW(oldText, sig, role);

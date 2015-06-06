@@ -152,7 +152,7 @@ public:
       return true;
 
     enum { role = Engine::ScenarioRole };
-    DWORD sig = Engine::hashThreadSignature(role, split);
+    auto sig = Engine::hashThreadSignature(role, split);
     //int size = arg->size; // size not used as not needed
     buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
 
@@ -204,7 +204,7 @@ public:
       return true;
 
     enum { role = Engine::OtherRole };
-    DWORD sig = Engine::hashThreadSignature(role, split2);
+    auto sig = Engine::hashThreadSignature(role, split2);
     buffer_ = g->dispatchTextA(text, sig, role);
 
     if (editable_) {

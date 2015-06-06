@@ -24,6 +24,21 @@ namespace Hijack {
   DEF_FUN(GetTextExtentPoint32A, BOOL, HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
   DEF_FUN(GetTextExtentPoint32W, BOOL, HDC hdc, LPCWSTR lpString, int cchString, LPSIZE lpSize)
 
+  DEF_FUN(GetTextExtentExPointA, BOOL, HDC hdc, LPCSTR lpszStr, int cchString, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
+  DEF_FUN(GetTextExtentExPointW, BOOL, HDC hdc, LPCWSTR lpszStr, int cchString, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
+
+  DEF_FUN(GetCharABCWidthsA, BOOL, HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc)
+  DEF_FUN(GetCharABCWidthsW, BOOL, HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc)
+
+  DEF_FUN(TextOutA, BOOL, HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
+  DEF_FUN(TextOutW, BOOL, HDC hdc, int nXStart, int nYStart, LPCWSTR lpString, int cchString)
+
+  DEF_FUN(ExtTextOutA, BOOL, HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCSTR lpString, UINT cbCount, const INT *lpDx)
+  DEF_FUN(ExtTextOutW, BOOL, HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCWSTR lpString, UINT cbCount, const INT *lpDx)
+
+  //DEF_FUN(TabbedTextOutA, LONG, HDC hDC, int X, int Y, LPCSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin)
+  //DEF_FUN(TabbedTextOutW, LONG, HDC hDC, int X, int Y, LPCWSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin)
+
 #undef DEF_FUN
 
 // Global variables
@@ -31,44 +46,3 @@ namespace Hijack {
 } // namespace Hijack
 
 // EOF
-
-/*
-
-BOOL WINAPI newTextOutA(
-  _In_  HDC hdc,
-  _In_  int nXStart,
-  _In_  int nYStart,
-  _In_  LPCSTR lpString,
-  _In_  int cchString
-);
-
-//BOOL WINAPI newTextOutW(
-//  _In_  HDC hdc,
-//  _In_  int nXStart,
-//  _In_  int nYStart,
-//  _In_  LPCWSTR lpString,
-//  _In_  int cchString
-//);
-
-BOOL WINAPI newExtTextOutA(
-  _In_  HDC hdc,
-  _In_  int X,
-  _In_  int Y,
-  _In_  UINT fuOptions,
-  _In_  const RECT *lprc,
-  _In_  LPCSTR lpString,
-  _In_  UINT cbCount,
-  _In_  const INT *lpDx
-);
-
-//BOOL WINAPI newExtTextOutW(
-//  _In_  HDC hdc,
-//  _In_  int X,
-//  _In_  int Y,
-//  _In_  UINT fuOptions,
-//  _In_  const RECT *lprc,
-//  _In_  LPCWSTR lpString,
-//  _In_  UINT cbCount,
-//  _In_  const INT *lpDx
-//);
-*/
