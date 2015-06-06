@@ -95,8 +95,6 @@ HCODE_FILE_BLACKLIST = frozenset(BLACKLIST_YAML['hcodefile'])
 
 ## Game engine ##
 
-EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] # [str name]
-
 CHAR_TEXT_THREADS = frozenset(ENGINES_YAML['char']) # [str name]
 WCHAR_TEXT_THREADS = frozenset(ENGINES_YAML['wchar']) # [str name]
 UTF8_TEXT_THREADS = frozenset(ENGINES_YAML['utf8']) # [str name]
@@ -123,6 +121,15 @@ NOFLOAT_GAME_ENGINES = frozenset(
     ENGINES_YAML['gui'] + ENGINES_YAML['nongui']) # [str name]
 
 RENAMED_GAME_ENGINES = ENGINES_YAML['rename']  # {str name:str name}
+
+EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] # [str name]
+
+def game_thread_embeddable(name):
+  """
+  @param  name  str
+  @return  bool
+  """
+  return bool(name) and (name in EMBEDDED_GAME_ENGINES or 'Embed' in name)
 
 def guess_thread_encoding(name): # str -> str or None
   if name in CHAR_TEXT_THREADS:

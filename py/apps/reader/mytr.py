@@ -41,6 +41,9 @@ class reader(QObject):
 
       self.tr("Translator"),
 
+      self.tr("Embeddable"),
+      self.tr("embeddable"),
+
       self.tr("YouTube Downloader"),
       self.tr("Download YouTube Videos"), self.tr("Download YouTube videos"),
 
