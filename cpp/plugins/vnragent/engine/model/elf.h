@@ -12,7 +12,8 @@ class ElfEngine : public EngineModel
 public:
   ElfEngine() //: Base("Elf", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute) // Need restore the old text to be freed using FreeHeap
   {
-    name = "Elf";
+    name = "EmbedElf";
+    dynamicEncoding = true;
     // "Silkys.exe" or AI6WIN.exe might not exist
     // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
     // mes.arc is the scenario
