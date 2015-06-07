@@ -109,6 +109,36 @@ namespace Private {
     return true;
   }
 
+  bool beforeAgsSpriteCreateTextEx(winhook::hook_stack *s)
+  {
+    static QString text_;
+    // All threads including character names are linked together
+
+    LPCWSTR text = (LPCWSTR)s->stack[2]; // arg2
+    if (!text || !*text)
+      return true;
+
+    //LPCWSTR trimmedText = ltrimTextW(text);
+    //if (!*trimmedText)
+    //  return true;
+
+    enum { role = Engine::OtherRole };
+    ulong split = s->stack[0]; // retaddr
+    auto sig = Engine::hashThreadSignature(role, split);
+
+    QString oldText = QString::fromWCharArray(text),
+            newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+    if (newText == oldText)
+      return true;
+    text_ = newText;
+    //if (text != trimmedText) {
+    //  QString prefix = QString::fromWCharArray(text, trimmedText - text);
+    //  text_.prepend(prefix);
+    //}
+    s->stack[1] = (ulong)text_.utf16(); // arg1
+    return true;
+  }
+
 } // namespace Private
 
 bool attach(HMODULE hModule) // attach scenario
@@ -116,9 +146,8 @@ bool attach(HMODULE hModule) // attach scenario
   ulong addr = findCppProc(hModule, "AgsSpriteCreateText", 1);
   if (!addr || !winhook::hook_before(addr, Private::beforeAgsSpriteCreateText))
     return false;
-
-  //if (addr = findCppProc(hModule, "AgsSpriteCreateTextEx", 1))
-  //  winhook::hook_before(addr, Private::beforeAgsSpriteCreateTextEx);
+  if (addr = findCppProc(hModule, "AgsSpriteCreateTextEx", 1))
+    winhook::hook_before(addr, Private::beforeAgsSpriteCreateTextEx);
   return true;
 }
 
@@ -138,35 +167,3 @@ bool SystemAoiWEngine::attach()
 }
 
 // EOF
-
-/*
-  bool beforeAgsSpriteCreateTextEx(winhook::hook_stack *s)
-  {
-    static QString text_;
-    // All threads including character names are linked together
-
-    LPCWSTR text = (LPCWSTR)s->stack[1]; // arg1
-    if (!text || !*text)
-      return true;
-
-    LPCWSTR trimmedText = ltrimTextW(text);
-    if (!*trimmedText)
-      return true;
-
-    enum { role = Engine::OtherRole };
-    ulong split = s->stack[0]; // retaddr
-    auto sig = Engine::hashThreadSignature(role, split);
-
-    QString oldText = QString::fromWCharArray(trimmedText),
-            newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
-    if (newText == oldText)
-      return true;
-    text_ = newText;
-    if (text != trimmedText) {
-      QString prefix = QString::fromWCharArray(text, trimmedText - text);
-      text_.prepend(prefix);
-    }
-    s->stack[1] = (ulong)text_.utf16(); // arg1
-    return true;
-  }
-*/
