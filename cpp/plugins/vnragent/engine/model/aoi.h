@@ -10,7 +10,7 @@ class SystemAoiWEngine : public EngineModel
   SK_EXTEND_CLASS(SystemAoiWEngine, EngineModel)
   static bool attach();
 public:
-  SystemAoiWEngine() //BlockingAttribute|SingleThreadAttribute)
+  SystemAoiWEngine()
   {
     name = "EmbedSystemAoiW";
     encoding = Utf16Encoding;

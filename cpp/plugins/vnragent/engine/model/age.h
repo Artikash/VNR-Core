@@ -11,7 +11,7 @@ class ARCGameEngine : public EngineModel
   static bool attach();
   static QString textFilter(const QString &text, int role);
 public:
-  ARCGameEngine() //BlockingAttribute|SingleThreadAttribute)
+  ARCGameEngine()
   {
     name = "EmbedARCGameEngine";
     dynamicEncoding = true;
