@@ -256,7 +256,7 @@ class Settings(QSettings):
 
   romajiMacronEnabledChanged = Signal(bool)
   def isRomajiMacronEnabled(self):
-    return to_bool(self.value('RomajiMacron', True))
+    return to_bool(self.value('RomajiMacron')) # disabled by default
   def setRomajiMacronEnabled(self, value):
     if value != self.isRomajiMacronEnabled():
       self.setValue('RomajiMacron', value)

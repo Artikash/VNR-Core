@@ -521,6 +521,7 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Embed
   - EmbedSiglusEngine
+  - EmbedSystemAoiW
   # Engines
   - Adobe AIR
   - Adobe Flash 10
