@@ -111,16 +111,9 @@ namespace Private {
 
   bool beforeAgsSpriteCreateTextEx(winhook::hook_stack *s)
   {
-    static QString text_;
-    // All threads including character names are linked together
-
-    LPCWSTR text = (LPCWSTR)s->stack[2]; // arg2
-    if (!text || !*text)
+    LPWSTR text = (LPWSTR)s->stack[2]; // arg2
+    if (!text || !*text || !Engine::isAddressWritable(text))
       return true;
-
-    //LPCWSTR trimmedText = ltrimTextW(text);
-    //if (!*trimmedText)
-    //  return true;
 
     enum { role = Engine::OtherRole };
     ulong split = s->stack[0]; // retaddr
@@ -130,12 +123,9 @@ namespace Private {
             newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
     if (newText == oldText)
       return true;
-    text_ = newText;
-    //if (text != trimmedText) {
-    //  QString prefix = QString::fromWCharArray(text, trimmedText - text);
-    //  text_.prepend(prefix);
-    //}
-    s->stack[1] = (ulong)text_.utf16(); // arg1
+    text[newText.size()] = 0;
+    if (!newText.isEmpty())
+      newText.toWCharArray(text);
     return true;
   }
 
