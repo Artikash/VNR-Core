@@ -9,10 +9,6 @@
   exist: AGERC.DLL
   #encoding: sjis
 
-- name: EmbedSiglusEngine # 5/25/2014, supposed to be SiglusEngine2
-  exist: Siglus*.exe
-  #encoding: utf16
-
 - name: EmbedBGI # 5/11/2014 jichi
   exist: BGI.*
   #encoding: sjis
@@ -27,9 +23,22 @@
   #encoding: sjis
   #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 
+- name: EmbedSiglusEngine # 5/25/2014, supposed to be SiglusEngine2
+  exist: Siglus*.exe
+  #encoding: utf16
+
 - name: EmbedSystem43 # 5/25/2015, compatible with System43+
   exist: AliceStart.ini
   #encoding: sjis
+
+- name: EmbedSystemAoiW # 6/5/2015, compatible with SystemAoi2
+  exist:
+    - Ags*.dll
+    - Aoi*.dll
+  #encoding: utf16
+#- name: EmbedSystemAoiA # 6/5/2015, compatible with SystemAoi
+#  exist: AoiLib.dll
+#  #encoding: sjis
 
 # EOF
 

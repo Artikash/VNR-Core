@@ -56,6 +56,9 @@ unsigned long getModuleFunction(const char *moduleName, const char *funcName);
 bool isAddressReadable(const ulong *p);
 bool isAddressReadable(const char *p);
 bool isAddressReadable(const wchar_t *p);
+bool isAddressWritable(const ulong *p);
+bool isAddressWritable(const char *p);
+bool isAddressWritable(const wchar_t *p);
 
 } // namespace Engine
 

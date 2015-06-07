@@ -5,6 +5,7 @@
 #include "engine/enginecontroller.h"
 #include "engine/enginefactory.h"
 #include "engine/model/age.h"
+#include "engine/model/aoi.h"
 #include "engine/model/bgi.h"
 #include "engine/model/elf.h"
 #include "engine/model/siglus.h"
@@ -26,6 +27,7 @@ EngineController *EngineFactory::createEngine()
 {
   static EngineModel *models[] = { // sort reversely
     new System4Engine
+    , new SystemAoiWEngine
     , new SiglusEngine
     , new ElfEngine
     , new BGIEngine

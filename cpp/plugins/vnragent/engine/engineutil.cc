@@ -36,6 +36,15 @@ bool Engine::isAddressReadable(const char *p)
 bool Engine::isAddressReadable(const wchar_t *p)
 { return p && !::IsBadReadPtr(p, sizeof(*p)); }
 
+bool Engine::isAddressWritable(const ulong *p)
+{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
+
+bool Engine::isAddressWritable(const char *p)
+{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
+
+bool Engine::isAddressWritable(const wchar_t *p)
+{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
+
 // - Detours -
 
 Engine::address_type Engine::replaceFunction(address_type old_addr, const_address_type new_addr)
