@@ -8,67 +8,43 @@
 // Debonosu hooks. Wait until it is really needed by certain games.
 // The order of the functions is used in several place.
 // I need to recompile all of the dlls to modify the order.
-enum HookFunType {
-  HF_Null = -1
-  , HF_DrawTextA
-  , HF_DrawTextExA
-  , HF_ExtTextOutA
-  , HF_GetCharABCWidthsA
-  , HF_GetCharABCWidthsFloatA
-  , HF_GetCharWidth32A
-  , HF_GetCharWidthFloatA
-  , HF_GetCharacterPlacementA
-  , HF_GetGlyphIndicesA
-  , HF_GetGlyphOutlineA
-  , HF_GetTabbedTextExtentA
-  , HF_GetTextExtentPoint32A
-  , HF_GetTextExtentExPointA
-  , HF_TabbedTextOutA // 4/30/2015: Added to support とある人妻のネトラレ事情
-  , HF_TextOutA
-  //, HF_lstrlenA
-  , HF_DrawTextW
-  , HF_DrawTextExW
-  , HF_ExtTextOutW
-  , HF_GetCharABCWidthsW
-  , HF_GetCharABCWidthsFloatW
-  , HF_GetCharWidth32W
-  , HF_GetCharWidthFloatW
-  , HF_GetCharacterPlacementW
-  , HF_GetTabbedTextExtentW
-  , HF_GetGlyphIndicesW
-  , HF_GetGlyphOutlineW
-  , HF_GetTextExtentPoint32W
-  , HF_GetTextExtentExPointW
-  , HF_TabbedTextOutW
-  , HF_TextOutW
-  //, HF_lstrlenW
-  , HookFunCount // 14
-};
 
 // jichi 10/14/2014
 #define HOOK_GDI_FUNCTION_LIST \
   GetTextExtentPoint32A \
   , GetTextExtentExPointA \
+  , GetTabbedTextExtentA \
+  , GetCharacterPlacementA \
+  , GetGlyphIndicesA \
   , GetGlyphOutlineA \
   , ExtTextOutA \
   , TextOutA \
   , TabbedTextOutA \
   , GetCharABCWidthsA \
+  , GetCharABCWidthsFloatA \
+  , GetCharWidth32A \
+  , GetCharWidthFloatA \
   , GetTextExtentPoint32W \
   , GetTextExtentExPointW \
+  , GetTabbedTextExtentW \
+  , GetCharacterPlacementW \
+  , GetGlyphIndicesW \
   , GetGlyphOutlineW \
   , ExtTextOutW \
   , TextOutW \
   , TabbedTextOutW \
   , GetCharABCWidthsW \
+  , GetCharABCWidthsFloatW \
+  , GetCharWidth32W \
+  , GetCharWidthFloatW \
   , DrawTextA \
   , DrawTextExA \
   , DrawTextW \
   , DrawTextExW
-
-enum { HOOK_FUN_COUNT = HookFunCount };
+enum { HOOK_FUN_COUNT = 30 }; // total number of GDI hooks
 // jichi 1/16/2015: Though called max hook, it means max number of text threads
-enum { MAX_HOOK = 32 }; // must be larger than HookFunCount
+enum { MAX_HOOK = 64 }; // must be larger than HookFunCount
+
 //enum { HOOK_SECTION_SIZE = 0x2000 }; // default ITH value
 // jichi 1/16/2015: Change to a very large number to prevent crash
 //enum { MAX_HOOK = 0x100 }; // must be larger than HookFunCount

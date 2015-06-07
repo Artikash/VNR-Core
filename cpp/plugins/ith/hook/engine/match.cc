@@ -629,6 +629,12 @@ bool DetermineNoEngine()
   //  return true;
   //}
 
+  // jichi 6/7/2015: RPGMaker v3
+  if (IthFindFile(L"*.rgss3a")) {
+    ConsoleOutput("vnreng: IGNORE RPGMaker RGSS3");
+    return true;
+  }
+
   // jichi 2/14/2015: Guilty+ ＲＩＮ×ＳＥＮ (PK)
   if (IthCheckFile(L"rio.ini") || IthFindFile(L"*.war")) {
     ConsoleOutput("vnreng: IGNORE unknown ShinaRio");
