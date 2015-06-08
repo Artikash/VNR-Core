@@ -29,19 +29,28 @@ namespace Private {
     return QString();
   }
 
-  struct HookArgument
-  {
-    LPDWORD unknown1,
-            unknown2;
-    size_t size;    // 0x8
-    LPSTR text;     // 0xc
-  };
-
-  HookArgument *arg_;
-
   enum { MaxTextSize = 0x1000 };
   //char oldText_[MaxTextSize + 1]; // 1 extra 0 that is always 0
   //size_t oldSize_;
+
+  struct HookArgument
+  {
+    LPDWORD type;    // 0x0
+    LPDWORD unknown; // 0x4
+    size_t size;     // 0x8
+    LPSTR text;      // 0xc
+
+    bool isValid() const
+    {
+      return Engine::isAddressReadable(type) && *type
+          && size && size < MaxTextSize
+          && Engine::isAddressWritable(text, size) && *text;
+    }
+
+    //int size() const { return (*type >> 0xe) & 0x1f; }
+  };
+
+  HookArgument *arg_;
 
   /**
    * Skip ascii characters in the beginning
@@ -63,7 +72,7 @@ namespace Private {
   bool hookBefore(winhook::hook_stack *s)
   {
     auto arg = (HookArgument *)s->stack[1]; // arg1
-    if (arg->size && arg->size < MaxTextSize && arg->text && Engine::isAddressWritable(arg->text, arg->size) && *arg->text) {
+    if (arg->isValid()) { // Engine::isAddressWritable(arg->text, arg->size)
       QString oldText = QString::fromUtf8(arg->text),
               prefix,
               trimmedText = ltrim(oldText, &prefix);
@@ -152,9 +161,9 @@ namespace Private {
  *  10041512   50               PUSH EAX
  *  10041513   33FF             XOR EDI,EDI
  *  10041515   E8 B64EFFFF      CALL RGSS301.100363D0
- *  1004151A   8B5424 18        MOV EDX,DWORD PTR SS:[ESP+0x18] ; jichi: edx becomes arg1 on the stack
+ *  1004151A   8B5424 18        MOV EDX,DWORD PTR SS:[ESP+0x18] ; jichi: edx = arg1 on the stack
  *  1004151E   8BD8             MOV EBX,EAX
- *  10041520   8B02             MOV EAX,DWORD PTR DS:[EDX]
+ *  10041520   8B02             MOV EAX,DWORD PTR DS:[EDX]  ; jichi: eax = ecx = [arg1]
  *  10041522   8BC8             MOV ECX,EAX
  *  10041524   83C4 04          ADD ESP,0x4
  *  10041527   81E1 00200000    AND ECX,0x2000
@@ -162,12 +171,12 @@ namespace Private {
  *  1004152F   C1E8 0E          SHR EAX,0xE
  *  10041532   83E0 1F          AND EAX,0x1F
  *  10041535   EB 03            JMP SHORT RGSS301.1004153A
- *  10041537   8B42 08          MOV EAX,DWORD PTR DS:[EDX+0x8]
+ *  10041537   8B42 08          MOV EAX,DWORD PTR DS:[EDX+0x8] ; jichi: [edx+0x8] text length
  *  1004153A   85C9             TEST ECX,ECX
  *  1004153C   75 05            JNZ SHORT RGSS301.10041543
  *  1004153E   83C2 08          ADD EDX,0x8
  *  10041541   EB 03            JMP SHORT RGSS301.10041546
- *  10041543   8B52 0C          MOV EDX,DWORD PTR DS:[EDX+0xC] ; jichi: edx + 0xc could be the text address
+ *  10041543   8B52 0C          MOV EDX,DWORD PTR DS:[EDX+0xC] ; jichi: [edx + 0xc] could be the text address
  *  10041546   F703 00200000    TEST DWORD PTR DS:[EBX],0x2000
  *  1004154C   8D4B 08          LEA ECX,DWORD PTR DS:[EBX+0x8]
  *  1004154F   74 03            JE SHORT RGSS301.10041554
