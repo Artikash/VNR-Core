@@ -11,7 +11,7 @@ class ElfEngine : public EngineModel
   static bool attach();
   static QString textFilter(const QString &text, int role);
 public:
-  ElfEngine() //: Base("Elf", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute) // Need restore the old text to be freed using FreeHeap
+  ElfEngine()
   {
     name = "EmbedElf";
     dynamicEncoding = true;

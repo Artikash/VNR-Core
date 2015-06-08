@@ -11064,10 +11064,11 @@ static bool _yk2garbage(const char *p)
 {
   //Q_ASSERT(p);
   while (char ch = *p++) {
-    if (ch >= '0' && ch <= '9' ||
+    if (!(
+        ch >= '0' && ch <= '9' ||
         ch >= 'A' && ch <= 'z' || // also ignore ASCII 91-96: [ \ ] ^ _ `
-        ch == '"' || ch == '.' || ch == '-' || ch == '#')
-      continue;
+        ch == '"' || ch == '.' || ch == '-' || ch == '#'
+      ))
     return false;
   }
   return true;

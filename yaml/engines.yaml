@@ -569,6 +569,8 @@ utf8:
   - FELISTELLA PSP
   - Imageepoch PSP
   - Imageepoch2 PSP
+  # PC
+  - EmbedRGSS
   - YukaSystem2
 
 # List of game engine that allows focus
@@ -603,6 +605,7 @@ focus:
   #- AliceRunPatch43
   #- AOS
   #- Elf
+  #- EmbedRGSS
   #- LunaSoft
   #- Majiro
   #- Malie2
