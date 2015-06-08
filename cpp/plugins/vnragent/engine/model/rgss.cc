@@ -210,6 +210,100 @@ namespace Private {
  *  00828EE0   00000280
  *  00828EE4   000001E0
  *  00828EE8   1019150F  RETURN to RGSS301.1019150F from RGSS301.1018DF45
+ *
+ *
+ *  Hardware breakpoints also here:
+ *  100585EC   CC               INT3
+ *  100585ED   CC               INT3
+ *  100585EE   CC               INT3
+ *  100585EF   CC               INT3
+ *  100585F0   53               PUSH EBX
+ *  100585F1   8B5C24 0C        MOV EBX,DWORD PTR SS:[ESP+0xC]  ; jichi: text here in ebx
+ *  100585F5   F6C3 03          TEST BL,0x3
+ *  100585F8   0F85 82000000    JNZ RGSS301.10058680
+ *  100585FE   F7C3 FBFFFFFF    TEST EBX,0xFFFFFFFB
+ *  10058604   74 7A            JE SHORT RGSS301.10058680
+ *  10058606   8B03             MOV EAX,DWORD PTR DS:[EBX]  ; jichi: text here in ebx
+ *  10058608   85C0             TEST EAX,EAX
+ *  1005860A   74 74            JE SHORT RGSS301.10058680
+ *  1005860C   A8 20            TEST AL,0x20
+ *  1005860E   75 70            JNZ SHORT RGSS301.10058680
+ *  10058610   56               PUSH ESI
+ *  10058611   8B7424 14        MOV ESI,DWORD PTR SS:[ESP+0x14]
+ *  10058615   83C8 20          OR EAX,0x20
+ *  10058618   81FE FA000000    CMP ESI,0xFA
+ *  1005861E   8903             MOV DWORD PTR DS:[EBX],EAX  ; jichi: text here in ebx
+ *  10058620   7F 22            JG SHORT RGSS301.10058644
+ *  10058622   85F6             TEST ESI,ESI
+ *  10058624   75 09            JNZ SHORT RGSS301.1005862F
+ *  10058626   E8 A5E2FFFF      CALL RGSS301.100568D0
+ *  1005862B   85C0             TEST EAX,EAX
+ *  1005862D   75 15            JNZ SHORT RGSS301.10058644
+ *  1005862F   57               PUSH EDI
+ *  10058630   8D7E 01          LEA EDI,DWORD PTR DS:[ESI+0x1]
+ *  10058633   8B7424 10        MOV ESI,DWORD PTR SS:[ESP+0x10]
+ *  10058637   53               PUSH EBX
+ *  10058638   E8 83E5FFFF      CALL RGSS301.10056BC0
+ *  1005863D   83C4 04          ADD ESP,0x4
+ *
+ *  10056BBE   CC               INT3
+ *  10056BBF   CC               INT3
+ *  10056BC0   83EC 18          SUB ESP,0x18
+ *  10056BC3   53               PUSH EBX
+ *  10056BC4   55               PUSH EBP
+ *  10056BC5   8B5C24 24        MOV EBX,DWORD PTR SS:[ESP+0x24]
+ *  10056BC9   8BEB             MOV EBP,EBX
+ *  10056BCB   83E5 03          AND EBP,0x3
+ *  10056BCE   75 24            JNZ SHORT RGSS301.10056BF4
+ *  10056BD0   F7C3 FBFFFFFF    TEST EBX,0xFFFFFFFB
+ *  10056BD6   74 1C            JE SHORT RGSS301.10056BF4
+ *  10056BD8   8B03             MOV EAX,DWORD PTR DS:[EBX]  ; jichi: text here in ebx
+ *  10056BDA   8BC8             MOV ECX,EAX                              ; Game.00402125
+ *  10056BDC   83E1 1F          AND ECX,0x1F
+ *  10056BDF   80F9 1C          CMP CL,0x1C
+ *  10056BE2   74 10            JE SHORT RGSS301.10056BF4
+ *  10056BE4   25 00040000      AND EAX,0x400
+ *  10056BE9   74 09            JE SHORT RGSS301.10056BF4
+ *  10056BEB   53               PUSH EBX
+ *  10056BEC   E8 0F050100      CALL RGSS301.10067100
+ *  10056BF1   83C4 04          ADD ESP,0x4
+ *  10056BF4   8B0B             MOV ECX,DWORD PTR DS:[EBX]
+ *  10056BF6   8BC1             MOV EAX,ECX                 ; jichi: text here in ebx
+ *  10056BF8   83E0 1F          AND EAX,0x1F
+ *  10056BFB   83F8 11          CMP EAX,0x11
+ *  10056BFE   0F84 43040000    JE RGSS301.10057047
+ *  10056C04   83F8 15          CMP EAX,0x15
+ *  10056C07   0F84 3A040000    JE RGSS301.10057047
+ *  10056C0D   83F8 1C          CMP EAX,0x1C
+ *  10056C10   0F84 3F010000    JE RGSS301.10056D55
+ *  10056C16   8B53 04          MOV EDX,DWORD PTR DS:[EBX+0x4]
+ *  10056C19   57               PUSH EDI
+ *  10056C1A   52               PUSH EDX
+ *  10056C1B   56               PUSH ESI
+ *  10056C1C   E8 CF190000      CALL RGSS301.100585F0
+ *  10056C21   8B13             MOV EDX,DWORD PTR DS:[EBX]  ; jichi: text here
+ *  10056C23   8BC2             MOV EAX,EDX                              ; Game.00402125
+ *  10056C25   83E0 1F          AND EAX,0x1F
+ *  10056C28   8D48 FF          LEA ECX,DWORD PTR DS:[EAX-0x1]
+ *  10056C2B   83C4 0C          ADD ESP,0xC
+ *  10056C2E   83F9 1D          CMP ECX,0x1D
+ *  10056C31   0F87 88030000    JA RGSS301.10056FBF
+ *  10056C37   0FB689 8C700510  MOVZX ECX,BYTE PTR DS:[ECX+0x1005708C]
+ *  10056C3E   FF248D 54700510  JMP DWORD PTR DS:[ECX*4+0x10057054]
+ *  10056C45   8B43 0C          MOV EAX,DWORD PTR DS:[EBX+0xC]
+ *  10056C48   85C0             TEST EAX,EAX
+ *
+ *  100587FB   8D0480           LEA EAX,DWORD PTR DS:[EAX+EAX*4]
+ *  100587FE   8D0483           LEA EAX,DWORD PTR DS:[EBX+EAX*4]
+ *  10058801   894424 2C        MOV DWORD PTR SS:[ESP+0x2C],EAX
+ *  10058805   3BD8             CMP EBX,EAX
+ *  10058807   0F83 A3000000    JNB RGSS301.100588B0
+ *  1005880D   8D49 00          LEA ECX,DWORD PTR DS:[ECX]
+ *  10058810   8B03             MOV EAX,DWORD PTR DS:[EBX]  ; jichi: text here in ebx
+ *  10058812   A8 20            TEST AL,0x20
+ *  10058814   75 72            JNZ SHORT RGSS301.10058888
+ *  10058816   85C0             TEST EAX,EAX
+ *  10058818   74 5C            JE SHORT RGSS301.10058876
  */
 
 bool attach() // attach scenario
@@ -240,6 +334,7 @@ bool attach() // attach scenario
   //addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
   //addr = 0x10041557;
   //addr = 0x100414a0;
+  //addr = 0x10056BC0;
   return winhook::hook_before(addr, Private::hookBefore); //, Private::hookAfter);
 }
 
