@@ -32,19 +32,16 @@ inline Ret replaceFunction(Arg1 arg1, Arg2 arg2)
 //{ return (Ret)restoreFunction((address_type)arg1, (const_address_type)arg2); }
 
 // File system
-bool globs(const QString &nameFilter);
-bool globs(const QStringList &nameFilters);
-
-bool globs(const QString &relPath, const QString &nameFilter);
-bool globs(const QString &relPath, const QStringList &nameFilters);
-
+bool globs(const QString &relpath);
 bool exists(const QString &relPath);
-bool exists(const QStringList &relPaths);
+
+QStringList glob(const QString &nameFilter);
 
 // Thread and process
 
 QString getNormalizedProcessName();
 
+//bool getMemoryRange(const char *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
 bool getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
 
 inline bool getCurrentMemoryRange(unsigned long *startAddress, unsigned long *stopAddress)
@@ -54,11 +51,11 @@ inline bool getCurrentMemoryRange(unsigned long *startAddress, unsigned long *st
 unsigned long getModuleFunction(const char *moduleName, const char *funcName);
 
 bool isAddressReadable(const ulong *p);
-bool isAddressReadable(const char *p);
-bool isAddressReadable(const wchar_t *p);
+bool isAddressReadable(const char *p, size_t count = 1);
+bool isAddressReadable(const wchar_t *p, size_t count = 1);
 bool isAddressWritable(const ulong *p);
-bool isAddressWritable(const char *p);
-bool isAddressWritable(const wchar_t *p);
+bool isAddressWritable(const char *p, size_t count = 1);
+bool isAddressWritable(const wchar_t *p, size_t count = 1);
 
 } // namespace Engine
 

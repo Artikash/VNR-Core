@@ -9,14 +9,16 @@ class RGSSEngine : public EngineModel
 {
   SK_EXTEND_CLASS(RGSSEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
 public:
   RGSSEngine()
   {
     name = "EmbedRGSS";
     encoding = Utf8Encoding;
-    //matchFiles << "System/RGSS3*.dll";
-    matchFiles << "Game.rgss3a";
+    matchFiles << "System/RGSS3*.dll";
+    //matchFiles << "Game.rgss3a";
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
   }
 };
 

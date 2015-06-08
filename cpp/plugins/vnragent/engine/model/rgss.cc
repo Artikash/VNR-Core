@@ -5,48 +5,82 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-#include "hijack/hijackfuns.h"
+#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 #include <boost/foreach.hpp>
 
-#define DEBUG "age"
+#define DEBUG "rgss"
 #include "sakurakit/skdebug.h"
 
-#pragma intrinsic(_ReturnAddress)
+//#pragma intrinsic(_ReturnAddress)
 
 namespace { // unnamed
 
 namespace RGSS3Hook {
 namespace Private {
 
-  struct HookArguments
+  QString getDllModuleName()
   {
-    char *dst;
-    char *src;
-    size_t size;
+    foreach (const QString &dll, Engine::glob("System/RGSS3*.dll"))
+      if (::GetModuleHandleW((LPCWSTR)dll.utf16()))
+        return dll;
+    return QString();
+  }
+
+  struct HookArgument
+  {
+    LPDWORD unknown1,
+            unknown2;
+    size_t size;    // 0x8
+    LPSTR text;     // 0xc
   };
+
+  HookArgument *arg_;
+
+  enum { MaxTextSize = 0x1000 };
+  //char oldText_[MaxTextSize + 1]; // 1 extra 0 that is always 0
+  //size_t oldSize_;
+
   bool hookBefore(winhook::hook_stack *s)
   {
-    auto arg = (HookArguments *)s->stack;
-    if (arg->size) {
-      QString oldText = QString::fromUtf8(arg->src, arg->size);
-      if (oldText[0].unicode() >= 128) {
-        enum { role = Engine::OtherRole };
-        ulong split = (ulong)_ReturnAddress();
+    auto arg = (HookArgument *)s->stack[1]; // arg1
+    if (arg->size && arg->size < 0x2000 && arg->text && Engine::isAddressWritable(arg->text, arg->size) && *arg->text) {
+      QString oldText = QString::fromUtf8(arg->text);
+      if (oldText[0].unicode() >= 128) { // skip text beginning with ascii character
+        enum { role = Engine::ScenarioRole };
+        //ulong split = arg->unknown2[0]; // always 2
+        //ulong split = s->stack[0]; // return address
+        ulong split = arg->unknown1[1]; // return address
         auto sig = Engine::hashThreadSignature(role, split);
 
         QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
         if (newText != oldText) {
           QByteArray data = newText.toUtf8();
-          memcpy(arg->src, data.constData(), data.size() + 1);
-          s->eax = arg->size = data.size();
+          //if (Engine::isAddressWritable(arg->text, data.size() + 1))
+
+          //arg_ = arg;
+          //oldSize_ = arg->size;
+          //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize));
+
+          arg->size = min(data.size(), MaxTextSize - 1);
+          ::memcpy(arg->text, data.constData(), arg->size + 1);
         }
       }
     }
     return true;
   }
+
+  //bool hookAfter(winhook::hook_stack *)
+  //{
+  //  if (arg_) {
+  //    arg_->size = oldSize_;
+  //    ::strcpy(arg_->text, oldText_);
+  //    arg_ = nullptr;
+  //  }
+  //  return true;
+  //}
 
 } // namespace Private
 
@@ -146,24 +180,57 @@ namespace Private {
  *  00828EE8   1019150F  RETURN to RGSS301.1019150F from RGSS301.1018DF45
  */
 
-bool attach(HMODULE hModule) // attach scenario
+bool attach() // attach scenario
 {
-  ulong addr = 0x10041557;
-  //addr = 0x100414A0;
-  return addr && winhook::hook_before(addr, Private::hookBefore);
+  QString module = Private::getDllModuleName();
+  if (module.isEmpty())
+    return false;
+
+  DOUT("dll =" << module);
+
+  ulong startAddress, stopAddress;
+  if (!Engine::getMemoryRange((LPCWSTR)module.utf16(), &startAddress, &stopAddress))
+    return false;
+
+  const quint8 bytes[] = {
+    0x8b,0x54,0x24, 0x24,           // 1004155c   8b5424 24        mov edx,dword ptr ss:[esp+0x24]
+    0x8b,0x02,                      // 10041560   8b02             mov eax,dword ptr ds:[edx]
+    0x8b,0xc8,                      // 10041562   8bc8             mov ecx,eax
+    0x83,0xc4, 0x0c,                // 10041564   83c4 0c          add esp,0xc
+    0x81,0xe1, 0x00,0x20,0x00,0x00  // 10041567   81e1 00200000    and ecx,0x2000
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  //addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
+  //addr = 0x10041557;
+  //addr = 0x100414a0;
+  return winhook::hook_before(addr, Private::hookBefore); //, Private::hookAfter);
 }
 
 } // namespace AgsHookW
+
 } // unnamed namespace
 
 /** Public class */
 
 bool RGSSEngine::attach()
 {
-  HMODULE hModule = ::GetModuleHandleA("RGSS301.dll");
-  if (!hModule)
+  if (!RGSS3Hook::attach())
     return false;
-  return RGSS3Hook::attach(hModule);
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW); // in order to customize font
+  return true;
+}
+
+QString RGSSEngine::textFilter(const QString &text, int role)
+{
+  Q_UNUSED(role);
+  QString ret = text;
+  ret = ret.remove("\\.");
+  return ret;
 }
 
 // EOF

@@ -173,6 +173,29 @@ public:
     }
     return text;
   }
+
+  static QString trimText(const QString &text, QString *prefix = nullptr, QString *suffix = nullptr)
+  {
+    if (text.isEmpty() ||
+        !text[0].isSpace() && !text[text.size() - 1].isSpace())
+      return text;
+    QString ret = text;
+    if (ret[0].isSpace()) {
+      int pos = 0;
+      for (; pos < ret.size() && ret[pos].isSpace(); pos++);
+      if (prefix)
+        *prefix = ret.left(pos);
+      ret = ret.mid(pos);
+    }
+    if (!ret.isEmpty() && ret[ret.size() - 1].isSpace()) {
+      int pos = ret.size() - 1;
+      for (; pos >= 0 && ret[pos].isSpace(); pos--);
+      if (suffix)
+        *suffix = ret.mid(pos + 1);
+      ret = ret.left(pos + 1);
+    }
+    return ret;
+  }
 };
 
 EngineController *EngineControllerPrivate::globalInstance;
@@ -308,27 +331,47 @@ bool EngineController::matchFiles(const QStringList &relpaths)
 
 QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role)
 {
+  if (data.isEmpty())
+    return data;
+
+  if (role == Engine::OtherRole) {
+    qint64 hash = Engine::hashByteArray(data);
+    if (d_->containsTextHash(hash))
+      return data;
+  }
+  if (!d_->settings.enabled
+      || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
+      || WinKey::isKeyShiftPressed())
+    return data;
+
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
 
   if (!role)
     role = d_->settings.textRoleOf(signature);
-  qint64 hash = Engine::hashByteArray(data);
-  if (role == Engine::OtherRole && d_->containsTextHash(hash))
-    return data;
 
-  if (!d_->settings.enabled
-      || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed())
+  QString prefix,
+          suffix,
+          trimmedText = D::trimText(text, &prefix, &suffix);
+
+  if (d_->model->textFilterFunction)
+    trimmedText = d_->model->textFilterFunction(trimmedText, role);
+
+  if (trimmedText.isEmpty()) {
+    if (!d_->settings.textVisible[role])
+      return QByteArray();
     return data;
+  }
+
+  qint64 hash = Engine::hashWString(trimmedText);
 
   auto p = EmbedManager::instance();
   QString repl;
   if (role == Engine::OtherRole) { // skip sending text
     if (!d_->settings.textVisible[role])
       return QByteArray();
-    if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(text))
+    if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(trimmedText))
       return data;
     repl = p->findTranslation(hash, role);
   }
@@ -337,12 +380,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
       && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
       && (role != Engine::OtherRole || repl.isEmpty())) {
     enum { NeedsTranslation = false };
-    if (d_->model->textFilterFunction) {
-      QString t = d_->model->textFilterFunction(text, role);
-      if (!t.isEmpty())
-        p->sendText(t, hash, signature, role, NeedsTranslation);
-    } else
-      p->sendText(text, hash, signature, role, NeedsTranslation);
+    p->sendText(trimmedText, hash, signature, role, NeedsTranslation);
   }
 
   if (!d_->settings.textVisible[role])
@@ -352,15 +390,9 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (repl.isEmpty())
     repl = p->findTranslation(hash, role);
-  bool needsTranslation = repl.isEmpty();
-  if (d_->model->textFilterFunction) {
-    QString t = d_->model->textFilterFunction(text, role);
-    if (!t.isEmpty())
-      p->sendText(t, hash, signature, role, needsTranslation);
-    else
-      return data;
-  } else
-    p->sendText(text, hash, signature, role, needsTranslation);
+
+  const bool needsTranslation = repl.isEmpty();
+  p->sendText(trimmedText, hash, signature, role, needsTranslation);
 
   if (needsTranslation) {
     repl = p->waitForTranslation(hash, role);
@@ -369,22 +401,30 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   }
 
   if (repl.isEmpty())
-    repl = text;
-  else if (repl != text)
+    repl = trimmedText;
+  else if (repl != trimmedText)
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
-        repl = QString("%1 \n%2").arg(repl, text);
+        repl.append(" \n")
+            .append(trimmedText);
       break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
-        repl = QString("%1 / %2").arg(repl, text);
+        repl.append(" / ")
+            .append(trimmedText);
       break;
     case Engine::OtherRole:
       if (d_->settings.otherTextVisible)
-        repl = QString("%1 / %2").arg(repl, text);
+        repl.append(" / ")
+            .append(trimmedText);
       break;
     }
+
+  if (!prefix.isEmpty())
+    repl.prepend(prefix);
+  if (!suffix.isEmpty())
+    repl.append(suffix);
 
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
@@ -404,9 +444,12 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (!role)
     role = d_->settings.textRoleOf(signature);
-  qint64 hash = Engine::hashWString(text);
-  if (role == Engine::OtherRole && d_->containsTextHash(hash))
-    return text;
+
+  if (role == Engine::OtherRole) {
+    qint64 hash = Engine::hashWString(text);
+    if (d_->containsTextHash(hash))
+      return text;
+  }
 
   // Canceled
   if (!d_->settings.enabled
@@ -414,13 +457,28 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
       || WinKey::isKeyShiftPressed())
     return text;
 
+  QString prefix,
+          suffix,
+          trimmedText = D::trimText(text, &prefix, &suffix);
+
+  if (d_->model->textFilterFunction)
+    trimmedText = d_->model->textFilterFunction(trimmedText, role);
+
+  if (trimmedText.isEmpty()) {
+    if (!d_->settings.textVisible[role])
+      return QString();
+    return text;
+  }
+
+  qint64 hash = Engine::hashWString(trimmedText);
+
   auto p = EmbedManager::instance();
   QString repl;
   if (role == Engine::OtherRole) { // skip sending text
     if (!d_->settings.textVisible[role])
       return QString();
-    if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(text))
-      return d_->adjustSpaces(text);
+    if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(trimmedText))
+      return text;
     repl = p->findTranslation(hash, role);
   }
 
@@ -428,30 +486,19 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
       && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
       && (role != Engine::OtherRole || repl.isEmpty())) {
     enum { NeedsTranslation = false };
-    if (d_->model->textFilterFunction) {
-      QString t = d_->model->textFilterFunction(text, role);
-      if (!t.isEmpty())
-        p->sendText(t, hash, signature, role, NeedsTranslation);
-    } else
-      p->sendText(text, hash, signature, role, NeedsTranslation);
+    p->sendText(trimmedText, hash, signature, role, NeedsTranslation);
   }
 
   if (!d_->settings.textVisible[role])
     return QString();
   if (!d_->settings.translationEnabled[role])
-    return d_->adjustSpaces(text);
+    return text;
 
   if (repl.isEmpty())
     repl = p->findTranslation(hash, role);
-  bool needsTranslation = repl.isEmpty();
-  if (d_->model->textFilterFunction) {
-    QString t = d_->model->textFilterFunction(text, role);
-    if (!t.isEmpty())
-      p->sendText(t, hash, signature, role, needsTranslation);
-    else
-      return d_->adjustSpaces(text);
-  } else
-    p->sendText(text, hash, signature, role, needsTranslation);
+
+  const bool needsTranslation = repl.isEmpty();
+  p->sendText(trimmedText, hash, signature, role, needsTranslation);
 
   if (needsTranslation) {
     repl = p->waitForTranslation(hash, role);
@@ -460,22 +507,31 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   }
 
   if (repl.isEmpty())
-    repl = text; // prevent from deleting text
-  else if (repl != text)
+    repl = trimmedText; // prevent from deleting text
+  else if (repl != trimmedText)
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
-        repl = QString("%1\n%2").arg(repl, text);
+        repl.append(" \n")
+            .append(trimmedText);
       break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
-        repl = QString("%1 / %2").arg(repl, text);
+        repl.append(" / ")
+            .append(trimmedText);
       break;
     case Engine::OtherRole:
       if (d_->settings.otherTextVisible)
-        repl = QString("%1 / %2").arg(repl, text);
+        repl.append(" / ")
+            .append(trimmedText);
+        //repl = QString("%1 / %2").arg(repl, trimmedText);
       break;
     }
+
+  if (!prefix.isEmpty())
+    repl.prepend(prefix);
+  if (!suffix.isEmpty())
+    repl.append(suffix);
 
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);

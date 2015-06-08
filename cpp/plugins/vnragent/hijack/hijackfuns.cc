@@ -5,13 +5,17 @@
 #include "hijack/hijacksettings.h"
 #include "util/dyncodec.h"
 #include "util/textutil.h"
+#include <boost/foreach.hpp>
+#include <algorithm>
+#include <list>
+#include <utility>
 
 #define DEBUG "hijackfuns"
 #include "sakurakit/skdebug.h"
 
 // Disable only for debugging purpose
-#define HIJACK_GDI_FONT
-#define HIJACK_GDI_TEXT
+//#define HIJACK_GDI_FONT
+//#define HIJACK_GDI_TEXT
 
 #define DEF_FUN(_f) Hijack::_f##_fun_t Hijack::old##_f = ::_f;
   DEF_FUN(CreateFontA)
@@ -69,36 +73,96 @@ void customizeLogFontW(LOGFONTW *lplf)
   }
 }
 
+// LogFont manager
+
+class LogFontManager
+{
+  typedef std::pair<HFONT, LOGFONTW> font_pair;
+  std::list<font_pair> fonts_;
+
+  static bool eq(const LOGFONTW &x, const LOGFONTW&y);
+
+public:
+  HFONT get(const LOGFONTW &lf) const;
+  void add(HFONT hf, const LOGFONTW &lf);
+  void remove(HFONT hf);
+  void remove(const LOGFONTW &lf);
+};
+
+bool LogFontManager::eq(const LOGFONTW &x, const LOGFONTW &y)
+{ // I assume there is no padding
+  return ::wcscmp(x.lfFaceName, y.lfFaceName) == 0
+      && ::memcmp(&x, &y, sizeof(x) - sizeof(x.lfFaceName)) == 0;
+}
+
+void LogFontManager::add(HFONT hf, const LOGFONTW &lf)
+{ fonts_.push_back(std::make_pair(hf, lf)); }
+
+void LogFontManager::remove(HFONT hf)
+{
+  std::remove_if(fonts_.begin(), fonts_.end(), [&hf](const font_pair &it) {
+    return it.first == hf;
+  });
+}
+
+void LogFontManager::remove(const LOGFONTW &lf)
+{
+  std::remove_if(fonts_.begin(), fonts_.end(), [&lf](const font_pair &it) {
+    return eq(it.second, lf);
+  });
+}
+
+HFONT LogFontManager::get(const LOGFONTW &lf) const
+{
+  BOOST_FOREACH (const font_pair &it, fonts_)
+    if (eq(it.second, lf))
+      return it.first;
+  return nullptr;
+}
+
+// GDI font switcher
+
 class DCFontSwitcher
 {
+  static LogFontManager fonts_;
+
   HDC hdc_;
   HFONT oldFont_,
         newFont_;
+
 public:
-  explicit DCFontSwitcher(HDC hdc);
+  explicit DCFontSwitcher(HDC hdc); // pass 0 to disable this class
   ~DCFontSwitcher();
 };
 
+LogFontManager DCFontSwitcher::fonts_;
+
 DCFontSwitcher::~DCFontSwitcher()
 {
-  if (oldFont_)
-    ::SelectObject(hdc_, oldFont_);
-  if (newFont_)
-    ::DeleteObject(newFont_);
+  // No idea why selecting old font will crash Mogeko Castle
+  //if (oldFont_ && oldFont_ != HGDI_ERROR)
+  //  ::SelectObject(hdc_, oldFont_);
+
+  // Never delete new font but cache them
+  // This could result in bad font after game is reset and deleted my font
+  //if (newFont_)
+  //  ::DeleteObject(newFont_);
 }
 
 DCFontSwitcher::DCFontSwitcher(HDC hdc)
   : hdc_(hdc), oldFont_(nullptr), newFont_(nullptr)
 {
-  TEXTMETRIC tm;
-  if (!::GetTextMetrics(hdc, &tm))
+  if (!hdc_)
     return;
-
   auto p = HijackHelper::instance();
   if (!p)
     return;
   auto s = p->settings();
   if (!s->isFontCustomized())
+    return;
+
+  TEXTMETRICW tm;
+  if (!::GetTextMetricsW(hdc, &tm))
     return;
 
   LOGFONTW lf = {};
@@ -115,7 +179,11 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
   if (s->fontFamily.isEmpty())
     ::GetTextFaceW(hdc_, LF_FACESIZE, lf.lfFaceName);
 
-  newFont_ = Hijack::oldCreateFontIndirectW(&lf);
+  newFont_ = fonts_.get(lf);
+  if (!newFont_) {
+    newFont_ = Hijack::oldCreateFontIndirectW(&lf);
+    fonts_.add(newFont_, lf);
+  }
   oldFont_ = (HFONT)SelectObject(hdc_, newFont_);
   //DOUT("pass");
 }
@@ -128,7 +196,6 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
 // The font creation functions will never fail
 HFONT WINAPI Hijack::newCreateFontIndirectA(const LOGFONTA *lplf)
 {
-#ifdef HIJACK_GDI_FONT
   //DOUT("pass");
   //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
@@ -151,13 +218,11 @@ HFONT WINAPI Hijack::newCreateFontIndirectA(const LOGFONTA *lplf)
       return oldCreateFontIndirectA(&lf.a);
     }
   }
-#endif // HIJACK_GDI_FONT
   return oldCreateFontIndirectA(lplf);
 }
 
 HFONT WINAPI Hijack::newCreateFontIndirectW(const LOGFONTW *lplf)
 {
-#ifdef HIJACK_GDI_FONT
   //DOUT("pass");
   //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
@@ -168,13 +233,11 @@ HFONT WINAPI Hijack::newCreateFontIndirectW(const LOGFONTW *lplf)
       return oldCreateFontIndirectW(&lf);
     }
   }
-#endif // HIJACK_GDI_FONT
   return oldCreateFontIndirectW(lplf);
 }
 
 HFONT WINAPI Hijack::newCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
-#ifdef HIJACK_GDI_FONT
   //DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
@@ -204,13 +267,11 @@ HFONT WINAPI Hijack::newCreateFontA(int nHeight, int nWidth, int nEscapement, in
       }
     }
   }
-#endif // HIJACK_GDI_FONT
   return oldCreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
 }
 
 HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
 {
-#ifdef HIJACK_GDI_FONT
   //DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
@@ -232,7 +293,6 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
         lpszFace = (LPCWSTR)s->fontFamily.utf16();
     }
   }
-#endif // HIJACK_GDI_FONT
   return oldCreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
 }
 
@@ -271,28 +331,46 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
 {
   //DOUT("pass");
-#ifdef HIJACK_GDI_TEXT
+  //DCFontSwitcher fs(hdc);
   DECODE_CHAR(uChar, oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2))
-#endif // HIJACK_GDI_TEXT
   return oldGetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
+}
+
+DWORD WINAPI Hijack::newGetGlyphOutlineW(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
+{
+  //DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  return oldGetGlyphOutlineW(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
 }
 
 BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
 {
   //DOUT("pass");
-#ifdef HIJACK_GDI_TEXT
+  //DCFontSwitcher fs(hdc);
   DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
-#endif // HIJACK_GDI_TEXT
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
+}
+
+BOOL WINAPI Hijack::newGetTextExtentPoint32W(HDC hdc, LPCWSTR lpString, int cchString, LPSIZE lpSize)
+{
+  //DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  return oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize);
 }
 
 BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
 {
   //DOUT("pass");
-#ifdef HIJACK_GDI_TEXT
+  //DCFontSwitcher fs(hdc);
   DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
-#endif // HIJACK_GDI_TEXT
   return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
+}
+
+BOOL WINAPI Hijack::newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpString, int cchString)
+{
+  //DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  return oldTextOutW(hdc, nXStart, nYStart, lpString, cchString);
 }
 
 // EOF

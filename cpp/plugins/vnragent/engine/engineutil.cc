@@ -17,6 +17,9 @@
 
 namespace { // unnamed
 
+inline QStringList globDir(const QDir &dir, const QString &filter)
+{ return dir.entryList(QStringList(filter)); }
+
 inline bool globsDir(const QDir &dir, const QString &filter)
 { return !dir.entryList(QStringList(filter)).isEmpty(); }
 
@@ -30,20 +33,20 @@ inline bool existsPath(const QString &path)
 bool Engine::isAddressReadable(const ulong *p)
 { return p && !::IsBadReadPtr(p, sizeof(*p)); }
 
-bool Engine::isAddressReadable(const char *p)
-{ return p && !::IsBadReadPtr(p, sizeof(*p)); }
+bool Engine::isAddressReadable(const char *p, size_t count)
+{ return p && !::IsBadReadPtr(p, sizeof(*p) * count); }
 
-bool Engine::isAddressReadable(const wchar_t *p)
-{ return p && !::IsBadReadPtr(p, sizeof(*p)); }
+bool Engine::isAddressReadable(const wchar_t *p, size_t count)
+{ return p && !::IsBadReadPtr(p, sizeof(*p) * count); }
 
 bool Engine::isAddressWritable(const ulong *p)
 { return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
 
-bool Engine::isAddressWritable(const char *p)
-{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
+bool Engine::isAddressWritable(const char *p, size_t count)
+{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
 
-bool Engine::isAddressWritable(const wchar_t *p)
-{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
+bool Engine::isAddressWritable(const wchar_t *p, size_t count)
+{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
 
 // - Detours -
 
@@ -72,37 +75,51 @@ Engine::address_type Engine::replaceFunction(address_type old_addr, const_addres
 
 // - File -
 
-bool Engine::globs(const QString &nameFilter)
+QStringList Engine::glob(const QString &relpath)
 {
-  QDir dir = QCoreApplication::applicationDirPath();
-  return ::globsDir(dir, nameFilter);
+  QString path = QCoreApplication::applicationDirPath();
+  int i = relpath.lastIndexOf('/');
+  if (i != -1) {
+    QDir dir = path + "/" + relpath.left(i);
+    return dir.exists() ? ::globDir(dir, relpath.mid(i+1)) : QStringList();
+  } else {
+    QDir dir = path;
+    return ::globDir(dir, relpath);
+  }
 }
 
-bool Engine::globs(const QStringList &nameFilters)
+bool Engine::globs(const QString &relpath)
 {
-  QDir dir = QCoreApplication::applicationDirPath();
-  foreach (const QString &filter, nameFilters)
-    if (!::globsDir(dir, filter))
-      return false;
-  return true;
+  QString path = QCoreApplication::applicationDirPath();
+  int i = relpath.lastIndexOf('/');
+  if (i != -1) {
+    QDir dir = path + "/" + relpath.left(i);
+    return dir.exists() && ::globsDir(dir, relpath.mid(i+1));
+  } else {
+    QDir dir = path;
+    return ::globsDir(dir, relpath);
+  }
 }
 
-bool Engine::globs(const QString &relPath, const QString &nameFilter)
-{
-  QDir dir = QCoreApplication::applicationDirPath() + "/" + relPath;
-  return dir.exists() && ::globsDir(dir, nameFilter);
-}
+//bool Engine::globs(const QStringList &nameFilters)
+//{
+//  QDir dir = QCoreApplication::applicationDirPath();
+//  foreach (const QString &filter, nameFilters)
+//    if (!::globsDir(dir, filter))
+//      return false;
+//  return true;
+//}
 
-bool Engine::globs(const QString &relPath, const QStringList &nameFilters)
-{
-  QDir dir = QCoreApplication::applicationDirPath() + "/" + relPath;
-  if (!dir.exists())
-    return false;
-  foreach (const QString &filter, nameFilters)
-    if (!::globsDir(dir, filter))
-      return false;
-  return true;
-}
+//bool Engine::globs(const QString &relPath, const QStringList &nameFilters)
+//{
+//  QDir dir = QCoreApplication::applicationDirPath() + "/" + relPath;
+//  if (!dir.exists())
+//    return false;
+//  foreach (const QString &filter, nameFilters)
+//    if (!::globsDir(dir, filter))
+//      return false;
+//  return true;
+//}
 
 bool Engine::exists(const QString &relPath)
 {
@@ -110,14 +127,14 @@ bool Engine::exists(const QString &relPath)
   return ::existsPath(path);
 }
 
-bool Engine::exists(const QStringList &relPaths)
-{
-  QString base = QCoreApplication::applicationDirPath();
-  foreach (const QString &path, relPaths)
-    if (!::existsPath(base + "/" + path))
-      return false;
-  return true;
-}
+//bool Engine::exists(const QStringList &relPaths)
+//{
+//  QString base = QCoreApplication::applicationDirPath();
+//  foreach (const QString &path, relPaths)
+//    if (!::existsPath(base + "/" + path))
+//      return false;
+//  return true;
+//}
 
 // - Process and threads -
 
@@ -130,6 +147,12 @@ QString Engine::getNormalizedProcessName()
   }
   return ret;
 }
+
+//bool Engine::getMemoryRange(const char *moduleName, unsigned long *startAddress, unsigned long *stopAddress)
+//{
+//  std::wstring ws = moduleName;
+//  return Engine::getMemoryRange(ws.c_str(), startAddress, stopAddress);
+//}
 
 bool Engine::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress)
 {
