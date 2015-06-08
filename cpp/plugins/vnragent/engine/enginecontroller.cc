@@ -181,14 +181,14 @@ public:
       return text;
     QString ret = text;
     if (ret[0].isSpace()) {
-      int pos = 0;
+      int pos = 1;
       for (; pos < ret.size() && ret[pos].isSpace(); pos++);
       if (prefix)
         *prefix = ret.left(pos);
       ret = ret.mid(pos);
     }
     if (!ret.isEmpty() && ret[ret.size() - 1].isSpace()) {
-      int pos = ret.size() - 1;
+      int pos = ret.size() - 2;
       for (; pos >= 0 && ret[pos].isSpace(); pos--);
       if (suffix)
         *suffix = ret.mid(pos + 1);

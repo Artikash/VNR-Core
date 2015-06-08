@@ -43,20 +43,40 @@ namespace Private {
   //char oldText_[MaxTextSize + 1]; // 1 extra 0 that is always 0
   //size_t oldSize_;
 
+  /**
+   * Skip ascii characters in the beginning
+   *  @param  text
+   *  @param  prefix
+   *  @return
+   */
+  QString ltrim(const QString &text, QString *prefix = nullptr)
+  {
+    if (text.isEmpty() || text[0].unicode() > 127)
+      return text;
+    int pos = 1;
+    for(; pos < text.size() && text[pos].unicode() <= 127; pos++);
+    if (prefix)
+      *prefix = text.left(pos);
+    return text.mid(pos);
+  }
+
   bool hookBefore(winhook::hook_stack *s)
   {
     auto arg = (HookArgument *)s->stack[1]; // arg1
-    if (arg->size && arg->size < 0x2000 && arg->text && Engine::isAddressWritable(arg->text, arg->size) && *arg->text) {
-      QString oldText = QString::fromUtf8(arg->text);
-      if (oldText[0].unicode() >= 128) { // skip text beginning with ascii character
-        enum { role = Engine::ScenarioRole };
+    if (arg->size && arg->size < MaxTextSize && arg->text && Engine::isAddressWritable(arg->text, arg->size) && *arg->text) {
+      QString oldText = QString::fromUtf8(arg->text),
+              prefix,
+              trimmedText = ltrim(oldText, &prefix);
+      if (!trimmedText.isEmpty()) { // skip text beginning with ascii character
+        enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
         //ulong split = arg->unknown2[0]; // always 2
         //ulong split = s->stack[0]; // return address
-        ulong split = arg->unknown1[1]; // return address
-        auto sig = Engine::hashThreadSignature(role, split);
+        //auto sig = Engine::hashThreadSignature(role, split);
 
-        QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
-        if (newText != oldText) {
+        QString newText = EngineController::instance()->dispatchTextW(trimmedText, sig, role);
+        if (newText != trimmedText) {
+          if (!prefix.isEmpty())
+            newText.prepend(prefix);
           QByteArray data = newText.toUtf8();
           //if (Engine::isAddressWritable(arg->text, data.size() + 1))
 
