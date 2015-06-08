@@ -10,6 +10,7 @@
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 #include <boost/foreach.hpp>
+#include <unordered_set>
 
 #define DEBUG "rgss"
 #include "sakurakit/skdebug.h"
@@ -44,13 +45,14 @@ namespace Private {
     {
       return Engine::isAddressReadable(type) && *type
           && size && size < MaxTextSize
-          && Engine::isAddressWritable(text, size) && *text;
+          && Engine::isAddressWritable(text, size + 1) && *text
+          && text[size] == 0 && ::strlen(text) == size; // validate size
     }
 
     //int size() const { return (*type >> 0xe) & 0x1f; }
   };
 
-  HookArgument *arg_;
+  std::unordered_set<HookArgument *> args_;
 
   /**
    * Skip ascii characters in the beginning
@@ -72,7 +74,8 @@ namespace Private {
   bool hookBefore(winhook::hook_stack *s)
   {
     auto arg = (HookArgument *)s->stack[1]; // arg1
-    if (arg->isValid()) { // Engine::isAddressWritable(arg->text, arg->size)
+    if (args_.find(arg) == args_.end() && arg->isValid()) { // Engine::isAddressWritable(arg->text, arg->size)
+      args_.insert(arg); // make sure it is only translated once
       QString oldText = QString::fromUtf8(arg->text),
               prefix,
               trimmedText = ltrim(oldText, &prefix);
