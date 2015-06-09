@@ -10,7 +10,8 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
-//#include <QtCore/QRegExp>
+#include <QtCore/QRegExp>
+#include <QtCore/QSet>
 #include <boost/foreach.hpp>
 
 #define DEBUG "rgss"
@@ -494,7 +495,7 @@ namespace Private {
     LPDWORD type;    // 0x0
     LPDWORD unknown; // 0x4
     size_t size;     // 0x8
-    LPSTR text;      // 0xc
+    LPCSTR text;     // 0xc, editable though
 
     bool isValid() const
     {
@@ -546,33 +547,45 @@ namespace Private {
   //  return false;
   //}
 
+  int guessTextRole(const QString &text)
+  {
+    enum { MaxNameSize = 100 };
+    enum : wchar_t {
+      w_square_open = 0x3010    /* 【 */
+      , w_square_close = 0x3011 /* 】 */
+    };
+    if (text.size() > 2
+        && text.size() < MaxNameSize
+        && text[0].unicode() == w_square_open
+        && text[text.size() - 1].unicode() == w_square_close)
+      return Engine::NameRole;
+    return Engine::ScenarioRole;
+  }
+
+  QByteArray data_;
   HookArgument *arg_;
-  LPSTR oldText_;
+  LPCSTR oldText_;
   size_t oldSize_;
   bool hookBefore(winhook::hook_stack *s)
   {
-    enum { role = Engine::ScenarioRole };
-
-    static QSet<HookArgument *> args_;
     static QSet<QString> texts_;
 
     auto arg = (HookArgument *)s->stack[0]; // arg1
-    if (!args_.contains(arg) && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
-      args_.insert(arg); // make sure it is only translated once
+    if (arg && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
       QString oldText = QString::fromUtf8(arg->text, arg->size),
               prefix,
               suffix,
               trimmedText = trim(oldText, &prefix, &suffix);
+
       if (!trimmedText.isEmpty() && !texts_.contains(trimmedText)) { // skip text beginning with ascii character
         auto q = EngineController::instance();
 
         //ulong split = arg->unknown2[0]; // always 2
-        ulong split = s->stack[0]; // return address
-        split = 0;
-        auto sig = Engine::hashThreadSignature(role, split);
-
+        //ulong split = s->stack[0]; // return address
         QString newText;
         if (!trimmedText.contains('\n')) {
+          auto role = guessTextRole(trimmedText);
+          auto sig = Engine::hashThreadSignature(role);
           newText = q->dispatchTextW(trimmedText, sig, role);
         } else { // handle each line one by one
           QStringList newTexts;
@@ -583,6 +596,8 @@ namespace Private {
             if (eachTrimmedText.isEmpty() || texts_.contains(eachTrimmedText))
               newTexts.append(eachOldText);
             else {
+              auto role = guessTextRole(eachTrimmedText);
+              auto sig = Engine::hashThreadSignature(role);
               QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role);
               if (eachNewText == eachTrimmedText)
                  newTexts.append(eachOldText);
@@ -604,7 +619,7 @@ namespace Private {
 
         if (newText != trimmedText) {
           texts_.insert(newText);
-          texts_.insert(trim(newText));
+          texts_.insert(trim(newText)); // in case there are leading/trailing English letters in the translation
 
           if (!prefix.isEmpty())
             newText.prepend(prefix);
@@ -613,22 +628,15 @@ namespace Private {
 
           //texts_.insert(newText);
 
-          QByteArray data = newText.toUtf8();
-          //if (Engine::isAddressWritable(arg->text, data.size() + 1))
-
-          //arg->size = min(data.size(), MaxTextSize - 1);
-          //::memcpy(arg->text, data.constData(), arg->size + 1);
+          data_ = newText.toUtf8();
 
           arg_ = arg;
           oldSize_ = arg->size;
           oldText_ = arg->text;
-          //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize));
+          //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize)); // memcpy also works
 
-          static QByteArray data_;
-          data_ = data;
-          arg->size = data.size();
-          arg->text = const_cast<LPSTR>(data_.constData());
-
+          arg->size = data_.size();
+          arg->text = data_.constData();
         }
       }
     }
@@ -645,7 +653,6 @@ namespace Private {
     }
     return true;
   }
-
 } // namespace Private
 
 bool attach(ulong startAddress, ulong stopAddress) // attach scenario
