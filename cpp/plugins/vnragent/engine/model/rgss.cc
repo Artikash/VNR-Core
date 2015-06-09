@@ -535,6 +535,17 @@ namespace Private {
     return ret;
   }
 
+  //bool textsContains(const QSet<QString> &texts, const QString &text)
+  //{
+  //  if (texts.contains(text))
+  //    return true;
+  //  if (text.contains('\n'))  // 0xa, skip translation if any of the part has been translated
+  //    foreach (const QString &it, text.split('\n', QString::SkipEmptyParts))
+  //      if (texts.contains(it))
+  //        return true;
+  //  return false;
+  //}
+
   bool hookBefore(winhook::hook_stack *s)
   {
     enum { role = Engine::ScenarioRole };
@@ -549,21 +560,54 @@ namespace Private {
               prefix,
               suffix,
               trimmedText = trim(oldText, &prefix, &suffix);
-      //trimmedText.remove('\n')  // remove Linux new line characters
-      //           .remove('\r');
-      if (!trimmedText.isEmpty() && !texts_.contains(trimmedText) && !texts_.contains(oldText)) { // skip text beginning with ascii character
+      if (!trimmedText.isEmpty() && !texts_.contains(trimmedText)) { // skip text beginning with ascii character
+        auto q = EngineController::instance();
+
         //ulong split = arg->unknown2[0]; // always 2
         ulong split = s->stack[0]; // return address
         auto sig = Engine::hashThreadSignature(role, split);
 
-        QString newText = EngineController::instance()->dispatchTextW(trimmedText, sig, role);
+        QString newText;
+        if (!trimmedText.contains('\n')) {
+          newText = q->dispatchTextW(trimmedText, sig, role);
+        } else { // handle each line one by one
+          QStringList newTexts;
+          foreach (const QString &eachOldText, trimmedText.split('\n')) {
+            QString eachPrefix,
+                    eachSuffix,
+                    eachTrimmedText = trim(eachOldText, &eachPrefix, &eachSuffix);
+            if (eachTrimmedText.isEmpty() || texts_.contains(eachTrimmedText))
+              newTexts.append(eachOldText);
+            else {
+              QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role);
+              if (eachNewText == eachTrimmedText)
+                 newTexts.append(eachOldText);
+              else {
+                texts_.insert(eachNewText);
+                texts_.insert(trim(eachNewText));
+
+                if (!eachPrefix.isEmpty())
+                  eachNewText.prepend(eachPrefix);
+                if (!eachSuffix.isEmpty())
+                  eachNewText.append(eachSuffix);
+
+                newTexts.append(eachNewText);
+              }
+            }
+          }
+          newText = newTexts.join(QChar('\n'));
+        }
+
         if (newText != trimmedText) {
           texts_.insert(newText);
+          texts_.insert(trim(newText));
 
           if (!prefix.isEmpty())
             newText.prepend(prefix);
           if (!suffix.isEmpty())
             newText.append(suffix);
+
+          //texts_.insert(newText);
 
           QByteArray data = newText.toUtf8();
           //if (Engine::isAddressWritable(arg->text, data.size() + 1))
