@@ -14,20 +14,10 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 
 int main()
 {
-  QString t = QString::fromStdWString(L"\u76ee");
-  //QString t = QString::fromStdWString(L"\u899a");
-  //QTextCodec *c = QTextCodec::codecForName("euc-kr");
-  QTextCodec *c = QTextCodec::codecForName("latin1");
-  qDebug() << c;
-  //QTextEncoder *e = c->makeEncoder(QTextCodec::ConvertInvalidToNull);
-  QTextEncoder *e = c->makeEncoder();
-  QByteArray b = e->fromUnicode(t);
-  qDebug() << t;
-  qDebug() << b.size();
-  qDebug() << QString(b);
-  qDebug() << encodable(t[0], e);
+  QRegExp rx_("\\\\[0-9A-Z.\\[\\]]+");
 
-  QChar ch(0x76ee);
-  qDebug() << QTextCodec::codecForName("euc-kr")->makeEncoder()->fromUnicode(&ch, 1);
+  QString t = "hello\\C[0] 123";
+  t.remove(rx_);
+  qDebug() << t;
   return 0;
 }

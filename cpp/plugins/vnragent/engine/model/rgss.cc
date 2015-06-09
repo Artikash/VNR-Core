@@ -5,12 +5,14 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
+#include "util/textutil.h"
 #include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+//#include <QtCore/QRegExp>
+#include <QtCore/QSet>
 #include <boost/foreach.hpp>
-#include <unordered_set>
 
 #define DEBUG "rgss"
 #include "sakurakit/skdebug.h"
@@ -46,58 +48,82 @@ namespace Private {
       return Engine::isAddressReadable(type) && *type
           && size && size < MaxTextSize
           && Engine::isAddressWritable(text, size + 1) && *text
-          && text[size] == 0 && ::strlen(text) == size; // validate size
+          && text[size] == 0 && ::strlen(text) == size  // validate size
+          //&& !::strchr(text, '/')
+          && !Util::allAscii(text);
     }
 
     //int size() const { return (*type >> 0xe) & 0x1f; }
   };
 
-  std::unordered_set<HookArgument *> args_;
+  inline bool _trims(const QChar &ch)
+  { return ch.unicode() <= 127 || ch.isSpace(); }
 
-  /**
-   * Skip ascii characters in the beginning
-   *  @param  text
-   *  @param  prefix
-   *  @return
-   */
-  QString ltrim(const QString &text, QString *prefix = nullptr)
+  QString trim(const QString &text, QString *prefix = nullptr, QString *suffix = nullptr)
   {
-    if (text.isEmpty() || text[0].unicode() > 127)
+    if (text.isEmpty() ||
+        !_trims(text[0]) && !_trims(text[text.size() - 1]))
       return text;
-    int pos = 1;
-    for(; pos < text.size() && text[pos].unicode() <= 127; pos++);
-    if (prefix)
-      *prefix = text.left(pos);
-    return text.mid(pos);
+    QString ret = text;
+    if (_trims(ret[0])) {
+      int pos = 1;
+      for (; pos < ret.size() && _trims(ret[pos]); pos++);
+      if (prefix)
+        *prefix = ret.left(pos);
+      ret = ret.mid(pos);
+    }
+    if (!ret.isEmpty() && _trims(ret[ret.size() - 1])) {
+      int pos = ret.size() - 2;
+      for (; pos >= 0 && _trims(ret[pos]); pos--);
+      if (suffix)
+        *suffix = ret.mid(pos + 1);
+      ret = ret.left(pos + 1);
+    }
+    return ret;
   }
 
   bool hookBefore(winhook::hook_stack *s)
   {
+    static QSet<HookArgument *> args_;
+    static QSet<QString> texts_;
+
     auto arg = (HookArgument *)s->stack[1]; // arg1
-    if (args_.find(arg) == args_.end() && arg->isValid()) { // Engine::isAddressWritable(arg->text, arg->size)
+    if (!args_.contains(arg) && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
       args_.insert(arg); // make sure it is only translated once
-      QString oldText = QString::fromUtf8(arg->text),
+      QString oldText = QString::fromUtf8(arg->text, arg->size),
               prefix,
-              trimmedText = ltrim(oldText, &prefix);
-      if (!trimmedText.isEmpty()) { // skip text beginning with ascii character
-        enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+              suffix,
+              trimmedText = trim(oldText, &prefix, &suffix);
+      //trimmedText.remove('\n')  // remove Linux new line characters
+      //           .remove('\r');
+      if (!trimmedText.isEmpty() && !texts_.contains(trimmedText) && !texts_.contains(oldText)) { // skip text beginning with ascii character
+        enum { role = Engine::ScenarioRole };
         //ulong split = arg->unknown2[0]; // always 2
-        //ulong split = s->stack[0]; // return address
-        //auto sig = Engine::hashThreadSignature(role, split);
+        ulong split = s->stack[0]; // return address
+        auto sig = Engine::hashThreadSignature(role, split);
 
         QString newText = EngineController::instance()->dispatchTextW(trimmedText, sig, role);
         if (newText != trimmedText) {
+          texts_.insert(newText);
+
           if (!prefix.isEmpty())
             newText.prepend(prefix);
+          if (!suffix.isEmpty())
+            newText.append(suffix);
+
           QByteArray data = newText.toUtf8();
           //if (Engine::isAddressWritable(arg->text, data.size() + 1))
+
+          arg->size = min(data.size(), MaxTextSize - 1);
+          ::memcpy(arg->text, data.constData(), arg->size + 1);
+
+          //static QByteArray data_;
+          //data_ = data;
+          //arg->text = const_cast<LPSTR>(data_.constData());
 
           //arg_ = arg;
           //oldSize_ = arg->size;
           //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize));
-
-          arg->size = min(data.size(), MaxTextSize - 1);
-          ::memcpy(arg->text, data.constData(), arg->size + 1);
         }
       }
     }
@@ -355,8 +381,11 @@ bool RGSSEngine::attach()
 QString RGSSEngine::textFilter(const QString &text, int role)
 {
   Q_UNUSED(role);
+  if (!text.contains('\\'))
+    return text;
   QString ret = text;
-  ret = ret.remove("\\.");
+  static QRegExp rx_("\\\\[0-9A-Z.\\[\\]]+");
+  ret.remove(rx_);
   return ret;
 }
 

@@ -334,22 +334,21 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (data.isEmpty())
     return data;
 
-  if (role == Engine::OtherRole) {
-    qint64 hash = Engine::hashByteArray(data);
-    if (d_->containsTextHash(hash))
-      return data;
-  }
   if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
       || WinKey::isKeyShiftPressed())
     return data;
 
+  if (!role)
+    role = d_->settings.textRoleOf(signature);
+
+  if (role == Engine::OtherRole
+      && d_->containsTextHash(Engine::hashByteArray(data)))
+    return data;
+
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
-
-  if (!role)
-    role = d_->settings.textRoleOf(signature);
 
   QString prefix,
           suffix,
@@ -442,19 +441,17 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (text.isEmpty())
     return text;
 
-  if (!role)
-    role = d_->settings.textRoleOf(signature);
-
-  if (role == Engine::OtherRole) {
-    qint64 hash = Engine::hashWString(text);
-    if (d_->containsTextHash(hash))
-      return text;
-  }
-
   // Canceled
   if (!d_->settings.enabled
       || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
       || WinKey::isKeyShiftPressed())
+    return text;
+
+  if (!role)
+    role = d_->settings.textRoleOf(signature);
+
+  if (role == Engine::OtherRole
+      && d_->containsTextHash(Engine::hashWString(text)))
     return text;
 
   QString prefix,
