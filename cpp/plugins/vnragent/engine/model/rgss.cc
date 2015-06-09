@@ -1187,7 +1187,7 @@ bool attach(ulong startAddress, ulong stopAddress) // attach other text
 
 } // namespace RGSS3Hook
 
-#if 1
+#if 0
 
 /**
  *  Sample game: Mogeko Castle with RGSS 3.01
