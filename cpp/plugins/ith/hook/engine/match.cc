@@ -673,6 +673,14 @@ bool DetermineNoEngine()
     return true;
   }
 
+  // jichi 6/9/2015: Skip Silkys Sakura
+  if ( // Almost the same as Silkys except mes.arc is replaced by Script.arc
+      IthCheckFile(L"data.arc") && IthCheckFile(L"effect.arc")
+      && IthCheckFile(L"Script.arc")) {
+    ConsoleOutput("vnreng: IGNORE Silkys Sakura BY/TH");
+    return true;
+  }
+
   if (IthFindFile(L"*.bsa")) {
     ConsoleOutput("vnreng: IGNORE Bishop");
     return true;
