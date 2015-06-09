@@ -1187,7 +1187,7 @@ bool attach(ulong startAddress, ulong stopAddress) // attach other text
 
 } // namespace RGSS3Hook
 
-#if 0
+#if 1
 
 /**
  *  Sample game: Mogeko Castle with RGSS 3.01
@@ -1206,12 +1206,13 @@ namespace DebugHook {
 
 bool beforeStrcpy(winhook::hook_stack *s)
 {
-  auto arg = (LPCSTR)s->stack[2]; // arg2
+  auto arg = (LPCSTR)s->stack[1]; // arg1
   auto sig = s->stack[0]; // retaddr
-  enum { role = Engine::OtherRole };
-  if (!::strstr(arg, "\xe3\x82\xaa\xe3\x83\xac\xe3\x83\xb3\xe7\x97\x94"))
-    return true;
-  QString text = QString::fromUtf8((LPCSTR)arg, s->stack[3]);
+  //enum { role = Engine::OtherRole };
+  //if (!::strstr(arg, "\xe3\x82\xaa\xe3\x83\xac\xe3\x83\xb3\xe7\x97\x94"))
+  //  return true;
+  QString text = QString::fromUtf16((LPCWSTR)arg);
+  //QString text = QString::fromUtf8((LPCSTR)arg, s->stack[3]);
   //if (!text.isEmpty() && text[0].unicode() >= 128 && text.size() == 5)
   //if (!text.isEmpty() && sig == 0x100378ed)
   EngineController::instance()->dispatchTextW(text, sig, role);
@@ -1220,7 +1221,9 @@ bool beforeStrcpy(winhook::hook_stack *s)
 
 bool attach()
 {
-  winhook::hook_before(0x10180840, beforeStrcpy);
+  //ulong addr = 0x10180840;
+  ulong addr = 0x1001f150;
+  winhook::hook_before(addr, beforeStrcpy);
   return true;
 }
 
