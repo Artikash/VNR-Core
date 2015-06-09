@@ -10,7 +10,7 @@
 #include <list>
 #include <utility>
 
-#define DEBUG "hijackfuns"
+//#define DEBUG "hijackfuns"
 #include "sakurakit/skdebug.h"
 
 // Disable only for debugging purpose
@@ -185,7 +185,7 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
     fonts_.add(newFont_, lf);
   }
   oldFont_ = (HFONT)SelectObject(hdc_, newFont_);
-  //DOUT("pass");
+  DOUT("pass");
 }
 
 } // unnamed namespace
@@ -196,7 +196,7 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
 // The font creation functions will never fail
 HFONT WINAPI Hijack::newCreateFontIndirectA(const LOGFONTA *lplf)
 {
-  //DOUT("pass");
+  DOUT("pass");
   //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
@@ -223,7 +223,7 @@ HFONT WINAPI Hijack::newCreateFontIndirectA(const LOGFONTA *lplf)
 
 HFONT WINAPI Hijack::newCreateFontIndirectW(const LOGFONTW *lplf)
 {
-  //DOUT("pass");
+  DOUT("pass");
   //DOUT("width:" << lplf->lfWidth << ", height:" << lplf->lfHeight << ", weight:" << lplf->lfWeight);
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
@@ -238,7 +238,7 @@ HFONT WINAPI Hijack::newCreateFontIndirectW(const LOGFONTW *lplf)
 
 HFONT WINAPI Hijack::newCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
-  //DOUT("pass");
+  DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (s->isFontCustomized()) {
@@ -272,7 +272,7 @@ HFONT WINAPI Hijack::newCreateFontA(int nHeight, int nWidth, int nEscapement, in
 
 HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
 {
-  //DOUT("pass");
+  DOUT("pass");
   if (auto p = HijackHelper::instance()) {
     auto s = p->settings();
     if (s->isFontCustomized()) {
@@ -330,7 +330,7 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
 {
-  //DOUT("pass");
+  DOUT("pass");
   //DCFontSwitcher fs(hdc);
   DECODE_CHAR(uChar, oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2))
   return oldGetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
@@ -338,14 +338,14 @@ DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGL
 
 DWORD WINAPI Hijack::newGetGlyphOutlineW(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
 {
-  //DOUT("pass");
+  DOUT("pass");
   DCFontSwitcher fs(hdc);
   return oldGetGlyphOutlineW(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
 }
 
 BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
 {
-  //DOUT("pass");
+  DOUT("pass");
   //DCFontSwitcher fs(hdc);
   DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
@@ -353,14 +353,14 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchSt
 
 BOOL WINAPI Hijack::newGetTextExtentPoint32W(HDC hdc, LPCWSTR lpString, int cchString, LPSIZE lpSize)
 {
-  //DOUT("pass");
+  DOUT("pass");
   DCFontSwitcher fs(hdc);
   return oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize);
 }
 
 BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
 {
-  //DOUT("pass");
+  DOUT("pass");
   //DCFontSwitcher fs(hdc);
   DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
   return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
@@ -368,7 +368,7 @@ BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpStri
 
 BOOL WINAPI Hijack::newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpString, int cchString)
 {
-  //DOUT("pass");
+  DOUT("pass");
   DCFontSwitcher fs(hdc);
   return oldTextOutW(hdc, nXStart, nYStart, lpString, cchString);
 }
