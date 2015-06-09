@@ -546,6 +546,9 @@ namespace Private {
   //  return false;
   //}
 
+  HookArgument *arg_;
+  LPSTR oldText_;
+  size_t oldSize_;
   bool hookBefore(winhook::hook_stack *s)
   {
     enum { role = Engine::ScenarioRole };
@@ -553,7 +556,7 @@ namespace Private {
     static QSet<HookArgument *> args_;
     static QSet<QString> texts_;
 
-    auto arg = (HookArgument *)s->stack[1]; // arg1
+    auto arg = (HookArgument *)s->stack[0]; // arg1
     if (!args_.contains(arg) && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
       args_.insert(arg); // make sure it is only translated once
       QString oldText = QString::fromUtf8(arg->text, arg->size),
@@ -565,6 +568,7 @@ namespace Private {
 
         //ulong split = arg->unknown2[0]; // always 2
         ulong split = s->stack[0]; // return address
+        split = 0;
         auto sig = Engine::hashThreadSignature(role, split);
 
         QString newText;
@@ -612,31 +616,35 @@ namespace Private {
           QByteArray data = newText.toUtf8();
           //if (Engine::isAddressWritable(arg->text, data.size() + 1))
 
-          arg->size = min(data.size(), MaxTextSize - 1);
-          ::memcpy(arg->text, data.constData(), arg->size + 1);
+          //arg->size = min(data.size(), MaxTextSize - 1);
+          //::memcpy(arg->text, data.constData(), arg->size + 1);
 
-          //static QByteArray data_;
-          //data_ = data;
-          //arg->text = const_cast<LPSTR>(data_.constData());
-
-          //arg_ = arg;
-          //oldSize_ = arg->size;
+          arg_ = arg;
+          oldSize_ = arg->size;
+          oldText_ = arg->text;
           //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize));
+
+          static QByteArray data_;
+          data_ = data;
+          arg->size = data.size();
+          arg->text = const_cast<LPSTR>(data_.constData());
+
         }
       }
     }
     return true;
   }
 
-  //bool hookAfter(winhook::hook_stack *)
-  //{
-  //  if (arg_) {
-  //    arg_->size = oldSize_;
-  //    ::strcpy(arg_->text, oldText_);
-  //    arg_ = nullptr;
-  //  }
-  //  return true;
-  //}
+  bool hookAfter(winhook::hook_stack *)
+  {
+    if (arg_) {
+      arg_->size = oldSize_;
+      arg_->text = oldText_;
+      //::strcpy(arg_->text, oldText_);
+      arg_ = nullptr;
+    }
+    return true;
+  }
 
 } // namespace Private
 
@@ -659,7 +667,11 @@ bool attach(ulong startAddress, ulong stopAddress) // attach scenario
   //addr = 0x10041557;
   //addr = 0x100414a0;
   //addr = 0x10056BC0;
-  return winhook::hook_before(addr, Private::hookBefore); //, Private::hookAfter);
+  //addr = 0x1002e5e1;
+  addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
+  if (!addr)
+    return false;
+  return winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
 }
 } // namespace ScenarioHook
 
