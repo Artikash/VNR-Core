@@ -42,7 +42,7 @@
 
 - name: EmbedRGSS # 6/7/2015
   exist: System/RGSS3*.dll # such as RGSS301.dll
-  #encoding: utf8
+  #encoding: utf16
 
 # EOF
 

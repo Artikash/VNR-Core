@@ -29,6 +29,8 @@ typedef std::function<bool (dword_t, dword_t)> address2_fun_t;
  */
 bool iterCallerAddress(const address2_fun_t &fun, dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+bool iterUniqueCallerAddress(const address_fun_t &fun, dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+bool iterUniqueCallerAddressAfterInt3(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 
 /**
  *  Iterate all call and caller addresses

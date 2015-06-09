@@ -500,6 +500,7 @@ bool iterCallerAddress(const address2_fun_t &callback, DWORD funcAddr, DWORD sig
   //OutputConsole(L"Find call and entry failed.");
   return true;
 }
+
 bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
 {
   auto callback = [&fun](dword_t addr, dword_t call) -> bool {
@@ -507,6 +508,27 @@ bool iterCallerAddressAfterInt3(const address2_fun_t &fun, dword_t funcAddr, dwo
     return fun(addr, call);
   };
   return iterCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
+}
+
+bool iterUniqueCallerAddress(const address_fun_t &fun, dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  dword_t prevAddr = 0;
+  auto callback = [&fun, &prevAddr](dword_t addr, dword_t) -> bool {
+    if (prevAddr == addr)
+      return true;
+    prevAddr = addr;
+    return fun(addr);
+  };
+  return iterCallerAddress(callback, funcAddr, funcInst, lowerBound, upperBound, callerSearchSize, offset);
+}
+
+bool iterUniqueCallerAddressAfterInt3(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  auto callback = [&fun](dword_t addr) -> bool {
+    while (byte_int3 == *(BYTE *)++addr); // skip leading int3
+    return fun(addr);
+  };
+  return iterUniqueCallerAddress(callback, funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize, offset);
 }
 
 bool iterLongJumpAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)

@@ -11,7 +11,6 @@
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 //#include <QtCore/QRegExp>
-#include <QtCore/QSet>
 #include <boost/foreach.hpp>
 
 #define DEBUG "rgss"
@@ -21,7 +20,8 @@
 
 namespace { // unnamed
 
-namespace RGSS3Hook {
+namespace RGSS3 {
+
 namespace Private {
 
   QString getDllModuleName()
@@ -32,118 +32,23 @@ namespace Private {
     return QString();
   }
 
-  enum { MaxTextSize = 0x1000 };
-  //char oldText_[MaxTextSize + 1]; // 1 extra 0 that is always 0
-  //size_t oldSize_;
-
-  struct HookArgument
-  {
-    LPDWORD type;    // 0x0
-    LPDWORD unknown; // 0x4
-    size_t size;     // 0x8
-    LPSTR text;      // 0xc
-
-    bool isValid() const
-    {
-      return Engine::isAddressReadable(type) && *type
-          && size && size < MaxTextSize
-          && Engine::isAddressWritable(text, size + 1) && *text
-          && text[size] == 0 && ::strlen(text) == size  // validate size
-          //&& !::strchr(text, '/')
-          && !Util::allAscii(text);
-    }
-
-    //int size() const { return (*type >> 0xe) & 0x1f; }
-  };
-
-  inline bool _trims(const QChar &ch)
-  { return ch.unicode() <= 127 || ch.isSpace(); }
-
-  QString trim(const QString &text, QString *prefix = nullptr, QString *suffix = nullptr)
-  {
-    if (text.isEmpty() ||
-        !_trims(text[0]) && !_trims(text[text.size() - 1]))
-      return text;
-    QString ret = text;
-    if (_trims(ret[0])) {
-      int pos = 1;
-      for (; pos < ret.size() && _trims(ret[pos]); pos++);
-      if (prefix)
-        *prefix = ret.left(pos);
-      ret = ret.mid(pos);
-    }
-    if (!ret.isEmpty() && _trims(ret[ret.size() - 1])) {
-      int pos = ret.size() - 2;
-      for (; pos >= 0 && _trims(ret[pos]); pos--);
-      if (suffix)
-        *suffix = ret.mid(pos + 1);
-      ret = ret.left(pos + 1);
-    }
-    return ret;
-  }
-
-  bool hookBefore(winhook::hook_stack *s)
-  {
-    static QSet<HookArgument *> args_;
-    static QSet<QString> texts_;
-
-    auto arg = (HookArgument *)s->stack[1]; // arg1
-    if (!args_.contains(arg) && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
-      args_.insert(arg); // make sure it is only translated once
-      QString oldText = QString::fromUtf8(arg->text, arg->size),
-              prefix,
-              suffix,
-              trimmedText = trim(oldText, &prefix, &suffix);
-      //trimmedText.remove('\n')  // remove Linux new line characters
-      //           .remove('\r');
-      if (!trimmedText.isEmpty() && !texts_.contains(trimmedText) && !texts_.contains(oldText)) { // skip text beginning with ascii character
-        enum { role = Engine::ScenarioRole };
-        //ulong split = arg->unknown2[0]; // always 2
-        ulong split = s->stack[0]; // return address
-        auto sig = Engine::hashThreadSignature(role, split);
-
-        QString newText = EngineController::instance()->dispatchTextW(trimmedText, sig, role);
-        if (newText != trimmedText) {
-          texts_.insert(newText);
-
-          if (!prefix.isEmpty())
-            newText.prepend(prefix);
-          if (!suffix.isEmpty())
-            newText.append(suffix);
-
-          QByteArray data = newText.toUtf8();
-          //if (Engine::isAddressWritable(arg->text, data.size() + 1))
-
-          arg->size = min(data.size(), MaxTextSize - 1);
-          ::memcpy(arg->text, data.constData(), arg->size + 1);
-
-          //static QByteArray data_;
-          //data_ = data;
-          //arg->text = const_cast<LPSTR>(data_.constData());
-
-          //arg_ = arg;
-          //oldSize_ = arg->size;
-          //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize));
-        }
-      }
-    }
-    return true;
-  }
-
-  //bool hookAfter(winhook::hook_stack *)
-  //{
-  //  if (arg_) {
-  //    arg_->size = oldSize_;
-  //    ::strcpy(arg_->text, oldText_);
-  //    arg_ = nullptr;
-  //  }
-  //  return true;
-  //}
-
 } // namespace Private
 
+bool getMemoryRange(ulong *startAddress, ulong *stopAddress)
+{
+  QString module = Private::getDllModuleName();
+  if (module.isEmpty())
+    return false;
+  DOUT("dll =" << module);
+  return Engine::getMemoryRange((LPCWSTR)module.utf16(), startAddress, stopAddress);
+}
+
+namespace ScenarioHook {
+
 /**
- *  Sample game: Mogeko Castle with RGSS 3.01
+ *  Sample game:
+ *  - Mogeko Castle with RGSS 3.01
+ *  - 魔鎧の少女騎士エルトリンデ with RGSS 3.02
  *
  *  1004149D   CC               INT3
  *  1004149E   CC               INT3
@@ -578,19 +483,121 @@ namespace Private {
  *  10180BAA   CC               INT3
  *  10180BAB   CC               INT3
  */
+namespace Private {
 
-bool attach() // attach scenario
+  enum { MaxTextSize = 0x1000 };
+  //char oldText_[MaxTextSize + 1]; // 1 extra 0 that is always 0
+  //size_t oldSize_;
+
+  struct HookArgument
+  {
+    LPDWORD type;    // 0x0
+    LPDWORD unknown; // 0x4
+    size_t size;     // 0x8
+    LPSTR text;      // 0xc
+
+    bool isValid() const
+    {
+      return Engine::isAddressReadable(type) && *type
+          && size && size < MaxTextSize
+          && Engine::isAddressWritable(text, size + 1) && *text
+          && text[size] == 0 && ::strlen(text) == size  // validate size
+          //&& !::strchr(text, '/')
+          && !Util::allAscii(text);
+    }
+
+    //int size() const { return (*type >> 0xe) & 0x1f; }
+  };
+
+  inline bool _trims(const QChar &ch)
+  { return ch.unicode() <= 127 || ch.isSpace(); }
+
+  QString trim(const QString &text, QString *prefix = nullptr, QString *suffix = nullptr)
+  {
+    if (text.isEmpty() ||
+        !_trims(text[0]) && !_trims(text[text.size() - 1]))
+      return text;
+    QString ret = text;
+    if (_trims(ret[0])) {
+      int pos = 1;
+      for (; pos < ret.size() && _trims(ret[pos]); pos++);
+      if (prefix)
+        *prefix = ret.left(pos);
+      ret = ret.mid(pos);
+    }
+    if (!ret.isEmpty() && _trims(ret[ret.size() - 1])) {
+      int pos = ret.size() - 2;
+      for (; pos >= 0 && _trims(ret[pos]); pos--);
+      if (suffix)
+        *suffix = ret.mid(pos + 1);
+      ret = ret.left(pos + 1);
+    }
+    return ret;
+  }
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    enum { role = Engine::ScenarioRole };
+
+    static QSet<HookArgument *> args_;
+    static QSet<QString> texts_;
+
+    auto arg = (HookArgument *)s->stack[1]; // arg1
+    if (!args_.contains(arg) && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
+      args_.insert(arg); // make sure it is only translated once
+      QString oldText = QString::fromUtf8(arg->text, arg->size),
+              prefix,
+              suffix,
+              trimmedText = trim(oldText, &prefix, &suffix);
+      //trimmedText.remove('\n')  // remove Linux new line characters
+      //           .remove('\r');
+      if (!trimmedText.isEmpty() && !texts_.contains(trimmedText) && !texts_.contains(oldText)) { // skip text beginning with ascii character
+        //ulong split = arg->unknown2[0]; // always 2
+        ulong split = s->stack[0]; // return address
+        auto sig = Engine::hashThreadSignature(role, split);
+
+        QString newText = EngineController::instance()->dispatchTextW(trimmedText, sig, role);
+        if (newText != trimmedText) {
+          texts_.insert(newText);
+
+          if (!prefix.isEmpty())
+            newText.prepend(prefix);
+          if (!suffix.isEmpty())
+            newText.append(suffix);
+
+          QByteArray data = newText.toUtf8();
+          //if (Engine::isAddressWritable(arg->text, data.size() + 1))
+
+          arg->size = min(data.size(), MaxTextSize - 1);
+          ::memcpy(arg->text, data.constData(), arg->size + 1);
+
+          //static QByteArray data_;
+          //data_ = data;
+          //arg->text = const_cast<LPSTR>(data_.constData());
+
+          //arg_ = arg;
+          //oldSize_ = arg->size;
+          //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize));
+        }
+      }
+    }
+    return true;
+  }
+
+  //bool hookAfter(winhook::hook_stack *)
+  //{
+  //  if (arg_) {
+  //    arg_->size = oldSize_;
+  //    ::strcpy(arg_->text, oldText_);
+  //    arg_ = nullptr;
+  //  }
+  //  return true;
+  //}
+
+} // namespace Private
+
+bool attach(ulong startAddress, ulong stopAddress) // attach scenario
 {
-  QString module = Private::getDllModuleName();
-  if (module.isEmpty())
-    return false;
-
-  DOUT("dll =" << module);
-
-  ulong startAddress, stopAddress;
-  if (!Engine::getMemoryRange((LPCWSTR)module.utf16(), &startAddress, &stopAddress))
-    return false;
-
   const quint8 bytes[] = {
     0x8b,0x54,0x24, 0x24,           // 1004155c   8b5424 24        mov edx,dword ptr ss:[esp+0x24]
     0x8b,0x02,                      // 10041560   8b02             mov eax,dword ptr ds:[edx]
@@ -610,8 +617,575 @@ bool attach() // attach scenario
   //addr = 0x10056BC0;
   return winhook::hook_before(addr, Private::hookBefore); //, Private::hookAfter);
 }
+} // namespace ScenarioHook
 
-} // namespace AgsHookW
+namespace ChoiceHook {
+
+namespace Private {
+
+  struct HookArgument
+  {
+    LPDWORD unknown1,
+            unknown2,
+            unknown3;
+    LPSTR text;       // arg2 + 0xc
+
+    bool isValid() const
+    {
+      return text
+          && Engine::isAddressReadable(text) && *text
+          && Engine::isAddressWritable(text, ::strlen(text));
+    }
+
+    //int size() const { return (*type >> 0xe) & 0x1f; }
+  };
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    enum { role = Engine::OtherRole };
+    auto arg = (HookArgument *)s->stack[2]; // arg2
+    if (arg->isValid()) {
+      QString oldText = QString::fromUtf8(arg->text);
+      auto split = s->stack[0]; // return address
+      auto sig = Engine::hashThreadSignature(role, split);
+
+      QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+      if (newText != oldText) {
+        if (newText.size() < oldText.size())
+          ::memset(arg->text, 0, ::strlen(arg->text));
+        ::strcpy(arg->text, newText.toUtf8());
+      }
+    }
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: Mogeko Castle
+ *
+ *  One of the caller of the three GetGlyphOutlineW
+ *
+ *  The paint function, where text get lost. Text in [[arg2]+0xc] in UTF8 encoding.
+ *  1000751D   CC               INT3
+ *  1000751E   CC               INT3
+ *  1000751F   CC               INT3
+ *  10007520   55               PUSH EBP
+ *  10007521   8BEC             MOV EBP,ESP
+ *  10007523   83EC 28          SUB ESP,0x28
+ *  10007526   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  10007529   50               PUSH EAX
+ *  1000752A   E8 51E6FFFF      CALL RGSS301.10005B80
+ *  1000752F   83C4 04          ADD ESP,0x4
+ *  10007532   8945 D8          MOV DWORD PTR SS:[EBP-0x28],EAX
+ *  10007535   68 08781A10      PUSH RGSS301.101A7808                    ; ASCII "font"
+ *  1000753A   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  1000753D   51               PUSH ECX
+ *  1000753E   E8 6D0E0600      CALL RGSS301.100683B0
+ *  10007543   83C4 08          ADD ESP,0x8
+ *  10007546   8945 E4          MOV DWORD PTR SS:[EBP-0x1C],EAX
+ *  10007549   8B55 E4          MOV EDX,DWORD PTR SS:[EBP-0x1C]
+ *  1000754C   8B42 10          MOV EAX,DWORD PTR DS:[EDX+0x10]
+ *  1000754F   8945 F8          MOV DWORD PTR SS:[EBP-0x8],EAX
+ *  10007552   8B4D 0C          MOV ECX,DWORD PTR SS:[EBP+0xC]
+ *  10007555   51               PUSH ECX
+ *  10007556   E8 15F90200      CALL RGSS301.10036E70
+ *  1000755B   83C4 04          ADD ESP,0x4
+ *  1000755E   8945 E0          MOV DWORD PTR SS:[EBP-0x20],EAX
+ *  10007561   8D55 E0          LEA EDX,DWORD PTR SS:[EBP-0x20]
+ *  10007564   52               PUSH EDX
+ *  10007565   E8 36070300      CALL RGSS301.10037CA0
+ *  1000756A   83C4 04          ADD ESP,0x4
+ *  1000756D   8945 DC          MOV DWORD PTR SS:[EBP-0x24],EAX
+ *  10007570   8B45 D8          MOV EAX,DWORD PTR SS:[EBP-0x28]
+ *  10007573   8B48 08          MOV ECX,DWORD PTR DS:[EAX+0x8]
+ *  10007576   E8 651F0100      CALL RGSS301.100194E0
+ *  1000757B   8945 F4          MOV DWORD PTR SS:[EBP-0xC],EAX
+ *  1000757E   83EC 08          SUB ESP,0x8
+ *  10007581   D9E8             FLD1
+ *  10007583   DD1C24           FSTP QWORD PTR SS:[ESP]
+ *  10007586   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
+ *  10007589   E8 A2210100      CALL RGSS301.10019730
+ *  1000758E   6A 00            PUSH 0x0
+ *  10007590   6A 00            PUSH 0x0
+ *  10007592   6A 00            PUSH 0x0
+ *  10007594   8D4D EC          LEA ECX,DWORD PTR SS:[EBP-0x14]
+ *  10007597   51               PUSH ECX
+ *  10007598   8B55 DC          MOV EDX,DWORD PTR SS:[EBP-0x24]
+ *  1000759B   52               PUSH EDX
+ *  1000759C   E8 CF500000      CALL RGSS301.1000C670  ; jichi: convert utf8 text in edx to utf16 in eax
+ *  100075A1   83C4 04          ADD ESP,0x4
+ *  100075A4   50               PUSH EAX
+ *  100075A5   8B45 D8          MOV EAX,DWORD PTR SS:[EBP-0x28]
+ *  100075A8   8B48 08          MOV ECX,DWORD PTR DS:[EAX+0x8]
+ *  100075AB   E8 A07B0100      CALL RGSS301.1001F150   ; jichi: utf16 text paint here
+ *  100075B0   E8 7BAB0000      CALL RGSS301.10012130
+ *  100075B5   8945 FC          MOV DWORD PTR SS:[EBP-0x4],EAX
+ *  100075B8   8B4D FC          MOV ECX,DWORD PTR SS:[EBP-0x4]
+ *  100075BB   8B51 10          MOV EDX,DWORD PTR DS:[ECX+0x10]
+ *  100075BE   8955 E8          MOV DWORD PTR SS:[EBP-0x18],EDX
+ *  100075C1   8B45 E8          MOV EAX,DWORD PTR SS:[EBP-0x18]
+ *  100075C4   C740 08 00000000 MOV DWORD PTR DS:[EAX+0x8],0x0
+ *  100075CB   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  100075CE   C741 0C 00000000 MOV DWORD PTR DS:[ECX+0xC],0x0
+ *  100075D5   8B55 E8          MOV EDX,DWORD PTR SS:[EBP-0x18]
+ *  100075D8   8B45 EC          MOV EAX,DWORD PTR SS:[EBP-0x14]
+ *  100075DB   8942 10          MOV DWORD PTR DS:[EDX+0x10],EAX
+ *  100075DE   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  100075E1   8B55 F0          MOV EDX,DWORD PTR SS:[EBP-0x10]
+ *  100075E4   8951 14          MOV DWORD PTR DS:[ECX+0x14],EDX
+ *  100075E7   8B45 FC          MOV EAX,DWORD PTR SS:[EBP-0x4]
+ *  100075EA   8BE5             MOV ESP,EBP
+ *  100075EC   5D               POP EBP
+ *  100075ED   C3               RETN
+ *  100075EE   CC               INT3
+ */
+ulong functionAddress; // the function address being hooked
+bool attach(ulong startAddress, ulong stopAddress) // attach other text
+{
+  const quint8 bytes[] = {
+    0x89,0x45, 0xfc,  // 100075b5   8945 fc          mov dword ptr ss:[ebp-0x4],eax
+    0x8b,0x4d, 0xfc,  // 100075b8   8b4d fc          mov ecx,dword ptr ss:[ebp-0x4]
+    0x8b,0x51, 0x10,  // 100075bb   8b51 10          mov edx,dword ptr ds:[ecx+0x10]
+    0x89,0x55, 0xe8,  // 100075be   8955 e8          mov dword ptr ss:[ebp-0x18],edx
+    0x8b,0x45, 0xe8   // 100075c1   8b45 e8          mov eax,dword ptr ss:[ebp-0x18]
+  };
+  if (ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress))
+    if (addr = MemDbg::findEnclosingAlignedFunction(addr))
+      if (winhook::hook_before(addr, Private::hookBefore)) {
+        functionAddress = addr;
+        return true;
+      }
+  return false;
+}
+
+} // namespace ChoiceHook
+
+namespace OtherHook {
+
+namespace Private {
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    enum { role = Engine::OtherRole };
+    auto retaddr = s->stack[0];
+    if (retaddr > ChoiceHook::functionAddress && retaddr - ChoiceHook::functionAddress < 0xff)
+      return true; // skip translate already-hooked function
+
+    auto text = (LPWSTR)s->stack[1]; // arg1
+    if (text && *text) {
+      QString oldText = QString::fromWCharArray(text);
+      if (oldText.size() > 1) {
+        auto sig = Engine::hashThreadSignature(role, retaddr);
+
+        QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+        if (newText != oldText)
+          ::wcscpy(text, (LPCWSTR)newText.utf16());
+      }
+    }
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: Mogeko Castle
+ *
+ *  There are three GetGlyphIndicesW.
+ *  The caller of the first one is hooked.
+ *
+ *  The first caller of GetGlyphOutlineW, text in arg1, which is other thread:
+ *
+ *  00826D48   10007251  RETURN to RGSS301.10007251 from RGSS301.1001F150
+ *  00826D4C   00826D9C ; jichi: text here
+ *  00826D50   00828DC8  ASCII "H?"
+ *  00826D54   00000001
+ *  00826D58   00000001
+ *  00826D5C   00828DEC
+ *  00826D60   40000000
+ *  00826D64   008283A8
+ *  00826D68   1018DF60  RGSS301.1018DF60
+ *
+ *  1001F14B   CC               INT3
+ *  1001F14C   CC               INT3
+ *  1001F14D   CC               INT3
+ *  1001F14E   CC               INT3
+ *  1001F14F   CC               INT3
+ *  1001F150   55               PUSH EBP
+ *  1001F151   8BEC             MOV EBP,ESP
+ *  1001F153   81EC 88000000    SUB ESP,0x88
+ *  1001F159   894D 8C          MOV DWORD PTR SS:[EBP-0x74],ECX
+ *  1001F15C   837D 18 00       CMP DWORD PTR SS:[EBP+0x18],0x0
+ *  1001F160   74 09            JE SHORT RGSS301.1001F16B
+ *  1001F162   8B45 18          MOV EAX,DWORD PTR SS:[EBP+0x18]
+ *  1001F165   C700 01000000    MOV DWORD PTR DS:[EAX],0x1
+ *  1001F16B   8B4D 8C          MOV ECX,DWORD PTR SS:[EBP-0x74]
+ *  1001F16E   E8 6DA3FFFF      CALL RGSS301.100194E0
+ *  1001F173   85C0             TEST EAX,EAX
+ *  1001F175   75 07            JNZ SHORT RGSS301.1001F17E
+ *  1001F177   33C0             XOR EAX,EAX
+ *  1001F179   E9 D1010000      JMP RGSS301.1001F34F
+ *  1001F17E   8B4D 8C          MOV ECX,DWORD PTR SS:[EBP-0x74]
+ *  1001F181   E8 5AA3FFFF      CALL RGSS301.100194E0
+ *  1001F186   8BC8             MOV ECX,EAX
+ *  1001F188   E8 D3A6FFFF      CALL RGSS301.10019860
+ *  1001F18D   8945 FC          MOV DWORD PTR SS:[EBP-0x4],EAX
+ *  1001F190   837D FC 00       CMP DWORD PTR SS:[EBP-0x4],0x0
+ *  1001F194   75 07            JNZ SHORT RGSS301.1001F19D
+ *  1001F196   33C0             XOR EAX,EAX
+ *  1001F198   E9 B2010000      JMP RGSS301.1001F34F
+ *  1001F19D   8D4D BC          LEA ECX,DWORD PTR SS:[EBP-0x44]
+ *  1001F1A0   51               PUSH ECX
+ *  1001F1A1   8B55 FC          MOV EDX,DWORD PTR SS:[EBP-0x4]
+ *  1001F1A4   52               PUSH EDX
+ *  1001F1A5   FF15 3C201A10    CALL DWORD PTR DS:[0x101A203C]           ; gdi32.GetTextMetricsW
+ *  1001F1AB   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  1001F1AE   C700 00000000    MOV DWORD PTR DS:[EAX],0x0
+ *  1001F1B4   8B4D 0C          MOV ECX,DWORD PTR SS:[EBP+0xC]
+ *  1001F1B7   C741 04 00000000 MOV DWORD PTR DS:[ECX+0x4],0x0
+ *  1001F1BE   33D2             XOR EDX,EDX
+ *  1001F1C0   66:8955 AC       MOV WORD PTR SS:[EBP-0x54],DX
+ *  1001F1C4   B8 01000000      MOV EAX,0x1
+ *  1001F1C9   66:8945 AE       MOV WORD PTR SS:[EBP-0x52],AX
+ *  1001F1CD   33C9             XOR ECX,ECX
+ *  1001F1CF   66:894D B0       MOV WORD PTR SS:[EBP-0x50],CX
+ *  1001F1D3   33D2             XOR EDX,EDX
+ *  1001F1D5   66:8955 B2       MOV WORD PTR SS:[EBP-0x4E],DX
+ *  1001F1D9   33C0             XOR EAX,EAX
+ *  1001F1DB   66:8945 B4       MOV WORD PTR SS:[EBP-0x4C],AX
+ *  1001F1DF   33C9             XOR ECX,ECX
+ *  1001F1E1   66:894D B6       MOV WORD PTR SS:[EBP-0x4A],CX
+ *  1001F1E5   33D2             XOR EDX,EDX
+ *  1001F1E7   66:8955 B8       MOV WORD PTR SS:[EBP-0x48],DX
+ *  1001F1EB   B8 01000000      MOV EAX,0x1
+ *  1001F1F0   66:8945 BA       MOV WORD PTR SS:[EBP-0x46],AX
+ *  1001F1F4   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  1001F1F7   894D 88          MOV DWORD PTR SS:[EBP-0x78],ECX
+ *  1001F1FA   8B55 88          MOV EDX,DWORD PTR SS:[EBP-0x78]
+ *  1001F1FD   83C2 02          ADD EDX,0x2
+ *  1001F200   8955 84          MOV DWORD PTR SS:[EBP-0x7C],EDX
+ *  1001F203   8B45 88          MOV EAX,DWORD PTR SS:[EBP-0x78]
+ *  1001F206   66:8B08          MOV CX,WORD PTR DS:[EAX]
+ *  1001F209   66:894D 82       MOV WORD PTR SS:[EBP-0x7E],CX
+ *  1001F20D   8345 88 02       ADD DWORD PTR SS:[EBP-0x78],0x2
+ *  1001F211   66:837D 82 00    CMP WORD PTR SS:[EBP-0x7E],0x0
+ *  1001F216  ^75 EB            JNZ SHORT RGSS301.1001F203
+ *  1001F218   8B55 88          MOV EDX,DWORD PTR SS:[EBP-0x78]
+ *  1001F21B   2B55 84          SUB EDX,DWORD PTR SS:[EBP-0x7C]
+ *  1001F21E   D1FA             SAR EDX,1
+ *  1001F220   8995 7CFFFFFF    MOV DWORD PTR SS:[EBP-0x84],EDX
+ *  1001F226   8B85 7CFFFFFF    MOV EAX,DWORD PTR SS:[EBP-0x84]
+ *  1001F22C   8945 F8          MOV DWORD PTR SS:[EBP-0x8],EAX
+ *  1001F22F   C745 A8 00000000 MOV DWORD PTR SS:[EBP-0x58],0x0
+ *  1001F236   EB 09            JMP SHORT RGSS301.1001F241
+ *  1001F238   8B4D A8          MOV ECX,DWORD PTR SS:[EBP-0x58]
+ *  1001F23B   83C1 01          ADD ECX,0x1
+ *  1001F23E   894D A8          MOV DWORD PTR SS:[EBP-0x58],ECX
+ *  1001F241   8B55 A8          MOV EDX,DWORD PTR SS:[EBP-0x58]
+ *  1001F244   3B55 F8          CMP EDX,DWORD PTR SS:[EBP-0x8]
+ *  1001F247   0F8D C2000000    JGE RGSS301.1001F30F
+ *  1001F24D   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]
+ *  1001F250   50               PUSH EAX
+ *  1001F251   6A 00            PUSH 0x0
+ *  1001F253   6A 00            PUSH 0x0
+ *  1001F255   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
+ *  1001F258   51               PUSH ECX
+ *  1001F259   6A 06            PUSH 0x6
+ *  1001F25B   8B55 A8          MOV EDX,DWORD PTR SS:[EBP-0x58]
+ *  1001F25E   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  1001F261   0FB70C50         MOVZX ECX,WORD PTR DS:[EAX+EDX*2]
+ *  1001F265   51               PUSH ECX
+ *  1001F266   8B55 FC          MOV EDX,DWORD PTR SS:[EBP-0x4]
+ *  1001F269   52               PUSH EDX
+ *  1001F26A   FF15 30201A10    CALL DWORD PTR DS:[0x101A2030]           ; gdi32.GetGlyphOutlineW
+ *  1001F270   8945 A4          MOV DWORD PTR SS:[EBP-0x5C],EAX
+ *  1001F273   837D 18 00       CMP DWORD PTR SS:[EBP+0x18],0x0
+ *  1001F277   74 12            JE SHORT RGSS301.1001F28B
+ *  1001F279   8B45 18          MOV EAX,DWORD PTR SS:[EBP+0x18]
+ *  1001F27C   8B4D A4          MOV ECX,DWORD PTR SS:[EBP-0x5C]
+ *  1001F27F   3B08             CMP ECX,DWORD PTR DS:[EAX]
+ *  1001F281   76 08            JBE SHORT RGSS301.1001F28B
+ *  1001F283   8B55 18          MOV EDX,DWORD PTR SS:[EBP+0x18]
+ *  1001F286   8B45 A4          MOV EAX,DWORD PTR SS:[EBP-0x5C]
+ *  1001F289   8902             MOV DWORD PTR DS:[EDX],EAX
+ *  1001F28B   8B4D 0C          MOV ECX,DWORD PTR SS:[EBP+0xC]
+ *  1001F28E   8B11             MOV EDX,DWORD PTR DS:[ECX]
+ *  1001F290   0355 98          ADD EDX,DWORD PTR SS:[EBP-0x68]
+ *  1001F293   79 0A            JNS SHORT RGSS301.1001F29F
+ *
+ *  Caller of the other two GetGlyphOutlineW, where text is in arg5.
+ *
+ *  00826D34   100074F7  RETURN to RGSS301.100074F7 from RGSS301.1001F360
+ *  00826D38   00000088
+ *  00826D3C   000000E8
+ *  00826D40   00000058
+ *  00826D44   00000018
+ *  00826D48   00826D9C ; jichi: text here
+ *  00826D4C   FFFFFFFF
+ *  00826D50   80000000
+ *  00826D54   00000001
+ *  00826D58   00000000
+ *  00826D5C   00000140
+ *  00826D60   000000C0
+ *  00826D64   008283A8
+ *  00826D68   1018DF60  RGSS301.1018DF60
+ *
+ *  1001F35C   CC               INT3
+ *  1001F35D   CC               INT3
+ *  1001F35E   CC               INT3
+ *  1001F35F   CC               INT3
+ *  1001F360   55               PUSH EBP
+ *  1001F361   8BEC             MOV EBP,ESP
+ *  1001F363   81EC 4C010000    SUB ESP,0x14C
+ *  1001F369   898D C4FEFFFF    MOV DWORD PTR SS:[EBP-0x13C],ECX
+ *  1001F36F   8B8D C4FEFFFF    MOV ECX,DWORD PTR SS:[EBP-0x13C]
+ *  1001F375   E8 66A1FFFF      CALL RGSS301.100194E0
+ *  1001F37A   85C0             TEST EAX,EAX
+ *  1001F37C   75 07            JNZ SHORT RGSS301.1001F385
+ *  1001F37E   33C0             XOR EAX,EAX
+ *  1001F380   E9 12060000      JMP RGSS301.1001F997
+ *  1001F385   8B8D C4FEFFFF    MOV ECX,DWORD PTR SS:[EBP-0x13C]
+ *  1001F38B   E8 50A1FFFF      CALL RGSS301.100194E0
+ *  1001F390   8BC8             MOV ECX,EAX
+ *  1001F392   E8 C9A4FFFF      CALL RGSS301.10019860
+ *  1001F397   8945 F8          MOV DWORD PTR SS:[EBP-0x8],EAX
+ *  1001F39A   837D F8 00       CMP DWORD PTR SS:[EBP-0x8],0x0
+ *  1001F39E   75 07            JNZ SHORT RGSS301.1001F3A7
+ *  1001F3A0   33C0             XOR EAX,EAX
+ *  1001F3A2   E9 F0050000      JMP RGSS301.1001F997
+ *  1001F3A7   8D45 A0          LEA EAX,DWORD PTR SS:[EBP-0x60]
+ *  1001F3AA   50               PUSH EAX
+ *  1001F3AB   8B4D F8          MOV ECX,DWORD PTR SS:[EBP-0x8]
+ *  1001F3AE   51               PUSH ECX
+ *  1001F3AF   FF15 3C201A10    CALL DWORD PTR DS:[0x101A203C]           ; gdi32.GetTextMetricsW
+ *  1001F3B5   837D 2C 00       CMP DWORD PTR SS:[EBP+0x2C],0x0
+ *  1001F3B9   77 4C            JA SHORT RGSS301.1001F407
+ *  1001F3BB   8D55 2C          LEA EDX,DWORD PTR SS:[EBP+0x2C]
+ *  1001F3BE   52               PUSH EDX
+ *  1001F3BF   8B45 24          MOV EAX,DWORD PTR SS:[EBP+0x24]
+ *  1001F3C2   50               PUSH EAX
+ *  1001F3C3   6A 01            PUSH 0x1
+ *  1001F3C5   8D8D 3CFFFFFF    LEA ECX,DWORD PTR SS:[EBP-0xC4]
+ *  1001F3CB   51               PUSH ECX
+ *  1001F3CC   8B55 18          MOV EDX,DWORD PTR SS:[EBP+0x18]
+ *  1001F3CF   52               PUSH EDX
+ *  1001F3D0   8B8D C4FEFFFF    MOV ECX,DWORD PTR SS:[EBP-0x13C]
+ *  1001F3D6   E8 75FDFFFF      CALL RGSS301.1001F150
+ *  1001F3DB   83BD 3CFFFFFF 00 CMP DWORD PTR SS:[EBP-0xC4],0x0
+ *  1001F3E2   74 09            JE SHORT RGSS301.1001F3ED
+ *  1001F3E4   83BD 40FFFFFF 00 CMP DWORD PTR SS:[EBP-0xC0],0x0
+ *  1001F3EB   75 0A            JNZ SHORT RGSS301.1001F3F7
+ *  1001F3ED   B8 01000000      MOV EAX,0x1
+ *  1001F3F2   E9 A0050000      JMP RGSS301.1001F997
+ *  1001F3F7   837D 2C 00       CMP DWORD PTR SS:[EBP+0x2C],0x0
+ *  1001F3FB   77 0A            JA SHORT RGSS301.1001F407
+ *  1001F3FD   B8 01000000      MOV EAX,0x1
+ *  1001F402   E9 90050000      JMP RGSS301.1001F997
+ *  1001F407   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  1001F40A   8985 58FFFFFF    MOV DWORD PTR SS:[EBP-0xA8],EAX
+ *  1001F410   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  1001F413   898D 54FFFFFF    MOV DWORD PTR SS:[EBP-0xAC],ECX
+ *  1001F419   8B95 54FFFFFF    MOV EDX,DWORD PTR SS:[EBP-0xAC]
+ *  1001F41F   0355 10          ADD EDX,DWORD PTR SS:[EBP+0x10]
+ *  1001F422   8995 5CFFFFFF    MOV DWORD PTR SS:[EBP-0xA4],EDX
+ *  1001F428   8B85 58FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xA8]
+ *  1001F42E   0345 14          ADD EAX,DWORD PTR SS:[EBP+0x14]
+ *  1001F431   8985 60FFFFFF    MOV DWORD PTR SS:[EBP-0xA0],EAX
+ *  1001F437   C745 E0 00000000 MOV DWORD PTR SS:[EBP-0x20],0x0
+ *  1001F43E   C745 DC 00000000 MOV DWORD PTR SS:[EBP-0x24],0x0
+ *  1001F445   8B4D 10          MOV ECX,DWORD PTR SS:[EBP+0x10]
+ *  1001F448   894D E4          MOV DWORD PTR SS:[EBP-0x1C],ECX
+ *  1001F44B   8B55 14          MOV EDX,DWORD PTR SS:[EBP+0x14]
+ *  1001F44E   8955 E8          MOV DWORD PTR SS:[EBP-0x18],EDX
+ *  1001F451   837D 24 00       CMP DWORD PTR SS:[EBP+0x24],0x0
+ *  1001F455   74 1F            JE SHORT RGSS301.1001F476
+ *  1001F457   6A FF            PUSH -0x1
+ *  1001F459   6A FF            PUSH -0x1
+ *  1001F45B   8D85 54FFFFFF    LEA EAX,DWORD PTR SS:[EBP-0xAC]
+ *  1001F461   50               PUSH EAX
+ *  1001F462   FF15 E8231A10    CALL DWORD PTR DS:[0x101A23E8]           ; user32.InflateRect
+ *  1001F468   6A FF            PUSH -0x1
+ *  1001F46A   6A FF            PUSH -0x1
+ *  1001F46C   8D4D DC          LEA ECX,DWORD PTR SS:[EBP-0x24]
+ *  1001F46F   51               PUSH ECX
+ *  1001F470   FF15 E8231A10    CALL DWORD PTR DS:[0x101A23E8]           ; user32.InflateRect
+ *  1001F476   68 E0010000      PUSH 0x1E0
+ *  1001F47B   68 80020000      PUSH 0x280
+ *  1001F480   E8 DBFF0E00      CALL RGSS301.1010F460
+ *  1001F485   8BC8             MOV ECX,EAX
+ *  1001F487   E8 54010F00      CALL RGSS301.1010F5E0
+ *  1001F48C   8945 F0          MOV DWORD PTR SS:[EBP-0x10],EAX
+ *  1001F48F   837D F0 00       CMP DWORD PTR SS:[EBP-0x10],0x0
+ *  1001F493   75 07            JNZ SHORT RGSS301.1001F49C
+ *  1001F495   33C0             XOR EAX,EAX
+ *  1001F497   E9 FB040000      JMP RGSS301.1001F997
+ *  1001F49C   6A 00            PUSH 0x0
+ *  1001F49E   8D55 DC          LEA EDX,DWORD PTR SS:[EBP-0x24]
+ *  1001F4A1   52               PUSH EDX
+ *  1001F4A2   8B4D F0          MOV ECX,DWORD PTR SS:[EBP-0x10]
+ *  1001F4A5   E8 A6CF0E00      CALL RGSS301.1010C450
+ *  1001F4AA   8B45 18          MOV EAX,DWORD PTR SS:[EBP+0x18]
+ *  1001F4AD   8985 C0FEFFFF    MOV DWORD PTR SS:[EBP-0x140],EAX
+ *  1001F4B3   8B8D C0FEFFFF    MOV ECX,DWORD PTR SS:[EBP-0x140]
+ *  1001F4B9   83C1 02          ADD ECX,0x2
+ *  1001F4BC   898D BCFEFFFF    MOV DWORD PTR SS:[EBP-0x144],ECX
+ *  1001F4C2   8B95 C0FEFFFF    MOV EDX,DWORD PTR SS:[EBP-0x140]
+ *  1001F4C8   66:8B02          MOV AX,WORD PTR DS:[EDX]
+ *  1001F4CB   66:8985 BAFEFFFF MOV WORD PTR SS:[EBP-0x146],AX
+ *  1001F4D2   8385 C0FEFFFF 02 ADD DWORD PTR SS:[EBP-0x140],0x2
+ *  1001F4D9   66:83BD BAFEFFFF>CMP WORD PTR SS:[EBP-0x146],0x0
+ *  1001F4E1  ^75 DF            JNZ SHORT RGSS301.1001F4C2
+ *  1001F4E3   8B8D C0FEFFFF    MOV ECX,DWORD PTR SS:[EBP-0x140]
+ *  1001F4E9   2B8D BCFEFFFF    SUB ECX,DWORD PTR SS:[EBP-0x144]
+ *  1001F4EF   D1F9             SAR ECX,1
+ *  1001F4F1   898D B4FEFFFF    MOV DWORD PTR SS:[EBP-0x14C],ECX
+ *  1001F4F7   8B95 B4FEFFFF    MOV EDX,DWORD PTR SS:[EBP-0x14C]
+ *  1001F4FD   8955 EC          MOV DWORD PTR SS:[EBP-0x14],EDX
+ *  1001F500   C745 F4 00000000 MOV DWORD PTR SS:[EBP-0xC],0x0
+ *  1001F507   33C0             XOR EAX,EAX
+ *  1001F509   66:8985 44FFFFFF MOV WORD PTR SS:[EBP-0xBC],AX
+ *  1001F510   B9 01000000      MOV ECX,0x1
+ *  1001F515   66:898D 46FFFFFF MOV WORD PTR SS:[EBP-0xBA],CX
+ *  1001F51C   33D2             XOR EDX,EDX
+ *  1001F51E   66:8995 48FFFFFF MOV WORD PTR SS:[EBP-0xB8],DX
+ *  1001F525   33C0             XOR EAX,EAX
+ *  1001F527   66:8985 4AFFFFFF MOV WORD PTR SS:[EBP-0xB6],AX
+ *  1001F52E   33C9             XOR ECX,ECX
+ *  1001F530   66:898D 4CFFFFFF MOV WORD PTR SS:[EBP-0xB4],CX
+ *  1001F537   33D2             XOR EDX,EDX
+ *  1001F539   66:8995 4EFFFFFF MOV WORD PTR SS:[EBP-0xB2],DX
+ *  1001F540   33C0             XOR EAX,EAX
+ *  1001F542   66:8985 50FFFFFF MOV WORD PTR SS:[EBP-0xB0],AX
+ *  1001F549   B9 01000000      MOV ECX,0x1
+ *  1001F54E   66:898D 52FFFFFF MOV WORD PTR SS:[EBP-0xAE],CX
+ *  1001F555   8B55 2C          MOV EDX,DWORD PTR SS:[EBP+0x2C]
+ *  1001F558   52               PUSH EDX
+ *  1001F559   E8 0EF31500      CALL RGSS301.1017E86C
+ *  1001F55E   83C4 04          ADD ESP,0x4
+ *  1001F561   8985 D0FEFFFF    MOV DWORD PTR SS:[EBP-0x130],EAX
+ *  1001F567   8B85 D0FEFFFF    MOV EAX,DWORD PTR SS:[EBP-0x130]
+ *  1001F56D   8985 64FFFFFF    MOV DWORD PTR SS:[EBP-0x9C],EAX
+ *  1001F573   C785 38FFFFFF 00>MOV DWORD PTR SS:[EBP-0xC8],0x0
+ *  1001F57D   EB 0F            JMP SHORT RGSS301.1001F58E
+ *  1001F57F   8B8D 38FFFFFF    MOV ECX,DWORD PTR SS:[EBP-0xC8]
+ *  1001F585   83C1 01          ADD ECX,0x1
+ *  1001F588   898D 38FFFFFF    MOV DWORD PTR SS:[EBP-0xC8],ECX
+ *  1001F58E   8B95 38FFFFFF    MOV EDX,DWORD PTR SS:[EBP-0xC8]
+ *  1001F594   3B55 EC          CMP EDX,DWORD PTR SS:[EBP-0x14]
+ *  1001F597   0F8D E6010000    JGE RGSS301.1001F783
+ *  1001F59D   8B45 2C          MOV EAX,DWORD PTR SS:[EBP+0x2C]
+ *  1001F5A0   50               PUSH EAX
+ *  1001F5A1   6A 00            PUSH 0x0
+ *  1001F5A3   8B8D 64FFFFFF    MOV ECX,DWORD PTR SS:[EBP-0x9C]
+ *  1001F5A9   51               PUSH ECX
+ *  1001F5AA   E8 E1FC1500      CALL RGSS301.1017F290
+ *  1001F5AF   83C4 0C          ADD ESP,0xC
+ *  1001F5B2   8D95 44FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xBC]
+ *  1001F5B8   52               PUSH EDX
+ *  1001F5B9   6A 00            PUSH 0x0
+ *  1001F5BB   6A 00            PUSH 0x0
+ *  1001F5BD   8D85 08FFFFFF    LEA EAX,DWORD PTR SS:[EBP-0xF8]
+ *  1001F5C3   50               PUSH EAX
+ *  1001F5C4   6A 00            PUSH 0x0
+ *  1001F5C6   8B8D 38FFFFFF    MOV ECX,DWORD PTR SS:[EBP-0xC8]
+ *  1001F5CC   8B55 18          MOV EDX,DWORD PTR SS:[EBP+0x18]
+ *  1001F5CF   0FB7044A         MOVZX EAX,WORD PTR DS:[EDX+ECX*2]
+ *  1001F5D3   50               PUSH EAX
+ *  1001F5D4   8B4D F8          MOV ECX,DWORD PTR SS:[EBP-0x8]
+ *  1001F5D7   51               PUSH ECX
+ *  1001F5D8   FF15 30201A10    CALL DWORD PTR DS:[0x101A2030]           ; gdi32.GetGlyphOutlineW
+ *  1001F5DE   8D95 44FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xBC]
+ *  1001F5E4   52               PUSH EDX
+ *  1001F5E5   8B85 64FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0x9C]
+ *  1001F5EB   50               PUSH EAX
+ *  1001F5EC   8B4D 2C          MOV ECX,DWORD PTR SS:[EBP+0x2C]
+ *  1001F5EF   51               PUSH ECX
+ *  1001F5F0   8D95 08FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xF8]
+ *  1001F5F6   52               PUSH EDX
+ *  1001F5F7   6A 06            PUSH 0x6
+ *  1001F5F9   8B85 38FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xC8]
+ *  1001F5FF   8B4D 18          MOV ECX,DWORD PTR SS:[EBP+0x18]
+ *  1001F602   0FB71441         MOVZX EDX,WORD PTR DS:[ECX+EAX*2]
+ *  1001F606   52               PUSH EDX
+ *  1001F607   8B45 F8          MOV EAX,DWORD PTR SS:[EBP-0x8]
+ *  1001F60A   50               PUSH EAX
+ *  1001F60B   FF15 30201A10    CALL DWORD PTR DS:[0x101A2030]           ; gdi32.GetGlyphOutlineW
+ *  1001F611   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
+ *  1001F614   038D 10FFFFFF    ADD ECX,DWORD PTR SS:[EBP-0xF0]
+ *  1001F61A   79 0B            JNS SHORT RGSS301.1001F627
+ *  1001F61C   8B95 10FFFFFF    MOV EDX,DWORD PTR SS:[EBP-0xF0]
+ *  1001F622   F7DA             NEG EDX
+ *  1001F624   8955 F4          MOV DWORD PTR SS:[EBP-0xC],EDX
+ *  1001F627   8B85 08FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xF8]
+ *  1001F62D   8985 28FFFFFF    MOV DWORD PTR SS:[EBP-0xD8],EAX
+ *
+ *  Additionally, text to paint is converted here from UTF-8 to UTF-16:
+ *  1000C62D   CC               INT3
+ *  1000C62E   CC               INT3
+ *  1000C62F   CC               INT3
+ *  1000C630   55               PUSH EBP
+ *  1000C631   8BEC             MOV EBP,ESP
+ *  1000C633   8B45 10          MOV EAX,DWORD PTR SS:[EBP+0x10]
+ *  1000C636   D1E0             SHL EAX,1
+ *  1000C638   50               PUSH EAX
+ *  1000C639   6A 00            PUSH 0x0
+ *  1000C63B   8B4D 0C          MOV ECX,DWORD PTR SS:[EBP+0xC]
+ *  1000C63E   51               PUSH ECX
+ *  1000C63F   E8 4C2C1700      CALL RGSS301.1017F290
+ *  1000C644   83C4 0C          ADD ESP,0xC
+ *  1000C647   8B55 10          MOV EDX,DWORD PTR SS:[EBP+0x10]
+ *  1000C64A   52               PUSH EDX
+ *  1000C64B   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  1000C64E   50               PUSH EAX
+ *  1000C64F   6A FF            PUSH -0x1
+ *  1000C651   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  1000C654   51               PUSH ECX
+ *  1000C655   6A 00            PUSH 0x0
+ *  1000C657   68 E9FD0000      PUSH 0xFDE9
+ *  1000C65C   FF15 38221A10    CALL DWORD PTR DS:[0x101A2238]           ; kernel32.MultiByteToWideChar
+ *  1000C662   5D               POP EBP
+ *  1000C663   C3               RETN
+ *  1000C664   CC               INT3
+ *  1000C665   CC               INT3
+ *  1000C666   CC               INT3
+ *  1000C667   CC               INT3
+ *  1000C668   CC               INT3
+ *  1000C669   CC               INT3
+ *  1000C66A   CC               INT3
+ *  1000C66B   CC               INT3
+ *  1000C66C   CC               INT3
+ *  1000C66D   CC               INT3
+ *  1000C66E   CC               INT3
+ *  1000C66F   CC               INT3
+ *  1000C670   55               PUSH EBP
+ *  1000C671   8BEC             MOV EBP,ESP
+ *  1000C673   68 00100000      PUSH 0x1000
+ *  1000C678   68 68302610      PUSH RGSS301.10263068
+ *  1000C67D   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  1000C680   50               PUSH EAX
+ *  1000C681   E8 AAFFFFFF      CALL RGSS301.1000C630
+ *  1000C686   83C4 0C          ADD ESP,0xC
+ *  1000C689   33C9             XOR ECX,ECX
+ *  1000C68B   66:890D 66502610 MOV WORD PTR DS:[0x10265066],CX
+ *  1000C692   B8 68302610      MOV EAX,RGSS301.10263068
+ *  1000C697   5D               POP EBP
+ *  1000C698   C3               RETN
+ *  1000C699   CC               INT3
+ *  1000C69A   CC               INT3
+ *  1000C69B   CC               INT3
+ *  1000C69C   CC               INT3
+ *  1000C69D   CC               INT3
+ */
+ulong functionAddress; // the beginning of the function being hooked
+bool attach(ulong startAddress, ulong stopAddress) // attach other text
+{
+  ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::GetGlyphOutlineW, startAddress, stopAddress);
+  return addr && winhook::hook_before(addr, Private::hookBefore);
+}
+
+} // namespace OtherHook
+
+} // namespace RGSS3Hook
 
 #if 0
 
@@ -661,8 +1235,24 @@ bool attach()
 
 bool RGSSEngine::attach()
 {
-  if (!RGSS3Hook::attach())
+  ulong startAddress, stopAddress;
+  if (!RGSS3::getMemoryRange(&startAddress, &stopAddress))
     return false;
+
+  if (RGSS3::ScenarioHook::attach(startAddress, stopAddress))
+    DOUT("scenario text found");
+  else {
+    DOUT("scenario text NOT FOUND");
+    return false;
+  }
+  if (RGSS3::ChoiceHook::attach(startAddress, stopAddress))
+    DOUT("choice text found");
+  else
+    DOUT("choice text NOT FOUND");
+  if (RGSS3::OtherHook::attach(startAddress, stopAddress))
+    DOUT("other text found");
+  else
+    DOUT("other text NOT FOUND");
 
   //DebugHook::attach();
 
@@ -672,8 +1262,7 @@ bool RGSSEngine::attach()
 
 QString RGSSEngine::textFilter(const QString &text, int role)
 {
-  Q_UNUSED(role);
-  if (!text.contains('\\'))
+  if (role == Engine::OtherRole || !text.contains('\\'))
     return text;
   QString ret = text;
   static QRegExp rx_("\\\\[0-9A-Z.\\[\\]]+");
@@ -682,6 +1271,7 @@ QString RGSSEngine::textFilter(const QString &text, int role)
 }
 
 // EOF
+
 /*
   //typedef char *(* hook_fun_t)(char *dst, const char *src, size_t size);
   //hook_fun_t oldHookFun;
