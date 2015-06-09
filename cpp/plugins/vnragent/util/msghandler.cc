@@ -8,6 +8,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QDateTime>
 #include <QtCore/QFile>
+#include <QtCore/QTextCodec>
 #include <QtCore/QTextStream>
 
 #define DEBUG_FILE      VNRAGENT_DEBUG_FILE
@@ -37,7 +38,7 @@ QString Util::debugFileLocation()
 // See: http://www.cppblog.com/lauer3912/archive/2011/04/10/143870.html
 void Util::debugMsgHandler(QtMsgType type, const char *msg)
 {
-
+  //static QTextCodec *codec = QTextCodec::codecForName("UTF-8");
   QString output;
   switch (type) {
   case QtDebugMsg:    output = QString("%1: %2\n").arg(DEBUG_TIMESTAMP, msg); break;
