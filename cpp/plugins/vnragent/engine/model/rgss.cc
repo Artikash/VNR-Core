@@ -570,6 +570,9 @@ namespace Private {
   {
     static QSet<QString> texts_;
 
+    enum { RecentTextCapacity = 4 };
+    static QStringList recentTexts_; // used to eliminate recent duplicates
+
     auto arg = (HookArgument *)s->stack[0]; // arg1
     if (arg && arg->isValid()) { // && (quint8)arg->text[0] > 127) { // skip translate text beginning with ascii character
       QString oldText = QString::fromUtf8(arg->text, arg->size),
@@ -578,6 +581,14 @@ namespace Private {
               trimmedText = trim(oldText, &prefix, &suffix);
 
       if (!trimmedText.isEmpty() && !texts_.contains(trimmedText)) { // skip text beginning with ascii character
+
+        bool sendAllowed = !recentTexts_.contains(oldText);
+        if (sendAllowed) {
+          recentTexts_.append(oldText);
+          if (recentTexts_.size() > RecentTextCapacity)
+            recentTexts_.removeFirst();
+        }
+
         auto q = EngineController::instance();
 
         //ulong split = arg->unknown2[0]; // always 2
@@ -586,7 +597,7 @@ namespace Private {
         if (!trimmedText.contains('\n')) {
           auto role = guessTextRole(trimmedText);
           auto sig = Engine::hashThreadSignature(role);
-          newText = q->dispatchTextW(trimmedText, sig, role);
+          newText = q->dispatchTextW(trimmedText, sig, role, sendAllowed);
         } else { // handle each line one by one
           QStringList newTexts;
           foreach (const QString &eachOldText, trimmedText.split('\n')) {
@@ -598,7 +609,7 @@ namespace Private {
             else {
               auto role = guessTextRole(eachTrimmedText);
               auto sig = Engine::hashThreadSignature(role);
-              QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role);
+              QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role, sendAllowed);
               if (eachNewText == eachTrimmedText)
                  newTexts.append(eachOldText);
               else {

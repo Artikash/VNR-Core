@@ -338,7 +338,7 @@ bool EngineController::matchFiles(const QStringList &relpaths)
 
 // - Dispatch -
 
-QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role)
+QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role, bool sendAllowed)
 {
   if (data.isEmpty())
     return data;
@@ -384,11 +384,14 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     repl = p->findTranslation(hash, role);
   }
 
-  if (!d_->settings.translationEnabled[role]
+  bool sent = false;
+  bool needsTranslation = false;
+  if (sendAllowed
+      && !d_->settings.translationEnabled[role]
       && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
       && (role != Engine::OtherRole || repl.isEmpty())) {
-    enum { NeedsTranslation = false };
-    p->sendText(trimmedText, hash, signature, role, NeedsTranslation);
+    p->sendText(trimmedText, hash, signature, role, needsTranslation);
+    sent = true;
   }
 
   if (!d_->settings.textVisible[role])
@@ -399,18 +402,19 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (repl.isEmpty())
     repl = p->findTranslation(hash, role);
 
-  const bool needsTranslation = repl.isEmpty();
-  p->sendText(trimmedText, hash, signature, role, needsTranslation);
-
-  if (needsTranslation) {
-    repl = p->waitForTranslation(hash, role);
-    if (!repl.isEmpty() && d_->model->translationFilterFunction)
-      repl = d_->model->translationFilterFunction(repl, role);
+  if (sendAllowed && !sent) {
+    needsTranslation = repl.isEmpty();
+    p->sendText(trimmedText, hash, signature, role, needsTranslation);
+    sent = true;
   }
+  if (sent && needsTranslation)
+    repl = p->waitForTranslation(hash, role);
 
   if (repl.isEmpty())
     repl = trimmedText;
-  else if (repl != trimmedText)
+  else if (repl != trimmedText) {
+    if (d_->model->translationFilterFunction)
+      repl = d_->model->translationFilterFunction(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
@@ -428,6 +432,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
             .append(trimmedText);
       break;
     }
+  }
 
   if (!prefix.isEmpty())
     repl.prepend(prefix);
@@ -445,7 +450,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   return ret;
 }
 
-QString EngineController::dispatchTextW(const QString &text, long signature, int role)
+QString EngineController::dispatchTextW(const QString &text, long signature, int role, bool sendAllowed)
 {
   if (text.isEmpty())
     return text;
@@ -488,11 +493,14 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     repl = p->findTranslation(hash, role);
   }
 
-  if (!d_->settings.translationEnabled[role]
+  bool sent = false;
+  bool needsTranslation = false;
+  if (sendAllowed
+      && !d_->settings.translationEnabled[role]
       && (d_->settings.extractionEnabled[role] || d_->settings.extractsAllTexts)
       && (role != Engine::OtherRole || repl.isEmpty())) {
-    enum { NeedsTranslation = false };
-    p->sendText(trimmedText, hash, signature, role, NeedsTranslation);
+    p->sendText(trimmedText, hash, signature, role, needsTranslation);
+    sent = true;
   }
 
   if (!d_->settings.textVisible[role])
@@ -503,18 +511,20 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (repl.isEmpty())
     repl = p->findTranslation(hash, role);
 
-  const bool needsTranslation = repl.isEmpty();
-  p->sendText(trimmedText, hash, signature, role, needsTranslation);
-
-  if (needsTranslation) {
-    repl = p->waitForTranslation(hash, role);
-    if (!repl.isEmpty() && d_->model->translationFilterFunction)
-      repl = d_->model->translationFilterFunction(repl, role);
+  if (sendAllowed && !sent) {
+    needsTranslation = repl.isEmpty();
+    p->sendText(trimmedText, hash, signature, role, needsTranslation);
+    sent = true;
   }
+  if (sent && needsTranslation)
+    repl = p->waitForTranslation(hash, role);
 
   if (repl.isEmpty())
     repl = trimmedText; // prevent from deleting text
-  else if (repl != trimmedText)
+  else if (repl != trimmedText) {
+    if (d_->model->translationFilterFunction)
+      repl = d_->model->translationFilterFunction(repl, role);
+
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
@@ -533,6 +543,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
         //repl = QString("%1 / %2").arg(repl, trimmedText);
       break;
     }
+  }
 
   if (!prefix.isEmpty())
     repl.prepend(prefix);

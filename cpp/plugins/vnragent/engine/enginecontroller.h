@@ -63,10 +63,10 @@ protected:
   // Interface to descendant classes, supposed to be protected
 public:
   ///  Send LPCSTR text to VNR
-  QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
+  QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0, bool sendAllowed = true);
 
   ///  Send LPCWSTR text to VNR
-  QString dispatchTextW(const QString &text, long signature, int role = 0);
+  QString dispatchTextW(const QString &text, long signature, int role = 0, bool sendAllowed = true);
 
   // This function is not thread-safe
   //const char *exchangeTextA(const char *data, long signature, int role = 0);
