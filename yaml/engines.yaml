@@ -61,6 +61,7 @@ embed:
   - SystemAoi
   - SystemAoi2
   - System43+
+  - WolfRPG
   #- AMUSE CRAFT
   #- BGI
   #- Elf
@@ -372,6 +373,7 @@ char:
   - EmbedARCGameEngine
   - EmbedBGI
   - EmbedElf
+  - EmbedWolfRPG
   - EmbedSystem43
   # Engines
   - 2RM
@@ -621,5 +623,6 @@ focus:
   #- SystemAoi2
   #- System40
   #- System43
+  #- WolfRPG
 
 # EOF

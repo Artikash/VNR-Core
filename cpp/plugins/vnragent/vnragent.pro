@@ -130,7 +130,8 @@ HEADERS += \
   engine/model/elf.h \
   engine/model/rgss.h \
   engine/model/system4.h \
-  engine/model/siglus.h
+  engine/model/siglus.h \
+  engine/model/wolf.h
   #engine/model/circus.h
   #engine/model/elf.h
   #engine/model/eushully.h \
@@ -146,7 +147,8 @@ SOURCES += \
   engine/model/elf.cc \
   engine/model/rgss.cc \
   engine/model/system4.cc \
-  engine/model/siglus.cc
+  engine/model/siglus.cc \
+  engine/model/wolf.cc
   #engine/model/circus.cc
   #engine/model/elf.cc
   #engine/model/eushully.cc

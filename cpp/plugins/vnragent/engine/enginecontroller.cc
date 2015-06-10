@@ -319,8 +319,17 @@ bool EngineController::matchFiles(const QStringList &relpaths)
   if (relpaths.isEmpty())
     return false;
   foreach (const QString &path, relpaths)
-    if (!(path.contains('*') && Engine::globs(path)
-        || Engine::exists(path)))
+    if (path.contains('|')) {
+      bool found = false;
+      foreach (const QString &it, path.split('|')) {
+        if ((it.contains('*') ? Engine::globs(it) : Engine::exists(it))) {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        return false;
+    } else if (!(path.contains('*') ? Engine::globs(path) : Engine::exists(path)))
       return false;
 
   DOUT("ret = true, relpaths =" << relpaths);
