@@ -48,11 +48,16 @@ class EngineFinder:
         if not self.eval(it):
           return False
       return True
-    else: # e is str or unicode
-      if '*' in e:
-        return self._globs(e)
-      else:
-        return self._exists(e)
+    # e is str or unicode
+    elif '|' in e:
+      for it in e.split('|'):
+        if self.eval(it):
+          return True
+      return False
+    elif '*' in e:
+      return self._globs(e)
+    else:
+      return self._exists(e)
 
   def _globs(self, relpath):
     """
