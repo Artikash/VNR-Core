@@ -1100,7 +1100,7 @@ class TextManager(QObject):
       if not sub:
         async = role == OTHER_THREAD_TYPE
         sub, lang, provider = trman.manager().translateOne(text, d.gameLanguage,
-            async=async, online=True, mark=False)
+            async=async, online=True, mark=False, keepsNewLine=True)
       if sub:
         if lang.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()

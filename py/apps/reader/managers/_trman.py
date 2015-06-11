@@ -97,10 +97,11 @@ class TranslationCache:
 
 class Translator(object):
   key = 'tr' # str
-  asyncSupported = True # bool  whether threading is supported
-  alignSupported = False # bool  whether support translation alignment
-  onlineRequired = False # bool  whether translation requires Internet access
-  parallelEnabled = False # bool  whether the translation is thread-safe
+  asyncSupported = True     # bool  whether threading is supported
+  alignSupported = False    # bool  whether support translation alignment
+  onlineRequired = False    # bool  whether translation requires Internet access
+  parallelEnabled = False   # bool  whether the translation is thread-safe
+  newLinePreserved = False   # bool  whether new line character can be preserved after translation
 
   def clearCache(self): pass
 
@@ -116,7 +117,7 @@ class Translator(object):
     """
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, align=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, keepsNewLine=False, align=None, **kwargs):
     """
     @param  text  unicode
     @param  to  str
@@ -126,6 +127,7 @@ class Translator(object):
     @param* align  list or None
     @param* mark  bool or None
     @param* scriptEnabled  bool
+    @param* keepsNewLine  bool
     @return  (unicode sub or None, str lang or None, str self.key or None)
     """
     return None, to, self.key
@@ -206,23 +208,23 @@ class Retranslator(Translator):
         return self.second.translateTest(text, to=to, fr=self.language, **kwargs)
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled1=False, scriptEnabled2=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, keepsNewLine=False, scriptEnabled1=False, scriptEnabled2=False, **kwargs):
     """@reimp"""
     if not self.first:
       return None, None, None
     if not self.second:
-      return self.first.translateTest(text, to=to, fr=fr,
-          mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled1, **kwargs)
+      return self.first.translate(text, to=to, fr=fr,
+          mark=mark, align=align, emit=emit, keepsNewLine=keepsNewLine, scriptEnabled=scriptEnabled1, **kwargs)
     lang = self.language
     if lang == 'zht':
       lang = 'zhs' # force using Simplified Chinese as intermediate language
     text, lang, key = self.first.translate(text, to=lang, fr=fr,
-        mark=False, align=None, emit=False, scriptEnabled=scriptEnabled1, **kwargs)
+        mark=False, align=None, emit=False, keepsNewLine=keepsNewLine, scriptEnabled=scriptEnabled1, **kwargs)
     if text:
       if fr == 'ja' and lang == 'zhs':
         text = opencc.ja2zhs(text)
       text2, lang2, key2 = self.second.translate(text, to=to, fr=lang,
-          mark=mark, align=align, emit=emit, scriptEnabled=scriptEnabled2, **kwargs)
+          mark=mark, align=align, emit=emit, keepsNewLine=keepsNewLine, scriptEnabled=scriptEnabled2, **kwargs)
       if text2:
         text = text2
         lang = lang2
@@ -242,7 +244,7 @@ class YueTranslator(Translator):
     baidufanyi.session = session or requests.Session()
     self.engine = baidufanyi
 
-  def translate(self, text, fr, to='yue', async=False):
+  def translate(self, text, fr, to='yue', async=False, **kwargs):
     """@reimp"""
     if text:
       ret = skthreads.runsync(partial(
@@ -311,13 +313,34 @@ class MachineTranslator(Translator):
     self.cache.clear()
     self._cache.clear()
 
-  def __tr(self, text, tr, to, fr, async):
+  def _translateLines(self, text, tr, to, fr):
     """
     @param  text  unicode
-    @param  async  bool
     @param  tr  function(unicode text, str to, str fr)
     @param  to  str
     @param  fr  str
+    @return  unicode or None
+    """
+    ret = ''
+    if text:
+      for it in text.split('\n'):
+        if it:
+          it = tr(it, to=to, fr=fr)
+          if it:
+            ret += it
+          elif it is None:
+            return None
+        ret += '\n'
+    return ret[:-1] # rtrim the last new line character
+
+  def _translateTransaction(self, text, tr, to, fr, async, keepsNewLine):
+    """
+    @param  text  unicode
+    @param  tr  function(unicode text, str to, str fr)
+    @param  to  str
+    @param  fr  str
+    @param  async  bool
+    @param  keepsNewLine  bool
     @return  unicode or None
     """
     #if len(text) > self._CACHE_LENGTH:
@@ -340,10 +363,12 @@ class MachineTranslator(Translator):
     if config.APP_DEBUG:
       prof = SkProfiler(self.key)
       prof.start()
-    ret = skthreads.runsync(partial(
-      tr, text, to=to, fr=fr),
-      abortSignal=self.abortSignal,
-    ) if async and self.asyncSupported else tr(text, to=to, fr=fr)
+
+    if keepsNewLine and not self.newLinePreserved and '\n' in text:
+      task = partial(self._translateLines, text, tr, to, fr)
+    else:
+      task = partial(tr, text, to=to, fr=fr)
+    ret = skthreads.runsync(task, abortSignal=self.abortSignal) if async and self.asyncSupported else task()
 
     if config.APP_DEBUG:
       prof.stop()
@@ -374,9 +399,10 @@ class MachineTranslator(Translator):
       for it in janovutil.split_quotes(text):
         yield it
 
-  def _itertexts(self, text):
+  def _itertexts(self, text, keepsNewLine=False):
     """
     @param  text  unicode
+    @param* keepsNewLine  bool
     @yield  unicode
     """
     for paragraph in self._splitQuotes(text):
@@ -386,23 +412,28 @@ class MachineTranslator(Translator):
           if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS:
             yield line
           else:
-            for sentence in _SENTENCE_RE.sub(r"\1\n", line).split("\n"):
+            if keepsNewLine:
+              sentences = _SENTENCE_RE.sub(r"\1\r", line).split("\r")
+            else:
+              sentences = _SENTENCE_RE.sub(r"\1\n", line).split("\n")
+            for sentence in sentences:
               if sentence:
                 yield sentence
 
-  def _splitTranslate(self, text, tr, to, fr, async):
+  def _splitTranslate(self, text, tr, to, fr, async, keepsNewLine):
     """
     @param  text  unicode
     @param  tr  function(text, to, fr)
     @param  async  bool
+    @param  keepsNewLine  bool
     @return  [unicode] not None
     """
     ret = []
-    for text in self._itertexts(text):
+    for text in self._itertexts(text, keepsNewLine=keepsNewLine):
       if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
         ret.append(text)
       else:
-        text = self._cache.get(text) or self.__tr(text, tr, to, fr, async)
+        text = self._cache.get(text) or self._translateTransaction(text, tr, to, fr, async, keepsNewLine)
         if text is None:
           dwarn("translation failed or aborted using '%s'" % self.key)
           return []
@@ -410,12 +441,13 @@ class MachineTranslator(Translator):
           ret.append(text)
     return ret
 
-  def _splitTranslate_par(self, text, tr, to, fr, async,
+  def _splitTranslate_par(self, text, tr, to, fr, async, keepsNewLine,
       nthreads=0, timeout=0, master_threshold=0):
     """Parallelized version
     @param  text  unicode
     @param  tr  function(text, to, fr)
     @param  async  bool
+    @param  keepsNewLine  bool
     @param* nthreads  maximum number of threads to use
     @param* master  bool  whether the master thread should paticipate  should disable this for tablet
     @param* timeout  int
@@ -429,7 +461,7 @@ class MachineTranslator(Translator):
     #  nthreads = psutil.NUM_CPUS or 1
     ret = []
     texts = []
-    for text in self._itertexts(text):
+    for text in self._itertexts(text, keepsNewLine=keepsNewLine):
       if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
         ret.append(text)
       else:
@@ -440,7 +472,7 @@ class MachineTranslator(Translator):
           ret.append(None) # place holder
           texts.append(text)
     if texts:
-      run = lambda text: self.__tr(text, tr, to, fr, async)
+      run = lambda text: self._translateTransaction(text, tr, to, fr, async, keepsNewLine)
       if len(texts) == 1:
         if master_threshold:
           t = run(texts[0])
@@ -467,7 +499,7 @@ class MachineTranslator(Translator):
             break
     return ret
 
-  def _translate(self, emit, text, tr, to, fr, async, align=None):
+  def _translate(self, emit, text, tr, to, fr, async, keepsNewLine, align=None):
     """
     @param  emit  bool
     @param  text  unicode
@@ -475,6 +507,7 @@ class MachineTranslator(Translator):
     @param  to  str
     @param  fr  str
     @param  async  bool
+    @param  keepsNewLine  bool
     @param* par  bool  parallel
     @param* align  list or None
     @return  unicode
@@ -487,7 +520,7 @@ class MachineTranslator(Translator):
     #  l = self._splitTranslate(text, tr, to, fr, async)
 
     split = self._splitTranslate_par if self.parallelEnabled else self._splitTranslate
-    l = split(text, tr, to, fr, async)
+    l = split(text, tr, to, fr, async, keepsNewLine)
     if emit:
       self.emitSplitTranslations(l)
     #delim = ' ' if self.splitsSentences else ''
@@ -755,7 +788,7 @@ class AtlasTranslator(OfflineMachineTranslator):
   def _translateApi(self, text, fr='', to=''): # unicode -> unicode
     return self.engine.translate(text)
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=False, mark=None, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, keepsNewLine=False, scriptEnabled=False, mark=None, **kwargs):
     """@reimp"""
     to = 'en'
     if emit:
@@ -772,7 +805,7 @@ class AtlasTranslator(OfflineMachineTranslator):
       try:
         repl = self._translate(emit, repl,
             self._translateApi,
-            to, fr, async)
+            to, fr, async, keepsNewLine)
         if repl:
           # ATLAS always try to append period at the end
           repl = wide2thin(repl) #.replace(u". 。", ". ").replace(u"。", ". ").replace(u" 」", u"」").rstrip()
@@ -852,7 +885,7 @@ class LecTranslator(OfflineMachineTranslator):
       to = 'en'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -871,7 +904,7 @@ class LecTranslator(OfflineMachineTranslator):
       try:
         repl = self._translate(emit, repl,
             self.engine.translate,
-            to, fr, async)
+            to, fr, async, keepsNewLine)
         if repl:
           repl = wide2thin(repl) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
@@ -944,7 +977,7 @@ class EzTranslator(OfflineMachineTranslator):
   #}))
   # Example: GPS97351.678 => GPS97351. 678
   #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, ehndEnabled=False, **kwargs):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, ehndEnabled=False, **kwargs):
     """@reimp"""
     to = 'ko'
     if emit:
@@ -963,7 +996,7 @@ class EzTranslator(OfflineMachineTranslator):
         #repl = self.__ez_repl_before(repl)
         repl = self._translate(emit, repl,
             self._translateApi,
-            to, fr, async)
+            to, fr, async, keepsNewLine)
         if repl:
           #repl = self.__ez_repl_after(repl)
           #repl = self.__re_term_fix.sub('', repl)
@@ -1027,7 +1060,7 @@ class TransCATTranslator(OfflineMachineTranslator):
   #}))
   # Example: GPS97351.678 => GPS97351. 678
   #__re_term_fix = re.compile(r'(?<=\d\.) (?=\d{2})')
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, **kwargs):
     """@reimp"""
     to = 'ko'
     if emit:
@@ -1045,7 +1078,7 @@ class TransCATTranslator(OfflineMachineTranslator):
         #repl = self.__cat_repl_before(repl)
         repl = self._translate(emit, repl,
             self._translateApi,
-            to, fr, async)
+            to, fr, async, keepsNewLine)
         if repl:
           #repl = self.__cat_repl_after(repl)
           #repl = self.__re_term_fix.sub('', repl)
@@ -1093,7 +1126,7 @@ class HanVietTranslator(OfflineMachineTranslator):
     #text = wide2thin(text) # not needed
     return text
 
-  def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, align=None, **kwargs):
+  def translate(self, text, to='vi', fr='zhs', emit=False, mark=None, align=None, keepsNewLine=False, **kwargs):
     """@reimp"""
     async = False # disable async
     to = 'vi'
@@ -1118,7 +1151,7 @@ class HanVietTranslator(OfflineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           partial(self._translateApi, mark=mark),
-          to, fr, async, align=align)
+          to, fr, async, keepsNewLine, align=align)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies) # 0.1 seconds
         self.cache.update(text, repl)
@@ -1132,6 +1165,7 @@ class HanVietTranslator(OfflineMachineTranslator):
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override
+  newLinePreserved = False # new line characters will crash JBeijing
   #parallelEnabled = True # override
 
   def __init__(self, **kwargs):
@@ -1199,7 +1233,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
   def _translateApi(self, text, fr='', to='', simplified=False): # unicode -> unicode
     return self.engine.translate(text, simplified=simplified)
 
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, **kwargs):
     """@reimp"""
     # Profiler: 1e-5 seconds
     #with SkProfiler():
@@ -1221,7 +1255,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
       try:
         repl = self._translate(emit, repl,
             partial(self._translateApi, simplified=simplified),
-            to, fr, async) # 0.1 seconds
+            to, fr, async, keepsNewLine) # 0.1 seconds
         if repl:
           #with SkProfiler():
           #repl = wide2thin_digit(repl) # convert wide digits to thin digits
@@ -1388,7 +1422,7 @@ class FastAITTranslator(OfflineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, **kwargs):
     """@reimp"""
     async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
     to, fr = self._checkLanguages(to, fr)
@@ -1410,7 +1444,7 @@ class FastAITTranslator(OfflineMachineTranslator):
             repl = self.__ja_repl_before(repl)
           repl = self._translate(emit, repl,
               partial(self._synchronizedTranslate, engine.translate),
-              to, fr, async)
+              to, fr, async, keepsNewLine)
           if repl:
             if fr == 'ja':
               repl = self.__ja_repl_after(repl)
@@ -1487,7 +1521,7 @@ class DreyeTranslator(OfflineMachineTranslator):
   #  '[': u'【',
   #  ' ]': u'】',
   #}))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, **kwargs):
     """@reimp"""
     if fr == 'zht':
       text = zht2zhs(text)
@@ -1504,7 +1538,7 @@ class DreyeTranslator(OfflineMachineTranslator):
       try:
         repl = self._translate(emit, repl,
             engine.translate,
-            to, fr, async)
+            to, fr, async, keepsNewLine)
         if repl:
           if to != 'zhs':
             repl = zhs2zht(repl)
@@ -1543,7 +1577,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  ']\n': u'】',
   #}))
   #__fix_escape = re.compile(r'(?<=[0-9]) .(?=[0-9])') # replace ' .' between digits with '.'
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -1559,7 +1593,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async, align=align)
+          to, fr, async, keepsNewLine, align=align)
       if repl:
         #repl = self.__fix_escape.sub('.', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
@@ -1592,7 +1626,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     async = True # force async or excite could get blocked using qt session
     to, fr = self._checkLanguages(to, fr)
@@ -1609,7 +1643,7 @@ class ExciteTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
@@ -1636,7 +1670,7 @@ class NiftyTranslator(OnlineMachineTranslator):
     niftyhonyaku.session = session or requests.Session()
     self.engine = niftyhonyaku
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -1652,7 +1686,7 @@ class NiftyTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
@@ -1678,7 +1712,7 @@ class BabylonTranslator(OnlineMachineTranslator):
     babylon.session = session or requests.Session()
     self.engine = babylon
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -1694,7 +1728,7 @@ class BabylonTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         #if to == 'ar':
         repl = fix_lower_proxy(repl)
@@ -1732,7 +1766,7 @@ class SystranTranslator(OnlineMachineTranslator):
       to = 'en'
     return to, fr
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     async = True # force async or systran could get hanged
     to, fr = self._checkLanguages(to, fr)
@@ -1749,7 +1783,7 @@ class SystranTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         if to == 'zht':
           repl = zhs2zht(repl)
@@ -1779,7 +1813,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     leconline.session = session or requests.Session()
     self.engine = leconline
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -1795,7 +1829,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
@@ -1822,7 +1856,7 @@ class TransruTranslator(OnlineMachineTranslator):
     transru.session = session or requests.Session()
     self.engine = transru
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -1838,7 +1872,7 @@ class TransruTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
@@ -1870,7 +1904,7 @@ class VTranslator(OnlineMachineTranslator):
     vtrans.session = session or requests.Session()
     self.engine = vtrans
 
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, keepsNewLine=False, mark=None, **kwargs):
     """@reimp"""
     if self.failedCount > self.MAX_FAILED_COUNT:
       dwarn("failed for too many times")
@@ -1890,7 +1924,7 @@ class VTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         if to == 'zht':
@@ -1927,7 +1961,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #}))
   # Fix numbers such as 929,005.678。
   #__re_term_fix = re.compile(r'(?<=\d),(?=\d{2})')
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
     #to, fr = self._checkLanguages(to, fr)
@@ -1942,7 +1976,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async, align=align)
+          to, fr, async, keepsNewLine, align=align)
       if repl:
         #if self.languageNeedsEscape(to, fr):
         #repl = self.__re_term_fix.sub('', repl)
@@ -1979,7 +2013,7 @@ class BingTranslator(OnlineMachineTranslator):
   #  ']\n': u'】',
   #}))
   #__fix_escape = re.compile(r'(?<=[0-9]),(?=[0-9])') # replace ',' between digits with '.'
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, scriptEnabled=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, mark=None, align=None, keepsNewLine=False, scriptEnabled=False, **kwargs):
     """@reimp"""
     #if fr != 'ja':
     #  return None, None, None
@@ -1997,7 +2031,7 @@ class BingTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async, align=align)
+          to, fr, async, keepsNewLine, align=align)
       if repl:
         #repl = self.__fix_escape.sub('.', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies, proxyDigit=proxyDigit)
@@ -2042,7 +2076,7 @@ class NaverTranslator(OnlineMachineTranslator):
       return 'ko', 'en'
     return to, fr
 
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False, mark=None, align=None, **kwargs):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, keepsNewLine=False, mark=None, align=None, **kwargs):
     """@reimp"""
     to, fr = self._checkLanguages(to, fr)
     if not to or not fr:
@@ -2062,7 +2096,7 @@ class NaverTranslator(OnlineMachineTranslator):
       alignCount = len(align) if align else 0
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async, align=align)
+          to, fr, async, keepsNewLine, align=align)
       if repl:
         # Sometimes naver translation result contains <>
         # Example: るみちゃん、めでたい結婚を機にさ、名前変えたら
@@ -2136,7 +2170,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, align=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, keepsNewLine=False, mark=None, align=None, **kwargs):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
@@ -2159,7 +2193,7 @@ class BaiduTranslator(OnlineMachineTranslator):
       repl = self.__baidu_repl_before(repl)
       repl = self._translate(emit, repl,
           engine.translate,
-          to, fr, async, align=align)
+          to, fr, async, keepsNewLine, align=align)
       if repl:
         if not fr.startswith('zh') and not to.startswith('zh'): # not translate chinese
           repl = fix_lower_proxy(repl)
@@ -2222,7 +2256,7 @@ class YoudaoTranslator(OnlineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, mark=None, **kwargs):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, keepsNewLine=False, mark=None, **kwargs):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
@@ -2243,7 +2277,7 @@ class YoudaoTranslator(OnlineMachineTranslator):
       repl = self.__youdao_repl_before(repl)
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async)
+          to, fr, async, keepsNewLine)
       if repl:
         repl = fix_lower_proxy(repl)
         if to == 'zht':

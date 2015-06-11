@@ -823,7 +823,7 @@ class TranslatorManager(QObject):
         kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
       return it.translateTest(text, **kw)
 
-  def translateOne(self, text, fr='ja', to='', engine='', mark=None, online=True, async=False, cached=True, emit=False, scriptEnabled=None, ehndEnabled=None):
+  def translateOne(self, text, fr='ja', to='', engine='', mark=None, online=True, async=False, cached=True, emit=False, keepsNewLine=None, scriptEnabled=None, ehndEnabled=None):
     """Translate using any translator
     @param  text  unicode
     @param* fr  unicode  language
@@ -850,6 +850,7 @@ class TranslatorManager(QObject):
         'mark': mark,
         'async': async,
         'emit': emit,
+        'keepsNewLine': keepsNewLine,
       }
       it = d.findRetranslator(it, to=to, fr=fr) or it
       if it.key == 'eztrans':
@@ -869,7 +870,7 @@ class TranslatorManager(QObject):
         ) or (None, None, None)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja', to='', mark=None, scriptEnabled=None, ehndEnabled=None, **kwargs):
+  def translateApply(self, func, text, fr='ja', to='', keepsNewLine=None, mark=None, scriptEnabled=None, ehndEnabled=None, **kwargs):
     """Specialized for textman
     @param  func  function(unicode sub, unicode lang, unicode provider)
     @param  text  unicode
@@ -893,7 +894,7 @@ class TranslatorManager(QObject):
       d.iterOnlineTranslators(reverse=True),
     )
     for it in translators:
-      kw = {'fr':fr, 'to':to, 'mark':mark, 'async':False}
+      kw = {'fr':fr, 'to':to, 'mark':mark, 'async':False, 'keepsNewLine':keepsNewLine}
       it = d.findRetranslator(it, to=to, fr=fr) or it
 
       align = None
