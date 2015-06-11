@@ -36,7 +36,8 @@ namespace Private {
     bool isValid() const
     {
       return flag1 == 0 && flag2 == 0 && flag3 == 0 && flag4 == 0
-          && Engine::isAddressReadable(text, size) && size == ::strlen(text);
+          && Engine::isAddressReadable(text, size) && size == ::strlen(text)
+          && (quint8)*text > 127;
     }
   };
 
@@ -45,10 +46,8 @@ namespace Private {
 
   bool hookBefore(winhook::hook_stack *s)
   {
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
     auto self = (TextListElement *)s->ecx; // ecx is actually a list of element
-    auto text = self->text;
-    if (self->isValid() && (quint8)*text > 127)
+    if (self && self->isValid())
       self_ = self;
     return true;
   }
@@ -56,7 +55,7 @@ namespace Private {
   bool hookAfter(winhook::hook_stack *)
   {
     enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    if (self_) {
+    if (self_ && self_->isValid()) {
       auto text = self_->text;
       //auto sig = Engine::hashThreadSignature(role, split);
       QByteArray oldData = text,
@@ -67,6 +66,7 @@ namespace Private {
         //if (newData.size() < oldData.size())
         //  ::memset(text + newData.size(), 0, oldData.size() - newData.size());
       }
+      self_ = nullptr;
     }
     return true;
   }

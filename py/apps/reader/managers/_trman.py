@@ -24,7 +24,7 @@ from opencc import opencc
 from unitraits.uniconv import wide2thin_alnum
 from janovp import janovutil
 from mytr import my, mytr_
-from unitraits import unichars, jpchars, jpmacros
+from unitraits import jpchars, jpmacros
 from convutil import wide2thin, zhs2zht, zht2zhs, zht2zhx
 from share.mt import mtinfo
 import config, defs, growl, termman, textutil, trman, tahscript
@@ -32,8 +32,8 @@ import config, defs, growl, termman, textutil, trman, tahscript
 _re_jitter = re.compile(jpmacros.applymacros(
     ur'{{boc}}({{kana}})[っッ]?(?=[、…]\1)'))
 
-isspace = unichars.isspace
-ispunct = textutil.ispunct
+from unitraits.unichars import isspace, allspace
+from textutil import ispunct
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -385,16 +385,17 @@ class MachineTranslator(Translator):
     #dprint("%s pass" % self.key)
     return ret
 
-  def _splitQuotes(self, text):
+  def _splitQuotes(self, text, strip=True):
     """Split name from text
     @param  text  unicode
     @yield  unicode
     """
     name, text = janovutil.split_text_name(text)
-    name = name.strip()
+    if strip:
+      name = name.strip()
+      text = text.strip()
     if name:
       yield name
-    text = text.strip()
     if text:
       for it in janovutil.split_quotes(text):
         yield it
@@ -405,13 +406,15 @@ class MachineTranslator(Translator):
     @param* keepsNewLine  bool
     @yield  unicode
     """
-    for paragraph in self._splitQuotes(text):
+    strip = not keepsNewLine
+    for paragraph in self._splitQuotes(text, strip=strip):
       for line in _PARAGRAPH_RE.split(paragraph):
-        line = line.strip()
+        if strip:
+          line = line.strip()
         if line:
-          if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS:
+          if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS or not strip and allspace(line):
             yield line
-          else:
+          else: # skips sentences
             if keepsNewLine:
               sentences = _SENTENCE_RE.sub(r"\1\r", line).split("\r")
             else:
@@ -462,7 +465,7 @@ class MachineTranslator(Translator):
     ret = []
     texts = []
     for text in self._itertexts(text, keepsNewLine=keepsNewLine):
-      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS or allspace(text):
         ret.append(text)
       else:
         t = self._cache.get(text)
@@ -672,7 +675,8 @@ class MachineTranslator(Translator):
       if to not in ('ja', 'zhs', 'zht'):
         text = textutil.remove_html_punct_space(text)
       text = textutil.beautify_subtitle(text)
-    return text.strip() # escape could produce trailing " "
+    return text
+    #return text.strip() # escape could produce trailing " "
 
   # Jitter for CJK
   #def _needsJitter(self, to, fr):
@@ -798,6 +802,8 @@ class AtlasTranslator(OfflineMachineTranslator):
     if not emit:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -812,6 +818,8 @@ class AtlasTranslator(OfflineMachineTranslator):
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           repl = repl.replace(u" 」", u"」") # remove the trailing space
           self.cache.update(text, repl)
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
@@ -897,6 +905,8 @@ class LecTranslator(OfflineMachineTranslator):
     if not emit:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -909,6 +919,8 @@ class LecTranslator(OfflineMachineTranslator):
           repl = wide2thin(repl) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
@@ -987,6 +999,8 @@ class EzTranslator(OfflineMachineTranslator):
     if not emit:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     #self.engine.setEhndEnabled(ehndEnabled) # never change it any more
     proxies = {}
@@ -1002,6 +1016,8 @@ class EzTranslator(OfflineMachineTranslator):
           #repl = self.__re_term_fix.sub('', repl)
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
@@ -1070,6 +1086,8 @@ class TransCATTranslator(OfflineMachineTranslator):
     if not emit:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
@@ -1084,6 +1102,8 @@ class TransCATTranslator(OfflineMachineTranslator):
           #repl = self.__re_term_fix.sub('', repl)
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
@@ -1143,6 +1163,8 @@ class HanVietTranslator(OfflineMachineTranslator):
     if not emit:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     text = opencc.ja2zhs(text)
     #with SkProfiler():
@@ -1155,6 +1177,8 @@ class HanVietTranslator(OfflineMachineTranslator):
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies) # 0.1 seconds
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     return None, None, None
 
@@ -1246,6 +1270,8 @@ class JBeijingTranslator(OfflineMachineTranslator):
     if not emit:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     #with SkProfiler():
     proxies = {}
@@ -1262,6 +1288,8 @@ class JBeijingTranslator(OfflineMachineTranslator):
           repl = wide2thin_alnum(repl) # convert all wide characters to thin
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies) # 0.1 seconds
           self.cache.update(text, repl)
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
@@ -1435,6 +1463,8 @@ class FastAITTranslator(OfflineMachineTranslator):
       else:
         repl = self.cache.get(text)
         if repl:
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       proxies = {}
       repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
@@ -1450,6 +1480,8 @@ class FastAITTranslator(OfflineMachineTranslator):
               repl = self.__ja_repl_after(repl)
             repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
             self.cache.update(text, repl)
+            if not keepsNewLine:
+              repl = repl.strip()
             return repl, to, self.key
         #except RuntimeError, e:
         except Exception, e:
@@ -1531,6 +1563,8 @@ class DreyeTranslator(OfflineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
@@ -1547,6 +1581,8 @@ class DreyeTranslator(OfflineMachineTranslator):
           #sub = sub.replace(']', u'】')
           repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
           self.cache.update(text, repl)
+          if not keepsNewLine:
+            repl = repl.strip()
           return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
@@ -1587,6 +1623,8 @@ class InfoseekTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1598,6 +1636,8 @@ class InfoseekTranslator(OnlineMachineTranslator):
         #repl = self.__fix_escape.sub('.', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1637,6 +1677,8 @@ class ExciteTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1647,6 +1689,8 @@ class ExciteTranslator(OnlineMachineTranslator):
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1680,6 +1724,8 @@ class NiftyTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1690,6 +1736,8 @@ class NiftyTranslator(OnlineMachineTranslator):
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1722,6 +1770,8 @@ class BabylonTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1734,6 +1784,8 @@ class BabylonTranslator(OnlineMachineTranslator):
         repl = fix_lower_proxy(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1777,6 +1829,8 @@ class SystranTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1789,6 +1843,8 @@ class SystranTranslator(OnlineMachineTranslator):
           repl = zhs2zht(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1823,6 +1879,8 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1833,6 +1891,8 @@ class LecOnlineTranslator(OnlineMachineTranslator):
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1866,6 +1926,8 @@ class TransruTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1876,6 +1938,8 @@ class TransruTranslator(OnlineMachineTranslator):
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -1918,6 +1982,8 @@ class VTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
@@ -1930,6 +1996,8 @@ class VTranslator(OnlineMachineTranslator):
         if to == 'zht':
           repl = zhs2zht(repl)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
       else:
         self.failedCount += 1
     return repl, to, self.key
@@ -1970,6 +2038,8 @@ class GoogleTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies, scriptEnabled=scriptEnabled)
@@ -1984,6 +2054,8 @@ class GoogleTranslator(OnlineMachineTranslator):
         if to.startswith('zh'):
           repl = repl.replace("...", u'…')
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -2024,6 +2096,8 @@ class BingTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     proxyDigit = to == 'ar' # bing tends to translate latin letters to arabic
@@ -2036,6 +2110,8 @@ class BingTranslator(OnlineMachineTranslator):
         #repl = self.__fix_escape.sub('.', repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies, proxyDigit=proxyDigit)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -2086,6 +2162,8 @@ class NaverTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     if fr == 'zht': # traditional Chinese translation is not good
       text = zht2zhs(text)
@@ -2110,6 +2188,8 @@ class NaverTranslator(OnlineMachineTranslator):
                 align[alignCount + i] = (k, zhs2zht(v))
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -2184,6 +2264,8 @@ class BaiduTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
@@ -2207,6 +2289,8 @@ class BaiduTranslator(OnlineMachineTranslator):
         repl = self.__baidu_repl_after(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
@@ -2270,6 +2354,8 @@ class YoudaoTranslator(OnlineMachineTranslator):
     else:
       repl = self.cache.get(text)
       if repl:
+        if not keepsNewLine:
+          repl = repl.strip()
         return repl, to, self.key
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies)
@@ -2285,6 +2371,8 @@ class YoudaoTranslator(OnlineMachineTranslator):
         repl = self.__youdao_repl_after(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, proxies=proxies)
         self.cache.update(text, repl)
+        if not keepsNewLine:
+          repl = repl.strip()
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
