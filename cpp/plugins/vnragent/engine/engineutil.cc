@@ -34,19 +34,19 @@ bool Engine::isAddressReadable(const ulong *p)
 { return p && !::IsBadReadPtr(p, sizeof(*p)); }
 
 bool Engine::isAddressReadable(const char *p, size_t count)
-{ return p && !::IsBadReadPtr(p, sizeof(*p) * count); }
+{ return p && count && !::IsBadReadPtr(p, sizeof(*p) * count); }
 
 bool Engine::isAddressReadable(const wchar_t *p, size_t count)
-{ return p && !::IsBadReadPtr(p, sizeof(*p) * count); }
+{ return p && count && !::IsBadReadPtr(p, sizeof(*p) * count); }
 
 bool Engine::isAddressWritable(const ulong *p)
 { return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p)); }
 
 bool Engine::isAddressWritable(const char *p, size_t count)
-{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
+{ return p && count && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
 
 bool Engine::isAddressWritable(const wchar_t *p, size_t count)
-{ return p && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
+{ return p && count && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
 
 // - Detours -
 

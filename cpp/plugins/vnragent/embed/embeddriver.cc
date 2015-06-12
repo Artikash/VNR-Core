@@ -4,6 +4,7 @@
 #include "embed/embeddriver.h"
 #include "embed/embedmanager.h"
 #include "engine/enginecontroller.h"
+#include "engine/enginemodel.h"
 #include "engine/enginefactory.h"
 #include "engine/enginesettings.h"
 
@@ -39,6 +40,8 @@ EmbedDriver::~EmbedDriver()
 }
 
 // - Properties -
+
+bool EmbedDriver::isDeviceContextFontEnabled() const { return  d_->engine && d_->engine->model()->enforceGDIFont; }
 
 void EmbedDriver::setTranslationWaitTime(int v)  { d_->manager->setTranslationWaitTime(v); }
 

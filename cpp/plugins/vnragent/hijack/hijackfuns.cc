@@ -158,7 +158,7 @@ DCFontSwitcher::DCFontSwitcher(HDC hdc)
   if (!p)
     return;
   auto s = p->settings();
-  if (!s->isFontCustomized())
+  if (!s->deviceContextFontEnabled || !s->isFontCustomized())
     return;
 
   TEXTMETRICW tm;
@@ -300,7 +300,6 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 #define DECODE_TEXT(lpString, cchString, ...) \
 { \
-  /*DCFontSwitcher fs(hdc);*/ \
   if(cchString > 1) \
     if (auto p = DynamicCodec::instance()) { \
       bool dynamic; \
@@ -316,7 +315,6 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 #define DECODE_CHAR(uChar, ...) \
 { \
-  /*DCFontSwitcher fs(hdc);*/ \
   if (uChar > 0xff) \
     if (auto p = DynamicCodec::instance()) { \
       bool dynamic; \
@@ -331,7 +329,7 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
 {
   DOUT("pass");
-  //DCFontSwitcher fs(hdc);
+  DCFontSwitcher fs(hdc);
   DECODE_CHAR(uChar, oldGetGlyphOutlineW(hdc, ch, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2))
   return oldGetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
 }
@@ -346,7 +344,7 @@ DWORD WINAPI Hijack::newGetGlyphOutlineW(HDC hdc, UINT uChar, UINT uFormat, LPGL
 BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
 {
   DOUT("pass");
-  //DCFontSwitcher fs(hdc);
+  DCFontSwitcher fs(hdc);
   DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
 }
@@ -361,7 +359,7 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32W(HDC hdc, LPCWSTR lpString, int cchS
 BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
 {
   DOUT("pass");
-  //DCFontSwitcher fs(hdc);
+  DCFontSwitcher fs(hdc);
   DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
   return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }

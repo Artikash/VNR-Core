@@ -7,6 +7,8 @@
 class HijackSettings
 {
 public:
+  bool deviceContextFontEnabled; // change font for GDI device context
+
   QString fontFamily;       // font face
   float fontScale;          // zoom font width and height
   int fontWeight;           // fw font weight
@@ -14,7 +16,8 @@ public:
   bool fontCharSetEnabled;  // whether modify font char set
 
   HijackSettings()
-    : fontScale(0)
+    : deviceContextFontEnabled(false)
+    , fontScale(0)
     , fontWeight(0)
     , fontCharSet(0)
     , fontCharSetEnabled(true)

@@ -20,6 +20,7 @@ public:
     : name(nullptr)
     , encoding(AsciiEncoding)   // scenario thread encoding
     , dynamicEncoding(false)    // whether use dynamic codec to fix ascii text
+    , enforceGDIFont(false)     // force changing GDI device context font
     , matchFunction(nullptr)    // determine whether apply engine
     , attachFunction(nullptr)   // apply the engine
     , detachFunction(nullptr)   // remove the applied engine
@@ -29,7 +30,8 @@ public:
 
   const char *name;
   Encoding encoding;
-  bool  dynamicEncoding;
+  bool dynamicEncoding;
+  bool enforceGDIFont;
 
   QStringList matchFiles; // files existing in the game directory
 

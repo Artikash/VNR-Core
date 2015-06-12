@@ -27,9 +27,10 @@ public slots:
   void setFontCharSet(int v);
   void setFontCharSetEnabled(bool t);
 
+  void setDeviceContextFontEnabled(bool t);
+
 private slots:
   void refresh();
 };
-
 
 // EOF

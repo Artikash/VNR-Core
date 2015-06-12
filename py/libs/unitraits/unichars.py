@@ -1,6 +1,7 @@
 # coding: utf8
 # unichars.py
 # 6/16/2014 jichi
+import re
 
 # Some of the kana characters are skipped
 # See: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana
@@ -88,6 +89,14 @@ def isspace(ch):
   @return  bool
   """
   return ch in u" \u3000\t\n"
+
+_rx_allspace = re.compile(r'^\n$', re.UNICODE)
+def allspace(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(text and _rx_allspace.match(text))
 
 def isalpha(ch):
   """

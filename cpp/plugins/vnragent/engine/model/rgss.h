@@ -15,6 +15,7 @@ public:
   {
     name = "EmbedRGSS";
     encoding = Utf16Encoding;
+    enforceGDIFont = true;
     matchFiles << "System/RGSS3*.dll";
     //matchFiles << "Game.rgss3a";
     attachFunction = &Self::attach;

@@ -40,6 +40,12 @@ HijackDriver::~HijackDriver() { delete d_; }
 
 // Properties
 
+void HijackDriver::setDeviceContextFontEnabled(bool t)
+{
+  d_->helper->settings()->deviceContextFontEnabled = t;
+  DOUT(t);
+}
+
 void HijackDriver::setEncoding(const QString &v)
 {
   d_->helper->setEncoding(v);

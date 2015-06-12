@@ -19,6 +19,8 @@ public:
   explicit EmbedDriver(QObject *parent = nullptr);
   ~EmbedDriver();
 
+  bool isDeviceContextFontEnabled() const;
+
 signals:
   void textReceived(QString text, qint64 hash, long signature, int role, bool needsTranslation);
   void engineNameChanged(QString name);
