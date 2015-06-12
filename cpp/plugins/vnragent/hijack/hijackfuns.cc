@@ -380,7 +380,7 @@ LPSTR WINAPI Hijack::newCharNextA(LPCSTR lpString)
 {
   DOUT("pass");
   //if (::GetACP() == 932)
-  return dynsjis::CharNextA(lpString);
+  return const_cast<char *>(dynsjis::next_char(lpString));
   //return oldCharNextA(lpString);
 }
 

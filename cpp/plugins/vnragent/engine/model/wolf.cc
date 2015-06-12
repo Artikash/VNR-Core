@@ -6,6 +6,7 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
+#include "dyncodec/dynsjis.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
@@ -60,8 +61,10 @@ namespace Private {
         data = EngineController::instance()->dispatchTextA(data, sig, role, SendAllowed, &timeout);
         if (timeout)
           return true;
-        if (data.size() >= self->capacity)
-          data = data.left(self->capacity - 1); // -1 for \0
+        if (data.size() >= self->capacity) { // assume shift jis encoding
+          const char *prev = dynsjis::prev_char(data.constData() + self->capacity - 1, data.constData());
+          data = data.left(prev - data.constData());
+        }
 
         ::strcpy(self->text, data.constData());
         self->size = data.size();
