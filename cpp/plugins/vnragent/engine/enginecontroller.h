@@ -27,6 +27,7 @@ public:
   ~EngineController();
 
   EngineSettings *settings() const;
+  EngineModel *model() const;
 
   const char *name() const;
 

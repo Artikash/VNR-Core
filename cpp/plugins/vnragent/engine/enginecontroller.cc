@@ -221,6 +221,8 @@ EngineController::EngineController(EngineModel *model)
 EngineController::~EngineController() { delete d_; }
 
 EngineSettings *EngineController::settings() const { return &d_->settings; }
+EngineModel *EngineController::model() const { return d_->model; }
+
 const char *EngineController::name() const { return d_->model->name; }
 
 const char *EngineController::encoding() const

@@ -433,7 +433,7 @@ class MachineTranslator(Translator):
     """
     ret = []
     for text in self._itertexts(text, keepsNewLine=keepsNewLine):
-      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS:
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS or allspace(text):
         ret.append(text)
       else:
         text = self._cache.get(text) or self._translateTransaction(text, tr, to, fr, async, keepsNewLine)
@@ -1189,7 +1189,7 @@ class HanVietTranslator(OfflineMachineTranslator):
 
 class JBeijingTranslator(OfflineMachineTranslator):
   key = 'jbeijing' # override
-  newLinePreserved = False # new line characters will crash JBeijing
+  #newLinePreserved = False # new line characters will crash JBeijing
   #parallelEnabled = True # override
 
   def __init__(self, **kwargs):
@@ -1277,7 +1277,8 @@ class JBeijingTranslator(OfflineMachineTranslator):
     proxies = {}
     repl = self._encodeTranslation(text, to=to, fr=fr, emit=emit, proxies=proxies) # 0.1 seconds
     if repl:
-      repl = repl.replace('\n', ' ') # JBeijing cannot handle multiple lines
+      if not keepsNewLine:
+        repl = repl.replace('\n', ' ') # JBeijing cannot handle multiple lines
       try:
         repl = self._translate(emit, repl,
             partial(self._translateApi, simplified=simplified),

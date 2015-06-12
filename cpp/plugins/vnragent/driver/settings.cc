@@ -169,10 +169,11 @@ bool Settings::isEmbeddedTextNeeded() const { return true; } // placeholder
 
 bool Settings::isEmbedDriverNeeded() const
 {
-  return isEmbeddedTextNeeded()
-      || isEmbeddedScenarioTranslationEnabled() || !isEmbeddedScenarioVisible()
-      || isEmbeddedNameTranslationEnabled() || !isEmbeddedNameVisible()
-      || isEmbeddedOtherTranslationEnabled() || !isEmbeddedOtherVisible();
+  return true; // always embedding text
+  //return isEmbeddedTextNeeded()
+  //    || isEmbeddedScenarioTranslationEnabled() || !isEmbeddedScenarioVisible()
+  //    || isEmbeddedNameTranslationEnabled() || !isEmbeddedNameVisible()
+  //    || isEmbeddedOtherTranslationEnabled() || !isEmbeddedOtherVisible();
 }
 
 // Marshal

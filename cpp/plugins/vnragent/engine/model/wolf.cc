@@ -9,8 +9,7 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
-//#include <QtCore/QRegExp>
-//#include <QtCore/QSet>
+#include <QtCore/QSet>
 
 #define DEBUG "wolf"
 #include "sakurakit/skdebug.h"
@@ -30,43 +29,39 @@ namespace Private {
     DWORD flag2;
     DWORD flag3;
     DWORD flag4;
-    size_t size,
-           capacity; // 0xe8, I am not sure if this ius the capacity though
+    int size,
+        capacity; // 0xe8, capacity of the data including \0
 
     bool isValid() const
     {
       return flag1 == 0 && flag2 == 0 && flag3 == 0 && flag4 == 0
-          && Engine::isAddressReadable(text, size) && size == ::strlen(text)
-          && (quint8)*text > 127;
+          && size > 0 && size < capacity
+          && Engine::isAddressReadable(text, capacity) && size == ::strlen(text);
+          //&& (quint8)*text > 127;
     }
   };
 
-  LPSTR text_;
-  TextListElement *self_;
-
   bool hookBefore(winhook::hook_stack *s)
   {
-    auto self = (TextListElement *)s->ecx; // ecx is actually a list of element
-    if (self && self->isValid())
-      self_ = self;
-    return true;
-  }
+    //enum { DataQueueCapacity = 30 };
+    static QSet<QByteArray> dataSet_;
 
-  bool hookAfter(winhook::hook_stack *)
-  {
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    if (self_ && self_->isValid()) {
-      auto text = self_->text;
-      //auto sig = Engine::hashThreadSignature(role, split);
-      QByteArray oldData = text,
-                 newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
-      if (newData != oldData) {
-        ::strncpy(text, newData.constData(), newData.size());
-        self_->size = newData.size();
-        //if (newData.size() < oldData.size())
-        //  ::memset(text + newData.size(), 0, oldData.size() - newData.size());
+    enum { role = Engine::ScenarioRole };
+    auto self = (TextListElement *)s->ecx; // ecx is actually a list of element
+    if (self && self->isValid()) {
+      QByteArray data = self->text;
+      if (!dataSet_.contains(data)) {
+        auto split = s->stack[0]; // retaddr
+        auto sig = Engine::hashThreadSignature(role, split);
+
+        data = EngineController::instance()->dispatchTextA(data, sig, role);
+        if (data.size() >= self->capacity)
+          data = data.left(self->capacity - 1); // -1 for \0
+
+        ::strcpy(self->text, data.constData());
+        self->size = data.size();
+        dataSet_.insert(data);
       }
-      self_ = nullptr;
     }
     return true;
   }
@@ -81,7 +76,7 @@ namespace Private {
  *  0046CCBD   CC               INT3
  *  0046CCBE   CC               INT3
  *  0046CCBF   CC               INT3
- *  0046CCC0   55               PUSH EBP    ; jichi: text list in eac
+ *  0046CCC0   55               PUSH EBP    ; jichi: hook here, text list in ecx
  *  0046CCC1   8BEC             MOV EBP,ESP
  *  0046CCC3   6A FF            PUSH -0x1
  *  0046CCC5   68 62496900      PUSH Game.00694962
@@ -520,26 +515,13 @@ bool attach() // attach other text
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-
-  const quint8 bytes[] = {
-    0x55,               // 00471690   55               push ebp
-    0x8b,0xec,          // 00471691   8bec             mov ebp,esp
-    0x83,0xec, 0x3c,    // 00471693   83ec 3c          sub esp,0x3c
-    0x89,0x4d, 0xec,    // 00471696   894d ec          mov dword ptr ss:[ebp-0x14],ecx
-    0x8b,0x45, 0xec,    // 00471699   8b45 ec          mov eax,dword ptr ss:[ebp-0x14]
-    0x83,0xc0, 0x1c,    // 0047169c   83c0 1c          add eax,0x1c
-    0x50,               // 0047169f   50               push eax
-    0x8b,0x4d, 0xec,    // 004716a0   8b4d ec          mov ecx,dword ptr ss:[ebp-0x14]
-    0x83,0xc1, 0x38     // 004716a3   83c1 38          add ecx,0x38
-  };
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
   if (!addr)
     return false;
-  addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
-  if (!addr)
-    return false;
-  //addr = 0x0046cd3c;
-  return winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
+  //addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
+  //if (!addr)
+  //  return false;
+  return winhook::hook_before(addr, Private::hookBefore);
 }
 
 } // namespace ScenarioHook
@@ -560,6 +542,32 @@ bool WolfRPGEngine::attach()
 // EOF
 
 /*
+bool attach() // attach other text
+{
+  ulong startAddress, stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return false;
+
+  const quint8 bytes[] = {
+    0x55,               // 00471690   55               push ebp
+    0x8b,0xec,          // 00471691   8bec             mov ebp,esp
+    0x83,0xec, 0x3c,    // 00471693   83ec 3c          sub esp,0x3c
+    0x89,0x4d, 0xec,    // 00471696   894d ec          mov dword ptr ss:[ebp-0x14],ecx
+    0x8b,0x45, 0xec,    // 00471699   8b45 ec          mov eax,dword ptr ss:[ebp-0x14]
+    0x83,0xc0, 0x1c,    // 0047169c   83c0 1c          add eax,0x1c
+    0x50,               // 0047169f   50               push eax
+    0x8b,0x4d, 0xec,    // 004716a0   8b4d ec          mov ecx,dword ptr ss:[ebp-0x14]
+    0x83,0xc1, 0x38     // 004716a3   83c1 38          add ecx,0x38
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore2);
+}
+
   bool hookBefore2(winhook::hook_stack *s)
   {
     static QByteArray newData_;
@@ -579,6 +587,36 @@ bool WolfRPGEngine::attach()
           ::strcpy(text, newData_.constData());
         }
       }
+    }
+    return true;
+  }
+
+
+  LPSTR text_;
+  TextListElement *self_;
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    auto self = (TextListElement *)s->ecx; // ecx is actually a list of element
+    if (self && self->isValid())
+      self_ = self;
+    return true;
+  }
+
+  bool hookAfter(winhook::hook_stack *)
+  {
+    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+    if (self_ && self_->isValid()) {
+      //auto sig = Engine::hashThreadSignature(role, split);
+      QByteArray oldData = self_->text,
+                 newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+      if (newData != oldData) {
+        ::strcpy(self_->text, newData.constData());
+        self_->size = newData.size();
+        //if (newData.size() < oldData.size())
+        //  ::memset(text + newData.size(), 0, oldData.size() - newData.size());
+      }
+      self_ = nullptr;
     }
     return true;
   }
