@@ -104,6 +104,9 @@ void PcHooks::hookGDIFunctions()
   NEW_HOOK(DrawTextExA,            s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
   NEW_HOOK(DrawTextW,              s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
   NEW_HOOK(DrawTextExW,            s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+
+  //NEW_HOOK(CharNextA, s_arg1, 0,s_arg1,0, USING_STRING, 0) // 6/11/2015 jichi: LPSTR WINAPI CharNextA(LPCTSTR lpString);
+  //NEW_HOOK(CharNextW, s_arg1, 0,s_arg1,0, USING_UNICODE|USING_STRING, 0)
 //#undef _
   DPRINT("leave");
 }
