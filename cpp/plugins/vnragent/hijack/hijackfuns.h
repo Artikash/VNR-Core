@@ -39,6 +39,11 @@ namespace Hijack {
   //DEF_FUN(TabbedTextOutA, LONG, HDC hDC, int X, int Y, LPCSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin)
   //DEF_FUN(TabbedTextOutW, LONG, HDC hDC, int X, int Y, LPCWSTR lpString, int nCount, int nTabPositions, const LPINT lpnTabStopPositions, int nTabOrigin)
 
+  DEF_FUN(CharNextA, LPSTR, LPCSTR lpString)
+  //DEF_FUN(CharNextW, LPWSTR, LPCWSTR lpString)
+  //DEF_FUN(CharNextExA, LPSTR, WORD COdePage, LPCSTR lpString, DWORD dwFlags)
+  //DEF_FUN(CharNextExW, LPWSTR, WORD COdePage, LPCWSTR lpString, DWORD dwFlags)
+
 #undef DEF_FUN
 
 // Global variables

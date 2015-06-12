@@ -340,8 +340,10 @@ bool EngineController::matchFiles(const QStringList &relpaths)
 
 // - Dispatch -
 
-QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role, bool sendAllowed)
+QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role, bool sendAllowed, bool *timeout)
 {
+  if (timeout)
+    *timeout = false;
   if (data.isEmpty())
     return data;
 
@@ -412,9 +414,11 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (sent && needsTranslation)
     repl = p->waitForTranslation(hash, role);
 
-  if (repl.isEmpty())
+  if (repl.isEmpty()) {
+    if (timeout)
+      *timeout = true;
     repl = trimmedText;
-  else if (repl != trimmedText) {
+  } else if (repl != trimmedText) {
     if (d_->model->translationFilterFunction)
       repl = d_->model->translationFilterFunction(repl, role);
     switch (role) {
@@ -452,8 +456,10 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   return ret;
 }
 
-QString EngineController::dispatchTextW(const QString &text, long signature, int role, bool sendAllowed)
+QString EngineController::dispatchTextW(const QString &text, long signature, int role, bool sendAllowed, bool *timeout)
 {
+  if (timeout)
+    *timeout = false;
   if (text.isEmpty())
     return text;
 
@@ -521,9 +527,11 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (sent && needsTranslation)
     repl = p->waitForTranslation(hash, role);
 
-  if (repl.isEmpty())
+  if (repl.isEmpty()) {
+    if (timeout)
+      *timeout = true;
     repl = trimmedText; // prevent from deleting text
-  else if (repl != trimmedText) {
+  } else if (repl != trimmedText) {
     if (d_->model->translationFilterFunction)
       repl = d_->model->translationFilterFunction(repl, role);
 

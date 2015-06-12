@@ -51,6 +51,10 @@ HijackManagerPrivate::HijackManagerPrivate()
   //ADD_FUN(ExtTextOutW)
   //ADD_FUN(TabbedTextOutA)
   //ADD_FUN(TabbedTextOutW)
+  ADD_FUN(CharNextA)
+  //ADD_FUN(CharNextW)
+  //ADD_FUN(CharNextExA)
+  //ADD_FUN(CharNextExW)
 #undef ADD_FUN
 }
 
