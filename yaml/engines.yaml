@@ -62,7 +62,6 @@ embed:
   - SystemAoi2
   - System43+
   - WolfRPG
-  - WolfRPG2
   #- AMUSE CRAFT
   #- BGI
   #- Elf
@@ -124,7 +123,7 @@ optgui:
   - Malie2 # Malie3 is better
   - SiglusEngine3 # SiglusEngine2 is better
   - System43 # System43+ is better
-  - WolfRPG # WolfRPG2 is better
+  #- WolfRPG # WolfRPG2 is better
 
 nongui:
   # PC
@@ -482,7 +481,6 @@ char:
   - Waffle
   - WillPlus
   - WolfRPG
-  - WolfRPG2
   - Yeti PSP
   - Yeti2 PSP
   - YU-RIS
