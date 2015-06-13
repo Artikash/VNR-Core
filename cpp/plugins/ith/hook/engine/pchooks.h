@@ -10,6 +10,7 @@ namespace PcHooks {
 void hookGDIFunctions();
 void hookLstrFunctions();
 void hookWcharFunctions();
+void hookCharNextFunctions();
 
 } // namespace PcHooks
 

@@ -194,7 +194,7 @@ void PcHooks::hookWcharFunctions()
 
   enum stack {
     s_retaddr = 0
-    //, s_arg1 = 4 * 1 // 0x4
+    , s_arg1 = 4 * 1 // 0x4
     //, s_arg2 = 4 * 2 // 0x8
     , s_arg3 = 4 * 3 // 0xc
     //, s_arg4 = 4 * 4 // 0x10
@@ -206,6 +206,26 @@ void PcHooks::hookWcharFunctions()
   // http://sakuradite.com/topic/159
   NEW_HOOK(MultiByteToWideChar, s_arg3, 0,4,0, USING_STRING, 4)
   NEW_HOOK(WideCharToMultiByte, s_arg3, 0,4,0, USING_UNICODE|USING_STRING, 4)
+  DPRINT("leave");
+}
+
+void PcHooks::hookCharNextFunctions()
+{
+  enum stack {
+    s_retaddr = 0
+    , s_arg1 = 4 * 1 // 0x4
+    , s_arg2 = 4 * 2 // 0x8
+    //, s_arg3 = 4 * 3 // 0xc
+    //, s_arg4 = 4 * 4 // 0x10
+    //, s_arg5 = 4 * 5 // 0x14
+    //, s_arg6 = 4 * 6 // 0x18
+  };
+
+  DPRINT("enter");
+  NEW_HOOK(CharNextA, s_arg1, 0,0,0, USING_STRING|DATA_INDIRECT, 1) // LPTSTR WINAPI CharNext(_In_ LPCTSTR lpsz);
+  NEW_HOOK(CharNextW, s_arg1, 0,0,0, USING_UNICODE|DATA_INDIRECT, 1)
+  //NEW_HOOK(CharNextExA, s_arg2, 0,0,0, USING_STRING|DATA_INDIRECT, 1) // LPSTR WINAPI CharNextExA(_In_ WORD   CodePage, _In_ LPCSTR lpCurrentChar, _In_ DWORD  dwFlags);
+  //NEW_HOOK(CharNextExW, s_arg2, 0,0,0, USING_UNICODE|DATA_INDIRECT, 1)
   DPRINT("leave");
 }
 
