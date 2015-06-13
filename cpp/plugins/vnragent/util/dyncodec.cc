@@ -3,7 +3,7 @@
 
 #include "util/codepage.h"
 #include "util/dyncodec.h"
-#include "qtdyncodec/dynsjis.h"
+#include "qtdyncodec/qtdynsjis.h"
 
 class DynamicCodecPrivate
 {

@@ -7559,8 +7559,9 @@ bool InsertCaramelBoxHook()
  *
  *  Again, drop the N to split dialogue and menu text into separate threads.
  */
+namespace { // WolfRPG
 // jichi 10/13/2013: restored
-bool InsertWolfHook()
+bool InsertOldWolfHook()
 {
   //__asm int 3   // debug
   // jichi 10/12/2013:
@@ -7593,6 +7594,66 @@ bool InsertWolfHook()
   //ConsoleOutput("Unknown WolfRPG engine.");
   ConsoleOutput("vnreng:WolfRPG: failed");
   return false;
+}
+
+
+struct TextListElement // ecx, this structure saved a list of element
+{
+  DWORD flag1; // should be zero when text is valid
+  LPSTR text;
+  DWORD flag2;
+  DWORD flag3;
+  DWORD flag4;
+  int size,
+      capacity; // 0xe8, capacity of the data including \0
+
+  bool isValid() const
+  {
+    return flag1 == 0 && flag2 == 0 && flag3 == 0 && flag4 == 0
+        && size > 0 && size < capacity
+        && !::IsBadReadPtr(text, capacity) && size == ::strlen(text);
+        //&& (quint8)*text > 127;
+  }
+};
+void SpecialHookWolf2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  auto self = (TextListElement *)regof(ecx, esp_base); // ecx is actually a list of element
+  if (self && self->isValid()) {
+    *data = (DWORD)self->text;
+    *len = self->size;
+  }
+}
+
+#if 0
+// jichi 6/11/2015: See embed translation source code
+bool InsertWolf2Hook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:WolfRPG2: failed to get memory range");
+    return false;
+  }
+  ULONG addr = MemDbg::findLastCallerAddressAfterInt3((ULONG)::CharNextA, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:WolfRPG2: failed to find target function");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  hp.text_fun = SpecialHookWolf2;
+  hp.type = USING_STRING;
+  ConsoleOutput("vnreng: INSERT WolfRPG2");
+  NewHook(hp, L"WolfRPG2");
+  return true;
+}
+#endif // 0
+
+} // WolfRPG namespace
+
+bool InsertWolfHook()
+{
+  return InsertOldWolfHook();
 }
 
 bool InsertIGSDynamicHook(LPVOID addr, DWORD frame, DWORD stack)

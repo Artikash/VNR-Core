@@ -115,14 +115,15 @@ gui:
 
 optgui:
   - 5pb2 # 5pb1 is better
-  - KiriKiri2
-  - AliceRunPatch43 # System43+ is better
-  - System43 # System43+ is better
-  #- KiriKiriZ # KAGParser is better
-  - SiglusEngine3 # SiglusEngine2 is better
-  - Malie2 # Malie3 is better
   - BootupLstrA # BootupA is better
   - BootupLstrW # BootupW is better
+  - AliceRunPatch43 # System43+ is better
+  - KiriKiri2
+  #- KiriKiriZ # KAGParser is better
+  - Malie2 # Malie3 is better
+  - SiglusEngine3 # SiglusEngine2 is better
+  - System43 # System43+ is better
+  #- WolfRPG # WolfRPG2 is better
 
 nongui:
   # PC

@@ -134,6 +134,8 @@ DWORD debug;
 BYTE launch_time[0x10];
 LPVOID page;
 
+// jichi 6/12/2015: https://en.wikipedia.org/wiki/Shift_JIS
+// Leading table for SHIFT-JIS encoding
 BYTE LeadByteTable[0x100] = {
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -682,7 +684,7 @@ int WC_MB(wchar_t *wc, char *mb)
     mov esi,wc
     mov edi,mb
     mov edx,page
-    add edx,0x7C22
+    add edx,0x7c22
     xor ebx,ebx
 _wc_translate:
     movzx eax,word ptr [esi]

@@ -49,24 +49,12 @@ bool DeterminePCEngine()
   }
 
   if (IthFindFile(L"pcsx2*.exe")) { // jichi 7/19/2014 PCSX2.exe or PCSX2WX.exe
-    if (!InsertPCSX2Hooks()) { // don't forget to rebuild vnrcli to inject SSE
-      // Always insert PC hooks so that user could add PCSX2 to VNR.
-      // TO BE REMOVED after more PS2 engines are added.
-      PcHooks::hookGDIFunctions();
-      PcHooks::hookLstrFunctions();
-    }
-
+    InsertPCSX2Hooks();
     return true;
   }
 
   if (IthFindFile(L"Dolphin.exe")) { // jichi 7/20/2014
-    if (!InsertGCHooks()) {
-      // Always insert PC hooks so that user could add PCSX2 to VNR.
-      // TO BE REMOVED after more PS2 engines are added.
-      PcHooks::hookGDIFunctions();
-      PcHooks::hookLstrFunctions();
-    }
-
+    InsertGCHooks();
     return true;
   }
 
@@ -773,6 +761,7 @@ bool DetermineEngineType()
   // jichi 9/27/2013: disable game engine for debugging use
 #ifdef ITH_DISABLE_ENGINE
   PcHooks::hookLstrFunctions();
+  PcHooks::hookCharNextFunctions();
   return false;
 #else
   bool found = false;
@@ -783,9 +772,10 @@ bool DetermineEngineType()
   seh_with_eh(ExceptHandler,
       found = UnsafeDetermineEngineType());
 #endif // ITH_HAS_SEH
-  if (!found)  // jichi 10/2/2013: Only enable it if no game engine is detected
+  if (!found) { // jichi 10/2/2013: Only enable it if no game engine is detected
     PcHooks::hookLstrFunctions();
-  else
+    PcHooks::hookCharNextFunctions();
+  } else
     ConsoleOutput("vnreng: found game engine, IGNORE non gui hooks");
   return found;
 #endif // ITH_DISABLE_ENGINE

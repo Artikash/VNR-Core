@@ -5,6 +5,7 @@
 #include "hijack/hijacksettings.h"
 #include "util/dyncodec.h"
 #include "util/textutil.h"
+#include "dyncodec/dynsjis.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
 #include <list>
@@ -36,6 +37,10 @@
   DEF_FUN(ExtTextOutW)
   //DEF_FUN(TabbedTextOutA)
   //DEF_FUN(TabbedTextOutW)
+  DEF_FUN(CharNextA)
+  //DEF_FUN(CharNextW)
+  //DEF_FUN(CharNextExA)
+  //DEF_FUN(CharNextExW)
 #undef DEF_FUN
 
 /** Helper */
@@ -369,6 +374,14 @@ BOOL WINAPI Hijack::newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpStr
   DOUT("pass");
   DCFontSwitcher fs(hdc);
   return oldTextOutW(hdc, nXStart, nYStart, lpString, cchString);
+}
+
+LPSTR WINAPI Hijack::newCharNextA(LPCSTR lpString)
+{
+  DOUT("pass");
+  //if (::GetACP() == 932)
+  return const_cast<char *>(dynsjis::next_char(lpString));
+  //return oldCharNextA(lpString);
 }
 
 // EOF

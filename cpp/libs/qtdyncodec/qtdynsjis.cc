@@ -1,7 +1,7 @@
-// dynsjis.cc
-// 3/5/2015 jichi
+// qtdynsjis.cc
+// 6/3/2015 jichi
 // http://en.wikipedia.org/wiki/Shift_JIS
-#include "qtdyncodec/dynsjis.h"
+#include "qtdyncodec/qtdynsjis.h"
 #include <QtCore/QTextCodec>
 
 #ifdef __clang__

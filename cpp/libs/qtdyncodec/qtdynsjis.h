@@ -1,8 +1,8 @@
-#ifndef DYNSJIS_H
-#define DYNSJIS_H
+#ifndef QTDYNCODEC_DYNSJIS_H
+#define QTDYNCODEC_DYNSJIS_H
 
-// dynsjis.h
-// 6/3/2014 jichi
+// qtdynsjis.h
+// 6/3/2015 jichi
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QString>
@@ -46,4 +46,4 @@ public:
   QString decode(const QByteArray &data, bool *dynamic = nullptr) const;
 };
 
-#endif // DYNSJIS_H
+#endif // QTDYNCODEC_DYNSJIS_H

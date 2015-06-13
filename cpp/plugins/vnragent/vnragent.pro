@@ -5,6 +5,7 @@ CONFIG += noqtgui dll
 include(../../../config.pri)
 #include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/disasm/disasm.pri)
+include($$LIBDIR/dyncodec/dyncodec.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 #include($$LIBDIR/mhook/mhook.pri)

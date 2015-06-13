@@ -8,9 +8,9 @@ QT += core
 DEPENDPATH += $$PWD
 
 HEADERS += \
-  $$PWD/dynsjis.h
+  $$PWD/qtdynsjis.h
 
 SOURCES += \
-  $$PWD/dynsjis.cc
+  $$PWD/qtdynsjis.cc
 
 # EOF

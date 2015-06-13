@@ -6,8 +6,10 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
+#include "dyncodec/dynsjis.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
+#include "winhook/hookfun.h"
 #include <qt_windows.h>
 #include <QtCore/QSet>
 
@@ -54,9 +56,15 @@ namespace Private {
         auto split = s->stack[0]; // retaddr
         auto sig = Engine::hashThreadSignature(role, split);
 
-        data = EngineController::instance()->dispatchTextA(data, sig, role);
-        if (data.size() >= self->capacity)
-          data = data.left(self->capacity - 1); // -1 for \0
+        enum { SendAllowed = true };
+        bool timeout;
+        data = EngineController::instance()->dispatchTextA(data, sig, role, SendAllowed, &timeout);
+        if (timeout)
+          return true;
+        if (data.size() >= self->capacity) { // assume shift jis encoding
+          const char *prev = dynsjis::prev_char(data.constData() + self->capacity - 1, data.constData());
+          data = data.left(prev - data.constData());
+        }
 
         ::strcpy(self->text, data.constData());
         self->size = data.size();
@@ -536,6 +544,8 @@ bool WolfRPGEngine::attach()
     return false;
 
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // for dynamic encoding
+  //if (::GetACP() == 932) // Japanese code page cp932
+  //  HijackManager::instance()->attachFunction((ulong)::CharNextA); // for dynamic encoding
   return true;
 }
 
