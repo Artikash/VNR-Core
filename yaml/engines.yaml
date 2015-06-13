@@ -129,6 +129,8 @@ nongui:
   # PC
   - lstrlenA
   - lstrlenW
+  - CharNextA
+  - CharNextW
   - MultiByteToWideChar
   - WideCharToMultiByte
   - _strinc
@@ -363,6 +365,7 @@ char:
   - TabbedTextOutA
   - lstrlenA
   - MultiByteToWideChar
+  - CharNextA
   # PSP
   - sysclib_strcat
   - sysclib_strcpy
@@ -506,6 +509,7 @@ wchar:
   - TabbedTextOutW
   - lstrlenW
   - WideCharToMultiByte
+  - CharNextW
   # Mono
   - mono_string_from_utf16
   - mono_string_to_utf16
