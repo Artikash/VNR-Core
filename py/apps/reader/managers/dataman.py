@@ -8454,6 +8454,7 @@ class _DataManager(object):
               'type': elem.get('type'),
               'disabled': elem.get('disabled') == 'true',
               'locked': elem.get('locked') == 'true',
+              'language': '', # language not null
             }
         else:
           path -= 1
@@ -8470,7 +8471,7 @@ class _DataManager(object):
               kw['hash'] = long(elem.get('hash'))
               kw['contextSize'] = int(elem.get('size'))
 
-          elif path == 2 and kw['type'] in Comment.TYPES and kw.get('language') not in blans: # grimoire/comments
+          elif path == 2 and kw['type'] in Comment.TYPES and kw['language'][:2] not in blans: # grimoire/comments
             #if not kw.get('userHash'):
             #  kw['userHash'] = kw['userId']
             c = Comment(init=False, **kw)
@@ -8792,6 +8793,7 @@ class _DataManager(object):
               'id': int(elem.get('id')),
               'type': type_,
               'disabled': elem.get('disabled') == 'true',
+              'language': '', # language not null
             }
         else:
           path -= 1
@@ -8806,7 +8808,7 @@ class _DataManager(object):
             elif tag in ('special', 'private', 'hentai', 'regex', 'phrase', 'icase'):
               kw[tag] = text == 'true'
 
-          elif path == 2 and kw['type'] in Term.TYPES and kw.get('language') not in blans:
+          elif path == 2 and kw['type'] in Term.TYPES and kw['language'][:2] not in blans:
             #if not kw.get('userHash'):
             #  kw['userHash'] = kw['userId']
             if kw.get('disabled'):
