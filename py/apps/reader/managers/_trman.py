@@ -35,6 +35,16 @@ _re_jitter = re.compile(jpmacros.applymacros(
 from unitraits.unichars import isspace, allspace
 from textutil import ispunct
 
+#def isnonprintable(ch): return ord(ch) < 32
+
+_rx_allnonprintable = re.compile('^[\x01-\x31]+$')
+def allnonprintable(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return bool(text and _rx_allnonprintable.match(text))
+
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
 _NO_RE = re.compile('')
@@ -57,6 +67,28 @@ _re_lower_proxy = re.compile(r"[Zz][a-y]+z") # fix proxy token take become lower
 _sub_lower_proxy = lambda m:m.group().upper()
 def fix_lower_proxy(text): #  unicode -> unicode
   return _re_lower_proxy.sub(_sub_lower_proxy, text)
+
+def partition_space(text):
+  """
+  @param  text  unicode
+  @return  (unicode prefix spaces, unicode trimmed text, unicode suffix spaces)
+  """
+  prefix = ''
+  for pos,ch in enumerate(text):
+    if not isspace(ch):
+      if pos:
+        prefix = text[:pos]
+        text = text[pos:]
+      break
+  suffix = ''
+  if text:
+    for pos,ch in enumerate(reversed(text)):
+      if not isspace(ch):
+        if pos:
+          suffix = text[-pos:]
+          text = text[:-pos]
+        break
+  return prefix, text, suffix
 
 # All methods in this class are supposed to be thread-safe
 # Though they are not orz
@@ -314,7 +346,7 @@ class MachineTranslator(Translator):
     self._cache.clear()
 
   def _translateLines(self, text, tr, to, fr):
-    """
+    """Translate line by line and preserve surrounding spaces
     @param  text  unicode
     @param  tr  function(unicode text, str to, str fr)
     @param  to  str
@@ -325,11 +357,14 @@ class MachineTranslator(Translator):
     if text:
       for it in text.split('\n'):
         if it:
-          it = tr(it, to=to, fr=fr)
-          if it:
+          prefix, trimmedText, suffix = partition_space(it)
+          if not trimmedText:
             ret += it
-          elif it is None:
-            return None
+          else:
+            t = tr(trimmedText, to=to, fr=fr)
+            if t is None:
+              return None
+            ret += prefix + t + suffix
         ret += '\n'
     return ret[:-1] # rtrim the last new line character
 
@@ -364,7 +399,7 @@ class MachineTranslator(Translator):
       prof = SkProfiler(self.key)
       prof.start()
 
-    if keepsNewLine and not self.newLinePreserved and '\n' in text:
+    if keepsNewLine and not self.newLinePreserved: #and '\n' in text:
       task = partial(self._translateLines, text, tr, to, fr)
     else:
       task = partial(tr, text, to=to, fr=fr)
@@ -400,6 +435,14 @@ class MachineTranslator(Translator):
       for it in janovutil.split_quotes(text):
         yield it
 
+  _rx_nonprintable = re.compile('([\x01-\x31]+)')
+  def _splitNonPrintable(self, text):
+    """Split text at non-printable characters (ASCII < 32)
+    @param  text
+    @yield  unicode
+    """
+    return self._rx_nonprintable.split(text)
+
   def _itertexts(self, text, keepsNewLine=False):
     """
     @param  text  unicode
@@ -407,21 +450,29 @@ class MachineTranslator(Translator):
     @yield  unicode
     """
     strip = not keepsNewLine
-    for paragraph in self._splitQuotes(text, strip=strip):
-      for line in _PARAGRAPH_RE.split(paragraph):
-        if strip:
-          line = line.strip()
-        if line:
-          if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS or not strip and allspace(line):
-            yield line
-          else: # skips sentences
-            if keepsNewLine:
-              sentences = _SENTENCE_RE.sub(r"\1\r", line).split("\r")
-            else:
-              sentences = _SENTENCE_RE.sub(r"\1\n", line).split("\n")
-            for sentence in sentences:
-              if sentence:
-                yield sentence
+    if keepsNewLine:
+      segments = self._splitNonPrintable(text)
+    else:
+      segments = text,
+    for seg in segments:
+      if allnonprintable(seg):
+        yield seg
+      elif seg:
+        for paragraph in self._splitQuotes(seg, strip=strip):
+          for line in _PARAGRAPH_RE.split(paragraph):
+            if strip:
+              line = line.strip()
+            if line:
+              if not self.splitsSentences or len(line) == 1 or line == defs.TERM_ESCAPE_EOS or not strip and allspace(line) or allnonprintable(line):
+                yield line
+              else: # skips sentences
+                if keepsNewLine:
+                  sentences = _SENTENCE_RE.sub(r"\1\r", line).split("\r")
+                else:
+                  sentences = _SENTENCE_RE.sub(r"\1\n", line).split("\n")
+                for sentence in sentences:
+                  if sentence:
+                    yield sentence
 
   def _splitTranslate(self, text, tr, to, fr, async, keepsNewLine):
     """
@@ -433,7 +484,7 @@ class MachineTranslator(Translator):
     """
     ret = []
     for text in self._itertexts(text, keepsNewLine=keepsNewLine):
-      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS or allspace(text):
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS or allspace(text) or allnonprintable(text):
         ret.append(text)
       else:
         text = self._cache.get(text) or self._translateTransaction(text, tr, to, fr, async, keepsNewLine)
@@ -465,7 +516,7 @@ class MachineTranslator(Translator):
     ret = []
     texts = []
     for text in self._itertexts(text, keepsNewLine=keepsNewLine):
-      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS or allspace(text):
+      if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) or text == defs.TERM_ESCAPE_EOS or allspace(text) or allnonprintable(text):
         ret.append(text)
       else:
         t = self._cache.get(text)

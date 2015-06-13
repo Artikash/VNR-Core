@@ -6,7 +6,6 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
-#include "dyncodec/dynsjis.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
@@ -34,41 +33,52 @@ namespace Private {
     int size,
         capacity; // 0xe8, capacity of the data including \0
 
+    bool isScenarioText() const
+    { return flag1 == 0 && flag2 == 0 && flag3 == 0 && flag4 == 0; }
+
     bool isValid() const
     {
-      return flag1 == 0 && flag2 == 0 && flag3 == 0 && flag4 == 0
-          && size > 0 && size < capacity
-          && Engine::isAddressReadable(text, capacity) && size == ::strlen(text);
-          //&& (quint8)*text > 127;
+      return size > 0 && size <= capacity
+        && Engine::isAddressReadable(text, capacity) && size == ::strlen(text);
     }
   };
+
+  // Skip non-printable and special ASCII characters on the left
+  inline char *ltrim(char *s)
+  {
+    while (*s && (quint8)*s <= 39)
+      s++;
+    return s;
+  }
 
   bool hookBefore(winhook::hook_stack *s)
   {
     //enum { DataQueueCapacity = 30 };
     static QSet<QByteArray> dataSet_;
 
-    enum { role = Engine::ScenarioRole };
     auto self = (TextListElement *)s->ecx; // ecx is actually a list of element
-    if (self && self->isValid()) {
-      QByteArray data = self->text;
-      if (!dataSet_.contains(data)) {
-        auto split = s->stack[0]; // retaddr
-        auto sig = Engine::hashThreadSignature(role, split);
+    if (self->isValid()) {
+      char *text = ltrim(self->text);
+      if (*text) {
+        QByteArray data = text;
+        if (!dataSet_.contains(data)) {
+          auto role = text == self->text && self->isScenarioText() ? Engine::ScenarioRole : Engine::OtherRole;
+          auto split = s->stack[0]; // retaddr
+          auto sig = Engine::hashThreadSignature(role, split);
 
-        enum { SendAllowed = true };
-        bool timeout;
-        data = EngineController::instance()->dispatchTextA(data, sig, role, SendAllowed, &timeout);
-        if (timeout)
-          return true;
-        if (data.size() >= self->capacity) { // assume shift jis encoding
-          const char *prev = dynsjis::prev_char(data.constData() + self->capacity - 1, data.constData());
-          data = data.left(prev - data.constData());
+          enum { SendAllowed = true };
+          bool timeout;
+          int prefixSize = text - self->text,
+              capacity = self->capacity - prefixSize;
+          data = EngineController::instance()->dispatchTextA(data, sig, role, capacity, SendAllowed, &timeout);
+          if (timeout)
+            return true;
+
+          dataSet_.insert(data);
+
+          ::memcpy(text, data.constData(), min(data.size() + 1, capacity));
+          self->size = data.size() + prefixSize;
         }
-
-        ::strcpy(self->text, data.constData());
-        self->size = data.size();
-        dataSet_.insert(data);
       }
     }
     return true;
@@ -381,6 +391,55 @@ namespace Private {
  *  0046D175   DD98 88000000    FSTP QWORD PTR DS:[EAX+0x88]
  *  0046D17B   0FB64D 08        MOVZX ECX,BYTE PTR SS:[EBP+0x8]
  *  0046D17F   85C9             TEST ECX,ECX
+ *  0046D181   74 35            JE SHORT Game.0046D1B8
+ *  0046D183   0FB655 9B        MOVZX EDX,BYTE PTR SS:[EBP-0x65]
+ *  0046D187   85D2             TEST EDX,EDX
+ *  0046D189   75 2D            JNZ SHORT Game.0046D1B8
+ *  0046D18B   8B85 C4FDFFFF    MOV EAX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D191   DD80 88000000    FLD QWORD PTR DS:[EAX+0x88]
+ *  0046D197   E8 54FF0500      CALL Game.004CD0F0
+ *  0046D19C   8B8D C4FDFFFF    MOV ECX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1A2   0381 F8000000    ADD EAX,DWORD PTR DS:[ECX+0xF8]
+ *  0046D1A8   8B95 C4FDFFFF    MOV EDX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1AE   3942 68          CMP DWORD PTR DS:[EDX+0x68],EAX
+ *  0046D1B1   7E 05            JLE SHORT Game.0046D1B8
+ *  0046D1B3   E9 0D420000      JMP Game.004713C5
+ *  0046D1B8   8B85 C4FDFFFF    MOV EAX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1BE   0FB688 E2000000  MOVZX ECX,BYTE PTR DS:[EAX+0xE2]
+ *  0046D1C5   85C9             TEST ECX,ECX
+ *  0046D1C7   74 1C            JE SHORT Game.0046D1E5
+ *  0046D1C9   8B95 C4FDFFFF    MOV EDX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1CF   8B85 C4FDFFFF    MOV EAX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1D5   8B8A EC000000    MOV ECX,DWORD PTR DS:[EDX+0xEC]
+ *  0046D1DB   3B48 68          CMP ECX,DWORD PTR DS:[EAX+0x68]
+ *  0046D1DE   7D 05            JGE SHORT Game.0046D1E5
+ *  0046D1E0   E9 E0410000      JMP Game.004713C5
+ *  0046D1E5   8B95 C4FDFFFF    MOV EDX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1EB   83BA E8000000 00 CMP DWORD PTR DS:[EDX+0xE8],0x0
+ *  0046D1F2   7E 1F            JLE SHORT Game.0046D213
+ *  0046D1F4   8B85 C4FDFFFF    MOV EAX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D1FA   8B88 E4000000    MOV ECX,DWORD PTR DS:[EAX+0xE4]
+ *  0046D200   83E9 01          SUB ECX,0x1
+ *  0046D203   8B95 C4FDFFFF    MOV EDX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D209   3B4A 68          CMP ECX,DWORD PTR DS:[EDX+0x68]
+ *  0046D20C   7D 05            JGE SHORT Game.0046D213
+ *  0046D20E   E9 B2410000      JMP Game.004713C5
+ *  0046D213   8B85 C4FDFFFF    MOV EAX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D219   8B48 68          MOV ECX,DWORD PTR DS:[EAX+0x68]
+ *  0046D21C   2B4D 84          SUB ECX,DWORD PTR SS:[EBP-0x7C]
+ *  0046D21F   51               PUSH ECX
+ *  0046D220   8B55 84          MOV EDX,DWORD PTR SS:[EBP-0x7C]
+ *  0046D223   52               PUSH EDX
+ *  0046D224   8D85 84FEFFFF    LEA EAX,DWORD PTR SS:[EBP-0x17C]
+ *  0046D22A   50               PUSH EAX
+ *  0046D22B   8B8D C4FDFFFF    MOV ECX,DWORD PTR SS:[EBP-0x23C]
+ *  0046D231   E8 4AFC0200      CALL Game.0049CE80 ; jichi; text in [arg1 + 0x4]
+ *  0046D236   8985 ACFDFFFF    MOV DWORD PTR SS:[EBP-0x254],EAX
+ *  0046D23C   8B8D ACFDFFFF    MOV ECX,DWORD PTR SS:[EBP-0x254]
+ *  0046D242   898D A8FDFFFF    MOV DWORD PTR SS:[EBP-0x258],ECX
+ *  0046D248   C645 FC 03       MOV BYTE PTR SS:[EBP-0x4],0x3
+ *  0046D24C   8B95 A8FDFFFF    MOV EDX,DWORD PTR SS:[EBP-0x258]
+ *  0046D252   52               PUSH EDX
  *
  *  This is the function being called
  *  0047168D   CC               INT3
@@ -523,7 +582,7 @@ bool attach() // attach other text
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
+  ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
   if (!addr)
     return false;
   //addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
