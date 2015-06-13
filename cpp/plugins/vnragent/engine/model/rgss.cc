@@ -582,7 +582,7 @@ namespace Private {
 
       if (!trimmedText.isEmpty() && !texts_.contains(trimmedText)) { // skip text beginning with ascii character
 
-        bool sendAllowed = !recentTexts_.contains(oldText);
+        const bool sendAllowed = !recentTexts_.contains(oldText);
         if (sendAllowed) {
           recentTexts_.append(oldText);
           if (recentTexts_.size() > RecentTextCapacity)
@@ -597,7 +597,7 @@ namespace Private {
         if (!trimmedText.contains('\n')) {
           auto role = guessTextRole(trimmedText);
           auto sig = Engine::hashThreadSignature(role);
-          newText = q->dispatchTextW(trimmedText, sig, role, sendAllowed);
+          newText = q->dispatchTextW(trimmedText, sig, role, 0, sendAllowed);
         } else { // handle each line one by one
           QStringList newTexts;
           foreach (const QString &eachOldText, trimmedText.split('\n')) {
@@ -609,7 +609,7 @@ namespace Private {
             else {
               auto role = guessTextRole(eachTrimmedText);
               auto sig = Engine::hashThreadSignature(role);
-              QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role, sendAllowed);
+              QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role, 0, sendAllowed);
               if (eachNewText == eachTrimmedText)
                  newTexts.append(eachOldText);
               else {

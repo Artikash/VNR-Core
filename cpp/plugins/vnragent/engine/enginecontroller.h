@@ -63,11 +63,11 @@ protected:
 
   // Interface to descendant classes, supposed to be protected
 public:
-  ///  Send LPCSTR text to VNR, timeout == true iff translation timeout
-  QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0, bool sendAllowed = true, bool *timeout = nullptr);
+  ///  Send LPCSTR text to VNR, timeout == true iff translation timeout. MaxSize is the maximum data size excluding \0
+  QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0, int maxSize = 0, bool sendAllowed = true, bool *timeout = nullptr);
 
-  ///  Send LPCWSTR text to VNR, timeout == true iff translation timeout
-  QString dispatchTextW(const QString &text, long signature, int role = 0, bool sendAllowed = true, bool *timeout = nullptr);
+  ///  Send LPCWSTR text to VNR, timeout == true iff translation timeout. MaxSize is the maximum text size excluding \0
+  QString dispatchTextW(const QString &text, long signature, int role = 0, int maxSize = 0, bool sendAllowed = true, bool *timeout = nullptr);
 
   // This function is not thread-safe
   //const char *exchangeTextA(const char *data, long signature, int role = 0);

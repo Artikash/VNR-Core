@@ -12,6 +12,7 @@
 #include "util/codepage.h"
 #include "util/dyncodec.h"
 #include "util/textutil.h"
+#include "dyncodec/dynsjis.h"
 //#include "windbg/util.h"
 #include "winhook/hookcode.h"
 #include "winkey/winkey.h"
@@ -340,7 +341,7 @@ bool EngineController::matchFiles(const QStringList &relpaths)
 
 // - Dispatch -
 
-QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role, bool sendAllowed, bool *timeout)
+QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role, int maxSize, bool sendAllowed, bool *timeout)
 {
   if (timeout)
     *timeout = false;
@@ -440,23 +441,49 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     }
   }
 
-  if (!prefix.isEmpty())
-    repl.prepend(prefix);
-  if (!suffix.isEmpty())
-    repl.append(suffix);
-
   if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
     repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
   repl = d_->adjustSpaces(repl);
 
-  QByteArray ret = (d_->dynamicEncodingEnabled && d_->dynamicCodec) ? d_->dynamicCodec->encode(repl)
-                 : d_->encode(repl);
+  QByteArray ret;
+  if (maxSize > 0) {
+    QByteArray prefixData,
+               suffixData;
+    if (!prefix.isEmpty())
+      prefixData = d_->encode(prefix);
+    if (!suffix.isEmpty())
+      suffixData = d_->encode(suffix);
+
+    ret = (d_->dynamicEncodingEnabled && d_->dynamicCodec) ? d_->dynamicCodec->encode(repl)
+        : d_->encode(repl);
+    int capacity = maxSize - prefixData.size() - suffixData.size(); // excluding trailing \0
+    if (capacity < ret.size()) {
+      if (capacity >= 2) {
+        const char *end = dynsjis::prev_char(ret.constData() + capacity, ret.constData());
+        ret = ret.left(end - data.constData());
+      } else
+        ret = ret.left(capacity);
+    }
+
+    if (!prefixData.isEmpty())
+      ret.prepend(prefixData);
+    if (!suffixData.isEmpty())
+      ret.append(suffixData);
+  } else {
+    if (!prefix.isEmpty())
+      repl.prepend(prefix);
+    if (!suffix.isEmpty())
+      repl.append(suffix);
+    ret = (d_->dynamicEncodingEnabled && d_->dynamicCodec) ? d_->dynamicCodec->encode(repl)
+        : d_->encode(repl);
+  }
+
   if (role == Engine::OtherRole)
     d_->addTextHash(Engine::hashByteArray(ret));
   return ret;
 }
 
-QString EngineController::dispatchTextW(const QString &text, long signature, int role, bool sendAllowed, bool *timeout)
+QString EngineController::dispatchTextW(const QString &text, long signature, int role, int maxSize, bool sendAllowed, bool *timeout)
 {
   if (timeout)
     *timeout = false;
@@ -555,14 +582,17 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     }
   }
 
+  if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
+    repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  repl = d_->adjustSpaces(repl);
+
+  if (maxSize > 0 && maxSize < repl.size() + prefix.size() + suffix.size())
+    repl = repl.left(maxSize - prefix.size() - suffix.size());
+
   if (!prefix.isEmpty())
     repl.prepend(prefix);
   if (!suffix.isEmpty())
     repl.append(suffix);
-
-  if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
-    repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
-  repl = d_->adjustSpaces(repl);
 
   if (role == Engine::OtherRole)
     d_->addTextHash(Engine::hashWString(repl));
