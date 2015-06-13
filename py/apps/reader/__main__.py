@@ -262,6 +262,8 @@ def main():
     rc.DIR_CACHE_SCAPE,
     rc.DIR_CACHE_TRAILERS,
     rc.DIR_CACHE_WEB,
+
+    rc.DIR_CACHE_SYNC,
     rc.DIR_TMP_OCR,
     rc.DIR_TMP_TERM, # not needed, though
     rc.DIR_TMP_TTS,
@@ -442,6 +444,14 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1434217165:
+      dst = rc.xml_path('terms')
+      if dst and not os.path.exists(dst):
+        src = rc.DIR_USER_XML + '/terms.xml'
+        if os.path.exists(src):
+          try: os.rename(src, dst)
+          except Exception, e: dwarn(e)
+
     if ss_version <= 1433033162:
       ss.remove('EmbeddedScenarioText') # reset scenario text visibility
       ss.remove('WindowTranscoding') # disable transcoding by default
