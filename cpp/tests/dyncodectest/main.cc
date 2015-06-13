@@ -1,7 +1,7 @@
 // main.cc
 // 4/5/2014 jichi
 #include <QtCore>
-#include "qtdyncodec/dynsjis.h"
+#include "qtdyncodec/qtdynsjis.h"
 
 bool encodable(const QChar &c, QTextEncoder *encoder)
 {
@@ -16,18 +16,22 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 int main()
 {
   DynamicShiftJISCodec codec;
-  char data[] = "\x80\x10\x80\x40\x00\x00";
-  QString t = QString::fromWCharArray((wchar_t *)data);
-  QByteArray d = codec.encode(t);
-  qDebug() << "encode:";
-  qDebug() << t;
-  qDebug() << t.size();
-  qDebug() << d.size();
-  qDebug() << d.toHex();
-  QString s = codec.decode(d);
-  qDebug() << "decode:";
-  qDebug() << s;
-  qDebug() << s.size();
-  qDebug() << (t == s);
+  for (int i = 0x85; i < 0x87; i++)
+    for (int j = 0; j < 0x2f; j++) {
+      char data[] = "\x85\x10\x00\x00";
+      data[0] = i;
+      data[1] = j;
+      QString t = QString::fromWCharArray((wchar_t *)data);
+      QByteArray d = codec.encode(t);
+      QString s = codec.decode(d);
+      if (t != s) {
+        qWarning() << "failed";
+        qDebug() << "size:" << codec.size() << d.toHex() << QString::number(s[0].unicode(), 16);
+      }
+    }
+  QByteArray d = "\x81\xff";
+  QString t = codec.decode(d);
+  qDebug() << t[0].unicode();
+  qDebug() << "exit";
   return 0;
 }

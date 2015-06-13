@@ -14,13 +14,36 @@
 
 /** Private class */
 
+// See also LeadByte table for Windows:
+//
+// BYTE LeadByteTable[0x100] = {
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+//   2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+//   2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+//   2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+//   2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1
+// };
+//
+// -2: 0x00 and 0xff are skipped
+
 class DynamicShiftJISCodecPrivate
 {
 public:
   // See: http://en.wikipedia.org/wiki/Shift_JIS
-  enum { Capacity = // 7739
-    (16 + 2) * 255 // first byte unused, 00 is skipped
-    + (3 * 16 - 1) * (4 * 16 + 4 - 1) // second byte unused, 00 is skipped
+  enum { Capacity = // = 7739
+    (3 * 16 - 1) * (4 * 16 + 4 - 1) // = 3149, 0x00 are skipped
+    + (16 + 2) * (256 - 1) // = 4590, first/last byte unused
   };
 
   QTextCodec *codec; // sjis codec
@@ -78,8 +101,8 @@ QByteArray DynamicShiftJISCodecPrivate::encodeChar(wchar_t ch)
         v2 = i % (4 * 16 + 4 - 1) + 1;
     if (v2 == 0x40)
       v2 = 0x7f;
-    else if (v2 > 0x3f)
-      v2 += 0xfd - 0x3f;
+    else if (v2 >= 0x41)
+      v2 += 0xfd - 0x41;
     ret.push_back(v1);
     ret.push_back(v2);
     return ret;
@@ -90,32 +113,32 @@ QByteArray DynamicShiftJISCodecPrivate::encodeChar(wchar_t ch)
         v2 = i % (4 * 16 + 4 - 1) + 1;
     if (v2 == 0x40)
       v2 = 0x7f;
-    else if (v2 > 0x3f)
-      v2 += 0xfd - 0x3f;
+    else if (v2 >= 0x41)
+      v2 += 0xfd - 0x41;
     ret.push_back(v1);
     ret.push_back(v2);
     return ret;
   }
   i -= 16 * (4 * 16 + 4 - 1);
-  if (i < 255) {
+  if (i < 256 - 1) {
     int v1 = 0x80,
-        v2 = i % 255 + 1;
+        v2 = i % (256 - 1) + 1;
     ret.push_back(v1);
     ret.push_back(v2);
     return ret;
   }
-  i -= 255;
-  if (i < 255) {
+  i -= 256 - 1;
+  if (i < 256 - 1) {
     int v1 = 0xa0,
-        v2 = i % 255 + 1;
+        v2 = i % (256 - 1) + 1;
     ret.push_back(v1);
     ret.push_back(v2);
     return ret;
   }
-  i -= 255;
-  if (i < 16 * 255) {
-    int v1 = i / 255 + 0xf0,
-        v2 = i % 255 + 1;
+  i -= 256 - 1;
+  if (i < 16 * (256 - 1)) {
+    int v1 = i / (256 - 1) + 0xf0,
+        v2 = i % (256 - 1) + 1;
     ret.push_back(v1);
     ret.push_back(v2);
     return ret;
@@ -148,7 +171,7 @@ QString DynamicShiftJISCodecPrivate::decode(const char *data, size_t length, boo
         if (dynamic)
           *dynamic = true;
       } else
-        ret.push_back(ch2 + (wchar_t(ch) << 8)); // preserve the original character
+        ret.push_back(ch + (wchar_t(ch2) << 8)); // preserve the original character
     }
   }
   return ret;
@@ -178,11 +201,11 @@ wchar_t DynamicShiftJISCodecPrivate::decodeChar(wchar_t ch1, wchar_t ch2) const
   else if (ch1 == 0xa0)
     i = ch2 - 1
       + 47 * (4 * 16 + 4 - 1)
-      + 255;
-  else if (ch1 >= 0xf0 && ch1 <= 0xff)
-    i = (ch1 - 0xf0) * 255 + ch2 - 1
+      + (256 - 1);
+  else if (ch1 >= 0xf0 && ch1 <= 0xff) // 0xff is skipped
+    i = (ch1 - 0xf0) * (256 - 1) + ch2 - 1
       + 47 * (4 * 16 + 4 - 1)
-      + 255 * 2;
+      + (256 - 1) * 2;
   if (i != std::wstring::npos && i < text.size())
     return text[i];
   return 0;
