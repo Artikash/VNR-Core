@@ -7633,7 +7633,7 @@ bool InsertWolf2Hook()
     ConsoleOutput("vnreng:WolfRPG2: failed to get memory range");
     return false;
   }
-  ULONG addr = MemDbg::findLastCallerAddressAfterInt3((ULONG)::CharNextA, startAddress, stopAddress);
+  ULONG addr = MemDbg::findCallerAddressAfterInt3((ULONG)::CharNextA, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:WolfRPG2: failed to find target function");
     return false;

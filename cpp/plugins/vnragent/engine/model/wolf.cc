@@ -523,7 +523,7 @@ bool attach() // attach other text
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
+  ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
   if (!addr)
     return false;
   //addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
