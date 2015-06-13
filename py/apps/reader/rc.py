@@ -82,6 +82,8 @@ DIR_CACHE_INST = DIR_APP_CACHE + '/Installers'# $app/Caches/Installers
 
 DIR_CACHE_SUB = DIR_APP_CACHE + '/Subtitles'    # $app/Caches/Subtitles
 
+DIR_CACHE_SYNC = DIR_APP_CACHE + '/Sync'        # $app/Caches/Sync
+
 DIR_XML_COMMENT = DIR_CACHE_SUB + '/xml'        # $app/Caches/Subtitles/xml
 DIR_YAML_SUB = DIR_CACHE_SUB + '/yaml'          # $app/Caches/Subtitles/yaml
 
@@ -137,8 +139,9 @@ XML_PATHS = {
   'gamefiles': DIR_USER_XML + '/gamefiles.xml',  # $user/xml/1/gamefiles.xml, game summary
   'gameitems': DIR_USER_XML + '/gameitems.xml',  # $user/xml/1/gameitems.xml, game summary
   #'refdigest': DIR_USER_XML + '/refdigest.xml',  # $user/xml/1/refdigest.xml, game summary
-  'terms': DIR_USER_XML + '/terms.xml',  # $user/xml/1/terms.xml, term library
   'users': DIR_USER_XML + '/users.xml',  # $user/xml/1/users.xml, user library
+
+  'terms': DIR_CACHE_SYNC + '/gamedic.xml',  # Caches/Sync/gamedic.xml, term library
 }
 
 def xml_path(name, backup=False):
