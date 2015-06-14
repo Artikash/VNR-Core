@@ -9529,14 +9529,24 @@ class DataManager(QObject):
 
       l = d.terms
       nm = netman.manager()
-      incremental = not reset and updateTime and l # bool
+      incremental = bool(not reset and updateTime and l) # bool
       if incremental:
         result = nm.mergeTerms(l, updateTime,
             d.user.name, d.user.password, init=False) #, parent=self)
+        if not result:
+          l = None
+        else:
+          l, now = result
       else:
         result = nm.getTerms(d.user.name, d.user.password, init=False) #, parent=self)
-      if result:
-        l, now = result
+        if not result:
+          l = None
+        else:
+          l, now = result
+          result = nm.mergeTerms(l, now,
+              d.user.name, d.user.password, init=False) #, parent=self)
+          if result:
+            l, now = result
       if l:
         #if not editable and editable != d.termsEditable:
         #  for it in l:

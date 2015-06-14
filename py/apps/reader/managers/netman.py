@@ -35,6 +35,8 @@ session = requests.Session() # global request session
 
 JSON_API = config.API_AJAX
 
+CACHE_API = config.API_CACHE
+
 XML_API = config.API_REST
 #XML_API = "http://localhost:5000/api/1"
 #XML_API = "http://localhost:5000/api/1"
@@ -376,7 +378,9 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = session.get(XML_API + '/item/list', params=params, headers=GZIP_HEADERS)
+      #url = XML_API + '/item/list'
+      url = CACHE_API + '/game/items.xml'
+      r = session.get(url, params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         TYPES = dataman.Reference.TYPES
@@ -535,7 +539,9 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = session.get(XML_API + '/user/list', params=params, headers=GZIP_HEADERS)
+      #url = XML_API + '/user/list'
+      url = CACHE_API + '/users.xml'
+      r = session.get(url, params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
@@ -1461,11 +1467,12 @@ class _NetworkManager(object):
     self._addBlockedLanguages(params)
     try:
       if difftime:
-        path = '/term/diff'
         params['mintime'] = difftime
+        url = XML_API + '/term/diff'
+        #url = XML_API + '/term/list'
       else:
-        path = '/term/list'
-      r = session.get(XML_API + path, params=params, headers=GZIP_HEADERS)
+        url = CACHE_API + '/game/terms.xml'
+      r = session.get(url, params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 

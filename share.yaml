@@ -215,6 +215,8 @@ apis:
   #rest: http://sakuradite.com/api/xml
   #rest: http://localhost:5000/api/xml
   #
+  cache: http://153.121.54.194/cache/api
+  #
   ajax: http://153.121.54.194/api/json/ # must end with '/'
   #ajax: http://localhost:8080/api/json/
   #ajax: http://localhost:8080/json/
