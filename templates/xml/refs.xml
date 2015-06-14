@@ -3,7 +3,7 @@
  # @param  refs  iter[dataman.Reference]
 -#}
 <?xml version="1.0" encoding="utf-8"?>
-<!-- references.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
+<!-- refs.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
 <grimoire version="1.0">
 	<references>
 %for it in refs

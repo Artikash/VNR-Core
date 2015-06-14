@@ -8726,6 +8726,7 @@ class _DataManager(object):
       return False
     ok = rc.jinja_template_write_xml('terms',
       now=datetime.now(),
+      timestamp=settings.global_().termsTime(),
       terms=self.iterTermData(),
     )
     if ok:
@@ -8735,6 +8736,9 @@ class _DataManager(object):
     return ok
 
   def reloadTerms(self):
+    """
+    @return  long  timestamp or None
+    """
     xmlfile = rc.xml_path('terms')
     self._termsDirty = False
     self.clearTerms()
@@ -8769,11 +8773,17 @@ class _DataManager(object):
       terms = []
       path = 0
       now = skdatetime.current_unixtime()
-      OUTDATE_TIME = now - 40 * 86400 # 1.5 month
+      timestamp = 0
+      outdate_interval = 40 * 86400 # 1.5 month
+      outdate_time = now - outdate_interval
       for event, elem in context:
         if event == 'start':
           path += 1
-          if path == 3: # grimoire/terms/term
+          if path == 1: # grimoire
+            timestamp = elem.get('timestamp')
+            #if timestamp:
+            #  outdate_time = now - outdate_interval
+          elif path == 3: # grimoire/terms/term
             type_ = elem.get('type')
             if type_:
               type_ = OLD_TYPES.get(type_) or type_
@@ -8813,7 +8823,7 @@ class _DataManager(object):
             #  kw['userHash'] = kw['userId']
             if kw.get('disabled'):
               t = kw.get('updateTimestamp') or kw.get('timestamp')
-              if t and t < OUTDATE_TIME:
+              if t and t < outdate_time:
                 dprint("ignore outdated term: id = %s" % kw.get('id'))
                 continue
             terms.append(Term(
@@ -8826,10 +8836,13 @@ class _DataManager(object):
         #self.termsInitialized = init
         #self.sortedTerms = None    # already cleared by clearTerms
 
+        if timestamp:
+          settings.global_().setTermsTime(timestamp)
+
         self.invalidateTerms()
 
         dprint("pass: load %i terms from %s" % (len(self.terms), xmlfile))
-        return
+        return timestamp
 
     except etree.ParseError, e:
       dwarn("xml parse error", e.args)
@@ -8999,8 +9012,13 @@ class DataManager(QObject):
   def reloadGameFiles(self): self.__d.reloadGameFiles()
   #def reloadReferenceDigests(self): self.__d.reloadReferenceDigests()
   def reloadGameItems(self): self.__d.reloadGameItems()
-  def reloadTerms(self): self.__d.reloadTerms()
   def reloadUsers(self): self.__d.reloadUsers()
+
+  def reloadTerms(self):
+    """
+    @return  long  timestamp or None
+    """
+    return self.__d.reloadTerms()
 
   def reloadUser(self): self.__d.reloadUser()
 
@@ -9513,10 +9531,12 @@ class DataManager(QObject):
       nm = netman.manager()
       incremental = not reset and updateTime and l # bool
       if incremental:
-        l = nm.mergeTerms(l, updateTime,
+        result = nm.mergeTerms(l, updateTime,
             d.user.name, d.user.password, init=False) #, parent=self)
       else:
-        l = nm.getTerms(d.user.name, d.user.password, init=False) #, parent=self)
+        result = nm.getTerms(d.user.name, d.user.password, init=False) #, parent=self)
+      if result:
+        l, now = result
       if l:
         #if not editable and editable != d.termsEditable:
         #  for it in l:
