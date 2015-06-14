@@ -239,6 +239,7 @@ API_HOST = SHARE_YAML['apis']['host']
 API_REST = SHARE_YAML['apis']['rest']
 API_PUSH = SHARE_YAML['apis']['push']
 API_AJAX = SHARE_YAML['apis']['ajax']
+API_CACHE = SHARE_YAML['apis']['cache']
 
 URL_READER_DEMO = SHARE_YAML['urls']['reader_demo']
 
