@@ -3,7 +3,7 @@
  # @param  files  iter[dataman.GameFile]
 -#}
 <?xml version="1.0" encoding="utf-8"?>
-<!-- gamedigest.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
+<!-- gamefiles.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
 <grimoire version="1.0">
 	<games>
 %for it in files

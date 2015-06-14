@@ -4,7 +4,7 @@
 -#}
 <?xml version="1.0" encoding="utf-8"?>
 <!-- terms.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
-<grimoire version="1.0">
+<grimoire version="1.0" timestamp="{{timestamp}}">
 	<terms>
 %for it in terms
 %	if it.id

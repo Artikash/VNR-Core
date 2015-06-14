@@ -1405,9 +1405,12 @@ class _NetworkManager(object):
     @param* kwargs  passed to getTerms
     @return  [dataman.Term] or [] or None
     """
-    l = self.getTerms(sort=False, init=init, **kwargs)
+    result = self.getTerms(sort=False, init=init, **kwargs)
+    if not result:
+      return
+    l, timestamp = result
     if l == []: # not modified
-      return l
+      return result
     if l:
       dprint("number of modified terms: %s" % len(l))
       if init:
@@ -1439,7 +1442,7 @@ class _NetworkManager(object):
           if _good_term_data(t.d):
             ret.append(t)
       ret.sort(key=operator.attrgetter('modifiedTimestamp'))
-      return ret
+      return ret, timestamp
 
   def getTerms(self, userName, password, sort=True, init=True, difftime=0):
     """
@@ -1448,6 +1451,7 @@ class _NetworkManager(object):
     @param* init  bool  whether init term object
     @param* sort  bool  whether sort the result list
     @param* difftime  long  timestamp
+    @return  None or (terms, timestamp)
     """
     params = {
       'ver': self.version,
@@ -1467,11 +1471,14 @@ class _NetworkManager(object):
 
         ret = []
         path = 0
+        timestamp = 0
         TYPES = dataman.Term.TYPES
         for event, elem in context:
           if event == 'start':
             path += 1
-            if path == 3: # grimoire/terms/term
+            if path == 1: # grimoire
+              timestamp = elem.get('timestamp')
+            elif path == 3: # grimoire/terms/term
               kw = {
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
@@ -1503,7 +1510,7 @@ class _NetworkManager(object):
             for it in ret:
               it.moveToThread(mainThread)
         dprint("term count = %i" % len(ret))
-        return ret
+        return ret, timestamp
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -2013,7 +2020,7 @@ class NetworkManager(QObject):
     @param* password  str
     @param* init  bool  whether initialize QObject
     @param* parent  QObject  to init
-    @return  [dataman.Term] or [] or None
+    @return ([dataman.Term] or [] or None, long timestamp) or None
     """
     if self.isOnline():
       return skthreads.runsync(partial(
@@ -2033,7 +2040,7 @@ class NetworkManager(QObject):
       userId = dataman.manager().user().id # bad pattern
       return skthreads.runsync(partial(
           self.__d.mergeTerms, userId, terms,
-            userName=userName, password=password, init=init, difftime=time))
+          userName=userName, password=password, init=init, difftime=time))
 
   def submitTerm(self, term, userName, password, async=False):
     """Either id or digest should be specified.
