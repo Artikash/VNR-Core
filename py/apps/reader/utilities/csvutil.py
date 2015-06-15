@@ -11,8 +11,9 @@ if __name__ == '__main__': # DEBUG
 import codecs, csv
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
+from mytr import mytr_
 from office import excelcsv
-import defs, dataman
+import defs, dataman, i18n
 
 #def _u16(t):
 #  """
@@ -36,24 +37,51 @@ def _writeterms(fp, data, header=True):
   w = excelcsv.writer(fp)
   if header:
     w.writerow((
-      tr_('Target'),
-      tr_('Language'),
-      tr_('Regular expression'),
+      tr_('ID'),
+      tr_('Enabled'),
+      tr_('Private'),
+      tr_('From'),
+      tr_('To'),
+      tr_('Type'),
+      tr_('Regex'),
+      tr_('Phrase'),
+      tr_('Case-insensitive'),
+      tr_('Hentai'),
+      mytr_('Series-specific'),
+      tr_('Game') + " ID",
       tr_('Pattern'),
       tr_('Translation'),
+      tr_('User'),
+      tr_('Creation time'),
       tr_('Comment'),
+      tr_('Update'),
+      tr_('Update time'),
+      mytr_('Update reason'),
     ))
-  t = dataman.Term.typeName
   for it in data:
-    if not it.disabled:
-      w.writerow((
-        t(it.type),
-        it.language,
-        it.regex,
-        it.pattern,
-        it.text,
-        it.comment,
-      ))
+    #if not it.disabled:
+    w.writerow((
+      it.id,
+      not it.disabled,
+      it.private,
+      it.sourceLanguage,
+      it.language,
+      dataman.Term.typeName(it.type),
+      it.regex,
+      it.phrase,
+      it.icase,
+      it.hentai,
+      it.special,
+      it.gameItemId or '',
+      it.pattern,
+      it.text,
+      it.userName,
+      i18n.timestamp2datetime(it.timestamp),
+      it.comment,
+      it.updateUserName,
+      i18n.timestamp2datetime(it.updateTimestamp),
+      it.updateComment,
+    ))
 
 def _writecomments(fp, data, header=True):
   """

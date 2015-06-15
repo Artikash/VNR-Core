@@ -315,14 +315,14 @@ def timestamp2datetime(sec):
   @param  sec  long
   @return  str
   """
-  return unparsedatetime(datetime.fromtimestamp(sec))
+  return unparsedatetime(datetime.fromtimestamp(sec)) if sec else ''
 
 def timestamp2date(sec):
   """
   @param  sec  long
   @return  str
   """
-  return unparsedate(datetime.fromtimestamp(sec))
+  return unparsedate(datetime.fromtimestamp(sec)) if sec else ''
 
 def timestamp2datetimeobj(sec):
   """

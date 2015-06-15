@@ -27,7 +27,7 @@ from convutil import wide2thin, zhs2zht, ja2zh_name_test
 from unitraits import jpchars, unichars
 from opencc import opencc
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, features, gameman, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, defs, features, gameman, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -10792,6 +10792,7 @@ class DataManager(QObject):
     ts = datetime.now().strftime("%y%m%d")
     fileName = "vnr-dict-%s.csv" % ts
     path = os.path.join(skpaths.DESKTOP, fileName)
+    import csvutil
     ok = csvutil.saveterms(path, self.__d.iterTermData())
     if ok:
       growl.msg(my.tr("Dictionary entries are saved to the desktop"))
@@ -10835,6 +10836,7 @@ class DataManager(QObject):
     ts = datetime.now().strftime("%y%m%d")
     fileName = "vnr-sub-%s.csv" % ts
     path = os.path.join(skpaths.DESKTOP, fileName)
+    import csvutil
     ok = csvutil.savecomments(path, data)
     if ok:
       growl.msg(my.tr("Subtitles are saved to the desktop"))
