@@ -9,8 +9,10 @@
 
 SK_BEGIN_NAMESPACE
 
+enum : quint64 { djb2_init = 5381 };
+
 ///  djb2: h = h*33 + c
-inline quint64 djb2(const quint8 *str, quint64 hash = 5381)
+inline quint64 djb2(const quint8 *str, quint64 hash = djb2_init)
 {
   quint8 c;
   while ((c = *str++))
@@ -19,7 +21,7 @@ inline quint64 djb2(const quint8 *str, quint64 hash = 5381)
 }
 
 /// s: signed char
-inline quint64 djb2_s(const char *str, quint64 hash = 5381)
+inline quint64 djb2_s(const char *str, quint64 hash = djb2_init)
 {
   char c;
   while ((c = *str++))
@@ -28,7 +30,7 @@ inline quint64 djb2_s(const char *str, quint64 hash = 5381)
 }
 
 ///  n: length
-inline quint64 djb2_n(const quint8 *str, size_t len, quint64 hash = 5381)
+inline quint64 djb2_n(const quint8 *str, size_t len, quint64 hash = djb2_init)
 {
   while (len--)
     hash = ((hash << 5) + hash) + (*str++); // hash * 33 + c
