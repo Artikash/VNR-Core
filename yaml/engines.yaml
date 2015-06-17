@@ -57,7 +57,8 @@ embed:
   - BGI2
   - Elf
   - SiglusEngine2
-  - SiglusEngine3
+  #- SiglusEngine3
+  #- SiglusEngine4
   - SystemAoi
   - SystemAoi2
   - System43+
@@ -236,6 +237,7 @@ simple:
   - SiglusEngine
   - SiglusEngine2
   - SiglusEngine3
+  - SiglusEngine4
   - ScenarioPlayerA
   - ScenarioPlayerW
   - Silkys # renamed
@@ -559,6 +561,7 @@ wchar:
   - SiglusEngine
   - SiglusEngine2
   - SiglusEngine3
+  - SiglusEngine4
   - SofthouseChara # renamed
   - SystemAoi # It could also be SHIFT-JIS for Aoi<4
   - SystemAoi2
@@ -605,6 +608,7 @@ focus:
   - Majiro2
   - SiglusEngine2
   - SiglusEngine3
+  - SiglusEngine4
   - Syuntada
   - WillPlus
   - YU-RIS2

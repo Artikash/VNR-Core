@@ -20,9 +20,12 @@
 #include "ntinspect/ntinspect.h"
 #include "disasm/disasm.h"
 #include "winversion/winversion.h"
+#include "hashutil/hashstr.h"
 #include "cpputil/cppcstring.h"
 #include "ccutil/ccmacro.h"
 //#include <cctype>
+
+#define hashstr hashutil::djb2
 
 // jichi 7/6/2014: read esp_base
 #define retof(esp_base)         *(DWORD *)(esp_base) // return address
@@ -31,7 +34,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-//#define DEBUG "engine.h"
+#define DEBUG "engine.h"
 
 enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
 
@@ -603,8 +606,7 @@ namespace { // unnamed
 
 bool KAGParserFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
-  WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
-                          L"[r]", 3);
+  WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size), L"[r]", 3);
   return true;
 }
 
@@ -2136,6 +2138,206 @@ bool InsertSiglus3Hook()
   return true;
 }
 
+/** jichi: 6/16/2015 Siglus4Engine for Frill games
+ *  Sample game: 円交少女
+ *
+ *  This function is found by tracking where the text length is modified
+ *
+ *  Base address: 0x070000
+ *
+ *  0020F51B   CC               INT3
+ *  0020F51C   CC               INT3
+ *  0020F51D   CC               INT3
+ *  0020F51E   CC               INT3
+ *  0020F51F   CC               INT3
+ *  0020F520   55               PUSH EBP	; jichi: memory address in [arg1+0x4], text length in arg1
+ *  0020F521   8BEC             MOV EBP,ESP
+ *  0020F523   6A FF            PUSH -0x1
+ *  0020F525   68 889B5900      PUSH .00599B88
+ *  0020F52A   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  0020F530   50               PUSH EAX
+ *  0020F531   83EC 1C          SUB ESP,0x1C
+ *  0020F534   53               PUSH EBX
+ *  0020F535   56               PUSH ESI
+ *  0020F536   57               PUSH EDI
+ *  0020F537   A1 E0946500      MOV EAX,DWORD PTR DS:[0x6594E0]
+ *  0020F53C   33C5             XOR EAX,EBP
+ *  0020F53E   50               PUSH EAX
+ *  0020F53F   8D45 F4          LEA EAX,DWORD PTR SS:[EBP-0xC]
+ *  0020F542   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  0020F548   8BD1             MOV EDX,ECX
+ *  0020F54A   8955 F0          MOV DWORD PTR SS:[EBP-0x10],EDX
+ *  0020F54D   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  0020F550   8B5D 10          MOV EBX,DWORD PTR SS:[EBP+0x10]
+ *  0020F553   3BC3             CMP EAX,EBX
+ *  0020F555   0F8D DF000000    JGE .0020F63A
+ *  0020F55B   8B75 08          MOV ESI,DWORD PTR SS:[EBP+0x8]
+ *  0020F55E   8D0C40           LEA ECX,DWORD PTR DS:[EAX+EAX*2]
+ *  0020F561   C1E1 03          SHL ECX,0x3
+ *  0020F564   2BD8             SUB EBX,EAX
+ *  0020F566   894D 0C          MOV DWORD PTR SS:[EBP+0xC],ECX
+ *  0020F569   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  0020F570   8B82 A4000000    MOV EAX,DWORD PTR DS:[EDX+0xA4]
+ *  0020F576   03C1             ADD EAX,ECX
+ *  0020F578   C745 EC 07000000 MOV DWORD PTR SS:[EBP-0x14],0x7
+ *  0020F57F   33C9             XOR ECX,ECX
+ *  0020F581   C745 E8 00000000 MOV DWORD PTR SS:[EBP-0x18],0x0
+ *  0020F588   6A FF            PUSH -0x1
+ *  0020F58A   51               PUSH ECX
+ *  0020F58B   66:894D D8       MOV WORD PTR SS:[EBP-0x28],CX
+ *  0020F58F   8D4D D8          LEA ECX,DWORD PTR SS:[EBP-0x28]
+ *  0020F592   50               PUSH EAX
+ *  0020F593   E8 68EFF4FF      CALL .0015E500
+ *  0020F598   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  0020F59F   8BCE             MOV ECX,ESI
+ *  0020F5A1   8B46 0C          MOV EAX,DWORD PTR DS:[ESI+0xC]
+ *  0020F5A4   8B7D E8          MOV EDI,DWORD PTR SS:[EBP-0x18]
+ *  0020F5A7   83C0 04          ADD EAX,0x4
+ *  0020F5AA   50               PUSH EAX
+ *  0020F5AB   E8 209DF5FF      CALL .001692D0
+ *  0020F5B0   8B0E             MOV ECX,DWORD PTR DS:[ESI]
+ *  0020F5B2   8D55 D8          LEA EDX,DWORD PTR SS:[EBP-0x28]
+ *  0020F5B5   33C0             XOR EAX,EAX
+ *  0020F5B7   3B4E 04          CMP ECX,DWORD PTR DS:[ESI+0x4]
+ *  0020F5BA   0F44C8           CMOVE ECX,EAX
+ *  0020F5BD   8B46 0C          MOV EAX,DWORD PTR DS:[ESI+0xC]
+ *  0020F5C0   893C01           MOV DWORD PTR DS:[ECX+EAX],EDI	; jichi: text length modified here
+ *  0020F5C3   8B45 E8          MOV EAX,DWORD PTR SS:[EBP-0x18]
+ *  0020F5C6   8346 0C 04       ADD DWORD PTR DS:[ESI+0xC],0x4
+ *  0020F5CA   8B4D D8          MOV ECX,DWORD PTR SS:[EBP-0x28]
+ *  0020F5CD   8D3C00           LEA EDI,DWORD PTR DS:[EAX+EAX]
+ *  0020F5D0   8B45 EC          MOV EAX,DWORD PTR SS:[EBP-0x14]
+ *  0020F5D3   83F8 08          CMP EAX,0x8
+ *  0020F5D6   0F43D1           CMOVNB EDX,ECX
+ *  0020F5D9   8955 10          MOV DWORD PTR SS:[EBP+0x10],EDX
+ *  0020F5DC   85FF             TEST EDI,EDI
+ *  0020F5DE   7E 32            JLE SHORT .0020F612
+ *  0020F5E0   8B46 0C          MOV EAX,DWORD PTR DS:[ESI+0xC]
+ *  0020F5E3   8BCE             MOV ECX,ESI
+ *  0020F5E5   03C7             ADD EAX,EDI
+ *  0020F5E7   50               PUSH EAX
+ *  0020F5E8   E8 E39CF5FF      CALL .001692D0
+ *  0020F5ED   8B0E             MOV ECX,DWORD PTR DS:[ESI]
+ *  0020F5EF   33C0             XOR EAX,EAX
+ *  0020F5F1   3B4E 04          CMP ECX,DWORD PTR DS:[ESI+0x4]
+ *  0020F5F4   57               PUSH EDI
+ *  0020F5F5   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
+ *  0020F5F8   0F44C8           CMOVE ECX,EAX
+ *  0020F5FB   8B46 0C          MOV EAX,DWORD PTR DS:[ESI+0xC]
+ *  0020F5FE   03C1             ADD EAX,ECX
+ *  0020F600   50               PUSH EAX
+ *  0020F601   E8 EA1B1200      CALL .003311F0
+ *  0020F606   8B45 EC          MOV EAX,DWORD PTR SS:[EBP-0x14]
+ *  0020F609   83C4 0C          ADD ESP,0xC
+ *  0020F60C   017E 0C          ADD DWORD PTR DS:[ESI+0xC],EDI
+ *  0020F60F   8B4D D8          MOV ECX,DWORD PTR SS:[EBP-0x28]
+ *  0020F612   C745 FC FFFFFFFF MOV DWORD PTR SS:[EBP-0x4],-0x1
+ *  0020F619   83F8 08          CMP EAX,0x8
+ *  0020F61C   72 09            JB SHORT .0020F627
+ *  0020F61E   51               PUSH ECX
+ *  0020F61F   E8 A6DC1100      CALL .0032D2CA
+ *  0020F624   83C4 04          ADD ESP,0x4
+ *  0020F627   8B4D 0C          MOV ECX,DWORD PTR SS:[EBP+0xC]
+ *  0020F62A   8B55 F0          MOV EDX,DWORD PTR SS:[EBP-0x10]
+ *  0020F62D   83C1 18          ADD ECX,0x18
+ *  0020F630   894D 0C          MOV DWORD PTR SS:[EBP+0xC],ECX
+ *  0020F633   4B               DEC EBX
+ *  0020F634  ^0F85 36FFFFFF    JNZ .0020F570
+ *  0020F63A   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
+ *  0020F63D   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  0020F644   59               POP ECX
+ *  0020F645   5F               POP EDI
+ *  0020F646   5E               POP ESI
+ *  0020F647   5B               POP EBX
+ *  0020F648   8BE5             MOV ESP,EBP
+ *  0020F64A   5D               POP EBP
+ *  0020F64B   C2 0C00          RETN 0xC
+ *  0020F64E   CC               INT3
+ *  0020F64F   CC               INT3
+ */
+bool Siglus4Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  auto text = reinterpret_cast<LPWSTR>(data);
+  auto len = reinterpret_cast<size_t *>(size);
+  // Remove "NLI"
+  WideStringFilter(text, len, L"NLI", 3);
+  // Replace 『』 (300e, 300f) with 「」 (300c,300d)
+  WideCharReplacer(text, len, 0x300e, 0x300c);
+  WideCharReplacer(text, len, 0x300f, 0x300d);
+  return true;
+}
+void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  static uint64_t lastTextHash_;
+  DWORD arg1 = argof(1, esp_base); // arg1
+  DWORD addr = *(DWORD *)(arg1 + 4);
+  int size = *(DWORD *)addr;
+  if (size <= 0 || size > VNR_TEXT_CAPACITY)
+    return;
+  auto text = LPWSTR(addr + 4);
+  if (!text || ::IsBadWritePtr(text, size * 2) || !*text || ::wcslen(text) != size || lastTextHash_ == hashstr(text)) //  || text[size+1], skip if text's size + 1 is not empty
+    return;
+  lastTextHash_ = hashstr(text); // skip last repetition
+  *len = size * 2;
+  *data = (DWORD)text;
+  *split = argof(3, esp_base); // arg3
+}
+bool InsertSiglus4Hook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:Siglus4: failed to get memory range");
+    return false;
+  }
+  const BYTE bytes[] = {
+    0x8b,0x75, 0x08, // 0020f55b   8b75 08          mov esi,dword ptr ss:[ebp+0x8]
+    0x8d,0x0c,0x40,  // 0020f55e   8d0c40           lea ecx,dword ptr ds:[eax+eax*2]
+    0xc1,0xe1, 0x03, // 0020f561   c1e1 03          shl ecx,0x3
+    0x2b,0xd8,       // 0020f564   2bd8             sub ebx,eax
+    0x89,0x4d, 0x0c  // 0020f566   894d 0c          mov dword ptr ss:[ebp+0xc],ecx
+
+    // The following pattern is not unique, there are at least four matches
+    //                        // 0020f5b7   3b4e 04     cmp ecx,dword ptr ds:[esi+0x4]
+    //                        // 0020f5ba   0f44c8      cmove ecx,eax
+    //0x8b,0x46, 0x0c,        // 0020f5bd   8b46 0c     mov eax,dword ptr ds:[esi+0xc]
+    //0x89,0x3c,0x01,         // 0020f5c0   893c01      mov dword ptr ds:[ecx+eax],edi	; jichi: text length modified here
+    //0x8b,0x45, 0xe8,        // 0020f5c3   8b45 e8     mov eax,dword ptr ss:[ebp-0x18]
+    //0x83,0x46, 0x0c, 0x04,  // 0020f5c6   8346 0c 04  add dword ptr ds:[esi+0xc],0x4
+    //0x8b,0x4d, 0xd8,        // 0020f5ca   8b4d d8     mov ecx,dword ptr ss:[ebp-0x28]
+    //0x8d,0x3c,0x00          // 0020f5cd   8d3c00      lea edi,dword ptr ds:[eax+eax]
+    //                        // 0020f5d0   8b45 ec     mov eax,dword ptr ss:[ebp-0x14]
+  };
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr) {
+    //ConsoleOutput("Unknown SiglusEngine");
+    ConsoleOutput("vnreng:Siglus4: pattern not found");
+    return false;
+  }
+  addr = MemDbg::findEnclosingAlignedFunction(addr, 0x100); // 0x0020f55b - 0x0020F520 = 59
+  if (!addr) {
+    ConsoleOutput("vnreng:Siglus4: enclosing function not found");
+    return false;
+  }
+
+  //addr += 0x0020f64b - 0x0020f520; // hook to ret instead
+
+  HookParam hp = {};
+  hp.address = addr;
+  //hp.type = USING_UNICODE;
+  hp.type = NO_CONTEXT;
+  hp.text_fun = SpecialHookSiglus4;
+  hp.filter_fun = Siglus4Filter; // remove NLI from the game
+
+  //ITH_GROWL_DWORD(addr);
+
+  ConsoleOutput("vnreng: INSERT Siglus4");
+  NewHook(hp, L"SiglusEngine4");
+
+  ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
+
 #if 0 // this hook is disabled as it might only work for AngleBeats. the same pattern might not exist in all other games
 /** SiglusEngine4 5/23/2015
  *  Sample game: AngleBeats trial
@@ -2190,7 +2392,7 @@ bool InsertSiglus3Hook()
  *  0042CF76   CC               INT3
  *  0042CF77   CC               INT3
  */
-void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookSiglus5(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base); // text
   if (!eax || !*(const BYTE *)eax) // empty data
@@ -2212,7 +2414,7 @@ void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD 
       *split = FIXED_SPLIT_VALUE * 2;
   }
 }
-bool InsertSiglus4Hook()
+bool InsertSiglus5Hook()
 {
   const BYTE bytes[] = {
     0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
@@ -3429,6 +3631,7 @@ bool InsertSiglusHook()
     return true;
   bool ok = InsertSiglus2Hook();
   ok = InsertSiglus3Hook() || ok;
+  //ok = InsertSiglus4Hook() || ok; // siglus4 also exist in siglus3, which is harmless though
   return ok;
 }
 
