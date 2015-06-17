@@ -2208,8 +2208,8 @@ bool Siglus4Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
   if (*len == 2 && *text == L'N')
     return false;
   // Remove "NNLI"
-  //if (*len > 2 && ::all_ascii(text))
-  //  return false;
+  if (*len > 2 && ::all_ascii(text))
+    return false;
   WideStringFilter(text, len, L"NLI", 3);
   // Replace 『』 (300e, 300f) with 「」 (300c,300d)
   //WideCharReplacer(text, len, 0x300e, 0x300c);
