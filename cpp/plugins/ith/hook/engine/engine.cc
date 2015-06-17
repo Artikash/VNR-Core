@@ -220,6 +220,16 @@ bool all_ascii(const char *s)
   return true;
 }
 
+bool all_ascii(const wchar_t *s)
+{
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
+  if (s)
+    for (size_t i = 0; i < MAX_LENGTH && *s; i++, s--)
+      if (*s > 127) // signed char
+        return false;
+  return true;
+}
+
 // String filters
 
 void CharReplacer(char *str, size_t *size, char fr, char to)
@@ -2138,6 +2148,152 @@ bool InsertSiglus3Hook()
   return true;
 }
 
+/** SiglusEngine4 5/23/2015
+ *  Sample game: AngleBeats trial
+ *  Alternative ATcode from EGDB:
+ *  UNIKOFILTER(30),FORCEFONT(5),HOOK(SiglusEngine.exe!0x0018CF39,TRANS(EAX,UNICODE,SMSTR,ADDNULL),RETNPOS(SOURCE))
+ *  Text address is [eax]
+ *
+ *  0042CEFD   CC               INT3
+ *  0042CEFE   CC               INT3
+ *  0042CEFF   CC               INT3
+ *  0042CF00   55               PUSH EBP
+ *  0042CF01   8BEC             MOV EBP,ESP
+ *  0042CF03   51               PUSH ECX
+ *  0042CF04   A1 005E8A00      MOV EAX,DWORD PTR DS:[0x8A5E00]
+ *  0042CF09   53               PUSH EBX
+ *  0042CF0A   56               PUSH ESI
+ *  0042CF0B   57               PUSH EDI
+ *  0042CF0C   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10]
+ *  0042CF0F   8BF9             MOV EDI,ECX
+ *  0042CF11   33C9             XOR ECX,ECX
+ *  0042CF13   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  0042CF1A   6A FF            PUSH -0x1
+ *  0042CF1C   51               PUSH ECX
+ *  0042CF1D   83E8 18          SUB EAX,0x18
+ *  0042CF20   C747 14 07000000 MOV DWORD PTR DS:[EDI+0x14],0x7
+ *  0042CF27   C747 10 00000000 MOV DWORD PTR DS:[EDI+0x10],0x0
+ *  0042CF2E   66:890F          MOV WORD PTR DS:[EDI],CX
+ *  0042CF31   8BCF             MOV ECX,EDI
+ *  0042CF33   50               PUSH EAX
+ *  0042CF34   E8 E725F6FF      CALL .0038F520
+ *  0042CF39   8B1D 005E8A00    MOV EBX,DWORD PTR DS:[0x8A5E00] ; jichi: ATcode hooked here, text sometimes in eax sometimes address in eax, size in [eax+0x16]
+ *  0042CF3F   8B73 10          MOV ESI,DWORD PTR DS:[EBX+0x10]
+ *  0042CF42   837E FC 08       CMP DWORD PTR DS:[ESI-0x4],0x8
+ *  0042CF46   72 0B            JB SHORT .0042CF53
+ *  0042CF48   FF76 E8          PUSH DWORD PTR DS:[ESI-0x18]
+ *  0042CF4B   E8 EA131300      CALL .0055E33A
+ *  0042CF50   83C4 04          ADD ESP,0x4
+ *  0042CF53   33C0             XOR EAX,EAX
+ *  0042CF55   C746 FC 07000000 MOV DWORD PTR DS:[ESI-0x4],0x7
+ *  0042CF5C   C746 F8 00000000 MOV DWORD PTR DS:[ESI-0x8],0x0
+ *  0042CF63   66:8946 E8       MOV WORD PTR DS:[ESI-0x18],AX
+ *  0042CF67   8BC7             MOV EAX,EDI
+ *  0042CF69   8343 10 E8       ADD DWORD PTR DS:[EBX+0x10],-0x18
+ *  0042CF6D   5F               POP EDI
+ *  0042CF6E   5E               POP ESI
+ *  0042CF6F   5B               POP EBX
+ *  0042CF70   8BE5             MOV ESP,EBP
+ *  0042CF72   5D               POP EBP
+ *  0042CF73   C3               RETN
+ *  0042CF74   CC               INT3
+ *  0042CF75   CC               INT3
+ *  0042CF76   CC               INT3
+ *  0042CF77   CC               INT3
+ */
+bool Siglus4Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  auto text = reinterpret_cast<LPWSTR>(data);
+  auto len = reinterpret_cast<size_t *>(size);
+  if (*len == 2 && *text == L'N')
+    return false;
+  // Remove "NNLI"
+  WideStringFilter(text, len, L"NLI", 3);
+  // Replace 『』 (300e, 300f) with 「」 (300c,300d)
+  //WideCharReplacer(text, len, 0x300e, 0x300c);
+  //WideCharReplacer(text, len, 0x300f, 0x300d);
+  return true;
+}
+void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  //static uint64_t lastTextHash_;
+  DWORD eax = regof(eax, esp_base); // text
+  if (!eax || !*(const BYTE *)eax) // empty data
+    return;
+  DWORD size = *(DWORD *)(eax + 0x10);
+  if (!size)
+    return;
+  if (size < 8)
+    *data = eax;
+  else
+    *data = *(DWORD *)eax;
+
+  // Avoid duplication
+  //LPCWSTR text = (LPCWSTR)*data;
+  //auto hash = hashstr(text);
+  //if (hash == lastTextHash_)
+  //  return;
+  //lastTextHash_ = hash;
+
+  *len = size * 2; // UTF-16
+  DWORD s0 = retof(esp_base); // use stack[0] as split
+  if (s0 <= 0xff) // scenario text
+    *split = FIXED_SPLIT_VALUE;
+  else if (::IsBadReadPtr((LPCVOID)s0, 4))
+    *split = s0;
+  else {
+    *split = *(DWORD *)s0; // This value is runtime dependent
+    if (*split == 0x54)
+      *split = FIXED_SPLIT_VALUE * 2;
+  }
+  *split += argof(1, esp_base); // plus stack[1] as split
+}
+bool InsertSiglus4Hook()
+{
+  const BYTE bytes[] = {
+    0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
+    0xc7,0x47, 0x10, 0x00,0x00,0x00,0x00,   // 0042cf27   c747 10 00000000 mov dword ptr ds:[edi+0x10],0x0
+    0x66,0x89,0x0f,                         // 0042cf2e   66:890f          mov word ptr ds:[edi],cx
+    0x8b,0xcf,                              // 0042cf31   8bcf             mov ecx,edi
+    0x50,                                   // 0042cf33   50               push eax
+    0xe8 //XX4                              // 0042cf34   e8 e725f6ff      call .0038f520
+    // hook here
+  };
+  enum { addr_offset = sizeof(bytes) + 4 }; // +4 for the call address
+  ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  //ULONG addr = module_base_ + 0x0018cf39;
+  if (!addr) {
+    //ConsoleOutput("Unknown SiglusEngine");
+    ConsoleOutput("vnreng:Siglus4: pattern not found");
+    return false;
+  }
+
+  //addr = MemDbg::findEnclosingAlignedFunction(addr, 50); // 0x002667dc - 0x002667c0 = 28
+  //if (!addr) {
+  //  ConsoleOutput("vnreng:Siglus3: enclosing function not found");
+  //  return false;
+  //}
+
+  HookParam hp = {};
+  hp.address = addr + addr_offset;
+  hp.type = NO_CONTEXT;
+  hp.text_fun = SpecialHookSiglus4;
+  hp.filter_fun = Siglus4Filter;
+  //hp.offset = pusha_eax_off - 4;
+  //hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|NO_CONTEXT;
+  //hp.type = USING_UNICODE|USING_SPLIT|NO_CONTEXT;
+  //hp.split = pusha_edx_off - 4;
+
+  ConsoleOutput("vnreng: INSERT Siglus4");
+  NewHook(hp, L"SiglusEngine4");
+
+  ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
+
+#if 0 // not all text can be extracted
 /** jichi: 6/16/2015 Siglus4Engine for Frill games
  *  Sample game: 円交少女
  *
@@ -2255,17 +2411,6 @@ bool InsertSiglus3Hook()
  *  0020F64E   CC               INT3
  *  0020F64F   CC               INT3
  */
-bool Siglus4Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
-{
-  auto text = reinterpret_cast<LPWSTR>(data);
-  auto len = reinterpret_cast<size_t *>(size);
-  // Remove "NLI"
-  WideStringFilter(text, len, L"NLI", 3);
-  // Replace 『』 (300e, 300f) with 「」 (300c,300d)
-  WideCharReplacer(text, len, 0x300e, 0x300c);
-  WideCharReplacer(text, len, 0x300f, 0x300d);
-  return true;
-}
 void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   static uint64_t lastTextHash_;
@@ -2337,127 +2482,8 @@ bool InsertSiglus4Hook()
   DisableGDIHooks();
   return true;
 }
-
-#if 0 // this hook is disabled as it might only work for AngleBeats. the same pattern might not exist in all other games
-/** SiglusEngine4 5/23/2015
- *  Sample game: AngleBeats trial
- *  Alternative ATcode from EGDB:
- *  UNIKOFILTER(30),FORCEFONT(5),HOOK(SiglusEngine.exe!0x0018CF39,TRANS(EAX,UNICODE,SMSTR,ADDNULL),RETNPOS(SOURCE))
- *  Text address is [eax]
- *
- *  0042CEFD   CC               INT3
- *  0042CEFE   CC               INT3
- *  0042CEFF   CC               INT3
- *  0042CF00   55               PUSH EBP
- *  0042CF01   8BEC             MOV EBP,ESP
- *  0042CF03   51               PUSH ECX
- *  0042CF04   A1 005E8A00      MOV EAX,DWORD PTR DS:[0x8A5E00]
- *  0042CF09   53               PUSH EBX
- *  0042CF0A   56               PUSH ESI
- *  0042CF0B   57               PUSH EDI
- *  0042CF0C   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10]
- *  0042CF0F   8BF9             MOV EDI,ECX
- *  0042CF11   33C9             XOR ECX,ECX
- *  0042CF13   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
- *  0042CF1A   6A FF            PUSH -0x1
- *  0042CF1C   51               PUSH ECX
- *  0042CF1D   83E8 18          SUB EAX,0x18
- *  0042CF20   C747 14 07000000 MOV DWORD PTR DS:[EDI+0x14],0x7
- *  0042CF27   C747 10 00000000 MOV DWORD PTR DS:[EDI+0x10],0x0
- *  0042CF2E   66:890F          MOV WORD PTR DS:[EDI],CX
- *  0042CF31   8BCF             MOV ECX,EDI
- *  0042CF33   50               PUSH EAX
- *  0042CF34   E8 E725F6FF      CALL .0038F520
- *  0042CF39   8B1D 005E8A00    MOV EBX,DWORD PTR DS:[0x8A5E00] ; jichi: ATcode hooked here, text sometimes in eax sometimes address in eax, size in [eax+0x16]
- *  0042CF3F   8B73 10          MOV ESI,DWORD PTR DS:[EBX+0x10]
- *  0042CF42   837E FC 08       CMP DWORD PTR DS:[ESI-0x4],0x8
- *  0042CF46   72 0B            JB SHORT .0042CF53
- *  0042CF48   FF76 E8          PUSH DWORD PTR DS:[ESI-0x18]
- *  0042CF4B   E8 EA131300      CALL .0055E33A
- *  0042CF50   83C4 04          ADD ESP,0x4
- *  0042CF53   33C0             XOR EAX,EAX
- *  0042CF55   C746 FC 07000000 MOV DWORD PTR DS:[ESI-0x4],0x7
- *  0042CF5C   C746 F8 00000000 MOV DWORD PTR DS:[ESI-0x8],0x0
- *  0042CF63   66:8946 E8       MOV WORD PTR DS:[ESI-0x18],AX
- *  0042CF67   8BC7             MOV EAX,EDI
- *  0042CF69   8343 10 E8       ADD DWORD PTR DS:[EBX+0x10],-0x18
- *  0042CF6D   5F               POP EDI
- *  0042CF6E   5E               POP ESI
- *  0042CF6F   5B               POP EBX
- *  0042CF70   8BE5             MOV ESP,EBP
- *  0042CF72   5D               POP EBP
- *  0042CF73   C3               RETN
- *  0042CF74   CC               INT3
- *  0042CF75   CC               INT3
- *  0042CF76   CC               INT3
- *  0042CF77   CC               INT3
- */
-void SpecialHookSiglus5(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
-{
-  DWORD eax = regof(eax, esp_base); // text
-  if (!eax || !*(const BYTE *)eax) // empty data
-    return;
-  DWORD size = *(DWORD *)(eax + 0x10);
-  if (!size)
-    return;
-  if (size < 8)
-    *data = eax;
-  else
-    *data = *(DWORD *)eax;
-  *len = size * 2; // UTF-16
-  DWORD s0 = retof(esp_base);
-  if (s0 <= 0xff) // scenario text
-    *split = FIXED_SPLIT_VALUE;
-  else {
-    *split = *(DWORD *)s0;
-    if (*split == 0x54)
-      *split = FIXED_SPLIT_VALUE * 2;
-  }
-}
-bool InsertSiglus5Hook()
-{
-  const BYTE bytes[] = {
-    0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
-    0xc7,0x47, 0x10, 0x00,0x00,0x00,0x00,   // 0042cf27   c747 10 00000000 mov dword ptr ds:[edi+0x10],0x0
-    0x66,0x89,0x0f,                         // 0042cf2e   66:890f          mov word ptr ds:[edi],cx
-    0x8b,0xcf,                              // 0042cf31   8bcf             mov ecx,edi
-    0x50,                                   // 0042cf33   50               push eax
-    0xe8 //XX4                              // 0042cf34   e8 e725f6ff      call .0038f520
-    // hook here
-  };
-  enum { addr_offset = sizeof(bytes) + 4 }; // +4 for the call address
-  ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ULONG addr = module_base_ + 0x0018cf39;
-  if (!addr) {
-    //ConsoleOutput("Unknown SiglusEngine");
-    ConsoleOutput("vnreng:Siglus4: pattern not found");
-    return false;
-  }
-
-  //addr = MemDbg::findEnclosingAlignedFunction(addr, 50); // 0x002667dc - 0x002667c0 = 28
-  //if (!addr) {
-  //  ConsoleOutput("vnreng:Siglus3: enclosing function not found");
-  //  return false;
-  //}
-
-  HookParam hp = {};
-  hp.address = addr + addr_offset;
-  hp.type = NO_CONTEXT;
-  hp.text_fun = SpecialHookSiglus4;
-  //hp.offset = pusha_eax_off - 4;
-  //hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|NO_CONTEXT;
-  //hp.type = USING_UNICODE|USING_SPLIT|NO_CONTEXT;
-  //hp.split = pusha_edx_off - 4;
-
-  ConsoleOutput("vnreng: INSERT Siglus4");
-  NewHook(hp, L"SiglusEngine4");
-
-  ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
-  DisableGDIHooks();
-  return true;
-}
 #endif // 0
+
 
 /**
  *  jichi 8/16/2013: Insert new siglus hook
@@ -3626,12 +3652,11 @@ bool InsertSiglus1Hook()
 // jichi 8/17/2013: Insert old first. As the pattern could also be found in the old engine.
 bool InsertSiglusHook()
 {
-  //return InsertSiglus4Hook();
   if (InsertSiglus1Hook())
     return true;
   bool ok = InsertSiglus2Hook();
   ok = InsertSiglus3Hook() || ok;
-  //ok = InsertSiglus4Hook() || ok; // siglus4 also exist in siglus3, which is harmless though
+  ok = InsertSiglus4Hook() || ok;
   return ok;
 }
 

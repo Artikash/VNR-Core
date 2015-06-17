@@ -123,6 +123,7 @@ optgui:
   #- KiriKiriZ # KAGParser is better
   - Malie2 # Malie3 is better
   - SiglusEngine3 # SiglusEngine2 is better
+  - SiglusEngine4 # SiglusEngine2 is better
   - System43 # System43+ is better
   #- WolfRPG # WolfRPG2 is better
 
@@ -237,7 +238,7 @@ simple:
   - SiglusEngine
   - SiglusEngine2
   - SiglusEngine3
-  - SiglusEngine4
+  #- SiglusEngine4 # there could have duplication
   - ScenarioPlayerA
   - ScenarioPlayerW
   - Silkys # renamed
@@ -316,6 +317,7 @@ nofloat:
   - Malie
   - MarineHeart # sometimes has limited repetition
   - Otomate PPSSPP # could have repetitions
+  - SiglusEngine4 # there could have duplication
   - Imageepoch PSP # could have repetitions
   - Vanillaware GC # could have repetitions
   # Mono
