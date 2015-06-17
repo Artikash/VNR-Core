@@ -14,6 +14,7 @@
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
+#include "winkey/winkey.h"
 #include "disasm/disasm.h"
 //#include "winseh/winseh.h"
 
@@ -295,6 +296,10 @@ inline bool HookFilter(DWORD retn)
 // - dwRetn: the return address of the hook
 DWORD TextHook::Send(DWORD dwDataBase, DWORD dwRetn)
 {
+  // jich: 6/17/2015: do not send when ctrl/shift are controlled
+  if (WinKey::isKeyControlPressed() || WinKey::isKeyShiftPressed())
+    return 0;
+
   DWORD ret = 0;
   //char b[0x100];
   //::wcstombs(b, hook_name, 0x100);
