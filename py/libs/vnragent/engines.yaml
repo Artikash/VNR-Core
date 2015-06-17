@@ -27,6 +27,13 @@
   exist: Siglus*.exe
   #encoding: utf16
 
+- name: EmbedSilkysPlus # 6/17/2015, compatible with SilkysPlus
+  exist:
+    - data.arc
+    - effect.arc
+    - Script.arc
+  #encoding: sjis
+
 - name: EmbedSystem43 # 5/25/2015, compatible with System43+
   exist: AliceStart.ini
   #encoding: sjis

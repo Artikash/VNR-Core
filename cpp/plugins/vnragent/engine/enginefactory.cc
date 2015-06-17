@@ -10,6 +10,7 @@
 #include "engine/model/elf.h"
 #include "engine/model/rgss.h"
 #include "engine/model/siglus.h"
+#include "engine/model/silkys.h"
 #include "engine/model/system4.h"
 #include "engine/model/wolf.h"
 //#include "engine/model/circus.h"
@@ -31,6 +32,7 @@ EngineController *EngineFactory::createEngine()
     new WolfRPGEngine
     , new System4Engine
     , new SystemAoiWEngine
+    , new SilkysEngine
     , new SiglusEngine
     , new RGSSEngine
     , new ElfEngine
