@@ -133,6 +133,7 @@ bool InsertElfHook();           // elf: Silky.exe
 bool InsertScenarioPlayerHook();// sol-fa-soft: *.iar && *.sec5
 bool InsertSiglusHook();        // SiglusEngine: SiglusEngine.exe
 bool InsertSideBHook();         // SideB: Copyright side-B
+bool InsertSilkysHook();        // SilkysPlus
 bool InsertSyuntadaHook();      // Syuntada: dSoh.dat
 bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
 bool InsertSystemAoiHook();     // SystemAoi: *.vfs

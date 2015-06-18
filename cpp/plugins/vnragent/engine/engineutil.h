@@ -4,6 +4,7 @@
 // 4/20/2014 jichi
 
 #include "memdbg/memsearch.h"
+#include "cpputil/cppcstring.h"
 #include <QtCore/QString>
 
 enum : quint8 { XX = MemDbg::WidecardByte }; // 0x11
@@ -30,6 +31,12 @@ inline Ret replaceFunction(Arg1 arg1, Arg2 arg2)
 //template<typename Ret, typename Arg1, typename Arg2>
 //inline Ret restoreFunction(Arg1 arg1, Arg2 arg2)
 //{ return (Ret)restoreFunction((address_type)arg1, (const_address_type)arg2); }
+
+// String
+enum { MaxTextSize = 1500 };
+template <typename charT>
+inline size_t getTextLength(const charT *s, size_t capacity = MaxTextSize)
+{ return cpp_basic_strnlen(s, capacity); }
 
 // File system
 bool globs(const QString &relpath);

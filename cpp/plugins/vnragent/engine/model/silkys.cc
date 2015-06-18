@@ -6,10 +6,11 @@
 #include "engine/model/silkys.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
+#include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
-#include "winhook/hookcode.h"
 #include "memdbg/memsearch.h"
+#include "winhook/hookcode.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
 
@@ -17,73 +18,66 @@
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
+
 namespace ScenarioHook {
 namespace Private {
+
+  enum { ShortTextCapacity = 0x10 }; // 16
 
   struct TextArgument
   {
     DWORD unknown; // should always be zero at runtime
     union {
-      LPCSTR scenarioText;
-      char nameText[1];
+      LPCSTR longText;
+      char shortText[ShortTextCapacity];
     };
+    int size; // text size
   };
 
   QByteArray data_;
-  TextArgument *scenarioArg_,
-               *nameArg_;
-  LPCSTR scenarioText_;
-
-  enum { MaxNameSize = 100 };
-  char nameText_[MaxNameSize + 1];
+  TextArgument *arg_,
+               argValue_;
 
   bool hookBefore(winhook::hook_stack *s)
   {
     auto arg = (TextArgument *)s->stack[0]; // arg1
+    if (arg->size <= 0 || arg->size > Engine::MaxTextSize)
+      return true;
+
     auto arg2 = s->stack[1]; // arg2
+    auto role = arg2 == 0 ? Engine::ScenarioRole : Engine::NameRole;
+    auto sig = Engine::hashThreadSignature(role);
+
     auto q = EngineController::instance();
 
-    // Scenario
-    if (arg2 == 0) {
-      enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-      // Text from scenario could be bad when open backlog while the character is speaking
-      auto text = arg->scenarioText;
-      //if (!Engine::isAddressReadable(text))
-      //  return true;
-      data_ = q->dispatchTextA(text, sig, role);
-      scenarioArg_ = arg;
-      scenarioText_ = arg->scenarioText;
-      arg->scenarioText = (LPCSTR)data_.constData();
+    arg_ = arg;
+    argValue_ = *arg;
+    if (arg->size >= ShortTextCapacity && Engine::isAddressReadable(arg->longText, arg->size)) {
+      data_ = q->dispatchTextA(arg->longText, sig, role);
+      arg->longText = (LPCSTR)data_.constData();
+      arg->size = data_.size(); // not needed and could crash on the other hand
     } else {
-      enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
-      auto text = arg->nameText;
-      QByteArray oldData = text,
-                 newData = q->dispatchTextA(oldData, sig, role);
-      if (!newData.isEmpty()) {
-        nameArg_ = arg;
-        ::memcpy(nameText_, oldData.constData(), min(oldData.size() + 1, MaxNameSize));
-        ::memcpy(text, newData.constData(), min(newData.size() + 1, MaxNameSize));
-      }
+      auto text = arg->shortText;
+      QByteArray data(text, arg->size);
+      data = q->dispatchTextA(data, sig, role);
+      arg->size = max(data.size(), ShortTextCapacity - 1); // truncate
+      ::memcpy(text, data.constData(), min(data.size() + 1, ShortTextCapacity));
     }
     return true;
   }
 
   bool hookAfter(winhook::hook_stack *)
   {
-    if (scenarioArg_) {
-      scenarioArg_->scenarioText = scenarioText_;
-      scenarioArg_ = nullptr;
-    }
-    if (nameArg_) {
-      ::strcpy(nameArg_->nameText, nameText_);
-      nameArg_ = nullptr;
+    if (arg_)  {
+      *arg_ = argValue_;
+      arg_ = nullptr;
     }
     return true;
   }
 
 } // namespace Private
 
-/**
+/** jichi: 6/17/2015
  *  Sample game: 堕ちていく新妻 trial
  *
  *  This function is found by backtracking GetGlyphOutlineA.
@@ -153,25 +147,35 @@ bool attach()
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  const char *msg = "/Config/SceneSkip";
-  ulong addr = MemDbg::findBytes(msg, ::strlen(msg) + 1, startAddress, stopAddress); // +1 to include \0 at the end
+  const BYTE bytes[] = {
+    0x66,0x89,0x45, 0xf9,   // 00a1a062   66:8945 f9       mov word ptr ss:[ebp-0x7],ax
+    0x39,0x47, 0x14         // 00a1a066   3947 14          cmp dword ptr ds:[edi+0x14],eax
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   if (!addr)
     return false;
-  addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
-  if (!addr)
-    return false;
+
+  //const char *msg = "\0/Config/SceneSkip";
+  //ulong addr = MemDbg::findBytes(msg, ::strlen(msg + 1) + 2, startAddress, stopAddress); // +1 to include \0 at the end
+  //if (!addr)
+  //  return false;
+  //addr += 1; // skip leading "\0"
+  //addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
+  //if (!addr)
+  //  return false;
+
   addr = MemDbg::findEnclosingAlignedFunction(addr);
   if (!addr)
     return false;
 
-  //ulong addr = MemDbg::findCallerAddressAfterInt3(startAddress, stopAddress);
+  //ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::GetGlyphOutlineA, startAddress, stopAddress);
   //if (!addr)
   //  return false;
-  //addr = MemDbg::findLastNearCallAddress(addr);
+  //addr = MemDbg::findLastNearCallAddress(addr, startAddress, stopAddress);
   //if (!addr)
   //  return false;
 
-  return winhook::hook_before(addr, Private::hookBefore);
+  //DOUT(addr);
 
   int count = 0;
   auto fun = [&count](ulong addr) -> bool {

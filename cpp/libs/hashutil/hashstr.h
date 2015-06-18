@@ -13,18 +13,18 @@ HASHUTIL_BEGIN_NAMESPACE
 enum : uint64_t { djb2_init = 5381 };
 
 ///  djb2: h = h*33 + c
-template <typename Tchar>
-inline uint64_t djb2(const Tchar *str, uint64_t hash = djb2_init)
+template <typename charT>
+inline uint64_t djb2(const charT *str, uint64_t hash = djb2_init)
 {
-  Tchar c;
+  charT c;
   while ((c = *str++))
     hash = ((hash << 5) + hash) + c; // hash * 33 + c
   return hash;
 }
 
 ///  n: length
-template <typename Tchar>
-inline uint64_t djb2_n(const Tchar *str, size_t len, uint64_t hash = djb2_init)
+template <typename charT>
+inline uint64_t djb2_n(const charT *str, size_t len, uint64_t hash = djb2_init)
 {
   while (len--)
     hash = ((hash << 5) + hash) + (*str++); // hash * 33 + c
@@ -32,19 +32,19 @@ inline uint64_t djb2_n(const Tchar *str, size_t len, uint64_t hash = djb2_init)
 }
 
 ///  sdbm: hash(i) = hash(i - 1) * 65599 + str[i];
-template <typename Tchar>
-inline uint64_t sdbm(const Tchar *str, uint64_t hash = 0)
+template <typename charT>
+inline uint64_t sdbm(const charT *str, uint64_t hash = 0)
 {
-  Tchar c;
+  charT c;
   while ((c = *str++))
      hash = c + (hash << 6) + (hash << 16) - hash;
   return hash;
 }
 
-template <typename Tchar>
-inline uint64_t loselose(const Tchar *str, uint64_t hash = 0)
+template <typename charT>
+inline uint64_t loselose(const charT *str, uint64_t hash = 0)
 {
-  Tchar c;
+  charT c;
   while ((c = *str++))
     hash += c;
   return hash;

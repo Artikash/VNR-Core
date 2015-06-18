@@ -34,7 +34,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-#define DEBUG "engine.h"
+//#define DEBUG "engine.h"
 
 enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
 
@@ -6590,7 +6590,7 @@ LPCWSTR _Malie3RTrim(LPCWSTR p)
 // 0D7D7E30  08 00 76 00 5F 00 7A 00 65 00 70 00 30 00 30 00  v_zep00
 // 0D7D7E40  37 00 36 00 00 00 46 30 01 30 42 30 01 30 41 30  76.う、あ、ぁ
 // 0D7D7E50  41 30 41 30 26 20 26 20 26 20 26 20 01 30 63 30  ぁぁ…………、っ
-// 0D7D7E60  07 00 09 00 0D 30 07 00 06 00 0A 00 0A 00 00 30  .」..　
+// 0D7D7E60  07 00 09 00 0D 30 07 00 06 00 0A 00 0A 00 00 30  .」..
 // 0D7D7E70  16 60 44 30 01 30 16 60 44 30 01 30 4A 30 5E 30  怖い、怖い、おぞ
 // 0D7D7E80  7E 30 57 30 44 30 02 30 55 4F 4C 30 16 60 44 30  ましい。何が怖い
 // 0D7D7E90  6E 30 4B 30 55 30 48 30 01 30 06 52 4B 30 89 30  のかさえ、分から
@@ -10428,6 +10428,275 @@ bool InsertElfHook()
     }
   ConsoleOutput("vnreng:Elf: function not found");
   return false;
+}
+
+/** jichi: 6/17/2015
+ *  Sample games
+ *  - 堕ちていく新妻 trial
+ *  - 根雪の幻影 trial
+ *
+ *  This function is found by backtracking GetGlyphOutlineA.
+ *  There are two GetGlyphOutlineA, which are in the same function.
+ *  That function are called by two other functions.
+ *  The second function is hooked.
+ *
+ *  堕ちていく新妻
+ *  baseaddr = 08e0000
+ *
+ *  0096652E   CC               INT3
+ *  0096652F   CC               INT3
+ *  00966530   55               PUSH EBP
+ *  00966531   8BEC             MOV EBP,ESP
+ *  00966533   83EC 18          SUB ESP,0x18
+ *  00966536   A1 00109F00      MOV EAX,DWORD PTR DS:[0x9F1000]
+ *  0096653B   33C5             XOR EAX,EBP
+ *  0096653D   8945 FC          MOV DWORD PTR SS:[EBP-0x4],EAX
+ *  00966540   53               PUSH EBX
+ *  00966541   8B5D 0C          MOV EBX,DWORD PTR SS:[EBP+0xC]
+ *  00966544   56               PUSH ESI
+ *  00966545   8B75 08          MOV ESI,DWORD PTR SS:[EBP+0x8]
+ *  00966548   57               PUSH EDI
+ *  00966549   6A 00            PUSH 0x0
+ *  0096654B   894D EC          MOV DWORD PTR SS:[EBP-0x14],ECX
+ *  0096654E   8B0D FCB7A200    MOV ECX,DWORD PTR DS:[0xA2B7FC]
+ *  00966554   68 90D29D00      PUSH .009DD290                           ; ASCII "/Config/SceneSkip"
+ *  00966559   895D F0          MOV DWORD PTR SS:[EBP-0x10],EBX
+ *  0096655C   E8 2F4A0100      CALL .0097AF90
+ *  00966561   83F8 01          CMP EAX,0x1
+ *  00966564   0F84 E0010000    JE .0096674A
+ *  0096656A   8B55 EC          MOV EDX,DWORD PTR SS:[EBP-0x14]
+ *  0096656D   85DB             TEST EBX,EBX
+ *  0096656F   75 09            JNZ SHORT .0096657A
+ *  00966571   8B42 04          MOV EAX,DWORD PTR DS:[EDX+0x4]
+ *  00966574   8B40 38          MOV EAX,DWORD PTR DS:[EAX+0x38]
+ *  00966577   8945 F0          MOV DWORD PTR SS:[EBP-0x10],EAX
+ *  0096657A   33C0             XOR EAX,EAX
+ *  0096657C   C645 F8 00       MOV BYTE PTR SS:[EBP-0x8],0x0
+ *  00966580   33C9             XOR ECX,ECX
+ *  00966582   66:8945 F9       MOV WORD PTR SS:[EBP-0x7],AX
+ *  00966586   3946 14          CMP DWORD PTR DS:[ESI+0x14],EAX
+ *  00966589   0F86 BB010000    JBE .0096674A
+ *
+ *  Scenario stack:
+ *
+ *  002FF9DC   00955659  RETURN to .00955659 from .00966530
+ *  002FF9E0   002FFA10  ; jichi: text in [arg1+4]
+ *  002FF9E4   00000000  ; arg2 is zero
+ *  002FF9E8   00000001
+ *  002FF9EC   784B8FC7
+ *
+ *  Name stack:
+ *
+ *  002FF59C   00930A76  RETURN to .00930A76 from .00966530
+ *  002FF5A0   002FF5D0 ; jichi: text in [arg1+4]
+ *  002FF5A4   004DDEC0 ; arg2 is a pointer
+ *  002FF5A8   00000001
+ *  002FF5AC   784B8387
+ *  002FF5B0   00000182
+ *  002FF5B4   00000000
+ *
+ *  Scenario and Name are called by different callers.
+ *
+ *  根雪の幻影
+ *
+ *  00A1A00E   CC               INT3
+ *  00A1A00F   CC               INT3
+ *  00A1A010   55               PUSH EBP
+ *  00A1A011   8BEC             MOV EBP,ESP
+ *  00A1A013   83EC 18          SUB ESP,0x18
+ *  00A1A016   A1 0050AA00      MOV EAX,DWORD PTR DS:[0xAA5000]
+ *  00A1A01B   33C5             XOR EAX,EBP
+ *  00A1A01D   8945 FC          MOV DWORD PTR SS:[EBP-0x4],EAX
+ *  00A1A020   53               PUSH EBX
+ *  00A1A021   56               PUSH ESI
+ *  00A1A022   8B75 0C          MOV ESI,DWORD PTR SS:[EBP+0xC]
+ *  00A1A025   57               PUSH EDI
+ *  00A1A026   8B7D 08          MOV EDI,DWORD PTR SS:[EBP+0x8]
+ *  00A1A029   6A 00            PUSH 0x0
+ *  00A1A02B   894D F0          MOV DWORD PTR SS:[EBP-0x10],ECX
+ *  00A1A02E   8B0D C434AE00    MOV ECX,DWORD PTR DS:[0xAE34C4]
+ *  00A1A034   68 F816A900      PUSH .00A916F8                           ; ASCII "/Config/SceneSkip"
+ *  00A1A039   8975 EC          MOV DWORD PTR SS:[EBP-0x14],ESI
+ *  00A1A03C   E8 7F510100      CALL .00A2F1C0
+ *  00A1A041   83F8 01          CMP EAX,0x1
+ *  00A1A044   0F84 3A010000    JE .00A1A184
+ *  00A1A04A   8B4D F0          MOV ECX,DWORD PTR SS:[EBP-0x10]
+ *  00A1A04D   85F6             TEST ESI,ESI
+ *  00A1A04F   75 09            JNZ SHORT .00A1A05A
+ *  00A1A051   8B41 04          MOV EAX,DWORD PTR DS:[ECX+0x4]
+ *  00A1A054   8B40 38          MOV EAX,DWORD PTR DS:[EAX+0x38]
+ *  00A1A057   8945 EC          MOV DWORD PTR SS:[EBP-0x14],EAX
+ *  00A1A05A   33C0             XOR EAX,EAX
+ *  00A1A05C   C645 F8 00       MOV BYTE PTR SS:[EBP-0x8],0x0
+ *  00A1A060   33DB             XOR EBX,EBX
+ *  00A1A062   66:8945 F9       MOV WORD PTR SS:[EBP-0x7],AX
+ *  00A1A066   3947 14          CMP DWORD PTR DS:[EDI+0x14],EAX
+ *  00A1A069   0F86 15010000    JBE .00A1A184
+ *  00A1A06F   90               NOP
+ *  00A1A070   837F 18 10       CMP DWORD PTR DS:[EDI+0x18],0x10
+ *  00A1A074   72 05            JB SHORT .00A1A07B
+ *  00A1A076   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A079   EB 03            JMP SHORT .00A1A07E
+ *  00A1A07B   8D47 04          LEA EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A07E   803C18 00        CMP BYTE PTR DS:[EAX+EBX],0x0
+ *  00A1A082   0F84 FC000000    JE .00A1A184
+ *  00A1A088   837F 18 10       CMP DWORD PTR DS:[EDI+0x18],0x10
+ *  00A1A08C   72 05            JB SHORT .00A1A093
+ *  00A1A08E   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A091   EB 03            JMP SHORT .00A1A096
+ *  00A1A093   8D47 04          LEA EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A096   8A0418           MOV AL,BYTE PTR DS:[EAX+EBX]
+ *  00A1A099   3C 81            CMP AL,0x81
+ *  00A1A09B   72 04            JB SHORT .00A1A0A1
+ *  00A1A09D   3C 9F            CMP AL,0x9F
+ *  00A1A09F   76 06            JBE SHORT .00A1A0A7
+ *  00A1A0A1   04 20            ADD AL,0x20
+ *  00A1A0A3   3C 0F            CMP AL,0xF
+ *  00A1A0A5   77 40            JA SHORT .00A1A0E7
+ *  00A1A0A7   837F 18 10       CMP DWORD PTR DS:[EDI+0x18],0x10
+ *  00A1A0AB   72 05            JB SHORT .00A1A0B2
+ *  00A1A0AD   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A0B0   EB 03            JMP SHORT .00A1A0B5
+ *  00A1A0B2   8D47 04          LEA EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A0B5   837F 18 10       CMP DWORD PTR DS:[EDI+0x18],0x10
+ *  00A1A0B9   8A0418           MOV AL,BYTE PTR DS:[EAX+EBX]
+ *  00A1A0BC   8845 F8          MOV BYTE PTR SS:[EBP-0x8],AL
+ *  00A1A0BF   72 13            JB SHORT .00A1A0D4
+ *  00A1A0C1   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A0C4   C645 F7 02       MOV BYTE PTR SS:[EBP-0x9],0x2
+ *  00A1A0C8   8A4418 01        MOV AL,BYTE PTR DS:[EAX+EBX+0x1]
+ *  00A1A0CC   83C3 02          ADD EBX,0x2
+ *  00A1A0CF   8845 F9          MOV BYTE PTR SS:[EBP-0x7],AL
+ *  00A1A0D2   EB 30            JMP SHORT .00A1A104
+ *  00A1A0D4   8D47 04          LEA EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A0D7   C645 F7 02       MOV BYTE PTR SS:[EBP-0x9],0x2
+ *  00A1A0DB   8A4418 01        MOV AL,BYTE PTR DS:[EAX+EBX+0x1]
+ *  00A1A0DF   83C3 02          ADD EBX,0x2
+ *  00A1A0E2   8845 F9          MOV BYTE PTR SS:[EBP-0x7],AL
+ *  00A1A0E5   EB 1D            JMP SHORT .00A1A104
+ *  00A1A0E7   837F 18 10       CMP DWORD PTR DS:[EDI+0x18],0x10
+ *  00A1A0EB   72 05            JB SHORT .00A1A0F2
+ *  00A1A0ED   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A0F0   EB 03            JMP SHORT .00A1A0F5
+ *  00A1A0F2   8D47 04          LEA EAX,DWORD PTR DS:[EDI+0x4]
+ *  00A1A0F5   8A0418           MOV AL,BYTE PTR DS:[EAX+EBX]
+ *  00A1A0F8   43               INC EBX
+ *  00A1A0F9   8845 F8          MOV BYTE PTR SS:[EBP-0x8],AL
+ *  00A1A0FC   C645 F9 00       MOV BYTE PTR SS:[EBP-0x7],0x0
+ *  00A1A100   C645 F7 01       MOV BYTE PTR SS:[EBP-0x9],0x1
+ *  00A1A104   807F 48 01       CMP BYTE PTR DS:[EDI+0x48],0x1
+ *  00A1A108   75 21            JNZ SHORT .00A1A12B
+ *  00A1A10A   8B49 08          MOV ECX,DWORD PTR DS:[ECX+0x8]
+ *  00A1A10D   8D47 38          LEA EAX,DWORD PTR DS:[EDI+0x38]
+ *  00A1A110   50               PUSH EAX
+ *  00A1A111   FF77 28          PUSH DWORD PTR DS:[EDI+0x28]
+ *  00A1A114   8B47 24          MOV EAX,DWORD PTR DS:[EDI+0x24]
+ *  00A1A117   03C0             ADD EAX,EAX
+ *  00A1A119   50               PUSH EAX
+ *  00A1A11A   8D47 20          LEA EAX,DWORD PTR DS:[EDI+0x20]
+ *  00A1A11D   50               PUSH EAX
+ *  00A1A11E   8D47 1C          LEA EAX,DWORD PTR DS:[EDI+0x1C]
+ *  00A1A121   50               PUSH EAX
+ *  00A1A122   8D45 F8          LEA EAX,DWORD PTR SS:[EBP-0x8]
+ *  00A1A125   50               PUSH EAX
+ *  00A1A126   E8 85220000      CALL .00A1C3B0
+ *  00A1A12B   FF77 34          PUSH DWORD PTR DS:[EDI+0x34]
+ *  00A1A12E   8B4D EC          MOV ECX,DWORD PTR SS:[EBP-0x14]
+ *  00A1A131   8D45 F8          LEA EAX,DWORD PTR SS:[EBP-0x8]
+ *  00A1A134   FF77 4C          PUSH DWORD PTR DS:[EDI+0x4C]
+ *  00A1A137   FF77 30          PUSH DWORD PTR DS:[EDI+0x30]
+ *  00A1A13A   FF77 2C          PUSH DWORD PTR DS:[EDI+0x2C]
+ *  00A1A13D   FF77 20          PUSH DWORD PTR DS:[EDI+0x20]
+ *  00A1A140   FF77 1C          PUSH DWORD PTR DS:[EDI+0x1C]
+ *  00A1A143   50               PUSH EAX
+ *  00A1A144   E8 1733FFFF      CALL .00A0D460
+ *  00A1A149   0FBE45 F7        MOVSX EAX,BYTE PTR SS:[EBP-0x9]
+ *  00A1A14D   0FAF47 24        IMUL EAX,DWORD PTR DS:[EDI+0x24]
+ *  00A1A151   0147 1C          ADD DWORD PTR DS:[EDI+0x1C],EAX
+ *  00A1A154   807F 48 00       CMP BYTE PTR DS:[EDI+0x48],0x0
+ *  00A1A158   8B47 1C          MOV EAX,DWORD PTR DS:[EDI+0x1C]
+ *  00A1A15B   75 1B            JNZ SHORT .00A1A178
+ *  00A1A15D   3947 40          CMP DWORD PTR DS:[EDI+0x40],EAX
+ *  00A1A160   7F 16            JG SHORT .00A1A178
+ *  00A1A162   8B47 38          MOV EAX,DWORD PTR DS:[EDI+0x38]
+ *  00A1A165   8B4F 28          MOV ECX,DWORD PTR DS:[EDI+0x28]
+ *  00A1A168   014F 20          ADD DWORD PTR DS:[EDI+0x20],ECX
+ *  00A1A16B   8947 1C          MOV DWORD PTR DS:[EDI+0x1C],EAX
+ *  00A1A16E   8B47 20          MOV EAX,DWORD PTR DS:[EDI+0x20]
+ *  00A1A171   03C1             ADD EAX,ECX
+ *  00A1A173   3B47 44          CMP EAX,DWORD PTR DS:[EDI+0x44]
+ *  00A1A176   7D 0C            JGE SHORT .00A1A184
+ *  00A1A178   8B4D F0          MOV ECX,DWORD PTR SS:[EBP-0x10]
+ *  00A1A17B   3B5F 14          CMP EBX,DWORD PTR DS:[EDI+0x14]
+ *  00A1A17E  ^0F82 ECFEFFFF    JB .00A1A070
+ *  00A1A184   8B4D FC          MOV ECX,DWORD PTR SS:[EBP-0x4]
+ *  00A1A187   5F               POP EDI
+ *  00A1A188   5E               POP ESI
+ *  00A1A189   33CD             XOR ECX,EBP
+ *  00A1A18B   5B               POP EBX
+ *  00A1A18C   E8 87600200      CALL .00A40218
+ *  00A1A191   8BE5             MOV ESP,EBP
+ *  00A1A193   5D               POP EBP
+ *  00A1A194   C2 0C00          RETN 0xC
+ *  00A1A197   CC               INT3
+ *  00A1A198   CC               INT3
+ */
+static void SpecialHookSilkys(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  //DWORD arg1 = *(DWORD *)(esp_base + 0x4);
+  DWORD arg1 = argof(1, esp_base),
+        arg2 = argof(2, esp_base);
+
+  int size = *(DWORD *)(arg1 + 0x14);
+  if (size <= 0)
+    return;
+
+  DWORD text = 0;
+  //if (arg2 == 0) {
+  if (size >= 0x10) {
+    text = *(DWORD *)(arg1 + 4);
+    if (text && ::IsBadReadPtr((LPCVOID)text, size)) // this might not be needed though
+      text = 0;
+  } else
+  if (!text) // short text
+    text = arg1 + 4;
+  *len = size;
+  *data = text;
+
+  *split = arg2 == 0 ? 1 : 0; // arg2 == 0 ? scenario : name
+}
+bool InsertSilkysHook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:Silkys: failed to get memory range");
+    return false;
+  }
+
+  const BYTE bytes[] = {
+    0x66,0x89,0x45, 0xf9,   // 00a1a062   66:8945 f9       mov word ptr ss:[ebp-0x7],ax
+    0x39,0x47, 0x14         // 00a1a066   3947 14          cmp dword ptr ds:[edi+0x14],eax
+  };
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:Silkys: pattern not found");
+    return false;
+  }
+
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:Silkys: function not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  hp.text_fun = SpecialHookSilkys;
+  hp.type = USING_STRING|NO_CONTEXT; // = 9
+
+  ConsoleOutput("vnreng: INSERT Silkys");
+  NewHook(hp, L"SilkysPlus");
+  return true;
 }
 
 /** jichi 6/1/2014 Eushully

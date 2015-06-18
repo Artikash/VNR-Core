@@ -63,7 +63,7 @@ namespace Private {
       auto text = arg->nameText;
       QByteArray oldData = text,
                  newData = q->dispatchTextA(oldData, sig, role);
-      if (!newData.isEmpty()) {
+      if (!newData.isEmpty() && newData != oldData) {
         nameArg_ = arg;
         ::memcpy(nameText_, oldData.constData(), min(oldData.size() + 1, MaxNameSize));
         ::memcpy(text, newData.constData(), min(newData.size() + 1, MaxNameSize));
