@@ -200,32 +200,29 @@ inline ULONG SafeMatchBytesInPS2Memory(LPCVOID pattern, DWORD patternSize)
 // 7/29/2014 jichi: I should move these functions to different files
 // String utilities
 // Return the address of the first non-zero address
-LPCSTR reverse_search_begin(const char * s)
+LPCSTR reverse_search_begin(const char *s, int maxsize = VNR_TEXT_CAPACITY)
 {
-  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (*s)
-    for (size_t i = 0; i < MAX_LENGTH; i++, s--)
+    for (int i = 0; i < maxsize; i++, s--)
       if (!*s)
         return s + 1;
   return nullptr;
 }
 
-bool all_ascii(const char *s)
+bool all_ascii(const char *s, int maxsize = VNR_TEXT_CAPACITY)
 {
-  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (s)
-    for (size_t i = 0; i < MAX_LENGTH && *s; i++, s--)
-      if (*s < 0) // signed char
+    for (int i = 0; i < maxsize && *s; i++, s++)
+      if ((BYTE)*s > 127) // unsigned char
         return false;
   return true;
 }
 
-bool all_ascii(const wchar_t *s)
+bool all_ascii(const wchar_t *s, int maxsize = VNR_TEXT_CAPACITY)
 {
-  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (s)
-    for (size_t i = 0; i < MAX_LENGTH && *s; i++, s--)
-      if (*s > 127) // signed char
+    for (int i = 0; i < maxsize && *s; i++, s++)
+      if (*s > 127) // unsigned char
         return false;
   return true;
 }
@@ -2206,10 +2203,10 @@ bool Siglus4Filter(LPVOID data, DWORD *size, HookParam *, BYTE)
   auto text = reinterpret_cast<LPWSTR>(data);
   auto len = reinterpret_cast<size_t *>(size);
   // Remove "NNLI"
-  if (*len > 2 && ::all_ascii(text))
-    return false;
-  if (*len == 2 && *text == L'N')
-    return false;
+  //if (*len > 2 && ::all_ascii(text))
+  //  return false;
+  //if (*len == 2 && *text == L'N')
+  //  return false;
   WideStringFilter(text, len, L"NLI", 3);
   // Replace 『』 (300e, 300f) with 「」 (300c,300d)
   //WideCharReplacer(text, len, 0x300e, 0x300c);
@@ -2229,6 +2226,10 @@ void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD 
     *data = eax;
   else
     *data = *(DWORD *)eax;
+
+  // Skip all ascii characters
+  if (all_ascii((LPCWSTR)*data))
+    return;
 
   // Avoid duplication
   //LPCWSTR text = (LPCWSTR)*data;
