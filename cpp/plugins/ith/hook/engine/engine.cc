@@ -10651,15 +10651,19 @@ static void SpecialHookSilkys(DWORD esp_base, HookParam *, BYTE, DWORD *data, DW
   if (size <= 0)
     return;
 
+  enum { ShortTextCapacity = 0x10 };
+
   DWORD text = 0;
   //if (arg2 == 0) {
-  if (size >= 0x10) {
+  if (size >= ShortTextCapacity) {
     text = *(DWORD *)(arg1 + 4);
     if (text && ::IsBadReadPtr((LPCVOID)text, size)) // this might not be needed though
       text = 0;
-  } else
-  if (!text) // short text
+  }
+  if (!text) { // short text
     text = arg1 + 4;
+    size = min(size, ShortTextCapacity);
+  }
   *len = size;
   *data = text;
 
