@@ -4436,11 +4436,11 @@ static void InsertAliceHook2(DWORD addr)
 bool InsertAliceHook()
 {
   DWORD low, high, addr;
-  if (::GetFunctionAddr("SP_TextDraw", &addr, &low, &high, 0) && addr) {
+  if (GetFunctionAddr("SP_TextDraw", &addr, &low, &high, 0) && addr) {
     InsertAliceHook1(addr, low, low + high);
     return true;
   }
-  if (::GetFunctionAddr("SP_SetTextSprite", &addr, &low, &high, 0) && addr) {
+  if (GetFunctionAddr("SP_SetTextSprite", &addr, &low, &high, 0) && addr) {
     InsertAliceHook2(addr);
     return true;
   }
@@ -7423,10 +7423,10 @@ bool IsPensilSetup()
 static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD retn = *(DWORD*)esp_base;
-  if (*(WORD*)retn == 0xc483) // add esp, *
-    hp->offset = 4;
-  else
-    hp->offset = -0x8;
+  if (*(WORD*)retn == 0xc483) // add esp, $  old Debonosu game
+    hp->offset = 4; // text in arg1
+  else // new Debonosu game
+    hp->offset = -0x8; // text in ecx instead
   //hp->type ^= EXTERN_HOOK;
   hp->text_fun = nullptr;
   *data = *(DWORD*)(esp_base + hp->offset);
@@ -7435,7 +7435,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
 bool InsertDebonosuHook()
 {
   DWORD fun;
-  if (CC_UNLIKELY(!GetFunctionAddr("lstrcatA", &fun, 0, 0, 0))) {
+  if (!GetFunctionAddr("lstrcatA", &fun, 0, 0, 0)) {
     ConsoleOutput("vnreng:Debonosu: failed to find lstrcatA");
     return false;
   }
@@ -8249,7 +8249,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
   };
   retn = *(DWORD *)esp_base; // jichi 1/18/2015: dynamically find function return address
   i = 0;
-  while (*pw != 0xc483) { //add esp, $
+  while (*pw != 0xc483) { // add esp, $
     l = ::disasm(pb);
     if (++i == 5)
       //ConsoleOutput("Fail to detect offset.");
