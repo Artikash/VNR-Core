@@ -10667,7 +10667,7 @@ static void SpecialHookSilkys(DWORD esp_base, HookParam *, BYTE, DWORD *data, DW
   *len = size;
   *data = text;
 
-  *split = arg2 == 0 ? 1 : 0; // arg2 == 0 ? scenario : name
+  *split = arg2 == 0 ? 1 : 2; // arg2 == 0 ? scenario : name
 }
 bool InsertSilkysHook()
 {
