@@ -7,6 +7,7 @@
 #include "hijack/hijackmanager.h"
 #include "winhook/hookcode.h"
 #include "memdbg/memsearch.h"
+#include "ntinspect/ntinspect.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
 
@@ -134,67 +135,25 @@ bool attach()
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return 0;
-
-  if (!::GetFunctionAddr("lstrcatA", &fun, 0, 0, 0)) {
-    ConsoleOutput("vnreng:Debonosu: failed to find lstrcatA");
+  ulong funaddr = NtInspect::getExportFunction("lstrcatA", L"user32.dll");
+  if (!funaddr)
     return false;
-  }
-  DWORD addr = Util::FindImportEntry(module_base_, fun);
-  if (!addr) {
-    ConsoleOutput("vnreng:Debonosu: lstrcatA is not called");
+  funaddr = NtInspect::getImportAddress(startAddress, "lstrcatA");
+  if (!funaddr)
     return false;
-  }
-  DWORD search = 0x15ff | (addr << 16); // jichi 10/20/2014: call dword ptr ds
-  addr >>= 16;
+  DWORD search = 0x15ff | (funaddr << 16); // jichi 10/20/2014: call dword ptr ds
+  funaddr >>= 16;
   for (DWORD i = startAddress; i < stopAddress - 4; i++)
     if (*(DWORD *)i == search &&
-        *(WORD *)(i + 4) == addr && // call dword ptr lstrcatA
+        *(WORD *)(i + 4) == funaddr && // call dword ptr lstrcatA
         *(BYTE *)(i - 5) == 0x68) { // push $
       DWORD push = *(DWORD *)(i - 4);
       for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
         if (*(BYTE *)j == 0xb8 &&
             *(DWORD *)(j + 1) == push)
-          if (DWORD hook_addr = SafeFindEntryAligned(i, 0x200)) {
-            HookParam hp = {};
-            hp.address = hook_addr;
-            hp.text_fun = SpecialHookDebonosu;
-            hp.type = USING_STRING;
-            ConsoleOutput("vnreng: INSERT Debonosu");
-            NewHook(hp, L"Debonosu");
-            //RegisterEngineType(ENGINE_DEBONOSU);
-            return true;
-          }
-      }
-
-
-  //const BYTE bytes[] = {
-  //    //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
-  //    //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
-  //    //0x83,0xec, 0x08,                  // 0093f9b3  |. 83ec 08        sub esp,0x8
-  //    //0x83,0x7d, 0x10, 0x00,            // 0093f9b6  |. 837d 10 00     cmp dword ptr ss:[ebp+0x10],0x0
-  //    //0x53,                             // 0093f9ba  |. 53             push ebx
-  //    //0x8b,0x5d, 0x0c,                  // 0093f9bb  |. 8b5d 0c        mov ebx,dword ptr ss:[ebp+0xc]
-  //    //0x56,                             // 0093f9be  |. 56             push esi
-  //    //0x57,                             // 0093f9bf  |. 57             push edi
-  //    0x75, 0x0f,                       // 0093f9c0  |. 75 0f          jnz short silkys.0093f9d1
-  //    0x8b,0x45, 0x08,                  // 0093f9c2  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
-  //    0x8b,0x48, 0x04,                  // 0093f9c5  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
-  //    0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
-  //};
-  //ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  //if (!addr)
-  //  return false;
-  //addr = MemDbg::findEnclosingAlignedFunction(addr);
-  //if (!addr)
-  //  return false;
-  //int count = 0;
-  //auto fun = [&count](ulong addr) -> bool {
-  //  count += winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
-  //  return true; // replace all functions
-  //};
-  //MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
-  //DOUT("call number =" << count);
-  //return count;
+          if (DWORD addr = MemDbg::findEnclosingAlignedFunction(i, 0x200))
+            return winhook::hook_before(addr, Private::hookBefore);
+    }
   return false;
 }
 

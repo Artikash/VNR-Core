@@ -172,7 +172,7 @@ bool Engine::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddre
 
   wchar_t processName[MAX_PATH]; // cached
   if (!moduleName) {
-    if (!NtInspect::getCurrentProcessName(processName, MAX_PATH)) // Initialize process name
+    if (!NtInspect::getProcessName(processName, MAX_PATH)) // Initialize process name
       return false;
     moduleName = processName;
   }
