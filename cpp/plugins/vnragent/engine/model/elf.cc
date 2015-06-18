@@ -58,14 +58,12 @@ namespace Private {
       scenarioArg_ = arg;
       scenarioText_ = arg->scenarioText;
       arg->scenarioText = (LPCSTR)data_.constData();
-    // Name
-    // FIXME: The name has to be truncated
     } else if (arg->nameFlag == 0) {
       enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
       auto text = arg->nameText;
       QByteArray oldData = text,
                  newData = q->dispatchTextA(oldData, sig, role);
-      if (!newData.isEmpty()) {
+      if (!newData.isEmpty() && newData != oldData) {
         nameArg_ = arg;
         ::memcpy(nameText_, oldData.constData(), min(oldData.size() + 1, MaxNameSize));
         ::memcpy(text, newData.constData(), min(newData.size() + 1, MaxNameSize));
@@ -97,6 +95,8 @@ namespace Private {
  *  jichi 5/31/2014: elf's
  *  Type1: SEXティーチャー剛史 trial, reladdr = 0x2f0f0, 2 parameters
  *  Type2: 愛姉妹4, reladdr = 0x2f9b0, 3 parameters
+ *
+ *  The hooked function is the caller of the caller of TextOutA.
  */
 bool attach()
 {

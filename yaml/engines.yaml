@@ -59,6 +59,8 @@ embed:
   - SiglusEngine2
   #- SiglusEngine3
   #- SiglusEngine4
+  - Silkys
+  - SilkysPlus
   - SystemAoi
   - SystemAoi2
   - System43+
@@ -232,6 +234,8 @@ simple:
   - RetouchSystem
   - rUGP
   - rUGP2
+  - ScenarioPlayerA
+  - ScenarioPlayerW
   - ShinaRio
   - ShinaRio2
   - SideB
@@ -239,9 +243,8 @@ simple:
   - SiglusEngine2
   - SiglusEngine3
   #- SiglusEngine4 # there could have duplication
-  - ScenarioPlayerA
-  - ScenarioPlayerW
   - Silkys # renamed
+  - SilkysPlus
   - SofthouseChara # renamed
   - SolfaSoft # renamed
   - StuffScriptEngine
@@ -381,6 +384,7 @@ char:
   - EmbedARCGameEngine
   - EmbedBGI
   - EmbedElf
+  - EmbedSilkysPlus
   - EmbedWolfRPG
   - EmbedSystem43
   # Engines
@@ -466,6 +470,7 @@ char:
   - ShinaRio2
   - SideB
   - Silkys # renamed
+  - SilkysPlus
   - SolfaSoft # renamed
   - StudioRyokucha
   - StuffScriptEngine
@@ -601,6 +606,7 @@ focus:
   - EAGLS
   - EmbedARCGameEngine
   - EmbedSiglusEngine
+  - EmbedSilkysPlus
   - FocasLens
   - HorkEye
   - KAGParser
@@ -611,6 +617,7 @@ focus:
   - SiglusEngine2
   - SiglusEngine3
   - SiglusEngine4
+  - SilkysPlus
   - Syuntada
   - WillPlus
   - YU-RIS2

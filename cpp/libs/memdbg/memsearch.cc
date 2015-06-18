@@ -319,6 +319,25 @@ DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, D
   return 0;
 }
 
+DWORD findLastWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, DWORD range)
+{
+  typedef WORD optype;
+  typedef DWORD argtype;
+  DWORD ret = 0;
+
+  for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
+    if (op == *(optype *)(start + i)) {
+      DWORD t = *(DWORD *)(start + i + sizeof(optype));
+      if (t > start && t < stop) {
+        if (arg1 == *(argtype *)t) // absolute address
+          ret = start + i;
+        i += sizeof(optype) + sizeof(argtype) - 1; // == 5
+      }
+    }
+  return ret;
+}
+
+
 /***
  *  Return the absolute address of op. Op takes 1 address parameter.
  *  BYTE call with relative address.
@@ -346,6 +365,23 @@ DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD range)
       //}
     }
   return 0;
+}
+
+DWORD findLastByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD range)
+{
+  typedef BYTE optype;
+  typedef DWORD argtype;
+  DWORD ret = 0;
+  for (DWORD i = offset; i < offset + range - sizeof(argtype); i++)
+    if (op == *(optype *)(start + i)) {
+      DWORD t = *(argtype *)(start + i + sizeof(optype));
+      //if (t > start && t < stop) {
+      if (arg1 == t + start + i + sizeof(optype) + sizeof(argtype)) // relative address
+        ret = start + i;
+      i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+      //}
+    }
+  return ret;
 }
 
 /***
@@ -389,6 +425,18 @@ DWORD findFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWO
 
 DWORD findNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
 { return findByteCall(byte_call, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+DWORD findLastLongJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findLastWordCall(word_jmp, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+DWORD findLastShortJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findLastByteCall(byte_jmp, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+DWORD findLastFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findLastWordCall(word_call, funcAddr, lowerBound, upperBound, offset, range ? range : (upperBound - lowerBound - offset)); }
+
+DWORD findLastNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
+{ return findLastByteCall(byte_call, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
 DWORD findPushDwordAddress(DWORD value, DWORD lowerBound, DWORD upperBound)
 {

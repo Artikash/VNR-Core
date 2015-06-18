@@ -126,6 +126,12 @@ bool DetermineEngineByFile1()
     InsertElfHook();
     return true;
   }
+  // jichi 6/9/2015: Skip Silkys Sakura
+  if ( // Almost the same as Silkys except mes.arc is replaced by Script.arc
+      IthCheckFile(L"data.arc") && IthCheckFile(L"effect.arc") && IthCheckFile(L"Script.arc")) {
+    InsertSilkysHook();
+    return true;
+  }
   if (IthFindFile(L"data\\pack\\*.cpz")) {
     InsertCMVSHook();
     return true;
@@ -658,14 +664,6 @@ bool DetermineNoEngine()
 
   if (IthCheckFile(L"game_sys.exe")) {
     ConsoleOutput("vnreng: IGNORE Atelier Kaguya BY/TH");
-    return true;
-  }
-
-  // jichi 6/9/2015: Skip Silkys Sakura
-  if ( // Almost the same as Silkys except mes.arc is replaced by Script.arc
-      IthCheckFile(L"data.arc") && IthCheckFile(L"effect.arc")
-      && IthCheckFile(L"Script.arc")) {
-    ConsoleOutput("vnreng: IGNORE Silkys Sakura BY/TH");
     return true;
   }
 
