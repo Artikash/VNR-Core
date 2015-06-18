@@ -32,7 +32,7 @@ namespace Private {
 
     enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
     QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
-    ::strcpy(text, data.constData());
+    //::strcpy(text, data.constData());
     return true;
   }
 
@@ -135,13 +135,13 @@ bool attach()
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong funaddr = NtInspect::getExportFunction("lstrcatA", L"user32.dll");
+  ulong funaddr = NtInspect::getModuleExportFunctionA("user32.dll", "lstrcatA");
   if (!funaddr)
     return false;
-  funaddr = NtInspect::getImportAddress(startAddress, "lstrcatA");
+  funaddr = NtInspect::getProcessImportAddress(funaddr);
   if (!funaddr)
     return false;
-  DWORD callinst = 0x15ff | (funaddr << 16); // jichi 10/20/2014: call dword ptr ds
+  DWORD callinst = 0x15ff | (funaddr << 16); // jichi 10/20/2014: far call dword ptr ds
   funaddr >>= 16;
   for (DWORD i = startAddress; i < stopAddress - 4; i++)
     if (*(DWORD *)i == callinst &&

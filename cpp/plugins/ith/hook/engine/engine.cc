@@ -1300,7 +1300,7 @@ bool KiriKiriZHook1(DWORD esp_base, HookParam *)
 bool InsertKiriKiriZHook1()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:KiriKiriZ1: failed to get memory range");
     return false;
   }
@@ -2433,7 +2433,7 @@ void SpecialHookSiglus4(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD 
 bool InsertSiglus4Hook()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Siglus4: failed to get memory range");
     return false;
   }
@@ -3897,7 +3897,7 @@ bool InsertMajiroHook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Majiro: failed to get memory range");
     return false;
   }
@@ -3954,7 +3954,7 @@ bool InsertCMVS1Hook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:CMVS1: failed to get memory range");
     return false;
   }
@@ -5336,7 +5336,7 @@ bool InsertSystem43Hook()
   ULONG startAddress, stopAddress;
   if (patched ?
       !NtInspect::getModuleMemoryRange(L"AliceRunPatch.dll", &startAddress, &stopAddress) :
-      !NtInspect::getMemoryRange(&startAddress, &stopAddress)) {
+      !NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) {
     ConsoleOutput("vnreng:System43: failed to get memory range");
     return false;
   }
@@ -6097,7 +6097,7 @@ bool InsertCotophaHook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Cotopha: failed to get memory range");
     return false;
   }
@@ -6279,7 +6279,7 @@ bool InsertCatSystemHook()
 
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:CatSystem2: failed to get memory range");
     return false;
   }
@@ -7860,7 +7860,7 @@ void SpecialHookWolf2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *spl
 bool InsertWolf2Hook()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:WolfRPG2: failed to get memory range");
     return false;
   }
@@ -8200,7 +8200,7 @@ bool InsertC4Hook()
 static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:WillPlus2: failed to get memory range");
     return false;
   }
@@ -9132,7 +9132,7 @@ bool InsertNexton1Hook()
   // Use accurate stopAddress in case of running out of memory
   // Since the file pattern for Nexton1 is not accurate.
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) {
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) {
     ConsoleOutput("vnreng:NEXTON1: failed to get memory range");
     return false;
   }
@@ -10673,7 +10673,7 @@ static void SpecialHookSilkys(DWORD esp_base, HookParam *, BYTE, DWORD *data, DW
 bool InsertSilkysHook()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Silkys: failed to get memory range");
     return false;
   }
@@ -11151,7 +11151,7 @@ bool InsertSilkysHook()
 bool InsertEushullyHook()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Eushully: failed to get memory range");
     return false;
   }
@@ -14339,7 +14339,7 @@ bool InsertPPSSPPHLEHooks()
 {
   ConsoleOutput("vnreng: PPSSPP HLE: enter");
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:PPSSPP HLE: failed to get memory range");
     return false;
   }
@@ -16954,7 +16954,7 @@ static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, BYTE, DWORD 
 bool InsertOtomatePPSSPPHook()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng: Otomate PPSSPP: failed to get memory range");
     return false;
   }

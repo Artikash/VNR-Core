@@ -277,7 +277,7 @@ finish:
 // Example call:
 // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
 enum : WORD {
-  word_jmp = 0x25ff    // long call
+  word_jmp = 0x25ff    // long jump
   , word_call = 0x15ff // far call
 };
 

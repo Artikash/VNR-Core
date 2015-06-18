@@ -3,6 +3,9 @@
 #include "ntdll/ntdll.h"
 #include "ntinspect/ntinspect.h"
 
+// https://social.msdn.microsoft.com/Forums/vstudio/en-US/4cb11cd3-8ce0-49d7-9dda-d62e9ae0180b/how-to-get-current-module-handle?forum=vcgeneral
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 //#ifdef _MSC_VER
 //# pragma warning(disable:4018) // C4018: signed/unsigned mismatch
 //#endif // _MSC_VER
@@ -22,6 +25,9 @@ errno_t wcscpy_safe(wchar_t *buffer, size_t bufferSize, const wchar_t *source)
 } // unnamed namespace
 
 NTINSPECT_BEGIN_NAMESPACE
+
+// https://social.msdn.microsoft.com/Forums/vstudio/en-US/4cb11cd3-8ce0-49d7-9dda-d62e9ae0180b/how-to-get-current-module-handle?forum=vcgeneral
+HMODULE getCurrentModuleHandle() { return (HMODULE)&__ImageBase; }
 
 /** Memory range */
 
@@ -90,7 +96,7 @@ BOOL getModuleMemoryRange(LPCWSTR moduleName, DWORD *lowerBound, DWORD *upperBou
   return FALSE;
 }
 
-BOOL getMemoryRange(DWORD *lowerBound, DWORD *upperBound)
+BOOL getProcessMemoryRange(DWORD *lowerBound, DWORD *upperBound)
 {
   WCHAR procName[MAX_PATH]; // cached
   return getProcessName(procName, MAX_PATH)
@@ -99,28 +105,71 @@ BOOL getMemoryRange(DWORD *lowerBound, DWORD *upperBound)
 
 /** Module header */
 
-// See: ITH AddModule
-static DWORD getModuleExportFunction(LPCSTR funcName, DWORD hModule)
+// See: ITH AddAllModules
+bool iterModule(iter_module_fun_t fun)
 {
+  // Iterate loaded modules
+  PPEB ppeb;
+  __asm {
+    mov eax, fs:[0x30]
+    mov ppeb, eax
+  }
+  const DWORD start = *(DWORD *)&ppeb->Ldr->InLoadOrderModuleList;
+  for (auto it = (PLDR_DATA_TABLE_ENTRY)start;
+      it->SizeOfImage && *(DWORD *)it != start;
+      it = (PLDR_DATA_TABLE_ENTRY)it->InLoadOrderModuleList.Flink)
+    if (!fun((HMODULE)it->DllBase, it->BaseDllName.Buffer, it->SizeOfImage))
+      return false;
+  return true;
+}
+
+
+// See: ITH AddAllModules
+DWORD getExportFunction(LPCSTR funcName)
+{
+  // Iterate loaded modules
+  PPEB ppeb;
+  __asm {
+    mov eax, fs:[0x30]
+    mov ppeb, eax
+  }
+  const DWORD start = *(DWORD *)&ppeb->Ldr->InLoadOrderModuleList;
+  for (auto it = (PLDR_DATA_TABLE_ENTRY)start;
+      it->SizeOfImage && *(DWORD *)it != start;
+      it = (PLDR_DATA_TABLE_ENTRY)it->InLoadOrderModuleList.Flink) {
+    //if (moduleName && ::wcscmp(moduleName, it->BaseDllName.Buffer)) // BaseDllName.Buffer == moduleName
+    //  continue;
+    if (DWORD addr = getModuleExportFunction((HMODULE)it->DllBase, funcName))
+      return addr;
+  }
+  return 0;
+}
+
+// See: ITH AddModule
+DWORD getModuleExportFunction(HMODULE hModule, LPCSTR funcName)
+{
+  if (!hModule)
+    return 0;
+  DWORD startAddress = (DWORD)hModule;
   IMAGE_DOS_HEADER *DosHdr = (IMAGE_DOS_HEADER *)hModule;
   if (IMAGE_DOS_SIGNATURE == DosHdr->e_magic) {
-    DWORD dwReadAddr = hModule + DosHdr->e_lfanew;
+    DWORD dwReadAddr = startAddress + DosHdr->e_lfanew;
     IMAGE_NT_HEADERS *NtHdr = (IMAGE_NT_HEADERS *)dwReadAddr;
     if (IMAGE_NT_SIGNATURE == NtHdr->Signature) {
       DWORD dwExportAddr = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
       if (dwExportAddr == 0)
         return 0;
-      dwExportAddr += hModule;
+      dwExportAddr += startAddress;
       IMAGE_EXPORT_DIRECTORY *ExtDir = (IMAGE_EXPORT_DIRECTORY *)dwExportAddr;
-      dwExportAddr = hModule + ExtDir->AddressOfNames;
+      dwExportAddr = startAddress + ExtDir->AddressOfNames;
       for (UINT uj = 0; uj < ExtDir->NumberOfNames; uj++) {
         DWORD dwFuncName = *(DWORD *)dwExportAddr;
-        char *pcFuncName = (char *)(hModule + dwFuncName);
+        char *pcFuncName = (char *)(startAddress + dwFuncName);
         if (::strcmp(funcName, pcFuncName) == 0) {
-          char *pcFuncPtr = (char *)(hModule + (DWORD)ExtDir->AddressOfNameOrdinals+(uj * sizeof(WORD)));
+          char *pcFuncPtr = (char *)(startAddress + (DWORD)ExtDir->AddressOfNameOrdinals+(uj * sizeof(WORD)));
           WORD word = *(WORD *)pcFuncPtr;
-          pcFuncPtr = (char *)(hModule + (DWORD)ExtDir->AddressOfFunctions+(word * sizeof(DWORD)));
-          return hModule + *(DWORD *)pcFuncPtr; // absolute address
+          pcFuncPtr = (char *)(startAddress + (DWORD)ExtDir->AddressOfFunctions+(word * sizeof(DWORD)));
+          return startAddress + *(DWORD *)pcFuncPtr; // absolute address
         }
         dwExportAddr += sizeof(DWORD);
       }
@@ -129,44 +178,23 @@ static DWORD getModuleExportFunction(LPCSTR funcName, DWORD hModule)
   return 0;
 }
 
-// See: ITH AddAllModules
-DWORD getExportFunction(LPCSTR funcName, LPCWSTR moduleName)
-{
-  // Iterate loaded modules
-  PPEB ppeb;
-  __asm {
-    mov eax, fs:[0x30]
-    mov ppeb, eax
-  }
-  const DWORD start = *(DWORD *)(&ppeb->Ldr->InLoadOrderModuleList);
-  for (PLDR_DATA_TABLE_ENTRY it = (PLDR_DATA_TABLE_ENTRY)start;
-      it->SizeOfImage && *(DWORD *it) != start;
-      it = (PLDR_DATA_TABLE_ENTRY)it->InLoadOrderModuleList.Flink) {
-    if (moduleName && ::wcscmp(moduleName, it->BaseDllName.Buffer)) // BaseDllName.Buffer == moduleName
-      continue;
-    if (DWORD addr = getModuleExportFunctionAddress(funcName, it->DllBase))
-      return addr;
-  }
-  return 0;
-}
-
 // See: ITH FindImportEntry
-DWORD getImportAddress(DWORD hModule, DWORD fun)
+DWORD getModuleImportAddress(HMODULE hModule, DWORD exportAddress)
 {
-  IMAGE_DOS_HEADER *DosHdr;
-  IMAGE_NT_HEADERS *NtHdr;
-  DWORD IAT, end, pt, addr;
-  DosHdr = (IMAGE_DOS_HEADER *)hModule;
+  if (!hModule)
+    return 0;
+  DWORD startAddress = (DWORD)hModule;
+  IMAGE_DOS_HEADER *DosHdr = (IMAGE_DOS_HEADER *)hModule;
   if (IMAGE_DOS_SIGNATURE == DosHdr->e_magic) {
-    NtHdr = (IMAGE_NT_HEADERS *)(hModule + DosHdr->e_lfanew);
+    IMAGE_NT_HEADERS *NtHdr = (IMAGE_NT_HEADERS *)(startAddress + DosHdr->e_lfanew);
     if (IMAGE_NT_SIGNATURE == NtHdr->Signature) {
-      IAT = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress;
-      end = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].Size;
-      IAT += hModule;
+      DWORD IAT = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress;
+      DWORD end = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].Size;
+      IAT += startAddress;
       end += IAT;
-      for (pt = IAT; pt < end; pt += 4) {
-        addr = *(DWORD *)pt;
-        if (addr == fun)
+      for (DWORD pt = IAT; pt < end; pt += 4) {
+        DWORD addr = *(DWORD *)pt;
+        if (addr == (DWORD)exportAddress)
           return pt;
       }
     }

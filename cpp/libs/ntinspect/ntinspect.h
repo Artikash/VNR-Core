@@ -15,8 +15,10 @@
 # define NTINSPECT_END_NAMESPACE    } // NtInspect
 #endif
 
-
 NTINSPECT_BEGIN_NAMESPACE
+
+// Get the module handle of the current module (not the current process that is GetModuleHandleA(0))
+HMODULE getCurrentModuleHandle();
 
 ///  Get current module name in fs:0x30
 BOOL getProcessName(_Out_ LPWSTR buffer, _In_ int bufferSize);
@@ -31,7 +33,21 @@ BOOL getProcessName(_Out_ LPWSTR buffer, _In_ int bufferSize);
 BOOL getModuleMemoryRange(_In_ LPCWSTR moduleName, _Out_ DWORD *lowerBound, _Out_ DWORD *upperBound);
 
 ///  Get memory of the current process module
-BOOL getMemoryRange(_Out_ DWORD *lowerBound, _Out_ DWORD *upperBound);
+BOOL getProcessMemoryRange(_Out_ DWORD *lowerBound, _Out_ DWORD *upperBound);
+
+#ifndef MEMDBG_NO_STL
+///  Iterate module information and return false if abort iteration.
+typedef std::function<bool (HMODULE hModule, LPCWSTR moduleName, size_t moduleSize)> iter_module_fun_t;
+#else
+typedef bool (* iter_module_fun_t)(HMODULE hModule, LPCWSTR moduleName, size_t moduleSize);
+#endif // MEMDBG_NO_STL
+
+/**
+ *  Iterate all modules
+ *  @param  fun  the first parameter is the address of the caller, and the second parameter is the address of the call itself
+ *  @return  false if return early, and true if iterate all elements
+ */
+bool iterModule(const iter_module_fun_t &fun);
 
 /**
  *  Return the absolute address of the function imported from the given module
@@ -41,31 +57,32 @@ BOOL getMemoryRange(_Out_ DWORD *lowerBound, _Out_ DWORD *upperBound);
  */
 DWORD getModuleExportFunction(HMODULE hModule, LPCSTR functionName);
 
+inline DWORD getModuleExportFunctionA(LPCSTR moduleName, LPCSTR functionName)
+{ return getModuleExportFunction(::GetModuleHandleA(moduleName), functionName); }
+
+inline DWORD getModuleExportFunctionW(LPCWSTR moduleName, LPCSTR functionName)
+{ return getModuleExportFunction(::GetModuleHandleW(moduleName), functionName); }
+
 ///  Get the function address exported from any module
 DWORD getExportFunction(LPCSTR functionName);
 
 /**
  *  Get the import address in the specified module
  *  @param  hModule
- *  @param  exportFunctionAddress  absolute address of the function exported from other modules
+ *  @param  exportAddress  absolute address of the function exported from other modules
  *  @return  function address or 0
  */
-DWORD getModuleImportAddress(HMODULE hModule, LPVOID exportFunctionAddress);
+DWORD getModuleImportAddress(HMODULE hModule, DWORD exportAddress);
 
-///  Get the import address in the current module
-DWORD getImportAddress(LPVOID exportFunctionAddress);
+inline DWORD getModuleImportAddressA(LPCSTR moduleName, DWORD exportAddress)
+{ return getModuleImportAddress(::GetModuleHandleA(moduleName), exportAddress); }
 
-#ifndef MEMDBG_NO_STL
-///  Iterate module information and return false if abort iteration.
-typedef std::function<bool (HMODULE hModule, LPCWSTR moduleName, size_t moduleSize)> iter_module_fun_t;
+inline DWORD getModuleImportAddressW(LPCWSTR moduleName, DWORD exportAddress)
+{ return getModuleImportAddress(::GetModuleHandleW(moduleName), exportAddress); }
 
-/**
- *  Iterate all modules
- *  @param  fun  the first parameter is the address of the caller, and the second parameter is the address of the call itself
- *  @return  false if return early, and true if iterate all elements
- */
-bool iterModule(iter_module_fun_t fun);
-#endif // MEMDBG_NO_STL
+///  Get the import address in the current executable
+inline DWORD getProcessImportAddress(DWORD exportAddress)
+{ return getModuleImportAddress(::GetModuleHandleA(nullptr), exportAddress); }
 
 
 NTINSPECT_END_NAMESPACE

@@ -191,7 +191,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 
       GetProcessName(::processName);
       FillRange(::processName, &::processStartAddress, &::processStopAddress);
-      //NtInspect::getMemoryRange(&::processStartAddress, &::processStopAddress);
+      //NtInspect::getProcessMemoryRange(&::processStartAddress, &::processStopAddress);
 
       //if (!::hookman) {
       //  ith_has_section = false;
