@@ -56,7 +56,7 @@ bool attach(bool hijackGDI) // attach scenario
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
   ulong lastCaller = 0,
         lastCall = 0;
   auto fun = [&lastCaller, &lastCall](ulong caller, ulong call) -> bool {
@@ -151,7 +151,7 @@ bool attach(bool hijackGDI) // attach scenario
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
   ulong thisCaller = 0,
         thisCall = 0,
         prevCall = 0;

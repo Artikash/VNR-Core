@@ -134,23 +134,22 @@ bool attach()
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
   ulong funaddr = NtInspect::getExportFunction("lstrcatA", L"user32.dll");
   if (!funaddr)
     return false;
   funaddr = NtInspect::getImportAddress(startAddress, "lstrcatA");
   if (!funaddr)
     return false;
-  DWORD search = 0x15ff | (funaddr << 16); // jichi 10/20/2014: call dword ptr ds
+  DWORD callinst = 0x15ff | (funaddr << 16); // jichi 10/20/2014: call dword ptr ds
   funaddr >>= 16;
   for (DWORD i = startAddress; i < stopAddress - 4; i++)
-    if (*(DWORD *)i == search &&
+    if (*(DWORD *)i == callinst &&
         *(WORD *)(i + 4) == funaddr && // call dword ptr lstrcatA
         *(BYTE *)(i - 5) == 0x68) { // push $
-      DWORD push = *(DWORD *)(i - 4);
+      DWORD push = *(DWORD *)(i - 4); // the global value being pushed
       for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
-        if (*(BYTE *)j == 0xb8 &&
-            *(DWORD *)(j + 1) == push)
+        if (*(BYTE *)j == 0xb8 && *(DWORD *)(j + 1) == push)
           if (DWORD addr = MemDbg::findEnclosingAlignedFunction(i, 0x200))
             return winhook::hook_before(addr, Private::hookBefore);
     }

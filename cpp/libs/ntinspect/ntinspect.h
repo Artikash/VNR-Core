@@ -44,7 +44,12 @@ DWORD getModuleExportFunction(HMODULE hModule, LPCSTR functionName);
 ///  Get the function address exported from any module
 DWORD getExportFunction(LPCSTR functionName);
 
-///  Get the import address in the specified module
+/**
+ *  Get the import address in the specified module
+ *  @param  hModule
+ *  @param  exportFunctionAddress  absolute address of the function exported from other modules
+ *  @return  function address or 0
+ */
 DWORD getModuleImportAddress(HMODULE hModule, LPVOID exportFunctionAddress);
 
 ///  Get the import address in the current module

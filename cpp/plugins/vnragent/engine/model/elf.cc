@@ -102,7 +102,7 @@ bool attach()
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
 
   const BYTE bytes[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here

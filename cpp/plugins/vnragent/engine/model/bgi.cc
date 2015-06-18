@@ -561,7 +561,7 @@ bool attach()
 {
   ulong startAddress, stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
   ulong addr = Private::search3(startAddress, stopAddress);
   if (addr) {
     Private::type_ = Private::Type3;
