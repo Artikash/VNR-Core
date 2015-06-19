@@ -75,7 +75,7 @@ bool DeterminePCEngine()
 
   // PC games
   PcHooks::hookGDIFunctions();
-  PcHooks::hookGDIPlusFunctions();
+  EnableGDIPlusHooks();
   return false;
 }
 
@@ -771,6 +771,8 @@ bool DetermineEngineType()
   seh_with_eh(ExceptHandler,
       found = UnsafeDetermineEngineType());
 #endif // ITH_HAS_SEH
+  if (::GDIPlusHooksEnabled())
+    PcHooks::hookGDIPlusFunctions();
   if (!found) { // jichi 10/2/2013: Only enable it if no game engine is detected
     PcHooks::hookLstrFunctions();
     PcHooks::hookCharNextFunctions();

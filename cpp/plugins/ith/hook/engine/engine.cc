@@ -7431,6 +7431,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
   hp->text_fun = nullptr;
   *data = *(DWORD*)(esp_base + hp->offset);
   *len = ::strlen((char*)*data);
+  *split = FIXED_SPLIT_VALUE;
 }
 bool InsertDebonosuHook()
 {
@@ -7459,10 +7460,11 @@ bool InsertDebonosuHook()
             hp.address = hook_addr;
             hp.text_fun = SpecialHookDebonosu;
             //hp.type = USING_STRING;
-            hp.type = USING_STRING|NO_CONTEXT|FIXING_SPLIT; // there is only one thread
+            hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|FIXING_SPLIT; // there is only one thread
             ConsoleOutput("vnreng: INSERT Debonosu");
             NewHook(hp, L"Debonosu");
             //RegisterEngineType(ENGINE_DEBONOSU);
+            ConsoleOutput("vnreng:Debonosu: disable GDI+ hooks");
             DisableGDIPlusHooks();
             return true;
           }
