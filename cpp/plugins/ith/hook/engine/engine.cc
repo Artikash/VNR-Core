@@ -7463,6 +7463,7 @@ bool InsertDebonosuHook()
             ConsoleOutput("vnreng: INSERT Debonosu");
             NewHook(hp, L"Debonosu");
             //RegisterEngineType(ENGINE_DEBONOSU);
+            DisableGDIPlusHooks();
             return true;
           }
       }

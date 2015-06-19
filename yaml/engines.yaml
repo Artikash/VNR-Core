@@ -80,6 +80,9 @@ gui:
   - DrawTextW
   - DrawTextExA
   - DrawTextExW
+  # GDI+
+  - GdipDrawString
+  - GdipMeasureString
   # GDI32
   - ExtTextOutA
   - ExtTextOutW
@@ -522,6 +525,9 @@ wchar:
   - lstrlenW
   - WideCharToMultiByte
   - CharNextW
+  # GDI+
+  - GdipDrawString
+  - GdipMeasureString
   # Mono
   - mono_string_from_utf16
   - mono_string_to_utf16

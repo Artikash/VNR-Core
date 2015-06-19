@@ -8,6 +8,7 @@
 namespace PcHooks {
 
 void hookGDIFunctions();
+void hookGDIPlusFunctions();
 void hookLstrFunctions();
 void hookWcharFunctions();
 void hookCharNextFunctions();

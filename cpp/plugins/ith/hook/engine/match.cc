@@ -75,6 +75,7 @@ bool DeterminePCEngine()
 
   // PC games
   PcHooks::hookGDIFunctions();
+  PcHooks::hookGDIPlusFunctions();
   return false;
 }
 
