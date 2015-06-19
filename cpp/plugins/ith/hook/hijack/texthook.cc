@@ -23,8 +23,14 @@
 // - Global variables -
 
 // 10/14/2014 jichi: disable GDI hooks
-static bool gdi_hook_disabled_ = false;
-void DisableGDIHooks() { ::gdi_hook_disabled_ = true; }
+static bool gdi_hook_enabled_ = true; // enable GDI by default
+static bool gdiplus_hook_enabled_ = false; // disable GDIPlus by default
+bool GDIHooksEnabled() { return ::gdi_hook_enabled_; }
+bool GDIPlusHooksEnabled() { return ::gdiplus_hook_enabled_; }
+void EnableGDIHooks() { ::gdi_hook_enabled_ = true; }
+void EnableGDIPlusHooks() { ::gdiplus_hook_enabled_ = true; }
+void DisableGDIHooks() { ::gdi_hook_enabled_ = false; }
+void DisableGDIPlusHooks() { ::gdiplus_hook_enabled_ = false; }
 
 static bool IsGDIFunction(LPCVOID addr)
 {
@@ -325,7 +331,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
 
   // jichi 10/24/2014: Skip GDI functions
-  if (::gdi_hook_disabled_ && ::IsGDIFunction((LPCVOID)hp.address))
+  if (!::gdi_hook_enabled_ && ::IsGDIFunction((LPCVOID)hp.address))
     return 0;
 
   dwAddr = hp.address;

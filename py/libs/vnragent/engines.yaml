@@ -15,6 +15,12 @@
   #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
   #vnrlocale: true # TODO: need a better name
 
+- name: EmbedDebonosu # 6/18/2015 jichi
+  exist:
+    - bmp.pak
+    - dsetup.dll
+  #encoding: sjis
+
 - name: EmbedElf # 5/31/2014
   exist:
     - data.arc

@@ -4,9 +4,13 @@
 
 #include "engine/enginecontroller.h"
 #include "engine/enginefactory.h"
+#include "windbg/util.h"
+#include <boost/foreach.hpp>
+
 #include "engine/model/age.h"
 #include "engine/model/aoi.h"
 #include "engine/model/bgi.h"
+#include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
 #include "engine/model/rgss.h"
 #include "engine/model/siglus.h"
@@ -18,8 +22,6 @@
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
 //#include "engine/model/sideb.h"
-#include "windbg/util.h"
-#include <boost/foreach.hpp>
 
 #define DEBUG "enginefactory"
 #include "sakurakit/skdebug.h"
@@ -36,6 +38,7 @@ EngineController *EngineFactory::createEngine()
     , new SiglusEngine
     , new RGSSEngine
     , new ElfEngine
+    , new DebonosuEngine
     , new BGIEngine
     , new ARCGameEngine
     //, new CircusEngine

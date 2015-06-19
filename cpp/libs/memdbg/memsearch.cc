@@ -277,7 +277,7 @@ finish:
 // Example call:
 // 00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
 enum : WORD {
-  word_jmp = 0x25ff    // long call
+  word_jmp = 0x25ff    // long jump
   , word_call = 0x15ff // far call
 };
 
@@ -591,6 +591,20 @@ bool iterFarCallAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBou
 bool iterNearCallAddress(const address_fun_t &fun, DWORD funcAddr, DWORD lowerBound, DWORD upperBound, DWORD offset, DWORD range)
 { return iterByteCall(fun, byte_call, funcAddr, lowerBound, offset, range ? range : (upperBound - lowerBound - offset)); }
 
+bool iterAlignedNearCallerAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  dword_t prevAddr = 0;
+  auto callback = [&fun, &prevAddr, callerSearchSize](dword_t addr) -> bool {
+    if ((addr = findEnclosingAlignedFunction(addr, callerSearchSize))
+        && prevAddr != addr) {
+      prevAddr = addr;
+      return fun(addr);
+    }
+    return true;
+  };
+  return iterNearCallAddress(callback, funcAddr, lowerBound, upperBound, offset);
+}
+
 #endif // MEMDBG_NO_STL
 
 DWORD findMultiCallerAddress(DWORD funcAddr, const DWORD sigs[], DWORD sigCount, DWORD lowerBound, DWORD upperBound, DWORD reverseLength, DWORD offset)
@@ -675,6 +689,20 @@ DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword
   if (addr)
     while (byte_int3 == *(BYTE *)++addr);
   return addr;
+}
+
+DWORD findAlignedNearCallerAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  if (DWORD addr = findNearCallAddress(funcAddr, lowerBound, upperBound, offset))
+    return findEnclosingAlignedFunction(addr, callerSearchSize);
+  return 0;
+}
+
+DWORD findLastAlignedNearCallerAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize, dword_t offset)
+{
+  if (DWORD addr = findLastCallerAddressAfterInt3(funcAddr, lowerBound, upperBound, callerSearchSize, offset))
+    return findEnclosingAlignedFunction(addr, callerSearchSize);
+  return 0;
 }
 
 DWORD findEnclosingAlignedFunction(DWORD start, DWORD back_range)

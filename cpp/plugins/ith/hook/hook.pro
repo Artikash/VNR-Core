@@ -20,11 +20,11 @@ include($$LIBDIR/winversion/winversion.pri)
 #DEFINES += ITH_WINE
 #DEFINES += ITH_SYNC_PIPE
 
-DEFINES += MEMDBG_NO_STL
+DEFINES += MEMDBG_NO_STL NTINSPECT_NO_STL
 
 ## Libraries
 
-LIBS    += -lkernel32 -luser32 -lgdi32
+LIBS    += -lkernel32 -luser32 -lgdi32 #-lgdiplus
 
 ## Sources
 

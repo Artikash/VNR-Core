@@ -128,6 +128,7 @@ HEADERS += \
   engine/model/age.h \
   engine/model/aoi.h \
   engine/model/bgi.h \
+  engine/model/debonosu.h \
   engine/model/elf.h \
   engine/model/rgss.h \
   engine/model/siglus.h \
@@ -146,6 +147,7 @@ SOURCES += \
   engine/model/age.cc \
   engine/model/aoi.cc \
   engine/model/bgi.cc \
+  engine/model/debonosu.cc \
   engine/model/elf.cc \
   engine/model/rgss.cc \
   engine/model/siglus.cc \

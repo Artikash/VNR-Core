@@ -81,40 +81,33 @@ namespace { // unnamed
 
 void AddModule(DWORD hModule, DWORD size, LPWSTR name)
 {
-  IMAGE_DOS_HEADER *DosHdr;
-  IMAGE_NT_HEADERS *NtHdr;
-  IMAGE_EXPORT_DIRECTORY *ExtDir;
-  UINT uj;
   FunctionInfo info = {0, hModule, size, name};
-  char *pcFuncPtr, *pcBuffer;
-  DWORD dwReadAddr, dwFuncName, dwExportAddr;
-  WORD wOrd;
-  DosHdr = (IMAGE_DOS_HEADER *)hModule;
-  if (IMAGE_DOS_SIGNATURE==DosHdr->e_magic) {
-    dwReadAddr = hModule + DosHdr->e_lfanew;
-    NtHdr = (IMAGE_NT_HEADERS *)dwReadAddr;
+  IMAGE_DOS_HEADER *DosHdr = (IMAGE_DOS_HEADER *)hModule;
+  if (IMAGE_DOS_SIGNATURE == DosHdr->e_magic) {
+    DWORD dwReadAddr = hModule + DosHdr->e_lfanew;
+    IMAGE_NT_HEADERS *NtHdr = (IMAGE_NT_HEADERS *)dwReadAddr;
     if (IMAGE_NT_SIGNATURE == NtHdr->Signature) {
-      dwExportAddr = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
+      DWORD dwExportAddr = NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
       if (dwExportAddr == 0)
         return;
-      dwExportAddr+=hModule;
-      ExtDir=(IMAGE_EXPORT_DIRECTORY*)dwExportAddr;
-      dwExportAddr=hModule+ExtDir->AddressOfNames;
-      for (uj = 0; uj < ExtDir->NumberOfNames; uj++) {
-        dwFuncName=*(DWORD*)dwExportAddr;
-        pcBuffer = (char *)(hModule+dwFuncName);
-        pcFuncPtr=(char *)(hModule+(DWORD)ExtDir->AddressOfNameOrdinals+(uj*sizeof(WORD)));
-        wOrd = *(WORD *)pcFuncPtr;
-        pcFuncPtr = (char *)(hModule+(DWORD)ExtDir->AddressOfFunctions+(wOrd*sizeof(DWORD)));
-        info.addr=hModule+*(DWORD*)pcFuncPtr;
-        ::tree->Insert(pcBuffer,info);
-        dwExportAddr+=sizeof(DWORD);
+      dwExportAddr += hModule;
+      IMAGE_EXPORT_DIRECTORY *ExtDir = (IMAGE_EXPORT_DIRECTORY*)dwExportAddr;
+      dwExportAddr = hModule+ExtDir->AddressOfNames;
+      for (UINT uj = 0; uj < ExtDir->NumberOfNames; uj++) {
+        DWORD dwFuncName = *(DWORD *)dwExportAddr;
+        char *pcBuffer = (char *)(hModule + dwFuncName);
+        char *pcFuncPtr = (char *)(hModule + (DWORD)ExtDir->AddressOfNameOrdinals+(uj * sizeof(WORD)));
+        WORD word = *(WORD *)pcFuncPtr;
+        pcFuncPtr = (char *)(hModule + (DWORD)ExtDir->AddressOfFunctions+(word * sizeof(DWORD)));
+        info.addr = hModule + *(DWORD *)pcFuncPtr;
+        ::tree->Insert(pcBuffer, info);
+        dwExportAddr += sizeof(DWORD);
       }
     }
   }
 }
 
-void GetFunctionNames()
+void AddAllModules()
 {
   // jichi 9/26/2013: AVLTree is already zero
   PPEB ppeb;
@@ -198,7 +191,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 
       GetProcessName(::processName);
       FillRange(::processName, &::processStartAddress, &::processStopAddress);
-      //NtInspect::getCurrentMemoryRange(&::processStartAddress, &::processStopAddress);
+      //NtInspect::getProcessMemoryRange(&::processStartAddress, &::processStopAddress);
 
       //if (!::hookman) {
       //  ith_has_section = false;
@@ -225,7 +218,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       ::running = true;
       ::current_available = ::hookman;
       ::tree = new AVLTree<char, FunctionInfo, SCMP, SCPY, SLEN>;
-      GetFunctionNames();
+      AddAllModules();
       InitFilterTable();
       //InitDefaultHook(); // jichi 7/17/2014: Disabled by default
       hSendThread = IthCreateThread(WaitForPipe, 0);

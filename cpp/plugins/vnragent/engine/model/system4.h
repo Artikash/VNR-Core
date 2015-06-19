@@ -14,6 +14,7 @@ public:
   System4Engine()
   {
     name = "EmbedSystem43";
+    //dynamicEncoding = true;
     matchFiles << "AliceStart.ini";
     attachFunction = &Self::attach;
   }

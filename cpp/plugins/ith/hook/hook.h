@@ -26,6 +26,11 @@ DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *
 //DWORD IHFAPI RegisterEngineModule(DWORD idEngine, DWORD dnHook);
 
 // 10/14/2014 jichi: disable GDI hooks
+void EnableGDIHooks();
+void EnableGDIPlusHooks();
 void DisableGDIHooks();
+void DisableGDIPlusHooks();
+bool GDIHooksEnabled();
+bool GDIPlusHooksEnabled();
 
 // EOF

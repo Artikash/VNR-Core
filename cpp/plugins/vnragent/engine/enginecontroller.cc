@@ -274,7 +274,7 @@ bool EngineController::attach()
   //  return false;
   //ulong startAddress,
   //      stopAddress;
-  //if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  //if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
   //  return false;
   //ulong addr = d_->model->searchFunction(startAddress, stopAddress);
   ////ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版

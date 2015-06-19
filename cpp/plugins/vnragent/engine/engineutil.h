@@ -48,11 +48,10 @@ QStringList glob(const QString &nameFilter);
 
 QString getNormalizedProcessName();
 
-//bool getMemoryRange(const char *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
-bool getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
+bool getModuleMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
 
-inline bool getCurrentMemoryRange(unsigned long *startAddress, unsigned long *stopAddress)
-{ return getMemoryRange(nullptr, startAddress, stopAddress); }
+inline bool getProcessMemoryRange(unsigned long *startAddress, unsigned long *stopAddress)
+{ return getModuleMemoryRange(nullptr, startAddress, stopAddress); }
 
 // This function might be cached and hence not thread-safe
 unsigned long getModuleFunction(const char *moduleName, const char *funcName);

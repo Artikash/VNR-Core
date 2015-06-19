@@ -101,8 +101,8 @@ namespace Private {
 bool attach()
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return 0;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
 
   const BYTE bytes[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
@@ -227,7 +227,7 @@ bool ElfEngine::attach()
 {
   ulong startAddress,
         stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
   int stackSize;
   ulong addr = ::searchElf(startAddress, stopAddress, &stackSize);

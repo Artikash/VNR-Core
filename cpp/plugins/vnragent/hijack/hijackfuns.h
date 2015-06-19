@@ -12,6 +12,9 @@ namespace Hijack {
   extern _fun##_fun_t old##_fun; \
   _return WINAPI new##_fun(__VA_ARGS__);
 
+  DEF_FUN(MultiByteToWideChar, int, UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
+  DEF_FUN(WideCharToMultiByte, int, UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
+
   DEF_FUN(CreateFontIndirectA, HFONT, const LOGFONTA *lplf)
   DEF_FUN(CreateFontIndirectW, HFONT, const LOGFONTW *lplf)
 
@@ -43,7 +46,6 @@ namespace Hijack {
   //DEF_FUN(CharNextW, LPWSTR, LPCWSTR lpString)
   //DEF_FUN(CharNextExA, LPSTR, WORD COdePage, LPCSTR lpString, DWORD dwFlags)
   //DEF_FUN(CharNextExW, LPWSTR, WORD COdePage, LPCWSTR lpString, DWORD dwFlags)
-
 #undef DEF_FUN
 
 // Global variables

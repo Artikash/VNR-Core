@@ -3,6 +3,7 @@
 
 #include "engine/pchooks.h"
 #include "hook.h"
+//#include <gdiplus.h>
 
 #define DEBUG "vnrcli"
 #define DPRINT(cstr) ConsoleOutput(DEBUG ":" __FUNCTION__ ":" cstr) // defined in vnrcli
@@ -14,10 +15,10 @@
 // http://bytes.com/topic/c/answers/135834-defining-wide-character-strings-macros
 #define LPASTE(s) L##s
 #define L(s) LPASTE(s)
-#define NEW_HOOK(_fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
+#define NEW_HOOK_AT(_addr, _fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
   { \
     HookParam hp = {}; \
-    hp.address = (DWORD)_fun; \
+    hp.address = _addr; \
     hp.offset = _data; \
     hp.index = _data_ind; \
     hp.split = _split_off; \
@@ -25,6 +26,16 @@
     hp.type = _type; \
     hp.length_offset = _len_off; \
     NewHook(hp, L(#_fun)); \
+  }
+
+// Static hook
+#define NEW_HOOK(_fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
+  NEW_HOOK_AT((DWORD)_fun, _fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
+
+#define NEW_MODULE_HOOK(_module, _fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
+  { \
+    if (DWORD addr = (DWORD)::GetProcAddress(_module, #_fun)) \
+      NEW_HOOK_AT(addr, _fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
   }
 
 // jichi 7/17/2014: Renamed from InitDefaultHook
@@ -105,9 +116,38 @@ void PcHooks::hookGDIFunctions()
   NEW_HOOK(DrawTextW,              s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
   NEW_HOOK(DrawTextExW,            s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
 
-  //NEW_HOOK(CharNextA, s_arg1, 0,s_arg1,0, USING_STRING, 0) // 6/11/2015 jichi: LPSTR WINAPI CharNextA(LPCTSTR lpString);
-  //NEW_HOOK(CharNextW, s_arg1, 0,s_arg1,0, USING_UNICODE|USING_STRING, 0)
-//#undef _
+  DPRINT("leave");
+}
+
+// jichi 6/18/2015: GDI+ functions
+void PcHooks::hookGDIPlusFunctions()
+{
+  HMODULE hModule = ::GetModuleHandleA("gdiplus.dll");
+  if (!hModule) {
+    DPRINT("not loaded");
+    return;
+  }
+
+  DPRINT("enter");
+  enum stack {
+    s_retaddr = 0
+    , s_arg1 = 4 * 1 // 0x4
+    , s_arg2 = 4 * 2 // 0x8
+    //, s_arg3 = 4 * 3 // 0xc
+    //, s_arg4 = 4 * 4 // 0x10
+    //, s_arg5 = 4 * 5 // 0x14
+    //, s_arg6 = 4 * 6 // 0x18
+  };
+
+  // gdiplus.dll
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms534053%28v=vs.85%29.aspx
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms534052%28v=vs.85%29.aspx
+  // Use arg1 pionter to GpGraphics as split
+  //using namespace Gdiplus::DllExports;
+  NEW_MODULE_HOOK(hModule, GdipDrawString,              s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipDrawString(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF *layoutRect, GDIPCONST GpStringFormat *stringFormat, GDIPCONST GpBrush *brush);
+  NEW_MODULE_HOOK(hModule, GdipMeasureString,           s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipMeasureString(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF *layoutRect, GDIPCONST GpStringFormat *stringFormat, RectF *boundingBox, INT *codepointsFitted, INT *linesFilled )
+  //NEW_MODULE_HOOK(hModule, GdipMeasureCharacterRanges,  s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipMeasureCharacterRanges(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF &layoutRect, GDIPCONST GpStringFormat *stringFormat, INT regionCount, GpRegion **regions)
+
   DPRINT("leave");
 }
 
