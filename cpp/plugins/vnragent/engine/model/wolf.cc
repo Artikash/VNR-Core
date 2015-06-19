@@ -580,7 +580,7 @@ namespace Private {
 bool attach() // attach other text
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
   ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
   if (!addr)
@@ -614,7 +614,7 @@ bool WolfRPGEngine::attach()
 bool attach() // attach other text
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
   const quint8 bytes[] = {

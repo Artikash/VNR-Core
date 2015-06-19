@@ -55,6 +55,7 @@ embed:
   - ARCGameEngine
   - BGI
   - BGI2
+  - Debonosu    # FIXME: English only
   - Elf
   - SiglusEngine2
   #- SiglusEngine3
@@ -63,7 +64,7 @@ embed:
   - SilkysPlus
   - SystemAoi
   - SystemAoi2
-  - System43+
+  - System43+   # FIXME: English only
   - WolfRPG
   #- AMUSE CRAFT
   #- BGI
@@ -275,6 +276,7 @@ single: # single thread
   # PC
   - AB2Try
   - ARCGameEngine
+  - Debonosu
   - Eushully # renamed
   - FocasLens
   - GXP
@@ -383,6 +385,7 @@ char:
   # Embed
   - EmbedARCGameEngine
   - EmbedBGI
+  - EmbedDebonosu
   - EmbedElf
   - EmbedSilkysPlus
   - EmbedWolfRPG
@@ -603,8 +606,10 @@ focus:
   - BootupLstrW
   - CatSystem2
   - CatSystem3
+  - Debonosu
   - EAGLS
   - EmbedARCGameEngine
+  - EmbedDebonosu
   - EmbedSiglusEngine
   - EmbedSilkysPlus
   - FocasLens

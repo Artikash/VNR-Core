@@ -7422,8 +7422,8 @@ bool IsPensilSetup()
 #endif // if 0
 static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD retn = *(DWORD*)esp_base;
-  if (*(WORD*)retn == 0xc483) // add esp, $  old Debonosu game
+  DWORD retn = *(DWORD *)esp_base;
+  if (*(WORD *)retn == 0xc483) // add esp, $  old Debonosu game
     hp->offset = 4; // text in arg1
   else // new Debonosu game
     hp->offset = -0x8; // text in ecx instead
@@ -7458,7 +7458,8 @@ bool InsertDebonosuHook()
             HookParam hp = {};
             hp.address = hook_addr;
             hp.text_fun = SpecialHookDebonosu;
-            hp.type = USING_STRING;
+            //hp.type = USING_STRING;
+            hp.type = USING_STRING|NO_CONTEXT|FIXING_SPLIT; // there is only one thread
             ConsoleOutput("vnreng: INSERT Debonosu");
             NewHook(hp, L"Debonosu");
             //RegisterEngineType(ENGINE_DEBONOSU);

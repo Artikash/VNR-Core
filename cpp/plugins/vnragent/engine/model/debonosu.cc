@@ -18,22 +18,54 @@ namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
 
+  enum Version {
+    OldVersion, // text in arg1
+    NewVersion  // text in ecx
+  } version_;
+
   bool hookBefore(winhook::hook_stack *s)
   {
-    LPCSTR text;
-    DWORD retn = *(DWORD *)s->stack[0];
-    if (*(WORD *)retn == 0xc483) // add esp, $  old Debonosu game
-      text = (LPCSTR)s->stack[1]; // text in arg1
+    static QByteArray data_;
+    LPCSTR *lpText;
+    if (version_ == OldVersion) // add esp, $  old Debonosu game
+      lpText = (LPCSTR *)s->stack; // text in arg1
     else // new Debonosu game
-      text = (LPCSTR)s->ecx; // text in ecx
+      lpText = (LPCSTR *)&s->ecx; // text in ecx
 
+    auto text = *lpText;
     if (!text || !*text)
       return true;
 
-    enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
-    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    *lpText = data_.constData();
     //::strcpy(text, data.constData());
     return true;
+  }
+
+  // Get the address of the scenario function
+  ulong findFunction(ulong startAddress, ulong stopAddress)
+  {
+    ulong funaddr = NtInspect::getModuleExportFunctionA("kernel32.dll", "lstrcatA");
+    if (!funaddr)
+      return false;
+    funaddr = NtInspect::getProcessImportAddress(funaddr);
+    if (!funaddr)
+      return false;
+
+    DWORD callinst = 0x15ff | (funaddr << 16); // jichi 10/20/2014: far call dword ptr ds
+    funaddr >>= 16;
+    for (DWORD i = startAddress; i < stopAddress - 4; i++)
+      if (*(DWORD *)i == callinst &&
+          *(WORD *)(i + 4) == funaddr && // call dword ptr lstrcatA
+          *(BYTE *)(i - 5) == 0x68) { // push $
+        DWORD push = *(DWORD *)(i - 4); // the global value being pushed
+        for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
+          if (*(BYTE *)j == 0xb8 && *(DWORD *)(j + 1) == push)
+            if (DWORD addr = MemDbg::findEnclosingAlignedFunction(i, 0x200))
+              return addr;
+      }
+    return 0;
   }
 
 } // namespace Private
@@ -133,27 +165,24 @@ namespace Private {
 bool attach()
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong funaddr = NtInspect::getModuleExportFunctionA("user32.dll", "lstrcatA");
-  if (!funaddr)
-    return false;
-  funaddr = NtInspect::getProcessImportAddress(funaddr);
-  if (!funaddr)
-    return false;
-  DWORD callinst = 0x15ff | (funaddr << 16); // jichi 10/20/2014: far call dword ptr ds
-  funaddr >>= 16;
-  for (DWORD i = startAddress; i < stopAddress - 4; i++)
-    if (*(DWORD *)i == callinst &&
-        *(WORD *)(i + 4) == funaddr && // call dword ptr lstrcatA
-        *(BYTE *)(i - 5) == 0x68) { // push $
-      DWORD push = *(DWORD *)(i - 4); // the global value being pushed
-      for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
-        if (*(BYTE *)j == 0xb8 && *(DWORD *)(j + 1) == push)
-          if (DWORD addr = MemDbg::findEnclosingAlignedFunction(i, 0x200))
-            return winhook::hook_before(addr, Private::hookBefore);
+  ulong addr = Private::findFunction(startAddress, stopAddress);
+  if (!addr)
+    return addr;
+
+  int count = 0;
+  auto fun = [&count](ulong addr) -> bool {
+    if (winhook::hook_before(addr, Private::hookBefore)) {
+      // 0xc483 = add esp, $  old Debonosu game
+      Private::version_ = *(WORD *)(addr + 4) == 0xc483 ? Private::OldVersion : Private::NewVersion;
+      count++;
     }
-  return false;
+    return true; // replace all functions
+  };
+  MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
+  DOUT("call number =" << count);
+  return count;
 }
 
 } // namespace ScenarioHook
@@ -163,7 +192,7 @@ bool DebonosuEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
-  //HijackManager::instance()->attachFunction((ulong)::TextOutA);
+  HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
   return true;
 }
 

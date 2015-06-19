@@ -154,7 +154,7 @@ QString Engine::getNormalizedProcessName()
 //  return Engine::getMemoryRange(ws.c_str(), startAddress, stopAddress);
 //}
 
-bool Engine::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress)
+bool Engine::getModuleMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress)
 {
   static std::unordered_map<const wchar_t *, std::pair<DWORD, DWORD> > cache;
   auto p = cache.find(moduleName);

@@ -16,7 +16,7 @@
   #vnrlocale: true # TODO: need a better name
 
 - name: EmbedDebonosu # 6/18/2015 jichi
-  exist: BGI.*
+  exist:
     - bmp.pak
     - dsetup.dll
   #encoding: sjis

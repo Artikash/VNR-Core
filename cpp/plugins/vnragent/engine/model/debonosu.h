@@ -13,7 +13,7 @@ public:
   DebonosuEngine()
   {
     name = "EmbedDebonosu";
-    //dynamicEncoding = true;
+    dynamicEncoding = true;
     matchFiles << "bmp.pak" << "dsetup.dll";
     attachFunction = &Self::attach;
   }

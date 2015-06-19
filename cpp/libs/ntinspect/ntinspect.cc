@@ -106,7 +106,7 @@ BOOL getProcessMemoryRange(DWORD *lowerBound, DWORD *upperBound)
 /** Module header */
 
 // See: ITH AddAllModules
-bool iterModule(iter_module_fun_t fun)
+bool iterModule(const iter_module_fun_t &fun)
 {
   // Iterate loaded modules
   PPEB ppeb;
@@ -118,7 +118,7 @@ bool iterModule(iter_module_fun_t fun)
   for (auto it = (PLDR_DATA_TABLE_ENTRY)start;
       it->SizeOfImage && *(DWORD *)it != start;
       it = (PLDR_DATA_TABLE_ENTRY)it->InLoadOrderModuleList.Flink)
-    if (!fun((HMODULE)it->DllBase, it->BaseDllName.Buffer, it->SizeOfImage))
+    if (!fun((HMODULE)it->DllBase, it->BaseDllName.Buffer))
       return false;
   return true;
 }
@@ -164,7 +164,7 @@ DWORD getModuleExportFunction(HMODULE hModule, LPCSTR funcName)
       dwExportAddr = startAddress + ExtDir->AddressOfNames;
       for (UINT uj = 0; uj < ExtDir->NumberOfNames; uj++) {
         DWORD dwFuncName = *(DWORD *)dwExportAddr;
-        char *pcFuncName = (char *)(startAddress + dwFuncName);
+        LPCSTR pcFuncName = (LPCSTR)(startAddress + dwFuncName);
         if (::strcmp(funcName, pcFuncName) == 0) {
           char *pcFuncPtr = (char *)(startAddress + (DWORD)ExtDir->AddressOfNameOrdinals+(uj * sizeof(WORD)));
           WORD word = *(WORD *)pcFuncPtr;

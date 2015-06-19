@@ -82,7 +82,7 @@ bool RejetEngine::attach()
 {
   DWORD startAddress,
         stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
   //enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
   //DWORD addr = MemDbg::findCallerAddress((DWORD)::TextOutA, sub_esp, startAddress, stopAddress);

@@ -55,7 +55,7 @@ namespace Private {
 bool attach(bool hijackGDI) // attach scenario
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
   ulong lastCaller = 0,
         lastCall = 0;
@@ -150,7 +150,7 @@ namespace Private {
 bool attach(bool hijackGDI) // attach scenario
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
   ulong thisCaller = 0,
         thisCall = 0,
@@ -269,7 +269,7 @@ namespace Private {
 bool removePopups()
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
   // hexstr: データが壊れています．

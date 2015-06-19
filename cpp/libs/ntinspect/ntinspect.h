@@ -35,12 +35,12 @@ BOOL getModuleMemoryRange(_In_ LPCWSTR moduleName, _Out_ DWORD *lowerBound, _Out
 ///  Get memory of the current process module
 BOOL getProcessMemoryRange(_Out_ DWORD *lowerBound, _Out_ DWORD *upperBound);
 
-#ifndef MEMDBG_NO_STL
+#ifndef NTINSPECT_NO_STL
 ///  Iterate module information and return false if abort iteration.
-typedef std::function<bool (HMODULE hModule, LPCWSTR moduleName, size_t moduleSize)> iter_module_fun_t;
+typedef std::function<bool (HMODULE hModule, LPCWSTR moduleName)> iter_module_fun_t;
 #else
-typedef bool (* iter_module_fun_t)(HMODULE hModule, LPCWSTR moduleName, size_t moduleSize);
-#endif // MEMDBG_NO_STL
+typedef bool (* iter_module_fun_t)(HMODULE hModule, LPCWSTR moduleName);
+#endif // NTINSPECT_NO_STL
 
 /**
  *  Iterate all modules

@@ -41,7 +41,7 @@ bool getMemoryRange(ulong *startAddress, ulong *stopAddress)
   if (module.isEmpty())
     return false;
   DOUT("dll =" << module);
-  return Engine::getMemoryRange((LPCWSTR)module.utf16(), startAddress, stopAddress);
+  return Engine::getModuleMemoryRange((LPCWSTR)module.utf16(), startAddress, stopAddress);
 }
 
 namespace ScenarioHook {

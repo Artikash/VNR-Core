@@ -144,7 +144,7 @@ namespace Private {
 bool attach()
 {
   ulong startAddress, stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
   const BYTE bytes[] = {

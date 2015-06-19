@@ -142,7 +142,7 @@ bool NeXASEngine::attach()
 {
   ulong startAddress,
         stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
   //ulong addr = ::searchNeXAS(startAddress, stopAddress, &stackSize);

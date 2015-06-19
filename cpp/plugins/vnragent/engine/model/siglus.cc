@@ -181,7 +181,7 @@ namespace Private {
   ulong search(Type *type)
   {
     ulong startAddress, stopAddress;
-    if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
       return false;
 
     ulong addr;
@@ -296,7 +296,7 @@ namespace Private {
   {
     ulong startAddress,
           stopAddress;
-    if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
       return false;
     const BYTE bytes[] = {
       0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7

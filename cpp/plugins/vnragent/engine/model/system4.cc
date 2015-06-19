@@ -29,8 +29,8 @@ bool getMemoryRange(ulong *startAddress, ulong *stopAddress)
   //bool patched = IthCheckFile(L"AliceRunPatch.dll");
   bool patched = ::GetModuleHandleA("AliceRunPatch.dll");
   return patched ?
-      Engine::getMemoryRange(L"AliceRunPatch.dll", startAddress, stopAddress) :
-      Engine::getCurrentMemoryRange(startAddress, stopAddress);
+      Engine::getModuleMemoryRange(L"AliceRunPatch.dll", startAddress, stopAddress) :
+      Engine::getProcessMemoryRange(startAddress, stopAddress);
 }
 
 ulong searchScenarioAddress(ulong startAddress, ulong stopAddress)
