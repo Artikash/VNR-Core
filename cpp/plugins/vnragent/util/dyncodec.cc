@@ -38,8 +38,6 @@ QByteArray DynamicCodec::encode(const QString &text, bool *dynamic) const
 QString DynamicCodec::decode(const QByteArray &data, bool *dynamic) const
 { return d_->codec->decode(data, dynamic); }
 
-#include <QDebug>
-
 uint DynamicCodec::decodeChar(uint ch, bool *dynamic) const
 {
   if (dynamic)
