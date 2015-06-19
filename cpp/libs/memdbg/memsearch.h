@@ -41,10 +41,12 @@ bool iterFarCallAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowe
 bool iterNearCallAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
 bool iterLongJumpAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
 bool iterShortJumpAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
+
+bool iterAlignedNearCallerAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 #endif // MEMDBG_NO_STL
 
 /**
- *  Return the absolute address of the caller function
+ *  Return the absolute address of the far caller function
  *  The same as ITH FindCallAndEntryAbs().
  *
  *  @param  funcAddr  callee function address
@@ -65,6 +67,9 @@ dword_t findLastCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerB
 dword_t findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 
 dword_t findMultiCallerAddress(dword_t funcAddr, const dword_t funcInsts[], dword_t funcInstCount, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+
+dword_t findAlignedNearCallerAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+dword_t findLastAlignedNearCallerAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
 
 /**
  *  Return the absolute address of the long jump (not short jump) instruction address.

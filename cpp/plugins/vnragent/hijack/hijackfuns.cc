@@ -307,13 +307,15 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
 {
-  DOUT("pass");
+  //DOUT("pass");
   if (auto p = DynamicCodec::instance())
-    if ((CodePage == 0 || CodePage == 932) && cchWideChar > 0 && cbMultiByte > 1) {
+    // CP_ACP(0), CP_MACCP(1), CP_OEMCP(2), CP_THREAD_ACP(3)
+    if ((CodePage <= 3 || CodePage == 932) && cchWideChar > 0 && cbMultiByte > 1) {
       bool dynamic;
       QByteArray data(lpMultiByteStr, cbMultiByte);
       QString text = p->decode(data, &dynamic);
       if (dynamic && !text.isEmpty()) {
+        DOUT("pass");
         int size = min(text.size() + 1, cchWideChar);
         ::memcpy(lpWideCharStr, text.utf16(), size * 2);
         //lpWideCharStr[size - 1] = 0; // enforce trailing zero
@@ -325,13 +327,14 @@ int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR l
 
 int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
 {
-  DOUT("pass");
+  //DOUT("pass");
   if (auto p = DynamicCodec::instance())
-    if ((CodePage == 0 || CodePage == 932) && cchWideChar > 0 && cbMultiByte >= 0) {
+    if ((CodePage <= 3 || CodePage == 932) && cchWideChar > 0 && cbMultiByte >= 0) {
       bool dynamic;
       QString text = QString::fromWCharArray(lpWideCharStr, cchWideChar);
       QByteArray data = p->encode(text, &dynamic);
       if (dynamic && !data.isEmpty()) {
+        DOUT("pass");
         int size = data.size() + 1;
         if (cbMultiByte && cbMultiByte < size)
           size = cbMultiByte;
