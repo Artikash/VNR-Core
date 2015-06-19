@@ -55,6 +55,8 @@ HijackManagerPrivate::HijackManagerPrivate()
   //ADD_FUN(CharNextW)
   //ADD_FUN(CharNextExA)
   //ADD_FUN(CharNextExW)
+  ADD_FUN(MultiByteToWideChar)
+  ADD_FUN(WideCharToMultiByte)
 #undef ADD_FUN
 }
 

@@ -199,7 +199,9 @@ bool DebonosuEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
-  HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
+  //HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
+  //HijackManager::instance()->attachFunction((ulong)::CharNextA);
+  HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
   return true;
 }
 
