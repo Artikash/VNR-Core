@@ -19,8 +19,8 @@ namespace ScenarioHook {
 namespace Private {
 
   enum Version {
-    OldVersion, // text in arg1
-    NewVersion  // text in ecx
+    NewVersion, // text in ecx
+    OldVersion  // text in arg1
   } version_;
 
   bool hookBefore(winhook::hook_stack *s)
@@ -28,7 +28,7 @@ namespace Private {
     static QByteArray data_;
     LPCSTR *lpText;
     if (version_ == OldVersion) // add esp, $  old Debonosu game
-      lpText = (LPCSTR *)s->stack; // text in arg1
+      lpText = (LPCSTR *)&s->stack[1]; // text in arg1
     else // new Debonosu game
       lpText = (LPCSTR *)&s->ecx; // text in ecx
 
@@ -169,20 +169,27 @@ bool attach()
     return false;
   ulong addr = Private::findFunction(startAddress, stopAddress);
   if (!addr)
-    return addr;
+    return false;
 
-  int count = 0;
-  auto fun = [&count](ulong addr) -> bool {
-    if (winhook::hook_before(addr, Private::hookBefore)) {
-      // 0xc483 = add esp, $  old Debonosu game
-      Private::version_ = *(WORD *)(addr + 4) == 0xc483 ? Private::OldVersion : Private::NewVersion;
-      count++;
-    }
-    return true; // replace all functions
-  };
-  MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
-  DOUT("call number =" << count);
-  return count;
+  ulong call = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
+  if (!call)
+    return false;
+  Private::version_ = *(WORD *)(call + 4) == 0xc483 ? Private::OldVersion : Private::NewVersion;
+
+  return winhook::hook_before(addr, Private::hookBefore);
+
+  //int count = 0;
+  //auto fun = [&count](ulong addr) -> bool {
+  //  if (winhook::hook_before(addr, Private::hookBefore)) {
+  //    // 0xc483 = add esp, $  old Debonosu game
+  //    Private::version_ = *(WORD *)(addr + 4) == 0xc483 ? Private::OldVersion : Private::NewVersion;
+  //    count++;
+  //  }
+  //  return true; // replace all functions
+  //};
+  //MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
+  //DOUT("call number =" << count);
+  //return count;
 }
 
 } // namespace ScenarioHook
