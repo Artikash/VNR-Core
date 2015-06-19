@@ -314,10 +314,10 @@ int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR l
       QByteArray data(lpMultiByteStr, cbMultiByte);
       QString text = p->decode(data, &dynamic);
       if (dynamic && !text.isEmpty()) {
-        int ret = 2 * min(text.size() + 1, cchWideChar);
-        ::memcpy(lpWideCharStr, text.utf16(), ret);
-        lpWideCharStr[ret / 2 - 1] = 0; // enforce trailing zero
-        return ret;
+        int size = min(text.size() + 1, cchWideChar);
+        ::memcpy(lpWideCharStr, text.utf16(), size * 2);
+        lpWideCharStr[size - 1] = 0; // enforce trailing zero
+        return size * 2;
       }
     }
   return oldMultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
@@ -332,12 +332,12 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
       QString text = QString::fromWCharArray(lpWideCharStr, cchWideChar);
       QByteArray data = p->encode(text, &dynamic);
       if (dynamic && !data.isEmpty()) {
-        int ret = data.size() + 1;
-        if (cbMultiByte && cbMultiByte < ret)
-          ret = cbMultiByte;
-        ::memcpy(lpMultiByteStr, data.constData(), ret);
-        lpMultiByteStr[ret - 1] = 0; // enforce trailing zero
-        return ret;
+        int size = data.size() + 1;
+        if (cbMultiByte && cbMultiByte < size)
+          size = cbMultiByte;
+        ::memcpy(lpMultiByteStr, data.constData(), size);
+        lpMultiByteStr[size - 1] = 0; // enforce trailing zero
+        return size;
       }
     }
   return oldWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
