@@ -316,8 +316,8 @@ int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR l
       if (dynamic && !text.isEmpty()) {
         int size = min(text.size() + 1, cchWideChar);
         ::memcpy(lpWideCharStr, text.utf16(), size * 2);
-        lpWideCharStr[size - 1] = 0; // enforce trailing zero
-        return size * 2;
+        //lpWideCharStr[size - 1] = 0; // enforce trailing zero
+        return size - 1;
       }
     }
   return oldMultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
@@ -336,8 +336,8 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
         if (cbMultiByte && cbMultiByte < size)
           size = cbMultiByte;
         ::memcpy(lpMultiByteStr, data.constData(), size);
-        lpMultiByteStr[size - 1] = 0; // enforce trailing zero
-        return size;
+        //lpMultiByteStr[size - 1] = 0; // enforce trailing zero
+        return size - 1;
       }
     }
   return oldWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
