@@ -14,7 +14,7 @@ public:
   SilkysEngine()
   {
     name = "EmbedSilkysPlus";
-    dynamicEncoding = true;
+    enableDynamicEncoding = true;
     matchFiles << "data.arc" << "effect.arc" << "Script.arc";
     attachFunction = &Self::attach;
   }

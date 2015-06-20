@@ -19,8 +19,11 @@ public:
   EngineModel()
     : name(nullptr)
     , encoding(AsciiEncoding)   // scenario thread encoding
-    , dynamicEncoding(false)    // whether use dynamic codec to fix ascii text
-    , enforceGDIFont(false)     // force changing GDI device context font
+
+    , enableDynamicEncoding(false) // whether use dynamic codec to fix ascii text
+    , enableLocaleEmulation(false) // fix inconsistent game locale
+    , enableGDIFont(false)      // change GDI device context font
+
     , matchFunction(nullptr)    // determine whether apply engine
     , attachFunction(nullptr)   // apply the engine
     , detachFunction(nullptr)   // remove the applied engine
@@ -30,8 +33,9 @@ public:
 
   const char *name;
   Encoding encoding;
-  bool dynamicEncoding;
-  bool enforceGDIFont;
+  bool enableDynamicEncoding;
+  bool enableLocaleEmulation;
+  bool enableGDIFont;
 
   QStringList matchFiles; // files existing in the game directory
 

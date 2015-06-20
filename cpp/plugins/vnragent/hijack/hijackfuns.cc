@@ -308,6 +308,10 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
 {
   //DOUT("pass");
+  if (auto p = HijackHelper::instance())
+    if (p->settings()->localeEmulationEnabled)
+      if (CodePage == CP_THREAD_ACP || CodePage == CP_OEMCP)
+        CodePage = CP_ACP;
   if (auto p = DynamicCodec::instance())
     // CP_ACP(0), CP_MACCP(1), CP_OEMCP(2), CP_THREAD_ACP(3)
     if ((CodePage <= 3 || CodePage == 932) && cchWideChar > 0 && cbMultiByte > 1) {
@@ -328,6 +332,10 @@ int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR l
 int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
 {
   //DOUT("pass");
+  if (auto p = HijackHelper::instance())
+    if (p->settings()->localeEmulationEnabled)
+      if (CodePage == CP_THREAD_ACP || CodePage == CP_OEMCP)
+        CodePage = CP_ACP;
   if (auto p = DynamicCodec::instance())
     if ((CodePage <= 3 || CodePage == 932) && cchWideChar > 0 && cbMultiByte >= 0) {
       bool dynamic;

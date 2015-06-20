@@ -14,8 +14,8 @@ public:
   WolfRPGEngine()
   {
     name = "EmbedWolfRPG";
-    dynamicEncoding = true;
-    enforceGDIFont = true;
+    enableDynamicEncoding = true;
+    enableGDIFont = true;
     matchFiles << "data.wolf|data/*.wolf";
     attachFunction = &Self::attach;
     //textFilterFunction = &Self::textFilter;

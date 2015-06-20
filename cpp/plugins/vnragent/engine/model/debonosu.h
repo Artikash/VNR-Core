@@ -14,7 +14,8 @@ public:
   DebonosuEngine()
   {
     name = "EmbedDebonosu";
-    dynamicEncoding = true;
+    enableDynamicEncoding = true;
+    enableLocaleEmulation = true; // fix thread codepage in MultiByteToWideChar
     matchFiles << "bmp.pak" << "dsetup.dll";
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
