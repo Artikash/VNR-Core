@@ -9,6 +9,7 @@ class DebonosuEngine : public EngineModel
 {
   SK_EXTEND_CLASS(DebonosuEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
 public:
   DebonosuEngine()
   {
@@ -16,6 +17,7 @@ public:
     dynamicEncoding = true;
     matchFiles << "bmp.pak" << "dsetup.dll";
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
   }
 };
 

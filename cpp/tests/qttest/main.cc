@@ -14,10 +14,10 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 
 int main()
 {
-  QRegExp rx_("\\\\[0-9A-Z.\\[\\]]+");
-
-  QString t = "hello\\C[0] 123";
-  t.remove(rx_);
+  QRegExp rx("\\{(.+)/.+\\}", Qt::CaseSensitive);
+  rx.setMinimal(true);
+  QString t = "123{123/456}awe}";
+  t.replace(rx, "\\1");
   qDebug() << t;
   return 0;
 }
