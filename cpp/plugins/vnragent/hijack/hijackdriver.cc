@@ -46,6 +46,12 @@ void HijackDriver::setDeviceContextFontEnabled(bool t)
   DOUT(t);
 }
 
+void HijackDriver::setLocaleEmulationEnabled(bool t)
+{
+  d_->helper->settings()->localeEmulationEnabled = t;
+  DOUT(t);
+}
+
 void HijackDriver::setEncoding(const QString &v)
 {
   d_->helper->setEncoding(v);

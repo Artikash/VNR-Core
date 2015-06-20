@@ -28,6 +28,7 @@ public slots:
   void setFontCharSetEnabled(bool t);
 
   void setDeviceContextFontEnabled(bool t);
+  void setLocaleEmulationEnabled(bool t);
 
 private slots:
   void refresh();

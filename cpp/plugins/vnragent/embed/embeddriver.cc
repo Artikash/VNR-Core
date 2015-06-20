@@ -41,7 +41,8 @@ EmbedDriver::~EmbedDriver()
 
 // - Properties -
 
-bool EmbedDriver::isDeviceContextFontEnabled() const { return  d_->engine && d_->engine->model()->enforceGDIFont; }
+bool EmbedDriver::isDeviceContextFontEnabled() const { return  d_->engine && d_->engine->model()->enableGDIFont; }
+bool EmbedDriver::isLocaleEmulationEnabled() const { return  d_->engine && d_->engine->model()->enableLocaleEmulation; }
 
 void EmbedDriver::setTranslationWaitTime(int v)  { d_->manager->setTranslationWaitTime(v); }
 

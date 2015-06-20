@@ -20,6 +20,7 @@ public:
   ~EmbedDriver();
 
   bool isDeviceContextFontEnabled() const;
+  bool isLocaleEmulationEnabled() const;
 
 signals:
   void textReceived(QString text, qint64 hash, long signature, int role, bool needsTranslation);

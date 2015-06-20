@@ -77,8 +77,10 @@ void MainDriverPrivate::createHijackDriver()
   connect(settings, SIGNAL(embeddedFontScaleChanged(float)), hijack, SLOT(setFontScale(float)));
   connect(settings, SIGNAL(embeddedFontWeightChanged(int)), hijack, SLOT(setFontWeight(int)));
 
-  if (eng)
+  if (eng) {
     hijack->setDeviceContextFontEnabled(eng->isDeviceContextFontEnabled());
+    hijack->setLocaleEmulationEnabled(eng->isLocaleEmulationEnabled());
+  }
 }
 
 void MainDriverPrivate::createWindowDriver()

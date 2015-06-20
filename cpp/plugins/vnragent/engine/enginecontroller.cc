@@ -110,7 +110,7 @@ private:
     //systemEncoding = ENC_KSC;
     encoder = Util::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
 
-    if (model->dynamicEncoding && dynamicEncodingEnabled)
+    if (model->enableDynamicEncoding && dynamicEncodingEnabled)
       dynamicCodec = new DynamicCodec;
 
     DOUT("encoding =" << engineEncoding  << ", system =" << systemEncoding);
@@ -236,7 +236,7 @@ void EngineController::setDynamicEncodingEnabled(bool t)
 {
   if (d_->dynamicEncodingEnabled != t) {
     d_->dynamicEncodingEnabled = t;
-    if (t && !d_->dynamicCodec && d_->finalized && d_->model->dynamicEncoding)
+    if (t && !d_->dynamicCodec && d_->finalized && d_->model->enableDynamicEncoding)
       d_->dynamicCodec = new DynamicCodec;
   }
 }
