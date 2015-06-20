@@ -275,8 +275,12 @@ namespace Private {
  *  00436C8B   CC               INT3
  *  00436C8C   CC               INT3
  */
-bool attach(ulong startAddress, ulong stopAddress)
+bool attach()
 {
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+
   ulong addr = Private::findFunction(startAddress, stopAddress);
   if (!addr)
     return false;
@@ -311,6 +315,416 @@ bool isOldVersion() // old Debonosu games
 
 } // namespace ScenarioHook
 
+} // unnamed namespace
+
+
+/**
+ *  Sample game: 神楽花莚譚
+ *
+ *  Here's the function using MultiByteToWideChar to decode sjis characters:
+ *
+ *  Pattern: f7 f9 33 d2 6a 04 8d 34 dd 00 00 00 00 0f 57 c0
+ *
+ *  0015ED1E   CC               INT3
+ *  0015ED1F   CC               INT3
+ *  0015ED20   55               PUSH EBP	; jichi: text in both arg1 and [arg2] in sjis encoding
+ *  0015ED21   8BEC             MOV EBP,ESP
+ *  0015ED23   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  0015ED29   6A FF            PUSH -0x1
+ *  0015ED2B   68 5EF12900      PUSH .0029F15E
+ *  0015ED30   50               PUSH EAX
+ *  0015ED31   64:8925 00000000 MOV DWORD PTR FS:[0],ESP
+ *  0015ED38   81EC A4000000    SUB ESP,0xA4
+ *  0015ED3E   33D2             XOR EDX,EDX
+ *  0015ED40   53               PUSH EBX
+ *  0015ED41   56               PUSH ESI
+ *  0015ED42   57               PUSH EDI
+ *  0015ED43   8BF9             MOV EDI,ECX
+ *  0015ED45   33DB             XOR EBX,EBX
+ *  0015ED47   BE FF7F0000      MOV ESI,0x7FFF
+ *  0015ED4C   3957 6C          CMP DWORD PTR DS:[EDI+0x6C],EDX
+ *  0015ED4F   76 1E            JBE SHORT .0015ED6F
+ *  0015ED51   33C9             XOR ECX,ECX
+ *  0015ED53   8B77 70          MOV ESI,DWORD PTR DS:[EDI+0x70]
+ *  0015ED56   8B0431           MOV EAX,DWORD PTR DS:[ECX+ESI]
+ *  0015ED59   85C0             TEST EAX,EAX
+ *  0015ED5B   74 04            JE SHORT .0015ED61
+ *  0015ED5D   48               DEC EAX
+ *  0015ED5E   890431           MOV DWORD PTR DS:[ECX+ESI],EAX
+ *  0015ED61   42               INC EDX
+ *  0015ED62   83C1 1C          ADD ECX,0x1C
+ *  0015ED65   3B57 6C          CMP EDX,DWORD PTR DS:[EDI+0x6C]
+ *  0015ED68  ^72 E9            JB SHORT .0015ED53
+ *  0015ED6A   BE FF7F0000      MOV ESI,0x7FFF
+ *  0015ED6F   33C0             XOR EAX,EAX
+ *  0015ED71   3947 6C          CMP DWORD PTR DS:[EDI+0x6C],EAX
+ *  0015ED74   76 25            JBE SHORT .0015ED9B
+ *  0015ED76   8B57 70          MOV EDX,DWORD PTR DS:[EDI+0x70]
+ *  0015ED79   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  0015ED80   8B0A             MOV ECX,DWORD PTR DS:[EDX]
+ *  0015ED82   85C9             TEST ECX,ECX
+ *  0015ED84   74 13            JE SHORT .0015ED99
+ *  0015ED86   3BCE             CMP ECX,ESI
+ *  0015ED88   73 04            JNB SHORT .0015ED8E
+ *  0015ED8A   8BD8             MOV EBX,EAX
+ *  0015ED8C   8BF1             MOV ESI,ECX
+ *  0015ED8E   40               INC EAX
+ *  0015ED8F   83C2 1C          ADD EDX,0x1C
+ *  0015ED92   3B47 6C          CMP EAX,DWORD PTR DS:[EDI+0x6C]
+ *  0015ED95  ^72 E9            JB SHORT .0015ED80
+ *  0015ED97   EB 02            JMP SHORT .0015ED9B
+ *  0015ED99   8BD8             MOV EBX,EAX
+ *  0015ED9B   8B47 70          MOV EAX,DWORD PTR DS:[EDI+0x70]
+ *  0015ED9E   8B4F 64          MOV ECX,DWORD PTR DS:[EDI+0x64]
+ *  0015EDA1   8945 E4          MOV DWORD PTR SS:[EBP-0x1C],EAX
+ *  0015EDA4   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  0015EDA7   894D D0          MOV DWORD PTR SS:[EBP-0x30],ECX
+ *  0015EDAA   8B40 28          MOV EAX,DWORD PTR DS:[EAX+0x28]
+ *  0015EDAD   99               CDQ
+ *  0015EDAE   F7F9             IDIV ECX
+ *  0015EDB0   33D2             XOR EDX,EDX
+ *  0015EDB2   6A 04            PUSH 0x4
+ *  0015EDB4   8D34DD 00000000  LEA ESI,DWORD PTR DS:[EBX*8]
+ *  0015EDBB   0F57C0           XORPS XMM0,XMM0
+ *  0015EDBE   2BF3             SUB ESI,EBX
+ *  0015EDC0   8975 8C          MOV DWORD PTR SS:[EBP-0x74],ESI
+ *  0015EDC3   66:0FD6          ???                                               ; Unknown command
+ *  0015EDC6   45               INC EBP
+ *  0015EDC7   AC               LODS BYTE PTR DS:[ESI]
+ *  0015EDC8   8BC8             MOV ECX,EAX
+ *  0015EDCA   8BC3             MOV EAX,EBX
+ *  0015EDCC   F7F1             DIV ECX
+ *  0015EDCE   8B4D D0          MOV ECX,DWORD PTR SS:[EBP-0x30]
+ *  0015EDD1   0FAFCA           IMUL ECX,EDX
+ *  0015EDD4   894D D0          MOV DWORD PTR SS:[EBP-0x30],ECX
+ *  0015EDD7   8B4F 68          MOV ECX,DWORD PTR DS:[EDI+0x68]
+ *  0015EDDA   0FAFC8           IMUL ECX,EAX
+ *  0015EDDD   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]
+ *  0015EDE0   50               PUSH EAX
+ *  0015EDE1   6A 02            PUSH 0x2
+ *  0015EDE3   8D45 08          LEA EAX,DWORD PTR SS:[EBP+0x8]
+ *  0015EDE6   50               PUSH EAX
+ *  0015EDE7   6A 01            PUSH 0x1
+ *  0015EDE9   6A 03            PUSH 0x3
+ *  0015EDEB   898D 7CFFFFFF    MOV DWORD PTR SS:[EBP-0x84],ECX
+ *  0015EDF1   FF15 68A22A00    CALL DWORD PTR DS:[0x2AA268]                      ; kernel32.MultiByteToWideChar
+ *  0015EDF7   8D57 08          LEA EDX,DWORD PTR DS:[EDI+0x8]
+ *  0015EDFA   8D4D 80          LEA ECX,DWORD PTR SS:[EBP-0x80]
+ *  0015EDFD   E8 5EFCFFFF      CALL .0015EA60
+ *  0015EE02   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  0015EE09   FF77 68          PUSH DWORD PTR DS:[EDI+0x68]
+ *  0015EE0C   8B57 64          MOV EDX,DWORD PTR DS:[EDI+0x64]
+ *  0015EE0F   8D4D A4          LEA ECX,DWORD PTR SS:[EBP-0x5C]
+ *  0015EE12   E8 B9FDFFFF      CALL .0015EBD0
+ *  0015EE17   83C4 04          ADD ESP,0x4
+ *  0015EE1A   8B45 A4          MOV EAX,DWORD PTR SS:[EBP-0x5C]
+ *  0015EE1D   33C9             XOR ECX,ECX
+ *  0015EE1F   894D EC          MOV DWORD PTR SS:[EBP-0x14],ECX
+ *  0015EE22   85C0             TEST EAX,EAX
+ *  0015EE24   74 12            JE SHORT .0015EE38
+ *  0015EE26   8D4D EC          LEA ECX,DWORD PTR SS:[EBP-0x14]
+ *  0015EE29   51               PUSH ECX
+ *  0015EE2A   FF70 04          PUSH DWORD PTR DS:[EAX+0x4]
+ *  0015EE2D   FF15 C0A72A00    CALL DWORD PTR DS:[0x2AA7C0]                      ; GdiPlus.GdipGetImageGraphicsContext
+ *  0015EE33   8B4D EC          MOV ECX,DWORD PTR SS:[EBP-0x14]
+ *  0015EE36   EB 06            JMP SHORT .0015EE3E
+ *  0015EE38   8B85 78FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0x88]
+ *  0015EE3E   8945 E8          MOV DWORD PTR SS:[EBP-0x18],EAX
+ *  0015EE41   898D 74FFFFFF    MOV DWORD PTR SS:[EBP-0x8C],ECX
+ *  0015EE47   FF77 58          PUSH DWORD PTR DS:[EDI+0x58]
+ *  0015EE4A   51               PUSH ECX
+ *  0015EE4B   FF15 CCA72A00    CALL DWORD PTR DS:[0x2AA7CC]                      ; GdiPlus.GdipSetTextRenderingHint
+ *  0015EE51   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  0015EE54   85C0             TEST EAX,EAX
+ *  0015EE56   6A 02            PUSH 0x2
+ *  0015EE58   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
+ *  0015EE5B   0F45C8           CMOVNE ECX,EAX
+ *  0015EE5E   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
+ *  0015EE61   FF15 D0A72A00    CALL DWORD PTR DS:[0x2AA7D0]                      ; GdiPlus.GdipSetPageUnit
+ *  0015EE67   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  0015EE6A   85C0             TEST EAX,EAX
+ *  0015EE6C   0F45C8           CMOVNE ECX,EAX
+ *  0015EE6F   51               PUSH ECX
+ *  0015EE70   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
+ *  0015EE73   C70424 0000803F  MOV DWORD PTR SS:[ESP],0x3F800000
+ *  0015EE7A   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
+ *  0015EE7D   FF15 D4A72A00    CALL DWORD PTR DS:[0x2AA7D4]                      ; GdiPlus.GdipSetPageScale
+ *  0015EE83   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  0015EE86   85C0             TEST EAX,EAX
+ *  0015EE88   0F45C8           CMOVNE ECX,EAX
+ *  0015EE8B   8D45 B8          LEA EAX,DWORD PTR SS:[EBP-0x48]
+ *  0015EE8E   50               PUSH EAX
+ *  0015EE8F   68 00040000      PUSH 0x400
+ *  0015EE94   6A 00            PUSH 0x0
+ *  0015EE96   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
+ *  0015EE99   C745 B8 00000000 MOV DWORD PTR SS:[EBP-0x48],0x0
+ *  0015EEA0   FF15 B0A72A00    CALL DWORD PTR DS:[0x2AA7B0]                      ; GdiPlus.GdipCreateStringFormat
+ *  0015EEA6   8945 BC          MOV DWORD PTR SS:[EBP-0x44],EAX
+ *  0015EEA9   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
+ *  0015EEAC   F7D8             NEG EAX
+ *  0015EEAE   66:0F6EC0        MOVD MM0,EAX
+ *  0015EEB2   0F5B             ???                                               ; Unknown command
+ *  0015EEB4   C08B 45E4F30F 5E ROR BYTE PTR DS:[EBX+0xFF3E445],0x5E              ; Shift constant out of range 1..31
+ *  0015EEBB   05 30D52E00      ADD EAX,.002ED530
+ *  0015EEC0   C745 C0 00000000 MOV DWORD PTR SS:[EBP-0x40],0x0
+ *  0015EEC7   F3:0F1145 B4     MOVSS DWORD PTR SS:[EBP-0x4C],XMM0
+ *  0015EECC   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
+ *  0015EED1   0F5B             ???                                               ; Unknown command
+ *  0015EED3   C0C7 45          ROL BH,0x45                                       ; Shift constant out of range 1..31
+ *  0015EED6   C400             LES EAX,FWORD PTR DS:[EAX]                        ; Modification of segment register
+ *  0015EED8   0000             ADD BYTE PTR DS:[EAX],AL
+ *  0015EEDA   00C7             ADD BH,AL
+ *  0015EEDC   45               INC EBP
+ *  0015EEDD   C8 000000        ENTER 0x0,0x0
+ *  0015EEE1   00C7             ADD BH,AL
+ *  0015EEE3   45               INC EBP
+ *  0015EEE4   CC               INT3
+ *  0015EEE5   0000             ADD BYTE PTR DS:[EAX],AL
+ *  0015EEE7   0000             ADD BYTE PTR DS:[EAX],AL
+ *  0015EEE9   F3:0F1144B0 18   MOVSS DWORD PTR DS:[EAX+ESI*4+0x18],XMM0
+ *  0015EEEF   FF75 AC          PUSH DWORD PTR SS:[EBP-0x54]
+ *  0015EEF2   E8 09450F00      CALL .00253400
+ *  0015EEF7   83C4 04          ADD ESP,0x4
+ *  0015EEFA   85C0             TEST EAX,EAX
+ *  0015EEFC   74 48            JE SHORT .0015EF46
+ *  0015EEFE   8D45 08          LEA EAX,DWORD PTR SS:[EBP+0x8]
+ *  0015EF01   50               PUSH EAX
+ *  0015EF02   FF15 18A42A00    CALL DWORD PTR DS:[0x2AA418]                      ; user32.CharNextA
+ *  0015EF08   8D4D 08          LEA ECX,DWORD PTR SS:[EBP+0x8]
+ *  0015EF0B   2BC1             SUB EAX,ECX
+ *  0015EF0D   83F8 01          CMP EAX,0x1
+ *  0015EF10   8B45 E4          MOV EAX,DWORD PTR SS:[EBP-0x1C]
+ *  0015EF13   75 14            JNZ SHORT .0015EF29
+ *  0015EF15   F3:0F1044B0 18   MOVSS XMM0,DWORD PTR DS:[EAX+ESI*4+0x18]
+ *  0015EF1B   F3:0F5905 CCC32E>MULSS XMM0,DWORD PTR DS:[0x2EC3CC]
+ *  0015EF23   F3:0F1144B0 18   MOVSS DWORD PTR DS:[EAX+ESI*4+0x18],XMM0
+ *  0015EF29   F3:0F1044B0 18   MOVSS XMM0,DWORD PTR DS:[EAX+ESI*4+0x18]
+ *  0015EF2F   F3:0F1145 C8     MOVSS DWORD PTR SS:[EBP-0x38],XMM0
+ *  0015EF34   66:0F6E47 68     MOVD MM0,DWORD PTR DS:[EDI+0x68]
+ *  0015EF39   0F5B             ???                                               ; Unknown command
+ *  0015EF3B   C0F3 0F          SAL BL,0xF
+ *  0015EF3E   1145 CC          ADC DWORD PTR SS:[EBP-0x34],EAX
+ *  0015EF41   E9 B7000000      JMP .0015EFFD
+ *  0015EF46   8B45 80          MOV EAX,DWORD PTR SS:[EBP-0x80]	; jichi: text might be rendered here?
+ *  0015EF49   C745 D4 00000000 MOV DWORD PTR SS:[EBP-0x2C],0x0
+ *  0015EF50   C745 D8 00000000 MOV DWORD PTR SS:[EBP-0x28],0x0
+ *  0015EF57   C745 DC 00000000 MOV DWORD PTR SS:[EBP-0x24],0x0
+ *  0015EF5E   C745 E0 00000000 MOV DWORD PTR SS:[EBP-0x20],0x0
+ *  0015EF65   85C0             TEST EAX,EAX
+ *  0015EF67   74 04            JE SHORT .0015EF6D
+ *  0015EF69   8B00             MOV EAX,DWORD PTR DS:[EAX]
+ *  0015EF6B   EB 02            JMP SHORT .0015EF6F
+ *  0015EF6D   33C0             XOR EAX,EAX
+ *  0015EF6F   6A 00            PUSH 0x0
+ *  0015EF71   6A 00            PUSH 0x0
+ *  0015EF73   8D4D C0          LEA ECX,DWORD PTR SS:[EBP-0x40]
+ *  0015EF76   51               PUSH ECX
+ *  0015EF77   FF75 B8          PUSH DWORD PTR SS:[EBP-0x48]
+ *  0015EF7A   8D4D D4          LEA ECX,DWORD PTR SS:[EBP-0x2C]
+ *  0015EF7D   51               PUSH ECX
+ *  0015EF7E   50               PUSH EAX
+ *  0015EF7F   6A 01            PUSH 0x1
+ *  0015EF81   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]	; jichi: ebp-0x54 is the unicode char address
+ *  0015EF84   50               PUSH EAX	; jichi: text
+ *  0015EF85   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]	; jichi: graphics
+ *  0015EF88   FF15 E0A72A00    CALL DWORD PTR DS:[0x2AA7E0]                      ; GdiPlus.GdipMeasureString: jichi: text painted here
+ *  0015EF8E   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
+ *  0015EF93   0F5B             ???                                               ; Unknown command
+ *  0015EF95   C085 C0740589 45 ROL BYTE PTR SS:[EBP+0x890574C0],0x45             ; Shift constant out of range 1..31
+ *  0015EF9C   E8 EB90F30F      CALL 1009808C
+ *  0015EFA1   1145 88          ADC DWORD PTR SS:[EBP-0x78],EAX
+ *  0015EFA4   F3:0F1045 B4     MOVSS XMM0,DWORD PTR SS:[EBP-0x4C]
+ *  0015EFA9   F3:0F5905 18C72E>MULSS XMM0,DWORD PTR DS:[0x2EC718]
+ *  0015EFB1   83EC 08          SUB ESP,0x8
+ *  0015EFB4   F3:0F5845 C8     ADDSS XMM0,DWORD PTR SS:[EBP-0x38]
+ *  0015EFB9   0F5A             ???                                               ; Unknown command
+ *  0015EFBB   C0F2 0F          SAL DL,0xF
+ *  0015EFBE   1145 DC          ADC DWORD PTR SS:[EBP-0x24],EAX
+ *  0015EFC1   DD45 DC          FLD QWORD PTR SS:[EBP-0x24]
+ *  0015EFC4   DD1C24           FSTP QWORD PTR SS:[ESP]
+ *  0015EFC7   E8 A4611200      CALL .00285170
+ *  0015EFCC   66:0F6E4F 64     MOVD MM1,DWORD PTR DS:[EDI+0x64]
+ *  0015EFD1   DD5D DC          FSTP QWORD PTR SS:[EBP-0x24]
+ *  0015EFD4   F2:              PREFIX REPNE:                                     ; Superfluous prefix
+ *  0015EFD5   0F1045 DC        MOVUPS XMM0,DQWORD PTR SS:[EBP-0x24]
+ *  0015EFD9   66:0F5A          ???                                               ; Unknown command
+ *  0015EFDC   C00F 5B          ROR BYTE PTR DS:[EDI],0x5B                        ; Shift constant out of range 1..31
+ *  0015EFDF   C9               LEAVE
+ *  0015EFE0   83C4 08          ADD ESP,0x8
+ *  0015EFE3   0F2FC1           COMISS XMM0,XMM1
+ *  0015EFE6   8D4D E0          LEA ECX,DWORD PTR SS:[EBP-0x20]
+ *  0015EFE9   8D45 88          LEA EAX,DWORD PTR SS:[EBP-0x78]
+ *  0015EFEC   0F46C1           CMOVBE EAX,ECX
+ *  0015EFEF   8B4D E4          MOV ECX,DWORD PTR SS:[EBP-0x1C]
+ *  0015EFF2   F3:0F1145 E0     MOVSS DWORD PTR SS:[EBP-0x20],XMM0
+ *  0015EFF7   8B00             MOV EAX,DWORD PTR DS:[EAX]
+ *  0015EFF9   8944B1 18        MOV DWORD PTR DS:[ECX+ESI*4+0x18],EAX
+ *  0015EFFD   FF77 68          PUSH DWORD PTR DS:[EDI+0x68]
+ *  0015F000   F3:0F1045 B4     MOVSS XMM0,DWORD PTR SS:[EBP-0x4C]
+ *  0015F005   FF77 64          PUSH DWORD PTR DS:[EDI+0x64]
+ *  0015F008   A1 E0FF3200      MOV EAX,DWORD PTR DS:[0x32FFE0]
+ *  0015F00D   6A 00            PUSH 0x0
+ *  0015F00F   6A 00            PUSH 0x0
+ *  0015F011   F3:0F1145 C0     MOVSS DWORD PTR SS:[EBP-0x40],XMM0
+ *  0015F016   C745 C4 00000000 MOV DWORD PTR SS:[EBP-0x3C],0x0
+ *  0015F01D   FF70 04          PUSH DWORD PTR DS:[EAX+0x4]
+ *  0015F020   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
+ *  0015F023   FF15 D8A72A00    CALL DWORD PTR DS:[0x2AA7D8]                      ; GdiPlus.GdipFillRectangleI
+ *  0015F029   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  0015F02C   85C0             TEST EAX,EAX
+ *  0015F02E   0F45C8           CMOVNE ECX,EAX
+ *  0015F031   A1 2CFF3200      MOV EAX,DWORD PTR DS:[0x32FF2C]
+ *  0015F036   898D 78FFFFFF    MOV DWORD PTR SS:[EBP-0x88],ECX
+ *  0015F03C   85C0             TEST EAX,EAX
+ *  0015F03E   74 05            JE SHORT .0015F045
+ *  0015F040   8B48 04          MOV ECX,DWORD PTR DS:[EAX+0x4]
+ *  0015F043   EB 02            JMP SHORT .0015F047
+ *  0015F045   33C9             XOR ECX,ECX
+ *  0015F047   8B45 80          MOV EAX,DWORD PTR SS:[EBP-0x80]
+ *  0015F04A   85C0             TEST EAX,EAX
+ *  0015F04C   74 04            JE SHORT .0015F052
+ *  0015F04E   8B00             MOV EAX,DWORD PTR DS:[EAX]
+ *  0015F050   EB 02            JMP SHORT .0015F054
+ *  0015F052   33C0             XOR EAX,EAX
+ *  0015F054   51               PUSH ECX
+ *  0015F055   FF75 B8          PUSH DWORD PTR SS:[EBP-0x48]
+ *  0015F058   8D4D C0          LEA ECX,DWORD PTR SS:[EBP-0x40]
+ *  0015F05B   51               PUSH ECX
+ *  0015F05C   50               PUSH EAX
+ *  0015F05D   6A 01            PUSH 0x1
+ *  0015F05F   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]
+ *  0015F062   50               PUSH EAX
+ *  0015F063   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
+ *  0015F066   FF15 DCA72A00    CALL DWORD PTR DS:[0x2AA7DC]                      ; GdiPlus.GdipDrawString
+ *  0015F06C   85C0             TEST EAX,EAX
+ *  0015F06E   0F85 60010000    JNZ .0015F1D4
+ *  0015F074   50               PUSH EAX
+ *  0015F075   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
+ *  0015F078   FF15 C8A72A00    CALL DWORD PTR DS:[0x2AA7C8]                      ; GdiPlus.GdipFlush
+ *  0015F07E   8B47 64          MOV EAX,DWORD PTR DS:[EDI+0x64]
+ *  0015F081   8B55 A4          MOV EDX,DWORD PTR SS:[EBP-0x5C]
+ *  0015F084   8B4F 68          MOV ECX,DWORD PTR DS:[EDI+0x68]
+ *  0015F087   8945 DC          MOV DWORD PTR SS:[EBP-0x24],EAX
+ *  0015F08A   8D85 58FFFFFF    LEA EAX,DWORD PTR SS:[EBP-0xA8]
+ *  0015F090   50               PUSH EAX
+ *  0015F091   68 06100200      PUSH 0x21006
+ *  0015F096   6A 01            PUSH 0x1
+ *  0015F098   8D45 D4          LEA EAX,DWORD PTR SS:[EBP-0x2C]
+ *  0015F09B   50               PUSH EAX
+ *  0015F09C   8995 54FFFFFF    MOV DWORD PTR SS:[EBP-0xAC],EDX
+ *  0015F0A2   C745 D4 00000000 MOV DWORD PTR SS:[EBP-0x2C],0x0
+ *  0015F0A9   C745 D8 00000000 MOV DWORD PTR SS:[EBP-0x28],0x0
+ *  0015F0B0   894D E0          MOV DWORD PTR SS:[EBP-0x20],ECX
+ *  0015F0B3   FF72 04          PUSH DWORD PTR DS:[EDX+0x4]
+ *  0015F0B6   FF15 10A82A00    CALL DWORD PTR DS:[0x2AA810]                      ; GdiPlus.GdipBitmapLockBits
+ *  0015F0BC   85C0             TEST EAX,EAX
+ *  0015F0BE   74 08            JE SHORT .0015F0C8
+ *  0015F0C0   8B4D A4          MOV ECX,DWORD PTR SS:[EBP-0x5C]
+ *  0015F0C3   8941 08          MOV DWORD PTR DS:[ECX+0x8],EAX
+ *  0015F0C6   EB 02            JMP SHORT .0015F0CA
+ *  0015F0C8   33C0             XOR EAX,EAX
+ *  0015F0CA   8985 70FFFFFF    MOV DWORD PTR SS:[EBP-0x90],EAX
+ *  0015F0D0   C645 FC 04       MOV BYTE PTR SS:[EBP-0x4],0x4
+ *  0015F0D4   85C0             TEST EAX,EAX
+ *  0015F0D6   0F85 DB000000    JNZ .0015F1B7
+ *  0015F0DC   8B45 E4          MOV EAX,DWORD PTR SS:[EBP-0x1C]
+ *  0015F0DF   8B95 7CFFFFFF    MOV EDX,DWORD PTR SS:[EBP-0x84]
+ *  0015F0E5   8B4D D0          MOV ECX,DWORD PTR SS:[EBP-0x30]
+ *  0015F0E8   83C0 08          ADD EAX,0x8
+ *  0015F0EB   8D34B0           LEA ESI,DWORD PTR DS:[EAX+ESI*4]
+ *  0015F0EE   8B85 5CFFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xA4]
+ *  0015F0F4   03C2             ADD EAX,EDX
+ *  0015F0F6   50               PUSH EAX
+ *  0015F0F7   8B85 58FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xA8]
+ *  0015F0FD   03C1             ADD EAX,ECX
+ *  0015F0FF   50               PUSH EAX
+ *  0015F100   52               PUSH EDX
+ *  0015F101   51               PUSH ECX
+ *  0015F102   56               PUSH ESI
+ *  0015F103   FF15 14A42A00    CALL DWORD PTR DS:[0x2AA414]                      ; user32.SetRect
+ *  0015F109   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
+ *  0015F10C   6A 00            PUSH 0x0
+ *  0015F10E   56               PUSH ESI
+ *  0015F10F   8945 90          MOV DWORD PTR SS:[EBP-0x70],EAX
+ *  0015F112   C745 94 00000000 MOV DWORD PTR SS:[EBP-0x6C],0x0
+ *  0015F119   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10]
+ *  0015F11C   8D55 98          LEA EDX,DWORD PTR SS:[EBP-0x68]
+ *  0015F11F   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  0015F121   52               PUSH EDX
+ *  0015F122   6A 00            PUSH 0x0
+ *  0015F124   50               PUSH EAX
+ *  0015F125   FF51 4C          CALL DWORD PTR DS:[ECX+0x4C]
+ *  0015F128   8945 A0          MOV DWORD PTR SS:[EBP-0x60],EAX
+ *  0015F12B   85C0             TEST EAX,EAX
+ *  0015F12D   78 64            JS SHORT .0015F193
+ *  0015F12F   8B45 90          MOV EAX,DWORD PTR SS:[EBP-0x70]
+ *  0015F132   8B4F 5C          MOV ECX,DWORD PTR DS:[EDI+0x5C]
+ *  0015F135   8B40 1C          MOV EAX,DWORD PTR DS:[EAX+0x1C]
+ *  0015F138   83C0 EB          ADD EAX,-0x15
+ *  0015F13B   83F8 1F          CMP EAX,0x1F
+ *  0015F13E   77 53            JA SHORT .0015F193
+ *  0015F140   0FB680 70F21500  MOVZX EAX,BYTE PTR DS:[EAX+0x15F270]
+ *  0015F147   FF2485 5CF21500  JMP DWORD PTR DS:[EAX*4+0x15F25C]
+ *  0015F14E   51               PUSH ECX
+ *  0015F14F   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
+ *  0015F155   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
+ *  0015F158   E8 833D0000      CALL .00162EE0
+ *  0015F15D   EB 31            JMP SHORT .0015F190
+ *  0015F15F   51               PUSH ECX
+ *  0015F160   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
+ *  0015F166   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
+ *  0015F169   E8 723E0000      CALL .00162FE0
+ *  0015F16E   EB 20            JMP SHORT .0015F190
+ *  0015F170   51               PUSH ECX
+ *  0015F171   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
+ *  0015F177   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
+ *  0015F17A   E8 613F0000      CALL .001630E0
+ *  0015F17F   EB 0F            JMP SHORT .0015F190
+ *  0015F181   51               PUSH ECX
+ *  0015F182   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
+ *  0015F188   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
+ *  0015F18B   E8 50400000      CALL .001631E0
+ *  0015F190   83C4 04          ADD ESP,0x4
+ *  0015F193   8B4D 8C          MOV ECX,DWORD PTR SS:[EBP-0x74]
+ *  0015F196   8B55 E4          MOV EDX,DWORD PTR SS:[EBP-0x1C]
+ *  0015F199   FF75 94          PUSH DWORD PTR SS:[EBP-0x6C]
+ *  0015F19C   C7048A FE7F0000  MOV DWORD PTR DS:[EDX+ECX*4],0x7FFE
+ *  0015F1A3   0FB745 08        MOVZX EAX,WORD PTR SS:[EBP+0x8]
+ *  0015F1A7   89448A 04        MOV DWORD PTR DS:[EDX+ECX*4+0x4],EAX
+*/
+bool DebonosuEngine::attach()
+{
+  if (!ScenarioHook::attach())
+    return false;
+
+  auto h = HijackManager::instance();
+  h->attachFunction((ulong)::MultiByteToWideChar);
+  h->attachFunction((ulong)::GetTextExtentPoint32A);
+
+  return true;
+}
+
+/**
+ *  Remove furigana in scenario thread.
+ *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
+ */
+QString DebonosuEngine::textFilter(const QString &text, int role)
+{
+  if (role != Engine::ScenarioRole || !text.contains('{'))
+    return text;
+
+  static QRegExp rx("\\{(.+)/.+\\}");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+
+  QString ret = text;
+  ret.replace(rx, "\\1");
+  return ret;
+}
+
+// EOF
+
+#if 0
 namespace OtherHook {
 
 std::unordered_set<LPCSTR> translatedTexts_; // text that has already been translated
@@ -939,7 +1353,6 @@ bool attach(ulong startAddress, ulong stopAddress)
 }
 
 } // namespace OtherHook
-
 namespace ChoiceHook {
 
 namespace Private {
@@ -1172,424 +1585,4 @@ bool attach(ulong startAddress, ulong stopAddress)
 
 } // namespace ChoiceHook
 
-} // unnamed namespace
-
-
-/**
- *  Sample game: 神楽花莚譚
- *
- *  Here's the function using MultiByteToWideChar to decode sjis characters:
- *
- *  Pattern: f7 f9 33 d2 6a 04 8d 34 dd 00 00 00 00 0f 57 c0
- *
- *  0015ED1E   CC               INT3
- *  0015ED1F   CC               INT3
- *  0015ED20   55               PUSH EBP	; jichi: text in both arg1 and [arg2] in sjis encoding
- *  0015ED21   8BEC             MOV EBP,ESP
- *  0015ED23   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
- *  0015ED29   6A FF            PUSH -0x1
- *  0015ED2B   68 5EF12900      PUSH .0029F15E
- *  0015ED30   50               PUSH EAX
- *  0015ED31   64:8925 00000000 MOV DWORD PTR FS:[0],ESP
- *  0015ED38   81EC A4000000    SUB ESP,0xA4
- *  0015ED3E   33D2             XOR EDX,EDX
- *  0015ED40   53               PUSH EBX
- *  0015ED41   56               PUSH ESI
- *  0015ED42   57               PUSH EDI
- *  0015ED43   8BF9             MOV EDI,ECX
- *  0015ED45   33DB             XOR EBX,EBX
- *  0015ED47   BE FF7F0000      MOV ESI,0x7FFF
- *  0015ED4C   3957 6C          CMP DWORD PTR DS:[EDI+0x6C],EDX
- *  0015ED4F   76 1E            JBE SHORT .0015ED6F
- *  0015ED51   33C9             XOR ECX,ECX
- *  0015ED53   8B77 70          MOV ESI,DWORD PTR DS:[EDI+0x70]
- *  0015ED56   8B0431           MOV EAX,DWORD PTR DS:[ECX+ESI]
- *  0015ED59   85C0             TEST EAX,EAX
- *  0015ED5B   74 04            JE SHORT .0015ED61
- *  0015ED5D   48               DEC EAX
- *  0015ED5E   890431           MOV DWORD PTR DS:[ECX+ESI],EAX
- *  0015ED61   42               INC EDX
- *  0015ED62   83C1 1C          ADD ECX,0x1C
- *  0015ED65   3B57 6C          CMP EDX,DWORD PTR DS:[EDI+0x6C]
- *  0015ED68  ^72 E9            JB SHORT .0015ED53
- *  0015ED6A   BE FF7F0000      MOV ESI,0x7FFF
- *  0015ED6F   33C0             XOR EAX,EAX
- *  0015ED71   3947 6C          CMP DWORD PTR DS:[EDI+0x6C],EAX
- *  0015ED74   76 25            JBE SHORT .0015ED9B
- *  0015ED76   8B57 70          MOV EDX,DWORD PTR DS:[EDI+0x70]
- *  0015ED79   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
- *  0015ED80   8B0A             MOV ECX,DWORD PTR DS:[EDX]
- *  0015ED82   85C9             TEST ECX,ECX
- *  0015ED84   74 13            JE SHORT .0015ED99
- *  0015ED86   3BCE             CMP ECX,ESI
- *  0015ED88   73 04            JNB SHORT .0015ED8E
- *  0015ED8A   8BD8             MOV EBX,EAX
- *  0015ED8C   8BF1             MOV ESI,ECX
- *  0015ED8E   40               INC EAX
- *  0015ED8F   83C2 1C          ADD EDX,0x1C
- *  0015ED92   3B47 6C          CMP EAX,DWORD PTR DS:[EDI+0x6C]
- *  0015ED95  ^72 E9            JB SHORT .0015ED80
- *  0015ED97   EB 02            JMP SHORT .0015ED9B
- *  0015ED99   8BD8             MOV EBX,EAX
- *  0015ED9B   8B47 70          MOV EAX,DWORD PTR DS:[EDI+0x70]
- *  0015ED9E   8B4F 64          MOV ECX,DWORD PTR DS:[EDI+0x64]
- *  0015EDA1   8945 E4          MOV DWORD PTR SS:[EBP-0x1C],EAX
- *  0015EDA4   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
- *  0015EDA7   894D D0          MOV DWORD PTR SS:[EBP-0x30],ECX
- *  0015EDAA   8B40 28          MOV EAX,DWORD PTR DS:[EAX+0x28]
- *  0015EDAD   99               CDQ
- *  0015EDAE   F7F9             IDIV ECX
- *  0015EDB0   33D2             XOR EDX,EDX
- *  0015EDB2   6A 04            PUSH 0x4
- *  0015EDB4   8D34DD 00000000  LEA ESI,DWORD PTR DS:[EBX*8]
- *  0015EDBB   0F57C0           XORPS XMM0,XMM0
- *  0015EDBE   2BF3             SUB ESI,EBX
- *  0015EDC0   8975 8C          MOV DWORD PTR SS:[EBP-0x74],ESI
- *  0015EDC3   66:0FD6          ???                                               ; Unknown command
- *  0015EDC6   45               INC EBP
- *  0015EDC7   AC               LODS BYTE PTR DS:[ESI]
- *  0015EDC8   8BC8             MOV ECX,EAX
- *  0015EDCA   8BC3             MOV EAX,EBX
- *  0015EDCC   F7F1             DIV ECX
- *  0015EDCE   8B4D D0          MOV ECX,DWORD PTR SS:[EBP-0x30]
- *  0015EDD1   0FAFCA           IMUL ECX,EDX
- *  0015EDD4   894D D0          MOV DWORD PTR SS:[EBP-0x30],ECX
- *  0015EDD7   8B4F 68          MOV ECX,DWORD PTR DS:[EDI+0x68]
- *  0015EDDA   0FAFC8           IMUL ECX,EAX
- *  0015EDDD   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]
- *  0015EDE0   50               PUSH EAX
- *  0015EDE1   6A 02            PUSH 0x2
- *  0015EDE3   8D45 08          LEA EAX,DWORD PTR SS:[EBP+0x8]
- *  0015EDE6   50               PUSH EAX
- *  0015EDE7   6A 01            PUSH 0x1
- *  0015EDE9   6A 03            PUSH 0x3
- *  0015EDEB   898D 7CFFFFFF    MOV DWORD PTR SS:[EBP-0x84],ECX
- *  0015EDF1   FF15 68A22A00    CALL DWORD PTR DS:[0x2AA268]                      ; kernel32.MultiByteToWideChar
- *  0015EDF7   8D57 08          LEA EDX,DWORD PTR DS:[EDI+0x8]
- *  0015EDFA   8D4D 80          LEA ECX,DWORD PTR SS:[EBP-0x80]
- *  0015EDFD   E8 5EFCFFFF      CALL .0015EA60
- *  0015EE02   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
- *  0015EE09   FF77 68          PUSH DWORD PTR DS:[EDI+0x68]
- *  0015EE0C   8B57 64          MOV EDX,DWORD PTR DS:[EDI+0x64]
- *  0015EE0F   8D4D A4          LEA ECX,DWORD PTR SS:[EBP-0x5C]
- *  0015EE12   E8 B9FDFFFF      CALL .0015EBD0
- *  0015EE17   83C4 04          ADD ESP,0x4
- *  0015EE1A   8B45 A4          MOV EAX,DWORD PTR SS:[EBP-0x5C]
- *  0015EE1D   33C9             XOR ECX,ECX
- *  0015EE1F   894D EC          MOV DWORD PTR SS:[EBP-0x14],ECX
- *  0015EE22   85C0             TEST EAX,EAX
- *  0015EE24   74 12            JE SHORT .0015EE38
- *  0015EE26   8D4D EC          LEA ECX,DWORD PTR SS:[EBP-0x14]
- *  0015EE29   51               PUSH ECX
- *  0015EE2A   FF70 04          PUSH DWORD PTR DS:[EAX+0x4]
- *  0015EE2D   FF15 C0A72A00    CALL DWORD PTR DS:[0x2AA7C0]                      ; GdiPlus.GdipGetImageGraphicsContext
- *  0015EE33   8B4D EC          MOV ECX,DWORD PTR SS:[EBP-0x14]
- *  0015EE36   EB 06            JMP SHORT .0015EE3E
- *  0015EE38   8B85 78FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0x88]
- *  0015EE3E   8945 E8          MOV DWORD PTR SS:[EBP-0x18],EAX
- *  0015EE41   898D 74FFFFFF    MOV DWORD PTR SS:[EBP-0x8C],ECX
- *  0015EE47   FF77 58          PUSH DWORD PTR DS:[EDI+0x58]
- *  0015EE4A   51               PUSH ECX
- *  0015EE4B   FF15 CCA72A00    CALL DWORD PTR DS:[0x2AA7CC]                      ; GdiPlus.GdipSetTextRenderingHint
- *  0015EE51   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
- *  0015EE54   85C0             TEST EAX,EAX
- *  0015EE56   6A 02            PUSH 0x2
- *  0015EE58   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
- *  0015EE5B   0F45C8           CMOVNE ECX,EAX
- *  0015EE5E   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
- *  0015EE61   FF15 D0A72A00    CALL DWORD PTR DS:[0x2AA7D0]                      ; GdiPlus.GdipSetPageUnit
- *  0015EE67   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
- *  0015EE6A   85C0             TEST EAX,EAX
- *  0015EE6C   0F45C8           CMOVNE ECX,EAX
- *  0015EE6F   51               PUSH ECX
- *  0015EE70   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
- *  0015EE73   C70424 0000803F  MOV DWORD PTR SS:[ESP],0x3F800000
- *  0015EE7A   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
- *  0015EE7D   FF15 D4A72A00    CALL DWORD PTR DS:[0x2AA7D4]                      ; GdiPlus.GdipSetPageScale
- *  0015EE83   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
- *  0015EE86   85C0             TEST EAX,EAX
- *  0015EE88   0F45C8           CMOVNE ECX,EAX
- *  0015EE8B   8D45 B8          LEA EAX,DWORD PTR SS:[EBP-0x48]
- *  0015EE8E   50               PUSH EAX
- *  0015EE8F   68 00040000      PUSH 0x400
- *  0015EE94   6A 00            PUSH 0x0
- *  0015EE96   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
- *  0015EE99   C745 B8 00000000 MOV DWORD PTR SS:[EBP-0x48],0x0
- *  0015EEA0   FF15 B0A72A00    CALL DWORD PTR DS:[0x2AA7B0]                      ; GdiPlus.GdipCreateStringFormat
- *  0015EEA6   8945 BC          MOV DWORD PTR SS:[EBP-0x44],EAX
- *  0015EEA9   8B47 08          MOV EAX,DWORD PTR DS:[EDI+0x8]
- *  0015EEAC   F7D8             NEG EAX
- *  0015EEAE   66:0F6EC0        MOVD MM0,EAX
- *  0015EEB2   0F5B             ???                                               ; Unknown command
- *  0015EEB4   C08B 45E4F30F 5E ROR BYTE PTR DS:[EBX+0xFF3E445],0x5E              ; Shift constant out of range 1..31
- *  0015EEBB   05 30D52E00      ADD EAX,.002ED530
- *  0015EEC0   C745 C0 00000000 MOV DWORD PTR SS:[EBP-0x40],0x0
- *  0015EEC7   F3:0F1145 B4     MOVSS DWORD PTR SS:[EBP-0x4C],XMM0
- *  0015EECC   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
- *  0015EED1   0F5B             ???                                               ; Unknown command
- *  0015EED3   C0C7 45          ROL BH,0x45                                       ; Shift constant out of range 1..31
- *  0015EED6   C400             LES EAX,FWORD PTR DS:[EAX]                        ; Modification of segment register
- *  0015EED8   0000             ADD BYTE PTR DS:[EAX],AL
- *  0015EEDA   00C7             ADD BH,AL
- *  0015EEDC   45               INC EBP
- *  0015EEDD   C8 000000        ENTER 0x0,0x0
- *  0015EEE1   00C7             ADD BH,AL
- *  0015EEE3   45               INC EBP
- *  0015EEE4   CC               INT3
- *  0015EEE5   0000             ADD BYTE PTR DS:[EAX],AL
- *  0015EEE7   0000             ADD BYTE PTR DS:[EAX],AL
- *  0015EEE9   F3:0F1144B0 18   MOVSS DWORD PTR DS:[EAX+ESI*4+0x18],XMM0
- *  0015EEEF   FF75 AC          PUSH DWORD PTR SS:[EBP-0x54]
- *  0015EEF2   E8 09450F00      CALL .00253400
- *  0015EEF7   83C4 04          ADD ESP,0x4
- *  0015EEFA   85C0             TEST EAX,EAX
- *  0015EEFC   74 48            JE SHORT .0015EF46
- *  0015EEFE   8D45 08          LEA EAX,DWORD PTR SS:[EBP+0x8]
- *  0015EF01   50               PUSH EAX
- *  0015EF02   FF15 18A42A00    CALL DWORD PTR DS:[0x2AA418]                      ; user32.CharNextA
- *  0015EF08   8D4D 08          LEA ECX,DWORD PTR SS:[EBP+0x8]
- *  0015EF0B   2BC1             SUB EAX,ECX
- *  0015EF0D   83F8 01          CMP EAX,0x1
- *  0015EF10   8B45 E4          MOV EAX,DWORD PTR SS:[EBP-0x1C]
- *  0015EF13   75 14            JNZ SHORT .0015EF29
- *  0015EF15   F3:0F1044B0 18   MOVSS XMM0,DWORD PTR DS:[EAX+ESI*4+0x18]
- *  0015EF1B   F3:0F5905 CCC32E>MULSS XMM0,DWORD PTR DS:[0x2EC3CC]
- *  0015EF23   F3:0F1144B0 18   MOVSS DWORD PTR DS:[EAX+ESI*4+0x18],XMM0
- *  0015EF29   F3:0F1044B0 18   MOVSS XMM0,DWORD PTR DS:[EAX+ESI*4+0x18]
- *  0015EF2F   F3:0F1145 C8     MOVSS DWORD PTR SS:[EBP-0x38],XMM0
- *  0015EF34   66:0F6E47 68     MOVD MM0,DWORD PTR DS:[EDI+0x68]
- *  0015EF39   0F5B             ???                                               ; Unknown command
- *  0015EF3B   C0F3 0F          SAL BL,0xF
- *  0015EF3E   1145 CC          ADC DWORD PTR SS:[EBP-0x34],EAX
- *  0015EF41   E9 B7000000      JMP .0015EFFD
- *  0015EF46   8B45 80          MOV EAX,DWORD PTR SS:[EBP-0x80]	; jichi: text might be rendered here?
- *  0015EF49   C745 D4 00000000 MOV DWORD PTR SS:[EBP-0x2C],0x0
- *  0015EF50   C745 D8 00000000 MOV DWORD PTR SS:[EBP-0x28],0x0
- *  0015EF57   C745 DC 00000000 MOV DWORD PTR SS:[EBP-0x24],0x0
- *  0015EF5E   C745 E0 00000000 MOV DWORD PTR SS:[EBP-0x20],0x0
- *  0015EF65   85C0             TEST EAX,EAX
- *  0015EF67   74 04            JE SHORT .0015EF6D
- *  0015EF69   8B00             MOV EAX,DWORD PTR DS:[EAX]
- *  0015EF6B   EB 02            JMP SHORT .0015EF6F
- *  0015EF6D   33C0             XOR EAX,EAX
- *  0015EF6F   6A 00            PUSH 0x0
- *  0015EF71   6A 00            PUSH 0x0
- *  0015EF73   8D4D C0          LEA ECX,DWORD PTR SS:[EBP-0x40]
- *  0015EF76   51               PUSH ECX
- *  0015EF77   FF75 B8          PUSH DWORD PTR SS:[EBP-0x48]
- *  0015EF7A   8D4D D4          LEA ECX,DWORD PTR SS:[EBP-0x2C]
- *  0015EF7D   51               PUSH ECX
- *  0015EF7E   50               PUSH EAX
- *  0015EF7F   6A 01            PUSH 0x1
- *  0015EF81   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]	; jichi: ebp-0x54 is the unicode char address
- *  0015EF84   50               PUSH EAX	; jichi: text
- *  0015EF85   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]	; jichi: graphics
- *  0015EF88   FF15 E0A72A00    CALL DWORD PTR DS:[0x2AA7E0]                      ; GdiPlus.GdipMeasureString: jichi: text painted here
- *  0015EF8E   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
- *  0015EF93   0F5B             ???                                               ; Unknown command
- *  0015EF95   C085 C0740589 45 ROL BYTE PTR SS:[EBP+0x890574C0],0x45             ; Shift constant out of range 1..31
- *  0015EF9C   E8 EB90F30F      CALL 1009808C
- *  0015EFA1   1145 88          ADC DWORD PTR SS:[EBP-0x78],EAX
- *  0015EFA4   F3:0F1045 B4     MOVSS XMM0,DWORD PTR SS:[EBP-0x4C]
- *  0015EFA9   F3:0F5905 18C72E>MULSS XMM0,DWORD PTR DS:[0x2EC718]
- *  0015EFB1   83EC 08          SUB ESP,0x8
- *  0015EFB4   F3:0F5845 C8     ADDSS XMM0,DWORD PTR SS:[EBP-0x38]
- *  0015EFB9   0F5A             ???                                               ; Unknown command
- *  0015EFBB   C0F2 0F          SAL DL,0xF
- *  0015EFBE   1145 DC          ADC DWORD PTR SS:[EBP-0x24],EAX
- *  0015EFC1   DD45 DC          FLD QWORD PTR SS:[EBP-0x24]
- *  0015EFC4   DD1C24           FSTP QWORD PTR SS:[ESP]
- *  0015EFC7   E8 A4611200      CALL .00285170
- *  0015EFCC   66:0F6E4F 64     MOVD MM1,DWORD PTR DS:[EDI+0x64]
- *  0015EFD1   DD5D DC          FSTP QWORD PTR SS:[EBP-0x24]
- *  0015EFD4   F2:              PREFIX REPNE:                                     ; Superfluous prefix
- *  0015EFD5   0F1045 DC        MOVUPS XMM0,DQWORD PTR SS:[EBP-0x24]
- *  0015EFD9   66:0F5A          ???                                               ; Unknown command
- *  0015EFDC   C00F 5B          ROR BYTE PTR DS:[EDI],0x5B                        ; Shift constant out of range 1..31
- *  0015EFDF   C9               LEAVE
- *  0015EFE0   83C4 08          ADD ESP,0x8
- *  0015EFE3   0F2FC1           COMISS XMM0,XMM1
- *  0015EFE6   8D4D E0          LEA ECX,DWORD PTR SS:[EBP-0x20]
- *  0015EFE9   8D45 88          LEA EAX,DWORD PTR SS:[EBP-0x78]
- *  0015EFEC   0F46C1           CMOVBE EAX,ECX
- *  0015EFEF   8B4D E4          MOV ECX,DWORD PTR SS:[EBP-0x1C]
- *  0015EFF2   F3:0F1145 E0     MOVSS DWORD PTR SS:[EBP-0x20],XMM0
- *  0015EFF7   8B00             MOV EAX,DWORD PTR DS:[EAX]
- *  0015EFF9   8944B1 18        MOV DWORD PTR DS:[ECX+ESI*4+0x18],EAX
- *  0015EFFD   FF77 68          PUSH DWORD PTR DS:[EDI+0x68]
- *  0015F000   F3:0F1045 B4     MOVSS XMM0,DWORD PTR SS:[EBP-0x4C]
- *  0015F005   FF77 64          PUSH DWORD PTR DS:[EDI+0x64]
- *  0015F008   A1 E0FF3200      MOV EAX,DWORD PTR DS:[0x32FFE0]
- *  0015F00D   6A 00            PUSH 0x0
- *  0015F00F   6A 00            PUSH 0x0
- *  0015F011   F3:0F1145 C0     MOVSS DWORD PTR SS:[EBP-0x40],XMM0
- *  0015F016   C745 C4 00000000 MOV DWORD PTR SS:[EBP-0x3C],0x0
- *  0015F01D   FF70 04          PUSH DWORD PTR DS:[EAX+0x4]
- *  0015F020   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
- *  0015F023   FF15 D8A72A00    CALL DWORD PTR DS:[0x2AA7D8]                      ; GdiPlus.GdipFillRectangleI
- *  0015F029   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
- *  0015F02C   85C0             TEST EAX,EAX
- *  0015F02E   0F45C8           CMOVNE ECX,EAX
- *  0015F031   A1 2CFF3200      MOV EAX,DWORD PTR DS:[0x32FF2C]
- *  0015F036   898D 78FFFFFF    MOV DWORD PTR SS:[EBP-0x88],ECX
- *  0015F03C   85C0             TEST EAX,EAX
- *  0015F03E   74 05            JE SHORT .0015F045
- *  0015F040   8B48 04          MOV ECX,DWORD PTR DS:[EAX+0x4]
- *  0015F043   EB 02            JMP SHORT .0015F047
- *  0015F045   33C9             XOR ECX,ECX
- *  0015F047   8B45 80          MOV EAX,DWORD PTR SS:[EBP-0x80]
- *  0015F04A   85C0             TEST EAX,EAX
- *  0015F04C   74 04            JE SHORT .0015F052
- *  0015F04E   8B00             MOV EAX,DWORD PTR DS:[EAX]
- *  0015F050   EB 02            JMP SHORT .0015F054
- *  0015F052   33C0             XOR EAX,EAX
- *  0015F054   51               PUSH ECX
- *  0015F055   FF75 B8          PUSH DWORD PTR SS:[EBP-0x48]
- *  0015F058   8D4D C0          LEA ECX,DWORD PTR SS:[EBP-0x40]
- *  0015F05B   51               PUSH ECX
- *  0015F05C   50               PUSH EAX
- *  0015F05D   6A 01            PUSH 0x1
- *  0015F05F   8D45 AC          LEA EAX,DWORD PTR SS:[EBP-0x54]
- *  0015F062   50               PUSH EAX
- *  0015F063   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
- *  0015F066   FF15 DCA72A00    CALL DWORD PTR DS:[0x2AA7DC]                      ; GdiPlus.GdipDrawString
- *  0015F06C   85C0             TEST EAX,EAX
- *  0015F06E   0F85 60010000    JNZ .0015F1D4
- *  0015F074   50               PUSH EAX
- *  0015F075   FF75 EC          PUSH DWORD PTR SS:[EBP-0x14]
- *  0015F078   FF15 C8A72A00    CALL DWORD PTR DS:[0x2AA7C8]                      ; GdiPlus.GdipFlush
- *  0015F07E   8B47 64          MOV EAX,DWORD PTR DS:[EDI+0x64]
- *  0015F081   8B55 A4          MOV EDX,DWORD PTR SS:[EBP-0x5C]
- *  0015F084   8B4F 68          MOV ECX,DWORD PTR DS:[EDI+0x68]
- *  0015F087   8945 DC          MOV DWORD PTR SS:[EBP-0x24],EAX
- *  0015F08A   8D85 58FFFFFF    LEA EAX,DWORD PTR SS:[EBP-0xA8]
- *  0015F090   50               PUSH EAX
- *  0015F091   68 06100200      PUSH 0x21006
- *  0015F096   6A 01            PUSH 0x1
- *  0015F098   8D45 D4          LEA EAX,DWORD PTR SS:[EBP-0x2C]
- *  0015F09B   50               PUSH EAX
- *  0015F09C   8995 54FFFFFF    MOV DWORD PTR SS:[EBP-0xAC],EDX
- *  0015F0A2   C745 D4 00000000 MOV DWORD PTR SS:[EBP-0x2C],0x0
- *  0015F0A9   C745 D8 00000000 MOV DWORD PTR SS:[EBP-0x28],0x0
- *  0015F0B0   894D E0          MOV DWORD PTR SS:[EBP-0x20],ECX
- *  0015F0B3   FF72 04          PUSH DWORD PTR DS:[EDX+0x4]
- *  0015F0B6   FF15 10A82A00    CALL DWORD PTR DS:[0x2AA810]                      ; GdiPlus.GdipBitmapLockBits
- *  0015F0BC   85C0             TEST EAX,EAX
- *  0015F0BE   74 08            JE SHORT .0015F0C8
- *  0015F0C0   8B4D A4          MOV ECX,DWORD PTR SS:[EBP-0x5C]
- *  0015F0C3   8941 08          MOV DWORD PTR DS:[ECX+0x8],EAX
- *  0015F0C6   EB 02            JMP SHORT .0015F0CA
- *  0015F0C8   33C0             XOR EAX,EAX
- *  0015F0CA   8985 70FFFFFF    MOV DWORD PTR SS:[EBP-0x90],EAX
- *  0015F0D0   C645 FC 04       MOV BYTE PTR SS:[EBP-0x4],0x4
- *  0015F0D4   85C0             TEST EAX,EAX
- *  0015F0D6   0F85 DB000000    JNZ .0015F1B7
- *  0015F0DC   8B45 E4          MOV EAX,DWORD PTR SS:[EBP-0x1C]
- *  0015F0DF   8B95 7CFFFFFF    MOV EDX,DWORD PTR SS:[EBP-0x84]
- *  0015F0E5   8B4D D0          MOV ECX,DWORD PTR SS:[EBP-0x30]
- *  0015F0E8   83C0 08          ADD EAX,0x8
- *  0015F0EB   8D34B0           LEA ESI,DWORD PTR DS:[EAX+ESI*4]
- *  0015F0EE   8B85 5CFFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xA4]
- *  0015F0F4   03C2             ADD EAX,EDX
- *  0015F0F6   50               PUSH EAX
- *  0015F0F7   8B85 58FFFFFF    MOV EAX,DWORD PTR SS:[EBP-0xA8]
- *  0015F0FD   03C1             ADD EAX,ECX
- *  0015F0FF   50               PUSH EAX
- *  0015F100   52               PUSH EDX
- *  0015F101   51               PUSH ECX
- *  0015F102   56               PUSH ESI
- *  0015F103   FF15 14A42A00    CALL DWORD PTR DS:[0x2AA414]                      ; user32.SetRect
- *  0015F109   8B47 04          MOV EAX,DWORD PTR DS:[EDI+0x4]
- *  0015F10C   6A 00            PUSH 0x0
- *  0015F10E   56               PUSH ESI
- *  0015F10F   8945 90          MOV DWORD PTR SS:[EBP-0x70],EAX
- *  0015F112   C745 94 00000000 MOV DWORD PTR SS:[EBP-0x6C],0x0
- *  0015F119   8B40 10          MOV EAX,DWORD PTR DS:[EAX+0x10]
- *  0015F11C   8D55 98          LEA EDX,DWORD PTR SS:[EBP-0x68]
- *  0015F11F   8B08             MOV ECX,DWORD PTR DS:[EAX]
- *  0015F121   52               PUSH EDX
- *  0015F122   6A 00            PUSH 0x0
- *  0015F124   50               PUSH EAX
- *  0015F125   FF51 4C          CALL DWORD PTR DS:[ECX+0x4C]
- *  0015F128   8945 A0          MOV DWORD PTR SS:[EBP-0x60],EAX
- *  0015F12B   85C0             TEST EAX,EAX
- *  0015F12D   78 64            JS SHORT .0015F193
- *  0015F12F   8B45 90          MOV EAX,DWORD PTR SS:[EBP-0x70]
- *  0015F132   8B4F 5C          MOV ECX,DWORD PTR DS:[EDI+0x5C]
- *  0015F135   8B40 1C          MOV EAX,DWORD PTR DS:[EAX+0x1C]
- *  0015F138   83C0 EB          ADD EAX,-0x15
- *  0015F13B   83F8 1F          CMP EAX,0x1F
- *  0015F13E   77 53            JA SHORT .0015F193
- *  0015F140   0FB680 70F21500  MOVZX EAX,BYTE PTR DS:[EAX+0x15F270]
- *  0015F147   FF2485 5CF21500  JMP DWORD PTR DS:[EAX*4+0x15F25C]
- *  0015F14E   51               PUSH ECX
- *  0015F14F   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
- *  0015F155   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
- *  0015F158   E8 833D0000      CALL .00162EE0
- *  0015F15D   EB 31            JMP SHORT .0015F190
- *  0015F15F   51               PUSH ECX
- *  0015F160   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
- *  0015F166   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
- *  0015F169   E8 723E0000      CALL .00162FE0
- *  0015F16E   EB 20            JMP SHORT .0015F190
- *  0015F170   51               PUSH ECX
- *  0015F171   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
- *  0015F177   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
- *  0015F17A   E8 613F0000      CALL .001630E0
- *  0015F17F   EB 0F            JMP SHORT .0015F190
- *  0015F181   51               PUSH ECX
- *  0015F182   8D95 54FFFFFF    LEA EDX,DWORD PTR SS:[EBP-0xAC]
- *  0015F188   8D4D 90          LEA ECX,DWORD PTR SS:[EBP-0x70]
- *  0015F18B   E8 50400000      CALL .001631E0
- *  0015F190   83C4 04          ADD ESP,0x4
- *  0015F193   8B4D 8C          MOV ECX,DWORD PTR SS:[EBP-0x74]
- *  0015F196   8B55 E4          MOV EDX,DWORD PTR SS:[EBP-0x1C]
- *  0015F199   FF75 94          PUSH DWORD PTR SS:[EBP-0x6C]
- *  0015F19C   C7048A FE7F0000  MOV DWORD PTR DS:[EDX+ECX*4],0x7FFE
- *  0015F1A3   0FB745 08        MOVZX EAX,WORD PTR SS:[EBP+0x8]
- *  0015F1A7   89448A 04        MOV DWORD PTR DS:[EDX+ECX*4+0x4],EAX
-*/
-bool DebonosuEngine::attach()
-{
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
-  if (!ScenarioHook::attach(startAddress, stopAddress))
-    return false;
-
-  //if (ChoiceHook::attach(startAddress, stopAddress))
-  //  DOUT("choice text found");
-  //else
-  //  DOUT("choice text NOT FOUND");
-
-  //if (OtherHook::attach(startAddress, stopAddress))
-  //  DOUT("other text found");
-  //else
-  //  DOUT("other text NOT FOUND");
-
-  HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
-  HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
-
-  return true;
-}
-
-/**
- *  Remove furigana in scenario thread.
- *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
- */
-QString DebonosuEngine::textFilter(const QString &text, int role)
-{
-  if (role != Engine::ScenarioRole || !text.contains('{'))
-    return text;
-
-  static QRegExp rx("\\{(.+)/.+\\}");
-  if (!rx.isMinimal())
-    rx.setMinimal(true);
-
-  QString ret = text;
-  ret.replace(rx, "\\1");
-  return ret;
-}
-
-// EOF
+#endif // 0

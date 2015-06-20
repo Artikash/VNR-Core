@@ -18,10 +18,13 @@ public:
     const char *name; // for debugging purpose
     ulong *oldFunction,
           newFunction;
-    bool attached;
+    bool attached,
+         translated;
 
-    explicit FunctionInfo(const char *name = "", ulong *oldFunction = nullptr, ulong newFunction = 0, bool attached = false)
-      : name(name), oldFunction(oldFunction), newFunction(newFunction), attached(attached)
+    explicit FunctionInfo(const char *name = "", ulong *oldFunction = nullptr, ulong newFunction = 0,
+        bool attached = false, bool translated = false)
+      : name(name), oldFunction(oldFunction), newFunction(newFunction)
+      , attached(attached), translated(translated)
     {}
   };
   std::unordered_map<ulong, FunctionInfo> funs; // attached functions
@@ -70,12 +73,23 @@ HijackManager::~HijackManager() { delete d_; }
 bool HijackManager::isFunctionAttached(ulong addr) const
 {
   auto p = d_->funs.find(addr);
-  if (p == d_->funs.end())
-    return false;
-  return p->second.attached;
+  return p != d_->funs.end() && p->second.attached;
 }
 
-void HijackManager::attachFunction(ulong addr)
+bool HijackManager::isFunctionTranslated(ulong addr) const
+{
+  auto p = d_->funs.find(addr);
+  return p != d_->funs.end() && p->second.translated;
+}
+
+void HijackManager::setFunctionTranslated(ulong addr, bool t)
+{
+  auto p = d_->funs.find(addr);
+  if (p != d_->funs.end())
+    p->second.translated = t;
+}
+
+void HijackManager::attachFunction(ulong addr, bool translated)
 {
   auto p = d_->funs.find(addr);
   if (p == d_->funs.end())
@@ -83,8 +97,9 @@ void HijackManager::attachFunction(ulong addr)
   auto &info = p->second;
   if (info.attached)
     return;
-  DOUT(info.name);
+  DOUT(info.name << ", translated =" << translated);
   info.attached = true;
+  info.translated = translated;
   *info.oldFunction = winhook::replace_fun(addr, info.newFunction);
 }
 

@@ -3,6 +3,10 @@
 #include "hijack/hijackfuns.h"
 #include "hijack/hijackhelper.h"
 #include "hijack/hijacksettings.h"
+#include "hijack/hijackmanager.h"
+#include "engine/enginedef.h"
+#include "engine/enginehash.h"
+#include "engine/enginecontroller.h"
 #include "util/dyncodec.h"
 #include "util/textutil.h"
 #include "dyncodec/dynsjis.h"
@@ -13,6 +17,8 @@
 
 //#define DEBUG "hijackfuns"
 #include "sakurakit/skdebug.h"
+
+#pragma intrinsic(_ReturnAddress)
 
 // Disable only for debugging purpose
 //#define HIJACK_GDI_FONT
@@ -305,6 +311,14 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
 
 /** Encoding */
 
+LPSTR WINAPI Hijack::newCharNextA(LPCSTR lpString)
+{
+  DOUT("pass");
+  //if (::GetACP() == 932)
+  return const_cast<char *>(dynsjis::next_char(lpString));
+  //return oldCharNextA(lpString);
+}
+
 int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
 {
   //DOUT("pass");
@@ -356,6 +370,19 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
 
 /** Text */
 
+#define DECODE_CHAR(uChar, ...) \
+{ \
+  if (uChar > 0xff) \
+    if (auto p = DynamicCodec::instance()) { \
+      bool dynamic; \
+      UINT ch = p->decodeChar(uChar, &dynamic); \
+      if (dynamic && ch) { \
+        uChar = ch; \
+        return (__VA_ARGS__); \
+      } \
+    } \
+}
+
 #define DECODE_TEXT(lpString, cchString, ...) \
 { \
   if(cchString > 1) \
@@ -371,17 +398,37 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
     } \
 }
 
-#define DECODE_CHAR(uChar, ...) \
-{ \
-  if (uChar > 0xff) \
-    if (auto p = DynamicCodec::instance()) { \
-      bool dynamic; \
-      UINT ch = p->decodeChar(uChar, &dynamic); \
-      if (dynamic && ch) { \
-        uChar = ch; \
-        return (__VA_ARGS__); \
-      } \
+#define TRANSLATE_TEXT_A(lpString, cchString, fun, ...) \
+if (HijackManager::instance()->isFunctionTranslated((ulong)::fun##A)) { \
+  if (auto q = EngineController::instance()) { \
+    QByteArray data(lpString, cchString); \
+    QString text = q->decode(data); \
+    if (!text.isEmpty()) { \
+      enum { role = Engine::OtherRole }; \
+      ulong split = (ulong)_ReturnAddress(); \
+      auto sig = Engine::hashThreadSignature(role, split); \
+      text = q->dispatchTextW(text, sig, role); \
+      LPCWSTR lpString = (LPCWSTR)text.utf16(); \
+      cchString = text.size(); \
+      return old##fun##W(__VA_ARGS__); \
     } \
+  } \
+}
+
+#define TRANSLATE_TEXT_W(lpString, cchString, fun, ...) \
+if (HijackManager::instance()->isFunctionTranslated((ulong)::fun##W)) { \
+  if (auto q = EngineController::instance()) { \
+    QString text = QString::fromWCharArray(lpString, cchString); \
+    if (!text.isEmpty()) { \
+      enum { role = Engine::OtherRole }; \
+      ulong split = (ulong)_ReturnAddress(); \
+      auto sig = Engine::hashThreadSignature(role, split); \
+      text = q->dispatchTextW(text, sig, role); \
+      LPCWSTR lpString = (LPCWSTR)text.utf16(); \
+      cchString = text.size(); \
+      return old##fun##W(__VA_ARGS__); \
+    } \
+  } \
 }
 
 DWORD WINAPI Hijack::newGetGlyphOutlineA(HDC hdc, UINT uChar, UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2)
@@ -403,6 +450,7 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchSt
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
+  //TRANSLATE_TEXT_A(lpString, cchString, GetTextExtentPoint32, hdc, lpString, cchString, lpSize)
   DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
 }
@@ -411,6 +459,7 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32W(HDC hdc, LPCWSTR lpString, int cchS
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
+  //TRANSLATE_TEXT_W(lpString, cchString, GetTextExtentPoint32, hdc, lpString, cchString, lpSize)
   return oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize);
 }
 
@@ -418,6 +467,7 @@ BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpStri
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
+  TRANSLATE_TEXT_A(lpString, cchString, TextOut, hdc, nXStart, nYStart, lpString, cchString)
   DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
   return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }
@@ -426,15 +476,8 @@ BOOL WINAPI Hijack::newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpStr
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
+  TRANSLATE_TEXT_W(lpString, cchString, TextOut, hdc, nXStart, nYStart, lpString, cchString)
   return oldTextOutW(hdc, nXStart, nYStart, lpString, cchString);
-}
-
-LPSTR WINAPI Hijack::newCharNextA(LPCSTR lpString)
-{
-  DOUT("pass");
-  //if (::GetACP() == 932)
-  return const_cast<char *>(dynsjis::next_char(lpString));
-  //return oldCharNextA(lpString);
 }
 
 // EOF

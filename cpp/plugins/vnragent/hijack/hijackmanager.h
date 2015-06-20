@@ -19,7 +19,10 @@ public:
   ~HijackManager();
 
   bool isFunctionAttached(unsigned long addr) const;
-  void attachFunction(unsigned long addr);
+  bool isFunctionTranslated(unsigned long addr) const;
+  void setFunctionTranslated(unsigned long addr, bool t);
+
+  void attachFunction(unsigned long addr, bool translate = false);
   void detachFunction(unsigned long addr);
 };
 
