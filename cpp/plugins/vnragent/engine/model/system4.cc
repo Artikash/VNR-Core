@@ -6,6 +6,7 @@
 #include "engine/enginehash.h"
 #include "engine/enginesettings.h"
 #include "engine/engineutil.h"
+//#include "hijack/hijackmanager.h"
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
@@ -306,6 +307,8 @@ bool System4Engine::attach()
     else
       DOUT("name text NOT FOUND");
   }
+
+  //HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
 
   return true;
 }

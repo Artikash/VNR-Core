@@ -11,6 +11,7 @@
 #include "ntinspect/ntinspect.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
+#include <QtCore/QSet>
 
 #define DEBUG "debonosu"
 #include "sakurakit/skdebug.h"
@@ -273,11 +274,8 @@ namespace Private {
  *  00436C8B   CC               INT3
  *  00436C8C   CC               INT3
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
   ulong addr = Private::findFunction(startAddress, stopAddress);
   if (!addr)
     return false;
@@ -307,67 +305,60 @@ bool attach()
   //return count;
 }
 
-bool isOldVersion() // old Debonosu games
-{ return Private::textOffset_ == Private::TextOffsetEax; }
+//bool isOldVersion() // old Debonosu games
+//{ return Private::textOffset_ == Private::TextOffsetEax; }
 
 } // namespace ScenarioHook
 
 namespace OtherHook {
-namespace Private {
-  /**
-   *  Runtime stack:
-   *
-   *  0025CDE8   01468CC2  RETURN to .01468CC2 from .01423C20
-   *  0025CDEC   0025DE00   ; jichi: point to an unknown small int (such as 2)
-   *  0025CDF0   08DF0AB0   ; jichi: text here
-   *  0025CDF4   00000000
-   *  0025CDF8   08DDCCC8
-   *  0025CDFC   00000000
-   *  0025CE00   829F8E20
-   *  0025CE04   827791CC
-   *  0025CE08   82738DD6
-   *  0025CE0C   000020AD
-   *  0025CE10   00000000
-   *  0025CE14   00000000
-   *  0025CE18   00000000
-   *  0025CE1C   00000000
-   *  0025CE20   CC829F8E
-   *  0025CE24   82779100
-   *  0025CE28   738D00D6
-   *  0025CE2C   DC82AB82
-   *  0025CE30   A982B782
-   *  0025CE34   61004881
-   *  0025CE38   00000001
-   *  0025CE3C  /0025CE74
-   *  0025CE40  |00713BBB  RETURN to d3dx9_31.00713BBB
-   */
 
-  inline char *ltrim(char *s) // skip leading "+" for choices
-  {
-    if (s && *s == '+')
-      s++;
-    return s;
-  }
+QSet<QByteArray> translations_;
+
+inline char *ltrim(const char *s) // skip leading "+" for choices
+{
+  if (s && *s == '+')
+    s++;
+  return const_cast<char *>(s);
+}
+
+namespace Private {
 
   bool hookBefore(winhook::hook_stack *s)
   {
-    auto text = (LPSTR)s->stack[2]; // text in arg2 for the caller of GetTextExtentPoint32A
-    //auto text = (LPSTR)s->ecx; // text in ecx for the caller of the caller of GetTextExtentPoint32A
-    text = ltrim(text);
-    if (!text || !*text)
+    LPCSTR *lpText = (LPCSTR *)&s->stack[2]; // new game, text in arg2 for the caller of GetTextExtentPoint32A
+    if (!Engine::isAddressWritable(*lpText)) {
+      lpText = (LPCSTR *)&s->edx; // old game
+      if (!Engine::isAddressWritable(*lpText))
+        return true;
+    }
+    auto text = *lpText;
+    LPCSTR trimmedText = OtherHook::ltrim(text);
+    if (!trimmedText || !*trimmedText)
+      return true;
+    QByteArray oldData = trimmedText;
+    if (OtherHook::translations_.contains(oldData))
       return true;
     enum { role = Engine::OtherRole };
-    auto split = s->stack[0];
+    auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
-    ::strcpy(text, data.constData());
-    //s->ecx = (ulong)data_.constData();
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    if (newData == oldData)
+      return true;
+    //::strcpy(text, newData.constData());
+    OtherHook::translations_.insert(newData);
+    if (trimmedText != text) {
+      newData.prepend(text, trimmedText - text);
+      OtherHook::translations_.insert(newData); // insert to make newData persistent
+    }
+    *lpText = newData.constData();
     return true;
   }
 
 } // namespace Private
 
 /**
+ *  Sample game: 神楽花莚譚
+ *
  *  01423C1C   CC               INT3
  *  01423C1D   CC               INT3
  *  01423C1E   CC               INT3
@@ -624,7 +615,362 @@ namespace Private {
  *  01423EE0   0FE6             ???                                      ; Unknown command
  *  01423EE2   C0F2 0F          SAL DL,0xF
  *
- *  Here's the caller of that function, text in ecx:
+ *  Runtime stack:
+ *  0025CDE8   01468CC2  RETURN to .01468CC2 from .01423C20
+ *  0025CDEC   0025DE00   ; jichi: point to an unknown small int (such as 2)
+ *  0025CDF0   08DF0AB0   ; jichi: text here
+ *  0025CDF4   00000000
+ *  0025CDF8   08DDCCC8
+ *  0025CDFC   00000000
+ *  0025CE00   829F8E20
+ *  0025CE04   827791CC
+ *  0025CE08   82738DD6
+ *  0025CE0C   000020AD
+ *  0025CE10   00000000
+ *  0025CE14   00000000
+ *  0025CE18   00000000
+ *  0025CE1C   00000000
+ *  0025CE20   CC829F8E
+ *  0025CE24   82779100
+ *  0025CE28   738D00D6
+ *  0025CE2C   DC82AB82
+ *  0025CE30   A982B782
+ *  0025CE34   61004881
+ *  0025CE38   00000001
+ *  0025CE3C  /0025CE74
+ *  0025CE40  |00713BBB  RETURN to d3dx9_31.00713BBB
+ *
+ *  Sample game: 神楽道中記
+ *
+ *  004C635D   CC               INT3
+ *  004C635E   CC               INT3
+ *  004C635F   CC               INT3
+ *  004C6360   83EC 28          SUB ESP,0x28
+ *  004C6363   53               PUSH EBX
+ *  004C6364   55               PUSH EBP
+ *  004C6365   56               PUSH ESI
+ *  004C6366   57               PUSH EDI
+ *  004C6367   8BD9             MOV EBX,ECX
+ *  004C6369   6A 24            PUSH 0x24
+ *  004C636B   895C24 24        MOV DWORD PTR SS:[ESP+0x24],EBX
+ *  004C636F   E8 50D70200      CALL .004F3AC4
+ *  004C6374   33D2             XOR EDX,EDX
+ *  004C6376   83C4 04          ADD ESP,0x4
+ *  004C6379   3BC2             CMP EAX,EDX
+ *  004C637B   74 16            JE SHORT .004C6393
+ *  004C637D   8910             MOV DWORD PTR DS:[EAX],EDX
+ *  004C637F   8950 04          MOV DWORD PTR DS:[EAX+0x4],EDX
+ *  004C6382   C740 08 FFFFFFFF MOV DWORD PTR DS:[EAX+0x8],-0x1
+ *  004C6389   8950 10          MOV DWORD PTR DS:[EAX+0x10],EDX
+ *  004C638C   8950 0C          MOV DWORD PTR DS:[EAX+0xC],EDX
+ *  004C638F   8BE8             MOV EBP,EAX
+ *  004C6391   EB 02            JMP SHORT .004C6395
+ *  004C6393   33ED             XOR EBP,EBP
+ *  004C6395   8B4424 3C        MOV EAX,DWORD PTR SS:[ESP+0x3C]
+ *  004C6399   8BF0             MOV ESI,EAX
+ *  004C639B   B9 09000000      MOV ECX,0x9
+ *  004C63A0   8BFD             MOV EDI,EBP
+ *  004C63A2   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  004C63A4   8955 04          MOV DWORD PTR SS:[EBP+0x4],EDX
+ *  004C63A7   8B40 04          MOV EAX,DWORD PTR DS:[EAX+0x4]
+ *  004C63AA   50               PUSH EAX
+ *  004C63AB   8BCD             MOV ECX,EBP
+ *  004C63AD   896C24 1C        MOV DWORD PTR SS:[ESP+0x1C],EBP
+ *  004C63B1   E8 1AC9FFFF      CALL .004C2CD0
+ *  004C63B6   8B4C24 3C        MOV ECX,DWORD PTR SS:[ESP+0x3C]
+ *  004C63BA   8B71 0C          MOV ESI,DWORD PTR DS:[ECX+0xC]
+ *  004C63BD   85F6             TEST ESI,ESI
+ *  004C63BF   74 2E            JE SHORT .004C63EF
+ *  004C63C1   56               PUSH ESI
+ *  004C63C2   FF15 24425400    CALL DWORD PTR DS:[0x544224]             ; kernel32.lstrlenA
+ *  004C63C8   8BF8             MOV EDI,EAX
+ *  004C63CA   83C7 01          ADD EDI,0x1
+ *  004C63CD   57               PUSH EDI
+ *  004C63CE   E8 91CF0200      CALL .004F3364
+ *  004C63D3   83C4 04          ADD ESP,0x4
+ *  004C63D6   85C0             TEST EAX,EAX
+ *  004C63D8   894424 3C        MOV DWORD PTR SS:[ESP+0x3C],EAX
+ *  004C63DC   74 11            JE SHORT .004C63EF
+ *  004C63DE   57               PUSH EDI
+ *  004C63DF   56               PUSH ESI
+ *  004C63E0   50               PUSH EAX
+ *  004C63E1   E8 9AD70200      CALL .004F3B80
+ *  004C63E6   8B4424 48        MOV EAX,DWORD PTR SS:[ESP+0x48]
+ *  004C63EA   83C4 0C          ADD ESP,0xC
+ *  004C63ED   EB 02            JMP SHORT .004C63F1
+ *  004C63EF   33C0             XOR EAX,EAX
+ *  004C63F1   8D73 54          LEA ESI,DWORD PTR DS:[EBX+0x54]
+ *  004C63F4   8D5424 18        LEA EDX,DWORD PTR SS:[ESP+0x18]
+ *  004C63F8   52               PUSH EDX
+ *  004C63F9   8BCE             MOV ECX,ESI
+ *  004C63FB   8945 0C          MOV DWORD PTR SS:[EBP+0xC],EAX
+ *  004C63FE   897424 30        MOV DWORD PTR SS:[ESP+0x30],ESI
+ *  004C6402   E8 79FEFFFF      CALL .004C6280
+ *  004C6407   8D4424 3C        LEA EAX,DWORD PTR SS:[ESP+0x3C]
+ *  004C640B   50               PUSH EAX
+ *  004C640C   8D4B 68          LEA ECX,DWORD PTR DS:[EBX+0x68]
+ *  004C640F   C74424 40 000000>MOV DWORD PTR SS:[ESP+0x40],0x0
+ *  004C6417   E8 D4FEFFFF      CALL .004C62F0
+ *  004C641C   837B 18 00       CMP DWORD PTR DS:[EBX+0x18],0x0
+ *  004C6420   8D43 18          LEA EAX,DWORD PTR DS:[EBX+0x18]
+ *  004C6423   0F84 BD010000    JE .004C65E6
+ *  004C6429   50               PUSH EAX
+ *  004C642A   FF15 5C405400    CALL DWORD PTR DS:[0x54405C]             ; gdi32.CreateFontIndirectA
+ *  004C6430   8BF0             MOV ESI,EAX
+ *  004C6432   85F6             TEST ESI,ESI
+ *  004C6434   897424 28        MOV DWORD PTR SS:[ESP+0x28],ESI
+ *  004C6438   75 0D            JNZ SHORT .004C6447
+ *  004C643A   5F               POP EDI
+ *  004C643B   5E               POP ESI
+ *  004C643C   5D               POP EBP
+ *  004C643D   83C8 FF          OR EAX,0xFFFFFFFF
+ *  004C6440   5B               POP EBX
+ *  004C6441   83C4 28          ADD ESP,0x28
+ *  004C6444   C2 0400          RETN 0x4
+ *  004C6447   6A 00            PUSH 0x0
+ *  004C6449   FF15 80405400    CALL DWORD PTR DS:[0x544080]             ; gdi32.CreateCompatibleDC
+ *  004C644F   8BF8             MOV EDI,EAX
+ *  004C6451   56               PUSH ESI
+ *  004C6452   57               PUSH EDI
+ *  004C6453   897C24 20        MOV DWORD PTR SS:[ESP+0x20],EDI
+ *  004C6457   FF15 78405400    CALL DWORD PTR DS:[0x544078]             ; gdi32.SelectObject
+ *  004C645D   894424 24        MOV DWORD PTR SS:[ESP+0x24],EAX
+ *  004C6461   33C0             XOR EAX,EAX
+ *  004C6463   6A 01            PUSH 0x1
+ *  004C6465   57               PUSH EDI
+ *  004C6466   894424 38        MOV DWORD PTR SS:[ESP+0x38],EAX
+ *  004C646A   894424 3C        MOV DWORD PTR SS:[ESP+0x3C],EAX
+ *  004C646E   FF15 60405400    CALL DWORD PTR DS:[0x544060]             ; gdi32.SetMapMode
+ *  004C6474   8B45 04          MOV EAX,DWORD PTR SS:[EBP+0x4]
+ *  004C6477   6A 5B            PUSH 0x5B
+ *  004C6479   50               PUSH EAX
+ *  004C647A   E8 7A130300      CALL .004F77F9
+ *  004C647F   8BF0             MOV ESI,EAX
+ *  004C6481   83C4 08          ADD ESP,0x8
+ *  004C6484   85F6             TEST ESI,ESI
+ *  004C6486   0F84 E3000000    JE .004C656F
+ *  004C648C   8B4D 04          MOV ECX,DWORD PTR SS:[EBP+0x4]
+ *  004C648F   51               PUSH ECX
+ *  004C6490   FF15 24425400    CALL DWORD PTR DS:[0x544224]             ; kernel32.lstrlenA
+ *  004C6496   8BD8             MOV EBX,EAX
+ *  004C6498   8D53 20          LEA EDX,DWORD PTR DS:[EBX+0x20]
+ *  004C649B   8BFE             MOV EDI,ESI
+ *  004C649D   2B7D 04          SUB EDI,DWORD PTR SS:[EBP+0x4]
+ *  004C64A0   52               PUSH EDX
+ *  004C64A1   E8 BECE0200      CALL .004F3364
+ *  004C64A6   8B4D 04          MOV ECX,DWORD PTR SS:[EBP+0x4]
+ *  004C64A9   57               PUSH EDI
+ *  004C64AA   51               PUSH ECX
+ *  004C64AB   50               PUSH EAX
+ *  004C64AC   894424 24        MOV DWORD PTR SS:[ESP+0x24],EAX
+ *  004C64B0   E8 CBD60200      CALL .004F3B80
+ *  004C64B5   8B45 04          MOV EAX,DWORD PTR SS:[EBP+0x4]
+ *  004C64B8   8B4C24 24        MOV ECX,DWORD PTR SS:[ESP+0x24]
+ *  004C64BC   03C3             ADD EAX,EBX
+ *  004C64BE   03F9             ADD EDI,ECX
+ *  004C64C0   83C4 10          ADD ESP,0x10
+ *  004C64C3   3BF0             CMP ESI,EAX
+ *  004C64C5   897C24 10        MOV DWORD PTR SS:[ESP+0x10],EDI
+ *  004C64C9   C64424 3C 00     MOV BYTE PTR SS:[ESP+0x3C],0x0
+ *  004C64CE   894424 1C        MOV DWORD PTR SS:[ESP+0x1C],EAX
+ *  004C64D2   73 6D            JNB SHORT .004C6541
+ *  004C64D4   56               PUSH ESI
+ *  004C64D5   FF15 68445400    CALL DWORD PTR DS:[0x544468]             ; user32.CharNextA
+ *  004C64DB   8BD8             MOV EBX,EAX
+ *  004C64DD   8BFB             MOV EDI,EBX
+ *  004C64DF   2BFE             SUB EDI,ESI
+ *  004C64E1   83FF 01          CMP EDI,0x1
+ *  004C64E4   75 2F            JNZ SHORT .004C6515
+ *  004C64E6   807C24 3C 00     CMP BYTE PTR SS:[ESP+0x3C],0x0
+ *  004C64EB   74 0C            JE SHORT .004C64F9
+ *  004C64ED   803E 5D          CMP BYTE PTR DS:[ESI],0x5D
+ *  004C64F0   75 3F            JNZ SHORT .004C6531
+ *  004C64F2   C64424 3C 00     MOV BYTE PTR SS:[ESP+0x3C],0x0
+ *  004C64F7   EB 38            JMP SHORT .004C6531
+ *  004C64F9   8A06             MOV AL,BYTE PTR DS:[ESI]
+ *  004C64FB   3C 5B            CMP AL,0x5B
+ *  004C64FD   75 07            JNZ SHORT .004C6506
+ *  004C64FF   C64424 3C 01     MOV BYTE PTR SS:[ESP+0x3C],0x1
+ *  004C6504   EB 2B            JMP SHORT .004C6531
+ *  004C6506   8B4C24 10        MOV ECX,DWORD PTR SS:[ESP+0x10]
+ *  004C650A   8801             MOV BYTE PTR DS:[ECX],AL
+ *  004C650C   83C1 01          ADD ECX,0x1
+ *  004C650F   894C24 10        MOV DWORD PTR SS:[ESP+0x10],ECX
+ *  004C6513   EB 1C            JMP SHORT .004C6531
+ *  004C6515   807C24 3C 00     CMP BYTE PTR SS:[ESP+0x3C],0x0
+ *  004C651A   75 15            JNZ SHORT .004C6531
+ *  004C651C   57               PUSH EDI
+ *  004C651D   56               PUSH ESI
+ *  004C651E   8B7424 18        MOV ESI,DWORD PTR SS:[ESP+0x18]
+ *  004C6522   56               PUSH ESI
+ *  004C6523   E8 58D60200      CALL .004F3B80
+ *  004C6528   83C4 0C          ADD ESP,0xC
+ *  004C652B   03F7             ADD ESI,EDI
+ *  004C652D   897424 10        MOV DWORD PTR SS:[ESP+0x10],ESI
+ *  004C6531   3B5C24 1C        CMP EBX,DWORD PTR SS:[ESP+0x1C]
+ *  004C6535   8BF3             MOV ESI,EBX
+ *  004C6537  ^72 9B            JB SHORT .004C64D4
+ *  004C6539   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  004C653D   8B7C24 10        MOV EDI,DWORD PTR SS:[ESP+0x10]
+ *  004C6541   8B4424 18        MOV EAX,DWORD PTR SS:[ESP+0x18]
+ *  004C6545   8D5424 30        LEA EDX,DWORD PTR SS:[ESP+0x30]
+ *  004C6549   52               PUSH EDX
+ *  004C654A   C607 00          MOV BYTE PTR DS:[EDI],0x0
+ *  004C654D   2BF9             SUB EDI,ECX
+ *  004C654F   57               PUSH EDI
+ *  004C6550   51               PUSH ECX
+ *  004C6551   50               PUSH EAX
+ *  004C6552   FF15 58405400    CALL DWORD PTR DS:[0x544058]             ; gdi32.GetTextExtentPoint32A
+ *  004C6558   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  004C655C   51               PUSH ECX
+ *  004C655D   E8 63060300      CALL .004F6BC5
+ *  004C6562   8B5C24 24        MOV EBX,DWORD PTR SS:[ESP+0x24]
+ *  004C6566   8B7C24 1C        MOV EDI,DWORD PTR SS:[ESP+0x1C]
+ *  004C656A   83C4 04          ADD ESP,0x4
+ *  004C656D   EB 1B            JMP SHORT .004C658A
+ *  004C656F   8B45 04          MOV EAX,DWORD PTR SS:[EBP+0x4]
+ *  004C6572   8D5424 30        LEA EDX,DWORD PTR SS:[ESP+0x30]
+ *  004C6576   52               PUSH EDX
+ *  004C6577   50               PUSH EAX
+ *  004C6578   FF15 24425400    CALL DWORD PTR DS:[0x544224]             ; kernel32.lstrlenA
+ *  004C657E   8B4D 04          MOV ECX,DWORD PTR SS:[EBP+0x4]
+ *  004C6581   50               PUSH EAX
+ *  004C6582   51               PUSH ECX
+ *  004C6583   57               PUSH EDI
+ *  004C6584   FF15 58405400    CALL DWORD PTR DS:[0x544058]             ; gdi32.GetTextExtentPoint32A
+ *  004C658A   8B4424 24        MOV EAX,DWORD PTR SS:[ESP+0x24]
+ *  004C658E   85C0             TEST EAX,EAX
+ *  004C6590   74 08            JE SHORT .004C659A
+ *  004C6592   50               PUSH EAX
+ *  004C6593   57               PUSH EDI
+ *  004C6594   FF15 78405400    CALL DWORD PTR DS:[0x544078]             ; gdi32.SelectObject
+ *  004C659A   8B5424 28        MOV EDX,DWORD PTR SS:[ESP+0x28]
+ *  004C659E   52               PUSH EDX
+ *  004C659F   FF15 6C405400    CALL DWORD PTR DS:[0x54406C]             ; gdi32.DeleteObject
+ *  004C65A5   57               PUSH EDI
+ *  004C65A6   FF15 74405400    CALL DWORD PTR DS:[0x544074]             ; gdi32.DeleteDC
+ *  004C65AC   8B4424 34        MOV EAX,DWORD PTR SS:[ESP+0x34]
+ *  004C65B0   8B4C24 30        MOV ECX,DWORD PTR SS:[ESP+0x30]
+ *  004C65B4   50               PUSH EAX
+ *  004C65B5   51               PUSH ECX
+ *  004C65B6   6A 00            PUSH 0x0
+ *  004C65B8   6A 00            PUSH 0x0
+ *  004C65BA   8D55 14          LEA EDX,DWORD PTR SS:[EBP+0x14]
+ *  004C65BD   52               PUSH EDX
+ *  004C65BE   FF15 60445400    CALL DWORD PTR DS:[0x544460]             ; user32.SetRect
+ *  004C65C4   8B83 E8000000    MOV EAX,DWORD PTR DS:[EBX+0xE8]
+ *  004C65CA   8945 20          MOV DWORD PTR SS:[EBP+0x20],EAX
+ *  004C65CD   8B83 E0000000    MOV EAX,DWORD PTR DS:[EBX+0xE0]
+ *  004C65D3   8B6D 1C          MOV EBP,DWORD PTR SS:[EBP+0x1C]
+ *  004C65D6   3BC5             CMP EAX,EBP
+ *  004C65D8   7F 02            JG SHORT .004C65DC
+ *  004C65DA   8BC5             MOV EAX,EBP
+ *  004C65DC   8B7424 2C        MOV ESI,DWORD PTR SS:[ESP+0x2C]
+ *  004C65E0   8983 E0000000    MOV DWORD PTR DS:[EBX+0xE0],EAX
+ *  004C65E6   8B8B E8000000    MOV ECX,DWORD PTR DS:[EBX+0xE8]
+ *  004C65EC   018B E4000000    ADD DWORD PTR DS:[EBX+0xE4],ECX
+ *  004C65F2   8BCB             MOV ECX,EBX
+ *  004C65F4   E8 47C7FFFF      CALL .004C2D40
+ *  004C65F9   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+ *  004C65FC   85C0             TEST EAX,EAX
+ *  004C65FE   75 0F            JNZ SHORT .004C660F
+ *  004C6600   33F6             XOR ESI,ESI
+ *  004C6602   5F               POP EDI
+ *  004C6603   8D46 FF          LEA EAX,DWORD PTR DS:[ESI-0x1]
+ *  004C6606   5E               POP ESI
+ *  004C6607   5D               POP EBP
+ *  004C6608   5B               POP EBX
+ *  004C6609   83C4 28          ADD ESP,0x28
+ *  004C660C   C2 0400          RETN 0x4
+ *  004C660F   8B76 08          MOV ESI,DWORD PTR DS:[ESI+0x8]
+ *  004C6612   2BF0             SUB ESI,EAX
+ *  004C6614   C1FE 02          SAR ESI,0x2
+ *  004C6617   5F               POP EDI
+ *  004C6618   8D46 FF          LEA EAX,DWORD PTR DS:[ESI-0x1]
+ *  004C661B   5E               POP ESI
+ *  004C661C   5D               POP EBP
+ *  004C661D   5B               POP EBX
+ *  004C661E   83C4 28          ADD ESP,0x28
+ *  004C6621   C2 0400          RETN 0x4
+ *  004C6624   CC               INT3
+ *  004C6625   CC               INT3
+ *  004C6626   CC               INT3
+ *
+ *  Stack
+ *  0012E460   00446BBD  RETURN to .00446BBD from .004C6360
+ *  0012E464   0012E4B8  text here, the same value as eax
+ *  0012E468   00000003
+ *  0012E46C   07E87CA8
+ *  0012E470   07E92830
+ *  0012E474   07E92810
+ *  0012E478   07E5EA50
+ *  0012E47C   07E5EA50
+ *
+ *  EAX 0012E4B8
+ *  ECX 01EA6490
+ *  EDX 0012E4DC    ; jichi: text here
+ *  EBX 00000000
+ *  ESP 0012E460
+ *  EBP FFFFFFFF
+ *  ESI 00000000
+ *  EDI 07E92810
+ *  EIP 004C6360 .004C6360
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+  //int count = 0;
+  //auto fun = [&count](ulong call) -> bool {
+  //  count += winhook::hook_both(call, Private::hookBefore, Private::hookAfter);
+  //  return true; // replace all functions
+  //};
+  //MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
+  //DOUT("call number =" << count);
+  //return count;
+}
+
+} // namespace OtherHook
+
+namespace ChoiceHook {
+
+namespace Private {
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    LPCSTR text = (LPCSTR)s->ecx; // new game, text in arg2 for the caller of GetTextExtentPoint32A
+    if (!Engine::isAddressWritable(text))
+      return true;
+    LPCSTR trimmedText = OtherHook::ltrim(text);
+    if (!trimmedText || !*trimmedText)
+      return true;
+    QByteArray oldData = trimmedText;
+    if (OtherHook::translations_.contains(oldData))
+      return true;
+    enum { role = Engine::OtherRole };
+    auto split = s->stack[0]; // retaddr
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    if (newData == oldData)
+      return true;
+    //::strcpy(text, newData.constData());
+    OtherHook::translations_.insert(newData);
+    if (trimmedText != text) {
+      newData.prepend(text, trimmedText - text);
+      OtherHook::translations_.insert(newData); // insert to make newData persistent
+    }
+    s->ecx = (DWORD)newData.constData();
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: 神楽花莚譚
+ *
+ *  Here's the caller of the scenario hook, text in ecx:
  *  01378BAA   CC               INT3
  *  01378BAB   CC               INT3
  *  01378BAC   CC               INT3
@@ -687,7 +1033,7 @@ namespace Private {
  *  01378C68   0FBE07           MOVSX EAX,BYTE PTR DS:[EDI]
  *  01378C6B   83F8 40          CMP EAX,0x40
  *  01378C6E  ^76 C2            JBE SHORT .01378C32
- *  01378C70   57               PUSH EDI
+ *  01378C70   57               PUSH EDI    ; jichi: ecx as args is here
  *  01378C71   8D85 CCEFFFFF    LEA EAX,DWORD PTR SS:[EBP-0x1034]
  *  01378C77   68 584B4601      PUSH .01464B58                           ; ASCII " %s "
  *  01378C7C   50               PUSH EAX
@@ -710,7 +1056,7 @@ namespace Private {
  *  01378CB3   8B0D D0EE4A01    MOV ECX,DWORD PTR DS:[0x14AEED0]
  *  01378CB9   8D45 CC          LEA EAX,DWORD PTR SS:[EBP-0x34]
  *  01378CBC   50               PUSH EAX
- *  01378CBD   E8 5EAFFBFF      CALL .01333C20  ; jichi: caller of GetTextExtentPoint32A is here
+ *  01378CBD   E8 5EAFFBFF      CALL .01333C20   ; jichi: caller of GetTextExtentPoint32A is here
  *  01378CC2   837D F4 00       CMP DWORD PTR SS:[EBP-0xC],0x0
  *  01378CC6   74 12            JE SHORT .01378CDA
  *  01378CC8   8B0D D0EE4A01    MOV ECX,DWORD PTR DS:[0x14AEED0]
@@ -786,27 +1132,33 @@ namespace Private {
  *  01378D8D   CC               INT3
  *  01378D8E   CC               INT3
  *  01378D8F   CC               INT3
+ *
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+  const quint8 bytes[] = {
+    0x89,0x45, 0xd0, // 01378c88   8945 d0          mov dword ptr ss:[ebp-0x30],eax
+    0x8b,0x45, 0xf8, // 01378c8b   8b45 f8          mov eax,dword ptr ss:[ebp-0x8]
+    0x89,0x45, 0xd4, // 01378c8e   8945 d4          mov dword ptr ss:[ebp-0x2c],eax
+    0x8b,0x45, 0xf0, // 01378c91   8b45 f0          mov eax,dword ptr ss:[ebp-0x10]
+    0x89,0x45, 0xdc, // 01378c94   8945 dc          mov dword ptr ss:[ebp-0x24],eax
+    0x8b,0x45, 0x08, // 01378c97   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+    0x83,0xc4, 0x0c, // 01378c9a   83c4 0c          add esp,0xc
+    0x89,0x5d, 0xcc, // 01378c9d   895d cc          mov dword ptr ss:[ebp-0x34],ebx
+    0x85,0xc0,       // 01378ca0   85c0             test eax,eax
+    0x74, 0x08       // 01378ca2   74 08            je short .01378cac
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
     return false;
-  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
   if (!addr)
     return false;
   return winhook::hook_before(addr, Private::hookBefore);
-  //int count = 0;
-  //auto fun = [&count](ulong caller) -> bool {
-  //  count += winhook::hook_before(caller, Private::hookBefore);
-  //  return true; // find all calls
-  //};
-  //MemDbg::iterAlignedNearCallerAddress(fun, addr, startAddress, stopAddress);
-  //DOUT("call number =" << count);
-  //return count;
 }
 
-} // namespace OtherHook
+} // namespace ChoiceHook
+
 } // unnamed namespace
 
 
@@ -1186,15 +1538,26 @@ bool attach()
 */
 bool DebonosuEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
-  HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
 
-  if (!ScenarioHook::isOldVersion() && OtherHook::attach()) {
-    HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
-    DOUT("other text found");
-  } else
-    DOUT("other text NOT FOUND");
+  if (!ScenarioHook::attach(startAddress, stopAddress))
+    return false;
+
+  if (ChoiceHook::attach(startAddress, stopAddress))
+    DOUT("choice text found");
+  else
+    DOUT("choice text NOT FOUND");
+
+  //if (OtherHook::attach(startAddress, stopAddress))
+  //  DOUT("other text found");
+  //else
+  //  DOUT("other text NOT FOUND");
+
+  HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
+  HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
+
   return true;
 }
 
