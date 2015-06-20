@@ -305,8 +305,8 @@ bool attach(ulong startAddress, ulong stopAddress)
   //return count;
 }
 
-//bool isOldVersion() // old Debonosu games
-//{ return Private::textOffset_ == Private::TextOffsetEax; }
+bool isOldVersion() // old Debonosu games
+{ return Private::textOffset_ == Private::TextOffsetEax; }
 
 } // namespace ScenarioHook
 
