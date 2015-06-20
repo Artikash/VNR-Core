@@ -12,6 +12,7 @@
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
 #include <QtCore/QSet>
+#include <QtCore/QRegExp>
 
 #define DEBUG "debonosu"
 #include "sakurakit/skdebug.h"
@@ -1559,6 +1560,24 @@ bool DebonosuEngine::attach()
   HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
 
   return true;
+}
+
+/**
+ *  Remove furigana in scenario thread.
+ *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
+ */
+QString DebonosuEngine::textFilter(const QString &text, int role)
+{
+  if (role != Engine::ScenarioRole || !text.contains('{'))
+    return text;
+
+  static QRegExp rx("\\{(.+)/.+\\}");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+
+  QString ret = text;
+  ret.replace(rx, "\\1");
+  return ret;
 }
 
 // EOF
