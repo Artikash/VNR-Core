@@ -11,8 +11,8 @@
 #include "ntinspect/ntinspect.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
-#include <QtCore/QSet>
 #include <QtCore/QRegExp>
+#include <unordered_set>
 
 #define DEBUG "debonosu"
 #include "sakurakit/skdebug.h"
@@ -313,7 +313,7 @@ bool isOldVersion() // old Debonosu games
 
 namespace OtherHook {
 
-QSet<QByteArray> translations_;
+std::unordered_set<LPCSTR> translatedTexts_; // text that has already been translated
 
 inline char *ltrim(const char *s) // skip leading "+" for choices
 {
@@ -322,36 +322,41 @@ inline char *ltrim(const char *s) // skip leading "+" for choices
   return const_cast<char *>(s);
 }
 
+// Maximum characters in a text including \0
+// Found by debugging text of 神楽花莚譚
+// Need to use this value if copy is used
+
 namespace Private {
 
   bool hookBefore(winhook::hook_stack *s)
   {
-    LPCSTR *lpText = (LPCSTR *)&s->stack[2]; // new game, text in arg2 for the caller of GetTextExtentPoint32A
-    if (!Engine::isAddressWritable(*lpText)) {
-      lpText = (LPCSTR *)&s->edx; // old game
-      if (!Engine::isAddressWritable(*lpText))
+    enum { TextCapacity = 0x10 };
+    LPSTR text = (LPSTR)s->stack[2]; // new game, text in arg2 for the caller of GetTextExtentPoint32A
+    if (!Engine::isAddressWritable(text)) {
+      text = (LPSTR)s->edx; // old game
+      if (!Engine::isAddressWritable(text))
         return true;
     }
-    auto text = *lpText;
+    if (translatedTexts_.find(text) != translatedTexts_.cend())
+      return true;
     LPCSTR trimmedText = OtherHook::ltrim(text);
     if (!trimmedText || !*trimmedText)
-      return true;
-    QByteArray oldData = trimmedText;
-    if (OtherHook::translations_.contains(oldData))
       return true;
     enum { role = Engine::OtherRole };
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
-    if (newData == oldData)
+    QByteArray oldData = trimmedText,
+               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    if (oldData == newData)
       return true;
-    //::strcpy(text, newData.constData());
-    OtherHook::translations_.insert(newData);
-    if (trimmedText != text) {
-      newData.prepend(text, trimmedText - text);
-      OtherHook::translations_.insert(newData); // insert to make newData persistent
-    }
-    *lpText = newData.constData();
+    //if (trimmedText != text)
+    //  newData.prepend(text, trimmedText - text);
+    int capacity = TextCapacity - (trimmedText - text);
+    if (capacity <= 0)
+      return true;
+    ::memcpy(text, newData.constData(), max(newData.size() + 1, capacity));
+    text[capacity - 1] = 0; // enforce trailing zero
+    translatedTexts_.insert(text);
     return true;
   }
 
@@ -941,27 +946,26 @@ namespace Private {
 
   bool hookBefore(winhook::hook_stack *s)
   {
+    enum { TextCapacity = 0x10 };
     LPCSTR text = (LPCSTR)s->ecx; // new game, text in arg2 for the caller of GetTextExtentPoint32A
     if (!Engine::isAddressWritable(text))
       return true;
+    //if (OtherHook::translatedTexts_.find(text) != OtherHook::translatedTexts_.cend())
+    //  return true;
     LPCSTR trimmedText = OtherHook::ltrim(text);
     if (!trimmedText || !*trimmedText)
-      return true;
-    QByteArray oldData = trimmedText;
-    if (OtherHook::translations_.contains(oldData))
       return true;
     enum { role = Engine::OtherRole };
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    QByteArray oldData = trimmedText,
+               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
     if (newData == oldData)
       return true;
     //::strcpy(text, newData.constData());
-    OtherHook::translations_.insert(newData);
-    if (trimmedText != text) {
+    if (trimmedText != text)
       newData.prepend(text, trimmedText - text);
-      OtherHook::translations_.insert(newData); // insert to make newData persistent
-    }
+
     s->ecx = (DWORD)newData.constData();
     return true;
   }
@@ -1155,7 +1159,15 @@ bool attach(ulong startAddress, ulong stopAddress)
   addr = MemDbg::findEnclosingAlignedFunction(addr);
   if (!addr)
     return false;
-  return winhook::hook_before(addr, Private::hookBefore);
+  //return winhook::hook_before(addr, Private::hookBefore);
+  int count = 0;
+  auto fun = [&count](ulong call) -> bool {
+    count += winhook::hook_before(call, Private::hookBefore);
+    return true; // replace all functions
+  };
+  MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
+  DOUT("call number =" << count);
+  return count;
 }
 
 } // namespace ChoiceHook
@@ -1546,10 +1558,10 @@ bool DebonosuEngine::attach()
   if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
 
-  if (ChoiceHook::attach(startAddress, stopAddress))
-    DOUT("choice text found");
-  else
-    DOUT("choice text NOT FOUND");
+  //if (ChoiceHook::attach(startAddress, stopAddress))
+  //  DOUT("choice text found");
+  //else
+  //  DOUT("choice text NOT FOUND");
 
   //if (OtherHook::attach(startAddress, stopAddress))
   //  DOUT("other text found");
