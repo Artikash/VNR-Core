@@ -9,6 +9,7 @@ rename:
   Eushully: ARCGameEngine
   MAJIRO: Majiro
   Pencil: Pensil
+  RetouchSystem: Retouch
   Silkys: Elf
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
@@ -237,7 +238,8 @@ simple:
   - Pensil
   - RealLive
   - Rejet
-  - RetouchSystem
+  - Retouch
+  - RetouchSystem # renamed
   - rUGP
   - rUGP2
   - ScenarioPlayerA
@@ -471,7 +473,8 @@ char:
   - QLIE2
   - RealLive
   - Rejet
-  - RetouchSystem
+  - Retouch
+  - RetouchSystem # renamed
   - rUGP
   - rUGP2
   - ScenarioPlayerA
