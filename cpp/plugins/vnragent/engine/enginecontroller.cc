@@ -412,8 +412,10 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (sendAllowed && !sent) {
     needsTranslation = repl.isEmpty();
-    p->sendText(trimmedText, hash, signature, role, needsTranslation);
-    sent = true;
+    if (role != Engine::OtherRole || needsTranslation) {
+      p->sendText(trimmedText, hash, signature, role, needsTranslation);
+      sent = true;
+    }
   }
   if (sent && needsTranslation)
     repl = p->waitForTranslation(hash, role);
@@ -551,8 +553,10 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (sendAllowed && !sent) {
     needsTranslation = repl.isEmpty();
-    p->sendText(trimmedText, hash, signature, role, needsTranslation);
-    sent = true;
+    if (role != Engine::OtherRole || needsTranslation) {
+      p->sendText(trimmedText, hash, signature, role, needsTranslation);
+      sent = true;
+    }
   }
   if (sent && needsTranslation)
     repl = p->waitForTranslation(hash, role);
