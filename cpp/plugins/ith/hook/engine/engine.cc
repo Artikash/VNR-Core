@@ -6344,12 +6344,12 @@ bool InsertRetouchHook()
     hp.address = addr;
     hp.offset = 4;
     hp.type = USING_STRING;
-    ConsoleOutput("vnreng: INSERT RetouchSystem");
-    NewHook(hp, L"RetouchSystem");
+    ConsoleOutput("vnreng: INSERT Retouch");
+    NewHook(hp, L"Retouch");
     return true;
   }
-  ConsoleOutput("vnreng:RetouchSystem: failed");
-  //ConsoleOutput("Unknown RetouchSystem engine.");
+  ConsoleOutput("vnreng:Retouch: failed");
+  //ConsoleOutput("Unknown Retouch engine.");
   return false;
 }
 
