@@ -6,13 +6,14 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
+#include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
-#include <unordered_set>
+#include <QtCore/QSet>
 
 #define DEBUG "debonosu"
 #include "sakurakit/skdebug.h"
@@ -312,6 +313,8 @@ bool attach(ulong startAddress, ulong stopAddress)
 } // namespace ScenarioHook
 
 namespace NameHook { // scenario with name, but scenario are rendered line-by-line and not good place to hook
+  QSet<QByteArray> texts_;
+
 namespace Private {
   bool hookBefore(winhook::hook_stack *s)
   {
@@ -322,8 +325,8 @@ namespace Private {
 
     enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
     data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    texts_.insert(data_);
     s->ecx = (ulong)data_.constData();
-    //::strcpy(text, data.constData());
     return true;
   }
 } // namespace Private
@@ -671,6 +674,177 @@ bool attach(ulong startAddress, ulong stopAddress)
 }
 
 } // namespace NameHook
+
+namespace OtherHook {
+
+namespace Private {
+
+  struct FunctionStack
+  {
+    DWORD retaddr;
+    LPDWORD unknown[4]; // arg1~4
+    LPCSTR begin,   // arg5, start of the text
+           end;     // arg6, stop of the text, usually \0
+
+    bool isValid() const
+    {
+      int size = end - begin;
+      return size > 2 // avoid paint individual character
+          && Engine::isAddressWritable(begin, size);
+    }
+  };
+
+  //inline const char *ltrim(const char *s) // skip leading "+" for choices
+  //{
+  //  for (; *s; s++)
+  //    if ((signed char)*s < 0)
+  //      break;
+  //  return s;
+  //}
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QByteArray data_;
+    auto args = (FunctionStack *)s->stack; // new game, text in arg2 for the caller of GetTextExtentPoint32A
+    if (!args->isValid())
+      return true;
+
+    QByteArray oldData(args->begin, args->end - args->begin);
+    if (NameHook::texts_.contains(oldData))
+      return true;
+    //auto text = ltrim(args->begin);
+    //text = args->begin;
+    //if (text != args->begin) {
+    //  if (text >= args->end)
+    //    return true;
+    //  oldData = text;
+    //}
+
+    enum { role = Engine::OtherRole };
+    auto split = args->retaddr;
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    if (newData == oldData)
+      return true;
+    //if (text != args->begin)
+    //  newData.prepend(args->begin, text - args->begin);
+    data_ = newData;
+    args->begin = data_.constData();
+    args->end = args->begin + data_.size();
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: 神楽花莚譚
+ *  FIXME: This hook does not work for some old games such as 神楽道中記.
+ *  FIXME: It does not hook for 偽骸のアルルーナ and 戦場のフォークロア as well.
+ *
+ *  Found by tracing GdipDrawString
+ *
+ *  0058E0E4   0005DC40   RETURN to .0005DC40 from .0010F510
+ *  0058E0E8   00000030
+ *  0058E0EC   00000073
+ *  0058E0F0   0058E120
+ *  0058E0F4   00000001
+ *  0058E0F8   1984B378 ; jichi: text begin, arg5
+ *  0058E0FC   1984B380 ; jichi: text end, arg6
+ *  0058E100   021D3DF0
+ *  0058E104   00000000
+ *  0058E108   FFA0A0A0
+ *  0058E10C   021D3E04
+ *  0058E110   021D3E08
+ *  0058E114   021D3E0C
+ *  0058E118   0AFA2FB8
+ *  0058E11C   00000030
+ *  0058E120   00000000
+ *  0058E124   00000000
+ *
+ *  0010F50E   CC               INT3
+ *  0010F50F   CC               INT3
+ *  0010F510   55               PUSH EBP
+ *  0010F511   8BEC             MOV EBP,ESP
+ *  0010F513   83E4 C0          AND ESP,0xFFFFFFC0
+ *  0010F516   81EC B4000000    SUB ESP,0xB4
+ *  0010F51C   8B45 2C          MOV EAX,DWORD PTR SS:[EBP+0x2C]
+ *  0010F51F   53               PUSH EBX
+ *  0010F520   8B5D 30          MOV EBX,DWORD PTR SS:[EBP+0x30]
+ *  0010F523   56               PUSH ESI
+ *  0010F524   8BF1             MOV ESI,ECX
+ *  0010F526   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  0010F528   57               PUSH EDI
+ *  0010F529   897424 4C        MOV DWORD PTR SS:[ESP+0x4C],ESI
+ *  0010F52D   85C9             TEST ECX,ECX
+ *  ...
+ *  0010FB7D   0FB707           MOVZX EAX,WORD PTR DS:[EDI] ; jichi: pattern existed in new Debonosu games
+ *  0010FB80   50               PUSH EAX
+ *  0010FB81   FF75 14          PUSH DWORD PTR SS:[EBP+0x14]
+ *  0010FB84   8BCE             MOV ECX,ESI
+ *  0010FB86   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
+ *  0010FB89   E8 22F8FFFF      CALL .0010F3B0
+ *  0010FB8E   807E 1F 80       CMP BYTE PTR DS:[ESI+0x1F],0x80
+ *  0010FB92   894424 44        MOV DWORD PTR SS:[ESP+0x44],EAX
+ *  0010FB96   75 1E            JNZ SHORT .0010FBB6
+ *  0010FB98   66:0F6E46 64     MOVD MM0,DWORD PTR DS:[ESI+0x64]
+ *  ...
+ *  0010FC02   FF75 14          PUSH DWORD PTR SS:[EBP+0x14]
+ *  0010FC05   8BCE             MOV ECX,ESI
+ *  0010FC07   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
+ *  0010FC0A   E8 A1F7FFFF      CALL .0010F3B0
+ *  0010FC0F   894424 44        MOV DWORD PTR SS:[ESP+0x44],EAX
+ *  0010FC13  ^E9 36FEFFFF      JMP .0010FA4E
+ *  0010FC18   8B7424 4C        MOV ESI,DWORD PTR SS:[ESP+0x4C]
+ *  0010FC1C   57               PUSH EDI
+ *  0010FC1D   FF15 18A42500    CALL DWORD PTR DS:[0x25A418]             ; user32.CharNextA
+ *  0010FC23   F3:0F105424 3C   MOVSS XMM2,DWORD PTR SS:[ESP+0x3C]
+ *  0010FC29   F3:0F104C24 40   MOVSS XMM1,DWORD PTR SS:[ESP+0x40]
+ *  0010FC2F   F3:0F101D CCC329>MOVSS XMM3,DWORD PTR DS:[0x29C3CC]
+ *  0010FC37   F3:0F104424 60   MOVSS XMM0,DWORD PTR SS:[ESP+0x60]
+ *  0010FC3D   8B15 18A42500    MOV EDX,DWORD PTR DS:[0x25A418]          ; user32.CharNextA
+ *  0010FC43   8BF8             MOV EDI,EAX
+ *  0010FC45   3B7D 1C          CMP EDI,DWORD PTR SS:[EBP+0x1C]
+ *  0010FC48  ^0F82 46FAFFFF    JB .0010F694
+ *  0010FC4E   8B4424 44        MOV EAX,DWORD PTR SS:[ESP+0x44]
+ *  0010FC52   85C0             TEST EAX,EAX
+ *  0010FC54   79 1D            JNS SHORT .0010FC73
+ *  0010FC56   50               PUSH EAX
+ *  0010FC57   E8 FABA1000      CALL .0021B756
+ *  0010FC5C   50               PUSH EAX
+ *  0010FC5D   68 F4DE2800      PUSH .0028DEF4                           ; ASCII "D3DFont::Draw"
+ *  0010FC62   68 40DD2800      PUSH .0028DD40                           ; ASCII "%s: %s"
+ *  0010FC67   E8 74A40E00      CALL .001FA0E0
+ *  0010FC6C   8B4424 50        MOV EAX,DWORD PTR SS:[ESP+0x50]
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const quint8 bytes[] = {
+    0x50,            // 0010fb80   50               push eax
+    0xff,0x75, 0x14, // 0010fb81   ff75 14          push dword ptr ss:[ebp+0x14]
+    0x8b,0xce,       // 0010fb84   8bce             mov ecx,esi
+    0xff,0x75, 0x10  // 0010fb86   ff75 10          push dword ptr ss:[ebp+0x10]
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (addr)
+    DOUT("instruction pattern found");
+  else  {
+    DOUT("instruction pattern not found, use string pattern instead");
+    const char *msg = "D3DFont::Draw";
+    ulong addr = MemDbg::findBytes(msg, ::strlen(msg+1), startAddress, stopAddress);
+    if (!addr)
+      return false;
+    addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
+    if (!addr)
+      return false;
+  }
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+}
+
+} // namespace OtherHook
+
 } // unnamed namespace
 
 /**
@@ -1060,10 +1234,17 @@ bool DebonosuEngine::attach()
   else
     DOUT("name text NOT FOUND");
 
-  //if (OtherHook::attach())
-  //  DOUT("other text found");
+  if (OtherHook::attach(startAddress, stopAddress))
+    DOUT("other text found");
+  else
+    DOUT("other text NOT FOUND");
+
+
+  //if (ChoiceHook::attach(startAddress, stopAddress))
+  //  DOUT("choice text found");
   //else
-  //  DOUT("other text NOT FOUND");
+  //  DOUT("choice text NOT FOUND");
+
 
   HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
   HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
@@ -1989,6 +2170,303 @@ bool attach(ulong startAddress, ulong stopAddress)
   MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
   DOUT("call number =" << count);
   return count;
+}
+
+} // namespace ChoiceHook
+
+namespace ChoiceHook {
+
+namespace Private {
+
+  struct FunctionStack
+  {
+    DWORD retaddr;
+    LPDWORD arg1;   // unknown
+    LPCSTR begin,   // arg2, start of the text
+           end;     // arg3, stop of the text, usually \0
+
+    bool isValid() const
+    { return Engine::isAddressWritable(begin, end - begin) && end - begin >= 3; }
+  };
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QByteArray data_;
+    auto args = (FunctionStack *)s->stack; // new game, text in arg2 for the caller of GetTextExtentPoint32A
+    if (!args->isValid())
+      return false;
+    enum { role = Engine::OtherRole };
+    auto split = args->retaddr;
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray oldData(args->begin, args->end - args->begin),
+               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    if (newData == oldData)
+      return true;
+    data_ = newData;
+    args->begin = data_.constData();
+    args->end = args->begin + data_.size();
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: 神楽花莚譚
+ *  Found by tracing CharNextA
+ *
+ *  0026E210   01451F57  RETURN to .01451F57 from .013FFD90
+ *  0026E214   0026E2B0
+ *  0026E218   01152080 ; jichi: text starts
+ *  0026E21C   0115208E ; jichi: pointed to \0
+ *  0026E220   00000000
+ *  0026E224   185DDC6C
+ *  0026E228   07B32310
+ *  0026E22C   000001B6
+ *
+ *  013FFD8D   CC               INT3
+ *  013FFD8E   CC               INT3
+ *  013FFD8F   CC               INT3
+ *  013FFD90   55               PUSH EBP    ; jichi: text is between arg2 and arg3, but it is used to measure text length instead of paint it
+ *  013FFD91   8BEC             MOV EBP,ESP
+ *  013FFD93   83EC 10          SUB ESP,0x10
+ *  013FFD96   53               PUSH EBX
+ *  013FFD97   8B5D 08          MOV EBX,DWORD PTR SS:[EBP+0x8]
+ *  013FFD9A   56               PUSH ESI
+ *  013FFD9B   8B75 0C          MOV ESI,DWORD PTR SS:[EBP+0xC]
+ *  013FFD9E   57               PUSH EDI
+ *  013FFD9F   33C0             XOR EAX,EAX
+ *  013FFDA1   8BF9             MOV EDI,ECX
+ *  013FFDA3   0F57C9           XORPS XMM1,XMM1
+ *  013FFDA6   897D F4          MOV DWORD PTR SS:[EBP-0xC],EDI
+ *  013FFDA9   C703 00000000    MOV DWORD PTR DS:[EBX],0x0
+ *  013FFDAF   C743 04 00000000 MOV DWORD PTR DS:[EBX+0x4],0x0
+ *  013FFDB6   F3:0F114D 0C     MOVSS DWORD PTR SS:[EBP+0xC],XMM1
+ *  013FFDBB   8945 F8          MOV DWORD PTR SS:[EBP-0x8],EAX
+ *  013FFDBE   3B75 10          CMP ESI,DWORD PTR SS:[EBP+0x10]
+ *  013FFDC1   0F83 57020000    JNB .0140001E
+ *  013FFDC7   8B15 18A45401    MOV EDX,DWORD PTR DS:[0x154A418]         ; user32.CharNextA
+ *  013FFDCD   8D49 00          LEA ECX,DWORD PTR DS:[ECX]
+ *  013FFDD0   8A0E             MOV CL,BYTE PTR DS:[ESI]
+ *  013FFDD2   0FBEC1           MOVSX EAX,CL
+ *  013FFDD5   83F8 7B          CMP EAX,0x7B
+ *  013FFDD8   0F87 EF000000    JA .013FFECD
+ *  013FFDDE   0FB680 44004001  MOVZX EAX,BYTE PTR DS:[EAX+0x1400044]
+ *  013FFDE5   FF2485 2C004001  JMP DWORD PTR DS:[EAX*4+0x140002C]
+ *  013FFDEC   46               INC ESI
+ *  013FFDED   E9 23020000      JMP .01400015
+ *  013FFDF2   807E 01 0A       CMP BYTE PTR DS:[ESI+0x1],0xA
+ *  013FFDF6   75 05            JNZ SHORT .013FFDFD
+ *  013FFDF8   56               PUSH ESI
+ *  013FFDF9   FFD2             CALL EDX
+ *  013FFDFB   8BF0             MOV ESI,EAX
+ *  013FFDFD   0F57C9           XORPS XMM1,XMM1
+ *  013FFE00   33C0             XOR EAX,EAX
+ *  013FFE02   F3:0F114D 0C     MOVSS DWORD PTR SS:[EBP+0xC],XMM1
+ *  013FFE07   8945 F8          MOV DWORD PTR SS:[EBP-0x8],EAX
+ *  013FFE0A   E9 F2010000      JMP .01400001
+ *  013FFE0F   8A46 01          MOV AL,BYTE PTR DS:[ESI+0x1]
+ *  013FFE12   46               INC ESI
+ *  013FFE13   84C0             TEST AL,AL
+ *  013FFE15   0F84 E6010000    JE .01400001
+ *  013FFE1B   EB 03            JMP SHORT .013FFE20
+ *  013FFE1D   8D49 00          LEA ECX,DWORD PTR DS:[ECX]
+ *  013FFE20   3C 5D            CMP AL,0x5D
+ *  013FFE22   0F84 D9010000    JE .01400001
+ *  013FFE28   0FBEC0           MOVSX EAX,AL
+ *  013FFE2B   50               PUSH EAX
+ *  013FFE2C   E8 5D210F00      CALL .014F1F8E
+ *  013FFE31   83C4 04          ADD ESP,0x4
+ *  013FFE34   85C0             TEST EAX,EAX
+ *  013FFE36   75 14            JNZ SHORT .013FFE4C
+ *  013FFE38   0FBE06           MOVSX EAX,BYTE PTR DS:[ESI]
+ *  013FFE3B   50               PUSH EAX
+ *  013FFE3C   E8 20210F00      CALL .014F1F61
+ *  013FFE41   83C4 04          ADD ESP,0x4
+ *  013FFE44   85C0             TEST EAX,EAX
+ *  013FFE46   0F84 B5010000    JE .01400001
+ *  013FFE4C   8A46 01          MOV AL,BYTE PTR DS:[ESI+0x1]
+ *  013FFE4F   46               INC ESI
+ *  013FFE50   84C0             TEST AL,AL
+ *  013FFE52  ^75 CC            JNZ SHORT .013FFE20
+ *  013FFE54   E9 A8010000      JMP .01400001
+ *  013FFE59   8A46 01          MOV AL,BYTE PTR DS:[ESI+0x1]
+ *  013FFE5C   46               INC ESI
+ *  013FFE5D   84C0             TEST AL,AL
+ *  013FFE5F   74 31            JE SHORT .013FFE92
+ *  013FFE61   3C 7D            CMP AL,0x7D
+ *  013FFE63   74 28            JE SHORT .013FFE8D
+ *  013FFE65   0FBEC0           MOVSX EAX,AL
+ *  013FFE68   50               PUSH EAX
+ *  013FFE69   E8 20210F00      CALL .014F1F8E
+ *  013FFE6E   83C4 04          ADD ESP,0x4
+ *  013FFE71   85C0             TEST EAX,EAX
+ *  013FFE73   75 10            JNZ SHORT .013FFE85
+ *  013FFE75   0FBE06           MOVSX EAX,BYTE PTR DS:[ESI]
+ *  013FFE78   50               PUSH EAX
+ *  013FFE79   E8 E3200F00      CALL .014F1F61
+ *  013FFE7E   83C4 04          ADD ESP,0x4
+ *  013FFE81   85C0             TEST EAX,EAX
+ *  013FFE83   74 08            JE SHORT .013FFE8D
+ *  013FFE85   8A46 01          MOV AL,BYTE PTR DS:[ESI+0x1]
+ *  013FFE88   46               INC ESI
+ *  013FFE89   84C0             TEST AL,AL
+ *  013FFE8B  ^75 D4            JNZ SHORT .013FFE61
+ *  013FFE8D   F3:0F104D 0C     MOVSS XMM1,DWORD PTR SS:[EBP+0xC]
+ *  013FFE92   F745 14 00000100 TEST DWORD PTR SS:[EBP+0x14],0x10000
+ *  013FFE99   0F84 62010000    JE .01400001
+ *  013FFE9F   8B45 18          MOV EAX,DWORD PTR SS:[EBP+0x18]
+ *  013FFEA2   B9 58615C01      MOV ECX,.015C6158
+ *  013FFEA7   8B00             MOV EAX,DWORD PTR DS:[EAX]
+ *  013FFEA9   85C0             TEST EAX,EAX
+ *  013FFEAB   0F45C8           CMOVNE ECX,EAX
+ *  013FFEAE   8339 00          CMP DWORD PTR DS:[ECX],0x0
+ *  013FFEB1   0F84 4A010000    JE .01400001
+ *  013FFEB7   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
+ *  013FFEBC   0F5B             ???                                      ; Unknown command
+ *  013FFEBE   C0F3 0F          SAL BL,0xF
+ *  013FFEC1   58               POP EAX
+ *  013FFEC2   C8 F30F11        ENTER 0xFF3,0x11
+ *  013FFEC6   4D               DEC EBP
+ *  013FFEC7   0C E9            OR AL,0xE9
+ *  013FFEC9   34 01            XOR AL,0x1
+ *  013FFECB   0000             ADD BYTE PTR DS:[EAX],AL
+ *  013FFECD   80F9 5C          CMP CL,0x5C
+ *  013FFED0   75 01            JNZ SHORT .013FFED3
+ *  013FFED2   46               INC ESI
+ *  013FFED3   F647 48 02       TEST BYTE PTR DS:[EDI+0x48],0x2
+ *  013FFED7   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  013FFEDE   0F84 9B000000    JE .013FFF7F
+ *  013FFEE4   833F 00          CMP DWORD PTR DS:[EDI],0x0
+ *  013FFEE7   74 39            JE SHORT .013FFF22
+ *  013FFEE9   56               PUSH ESI
+ *  013FFEEA   FFD2             CALL EDX
+ *  013FFEEC   2BC6             SUB EAX,ESI
+ *  013FFEEE   83F8 01          CMP EAX,0x1
+ *  013FFEF1   75 2F            JNZ SHORT .013FFF22
+ *  013FFEF3   0FBE0E           MOVSX ECX,BYTE PTR DS:[ESI]
+ *  013FFEF6   83E9 20          SUB ECX,0x20
+ *  013FFEF9   C1E1 04          SHL ECX,0x4
+ *  013FFEFC   034F 60          ADD ECX,DWORD PTR DS:[EDI+0x60]
+ *  013FFEFF   8B41 08          MOV EAX,DWORD PTR DS:[ECX+0x8]
+ *  013FFF02   2B01             SUB EAX,DWORD PTR DS:[ECX]
+ *  013FFF04   83E8 02          SUB EAX,0x2
+ *  013FFF07   66:0F6EC0        MOVD MM0,EAX
+ *  013FFF0B   0F5B             ???                                      ; Unknown command
+ *  013FFF0D   D0B8 02000000    SAR BYTE PTR DS:[EAX+0x2],1
+ *  013FFF13   F3:0F5855 0C     ADDSS XMM2,DWORD PTR SS:[EBP+0xC]
+ *  013FFF18   F3:0F1155 0C     MOVSS DWORD PTR SS:[EBP+0xC],XMM2
+ *  013FFF1D   E9 A5000000      JMP .013FFFC7
+ *  013FFF22   8B57 6C          MOV EDX,DWORD PTR DS:[EDI+0x6C]
+ *  013FFF25   0FB71E           MOVZX EBX,WORD PTR DS:[ESI]
+ *  013FFF28   33C0             XOR EAX,EAX
+ *  013FFF2A   85D2             TEST EDX,EDX
+ *  013FFF2C   74 21            JE SHORT .013FFF4F
+ *  013FFF2E   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
+ *  013FFF31   8BFB             MOV EDI,EBX
+ *  013FFF33   8B49 70          MOV ECX,DWORD PTR DS:[ECX+0x70]
+ *  013FFF36   83C1 04          ADD ECX,0x4
+ *  013FFF39   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  013FFF40   3939             CMP DWORD PTR DS:[ECX],EDI
+ *  013FFF42   74 08            JE SHORT .013FFF4C
+ *  013FFF44   40               INC EAX
+ *  013FFF45   83C1 1C          ADD ECX,0x1C
+ *  013FFF48   3BC2             CMP EAX,EDX
+ *  013FFF4A  ^72 F4            JB SHORT .013FFF40
+ *  013FFF4C   8B7D F4          MOV EDI,DWORD PTR SS:[EBP-0xC]
+ *  013FFF4F   3BC2             CMP EAX,EDX
+ *  013FFF51   75 08            JNZ SHORT .013FFF5B
+ *  013FFF53   53               PUSH EBX
+ *  013FFF54   8BCF             MOV ECX,EDI
+ *  013FFF56   E8 C5EDFFFF      CALL .013FED20
+ *  013FFF5B   8B5D 08          MOV EBX,DWORD PTR SS:[EBP+0x8]
+ *  013FFF5E   8D0CC5 00000000  LEA ECX,DWORD PTR DS:[EAX*8]
+ *  013FFF65   2BC8             SUB ECX,EAX
+ *  013FFF67   8B47 70          MOV EAX,DWORD PTR DS:[EDI+0x70]
+ *  013FFF6A   F3:0F104488 18   MOVSS XMM0,DWORD PTR DS:[EAX+ECX*4+0x18]
+ *  013FFF70   F3:0F5845 0C     ADDSS XMM0,DWORD PTR SS:[EBP+0xC]
+ *  013FFF75   0F28D0           MOVAPS XMM2,XMM0
+ *  013FFF78   F3:0F1155 0C     MOVSS DWORD PTR SS:[EBP+0xC],XMM2
+ *  013FFF7D   EB 45            JMP SHORT .013FFFC4
+ *  013FFF7F   56               PUSH ESI
+ *  013FFF80   FFD2             CALL EDX
+ *  013FFF82   2BC6             SUB EAX,ESI
+ *  013FFF84   83F8 01          CMP EAX,0x1
+ *  013FFF87   75 26            JNZ SHORT .013FFFAF
+ *  013FFF89   807F 1F 80       CMP BYTE PTR DS:[EDI+0x1F],0x80
+ *  013FFF8D  ^0F85 60FFFFFF    JNZ .013FFEF3
+ *  013FFF93   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
+ *  013FFF98   0F5B             ???                                      ; Unknown command
+ *  013FFF9A   D0F3             SAL BL,1
+ *  013FFF9C   0F5915 CCC35801  MULPS XMM2,DQWORD PTR DS:[0x158C3CC]
+ *  013FFFA3   F3:0F5855 0C     ADDSS XMM2,DWORD PTR SS:[EBP+0xC]
+ *  013FFFA8   F3:0F1155 0C     MOVSS DWORD PTR SS:[EBP+0xC],XMM2
+ *  013FFFAD   EB 15            JMP SHORT .013FFFC4
+ *  013FFFAF   66:0F6E47 64     MOVD MM0,DWORD PTR DS:[EDI+0x64]
+ *  013FFFB4   0F5B             ???                                      ; Unknown command
+ *  013FFFB6   C0F3 0F          SAL BL,0xF
+ *  013FFFB9   58               POP EAX
+ *  013FFFBA   45               INC EBP
+ *  013FFFBB   0C 0F            OR AL,0xF
+ *  013FFFBD   28D0             SUB AL,DL
+ *  013FFFBF   F3:0F1145 0C     MOVSS DWORD PTR SS:[EBP+0xC],XMM0
+ *  013FFFC4   8B45 FC          MOV EAX,DWORD PTR SS:[EBP-0x4]
+ *  013FFFC7   66:0F6E0B        MOVD MM1,DWORD PTR DS:[EBX]
+ *  013FFFCB   66:0F6EC0        MOVD MM0,EAX
+ *  013FFFCF   0F5B             ???                                      ; Unknown command
+ *  013FFFD1   C00F 5B          ROR BYTE PTR DS:[EDI],0x5B               ; Shift constant out of range 1..31
+ *  013FFFD4   C9               LEAVE
+ *  013FFFD5   F3:0F58C2        ADDSS XMM0,XMM2
+ *  013FFFD9   0F2FC8           COMISS XMM1,XMM0
+ *  013FFFDC   77 03            JA SHORT .013FFFE1
+ *  013FFFDE   0F28C8           MOVAPS XMM1,XMM0
+ *  013FFFE1   8B55 F8          MOV EDX,DWORD PTR SS:[EBP-0x8]
+ *  013FFFE4   F3:0F2CC1        CVTTSS2SI EAX,XMM1
+ *  013FFFE8   8903             MOV DWORD PTR DS:[EBX],EAX
+ *  013FFFEA   8B47 60          MOV EAX,DWORD PTR DS:[EDI+0x60]
+ *  013FFFED   8B48 0C          MOV ECX,DWORD PTR DS:[EAX+0xC]
+ *  013FFFF0   2B48 04          SUB ECX,DWORD PTR DS:[EAX+0x4]
+ *  013FFFF3   3BD1             CMP EDX,ECX
+ *  013FFFF5   7D 0A            JGE SHORT .01400001
+ *  013FFFF7   8BC1             MOV EAX,ECX
+ *  013FFFF9   2BC2             SUB EAX,EDX
+ *  013FFFFB   0143 04          ADD DWORD PTR DS:[EBX+0x4],EAX
+ *  013FFFFE   894D F8          MOV DWORD PTR SS:[EBP-0x8],ECX
+ *  01400001   56               PUSH ESI
+ *  01400002   FF15 18A45401    CALL DWORD PTR DS:[0x154A418]            ; user32.CharNextA	; jichi: choice accessed here
+ *  01400008   F3:0F104D 0C     MOVSS XMM1,DWORD PTR SS:[EBP+0xC]
+ *  0140000D   8B15 18A45401    MOV EDX,DWORD PTR DS:[0x154A418]         ; user32.CharNextA
+ *  01400013   8BF0             MOV ESI,EAX
+ *  01400015   3B75 10          CMP ESI,DWORD PTR SS:[EBP+0x10]
+ *  01400018  ^0F82 B2FDFFFF    JB .013FFDD0
+ *  0140001E   5F               POP EDI
+ *  0140001F   5E               POP ESI
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const quint8 bytes[] = {
+                      // 013fffe8   8903             mov dword ptr ds:[ebx],eax
+                      // 013fffea   8b47 60          mov eax,dword ptr ds:[edi+0x60]
+                      // 013fffed   8b48 0c          mov ecx,dword ptr ds:[eax+0xc]
+                      // 013ffff0   2b48 04          sub ecx,dword ptr ds:[eax+0x4]
+                      // 013ffff3   3bd1             cmp edx,ecx
+    0x7d, 0x0a,       // 013ffff5   7d 0a            jge short .01400001
+    0x8b,0xc1,        // 013ffff7   8bc1             mov eax,ecx
+    0x2b,0xc2,        // 013ffff9   2bc2             sub eax,edx
+    0x01,0x43, 0x04,  // 013ffffb   0143 04          add dword ptr ds:[ebx+0x4],eax
+    0x89,0x4d, 0xf8   // 013ffffe   894d f8          mov dword ptr ss:[ebp-0x8],ecx
+                      // 01400002   ff15 18a45401    call dword ptr ds:[0x154a418]            ; user32.charnexta	; jichi: choice accessed here
+                      // 01400008   f3:0f104d 0c     movss xmm1,dword ptr ss:[ebp+0xc]
+                      // 0140000d   8b15 18a45401    mov edx,dword ptr ds:[0x154a418]         ; user32.charnexta
+                      // 01400013   8bf0             mov esi,eax
+                      // 01400015   3b75 10          cmp esi,dword ptr ss:[ebp+0x10]
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
 }
 
 } // namespace ChoiceHook
