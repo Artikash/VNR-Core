@@ -689,7 +689,7 @@ namespace Private {
     bool isValid() const
     {
       int size = end - begin;
-      return size > 2 // avoid paint individual character
+      return size > 2 // avoid translating individual character
           && Engine::isAddressWritable(begin, size);
     }
   };
@@ -710,8 +710,9 @@ namespace Private {
       return true;
 
     QByteArray oldData(args->begin, args->end - args->begin);
-    if (NameHook::texts_.contains(oldData))
+    if (NameHook::texts_.contains(oldData)) // avoid re-translate character name
       return true;
+
     //auto text = ltrim(args->begin);
     //text = args->begin;
     //if (text != args->begin) {
@@ -828,7 +829,7 @@ bool attach(ulong startAddress, ulong stopAddress)
   if (addr)
     DOUT("instruction pattern found");
   else  {
-    DOUT("instruction pattern not found, use string pattern instead");
+    DOUT("instruction pattern not found, try string pattern instead");
     const char *msg = "D3DFont::Draw";
     ulong addr = MemDbg::findBytes(msg, ::strlen(msg+1), startAddress, stopAddress);
     if (!addr)
