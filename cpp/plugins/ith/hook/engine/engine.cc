@@ -8672,8 +8672,7 @@ void InsertRyokuchaHook()
  *  00A78D64   CC               INT3
  *  00A78D65   CC               INT3
  */
-
-bool InsertGXPHook()
+static bool InsertGXP1Hook()
 {
   union {
     DWORD i;
@@ -8742,6 +8741,48 @@ bool InsertGXPHook()
   //ConsoleOutput("Unknown GXP engine.");
   ConsoleOutput("vnreng:GXP: failed");
   return false;
+}
+
+static bool InsertGXP2Hook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) {
+    ConsoleOutput("vnreng:GXP2: failed to get memory range");
+    return false;
+  }
+
+  // pattern = 0x0f5bc9f30f11442444f30f114c2448e8
+  const BYTE bytes[] = {
+     0x0f,0x5b,                      // 00A78845   0F5B             ???                                      ; Unknown command
+     0xc9,                           // 00A78847   C9               LEAVE
+     0xf3,0x0f,0x11,0x44,0x24, 0x44, // 00A78848   F3:0F114424 44   MOVSS DWORD PTR SS:[ESP+0x44],XMM0
+     0xf3,0x0f,0x11,0x4c,0x24, 0x48, // 00A7884E   F3:0F114C24 48   MOVSS DWORD PTR SS:[ESP+0x48],XMM1
+     0xe8 //37040000                 // 00A78854   E8 37040000      CALL .00A78C90  ; jichi: here's the target function to hook to, text char on the stack[0]
+  };
+  enum { addr_offset = sizeof(bytes) - 1 }; // 0x00a78854 - 0x00a78845
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:GXP2: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr + addr_offset;
+  hp.type = USING_UNICODE|NO_CONTEXT|DATA_INDIRECT|FIXING_SPLIT;
+  hp.length_offset = 1;
+  ConsoleOutput("vnreng: INSERT GXP2");
+  NewHook(hp, L"GXP2");
+  ConsoleOutput("vnreng:GXP: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
+
+bool InsertGXPHook()
+{
+  // GXP1 and GXP2 are harmless to each other
+  bool ok = InsertGXP1Hook();
+  ok = InsertGXP2Hook() || ok;
+  return ok;
 }
 
 namespace { // unnamed, for Anex86

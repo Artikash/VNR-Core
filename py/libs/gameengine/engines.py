@@ -24,7 +24,7 @@ def engines():
   if not ENINES:
     ENGINES = [
       MonoEngine(),
-      GXPEngine(),
+      #GXPEngine(),
       #AliceEngine(),
     ]
   return ENGINES
@@ -195,6 +195,8 @@ class MonoEngine(Engine):
     dprint(ret)
     return ret
 
+# EOF
+
 # 4/27/2015
 # See also GXP comments in engine.cc
 #
@@ -225,36 +227,34 @@ class MonoEngine(Engine):
 #
 # 5/2/2015: Alternative H-code for the full game: /HWN-4@48806:verethragna.exe
 # Try this one if GXP2 fails.
-class GXPEngine(Engine):
-
-  NAME = "GXP2" # str, override
-  ENCODING = UTF16_ENCODING # str, override
-
-  def match(self, pid): # override
-    return bool(self.globAppDirectory('*.gxp', pid))
-
-  def inject(self, pid): # override
-    from gamedebugger import GameDebugger
-    dbg = GameDebugger(pid)
-    ret = False
-    if dbg.active():
-      #  00A78845   0F5B             ???                                      ; Unknown command
-      #  00A78847   C9               LEAVE
-      #  00A78848   F3:0F114424 44   MOVSS DWORD PTR SS:[ESP+0x44],XMM0
-      #  00A7884E   F3:0F114C24 48   MOVSS DWORD PTR SS:[ESP+0x48],XMM1
-      #  00A78854   E8 37040000      CALL .00A78C90  ; jichi: here's the target function to hook to, text char on the stack[0]
-      pattern = 0x0f5bc9f30f11442444f30f114c2448e8
-      addr = dbg.search_module_memory(pattern)
-      if addr > 0:
-        addr += 0x00A78854 - 0x00A78845
-        # type: USING_UNICODE(W) | NO_CONTEXT (N) | DATA_INDIRECT(*) | FIXING_SPLIT(F)
-        # length_offset: 1
-        code = "/HWNF*@%x" % addr
-        ret = self.addHook(code)
-    dprint(ret)
-    return ret
-
-# EOF
+#class GXPEngine(Engine):
+#
+#  NAME = "GXP2" # str, override
+#  ENCODING = UTF16_ENCODING # str, override
+#
+#  def match(self, pid): # override
+#    return bool(self.globAppDirectory('*.gxp', pid))
+#
+#  def inject(self, pid): # override
+#    from gamedebugger import GameDebugger
+#    dbg = GameDebugger(pid)
+#    ret = False
+#    if dbg.active():
+#      #  00A78845   0F5B             ???                                      ; Unknown command
+#      #  00A78847   C9               LEAVE
+#      #  00A78848   F3:0F114424 44   MOVSS DWORD PTR SS:[ESP+0x44],XMM0
+#      #  00A7884E   F3:0F114C24 48   MOVSS DWORD PTR SS:[ESP+0x48],XMM1
+#      #  00A78854   E8 37040000      CALL .00A78C90  ; jichi: here's the target function to hook to, text char on the stack[0]
+#      pattern = 0x0f5bc9f30f11442444f30f114c2448e8
+#      addr = dbg.search_module_memory(pattern)
+#      if addr > 0:
+#        addr += 0x00A78854 - 0x00A78845
+#        # type: USING_UNICODE(W) | NO_CONTEXT (N) | DATA_INDIRECT(*) | FIXING_SPLIT(F)
+#        # length_offset: 1
+#        code = "/HWNF*@%x" % addr
+#        ret = self.addHook(code)
+#    dprint(ret)
+#    return ret
 
 # 5/8/2015
 # Sample game: イブニクル version 1.0.1
