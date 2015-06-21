@@ -33,6 +33,8 @@ public:
 
   const char *encoding() const;
   void setEncoding(const QString &v);
+  QByteArray encode(const QString &text) const;
+  QString decode(const QByteArray &text) const;
 
   // Encoding for inserting spaces
   void setSpacePolicyEncoding(const QString &v);

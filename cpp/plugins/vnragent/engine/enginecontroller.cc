@@ -262,6 +262,9 @@ bool EngineController::isTranscodingNeeded() const
 void EngineController::setSpacePolicyEncoding(const QString &v)
 { d_->spaceCodec = v.isEmpty() ? nullptr : Util::codecForName(v.toAscii()); }
 
+QString EngineController::decode(const QByteArray &v) const { return d_->decode(v); }
+QByteArray EngineController::encode(const QString &v) const { return d_->encode(v); }
+
 // - Attach -
 
 bool EngineController::attach()

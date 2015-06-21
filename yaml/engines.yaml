@@ -55,7 +55,8 @@ embed:
   - ARCGameEngine
   - BGI
   - BGI2
-  - Debonosu    # FIXME: English only
+  - Debonosu
+  - DebonosuName
   - Elf
   - SiglusEngine2
   #- SiglusEngine3
@@ -196,6 +197,7 @@ simple:
   - Cotopha
   - CYBERFRONT PSP
   - Debonosu
+  - DebonosuName
   - EAGLS
   - Elf
   - Eushully # renamed
@@ -279,7 +281,7 @@ single: # single thread
   # PC
   - AB2Try
   - ARCGameEngine
-  - Debonosu
+  #- Debonosu
   - Eushully # renamed
   - FocasLens
   - GXP
@@ -430,6 +432,7 @@ char:
   - CMVS2
   - CYBERFRONT PSP
   - Debonosu
+  - DebonosuName
   - EAGLS
   - Elf
   - EmonEngine
@@ -613,6 +616,7 @@ focus:
   - CatSystem2
   - CatSystem3
   - Debonosu
+  - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
   - EmbedDebonosu
