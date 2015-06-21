@@ -275,12 +275,8 @@ namespace Private {
  *  00436C8B   CC               INT3
  *  00436C8C   CC               INT3
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
   ulong addr = Private::findFunction(startAddress, stopAddress);
   if (!addr)
     return false;
@@ -310,13 +306,372 @@ bool attach()
   //return count;
 }
 
-bool isOldVersion() // old Debonosu games
-{ return Private::textOffset_ == Private::TextOffsetEax; }
+//bool isOldVersion() // old Debonosu games
+//{ return Private::textOffset_ == Private::TextOffsetEax; }
 
 } // namespace ScenarioHook
 
-} // unnamed namespace
+namespace NameHook { // scenario with name, but scenario are rendered line-by-line and not good place to hook
+namespace Private {
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QByteArray data_;
+    auto text = (LPCSTR)s->ecx;
+    if (!text || !*text)
+      return true;
 
+    enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
+    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    s->ecx = (ulong)data_.constData();
+    //::strcpy(text, data.constData());
+    return true;
+  }
+} // namespace Private
+/**
+ *  Sample games: 神楽花莚譚, 偽骸のアルルーナ, 戦場のフォークロア
+ *  FIXME: This hook does not work for some old games such as 神楽道中記.
+ *
+ *  Functions found by debugging lstrcatA.
+ *
+ *  0032E3DB   CC               INT3
+ *  0032E3DC   CC               INT3
+ *  0032E3DD   CC               INT3
+ *  0032E3DE   CC               INT3
+ *  0032E3DF   CC               INT3
+ *  0032E3E0   55               PUSH EBP ; jichi: text in arg1
+ *  0032E3E1   8BEC             MOV EBP,ESP
+ *  0032E3E3   6A FF            PUSH -0x1
+ *  0032E3E5   68 19263E00      PUSH .003E2619
+ *  0032E3EA   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  0032E3F0   50               PUSH EAX
+ *  0032E3F1   B8 04140000      MOV EAX,0x1404
+ *  0032E3F6   64:8925 00000000 MOV DWORD PTR FS:[0],ESP
+ *  0032E3FD   E8 8E310700      CALL .003A1590
+ *  0032E402   53               PUSH EBX
+ *  0032E403   56               PUSH ESI
+ *  0032E404   8B75 24          MOV ESI,DWORD PTR SS:[EBP+0x24]
+ *  0032E407   57               PUSH EDI
+ *  0032E408   8BFA             MOV EDI,EDX
+ *  0032E40A   897D E0          MOV DWORD PTR SS:[EBP-0x20],EDI
+ *  0032E40D   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
+ *  0032E410   C745 C8 01000000 MOV DWORD PTR SS:[EBP-0x38],0x1
+ *  0032E417   85F6             TEST ESI,ESI
+ *  0032E419   75 11            JNZ SHORT .0032E42C
+ *  0032E41B   A1 F4EF4600      MOV EAX,DWORD PTR DS:[0x46EFF4]
+ *  0032E420   C1E0 08          SHL EAX,0x8
+ *  0032E423   8BB0 CC6D4700    MOV ESI,DWORD PTR DS:[EAX+0x476DCC]
+ *  0032E429   8975 24          MOV DWORD PTR SS:[EBP+0x24],ESI
+ *  0032E42C   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+ *  0032E42F   F640 48 02       TEST BYTE PTR DS:[EAX+0x48],0x2
+ *  0032E433   74 16            JE SHORT .0032E44B
+ *  0032E435   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  0032E438   8B5D 10          MOV EBX,DWORD PTR SS:[EBP+0x10]
+ *  0032E43B   51               PUSH ECX
+ *  0032E43C   53               PUSH EBX
+ *  0032E43D   8BCE             MOV ECX,ESI
+ *  0032E43F   E8 1CFCFFFF      CALL .0032E060
+ *  0032E444   83C4 08          ADD ESP,0x8
+ *  0032E447   8BC8             MOV ECX,EAX
+ *  0032E449   EB 35            JMP SHORT .0032E480
+ *  0032E44B   E8 B09FFFFF      CALL .00328400
+ *  0032E450   66:0F6E05 50ED46>MOVD MM0,DWORD PTR DS:[0x46ED50]
+ *  0032E458   F3:              PREFIX REP:                              ; Superfluous prefix
+ *  0032E459   0FE6             ???                                      ; Unknown command
+ *  0032E45B   C08D 4802F20F 59 ROR BYTE PTR SS:[EBP+0xFF20248],0x59     ; Shift constant out of range 1..31
+ *  0032E462   05 C0C64200      ADD EAX,.0042C6C0
+ *  0032E467   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+ *  0032E46A   8B70 64          MOV ESI,DWORD PTR DS:[EAX+0x64]
+ *  0032E46D   F2:              PREFIX REPNE:                            ; Superfluous prefix
+ *  0032E46E   0F2CC0           CVTTPS2PI MM0,XMM0
+ *  0032E471   3BF0             CMP ESI,EAX
+ *  0032E473   74 08            JE SHORT .0032E47D
+ *  0032E475   0FAFC1           IMUL EAX,ECX
+ *  0032E478   99               CDQ
+ *  0032E479   F7FE             IDIV ESI
+ *  0032E47B   8BC8             MOV ECX,EAX
+ *  0032E47D   8B5D 10          MOV EBX,DWORD PTR SS:[EBP+0x10]
+ *  0032E480   837D 30 03       CMP DWORD PTR SS:[EBP+0x30],0x3
+ *  0032E484   1BC0             SBB EAX,EAX
+ *  0032E486   83C0 02          ADD EAX,0x2
+ *  0032E489   0FAFC1           IMUL EAX,ECX
+ *  0032E48C   807D 28 00       CMP BYTE PTR SS:[EBP+0x28],0x0
+ *  0032E490   8945 C4          MOV DWORD PTR SS:[EBP-0x3C],EAX
+ *  0032E493   8D45 24          LEA EAX,DWORD PTR SS:[EBP+0x24]
+ *  0032E496   8945 A8          MOV DWORD PTR SS:[EBP-0x58],EAX
+ *  0032E499   74 3F            JE SHORT .0032E4DA
+ *  0032E49B   F2:              PREFIX REPNE:                            ; Superfluous prefix
+ *  0032E49C   0F1005 D86F4700  MOVUPS XMM0,DQWORD PTR DS:[0x476FD8]
+ *  0032E4A3   0F57C9           XORPS XMM1,XMM1
+ *  0032E4A6   66:0F2FC8        COMISS XMM1,XMM0
+ *  0032E4AA   76 24            JBE SHORT .0032E4D0
+ *  0032E4AC   B9 0C000000      MOV ECX,0xC
+ *  0032E4B1   390D 485E4600    CMP DWORD PTR DS:[0x465E48],ECX
+ *  0032E4B7   0F420D 485E4600  CMOVB ECX,DWORD PTR DS:[0x465E48]
+ *  0032E4BE   8D04CD 00000000  LEA EAX,DWORD PTR DS:[ECX*8]
+ *  0032E4C5   B9 084C4200      MOV ECX,.00424C08
+ *  0032E4CA   2BC8             SUB ECX,EAX
+ *  0032E4CC   F2:              PREFIX REPNE:                            ; Superfluous prefix
+ *  0032E4CD   0F1001           MOVUPS XMM0,DQWORD PTR DS:[ECX]
+ *  0032E4D0   66:0F2FC1        COMISS XMM0,XMM1
+ *  0032E4D4   C645 2B 01       MOV BYTE PTR SS:[EBP+0x2B],0x1
+ *  0032E4D8   77 04            JA SHORT .0032E4DE
+ *  0032E4DA   C645 2B 00       MOV BYTE PTR SS:[EBP+0x2B],0x0
+ *  0032E4DE   0F57C0           XORPS XMM0,XMM0
+ *  0032E4E1   66:0FD6          ???                                      ; Unknown command
+ *  0032E4E4   45               INC EBP
+ *  0032E4E5   B0 85            MOV AL,0x85
+ *  0032E4E7   DB               ???                                      ; Unknown command
+ *  0032E4E8   74 13            JE SHORT .0032E4FD
+ *  0032E4EA   8BCB             MOV ECX,EBX
+ *  0032E4EC   8D51 01          LEA EDX,DWORD PTR DS:[ECX+0x1]
+ *  0032E4EF   90               NOP
+ *  0032E4F0   8A01             MOV AL,BYTE PTR DS:[ECX]
+ *  0032E4F2   41               INC ECX
+ *  0032E4F3   84C0             TEST AL,AL
+ *  0032E4F5  ^75 F9            JNZ SHORT .0032E4F0
+ *  0032E4F7   2BCA             SUB ECX,EDX
+ *  0032E4F9   03CB             ADD ECX,EBX
+ *  0032E4FB   EB 02            JMP SHORT .0032E4FF
+ *  0032E4FD   33C9             XOR ECX,ECX
+ *  0032E4FF   8B55 24          MOV EDX,DWORD PTR SS:[EBP+0x24]
+ *  0032E502   8D42 1C          LEA EAX,DWORD PTR DS:[EDX+0x1C]
+ *  0032E505   50               PUSH EAX
+ *  0032E506   FF72 0C          PUSH DWORD PTR DS:[EDX+0xC]
+ *  0032E509   8D45 B0          LEA EAX,DWORD PTR SS:[EBP-0x50]
+ *  0032E50C   51               PUSH ECX
+ *  0032E50D   8B4A 04          MOV ECX,DWORD PTR DS:[EDX+0x4]
+ *  0032E510   53               PUSH EBX
+ *  0032E511   50               PUSH EAX
+ *  0032E512   E8 7918F7FF      CALL .0029FD90
+ *  0032E517   807D 2B 00       CMP BYTE PTR SS:[EBP+0x2B],0x0
+ *  0032E51B   8B45 B0          MOV EAX,DWORD PTR SS:[EBP-0x50]
+ *  0032E51E   8945 D8          MOV DWORD PTR SS:[EBP-0x28],EAX
+ *  0032E521   74 20            JE SHORT .0032E543
+ *  0032E523   803B 00          CMP BYTE PTR DS:[EBX],0x0
+ *  0032E526   74 1B            JE SHORT .0032E543
+ *  0032E528   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  0032E52B   6A 00            PUSH 0x0
+ *  0032E52D   53               PUSH EBX
+ *  0032E52E   8B5D 14          MOV EBX,DWORD PTR SS:[EBP+0x14]
+ *  0032E531   53               PUSH EBX
+ *  0032E532   FF75 24          PUSH DWORD PTR SS:[EBP+0x24]
+ *  0032E535   03C1             ADD EAX,ECX
+ *  0032E537   57               PUSH EDI
+ *  0032E538   50               PUSH EAX
+ *  0032E539   FF75 20          PUSH DWORD PTR SS:[EBP+0x20]
+ *  0032E53C   E8 9F9BFFFF      CALL .003280E0
+ *  0032E541   EB 13            JMP SHORT .0032E556
+ *  0032E543   8B4D E8          MOV ECX,DWORD PTR SS:[EBP-0x18]
+ *  0032E546   53               PUSH EBX
+ *  0032E547   FF75 24          PUSH DWORD PTR SS:[EBP+0x24]
+ *  0032E54A   03C1             ADD EAX,ECX
+ *  0032E54C   57               PUSH EDI
+ *  0032E54D   50               PUSH EAX
+ *  0032E54E   E8 7D9CFFFF      CALL .003281D0
+ *  0032E553   8B5D 14          MOV EBX,DWORD PTR SS:[EBP+0x14]
+ *  0032E556   807D 2B 00       CMP BYTE PTR SS:[EBP+0x2B],0x0
+ *  0032E55A   895D A4          MOV DWORD PTR SS:[EBP-0x5C],EBX
+ *  0032E55D   74 11            JE SHORT .0032E570
+ *  0032E55F   8B75 18          MOV ESI,DWORD PTR SS:[EBP+0x18]
+ *  0032E562   85F6             TEST ESI,ESI
+ *  0032E564   74 0A            JE SHORT .0032E570
+ *  0032E566   8B06             MOV EAX,DWORD PTR DS:[ESI]
+ *  0032E568   85C0             TEST EAX,EAX
+ *  0032E56A   0F45D8           CMOVNE EBX,EAX
+ *  0032E56D   895D 14          MOV DWORD PTR SS:[EBP+0x14],EBX
+ *  0032E570   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
+ *  0032E573   FF15 10A33E00    CALL DWORD PTR DS:[0x3EA310]             ; kernel32.lstrlenA
+ *  0032E579   8945 C0          MOV DWORD PTR SS:[EBP-0x40],EAX
+ *  0032E57C   8B35 18A43E00    MOV ESI,DWORD PTR DS:[0x3EA418]          ; user32.CharNextA
+ *  0032E582   C645 33 00       MOV BYTE PTR SS:[EBP+0x33],0x0
+ *  0032E586   8B55 08          MOV EDX,DWORD PTR SS:[EBP+0x8]
+ *  0032E589   8A0A             MOV CL,BYTE PTR DS:[EDX]
+ *  0032E58B   84C9             TEST CL,CL
+ *  0032E58D   74 0E            JE SHORT .0032E59D
+ *  0032E58F   8B45 C4          MOV EAX,DWORD PTR SS:[EBP-0x3C]
+ *  0032E592   03C0             ADD EAX,EAX
+ *  0032E594   3945 C0          CMP DWORD PTR SS:[EBP-0x40],EAX
+ *  0032E597   0F8D EC0A0000    JGE .0032F089
+ *  0032E59D   807D 1C 00       CMP BYTE PTR SS:[EBP+0x1C],0x0
+ *  0032E5A1   74 3D            JE SHORT .0032E5E0
+ *  0032E5A3   80F9 5C          CMP CL,0x5C
+ *  0032E5A6   75 26            JNZ SHORT .0032E5CE
+ *  0032E5A8   8A42 01          MOV AL,BYTE PTR DS:[EDX+0x1]
+ *  0032E5AB   3C 72            CMP AL,0x72
+ *  0032E5AD   75 17            JNZ SHORT .0032E5C6
+ *  0032E5AF   384A 02          CMP BYTE PTR DS:[EDX+0x2],CL
+ *  0032E5B2   75 0A            JNZ SHORT .0032E5BE
+ *  0032E5B4   807A 03 6E       CMP BYTE PTR DS:[EDX+0x3],0x6E
+ *  0032E5B8   0F84 760A0000    JE .0032F034
+ *  0032E5BE   3C 72            CMP AL,0x72
+ *  0032E5C0   0F84 B00A0000    JE .0032F076
+ *  0032E5C6   3C 6E            CMP AL,0x6E
+ *  0032E5C8   0F84 A80A0000    JE .0032F076
+ *  0032E5CE   80F9 0D          CMP CL,0xD
+ *  0032E5D1   0F84 920A0000    JE .0032F069
+ *  0032E5D7   80F9 0A          CMP CL,0xA
+ *  0032E5DA   0F84 8F0A0000    JE .0032F06F
+ *  0032E5E0   84C9             TEST CL,CL
+ *  0032E5E2   0F84 DC0A0000    JE .0032F0C4
+ *  0032E5E8   52               PUSH EDX
+ *  0032E5E9   FFD6             CALL ESI
+ *  0032E5EB   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  0032E5EE   8BF8             MOV EDI,EAX
+ *  0032E5F0   2BC1             SUB EAX,ECX
+ *  0032E5F2   8945 DC          MOV DWORD PTR SS:[EBP-0x24],EAX
+ *  0032E5F5   40               INC EAX
+ *  0032E5F6   50               PUSH EAX
+ *  0032E5F7   51               PUSH ECX
+ *  0032E5F8   8D45 EC          LEA EAX,DWORD PTR SS:[EBP-0x14]
+ *  0032E5FB   50               PUSH EAX
+ *  0032E5FC   FF15 BCA23E00    CALL DWORD PTR DS:[0x3EA2BC]             ; kernel32.lstrcpynA
+ *  0032E602   837D DC 01       CMP DWORD PTR SS:[EBP-0x24],0x1
+ *  0032E606   8A4D EC          MOV CL,BYTE PTR SS:[EBP-0x14]
+ *  0032E609   897D 08          MOV DWORD PTR SS:[EBP+0x8],EDI
+ *  0032E60C   0F85 BF000000    JNZ .0032E6D1
+ *  0032E612   80F9 20          CMP CL,0x20
+ *  0032E615   72 09            JB SHORT .0032E620
+ *  0032E617   80F9 7F          CMP CL,0x7F
+ *  0032E61A   0F82 B1000000    JB .0032E6D1
+ *  0032E620   B1 20            MOV CL,0x20
+ *  0032E622   884D EC          MOV BYTE PTR SS:[EBP-0x14],CL
+ *  0032E625   C745 C8 00000000 MOV DWORD PTR SS:[EBP-0x38],0x0
+ *  0032E62C   8B35 10A33E00    MOV ESI,DWORD PTR DS:[0x3EA310]          ; kernel32.lstrlenA
+ *  0032E632   8B45 C4          MOV EAX,DWORD PTR SS:[EBP-0x3C]
+ *  0032E635   8D0445 FEFFFFFF  LEA EAX,DWORD PTR DS:[EAX*2-0x2]
+ *  0032E63C   3945 C0          CMP DWORD PTR SS:[EBP-0x40],EAX
+ *  0032E63F   7C 52            JL SHORT .0032E693
+ *  0032E641   8D45 EC          LEA EAX,DWORD PTR SS:[EBP-0x14]
+ *  0032E644   50               PUSH EAX
+ *  0032E645   FF35 E0714100    PUSH DWORD PTR DS:[0x4171E0]             ; .0041FF08
+ *  0032E64B   E8 CA570600      CALL .00393E1A
+ *
+ *  ....
+ *
+ *  0032F637   E8 A47AF7FF      CALL .002A70E0
+ *  0032F63C   56               PUSH ESI
+ *  0032F63D   E8 9EFF0500      CALL .0038F5E0
+ *  0032F642   83C4 04          ADD ESP,0x4
+ *  0032F645   A1 F4EF4600      MOV EAX,DWORD PTR DS:[0x46EFF4]
+ *  0032F64A   C1E0 08          SHL EAX,0x8
+ *  0032F64D   5F               POP EDI
+ *  0032F64E   5E               POP ESI
+ *  0032F64F   C780 C06D4700 00>MOV DWORD PTR DS:[EAX+0x476DC0],0x0
+ *  0032F659   32C0             XOR AL,AL
+ *  0032F65B   5B               POP EBX
+ *  0032F65C   8BE5             MOV ESP,EBP
+ *  0032F65E   5D               POP EBP
+ *  0032F65F   C3               RETN
+ *  0032F660   55               PUSH EBP    ; jichi: name text in ecx, which could be zero though
+ *  0032F661   8BEC             MOV EBP,ESP
+ *  0032F663   81EC 2C080000    SUB ESP,0x82C
+ *  0032F669   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  0032F66C   53               PUSH EBX
+ *  0032F66D   56               PUSH ESI
+ *  0032F66E   8BF1             MOV ESI,ECX
+ *  0032F670   85C0             TEST EAX,EAX
+ *  0032F672   8D4D F0          LEA ECX,DWORD PTR SS:[EBP-0x10]
+ *  0032F675   0F45C8           CMOVNE ECX,EAX
+ *  0032F678   57               PUSH EDI
+ *  0032F679   C745 F0 00000000 MOV DWORD PTR SS:[EBP-0x10],0x0
+ *  0032F680   8B01             MOV EAX,DWORD PTR DS:[ECX]
+ *  0032F682   68 00080000      PUSH 0x800
+ *  0032F687   8945 EC          MOV DWORD PTR SS:[EBP-0x14],EAX
+ *  0032F68A   8D85 D8F7FFFF    LEA EAX,DWORD PTR SS:[EBP-0x828]
+ *  0032F690   6A 00            PUSH 0x0
+ *  0032F692   50               PUSH EAX
+ *  0032F693   8955 F8          MOV DWORD PTR SS:[EBP-0x8],EDX
+ *  0032F696   894D F4          MOV DWORD PTR SS:[EBP-0xC],ECX
+ *  0032F699   E8 525D0600      CALL .003953F0
+ *  0032F69E   8B1D F4EF4600    MOV EBX,DWORD PTR DS:[0x46EFF4]
+ *  0032F6A4   8BCB             MOV ECX,EBX
+ *  0032F6A6   C1E1 08          SHL ECX,0x8
+ *  0032F6A9   83C4 0C          ADD ESP,0xC
+ *  0032F6AC   83B9 346E4700 00 CMP DWORD PTR DS:[ECX+0x476E34],0x0
+ *  0032F6B3   7D 0A            JGE SHORT .0032F6BF
+ *  0032F6B5   C781 346E4700 00>MOV DWORD PTR DS:[ECX+0x476E34],0x0
+ *  0032F6BF   8B55 10          MOV EDX,DWORD PTR SS:[EBP+0x10]
+ *  0032F6C2   803A 00          CMP BYTE PTR DS:[EDX],0x0
+ *  0032F6C5   74 67            JE SHORT .0032F72E
+ *  0032F6C7   83B9 346E4700 00 CMP DWORD PTR DS:[ECX+0x476E34],0x0
+ *  0032F6CE   0F94C0           SETE AL
+ *  0032F6D1   8802             MOV BYTE PTR DS:[EDX],AL
+ *  0032F6D3   84C0             TEST AL,AL
+ *  0032F6D5   74 57            JE SHORT .0032F72E
+ *  0032F6D7   8B89 C06D4700    MOV ECX,DWORD PTR DS:[ECX+0x476DC0]
+ *  0032F6DD   68 000000FF      PUSH 0xFF000000
+ *  0032F6E2   6A 00            PUSH 0x0
+ *  0032F6E4   E8 278BF7FF      CALL .002A8210
+ *  0032F6E9   FF75 14          PUSH DWORD PTR SS:[EBP+0x14]
+ *  0032F6EC   A1 445E4600      MOV EAX,DWORD PTR DS:[0x465E44]
+ *  0032F6F1   8B15 A46F4700    MOV EDX,DWORD PTR DS:[0x476FA4]
+ *  0032F6F7   51               PUSH ECX
+ *  0032F6F8   8B0D A06F4700    MOV ECX,DWORD PTR DS:[0x476FA0]
+ *  0032F6FE   A3 1CF44700      MOV DWORD PTR DS:[0x47F41C],EAX
+ *  0032F703   E8 F8E70000      CALL .0033DF00
+ *  0032F708   A1 A06F4700      MOV EAX,DWORD PTR DS:[0x476FA0]
+ *  0032F70D   8B1D F4EF4600    MOV EBX,DWORD PTR DS:[0x46EFF4]
+ *  0032F713   0F57C0           XORPS XMM0,XMM0
+ *  0032F716   83C4 08          ADD ESP,0x8
+ *  0032F719   A3 A46F4700      MOV DWORD PTR DS:[0x476FA4],EAX
+ *  0032F71E   F2:              PREFIX REPNE:                            ; Superfluous prefix
+ *  0032F71F   0F1105 B86F4700  MOVUPS DQWORD PTR DS:[0x476FB8],XMM0
+ *  0032F726   F2:              PREFIX REPNE:                            ; Superfluous prefix
+ *  0032F727   0F1105 B06F4700  MOVUPS DQWORD PTR DS:[0x476FB0],XMM0
+ *  0032F72E   807D 14 00       CMP BYTE PTR SS:[EBP+0x14],0x0
+ *  0032F732   0F84 15010000    JE .0032F84D
+ *  0032F738   85F6             TEST ESI,ESI
+ *  0032F73A   0F84 0D010000    JE .0032F84D
+ *  0032F740   803E 00          CMP BYTE PTR DS:[ESI],0x0
+ *  0032F743   0F84 04010000    JE .0032F84D
+ *  0032F749   8BCE             MOV ECX,ESI
+ *  0032F74B   C645 17 01       MOV BYTE PTR SS:[EBP+0x17],0x1
+ *  0032F74F   E8 2CD8FEFF      CALL .0031CF80
+ *  0032F754   8BF8             MOV EDI,EAX
+ *  0032F756   56               PUSH ESI
+ *  0032F757   8D4F 20          LEA ECX,DWORD PTR DS:[EDI+0x20]
+ *  0032F75A   51               PUSH ECX
+ *  0032F75B   68 68404900      PUSH .00494068
+ *  0032F760   E8 350F0600      CALL .0039069A
+ *  0032F765   66:0F6E05 50ED46>MOVD MM0,DWORD PTR DS:[0x46ED50]
+ *  0032F76D   8B0D F4EF4600    MOV ECX,DWORD PTR DS:[0x46EFF4]
+ *  0032F773   F3:              PREFIX REP:                              ; Superfluous prefix
+ *  0032F774   0FE6             ???                                      ; Unknown command
+ *  0032F776   C0C1 E1          ROL CL,0xE1                              ; Shift constant out of range 1..31
+ *  0032F779   08F2             OR DL,DH
+ *  0032F77B   0F5905 68D84200  MULPS XMM0,DQWORD PTR DS:[0x42D868]
+ *  0032F782   8B99 946D4700    MOV EBX,DWORD PTR DS:[ECX+0x476D94]
+ *  0032F788   8BB1 A06D4700    MOV ESI,DWORD PTR DS:[ECX+0x476DA0]
+ *  0032F78E   83C4 0C          ADD ESP,0xC
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const quint8 bytes[] = {
+                     // 0032f659   32c0             xor al,al
+                     // 0032f65b   5b               pop ebx
+                     // 0032f65c   8be5             mov esp,ebp
+                     // 0032f65e   5d               pop ebp
+                     // 0032f65f   c3               retn
+    0x55,            // 0032f660   55               push ebp    ; jichi: name text in ecx, which could be zero though
+    0x8b,0xec,       // 0032f661   8bec             mov ebp,esp
+    0x81,0xec, XX4,  // 0032f663   81ec 2c080000    sub esp,0x82c
+    0x8b,0x45, 0x08, // 0032f669   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+    0x53,            // 0032f66c   53               push ebx
+    0x56,            // 0032f66d   56               push esi
+    0x8b,0xf1,       // 0032f66e   8bf1             mov esi,ecx
+    0x85,0xc0,       // 0032f670   85c0             test eax,eax
+    0x8d,0x4d, 0xf0, // 0032f672   8d4d f0          lea ecx,dword ptr ss:[ebp-0x10]
+    0x0f,0x45,0xc8,  // 0032f675   0f45c8           cmovne ecx,eax
+    0x57             // 0032f678   57               push edi
+  };
+  ulong addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+}
+
+} // namespace NameHook
+} // unnamed namespace
 
 /**
  *  Sample game: 神楽花莚譚
@@ -691,16 +1046,27 @@ bool isOldVersion() // old Debonosu games
  *  0015F19C   C7048A FE7F0000  MOV DWORD PTR DS:[EDX+ECX*4],0x7FFE
  *  0015F1A3   0FB745 08        MOVZX EAX,WORD PTR SS:[EBP+0x8]
  *  0015F1A7   89448A 04        MOV DWORD PTR DS:[EDX+ECX*4+0x4],EAX
-*/
+ */
 bool DebonosuEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
 
-  auto h = HijackManager::instance();
-  h->attachFunction((ulong)::MultiByteToWideChar);
-  h->attachFunction((ulong)::GetTextExtentPoint32A);
+  if (NameHook::attach(startAddress, stopAddress))
+    DOUT("name text found");
+  else
+    DOUT("name text NOT FOUND");
 
+  //if (OtherHook::attach())
+  //  DOUT("other text found");
+  //else
+  //  DOUT("other text NOT FOUND");
+
+  HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
+  HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
   return true;
 }
 
@@ -725,6 +1091,48 @@ QString DebonosuEngine::textFilter(const QString &text, int role)
 // EOF
 
 #if 0
+namespace OtherHook {
+
+namespace Private {
+
+  BOOL WINAPI newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchString, LPSIZE lpSize)
+  {
+    enum { TextCapacity = 0x10 };
+    static std::unordered_set<LPCSTR> texts_;
+    if (texts_.find(lpString) == texts_.end())
+    if (auto q = EngineController::instance()) {
+      QByteArray data(lpString, cchString);
+      QString oldText = q->decode(data);
+      if (!oldText.isEmpty()) {
+        enum { role = Engine::OtherRole };
+        ulong split = (ulong)_ReturnAddress();
+        auto sig = Engine::hashThreadSignature(role, split);
+        QString newText = q->dispatchTextW(oldText, sig, role);
+        if (!newText.isEmpty() && newText != oldText) {
+          texts_.insert(lpString);
+          if (auto p = DynamicCodec::instance()) {
+            QByteArray data = p->encode(newText);
+            int size = min(TextCapacity, data.size() + 1);
+            auto text = const_cast<LPSTR>(lpString);
+            ::memcpy(text, data.constData(), size);
+            text[size - 1] = 0;
+          }
+          return Hijack::oldGetTextExtentPoint32W(hdc, (LPCWSTR)newText.utf16(), newText.size(), lpSize);
+        }
+      }
+    }
+    return Hijack::oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
+  }
+} // namespace Private
+
+bool attach()
+{
+  return Hijack::oldGetTextExtentPoint32A = (Hijack::GetTextExtentPoint32A_fun_t)
+      winhook::replace_fun((ulong)::GetTextExtentPoint32A, (ulong)Private::newGetTextExtentPoint32A);
+}
+
+} // namespace OtherHook
+
 namespace OtherHook {
 
 std::unordered_set<LPCSTR> translatedTexts_; // text that has already been translated

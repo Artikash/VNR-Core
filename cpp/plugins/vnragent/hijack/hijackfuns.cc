@@ -398,25 +398,27 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
     } \
 }
 
-#define TRANSLATE_TEXT_A(lpString, cchString, fun, ...) \
-if (HijackManager::instance()->isFunctionTranslated((ulong)::fun##A)) { \
+#define TRANSLATE_TEXT_A(lpString, cchString, ...) \
+{ \
   if (auto q = EngineController::instance()) { \
     QByteArray data(lpString, cchString); \
-    QString text = q->decode(data); \
-    if (!text.isEmpty()) { \
+    QString oldText = q->decode(data); \
+    if (!oldText.isEmpty()) { \
       enum { role = Engine::OtherRole }; \
       ulong split = (ulong)_ReturnAddress(); \
       auto sig = Engine::hashThreadSignature(role, split); \
-      text = q->dispatchTextW(text, sig, role); \
-      LPCWSTR lpString = (LPCWSTR)text.utf16(); \
-      cchString = text.size(); \
-      return old##fun##W(__VA_ARGS__); \
+      QString newText = q->dispatchTextW(oldText, sig, role); \
+      if (newText != oldText) { \
+        LPCWSTR lpString = (LPCWSTR)newText.utf16(); \
+        cchString = newText.size(); \
+        return (__VA_ARGS__); \
+      } \
     } \
   } \
 }
 
-#define TRANSLATE_TEXT_W(lpString, cchString, fun, ...) \
-if (HijackManager::instance()->isFunctionTranslated((ulong)::fun##W)) { \
+#define TRANSLATE_TEXT_W(lpString, cchString, ...) \
+{ \
   if (auto q = EngineController::instance()) { \
     QString text = QString::fromWCharArray(lpString, cchString); \
     if (!text.isEmpty()) { \
@@ -426,7 +428,7 @@ if (HijackManager::instance()->isFunctionTranslated((ulong)::fun##W)) { \
       text = q->dispatchTextW(text, sig, role); \
       LPCWSTR lpString = (LPCWSTR)text.utf16(); \
       cchString = text.size(); \
-      return old##fun##W(__VA_ARGS__); \
+      return (__VA_ARGS__); \
     } \
   } \
 }
@@ -450,7 +452,7 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32A(HDC hdc, LPCSTR lpString, int cchSt
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
-  //TRANSLATE_TEXT_A(lpString, cchString, GetTextExtentPoint32, hdc, lpString, cchString, lpSize)
+  //TRANSLATE_TEXT_A(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   DECODE_TEXT(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   return oldGetTextExtentPoint32A(hdc, lpString, cchString, lpSize);
 }
@@ -459,7 +461,7 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32W(HDC hdc, LPCWSTR lpString, int cchS
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
-  //TRANSLATE_TEXT_W(lpString, cchString, GetTextExtentPoint32, hdc, lpString, cchString, lpSize)
+  //TRANSLATE_TEXT_W(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   return oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize);
 }
 
@@ -467,8 +469,10 @@ BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpStri
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
-  TRANSLATE_TEXT_A(lpString, cchString, TextOut, hdc, nXStart, nYStart, lpString, cchString)
-  DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::TextOutA))
+    TRANSLATE_TEXT_A(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
+  else
+    DECODE_TEXT(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
   return oldTextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }
 
@@ -476,7 +480,8 @@ BOOL WINAPI Hijack::newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpStr
 {
   DOUT("pass");
   DCFontSwitcher fs(hdc);
-  TRANSLATE_TEXT_W(lpString, cchString, TextOut, hdc, nXStart, nYStart, lpString, cchString)
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::TextOutW))
+    TRANSLATE_TEXT_W(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
   return oldTextOutW(hdc, nXStart, nYStart, lpString, cchString);
 }
 

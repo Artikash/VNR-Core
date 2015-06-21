@@ -7420,7 +7420,8 @@ bool IsPensilSetup()
   return ret;
 }
 #endif // if 0
-static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+namespace { // unnamed
+void SpecialHookDebonosuScenario(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD retn = *(DWORD *)esp_base;
   if (*(WORD *)retn == 0xc483) // add esp, $  old Debonosu game
@@ -7433,7 +7434,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
   *len = ::strlen((char*)*data);
   *split = FIXED_SPLIT_VALUE;
 }
-bool InsertDebonosuHook()
+bool InsertDebonosuScenarioHook()
 {
   DWORD fun;
   if (!GetFunctionAddr("lstrcatA", &fun, 0, 0, 0)) {
@@ -7458,7 +7459,7 @@ bool InsertDebonosuHook()
           if (DWORD hook_addr = SafeFindEntryAligned(i, 0x200)) {
             HookParam hp = {};
             hp.address = hook_addr;
-            hp.text_fun = SpecialHookDebonosu;
+            hp.text_fun = SpecialHookDebonosuScenario;
             //hp.type = USING_STRING;
             hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|FIXING_SPLIT; // there is only one thread
             ConsoleOutput("vnreng: INSERT Debonosu");
@@ -7473,6 +7474,64 @@ bool InsertDebonosuHook()
   ConsoleOutput("vnreng:Debonosu: failed");
   //ConsoleOutput("Unknown Debonosu engine.");
   return false;
+}
+void SpecialHookDebonosuName(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD text = regof(ecx, esp_base);
+  if (!text)
+    return;
+  *data = text;
+  *len = ::strlen((LPCSTR)text);
+  *split = FIXED_SPLIT_VALUE << 1;
+}
+bool InsertDebonosuNameHook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:Silkys: failed to get memory range");
+    return false;
+  }
+  const BYTE bytes[] = {
+                     // 0032f659   32c0             xor al,al
+                     // 0032f65b   5b               pop ebx
+                     // 0032f65c   8be5             mov esp,ebp
+                     // 0032f65e   5d               pop ebp
+                     // 0032f65f   c3               retn
+    0x55,            // 0032f660   55               push ebp    ; jichi: name text in ecx, which could be zero though
+    0x8b,0xec,       // 0032f661   8bec             mov ebp,esp
+    0x81,0xec, XX4,  // 0032f663   81ec 2c080000    sub esp,0x82c
+    0x8b,0x45, 0x08, // 0032f669   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+    0x53,            // 0032f66c   53               push ebx
+    0x56,            // 0032f66d   56               push esi
+    0x8b,0xf1,       // 0032f66e   8bf1             mov esi,ecx
+    0x85,0xc0,       // 0032f670   85c0             test eax,eax
+    0x8d,0x4d, 0xf0, // 0032f672   8d4d f0          lea ecx,dword ptr ss:[ebp-0x10]
+    0x0f,0x45,0xc8,  // 0032f675   0f45c8           cmovne ecx,eax
+    0x57             // 0032f678   57               push edi
+  };
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:DebonosuName: pattern NOT FOUND");
+    return false;
+  }
+  HookParam hp = {};
+  hp.address = addr;
+  hp.text_fun = SpecialHookDebonosuName;
+  //hp.type = USING_STRING;
+  hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT; //|FIXING_SPLIT; // there is only one thread
+  ConsoleOutput("vnreng: INSERT DebonosuName");
+  NewHook(hp, L"DebonosuName");
+  return true;
+}
+
+} // unnamed namespace
+
+bool InsertDebonosuHook()
+{
+  bool ok = InsertDebonosuScenarioHook();
+  if (ok)
+    InsertDebonosuNameHook();
+  return ok;
 }
 
 /* 7/8/2014: The engine name is supposed to be: AoiGameSystem Engine
