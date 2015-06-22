@@ -6335,22 +6335,75 @@ bool InsertNitroPlusHook()
   return true;
 }
 
+// jichi 6/21/2015
+namespace { // unnamed
+
+void SpecialHookRetouch1(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD text = argof(1, esp_base);
+  *data = text;
+  *len = ::strlen((LPCSTR)text);
+  *split =
+    regof(eax,esp_base) == 0 ? FIXED_SPLIT_VALUE * 2 : // name
+    regof(ebx,esp_base) == 0 ? FIXED_SPLIT_VALUE * 1 : // scenario
+                               FIXED_SPLIT_VALUE * 3 ; // other
+}
+
+bool InsertRetouch1Hook()
+{
+  HMODULE hModule = ::GetModuleHandleA("resident.dll");
+  if (!hModule) {
+    ConsoleOutput("vnreng:Retouch: failed, dll handle not loaded");
+    return false;
+  }
+  // private: bool __thiscall RetouchPrintManager::printSub(char const *,class UxPrintData &,unsigned long)	0x10050650	0x00050650	2904 (0xb58)	resident.dll	C:\Local\箱庭ロジック\resident.dll	Exported Function
+  const char *sig = "?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z";
+  DWORD addr = (DWORD)::GetProcAddress(hModule, sig);
+  if (!addr) {
+    ConsoleOutput("vnreng:Retouch: failed, procedure not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  hp.offset = 4;
+  hp.type = USING_STRING|NO_CONTEXT;
+  hp.text_fun = SpecialHookRetouch1;
+  ConsoleOutput("vnreng: INSERT Retouch");
+  NewHook(hp, L"Retouch");
+  return true;
+}
+
+bool InsertRetouch2Hook()
+{
+  HMODULE hModule = ::GetModuleHandleA("resident.dll");
+  if (!hModule) {
+    ConsoleOutput("vnreng:Retouch2: failed, dll handle not loaded");
+    return false;
+  }
+  // private: void __thiscall RetouchPrintManager::printSub(char const *,unsigned long,int &,int &)	0x10046560	0x00046560	2902 (0xb56)	resident.dll	C:\Local\箱庭ロジック\resident.dll	Exported Function
+  const char *sig = "?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z";
+  DWORD addr = (DWORD)::GetProcAddress(hModule, sig);
+  if (!addr) {
+    ConsoleOutput("vnreng:Retouch2: failed, procedure not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  hp.offset = 4;
+  hp.type = USING_STRING;
+  ConsoleOutput("vnreng: INSERT Retouch");
+  NewHook(hp, L"Retouch");
+  return true;
+}
+
+} // unnamed namespace
 bool InsertRetouchHook()
 {
-  DWORD addr;
-  if (GetFunctionAddr("?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z", &addr, nullptr, nullptr, nullptr) ||
-      GetFunctionAddr("?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z", &addr, nullptr, nullptr, nullptr)) {
-    HookParam hp = {};
-    hp.address = addr;
-    hp.offset = 4;
-    hp.type = USING_STRING;
-    ConsoleOutput("vnreng: INSERT Retouch");
-    NewHook(hp, L"Retouch");
-    return true;
-  }
-  ConsoleOutput("vnreng:Retouch: failed");
-  //ConsoleOutput("Unknown Retouch engine.");
-  return false;
+  bool ok = InsertRetouch1Hook();
+  ok = InsertRetouch2Hook() || ok;
+  return ok;
 }
 
 namespace { // unnamed Malie

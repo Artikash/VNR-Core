@@ -239,6 +239,7 @@ simple:
   - RealLive
   - Rejet
   - Retouch
+  - Retouch2
   - RetouchSystem # renamed
   - rUGP
   - rUGP2
@@ -475,6 +476,7 @@ char:
   - RealLive
   - Rejet
   - Retouch
+  - Retouch2
   - RetouchSystem # renamed
   - rUGP
   - rUGP2
@@ -635,6 +637,7 @@ focus:
   - Leaf
   - Majiro2
   - Retouch
+  - Retouch2
   - SiglusEngine2
   - SiglusEngine3
   - SiglusEngine4
