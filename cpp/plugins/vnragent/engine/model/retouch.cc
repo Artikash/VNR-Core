@@ -40,7 +40,7 @@ namespace Private {
 
 /**
  *  Sample games:
- *  - ららプリ
+ *  - らぶらぶプリンセス
  *  - 箱庭ロジック
  *  All two function entries exist.
  *

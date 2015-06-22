@@ -9348,9 +9348,10 @@ bool InsertNexton1Hook()
  */
 bool InsertGesen18Hook()
 {
+  // pattern: 2bce8bf8
   const BYTE bytes[] = {
     0x2b,0xce,  // sub ecx,esi ; hook here
-    0x8b,0xf8   // mov eds,eax
+    0x8b,0xf8   // mov edi,eax
   };
   //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
@@ -9363,7 +9364,7 @@ bool InsertGesen18Hook()
   HookParam hp = {};
   hp.type = NO_CONTEXT | DATA_INDIRECT;
   hp.length_offset = 1;
-  hp.offset = -0x24;
+  hp.offset = -0x24; // jichi: text in edi
   hp.address = addr;
 
   //index = SearchPattern(module_base_, size,ins, sizeof(ins));
