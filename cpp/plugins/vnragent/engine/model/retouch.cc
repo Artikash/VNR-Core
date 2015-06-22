@@ -27,9 +27,9 @@ namespace Private {
     // All threads including character names are linked together
     LPCSTR text = (LPCSTR)s->stack[1]; // arg1
     auto role =
-      s->eax == 0 ?  Engine::NameRole :
-      s->ebx == 0 ? Engine::ScenarioRole :
-      Engine::OtherRole; // ruby
+      s->eax == 0 ?  Engine::NameRole : Engine::ScenarioRole;
+      //s->ebx == 0 ? Engine::ScenarioRole :
+      //Engine::OtherRole; // ruby is not skipped
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
     data_ = EngineController::instance()->dispatchTextA(text, sig, role);
@@ -136,7 +136,8 @@ bool attach() // attach scenario
   if (!hModule)
     return false;
   // private: bool __thiscall RetouchPrintManager::printSub(char const *,class UxPrintData &,unsigned long)	0x10050650	0x00050650	2904 (0xb58)	resident.dll	C:\Local\箱庭ロジック\resident.dll	Exported Function
-  auto fun = ::GetProcAddress(hModule, "?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z");
+  const char *sig = "?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z";
+  auto fun = ::GetProcAddress(hModule, sig);
   if (!fun)
     return false;
   return winhook::hook_before((ulong)fun, Private::hookBefore);
@@ -165,7 +166,8 @@ bool attach() // attach scenario
   if (!hModule)
     return false;
   // private: void __thiscall RetouchPrintManager::printSub(char const *,unsigned long,int &,int &)	0x10046560	0x00046560	2902 (0xb56)	resident.dll	C:\Local\箱庭ロジック\resident.dll	Exported Function
-  auto fun = ::GetProcAddress(hModule, "?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z");
+  const char *sig = "?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z";
+  auto fun = ::GetProcAddress(hModule, sig);
   if (!fun)
     return false;
   return winhook::hook_before((ulong)fun, Private::hookBefore);
