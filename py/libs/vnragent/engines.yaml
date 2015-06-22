@@ -29,7 +29,11 @@
   #encoding: sjis
   #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 
-- name: EmbedSiglusEngine # 5/25/2014, supposed to be SiglusEngine2
+- name: EmbedRetouch # 6/27/2014, for Retouch
+  exist: resident.dll
+  #encoding: sjis
+
+- name: EmbedSiglusEngine # 5/25/2014, for SiglusEngine2
   exist: Siglus*.exe
   #encoding: utf16
 

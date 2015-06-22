@@ -394,6 +394,7 @@ char:
   - EmbedBGI
   - EmbedDebonosu
   - EmbedElf
+  - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedWolfRPG
   - EmbedSystem43
@@ -623,6 +624,7 @@ focus:
   - EAGLS
   - EmbedARCGameEngine
   - EmbedDebonosu
+  - EmbedRetouch
   - EmbedSiglusEngine
   - EmbedSilkysPlus
   - FocasLens
@@ -632,6 +634,7 @@ focus:
   - KiriKiriZ
   - Leaf
   - Majiro2
+  - Retouch
   - SiglusEngine2
   - SiglusEngine3
   - SiglusEngine4
