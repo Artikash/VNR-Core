@@ -185,22 +185,4 @@ bool CatSystem2Engine::attach()
   return true;
 }
 
-/**
- *  Remove furigana in scenario thread.
- *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
- */
-QString CatSystem2Engine::textFilter(const QString &text, int role)
-{
-  if (role != Engine::ScenarioRole || !text.contains('{'))
-    return text;
-
-  static QRegExp rx("\\{(.+)/.+\\}");
-  if (!rx.isMinimal())
-    rx.setMinimal(true);
-
-  QString ret = text;
-  ret.replace(rx, "\\1");
-  return ret;
-}
-
 // EOF
