@@ -15,6 +15,10 @@
   #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
   #vnrlocale: true # TODO: need a better name
 
+- name: EmbedCatSystem2 # 6/21/2015 jichi
+  exist: "*.int"
+  #encoding: sjis
+
 - name: EmbedDebonosu # 6/18/2015 jichi
   exist:
     - bmp.pak

@@ -56,9 +56,13 @@ embed:
   - ARCGameEngine
   - BGI
   - BGI2
+  - CatSystem2
+  - CatSystem3
   - Debonosu
   - DebonosuName
   - Elf
+  - Retouch
+  - Retouch2
   - SiglusEngine2
   #- SiglusEngine3
   #- SiglusEngine4
@@ -393,6 +397,7 @@ char:
   # Embed
   - EmbedARCGameEngine
   - EmbedBGI
+  - EmbedCatSystem2
   - EmbedDebonosu
   - EmbedElf
   - EmbedRetouch
@@ -625,6 +630,7 @@ focus:
   - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
+  - EmbedCatSystem2
   - EmbedDebonosu
   - EmbedRetouch
   - EmbedSiglusEngine
