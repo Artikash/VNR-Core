@@ -56,8 +56,8 @@ embed:
   - ARCGameEngine
   - BGI
   - BGI2
-  - CatSystem2
-  - CatSystem3
+  #- CatSystem2
+  #- CatSystem3
   - Debonosu
   - DebonosuName
   - Elf
