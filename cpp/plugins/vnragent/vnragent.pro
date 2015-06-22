@@ -130,6 +130,7 @@ HEADERS += \
   engine/model/bgi.h \
   engine/model/debonosu.h \
   engine/model/elf.h \
+  engine/model/retouch.h \
   engine/model/rgss.h \
   engine/model/siglus.h \
   engine/model/silkys.h \
@@ -149,6 +150,7 @@ SOURCES += \
   engine/model/bgi.cc \
   engine/model/debonosu.cc \
   engine/model/elf.cc \
+  engine/model/retouch.cc \
   engine/model/rgss.cc \
   engine/model/siglus.cc \
   engine/model/silkys.cc \

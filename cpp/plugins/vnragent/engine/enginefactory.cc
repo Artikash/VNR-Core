@@ -12,6 +12,7 @@
 #include "engine/model/bgi.h"
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
+#include "engine/model/retouch.h"
 #include "engine/model/rgss.h"
 #include "engine/model/siglus.h"
 #include "engine/model/silkys.h"
@@ -37,6 +38,7 @@ EngineController *EngineFactory::createEngine()
     , new SilkysEngine
     , new SiglusEngine
     , new RGSSEngine
+    , new RetouchEngine
     , new ElfEngine
     , new DebonosuEngine
     , new BGIEngine
