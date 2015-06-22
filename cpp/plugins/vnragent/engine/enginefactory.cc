@@ -10,6 +10,7 @@
 #include "engine/model/age.h"
 #include "engine/model/aoi.h"
 #include "engine/model/bgi.h"
+#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
 #include "engine/model/retouch.h"
@@ -41,6 +42,7 @@ EngineController *EngineFactory::createEngine()
     , new RetouchEngine
     , new ElfEngine
     , new DebonosuEngine
+    , new CatSystem2Engine
     , new BGIEngine
     , new ARCGameEngine
     //, new CircusEngine
