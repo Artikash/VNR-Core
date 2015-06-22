@@ -10,7 +10,7 @@
 #include "engine/model/age.h"
 #include "engine/model/aoi.h"
 #include "engine/model/bgi.h"
-#include "engine/model/cs2.h"
+//#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
 #include "engine/model/retouch.h"
