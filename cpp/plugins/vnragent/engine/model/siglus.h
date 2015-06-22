@@ -15,7 +15,7 @@ public:
   {
     name = "EmbedSiglusEngine";
     encoding = Utf16Encoding;
-    matchFiles << "SiglusEngine.exe";
+    matchFiles << "SiglusEngine*.exe";
     attachFunction = &Self::attach;
   }
 };

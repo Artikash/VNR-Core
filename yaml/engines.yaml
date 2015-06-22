@@ -7,6 +7,7 @@ rename:
   AUEngine: Tenco
   ApRicot: ApRicoT
   Eushully: ARCGameEngine
+  Gesen18: Unicorn
   MAJIRO: Majiro
   Pencil: Pensil
   RetouchSystem: Retouch
@@ -71,6 +72,7 @@ embed:
   - SystemAoi
   - SystemAoi2
   - System43+   # FIXME: English only
+  - Unicorn
   - WolfRPG
   #- AMUSE CRAFT
   #- BGI
@@ -315,13 +317,13 @@ norepeat:
   - Artemis
   - BALDR # removed
   - EXP # there could be different type of threads, but it is OK to merge them
-  - Gesen18
   - KiriKiri2  # might float, http://sakuradite.com/game/4633
   - QLIE
   - QLIE2
   - NEXTON
   - NEXTON1 # I am not sure if it could be floating like NEXTON
   - TanukiSoft # But this thread is floating
+  - Unicorn
   - Unity # removed
 
 # Not floating address
@@ -346,7 +348,7 @@ nofloat:
   - mono_utf8_from_external
 
 float:
-  - Gesen18
+  - Unicorn
   - Unity # removed
 
 # The game engines that require the game to have normal/slow text speed
@@ -397,13 +399,14 @@ char:
   # Embed
   - EmbedARCGameEngine
   - EmbedBGI
-  - EmbedCatSystem2
+  #- EmbedCatSystem2
   - EmbedDebonosu
   - EmbedElf
   - EmbedRetouch
   - EmbedSilkysPlus
-  - EmbedWolfRPG
   - EmbedSystem43
+  - EmbedUnicorn
+  - EmbedWolfRPG
   # Engines
   - 2RM
   - 5pb PSP
@@ -448,7 +451,7 @@ char:
   - Eushully # renamed
   - EXP
   - FocasLens
-  - Gesen18
+  - Gesen18 # renamed
   - HorkEye
   - Intense PSP
   - KONAMI PSP
@@ -508,6 +511,7 @@ char:
   - TinkerBell2
   - Triangle
   - TypeMoon PS2
+  - Unicorn
   - Vanillaware GC
   - WAFFLE
   - Waffle
@@ -630,11 +634,12 @@ focus:
   - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
-  - EmbedCatSystem2
+  #- EmbedCatSystem2
   - EmbedDebonosu
   - EmbedRetouch
   - EmbedSiglusEngine
   - EmbedSilkysPlus
+  - EmbedUnicorn
   - FocasLens
   - HorkEye
   - KAGParser
@@ -649,6 +654,7 @@ focus:
   - SiglusEngine4
   - SilkysPlus
   - Syuntada
+  - Unicorn
   - WillPlus
   - YU-RIS2
 # No focus:

@@ -99,7 +99,6 @@ bool InsertEMEHook();           // EmonEngine: emecfg.ecf
 bool InsertEushullyHook();      // Eushully: AGERC.DLL
 bool InsertExpHook();           // EXP: http://www.exp-inc.jp
 bool InsertFocasLensHook();     // FocasLens: Dat/*.arc, http://www.fo-lens.net
-bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertHorkEyeHook();       // HorkEye: resource string
 bool InsertKAGParserHook();     // plugin/KAGParser.dll
@@ -141,10 +140,11 @@ bool InsertTanukiHook();        // Tanuki: *.tak
 bool InsertTaskforce2Hook();    // Taskforce2.exe
 bool InsertTencoHook();         // Tenco: Check.mdx
 bool InsertTriangleHook();      // Triangle: Execle.exe
-bool InsertYukaSystem2Hook();   // YukaSystem2: *.ykc
-bool InsertYurisHook();         // YU-RIS: *.ypf
+bool InsertUnicornHook();       // Gsen18: *.szs|Data/*.szs
 bool InsertWillPlusHook();      // WillPlus: Rio.arc
 bool InsertWolfHook();          // Wolf: Data.wolf
+bool InsertYukaSystem2Hook();   // YukaSystem2: *.ykc
+bool InsertYurisHook();         // YU-RIS: *.ypf
 
 void InsertBrunsHook();         // Bruns: bruns.exe
 void InsertIronGameSystemHook();// IroneGameSystem: igs_sample.exe

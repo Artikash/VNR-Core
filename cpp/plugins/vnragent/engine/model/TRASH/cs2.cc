@@ -34,12 +34,13 @@ namespace Private {
 
 /**
  *  Sample game: カミカゼ
- *  text in arg1
+ *
+ *  FIXME: This is the log function
  *
  *  Function found by debugging GetGlyphOutlineA, then traversing function stack
  *  005B516E   CC               INT3
  *  005B516F   CC               INT3
- *  005B5170   51               PUSH ECX
+ *  005B5170   51               PUSH ECX ; jichi: text in arg1
  *  005B5171   8B43 1C          MOV EAX,DWORD PTR DS:[EBX+0x1C]
  *  005B5174   55               PUSH EBP
  *  005B5175   56               PUSH ESI
