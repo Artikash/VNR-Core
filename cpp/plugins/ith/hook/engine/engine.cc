@@ -9346,32 +9346,32 @@ bool InsertNexton1Hook()
  *  - off: 4294967260 (0xffffffdc)
  *  - type: 1032 (0x408)
  */
-bool InsertGesen18Hook()
+bool InsertUnicornHook()
 {
+  // pattern: 2bce8bf8
   const BYTE bytes[] = {
     0x2b,0xce,  // sub ecx,esi ; hook here
-    0x8b,0xf8   // mov eds,eax
+    0x8b,0xf8   // mov edi,eax
   };
   //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
-    ConsoleOutput("vnreng:Gesen18: pattern not exist");
+    ConsoleOutput("vnreng:Unicorn: pattern not exist");
     return false;
   }
 
   HookParam hp = {};
   hp.type = NO_CONTEXT | DATA_INDIRECT;
   hp.length_offset = 1;
-  hp.offset = -0x24;
+  hp.offset = -0x24; // jichi: text in edi
   hp.address = addr;
 
   //index = SearchPattern(module_base_, size,ins, sizeof(ins));
   //ITH_GROWL_DWORD2(base, index);
 
-  ConsoleOutput("vnreng: INSERT Gesen18");
-  NewHook(hp, L"Gesen18");
-  //ConsoleOutput("Gesen18");
+  ConsoleOutput("vnreng: INSERT Unicorn");
+  NewHook(hp, L"Unicorn");
   return true;
 }
 

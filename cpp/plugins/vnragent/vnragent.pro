@@ -136,11 +136,13 @@ HEADERS += \
   engine/model/silkys.h \
   engine/model/system4.h \
   engine/model/wolf.h
+  #engine/model/unicorn.h
+  #engine/model/cs2.h
   #engine/model/circus.h
   #engine/model/elf.h
-  #engine/model/eushully.h \
-  #engine/model/majiro.h \
-  #engine/model/sideb.h \
+  #engine/model/eushully.h
+  #engine/model/majiro.h
+  #engine/model/sideb.h
   ##engine/model/nexas.h
   #engine/model/rejet.h
   #engine/model/test.h
@@ -156,6 +158,8 @@ SOURCES += \
   engine/model/silkys.cc \
   engine/model/system4.cc \
   engine/model/wolf.cc
+  #engine/model/unicorn.cc
+  #engine/model/cs2.cc
   #engine/model/circus.cc
   #engine/model/elf.cc
   #engine/model/eushully.cc

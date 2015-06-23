@@ -15,6 +15,10 @@
   #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
   #vnrlocale: true # TODO: need a better name
 
+#- name: EmbedCatSystem2 # 6/21/2015 jichi
+#  exist: "*.int"
+#  #encoding: sjis
+
 - name: EmbedDebonosu # 6/18/2015 jichi
   exist:
     - bmp.pak
@@ -60,6 +64,10 @@
 - name: EmbedRGSS # 6/7/2015
   exist: System/RGSS3*.dll # such as RGSS301.dll
   #encoding: utf16
+  #
+#- name: EmbedUnicorn # 6/22/2015 jichi
+#  exist: "*.szs|data/*.szs"
+#  #encoding: sjis
 
 - name: EmbedWolfRPG # 6/9/2015
   exist: data.wolf|data/*.wolf

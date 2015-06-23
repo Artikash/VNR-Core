@@ -200,7 +200,7 @@ bool DetermineEngineByFile1()
   }
   // jichi 9/16/2013: Add Gesen18
   if (IthFindFile(L"*.szs") || IthFindFile(L"Data\\*.szs")) {
-    InsertGesen18Hook();
+    InsertUnicornHook();
     return true;
   }
   // jichi 12/22/2013: Add rejet

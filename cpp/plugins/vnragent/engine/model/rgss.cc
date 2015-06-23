@@ -486,7 +486,7 @@ namespace ScenarioHook {
  */
 namespace Private {
 
-  enum { MaxTextSize = 0x1000 };
+  //enum { MaxTextSize = 0x1000 };
   //char oldText_[MaxTextSize + 1]; // 1 extra 0 that is always 0
   //size_t oldSize_;
 
@@ -500,7 +500,7 @@ namespace Private {
     bool isValid() const
     {
       return Engine::isAddressReadable(type) && *type
-          && size && size < MaxTextSize
+          && size && size < Engine::MaxTextSize
           && Engine::isAddressWritable(text, size + 1) && *text
           && text[size] == 0 && ::strlen(text) == size  // validate size
           //&& !::strchr(text, '/')

@@ -34,12 +34,12 @@ namespace Private {
     int size; // text size
   };
 
-  QByteArray data_;
   TextArgument *arg_,
                argValue_;
 
   bool hookBefore(winhook::hook_stack *s)
   {
+    static QByteArray data_;
     auto arg = (TextArgument *)s->stack[0]; // arg1
     if (arg->size <= 0 || arg->size > Engine::MaxTextSize)
       return true;
