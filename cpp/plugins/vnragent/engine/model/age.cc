@@ -53,7 +53,7 @@ namespace Private {
 } // namespace Private
 
 /**
- *  Sample game: 神のラプソディ
+ *  Sample game: 神採りアルケミーマイスター
  *
  *  The caller of the last GetTextExtentPoint32A:
  *
@@ -962,7 +962,7 @@ bool attach(bool hijackGDI) // attach scenario
   if (!lastCaller)
     return false;
 
-  // Check caller that is not after int3 for old AGE games
+  // Check caller that is not after int3 for old AGE game 神採りアルケミーマイスター
   // 0045AB1D   C2 1000          RETN 0x10
   // 0045AB20   55               PUSH EBP
   {
