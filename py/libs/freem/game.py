@@ -97,7 +97,7 @@ class GameApi(object):
     return self._re_fixtitle.sub('', t)
 
   # Example: <meta name="twitter:title" content="「恋と友情の境界線-体験版-」：無料ゲーム by ふりーむ！">
-  _re_title = re.compile(ur'<meta name="twitter:title" content="([^"]+?)：無料ゲーム by ふりーむ！"')
+  _re_title = re.compile(ur'<meta name="twitter:title" content="([^"]+?)：無料ゲーム[^"]*"')
   def _parsetitle(self, h):
     """
     @param  h  unicode  html
@@ -188,6 +188,7 @@ if __name__ == '__main__':
   k = 7190 # http://www.freem.ne.jp/win/game/7190
   k = 5414 # special name
   k = 4467 # http://www.freem.ne.jp/win/game/4467
+  k = 3781
   # Youtube Video
   print '-' * 10
   q = api.query(k)
