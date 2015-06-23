@@ -24,6 +24,8 @@ public:
     , enableLocaleEmulation(false) // fix inconsistent game locale
     , enableGDIFont(false)      // change GDI device context font
 
+    , automaticLineCapacity(0)  // estimated maximum number of thin characters for scenario text per line, 0 to disable it
+
     , matchFunction(nullptr)    // determine whether apply engine
     , attachFunction(nullptr)   // apply the engine
     , detachFunction(nullptr)   // remove the applied engine
@@ -36,6 +38,8 @@ public:
   bool enableDynamicEncoding;
   bool enableLocaleEmulation;
   bool enableGDIFont;
+
+  int automaticLineCapacity;
 
   QStringList matchFiles; // files existing in the game directory
 
