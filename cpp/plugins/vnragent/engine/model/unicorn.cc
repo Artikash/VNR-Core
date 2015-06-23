@@ -18,61 +18,57 @@
 namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
+  enum { ShortTextCapacity = 0x10 }; // 15, maximum number of characters for short text including '\0'
   struct HookArgument
   {
-    DWORD   type;       // 0x0, only valid if zero
-    LPCSTR  text;       // 0x4, editable though
-    DWORD   unknown[3];
-    int     size,       // 0x14
-            capacity;   // 0x18
+    DWORD type;       // 0x0, equal zero for scenario
+    union {
+      LPCSTR  longText;       // 0x4, editable though
+      char shortText[ShortTextCapacity];
+    };
+    int size,     // 0x14, 0xf for short text
+        capacity; // 0x18
 
-    bool isValid() const
-    {
-      return type == 0
-          && size > 0 && size < Engine::MaxTextSize && size <= capacity
-          && Engine::isAddressWritable(text, size + 1) && *text
-          && text[size] == 0 && ::strlen(text) == size // validate size
-          && !Util::allAscii(text); // this function could capture image files that are all ascii
-    }
-
-    //int size() const { return (*type >> 0xe) & 0x1f; }
+    // Skip single character
+    bool isValid() const { return size > 2 && size < Engine::MaxTextSize && size <= capacity; }
+    int role() const { return type == 0 ? Engine::ScenarioRole : Engine::OtherRole; }
+    LPCSTR text() const { return capacity <= ShortTextCapacity ? shortText : longText; }
   };
 
-  HookArgument *arg_;
-  LPCSTR oldText_;
-  int oldSize_,
-      oldCapacity_;
-  bool hookBefore(winhook::hook_stack *s)
+  HookArgument *arg_,
+               argValue_;
+  bool hookBefore(ulong addr, winhook::hook_stack *s)
   {
     static QByteArray data_;
     static std::unordered_set<LPCSTR> texts_; // addresses of the translated texts
     auto arg = (HookArgument *)s->stack[0]; // arg1
-    if (!arg || !arg->isValid() || texts_.find(arg->text) != texts_.cend())
+    if (!arg || !arg->isValid())
       return true;
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    //auto split = s->stack[0]; // retaddr
-    //auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray oldData = arg->text,
+    auto text = arg->text();
+    if (!text || !*text || Util::allAscii(text) || texts_.find(text) != texts_.cend())
+      return true;
+    auto role = arg->role();
+    auto split = addr + 5; // use retaddr as split, 5 = jumpsize
+    auto sig = Engine::hashThreadSignature(role, split);
+    sig = addr; // use return address as split
+    QByteArray oldData(text, arg->size),
                newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
     if (newData == oldData)
       return true;
+    return true;
+    //texts_.insert(text);
     data_ = newData;
     arg_ = arg;
-    oldText_ = arg_->text;
-    oldSize_ = arg_->size;
-    oldCapacity_ = arg_->capacity;
-    arg->text = data_.constData();
+    argValue_ = *arg;
+    arg->longText = data_.constData();
     arg->size = data_.size();
-    arg->capacity = arg->size + 1;
-    texts_.insert(arg->text);
+    arg->capacity = arg->size;
     return true;
   }
   bool hookAfter(winhook::hook_stack *)
   {
     if (arg_) {
-      arg_->text = oldText_;
-      arg_->size = oldSize_;
-      arg_->capacity = oldCapacity_;
+      *arg_ = argValue_;
       arg_ = nullptr;
     }
     return true;
@@ -223,7 +219,10 @@ bool attach()
   //return winhook::hook_before(addr, Private::hookBefore);
   int count = 0;
   auto fun = [&count](ulong call) -> bool {
-    count += winhook::hook_both(call, Private::hookBefore, Private::hookAfter);
+    auto hookBefore = [call](winhook::hook_stack *s) {
+      return Private::hookBefore(call, s);
+    };
+    count += winhook::hook_both(call, hookBefore, Private::hookAfter);
     return true; // find all calls
   };
   MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);

@@ -72,7 +72,7 @@ embed:
   - SystemAoi
   - SystemAoi2
   - System43+   # FIXME: English only
-  - Unicorn
+  #- Unicorn
   - WolfRPG
   #- AMUSE CRAFT
   #- BGI
@@ -405,7 +405,7 @@ char:
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
-  - EmbedUnicorn
+  #- EmbedUnicorn
   - EmbedWolfRPG
   # Engines
   - 2RM

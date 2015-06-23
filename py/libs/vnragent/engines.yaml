@@ -65,9 +65,9 @@
   exist: System/RGSS3*.dll # such as RGSS301.dll
   #encoding: utf16
   #
-- name: EmbedUnicorn # 6/22/2015 jichi
-  exist: "*.szs|data/*.szs"
-  #encoding: sjis
+#- name: EmbedUnicorn # 6/22/2015 jichi
+#  exist: "*.szs|data/*.szs"
+#  #encoding: sjis
 
 - name: EmbedWolfRPG # 6/9/2015
   exist: data.wolf|data/*.wolf
