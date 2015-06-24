@@ -65,10 +65,10 @@ namespace Private {
                  newData = q->dispatchTextA(oldData, sig, role);
       if (!newData.isEmpty() && newData != oldData) {
         nameArg_ = arg;
-        ::memcpy(nameText_, oldData.constData(), min(oldData.size() + 1, MaxNameSize));
-        ::memcpy(text, newData.constData(), min(newData.size() + 1, MaxNameSize));
+        ::memcpy(nameText_, oldData.constData(), qMin<size_t>(oldData.size() + 1, MaxNameSize));
+        ::memcpy(text, newData.constData(), qMin<size_t>(newData.size() + 1, MaxNameSize));
       }
-      //  ::memcpy(text, newData.constData(), min(oldData.size(), newData.size()));
+      //  ::memcpy(text, newData.constData(), qMin(oldData.size(), newData.size()));
       //int left = oldData.size() - newData.size();
       //if (left > 0)
       //  ::memset(text + oldData.size() - left, 0, left);
@@ -206,7 +206,7 @@ static ulong attach(ulong startAddress, ulong stopAddress, int *stackSize)
       0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
   };
   //enum { hook_offset = 0xc };
-  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  //ulong range = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
   ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(reladdr);
   //reladdr = 0x2f9b0; // 愛姉妹4
@@ -275,7 +275,7 @@ bool ElfEngine::attach()
       QByteArray oldData = text,
                  newData = q->dispatchTextA(oldData, sig, role);
       if (!newData.isEmpty())
-        ::memcpy(text, newData.constData(), min(oldData.size(), newData.size()));
+        ::memcpy(text, newData.constData(), qMin(oldData.size(), newData.size()));
       int left = oldData.size() - newData.size();
       if (left > 0)
         ::memset(text + oldData.size() - left, 0, left);

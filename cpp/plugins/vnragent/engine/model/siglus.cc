@@ -52,7 +52,7 @@ struct TextArgument
   {
     texts[0] = text;
     size = length;
-    capacity = max(DataCapacity, length);
+    capacity = qMax<size_t>(DataCapacity, length);
   }
 
   void setText(const QString &text)

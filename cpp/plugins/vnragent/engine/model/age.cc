@@ -1494,7 +1494,7 @@ static DWORD searchEushully(DWORD startAddress, DWORD stopAddress)
     0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
   };
   //enum { hook_offset = 0 };
-  //DWORD range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  //DWORD range1 = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
   DWORD addr = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress);
   if (!addr)
     //ConsoleOutput("vnreng:Siglus2: pattern not found");

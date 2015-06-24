@@ -76,7 +76,7 @@ namespace Private {
 
           dataSet_.insert(data);
 
-          ::memcpy(text, data.constData(), min(data.size() + 1, capacity));
+          ::memcpy(text, data.constData(), qMin(data.size() + 1, capacity));
           self->size = data.size() + prefixSize;
         }
       }

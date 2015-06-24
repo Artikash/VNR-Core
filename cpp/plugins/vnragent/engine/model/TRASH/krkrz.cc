@@ -67,10 +67,10 @@ namespace Private {
                  newData = q->dispatchTextA(oldData, sig, role);
       if (!newData.isEmpty()) {
         nameArg_ = arg;
-        ::memcpy(nameText_, oldData.constData(), min(oldData.size() + 1, MaxNameSize));
-        ::memcpy(text, newData.constData(), min(newData.size() + 1, MaxNameSize));
+        ::memcpy(nameText_, oldData.constData(), qMin(oldData.size() + 1, MaxNameSize));
+        ::memcpy(text, newData.constData(), qMin(newData.size() + 1, MaxNameSize));
       }
-      //  ::memcpy(text, newData.constData(), min(oldData.size(), newData.size()));
+      //  ::memcpy(text, newData.constData(), qMin(oldData.size(), newData.size()));
       //int left = oldData.size() - newData.size();
       //if (left > 0)
       //  ::memset(text + oldData.size() - left, 0, left);

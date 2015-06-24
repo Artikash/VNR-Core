@@ -1294,7 +1294,7 @@ namespace Private {
           texts_.insert(lpString);
           if (auto p = DynamicCodec::instance()) {
             QByteArray data = p->encode(newText);
-            int size = min(TextCapacity, data.size() + 1);
+            int size = qMin(TextCapacity, data.size() + 1);
             auto text = const_cast<LPSTR>(lpString);
             ::memcpy(text, data.constData(), size);
             text[size - 1] = 0;
@@ -1358,7 +1358,7 @@ namespace Private {
     int capacity = TextCapacity - (trimmedText - text);
     if (capacity <= 0)
       return true;
-    ::memcpy(text, newData.constData(), max(newData.size() + 1, capacity));
+    ::memcpy(text, newData.constData(), qMax(newData.size() + 1, capacity));
     text[capacity - 1] = 0; // enforce trailing zero
     translatedTexts_.insert(text);
     return true;

@@ -241,7 +241,7 @@ namespace Private {
        0x85,0xff,        // 004208ef  |. 85ff           test edi,edi
     };
     //enum { hook_offset = 0x4207e0 - 0x4208de }; // distance to the beginning of the function
-    //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+    //ulong range = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
     ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
     if (!addr)
       //ConsoleOutput("vnreng:BGI2: pattern not found");
@@ -361,7 +361,7 @@ namespace Private {
       0x77, 0x6a       // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
     };
     enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
-    //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+    //ulong range = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
     ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
     if (!addr)
       //ConsoleOutput("vnreng:BGI2: pattern not found");

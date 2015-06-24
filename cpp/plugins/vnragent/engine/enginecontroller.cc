@@ -52,7 +52,7 @@ public:
 
   bool finalized;
 
-  int scenarioLineCapacity; // current maximum number bytes in a line, always increase and never decrease
+  int scenarioLineCapacity; // current maximum number bytes in a line for scenario thread, always increase and never decrease
   std::unordered_set<qint64> textHashes_; // hashes of rendered text
 
   EngineControllerPrivate(EngineModel *model)
@@ -141,26 +141,65 @@ private:
     return ret;
   }
 
+  static size_t getLineCapacity(const wchar_t *s)
+  {
+    enum : wchar_t { br = '\n' };
+    if (::wcschr(s, br))
+      return Util::measureTextSize(s);
+    size_t ret = 0;
+    for (auto p = s; *s; s++)
+      if (*s == br) {
+        ret = qMax<int>(ret, Util::measureTextSize(p, s));
+        p = s + 1;
+      }
+    return ret;
+  }
 
 public:
+  void updateLineCapacity(const QString &text)
+  {
+    scenarioLineCapacity = qMax<int>(scenarioLineCapacity,
+        getLineCapacity(static_cast<const wchar_t *>(text.utf16())));
+  }
+
+  static QString mergeLines(const QString &text)
+  {
+    const char br = '\n';
+    if (!text.contains(br))
+      return text;
+    // Remove \n\s+
+    bool br_found = false;
+    QString ret;
+    foreach (const QChar &ch, text)
+      if (ch.unicode() == br)
+        br_found = true;
+      else if (!br_found || !ch.isSpace()) {
+        br_found = true;
+        ret.push_back(ch);
+      }
+    return ret;
+  }
+
   static QString limitTextWidth(const QString &text, int limit)
   {
     if (limit <= 0 || text.size() <= limit)
       return text;
 
+    const char br = '\n';
+
     QString ret;
     int width = 0;
     foreach (const QChar &ch, text) {
-      ret.append(ch);
+      ret.push_back(ch);
 
       wchar_t w = ch.unicode();
       width += 1 + (w >= 128); // assume wide character to have double width
       if (width >= limit) {
         width = 0;
-        if (w != '\n')
-          ret.append('\n');
+        if (w != br)
+          ret.push_back(br);
       }
-      //else if (w == '\n')
+      //else if (w == br)
       //  ret[ret.size() - 1] = ' '; // replace '\n' by ' '
     }
     return ret;
@@ -376,6 +415,8 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (d_->model->textFilterFunction)
     trimmedText = d_->model->textFilterFunction(trimmedText, role);
+  if (role == Engine::ScenarioRole && d_->scenarioLineCapacity)
+    trimmedText = d_->mergeLines(trimmedText);
 
   if (trimmedText.isEmpty()) {
     if (!d_->settings.textVisible[role])
@@ -449,8 +490,13 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     }
   }
 
-  if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
-    repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  if (role == Engine::ScenarioRole) {
+    if (d_->scenarioLineCapacity) {
+      d_->updateLineCapacity(text);
+      repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
+    } else if (d_->settings.scenarioWidth)
+      repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  }
   repl = d_->adjustSpaces(repl);
 
   QByteArray ret;
@@ -517,6 +563,8 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (d_->model->textFilterFunction)
     trimmedText = d_->model->textFilterFunction(trimmedText, role);
+  if (role == Engine::ScenarioRole && d_->scenarioLineCapacity)
+    trimmedText = d_->mergeLines(trimmedText);
 
   if (trimmedText.isEmpty()) {
     if (!d_->settings.textVisible[role])
@@ -592,8 +640,13 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     }
   }
 
-  if (d_->settings.scenarioWidth && role == Engine::ScenarioRole)
-    repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  if (role == Engine::ScenarioRole) {
+    if (d_->scenarioLineCapacity) {
+      d_->updateLineCapacity(text);
+      repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
+    } else if (d_->settings.scenarioWidth)
+      repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  }
   repl = d_->adjustSpaces(repl);
 
   if (maxSize > 0 && maxSize < repl.size() + prefix.size() + suffix.size())
