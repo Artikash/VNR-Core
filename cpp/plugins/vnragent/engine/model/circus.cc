@@ -101,7 +101,7 @@ bool CircusEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
-  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // for special symbol and ruby texts
   return true;
 }
 
