@@ -6,7 +6,7 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackfuns.h"
-#include "hijack/hijackmanager.h"
+//#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
@@ -21,6 +21,17 @@ namespace { // unnamed
 namespace ScenarioHook {
 
 namespace Private {
+
+  // Skip leading tags such as @K and @c5
+  LPCSTR ltrim(LPCSTR s)
+  {
+    if (*s == '@')
+      while ((signed char)*++s > 0);
+    return s;
+  }
+
+  DWORD nameReturnAddress_,
+        scenarioReturnAddress_;
 
   /**
    *  Sample game: DC3, function: 0x4201d0
@@ -41,29 +52,84 @@ namespace Private {
    *  0012F16C   0012F7CC
    *  0012F170   0012F7CC
    */
-
   bool hookBefore(winhook::hook_stack *s)
   {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
-    auto text = (LPCSTR)s->stack[2]; // arg2
+    auto text = (LPCSTR)s->stack[2], // arg2
+         trimmedText = ltrim(text);
+    if (!*trimmedText)
+      return true;
     auto retaddr = s->stack[0]; // retaddr
-    auto role = s->ebx? Engine::OtherRole : // other threads ebx is not zero
-                // 004201e4  |. 83c1 02        |add ecx,0x2
-                // 004201e7  |. eb 04          |jmp short dc3.004201ed
-                *(BYTE *)(retaddr + 3) == 0xe9 ? Engine::NameRole : // retaddr+3 is jmp
-                Engine::ScenarioRole;
+    auto role = retaddr == scenarioReturnAddress_ ? Engine::ScenarioRole :
+                retaddr == nameReturnAddress_ ? Engine::NameRole :
+                Engine::OtherRole;
+                //s->ebx? Engine::OtherRole : // other threads ebx is not zero
+                //// 004201e4  |. 83c1 02        |add ecx,0x2
+                //// 004201e7  |. eb 04          |jmp short dc3.004201ed
+                //*(BYTE *)(retaddr + 3) == 0xe9 // old name
+                //? Engine::NameRole : // retaddr+3 is jmp
+                //Engine::ScenarioRole;
     auto split = retaddr;
     auto sig = Engine::hashThreadSignature(role, split);
-    sig = retaddr;
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    QByteArray oldData = trimmedText,
+               newData = EngineController::instance()->dispatchTextA(trimmedText, sig, role);
+    if (oldData == newData)
+      return true;
+    if (trimmedText != text)
+      newData.prepend(text, trimmedText - text);
+    data_ = newData;
     s->stack[2] = (DWORD)data_.constData(); // reset arg2
     return true;
+  }
+
+  // Alternatively, using the following pattern bytes also works:
+  //
+  // 3c24750583c102eb0488024241
+  //
+  // 004201e0  |> 3c 24          /cmp al,0x24
+  // 004201e2  |. 75 05          |jnz short dc3.004201e9
+  // 004201e4  |. 83c1 02        |add ecx,0x2
+  // 004201e7  |. eb 04          |jmp short dc3.004201ed
+  // 004201e9  |> 8802           |mov byte ptr ds:[edx],al
+  // 004201eb  |. 42             |inc edx
+  // 004201ec  |. 41             |inc ecx
+  ulong findFunctionAddress(ulong startAddress, ulong stopAddress) // find the function to hook
+  {
+    //return 0x4201d0; // DC3 function address
+    for (ulong i = startAddress + 0x1000; i < stopAddress -4; i++)
+      // *  004201e0  |> 3c 24          /cmp al,0x24
+      // *  004201e2  |. 75 05          |jnz short dc3.004201e9
+      if ((*(ulong *)i & 0xffffff) == 0x75243c) { // cmp al, 24; je
+        enum { range = 0x80 }; // the range is small, since it is a small function
+        if (ulong addr = MemDbg::findEnclosingAlignedFunction(i, range))
+          return addr;
+      }
+    return 0;
   }
 
 } // namespace Private
 
 /**
  *  jichi 6/5/2014: Sample function from DC3 at 0x4201d0
+ *
+ *  Sample game: DC3PP
+ *  0042CE1E   68 E0F0B700      PUSH .00B7F0E0
+ *  0042CE23   A3 0C824800      MOV DWORD PTR DS:[0x48820C],EAX
+ *  0042CE28   E8 A352FFFF      CALL .004220D0  ; jichi: name thread
+ *  0042CE2D   C705 08024D00 01>MOV DWORD PTR DS:[0x4D0208],0x1
+ *  0042CE37   EB 52            JMP SHORT .0042CE8B
+ *  0042CE39   392D 08024D00    CMP DWORD PTR DS:[0x4D0208],EBP
+ *  0042CE3F   74 08            JE SHORT .0042CE49
+ *  0042CE41   392D 205BB900    CMP DWORD PTR DS:[0xB95B20],EBP
+ *  0042CE47   74 07            JE SHORT .0042CE50
+ *  0042CE49   C605 E0F0B700 00 MOV BYTE PTR DS:[0xB7F0E0],0x0
+ *  0042CE50   8D5424 40        LEA EDX,DWORD PTR SS:[ESP+0x40]
+ *  0042CE54   52               PUSH EDX
+ *  0042CE55   68 30B5BA00      PUSH .00BAB530
+ *  0042CE5A   892D 08024D00    MOV DWORD PTR DS:[0x4D0208],EBP
+ *  0042CE60   E8 6B52FFFF      CALL .004220D0  ; jichi: scenario thread
+ *  0042CE65   C705 A0814800 FF>MOV DWORD PTR DS:[0x4881A0],-0x1
+ *  0042CE6F   892D 2C824800    MOV DWORD PTR DS:[0x48822C],EBP
  *
  *  Sample game: 水夏弐律
  *
@@ -145,30 +211,26 @@ namespace Private {
  */
 bool attach()
 {
-  // Alternatively, using the following pattern bytes also works:
-  //
-  // 3c24750583c102eb0488024241
-  //
-  // 004201e0  |> 3c 24          /cmp al,0x24
-  // 004201e2  |. 75 05          |jnz short dc3.004201e9
-  // 004201e4  |. 83c1 02        |add ecx,0x2
-  // 004201e7  |. eb 04          |jmp short dc3.004201ed
-  // 004201e9  |> 8802           |mov byte ptr ds:[edx],al
-  // 004201eb  |. 42             |inc edx
-  // 004201ec  |. 41             |inc ecx
   ulong startAddress, stopAddress;
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return 0;
+  ulong addr = Private::findFunctionAddress(startAddress, stopAddress);
+  if (!addr)
     return false;
-  //return 0x4201d0; // DC3 function address
-  for (ulong i = startAddress + 0x1000; i < stopAddress -4; i++)
-    // *  004201e0  |> 3c 24          /cmp al,0x24
-    // *  004201e2  |. 75 05          |jnz short dc3.004201e9
-    if ((*(ulong *)i & 0xffffff) == 0x75243c) { // cmp al, 24; je
-      enum { range = 0x80 }; // the range is small, since it is a small function
-      if (ulong addr = MemDbg::findEnclosingAlignedFunction(i, range))
-        return winhook::hook_before(addr, Private::hookBefore);
+  // Find the nearest two callers (distance within 100)
+  ulong lastCall = 0;
+  auto fun = [&lastCall](ulong call) -> bool {
+    if (call - lastCall < 100) {
+      Private::scenarioReturnAddress_ = call + 5;
+      Private::nameReturnAddress_ = lastCall + 5;
+      DOUT("found scenario and name calls");
+      return false; // found target
     }
-  return false;
+    lastCall = call;
+    return true; // replace all functions
+  };
+  MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
+  return winhook::hook_before(addr, Private::hookBefore);
 }
 
 } // namespace ScenarioHook
@@ -181,7 +243,7 @@ bool CircusEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
-  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // for special symbol and ruby texts
+  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // for special symbol and ruby texts
   return true;
 }
 
@@ -192,13 +254,13 @@ bool CircusEngine::attach()
  */
 QString CircusEngine::textFilter(const QString &text, int role)
 {
-  if (role != Engine::ScenarioRole) // || !text.contains(w_open))
-    return text;
   const wchar_t
     w_open = 0xff5b    /* ｛ */
     , w_close = 0xff5d /* ｝ */
     , w_split = 0xff0f /* ／ */
   ;
+  if (role != Engine::ScenarioRole || !text.contains(w_open))
+    return text;
   QString ret = text;
   //ret.remove("@K");
   for (int pos = ret.indexOf(w_open); pos != -1; pos = ret.indexOf(w_open, pos)) {

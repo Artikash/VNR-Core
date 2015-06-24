@@ -19,8 +19,9 @@ public:
     matchFiles << "AdvData/GRP/NAMES.DAT"; // New circus games
     //matchFiles << "AdvData/DAT/NAMES.DAT"; // Old circus games
 
-    enableDynamicEncoding = true;
-    automaticLineCapacity = 40; // 61 in D.C.III, around 50 in 水夏弐律(vertical)
+    //enableDynamicEncoding = true;
+    scenarioLineCapacity =
+    otherLineCapacity = 40; // 61 in D.C.III, around 50 in 水夏弐律(vertical)
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
   }

@@ -42,7 +42,7 @@ inline size_t measureTextSize(const wchar_t *begin, const wchar_t *end)
 {
   size_t ret = 0;
   while (*begin && begin != end)
-    ret += (127 >= *begin++) ? 1 : 2;
+    ret += (*begin++ <= 127) ? 1 : 2;
   return ret;
 }
 

@@ -52,7 +52,8 @@ public:
 
   bool finalized;
 
-  int scenarioLineCapacity; // current maximum number bytes in a line for scenario thread, always increase and never decrease
+  int scenarioLineCapacity, // current maximum number bytes in a line for scenario thread, always increase and never decrease
+      otherLineCapacity;
   std::unordered_set<qint64> textHashes_; // hashes of rendered text
 
   EngineControllerPrivate(EngineModel *model)
@@ -63,6 +64,7 @@ public:
     , dynamicCodec(nullptr)
     , finalized(false)
     , scenarioLineCapacity(0)
+    , otherLineCapacity(0)
   {}
 
   ~EngineControllerPrivate()
@@ -75,7 +77,8 @@ public:
   {
     if (!finalized) {
       finalizeCodecs();
-      scenarioLineCapacity = model->automaticLineCapacity;
+      scenarioLineCapacity = model->scenarioLineCapacity;
+      otherLineCapacity = model->otherLineCapacity;
       finalized = true;
     }
   }
@@ -123,9 +126,9 @@ private:
   {
     QString ret;
     foreach (QChar c, text) {
-      ret.append(c);
+      ret.push_back(c);
       if (c.unicode() >= 32) // ignore non-printable characters
-        ret.append(' '); // or insert \u3000 if needed
+        ret.push_back(' '); // or insert \u3000 if needed
     }
     return ret;
   }
@@ -134,9 +137,9 @@ private:
   {
     QString ret;
     foreach (const QChar &c, text) {
-      ret.append(c);
+      ret.push_back(c);
       if (!Util::charEncodable(c, codec))
-        ret.append(' ');
+        ret.push_back(' ');
     }
     return ret;
   }
@@ -144,7 +147,7 @@ private:
   static size_t getLineCapacity(const wchar_t *s)
   {
     enum : wchar_t { br = '\n' };
-    if (::wcschr(s, br))
+    if (!::wcschr(s, br))
       return Util::measureTextSize(s);
     size_t ret = 0;
     for (auto p = s; *s; s++)
@@ -156,11 +159,8 @@ private:
   }
 
 public:
-  void updateLineCapacity(const QString &text)
-  {
-    scenarioLineCapacity = qMax<int>(scenarioLineCapacity,
-        getLineCapacity(static_cast<const wchar_t *>(text.utf16())));
-  }
+  static size_t getLineCapacity(const QString &text)
+  { return getLineCapacity(static_cast<const wchar_t *>(text.utf16())); }
 
   static QString mergeLines(const QString &text)
   {
@@ -174,7 +174,7 @@ public:
       if (ch.unicode() == br)
         br_found = true;
       else if (!br_found || !ch.isSpace()) {
-        br_found = true;
+        br_found = false;
         ret.push_back(ch);
       }
     return ret;
@@ -182,7 +182,7 @@ public:
 
   static QString limitTextWidth(const QString &text, int limit)
   {
-    if (limit <= 0 || text.size() <= limit)
+    if (limit <= 0 || text.size() <= limit / 2)
       return text;
 
     const char br = '\n';
@@ -193,7 +193,7 @@ public:
       ret.push_back(ch);
 
       wchar_t w = ch.unicode();
-      width += 1 + (w >= 128); // assume wide character to have double width
+      width += w <= 127 ? 1 : 2;
       if (width >= limit) {
         width = 0;
         if (w != br)
@@ -415,7 +415,9 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (d_->model->textFilterFunction)
     trimmedText = d_->model->textFilterFunction(trimmedText, role);
-  if (role == Engine::ScenarioRole && d_->scenarioLineCapacity)
+
+  if (role == Engine::ScenarioRole && d_->scenarioLineCapacity ||
+      role == Engine::OtherRole && d_->otherLineCapacity)
     trimmedText = d_->mergeLines(trimmedText);
 
   if (trimmedText.isEmpty()) {
@@ -492,10 +494,13 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   if (role == Engine::ScenarioRole) {
     if (d_->scenarioLineCapacity) {
-      d_->updateLineCapacity(text);
+      d_->scenarioLineCapacity = qMax<int>(d_->scenarioLineCapacity, D::getLineCapacity(text));
       repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
     } else if (d_->settings.scenarioWidth)
       repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
+    d_->otherLineCapacity = qMax<int>(d_->otherLineCapacity, D::getLineCapacity(text));
+    repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
   }
   repl = d_->adjustSpaces(repl);
 
@@ -563,7 +568,9 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (d_->model->textFilterFunction)
     trimmedText = d_->model->textFilterFunction(trimmedText, role);
-  if (role == Engine::ScenarioRole && d_->scenarioLineCapacity)
+
+  if (role == Engine::ScenarioRole && d_->scenarioLineCapacity ||
+      role == Engine::OtherRole && d_->otherLineCapacity)
     trimmedText = d_->mergeLines(trimmedText);
 
   if (trimmedText.isEmpty()) {
@@ -642,10 +649,13 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   if (role == Engine::ScenarioRole) {
     if (d_->scenarioLineCapacity) {
-      d_->updateLineCapacity(text);
+      d_->scenarioLineCapacity = qMax<int>(d_->scenarioLineCapacity, D::getLineCapacity(text));
       repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
     } else if (d_->settings.scenarioWidth)
       repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+  } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
+    d_->otherLineCapacity = qMax<int>(d_->otherLineCapacity, D::getLineCapacity(text));
+    repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
   }
   repl = d_->adjustSpaces(repl);
 
