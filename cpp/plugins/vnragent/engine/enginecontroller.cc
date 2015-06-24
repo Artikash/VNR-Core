@@ -52,6 +52,7 @@ public:
 
   bool finalized;
 
+  int scenarioLineCapacity; // current maximum number bytes in a line, always increase and never decrease
   std::unordered_set<qint64> textHashes_; // hashes of rendered text
 
   EngineControllerPrivate(EngineModel *model)
@@ -61,6 +62,7 @@ public:
     , dynamicEncodingEnabled(true)
     , dynamicCodec(nullptr)
     , finalized(false)
+    , scenarioLineCapacity(0)
   {}
 
   ~EngineControllerPrivate()
@@ -73,6 +75,7 @@ public:
   {
     if (!finalized) {
       finalizeCodecs();
+      scenarioLineCapacity = model->automaticLineCapacity;
       finalized = true;
     }
   }

@@ -5418,7 +5418,7 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
             hp.length_offset = 1;
             hp.type = DATA_INDIRECT|USING_SPLIT;
             ConsoleOutput("vnreng: INSERT CIRCUS#1");
-            NewHook(hp, L"CIRCUS");
+            NewHook(hp, L"Circus1");
             //RegisterEngineType(ENGINE_CIRCUS);
             return true;
           }
@@ -5426,7 +5426,7 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
       }
       //break;
   //ConsoleOutput("Unknown CIRCUS engine");
-  ConsoleOutput("vnreng:CIRCUS: failed");
+  ConsoleOutput("vnreng:CIRCUS1: failed");
   return false;
 }
 
@@ -5468,7 +5468,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
         //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 0x4201d0 for DC3
-        NewHook(hp, L"CIRCUS");
+        NewHook(hp, L"Circus");
         //RegisterEngineType(ENGINE_CIRCUS);
         return true;
       }

@@ -20,7 +20,7 @@ public:
     //matchFiles << "AdvData/DAT/NAMES.DAT"; // Old circus games
 
     enableDynamicEncoding = true;
-    automaticLineCapacity = 50; // 61 in D.C.III
+    automaticLineCapacity = 40; // 61 in D.C.III, around 50 in 水夏弐律(vertical)
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
   }

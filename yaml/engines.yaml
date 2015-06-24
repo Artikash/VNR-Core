@@ -6,6 +6,7 @@ rename:
   AliceRunPatch: AliceRunPatch43
   AUEngine: Tenco
   ApRicot: ApRicoT
+  CIRCUS: Circus
   Eushully: ARCGameEngine
   Gesen18: Unicorn
   MAJIRO: Majiro
@@ -59,7 +60,7 @@ embed:
   - BGI2
   #- CatSystem2
   #- CatSystem3
-  - CIRCUS
+  - Circus
   - Debonosu
   - DebonosuName
   - Elf
@@ -79,6 +80,10 @@ embed:
   #- Majiro
   #- Majiro2
   #- SideB
+
+embed_en:
+  - Circus
+  - System43+
 
 gui:
   # User32
@@ -196,7 +201,9 @@ simple:
   - Broccoli PSP
   - CatSystem2
   - CatSystem3
-  - CIRCUS
+  - CIRCUS # renamed
+  - Circus
+  - Circus1
   - CMVS
   - CMVS2
   - Cotopha
@@ -438,7 +445,9 @@ char:
   - CaramelBox
   - CatSystem2
   - CatSystem3
-  - CIRCUS
+  - CIRCUS # renamed
+  - Circus
+  - Circus1
   - CMVS
   - CMVS2
   - CYBERFRONT PSP
@@ -629,7 +638,8 @@ focus:
   - BootupLstrW
   - CatSystem2
   - CatSystem3
-  - CIRCUS
+  - Circus
+  - Circus1
   - Debonosu
   - DebonosuName
   - EAGLS
