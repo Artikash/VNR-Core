@@ -119,7 +119,7 @@ static ulong searchNeXAS(ulong startAddress, ulong stopAddress, int *stackSize)
       0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
   };
   //enum { hook_offset = 0xc };
-  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  //ulong range = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
   ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(reladdr);
   //reladdr = 0x2f9b0; // 愛姉妹4

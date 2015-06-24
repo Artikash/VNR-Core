@@ -143,11 +143,11 @@ bool DetermineEngineByFile1()
     InsertWolfHook();
     return true;
   }
-  if (IthCheckFile(L"advdata\\dat\\names.dat")) {
+  if (IthCheckFile(L"AdvData\\DAT\\NAMES.DAT")) {
     InsertCircusHook1();
     return true;
   }
-  if (IthCheckFile(L"advdata\\grp\\names.dat")) {
+  if (IthCheckFile(L"AdvData\\GRP\\NAMES.DAT")) {
     InsertCircusHook2();
     return true;
   }

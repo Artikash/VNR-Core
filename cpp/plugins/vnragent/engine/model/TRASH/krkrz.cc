@@ -1,5 +1,5 @@
-// elf.cc
-// 5/31/2014 jichi
+// krkrz.cc
+// 6/15/2015 jichi
 // About MES and Silky's arc
 // See: http://www.dsl.gr.jp/~sage/mamitool/case/elf/aishimai.html
 // MES: http://tieba.baidu.com/p/2068362185
@@ -13,7 +13,7 @@
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
 
-#define DEBUG "elf"
+#define DEBUG "krkrz"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -58,15 +58,17 @@ namespace Private {
       scenarioArg_ = arg;
       scenarioText_ = arg->scenarioText;
       arg->scenarioText = (LPCSTR)data_.constData();
+    // Name
+    // FIXME: The name has to be truncated
     } else if (arg->nameFlag == 0) {
       enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
       auto text = arg->nameText;
       QByteArray oldData = text,
                  newData = q->dispatchTextA(oldData, sig, role);
-      if (!newData.isEmpty() && newData != oldData) {
+      if (!newData.isEmpty()) {
         nameArg_ = arg;
-        ::memcpy(nameText_, oldData.constData(), qMin<size_t>(oldData.size() + 1, MaxNameSize));
-        ::memcpy(text, newData.constData(), qMin<size_t>(newData.size() + 1, MaxNameSize));
+        ::memcpy(nameText_, oldData.constData(), qMin(oldData.size() + 1, MaxNameSize));
+        ::memcpy(text, newData.constData(), qMin(newData.size() + 1, MaxNameSize));
       }
       //  ::memcpy(text, newData.constData(), qMin(oldData.size(), newData.size()));
       //int left = oldData.size() - newData.size();
@@ -95,8 +97,6 @@ namespace Private {
  *  jichi 5/31/2014: elf's
  *  Type1: SEXティーチャー剛史 trial, reladdr = 0x2f0f0, 2 parameters
  *  Type2: 愛姉妹4, reladdr = 0x2f9b0, 3 parameters
- *
- *  The hooked function is the caller of the caller of TextOutA.
  */
 bool attach()
 {
@@ -150,7 +150,7 @@ bool attach()
 } // namespace ScenarioHook
 } // unnamed namespace
 
-bool ElfEngine::attach()
+bool KiriKiriZEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
@@ -162,7 +162,7 @@ bool ElfEngine::attach()
  * Pattern: 〈(.*?)〉：?([^〈]+?)(?=〈|$
  * Format: L"【\1】\2"
  */
-QString ElfEngine::textFilter(const QString &text, int role)
+QString KiriKiriZEngine::textFilter(const QString &text, int role)
 {
   if (role != Engine::ScenarioRole)
     return text;
@@ -186,100 +186,3 @@ QString ElfEngine::textFilter(const QString &text, int role)
 }
 
 // EOF
-/*
-
-// @param  stackSize  number of bytes on the stack of the function, which is the parameter of sub esp
-static ulong attach(ulong startAddress, ulong stopAddress, int *stackSize)
-{
-  const BYTE bytes[] = {
-      //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
-      //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
-      //0x83,0xec, 0x08,                  // 0093f9b3  |. 83ec 08        sub esp,0x8
-      //0x83,0x7d, 0x10, 0x00,            // 0093f9b6  |. 837d 10 00     cmp dword ptr ss:[ebp+0x10],0x0
-      //0x53,                             // 0093f9ba  |. 53             push ebx
-      //0x8b,0x5d, 0x0c,                  // 0093f9bb  |. 8b5d 0c        mov ebx,dword ptr ss:[ebp+0xc]
-      //0x56,                             // 0093f9be  |. 56             push esi
-      //0x57,                             // 0093f9bf  |. 57             push edi
-      0x75, 0x0f,                       // 0093f9c0  |. 75 0f          jnz short silkys.0093f9d1
-      0x8b,0x45, 0x08,                  // 0093f9c2  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
-      0x8b,0x48, 0x04,                  // 0093f9c5  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
-      0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
-  };
-  //enum { hook_offset = 0xc };
-  //ulong range = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  //ITH_GROWL_DWORD(reladdr);
-  //reladdr = 0x2f9b0; // 愛姉妹4
-  //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
-  enum : BYTE { push_ebp = 0x55 };
-  for (int i = 0; i < 0x20; i++, addr--) // value of i is supposed to be 0xc or 0x10
-    if (*(BYTE *)addr == push_ebp) { // beginning of the function
-      // 012df0f0  /$ 55             push ebp   ; funtion starts
-      // 012df0f1  |. 8bec           mov ebp,esp
-      // 012df0f3  |. 83ec 10        sub esp,0x10
-      // 012df0f6  |. 837d 0c 00     cmp dword ptr ss:[ebp+0xc],0x0
-      *stackSize = ((BYTE *)addr)[5];
-      return addr;
-    }
-  return 0;
-}
-bool ElfEngine::attach()
-{
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-  int stackSize;
-  ulong addr = ::searchElf(startAddress, stopAddress, &stackSize);
-  //DWORD addr = startAddress + 0x2f9b0; // 愛姉妹4
-  //DWORD addr = startAddress + 0x2f0f0; // SEXティーチャー剛史 trial
-  //dmsg(*(BYTE *)addr); // supposed to be 0x55
-  //dmsg(addr - startAddress);
-  //dmsg(stackSize);
-  // FIXME: It only supports 2 parameters. Dynamically determine parameter size
-  if (!addr || stackSize != 0x8)
-    return false;
-  return ::oldHookFun = Engine::replaceFunction<hook_fun_t>(addr, ::newHookFun);
-}
-
-  typedef LPCSTR (__thiscall *hook_fun_t)(void *, DWORD, DWORD, DWORD);
-  // Use __fastcall to completely forward ecx and edx
-  //typedef int (__fastcall *hook_fun_t)(void *, void *, DWORD, DWORD);
-  hook_fun_t oldHookFun;
-
-  LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWORD arg3)
-  {
-    Q_UNUSED(edx)
-    auto arg = (TextArgument *)arg1;
-    auto q = EngineController::instance();
-
-    // Scenario
-    if (arg->scenarioFlag == 0) {
-      enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-      // Text from scenario could be bad when open backlog while the character is speaking
-      auto text = arg->scenarioText;
-      if (!Engine::isAddressReadable(text))
-        return oldHookFun(self, arg1, arg2, arg3);
-      QByteArray data = q->dispatchTextA(text, sig, role);
-      auto oldText = arg->scenarioText;
-      arg->scenarioText = (LPCSTR)data.constData();
-      LPCSTR ret = oldHookFun(self, arg1, arg2, arg3);
-      arg->scenarioText = oldText; // scenario text created using VirtualAlloc, and must be restored
-      return ret;
-
-    // Name
-    // FIXME: The name has to be truncated
-    } else if (arg->nameFlag == 0) {
-      enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
-      auto text = arg->nameText;
-      QByteArray oldData = text,
-                 newData = q->dispatchTextA(oldData, sig, role);
-      if (!newData.isEmpty())
-        ::memcpy(text, newData.constData(), qMin(oldData.size(), newData.size()));
-      int left = oldData.size() - newData.size();
-      if (left > 0)
-        ::memset(text + oldData.size() - left, 0, left);
-    }
-    return oldHookFun(self, arg1, arg2, arg3);
-  }
-*/

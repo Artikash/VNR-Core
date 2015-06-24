@@ -146,9 +146,20 @@ void EmbedManager::sendText(const QString &text, qint64 hash, long signature, in
 
 QString EmbedManager::findTranslation(qint64 hash, int role) const
 {
-  qint64 key = Engine::hashTextKey(hash, role);
   D_LOCK;
-  return d_->translations.value(key);
+  if (role <= 1) {
+    qint64 key = Engine::hashTextKey(hash, role);
+    return d_->translations.value(key);
+  } else {
+    QString ret;
+    for (int i = role; i > 0; i--) {
+      qint64 key = Engine::hashTextKey(hash, i);
+      ret = d_->translations.value(key);
+      if (!ret.isEmpty())
+        return ret;
+    }
+    return ret;
+  }
 }
 
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const

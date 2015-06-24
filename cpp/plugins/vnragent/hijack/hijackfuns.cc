@@ -334,7 +334,7 @@ int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR l
       QString text = p->decode(data, &dynamic);
       if (dynamic && !text.isEmpty()) {
         DOUT("pass");
-        int size = min(text.size() + 1, cchWideChar);
+        int size = qMin(text.size() + 1, cchWideChar);
         ::memcpy(lpWideCharStr, text.utf16(), size * 2);
         //lpWideCharStr[size - 1] = 0; // enforce trailing zero
         return size - 1;

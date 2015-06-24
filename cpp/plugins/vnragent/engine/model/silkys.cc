@@ -60,8 +60,8 @@ namespace Private {
       auto text = arg->shortText;
       QByteArray data(text, arg->size);
       data = q->dispatchTextA(data, sig, role);
-      arg->size = max(data.size(), ShortTextCapacity - 1); // truncate
-      ::memcpy(text, data.constData(), min(data.size() + 1, ShortTextCapacity));
+      arg->size = qMax<size_t>(data.size(), ShortTextCapacity - 1); // truncate
+      ::memcpy(text, data.constData(), qMin<size_t>(data.size() + 1, ShortTextCapacity));
     }
     return true;
   }

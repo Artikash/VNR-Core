@@ -644,7 +644,7 @@ namespace Private {
           arg_ = arg;
           oldSize_ = arg->size;
           oldText_ = arg->text;
-          //::memcpy(oldText_, arg->text, min(arg->size + 1, MaxTextSize)); // memcpy also works
+          //::memcpy(oldText_, arg->text, qMin(arg->size + 1, MaxTextSize)); // memcpy also works
 
           arg->size = data_.size();
           arg->text = data_.constData();
