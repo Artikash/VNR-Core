@@ -16,6 +16,7 @@ public:
     name = "EmbedSilkysPlus";
     enableDynamicEncoding = true;
     matchFiles << "data.arc" << "effect.arc" << "Script.arc";
+    //newLineString = nullptr; // TODO: not verified
     attachFunction = &Self::attach;
   }
 };

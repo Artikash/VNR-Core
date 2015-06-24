@@ -17,6 +17,7 @@ public:
     enableDynamicEncoding = true;
     enableGDIFont = true;
     matchFiles << "data.wolf|data/*.wolf";
+    //newLineString = true;
     attachFunction = &Self::attach;
     //textFilterFunction = &Self::textFilter;
   }

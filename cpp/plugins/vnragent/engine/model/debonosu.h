@@ -19,6 +19,7 @@ public:
     enableDynamicEncoding = true;
     enableLocaleEmulation = true; // fix thread codepage in MultiByteToWideChar
     matchFiles << "bmp.pak" << "dsetup.dll";
+    //newLineString = nullptr; // TODO: not verified
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
     rubyCreateFunction = &Self::rubyCreate;
