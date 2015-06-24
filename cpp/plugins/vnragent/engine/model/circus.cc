@@ -5,7 +5,6 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-#include "hijack/hijackfuns.h"
 //#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"

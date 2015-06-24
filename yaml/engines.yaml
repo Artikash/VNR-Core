@@ -60,7 +60,6 @@ embed:
   - BGI2
   #- CatSystem2
   #- CatSystem3
-  - Circus
   - Debonosu
   - DebonosuName
   - Elf
@@ -73,7 +72,6 @@ embed:
   - SilkysPlus
   - SystemAoi
   - SystemAoi2
-  - System43+   # FIXME: English only
   #- Unicorn
   - WolfRPG
   #- AMUSE CRAFT
@@ -83,6 +81,7 @@ embed:
 
 embed_en:
   - Circus
+  - Leaf
   - System43+
 
 gui:
@@ -408,6 +407,7 @@ char:
   - EmbedCircus
   - EmbedDebonosu
   - EmbedElf
+  - EmbedLeaf
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
@@ -647,6 +647,7 @@ focus:
   #- EmbedCatSystem2
   - EmbedCircus
   - EmbedDebonosu
+  - EmbedLeaf
   - EmbedRetouch
   - EmbedSiglusEngine
   - EmbedSilkysPlus
