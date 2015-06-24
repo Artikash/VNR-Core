@@ -30,17 +30,31 @@ namespace Private {
    *  - arg_4 = dword ptr  8
    *
    *  Observations:
-   *  - arg1: LPVOID, another function address
+   *  - arg1: LPVOID, pointed to unknown object
    *  - arg2: LPCSTR, the actual text
+   *
+   *  Example runtime stack:
+   *  0012F15C   0040C208  RETURN to .0040C208 from .00420460
+   *  0012F160   0012F7CC ; jichi: unknown stck
+   *  0012F164   0012F174 ; jichi: text
+   *  0012F168   0012F6CC
+   *  0012F16C   0012F7CC
+   *  0012F170   0012F7CC
    */
 
   bool hookBefore(winhook::hook_stack *s)
   {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
     auto text = (LPCSTR)s->stack[2]; // arg2
-    auto role = Engine::ScenarioRole;
-    auto split = s->stack[0]; // retaddr
+    auto retaddr = s->stack[0]; // retaddr
+    auto role = s->ebx? Engine::OtherRole : // other threads ebx is not zero
+                // 004201e4  |. 83c1 02        |add ecx,0x2
+                // 004201e7  |. eb 04          |jmp short dc3.004201ed
+                *(BYTE *)(retaddr + 3) == 0xe9 ? Engine::NameRole : // retaddr+3 is jmp
+                Engine::ScenarioRole;
+    auto split = retaddr;
     auto sig = Engine::hashThreadSignature(role, split);
+    sig = retaddr;
     data_ = EngineController::instance()->dispatchTextA(text, sig, role);
     s->stack[2] = (DWORD)data_.constData(); // reset arg2
     return true;
@@ -50,6 +64,9 @@ namespace Private {
 
 /**
  *  jichi 6/5/2014: Sample function from DC3 at 0x4201d0
+ *
+ *  Sample game: 水夏弐律
+ *
  *  004201ce     cc             int3
  *  004201cf     cc             int3
  *  004201d0  /$ 8b4c24 08      mov ecx,dword ptr ss:[esp+0x8]
@@ -73,9 +90,72 @@ namespace Private {
  *  004201f6  |> 8b4424 04      mov eax,dword ptr ss:[esp+0x4]
  *  004201fa  |. c600 00        mov byte ptr ds:[eax],0x0
  *  004201fd  \. c3             retn
+ *
+ *  Sample registers:
+ *  EAX 0012F998
+ *  ECX 000000DB
+ *  EDX 00000059
+ *  EBX 00000000    ; ebx is zero for name/scenario thread
+ *  ESP 0012F96C
+ *  EBP 00000003
+ *  ESI 00000025
+ *  EDI 000000DB
+ *  EIP 022C0000
+ *
+ *  EAX 0012F174
+ *  ECX 0012F7CC
+ *  EDX FDFBF80C
+ *  EBX 0012F6CC
+ *  ESP 0012F15C
+ *  EBP 0012F5CC
+ *  ESI 800000DB
+ *  EDI 00000001
+ *  EIP 00420460 .00420460
+ *
+ *  EAX 0012F174
+ *  ECX 0012F7CC
+ *  EDX FDFBF7DF
+ *  EBX 0012F6CC
+ *  ESP 0012F15C
+ *  EBP 0012F5CC
+ *  ESI 00000108
+ *  EDI 00000001
+ *  EIP 00420460 .00420460
+ *
+ *  0042DC5D   52               PUSH EDX
+ *  0042DC5E   68 E038AC00      PUSH .00AC38E0                           ; ASCII "Ami"
+ *  0042DC63   E8 F827FFFF      CALL .00420460  ; jichi: name thread
+ *  0042DC68   83C4 08          ADD ESP,0x8
+ *  0042DC6B   E9 48000000      JMP .0042DCB8
+ *  0042DC70   83FD 58          CMP EBP,0x58
+ *  0042DC73   74 07            JE SHORT .0042DC7C
+ *  0042DC75   C605 E038AC00 00 MOV BYTE PTR DS:[0xAC38E0],0x0
+ *  0042DC7C   8D4424 20        LEA EAX,DWORD PTR SS:[ESP+0x20]
+ *  0042DC80   50               PUSH EAX
+ *  0042DC81   68 0808AF00      PUSH .00AF0808
+ *  0042DC86   E8 D527FFFF      CALL .00420460 ; jichi: scenario thread
+ *  0042DC8B   83C4 08          ADD ESP,0x8
+ *  0042DC8E   33C0             XOR EAX,EAX
+ *  0042DC90   C705 D0DF4700 FF>MOV DWORD PTR DS:[0x47DFD0],-0x1
+ *  0042DC9A   A3 0CE04700      MOV DWORD PTR DS:[0x47E00C],EAX
+ *  0042DC9F   A3 940EB200      MOV DWORD PTR DS:[0xB20E94],EAX
+ *  0042DCA4   A3 2C65AC00      MOV DWORD PTR DS:[0xAC652C],EAX
+ *  0042DCA9   C705 50F9AC00 59>MOV DWORD PTR DS:[0xACF950],0x59
+ *  0042DCB3   A3 3C70AE00      MOV DWORD PTR DS:[0xAE703C],EAX
  */
 bool attach()
 {
+  // Alternatively, using the following pattern bytes also works:
+  //
+  // 3c24750583c102eb0488024241
+  //
+  // 004201e0  |> 3c 24          /cmp al,0x24
+  // 004201e2  |. 75 05          |jnz short dc3.004201e9
+  // 004201e4  |. 83c1 02        |add ecx,0x2
+  // 004201e7  |. eb 04          |jmp short dc3.004201ed
+  // 004201e9  |> 8802           |mov byte ptr ds:[edx],al
+  // 004201eb  |. 42             |inc edx
+  // 004201ec  |. 41             |inc ecx
   ulong startAddress, stopAddress;
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
@@ -112,14 +192,15 @@ bool CircusEngine::attach()
  */
 QString CircusEngine::textFilter(const QString &text, int role)
 {
+  if (role != Engine::ScenarioRole) // || !text.contains(w_open))
+    return text;
   const wchar_t
     w_open = 0xff5b    /* ｛ */
     , w_close = 0xff5d /* ｝ */
     , w_split = 0xff0f /* ／ */
   ;
-  if (role != Engine::ScenarioRole || !text.contains(w_open))
-    return text;
   QString ret = text;
+  //ret.remove("@K");
   for (int pos = ret.indexOf(w_open); pos != -1; pos = ret.indexOf(w_open, pos)) {
     int split_pos = ret.indexOf(w_split, pos);
     if (split_pos == -1)
