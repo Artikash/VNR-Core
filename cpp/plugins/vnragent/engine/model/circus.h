@@ -12,6 +12,9 @@ class CircusEngine : public EngineModel
   SK_EXTEND_CLASS(CircusEngine, EngineModel)
   static bool attach();
   static QString textFilter(const QString &text, int role);
+  static QString rubyCreate(const QString &rb, const QString &rt);
+  static QString rubyRemove(const QString &text);
+
 public:
   CircusEngine()
   {
@@ -24,6 +27,8 @@ public:
     otherLineCapacity = 40; // 61 in D.C.III, around 50 in 水夏弐律(vertical)
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
+    rubyCreateFunction = &Self::rubyCreate;
+    rubyRemoveFunction = &Self::rubyRemove;
   }
 };
 

@@ -26,7 +26,7 @@ public:
 
     , scenarioLineCapacity(0)   // estimated maximum number of thin characters for scenario text per line, 0 to disable it
     , otherLineCapacity(0)      // estimated maximum number of thin characters for other text per line, 0 to disable it
-    , newLineString("\n")       // not null, new line deliminator
+    , newLineString("\n")       // new line deliminator, nullptr if does not work
 
     , matchFunction(nullptr)    // determine whether apply engine
     , attachFunction(nullptr)   // apply the engine
@@ -54,10 +54,16 @@ public:
                  attachFunction, // override searchFunction and hookFunction
                  detachFunction; // not used
 
-  // Filter functions
+  // Text functions
   typedef QString (* filter_function)(const QString &text, int role);
   filter_function textFilterFunction,        ///< modify game text
                   translationFilterFunction; ///< modify translation
+
+  typedef QString (* text_function)(const QString &x);
+  typedef QString (* text2_function)(const QString &x, const QString &y);
+
+  text2_function rubyCreateFunction; ///< create ruby
+  text_function rubyRemoveFunction; ///< remove ruby
 };
 
   // Memory search function
