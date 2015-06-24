@@ -16,6 +16,7 @@ public:
     name = "EmbedARCGameEngine";
     enableDynamicEncoding = true;
     matchFiles << "AGERC.DLL"; // the process name is AGE.EXE.
+    newLineString = nullptr;
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
   }

@@ -15,6 +15,7 @@ public:
     name = "EmbedBGI";
     enableDynamicEncoding = true;
     matchFiles << "BGI.*";
+    //newLineString = nullptr; // TODO: not verified
     attachFunction = &Self::attach;
   }
 };

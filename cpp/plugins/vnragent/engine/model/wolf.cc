@@ -741,5 +741,4 @@ bool attach() // attach other text
 0046CD3C   E8 4F490000      CALL Game.00471690
 0046CD41   A1 30456F00      MOV EAX,DWORD PTR DS:[0x6F4530]
 
-
  */

@@ -16,6 +16,7 @@ public:
     name = "EmbedSiglusEngine";
     encoding = Utf16Encoding;
     matchFiles << "SiglusEngine*.exe";
+    //newLineString = true;
     attachFunction = &Self::attach;
   }
 };
