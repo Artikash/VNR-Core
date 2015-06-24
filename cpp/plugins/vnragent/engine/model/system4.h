@@ -16,7 +16,7 @@ public:
     name = "EmbedSystem43";
     //enableDynamicEncoding = true;
     matchFiles << "AliceStart.ini";
-    newLineString = ""; // disable new line string
+    newLineString = nullptr;
     attachFunction = &Self::attach;
   }
 };

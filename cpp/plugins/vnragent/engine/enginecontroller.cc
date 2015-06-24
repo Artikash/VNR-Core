@@ -467,7 +467,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     repl = p->waitForTranslation(hash, role);
 
 
-  if (!repl.isEmpty()) {
+  if (!repl.isEmpty() && d_->model->newLineString) {
     if (role == Engine::ScenarioRole) {
       if (d_->scenarioLineCapacity) {
         QString t = text;
@@ -496,9 +496,11 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible)
-        repl.append(' ')
-            .append(d_->model->newLineString)
-            .append(trimmedText);
+        if (d_->model->newLineString)
+          repl.append(d_->model->newLineString);
+        else
+          repl.push_back(' ');
+        repl.append(trimmedText);
       break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
@@ -631,7 +633,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     repl = p->waitForTranslation(hash, role);
 
 
-  if (!repl.isEmpty()) {
+  if (!repl.isEmpty() && d_->model->newLineString) {
     if (role == Engine::ScenarioRole) {
       if (d_->scenarioLineCapacity) {
         QString t = text;
@@ -657,14 +659,15 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   } else if (repl != trimmedText) {
     if (d_->model->translationFilterFunction)
       repl = d_->model->translationFilterFunction(repl, role);
-
     switch (role) {
     case Engine::ScenarioRole:
-      if (d_->settings.scenarioTextVisible)
-        repl.append(' ')
-            .append(d_->model->newLineString)
-            .append(trimmedText);
-      break;
+      if (d_->settings.scenarioTextVisible) {
+        if (d_->model->newLineString)
+          repl.append(d_->model->newLineString);
+        else
+          repl.push_back(' ');
+        repl.append(trimmedText);
+      } break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
         repl.append(" / ")

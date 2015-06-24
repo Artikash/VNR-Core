@@ -1252,22 +1252,30 @@ bool DebonosuEngine::attach()
   return true;
 }
 
-/**
- *  Remove furigana in scenario thread.
- *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
- */
+// Remove furigana in scenario thread.
 QString DebonosuEngine::textFilter(const QString &text, int role)
 {
-  if (role != Engine::ScenarioRole || !text.contains('{'))
-    return text;
+  if (role == Engine::ScenarioRole)
+    return rubyRemove(text);
+  return text;
+}
 
+/**
+ *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
+ */
+QString DebonosuEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "{%1/%2}";
+  return fmt.arg(rb).arg(rt);
+}
+QString DebonosuEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains('{'))
+    return text;
   static QRegExp rx("\\{(.+)/.+\\}");
   if (!rx.isMinimal())
     rx.setMinimal(true);
-
-  QString ret = text;
-  ret.replace(rx, "\\1");
-  return ret;
+  return QString(text).replace(rx, "\\1");
 }
 
 // EOF

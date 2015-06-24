@@ -9,6 +9,7 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <QtCore/QRegExp>
 
 #define DEBUG "circus"
 #include "sakurakit/skdebug.h"
@@ -246,34 +247,56 @@ bool CircusEngine::attach()
   return true;
 }
 
+// Remove furigana in scenario thread.
+QString CircusEngine::textFilter(const QString &text, int role)
+{
+  if (role == Engine::ScenarioRole)
+    return rubyRemove(text);
+  //ret.remove("@K");
+  return text;
+}
+
 /**
  *  Get rid of ruby. Examples:
  *  ｛くらき／蔵木｝
  *  ｛・・・・／いいから｝この私に、紅茶を淹れなさい」
  */
-QString CircusEngine::textFilter(const QString &text, int role)
+QString CircusEngine::rubyCreate(const QString &rb, const QString &rt)
 {
-  const wchar_t
-    w_open = 0xff5b    /* ｛ */
-    , w_close = 0xff5d /* ｝ */
-    , w_split = 0xff0f /* ／ */
-  ;
-  if (role != Engine::ScenarioRole || !text.contains(w_open))
+  static QString fmt = QString::fromWCharArray(L"\xff5b%2\xff0f%1\xff5d");
+  return fmt.arg(rb).arg(rt);
+}
+
+// Remove furigana in scenario thread.
+QString CircusEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains((wchar_t)0xff5b))
     return text;
-  QString ret = text;
-  //ret.remove("@K");
-  for (int pos = ret.indexOf(w_open); pos != -1; pos = ret.indexOf(w_open, pos)) {
-    int split_pos = ret.indexOf(w_split, pos);
-    if (split_pos == -1)
-      return ret;
-    int close_pos = ret.indexOf(w_close, split_pos);
-    if (close_pos == -1)
-      return ret;
-    ret.remove(close_pos, 1);
-    ret.remove(pos, split_pos - pos + 1);
-    pos += close_pos - split_pos - 1;
-  }
-  return ret;
+  static QRegExp rx(QString::fromWCharArray(L"\xff5b.+\xff0f(.+)\xff5d"));
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
+
+  //const wchar_t
+  //  w_open = 0xff5b    /* ｛ */
+  //  , w_close = 0xff5d /* ｝ */
+  //  , w_split = 0xff0f /* ／ */
+  //;
+  //if (!text.contains(w_open))
+  //  return text;
+  //QString ret = text;
+  //for (int pos = ret.indexOf(w_open); pos != -1; pos = ret.indexOf(w_open, pos)) {
+  //  int split_pos = ret.indexOf(w_split, pos);
+  //  if (split_pos == -1)
+  //    return ret;
+  //  int close_pos = ret.indexOf(w_close, split_pos);
+  //  if (close_pos == -1)
+  //    return ret;
+  //  ret.remove(close_pos, 1);
+  //  ret.remove(pos, split_pos - pos + 1);
+  //  pos += close_pos - split_pos - 1;
+  //}
+  //return ret;
 }
 
 // EOF
