@@ -122,7 +122,7 @@ NOFLOAT_GAME_ENGINES = frozenset(
 
 RENAMED_GAME_ENGINES = ENGINES_YAML['rename']  # {str name:str name}
 
-EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] # [str name]
+EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] + ENGINES_YAML['embed_en'] # [str name]
 
 def game_thread_embeddable(name):
   """

@@ -32,6 +32,10 @@
     - mes.arc
   #encoding: sjis
 
+- name: EmbedLeaf # 6/24/2015
+  exist: bak.pak
+  #encoding: sjis
+
 - name: EmbedRetouch # 6/27/2014, for Retouch
   exist: resident.dll
   #encoding: sjis
