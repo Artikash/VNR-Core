@@ -59,6 +59,7 @@ embed:
   - BGI2
   #- CatSystem2
   #- CatSystem3
+  - CIRCUS
   - Debonosu
   - DebonosuName
   - Elf
@@ -75,9 +76,6 @@ embed:
   #- Unicorn
   - WolfRPG
   #- AMUSE CRAFT
-  #- BGI
-  #- Elf
-  #- CIRCUS
   #- Majiro
   #- Majiro2
   #- SideB
@@ -400,6 +398,7 @@ char:
   - EmbedARCGameEngine
   - EmbedBGI
   #- EmbedCatSystem2
+  - EmbedCircus
   - EmbedDebonosu
   - EmbedElf
   - EmbedRetouch
@@ -630,11 +629,13 @@ focus:
   - BootupLstrW
   - CatSystem2
   - CatSystem3
+  - CIRCUS
   - Debonosu
   - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
   #- EmbedCatSystem2
+  - EmbedCircus
   - EmbedDebonosu
   - EmbedRetouch
   - EmbedSiglusEngine

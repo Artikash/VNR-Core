@@ -1227,7 +1227,7 @@ bool ARCGameEngine::attach()
     DOUT("remove popups succeed");
   else
     DOUT("remove popups FAILED");
-  HijackManager::instance()->attachFunction((DWORD)::CreateFontIndirectA);
+  HijackManager::instance()->attachFunction((ulong)::CreateFontIndirectA);
   return true;
 }
 

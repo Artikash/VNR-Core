@@ -1,9 +1,5 @@
 # engines.yaml
 # 6/9/2014 jichi
-#
-# Defaults:
-# - wideChar: false  game has UTF-16 encoding or not
-# - regionLocked: false  game require Japanese locale or not
 
 - name: EmbedARCGameEngine # 6/2/2015, compatible with ARCGameEngine
   exist: AGERC.DLL
@@ -12,12 +8,16 @@
 - name: EmbedBGI # 5/11/2014 jichi
   exist: BGI.*
   #encoding: sjis
-  #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
   #vnrlocale: true # TODO: need a better name
 
 #- name: EmbedCatSystem2 # 6/21/2015 jichi
 #  exist: "*.int"
 #  #encoding: sjis
+
+- name: EmbedCircus  # 6/5/2014  CIRCUS2
+  exist: AdvData/GRP/NAMES.DAT
+  #exist: AdvData/DAT/NAMES.DAT
+  #encoding: sjis
 
 - name: EmbedDebonosu # 6/18/2015 jichi
   exist:
@@ -31,7 +31,6 @@
     - effect.arc
     - mes.arc
   #encoding: sjis
-  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 
 - name: EmbedRetouch # 6/27/2014, for Retouch
   exist: resident.dll
@@ -76,25 +75,15 @@
 # EOF
 
 #-
-#  name: CIRCUS  # 6/5/2014
-#  exist: advdata/grp/names.dat
-#  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
-#-
-#  name: Eushully # 6/1/2014
-#  exist: AGERC.DLL
-#  #regionLocked: true # text become ????, and it cannot translate name
-#-
 #  name: Majiro  # 4/20/2014
 #  exist:
 #    - data*.arc
 #    - stream*.arc
-#  #regionLocked: false # with minor issue
 #-
 #  name: SideB # 8/2/2014
 #  exist:
 #    - lua5.1.dll
 #    - dat/0001.dat
-#  #regionLocked: false # with minor issue
 
 #-
 #  name: AMUSE CRAFT # 6/3/2014
@@ -114,6 +103,5 @@
 #  exist: *.gxp
 #-
 #  name: NeXAS  # 7/6/2014
-#  regionLocked: true # not sure
 #  exist:
 #    - Thumbnail.pac

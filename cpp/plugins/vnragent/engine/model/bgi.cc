@@ -576,7 +576,7 @@ bool attach()
     return false;
   if (!winhook::hook_before(addr, Private::hookBefore))
     return false;
-  HijackManager::instance()->attachFunction((DWORD)::TextOutA);
+  HijackManager::instance()->attachFunction((ulong)::TextOutA);
   DOUT("type =" << Private::type_);
   return true;
 }

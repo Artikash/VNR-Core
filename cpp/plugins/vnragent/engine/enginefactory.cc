@@ -12,6 +12,7 @@
 #include "engine/model/bgi.h"
 //#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
+#include "engine/model/circus.h"
 #include "engine/model/elf.h"
 #include "engine/model/retouch.h"
 #include "engine/model/rgss.h"
@@ -20,7 +21,6 @@
 #include "engine/model/system4.h"
 //#include "engine/model/unicorn.h"
 #include "engine/model/wolf.h"
-//#include "engine/model/circus.h"
 //#include "engine/model/eushully.h"
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
@@ -44,9 +44,9 @@ EngineController *EngineFactory::createEngine()
     , new RetouchEngine
     , new ElfEngine
     , new DebonosuEngine
+    , new CircusEngine
     , new BGIEngine
     , new ARCGameEngine
-    //, new CircusEngine
     //, new ElfEngine
     //, new EushullyEngine
     //, new MajiroEngine

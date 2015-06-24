@@ -185,7 +185,7 @@ bool RetouchEngine::attach()
     DOUT("other text found");
   else
     DOUT("other text NOT FOUND");
-  HijackManager::instance()->attachFunction((DWORD)::GetGlyphOutlineA);
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;
 }
 
