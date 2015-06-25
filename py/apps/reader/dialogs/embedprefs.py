@@ -644,9 +644,13 @@ class _TextTab(object):
     if not engine:
       msg = tr_('Unknown') # This should never happen
     else:
-      enc = config.guess_thread_encoding(engine)
-      if enc:
-        msg = "%s (%s)" % (engine, enc)
+      tip = config.guess_thread_encoding(engine)
+      if engine in config.EMBEDDED_EN_GAME_ENGINES:
+        if tip:
+          tip += ", "
+        tip += '<span style="color:red">%s</span>' % my.tr("English-only")
+      if tip:
+        msg = "%s (%s)" % (engine, tip)
       else:
         msg = engine
     self.engineLabel.setText(msg)

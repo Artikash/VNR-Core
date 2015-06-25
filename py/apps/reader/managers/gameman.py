@@ -1301,16 +1301,21 @@ class GameManager(QtCore.QObject):
       task = partial(dataman.manager().loadGame, gameData)
       skevents.runlater(task, 200)
 
-      if g.threadName in config.REPEAT_GAME_ENGINES:
-        growl.notify(my.tr("This game might need turning on repetition elimination"))
+      if agentAttached:
+        if g.threadName in config.EMBEDDED_EN_GAME_ENGINES:
+          growl.notify(my.tr("Embed translation might only work for English for this game"))
+      else:
 
-      if g.threadName in config.SLOW_GAME_ENGINES:
-        growl.notify(my.tr("This game requires the text speed to be either Normal or Slow instead of Fast to work"))
-      elif g.threadName in config.FAST_GAME_ENGINES:
-        growl.notify(my.tr("This game requires the text speed to be Fast to work"))
+        if g.threadName in config.REPEAT_GAME_ENGINES:
+          growl.notify(my.tr("This game might need turning on repetition elimination"))
 
-      if g.threadName in config.DELAY_GAME_ENGINES:
-        growl.notify(my.tr("This game requires opening VNR after starting/loading the game"))
+        if g.threadName in config.SLOW_GAME_ENGINES:
+          growl.notify(my.tr("This game requires the text speed to be either Normal or Slow instead of Fast to work"))
+        elif g.threadName in config.FAST_GAME_ENGINES:
+          growl.notify(my.tr("This game requires the text speed to be Fast to work"))
+
+        if g.threadName in config.DELAY_GAME_ENGINES:
+          growl.notify(my.tr("This game requires opening VNR after starting/loading the game"))
 
     finally:
       try:

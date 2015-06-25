@@ -86,7 +86,10 @@ class _TextThreadView(object):
     else:
       n = self.name
     if config.game_thread_embeddable(self.name):
-      n += ' <span style="color:darkgreen">(%s)</span>' % mytr_("embeddable")
+      t = mytr_("embeddable")
+      if self.name in config.EMBEDDED_EN_GAME_ENGINES:
+        t += ', <span style="color:red">%s</span>' % my.tr("English-only")
+      n += ' <span style="color:darkgreen">(%s)</span>' % t
     title = '%s <span style="color:gray">%x</span>' % (n, self.signature)
     enc = config.guess_thread_encoding(self.name)
     if enc:
