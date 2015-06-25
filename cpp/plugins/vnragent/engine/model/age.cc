@@ -10,7 +10,6 @@
 #include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "disasm/disasm.h"
-#include "winasm/winasmdef.h"
 #include "winasm/winasmutil.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
@@ -1165,16 +1164,6 @@ namespace Private {
     return 0;
   }
 
-  // Return the second call address between start and stop addresses
-  ulong find_call(ulong start, ulong stop)
-  {
-    for (ulong addr = start, size = ::disasm((LPCVOID)start); size && addr < stop; addr += size) {
-      if (*(BYTE *)addr == s1_call_)
-        return addr;
-      size = ::disasm((LPCVOID)addr);
-    }
-    return 0;
-  };
 } // namespace Private
 
 bool removePopups()
@@ -1196,11 +1185,11 @@ bool removePopups()
     return false;
 
   ulong limit = addr + 100;  // 0x00411DCB - 0x00411DAC = 31
-  addr = Private::find_call(addr, limit);
+  addr = Engine::findNearCall(addr, limit);
   if (!addr)
     return false;
   addr += ::disasm((LPCVOID)addr); // skip the current call instruction
-  addr = Private::find_call(addr, limit); // find second call
+  addr = Engine::findNearCall(addr, limit); // find second call
   if (!addr)
     return false;
 

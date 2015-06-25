@@ -6,6 +6,8 @@
 #include "detoursutil/detoursutil.h"
 #include "ntinspect/ntinspect.h"
 #include "winhook/hookfun.h"
+#include "disasm/disasm.h"
+#include "winasm/winasmdef.h"
 //#include "windbg/util.h"
 #include <QtCore/QDir>
 #include <QtCore/QCoreApplication>
@@ -195,5 +197,21 @@ unsigned long Engine::getModuleFunction(const char *moduleName, const char *func
   }
   return 0;
 }
+
+ulong Engine::findNearCall(ulong start, ulong stop)
+{
+  ulong addr = start,
+        size = ::disasm((LPCVOID)addr);
+  while (size) {
+    enum { call_size = 5 }; //  size of near call instruction is 5
+    if (size == call_size && *(BYTE *)addr == s1_call_)
+      return addr;
+    addr += size;
+    if (stop && stop < addr + call_size)
+      return 0;
+    size = ::disasm((LPCVOID)addr);
+  }
+  return 0;
+};
 
 // EOF
