@@ -11,6 +11,8 @@ class LeafEngine : public EngineModel
   static bool attach();
   static QString textFilter(const QString &text, int role);
   static QString translationFilter(const QString &text, int role);
+  static QString rubyCreate(const QString &rb, const QString &rt);
+  static QString rubyRemove(const QString &text);
 public:
   LeafEngine()
   {
@@ -22,6 +24,8 @@ public:
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
     translationFilterFunction = &Self::translationFilter;
+    rubyCreateFunction = &Self::rubyCreate;
+    rubyRemoveFunction = &Self::rubyRemove;
   }
 };
 

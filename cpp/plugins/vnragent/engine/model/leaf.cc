@@ -13,6 +13,7 @@
 #include "winhook/hookcode.h"
 #include "winhook/hookcall.h"
 #include <qt_windows.h>
+#include <QtCore/QRegExp>
 
 #define DEBUG "leaf"
 #include "sakurakit/skdebug.h"
@@ -35,10 +36,8 @@ namespace Private {
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData = text,
                newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
-    if (newData.isEmpty() || newData == oldData) {
-      data_.clear();
+    if (newData.isEmpty() || newData == oldData)
       return true;
-    }
     data_ = newData;
     s->eax = (ulong)data_.constData();
     return true;
@@ -46,8 +45,10 @@ namespace Private {
 
   bool hook2(winhook::hook_stack *s)
   {
-    if (!data_.isEmpty())
+    if (!data_.isEmpty()) {
       s->ecx = (ulong)data_.constData();
+      data_.clear();
+    }
     return true;
   }
 
@@ -500,18 +501,39 @@ bool LeafEngine::attach()
 
 QString LeafEngine::textFilter(const QString &text, int role)
 {
-  if (role != Engine::ScenarioRole || !text.contains('\\'))
+  if (role != Engine::ScenarioRole
+      || !text.contains('\\') && !text.contains('<'))
     return text;
-  return QString(text)
+  return rubyRemove(text)
       .remove("\\k")
       .replace("\\n", "\n");
 }
 
+/**
+ *  Example: <R空港|ここ>
+ */
 QString LeafEngine::translationFilter(const QString &text, int role)
 {
   if (role != Engine::ScenarioRole || !text.contains('\n'))
     return text;
   return QString(text).replace("\n", "\\n");
+}
+
+QString LeafEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "<R%1|%2>";
+  return fmt.arg(rb).arg(rt);
+}
+
+// Remove furigana in scenario thread.
+QString LeafEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains('<'))
+    return text;
+  static QRegExp rx("<R(.+)\\|.+>");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
 }
 
 // EOF
