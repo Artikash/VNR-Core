@@ -20,6 +20,9 @@
 #define s1_push_        0x68        // push, incomplete
 #define s1_push_0d      0x68, s1_0d // push 0x0000
 
+#define s1_push_eax     0x50    // push eax
+#define s1_push_ecx     0x51    // push ecx
+#define s1_push_edx     0x52    // push edx
 #define s1_push_ebx     0x53    // push edi
 #define s1_push_esp     0x54    // push esp
 #define s1_push_esi     0x56    // push esi

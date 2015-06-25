@@ -331,6 +331,9 @@ void EngineController::setSpacePolicyEncoding(const QString &v)
 QString EngineController::decode(const QByteArray &v) const { return d_->decode(v); }
 QByteArray EngineController::encode(const QString &v) const { return d_->encode(v); }
 
+QTextCodec *EngineController::encoder() const { return d_->encoder; }
+QTextCodec *EngineController::decoder() const { return d_->decoder; }
+
 // - Attach -
 
 bool EngineController::attach()
