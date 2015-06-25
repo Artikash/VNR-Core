@@ -45,7 +45,7 @@ EngineController *EngineFactory::createEngine()
     , new RGSSEngine
     , new RetouchEngine
     , new LeafEngine
-    //, new HorkEyeEngine
+    , new HorkEyeEngine
     , new ElfEngine
     , new DebonosuEngine
     , new CircusEngine

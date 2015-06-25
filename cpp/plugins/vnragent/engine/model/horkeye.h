@@ -20,8 +20,6 @@ public:
     matchFiles << "arc0.dat" << "arc1.dat" << "arc2.dat" << "script.dat";
     newLineString = "[n]";
     attachFunction = &Self::attach;
-    textFilterFunction = &Self::textFilter;
-    translationFilterFunction = &Self::translationFilter;
   }
 };
 
