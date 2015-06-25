@@ -648,7 +648,7 @@ class _TextTab(object):
       if engine in config.EMBEDDED_EN_GAME_ENGINES:
         if tip:
           tip += ", "
-        tip += '<span style="color:red">%s</span>' % my.tr("English-only")
+        tip += '<span style="color:purple">%s</span>' % my.tr("English-only")
       if tip:
         msg = "%s (%s)" % (engine, tip)
       else:

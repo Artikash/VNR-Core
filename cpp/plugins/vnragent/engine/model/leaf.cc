@@ -8,6 +8,7 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 //#include "hijack/hijackmanager.h"
+#include "util/textutil.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookcall.h"
@@ -25,6 +26,8 @@ namespace Private {
   bool hook1(winhook::hook_stack *s)
   {
     auto text = (LPCSTR)s->eax;
+    if (Util::allAscii(text))
+      return true;
     auto split = s->stack[0];
     auto role = split == 2 ? Engine::ScenarioRole :
                 split == 0 ? Engine::NameRole :
