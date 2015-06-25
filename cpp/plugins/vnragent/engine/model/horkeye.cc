@@ -140,7 +140,7 @@ bool attach() // attach scenario
   // 013cdabf   c3               retn
   // 013cdac0   83ec 40          sub esp,0x40    ; jichi: text here in arg1
   //
-  // 0x013cdb0d-0x013cdabf = 7
+  // 0x013cdb0d - 0x013cdabf = 78
   for (DWORD i = addr; i > addr - 0x100; i--)
     if (*(DWORD *)i == 0x40ec83c3)
       return winhook::hook_before(i, Private::hookBefore);
