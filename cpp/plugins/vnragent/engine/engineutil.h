@@ -63,6 +63,9 @@ bool isAddressWritable(const ulong *p);
 bool isAddressWritable(const char *p, size_t count = 1);
 bool isAddressWritable(const wchar_t *p, size_t count = 1);
 
+// find the near call instruction address in between two addresses
+ulong findNearCall(ulong startAddress, ulong stopAddress = 0); // 0 stop address means no limit
+
 } // namespace Engine
 
 // EOF

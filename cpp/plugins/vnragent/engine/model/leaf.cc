@@ -11,7 +11,7 @@
 #include "util/textutil.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
-#include "winhook/hookcall.h"
+#include "winhook/hookutil.h"
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
 
@@ -487,6 +487,57 @@ bool attach() // attach scenario
 
 } // namespace ScenarioHook
 
+namespace Patch {
+/**
+ *  Sample game: WHITE ALBUM2 trial
+ *  There are two popups
+ *
+ *  0042A786   EB 30            JMP SHORT .0042A7B8
+ *  0042A788   833D D8188200 00 CMP DWORD PTR DS:[0x8218D8],0x0
+ *  0042A78F   75 19            JNZ SHORT .0042A7AA
+ *  0042A791   68 106C4800      PUSH .00486C10
+ *  0042A796   6A 00            PUSH 0x0
+ *  0042A798   C705 D8188200 01>MOV DWORD PTR DS:[0x8218D8],0x1
+ *  0042A7A2   E8 C9460000      CALL .0042EE70  ; jichi: popup invoked here
+ *  0042A7A7   83C4 08          ADD ESP,0x8
+ *  0042A7AA   8B4424 54        MOV EAX,DWORD PTR SS:[ESP+0x54]
+ *  0042A7AE   85C0             TEST EAX,EAX
+ *  0042A7B0   74 06            JE SHORT .0042A7B8
+ *  0042A7B2   C700 01000000    MOV DWORD PTR DS:[EAX],0x1
+ *  0042A7B8   8B4C24 70        MOV ECX,DWORD PTR SS:[ESP+0x70]
+ *  0042A7BC   85C9             TEST ECX,ECX
+ *  0042A7BE   74 6A            JE SHORT .0042A82A
+ */
+bool removePopups()
+{
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+
+  // hexstr: 行数が多すぎます
+  // Having \0 before and after the text
+  const char *msg = "\x8d\x73\x90\x94\x82\xaa\x91\xbd\x82\xb7\x82\xac\x82\xdc\x82\xb7";
+  ulong msgAddress = MemDbg::findBytes(msg, 1 + ::strlen(msg), startAddress, stopAddress);
+  if (!msgAddress)
+    return false;
+
+  int count = 0;
+  for (ulong addr = startAddress; addr < stopAddress;) {
+    addr = MemDbg::findPushAddress(msgAddress, addr, stopAddress);
+    if (!addr)
+      break;
+    enum { range = 30 };  // 0x0042A7A2 - 0x0042A791 = 17
+    addr = Engine::findNearCall(addr, addr + range);
+    if (!addr)
+      return false;
+    count += winhook::remove_inst(addr);
+  }
+  DOUT("removed popup count =" << count);
+  return count;
+}
+
+} // namespace Patch
+
 } // unnamed namespace
 
 /** Public class */
@@ -495,6 +546,10 @@ bool LeafEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
+  if (Patch::removePopups())
+    DOUT("remove popups succeed");
+  else
+    DOUT("remove popups FAILED");
   //HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
   return true;
 }
