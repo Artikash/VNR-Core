@@ -84,6 +84,10 @@ embed_en:
   - Leaf
   - System43+
 
+  - EmbedCircus
+  - EmbedLeaf
+  - EmbedSystem43
+
 gui:
   # User32
   - DrawTextA
