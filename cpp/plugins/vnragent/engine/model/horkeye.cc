@@ -1,8 +1,6 @@
-// leaf.cc
+// horkeye.cc
 // 6/24/2015 jichi
-// See: http://bbs.sumisora.org/read.php?tid=11044256
-// See also ATCode: http://capita.tistory.com/m/post/255
-#include "engine/model/leaf.h"
+#include "engine/model/horkeye.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
@@ -895,7 +893,7 @@ bool removePopups()
 
 /** Public class */
 
-bool LeafEngine::attach()
+bool HorkEyeEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
@@ -907,24 +905,34 @@ bool LeafEngine::attach()
   return true;
 }
 
-QString LeafEngine::textFilter(const QString &text, int role)
+QString HorkEyeEngine::textFilter(const QString &text, int role)
 {
-  if (role == Engine::ScenarioRole && text.contains('\\'))
-    return QString(text).remove("\\k");
-  return text;
+  if (role != Engine::ScenarioRole
+      || !text.contains('\\') && !text.contains('<'))
+    return text;
+  return rubyRemove(text)
+      .remove("\\k")
+      .replace("\\n", "\n");
 }
 
 /**
  *  Example: <R空港|ここ>
  */
-QString LeafEngine::rubyCreate(const QString &rb, const QString &rt)
+QString HorkEyeEngine::translationFilter(const QString &text, int role)
+{
+  if (role != Engine::ScenarioRole || !text.contains('\n'))
+    return text;
+  return QString(text).replace("\n", "\\n");
+}
+
+QString HorkEyeEngine::rubyCreate(const QString &rb, const QString &rt)
 {
   static QString fmt = "<R%1|%2>";
   return fmt.arg(rb).arg(rt);
 }
 
 // Remove furigana in scenario thread.
-QString LeafEngine::rubyRemove(const QString &text)
+QString HorkEyeEngine::rubyRemove(const QString &text)
 {
   if (!text.contains('<'))
     return text;

@@ -239,22 +239,7 @@ bool attach()
 
 /** Public class */
 
-bool CircusEngine::attach()
-{
-  if (!ScenarioHook::attach())
-    return false;
-  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // for special symbol and ruby texts
-  return true;
-}
-
-// Remove furigana in scenario thread.
-QString CircusEngine::textFilter(const QString &text, int role)
-{
-  if (role == Engine::ScenarioRole)
-    return rubyRemove(text);
-  //ret.remove("@K");
-  return text;
-}
+bool CircusEngine::attach() { return ScenarioHook::attach(); }
 
 /**
  *  Get rid of ruby. Examples:

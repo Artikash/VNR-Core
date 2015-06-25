@@ -32,6 +32,14 @@
     - mes.arc
   #encoding: sjis
 
+- name: EmbedHorkEye # 6/24/2015
+  exist:
+  - arc0.dat
+  - arc1.dat
+  - arc2.dat
+  - script.dat
+  #encoding: sjis
+
 - name: EmbedLeaf # 6/24/2015
   exist: bak.pak
   #encoding: sjis

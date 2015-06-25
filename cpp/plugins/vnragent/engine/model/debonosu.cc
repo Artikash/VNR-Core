@@ -1252,14 +1252,6 @@ bool DebonosuEngine::attach()
   return true;
 }
 
-// Remove furigana in scenario thread.
-QString DebonosuEngine::textFilter(const QString &text, int role)
-{
-  if (role == Engine::ScenarioRole)
-    return rubyRemove(text);
-  return text;
-}
-
 /**
  *  Example sentence: 暗闇の中、一組の男女が{蠢/うごめ}いていた。
  */
