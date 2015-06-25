@@ -59,7 +59,7 @@ namespace Private {
    */
   struct HookArgument
   {
-    LPCSTR text;  // 0x0
+    LPSTR text;  // 0x0
     DWORD unknown[3];
     int size,     // 0x10
         capacity; // 0x14
@@ -85,6 +85,7 @@ namespace Private {
       newData.prepend(prefix);
     data_.append(newData);
     arg->text = newData.constData();
+    //::strcpy(text, newData.constData());
     s->ecx= arg->size = newData.size(); // size in arg2
     arg->capacity = arg->size + 1;
 
