@@ -7,7 +7,7 @@ QT += core
 
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/qtrichruby.h
-SOURCES += $$PWD/qtrichruby.cc
+HEADERS += $$PWD/richrubyparser.h
+SOURCES += $$PWD/richrubyparser.cc
 
 # EOF

@@ -1,23 +1,23 @@
-#ifndef QTRICHRUBY_H
-#define QTRICHRUBY_H
+#ifdef RICHRUBYPARSER_H
+#define RICHRUBYPARSER_H
 
-// qtdynsjis.h
-// 6/3/2015 jichi
+// richrubyparser.h
+// 6/25/2015 jichi
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QString>
 
-class QtRichRubyPrivate;
-class QtRichRuby
+class RichRubyParserPrivate;
+class RichRubyParser
 {
-  SK_CLASS(QtRichRuby)
-  SK_DISABLE_COPY(QtRichRuby)
-  SK_DECLARE_PRIVATE(QtRichRubyPrivate)
+  SK_CLASS(RichRubyParser)
+  SK_DISABLE_COPY(RichRubyParser)
+  SK_DECLARE_PRIVATE(RichRubyParserPrivate)
 
   // - Construction -
 public:
-  QtRichRuby();
-  ~QtRichRuby();
+  RichRubyParser();
+  ~RichRubyParser();
 
   void setOpenChar(int v);
   int openChar() const;
@@ -28,11 +28,11 @@ public:
   void setSeparatorChar(int v);
   int separatorChar() const;
 
-  QString render(const QString &text) const; // render to html-like rich text
+  QString renderTable(const QString &text) const; // render to html-like rich text
 
   bool containsRuby(const QString &text) const; // return if it contains ruby tag
   QString createRuby(const QString &rb, const QString &rt) const; // create one ruby tag
   QString removeRuby(const QString &text) const; // remove all ruby tags
 };
 
-#endif // QTRICHRUBY_H
+#endif // RICHRUBYPARSER_H
