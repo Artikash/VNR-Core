@@ -16,9 +16,9 @@ public:
   {
     name = "EmbedHorkEye";
     //enableDynamicEncoding = true;
-    scenarioLineCapacity = 40; // at least 25 wide character
     matchFiles << "arc0.dat" << "arc1.dat" << "arc2.dat" << "script.dat";
     newLineString = "[n]";
+    //scenarioLineCapacity = 40; // at least 25 wide character
     attachFunction = &Self::attach;
   }
 };
