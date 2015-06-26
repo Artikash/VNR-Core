@@ -4,6 +4,8 @@
 // unichar.h
 // 1/6/2015 jichi
 
+#include <cstring>
+
 #ifdef __clang__
 # pragma clang diagnostic ignored "-Wlogical-op-parentheses"
 #endif // __clang__
@@ -61,7 +63,26 @@ inline bool ishangul(int ch)
       || 0xd7b0 <= ch && ch <= 0xd7ff;  // Hangul Jamo Extended-B (D7B0-D7FF)
 }
 
-// Chinese
+// Punctuations
+
+inline bool isspace(int ch) { return ::wcschr(L" \t\n\x3000", ch); }
+
+/**
+ *  TODO: The punctuation string is incomplete
+ *  、。〈〉《》「」『』【】
+ *  …
+ *  ★☆♡♥
+ *  ！（），＜＞？
+ */
+inline bool ispunct(int ch)
+{
+  return ::wcschr(
+    L"\x3001\x3002\x3008\x3009\x300a\x300b\x300c\x300d\x300e\x300f\x3010\x3011"
+    L"\x2026"
+    L"\x2605\x2606\x2661\x2665"
+    L"\xff01\xff08\xff09\xff0c\xff1c\xff1d\xff1f"
+  , ch);
+}
 
 } // namespace unistr
 
