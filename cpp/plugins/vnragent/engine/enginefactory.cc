@@ -14,7 +14,7 @@
 #include "engine/model/debonosu.h"
 #include "engine/model/circus.h"
 #include "engine/model/elf.h"
-#include "engine/model/horkeye.h"
+//#include "engine/model/horkeye.h"
 #include "engine/model/leaf.h"
 #include "engine/model/retouch.h"
 #include "engine/model/rgss.h"
@@ -45,7 +45,7 @@ EngineController *EngineFactory::createEngine()
     , new RGSSEngine
     , new RetouchEngine
     , new LeafEngine
-    , new HorkEyeEngine
+    //, new HorkEyeEngine
     , new ElfEngine
     , new DebonosuEngine
     , new CircusEngine
