@@ -239,6 +239,30 @@ public:
     }
     return ret;
   }
+
+  QString filterText(const QString &text, int role) const
+  {
+    QString ret = text;
+    if (role == Engine::ScenarioRole) {
+      if (model->newLineString && ::strcmp(model->newLineString, "\n"))
+        ret.replace(model->newLineString, "\n");
+      if (model->rubyRemoveFunction)
+        ret = model->rubyRemoveFunction(ret);
+    }
+    if (model->textFilterFunction)
+      ret = model->textFilterFunction(ret, role);
+    return ret;
+  }
+
+  QString filterTranslation(const QString &text, int role) const
+  {
+    QString ret = text;
+    if (role == Engine::ScenarioRole && model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
+      ret.replace("\n", model->newLineString);
+    if (model->translationFilterFunction)
+      ret = model->translationFilterFunction(ret, role);
+    return ret;
+  }
 };
 
 EngineController *EngineControllerPrivate::globalInstance;
@@ -306,6 +330,9 @@ void EngineController::setSpacePolicyEncoding(const QString &v)
 
 QString EngineController::decode(const QByteArray &v) const { return d_->decode(v); }
 QByteArray EngineController::encode(const QString &v) const { return d_->encode(v); }
+
+QTextCodec *EngineController::encoder() const { return d_->encoder; }
+QTextCodec *EngineController::decoder() const { return d_->decoder; }
 
 // - Attach -
 
@@ -413,8 +440,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
           suffix,
           trimmedText = D::trimText(text, &prefix, &suffix);
 
-  if (d_->model->textFilterFunction)
-    trimmedText = d_->model->textFilterFunction(trimmedText, role);
+  trimmedText = d_->filterText(trimmedText, role);
 
   if (role == Engine::ScenarioRole && d_->scenarioLineCapacity ||
       role == Engine::OtherRole && d_->otherLineCapacity)
@@ -466,33 +492,28 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   if (sent && needsTranslation)
     repl = p->waitForTranslation(hash, role);
 
-
-  if (!repl.isEmpty() && d_->model->newLineString) {
-    if (role == Engine::ScenarioRole) {
-      if (d_->scenarioLineCapacity) {
-        QString t = text;
-        if (d_->model->textFilterFunction)
-          t = d_->model->textFilterFunction(t, role);
-        d_->scenarioLineCapacity = qMax<int>(d_->scenarioLineCapacity, D::getLineCapacity(t));
-        repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
-      } else if (d_->settings.scenarioWidth)
-        repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
-    } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
-      QString t = text;
-      if (d_->model->textFilterFunction)
-        t = d_->model->textFilterFunction(t, role);
-      d_->otherLineCapacity = qMax<int>(d_->otherLineCapacity, D::getLineCapacity(t));
-      repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
-    }
-  }
-
   if (repl.isEmpty()) {
     if (timeout)
       *timeout = true;
     repl = trimmedText;
   } else if (repl != trimmedText) {
-    if (d_->model->translationFilterFunction)
-      repl = d_->model->translationFilterFunction(repl, role);
+    if (!repl.isEmpty() && d_->model->newLineString) {
+      if (role == Engine::ScenarioRole) {
+        if (d_->scenarioLineCapacity) {
+          int capacity = D::getLineCapacity(d_->filterText(text, role));
+          if (d_->scenarioLineCapacity < capacity)
+            d_->scenarioLineCapacity = capacity;
+          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
+        } else if (d_->settings.scenarioWidth)
+          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+      } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
+        int capacity = D::getLineCapacity(d_->filterText(text, role));
+        if (d_->otherLineCapacity < capacity)
+          d_->otherLineCapacity = capacity;
+        repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
+      }
+    }
+    repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible) {
@@ -578,10 +599,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   QString prefix,
           suffix,
           trimmedText = D::trimText(text, &prefix, &suffix);
-
-  if (d_->model->textFilterFunction)
-    trimmedText = d_->model->textFilterFunction(trimmedText, role);
-
+  trimmedText = d_->filterText(trimmedText, role);
   if (role == Engine::ScenarioRole && d_->scenarioLineCapacity ||
       role == Engine::OtherRole && d_->otherLineCapacity)
     trimmedText = d_->mergeLines(trimmedText);
@@ -632,33 +650,28 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   if (sent && needsTranslation)
     repl = p->waitForTranslation(hash, role);
 
-
-  if (!repl.isEmpty() && d_->model->newLineString) {
-    if (role == Engine::ScenarioRole) {
-      if (d_->scenarioLineCapacity) {
-        QString t = text;
-        if (d_->model->textFilterFunction)
-          t = d_->model->textFilterFunction(t, role);
-        d_->scenarioLineCapacity = qMax<int>(d_->scenarioLineCapacity, D::getLineCapacity(t));
-        repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
-      } else if (d_->settings.scenarioWidth)
-        repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
-    } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
-      QString t = text;
-      if (d_->model->textFilterFunction)
-        t = d_->model->textFilterFunction(t, role);
-      d_->otherLineCapacity = qMax<int>(d_->otherLineCapacity, D::getLineCapacity(t));
-      repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
-    }
-  }
-
   if (repl.isEmpty()) {
     if (timeout)
       *timeout = true;
     repl = trimmedText; // prevent from deleting text
   } else if (repl != trimmedText) {
-    if (d_->model->translationFilterFunction)
-      repl = d_->model->translationFilterFunction(repl, role);
+    if (!repl.isEmpty() && d_->model->newLineString) {
+      if (role == Engine::ScenarioRole) {
+        if (d_->scenarioLineCapacity) {
+          int capacity = D::getLineCapacity(d_->filterText(text, role));
+          if (d_->scenarioLineCapacity < capacity)
+            d_->scenarioLineCapacity = capacity;
+          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
+        } else if (d_->settings.scenarioWidth)
+          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+      } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
+        int capacity = D::getLineCapacity(d_->filterText(text, role));
+        if (d_->otherLineCapacity < capacity)
+          d_->otherLineCapacity = capacity;
+        repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
+      }
+    }
+    repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
       if (d_->settings.scenarioTextVisible) {

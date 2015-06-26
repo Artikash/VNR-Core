@@ -6,6 +6,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QStringList>
 
+QT_FORWARD_DECLARE_CLASS(QTextCodec)
 class EngineModel;
 class EngineSettings;
 class EngineControllerPrivate;
@@ -35,6 +36,9 @@ public:
   void setEncoding(const QString &v);
   QByteArray encode(const QString &text) const;
   QString decode(const QByteArray &text) const;
+
+  QTextCodec *encoder() const;
+  QTextCodec *decoder() const;
 
   // Encoding for inserting spaces
   void setSpacePolicyEncoding(const QString &v);

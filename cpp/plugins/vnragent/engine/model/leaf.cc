@@ -909,24 +909,14 @@ bool LeafEngine::attach()
 
 QString LeafEngine::textFilter(const QString &text, int role)
 {
-  if (role != Engine::ScenarioRole
-      || !text.contains('\\') && !text.contains('<'))
-    return text;
-  return rubyRemove(text)
-      .remove("\\k")
-      .replace("\\n", "\n");
+  if (role == Engine::ScenarioRole && text.contains('\\'))
+    return QString(text).remove("\\k");
+  return text;
 }
 
 /**
  *  Example: <R空港|ここ>
  */
-QString LeafEngine::translationFilter(const QString &text, int role)
-{
-  if (role != Engine::ScenarioRole || !text.contains('\n'))
-    return text;
-  return QString(text).replace("\n", "\\n");
-}
-
 QString LeafEngine::rubyCreate(const QString &rb, const QString &rt)
 {
   static QString fmt = "<R%1|%2>";

@@ -12465,6 +12465,7 @@ static bool HorkEyeFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
        *stop;
 
   // Remove text between , and ]
+  // FIXME: This does not work well because of the ascii encoding
   if ((start = (char *)::memchr(str, ',', len)) &&
       (stop = cpp_strnstr(start, "\x81\x7a", len - (start - str))) &&
       (len -= stop - start)) // = u'】'.encode('sjis')

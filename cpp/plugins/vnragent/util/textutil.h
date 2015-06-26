@@ -10,6 +10,11 @@ namespace Util {
 ///  Assume the text is Japanese, and return if it is not understandable for non-Japanese speakers.
 bool needsTranslation(const QString &text);
 
+bool allHangul(const wchar_t *s);
+
+inline bool allHangul(const QString &text)
+{ return allHangul(static_cast<const wchar_t *>(text.utf16())); }
+
 inline bool allAscii(const char *s)
 {
   while (*s)

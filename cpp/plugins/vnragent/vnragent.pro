@@ -138,6 +138,7 @@ HEADERS += \
   engine/model/silkys.h \
   engine/model/system4.h \
   engine/model/wolf.h
+  #engine/model/horkeye.h
   #engine/model/unicorn.h
   #engine/model/cs2.h
   #engine/model/circus.h
@@ -162,6 +163,7 @@ SOURCES += \
   engine/model/silkys.cc \
   engine/model/system4.cc \
   engine/model/wolf.cc
+  #engine/model/horkeye.cc
   #engine/model/unicorn.cc
   #engine/model/cs2.cc
   #engine/model/circus.cc
