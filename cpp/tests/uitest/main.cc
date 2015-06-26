@@ -161,10 +161,24 @@ int main(int argc, char *argv[])
   font.setBold(true);
   w->setFont(font);
 
-  w->setTextColor(Qt::white);
-  auto h = "<span style='color:white'>a very long text</span>";
+  //auto h = "<span style='color:white'>a very long text</span>";
   //auto h = "a very long text";
+  auto h = "aaaa"
+      "<table>"
+        "<tr><td>hello</td><td>what</td></tr>"
+        "<tr>"
+            "<td>outer1</td>"
+            "<td><table><tr><td>inner1</td></tr><tr><td>inner2</td></tr></table></td>"
+            "<td>outer2afwaefae</td>"
+        "</tr>"
+      "</table>"
+      "bbbb";
   w->setHtml(h);
+  auto tc = w->textCursor();
+  tc.movePosition(QTextCursor::End);
+  QTextFrameFormat f;
+  tc.insertFrame(f);
+  tc.insertText("insert");
   //w->setTextBackgroundColor(Qt::black);
 
   w->resize(400, 300);
