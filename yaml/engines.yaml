@@ -81,12 +81,12 @@ embed:
 
 embed_en:
   - Circus
-  - HorkEye
+  #- HorkEye
   - Leaf
   - System43+
 
   - EmbedCircus
-  - EmbedHorkEye
+  #- EmbedHorkEye
   - EmbedLeaf
   - EmbedSystem43
 
@@ -414,7 +414,7 @@ char:
   - EmbedDebonosu
   - EmbedElf
   - EmbedLeaf
-  - EmbedHorkEye
+  #- EmbedHorkEye
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
@@ -654,7 +654,7 @@ focus:
   #- EmbedCatSystem2
   - EmbedCircus
   - EmbedDebonosu
-  - EmbedHorkEye
+  #- EmbedHorkEye
   - EmbedLeaf
   - EmbedRetouch
   - EmbedSiglusEngine
