@@ -45,11 +45,11 @@ private:
    *  @param  rb
    *  @param  rt
    *  @param  pos  the postion in the original text directly after ruby
-   *  @param  prefix  html prefix tag
-   *  @param  suffix  html suffix tag
+   *  //@param  prefix  html prefix tag
+   *  //@param  suffix  html suffix tag
    *  @return  if stop iteration. pos it the parsed offset
    */
-  typedef std::function<bool (const QString &rb, const QString &rt, int pos, const QString &prefix, const QString &suffix)> ruby_fun_t;
+  typedef std::function<bool (const QString &rb, const QString &rt, int pos)> ruby_fun_t;
   void iterRuby(const QString &text, const ruby_fun_t &fun) const;
 
   static int textWidth(const QString &text, const QFontMetrics &font);
@@ -60,7 +60,7 @@ int RichRubyParserPrivate::textWidth(const QString &text, const QFontMetrics &fo
 {
   if (text.isEmpty())
     return 0;
-  if (text.contains('<') && text.contains('>'))
+  if (!text.contains('<') || !text.contains('>'))
     return font.width(text);
 
   static QRegExp rx("<.+>");
@@ -88,7 +88,8 @@ QString RichRubyParserPrivate::partition(const QString &text, int width, const Q
         //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
         //  // do nothing
         //}
-        ret.append(text.mid(pos, closePos - pos + 1));
+        QString tag = text.mid(pos, closePos - pos + 1);
+        ret.append(tag);
         pos = closePos;
         continue;
       }
@@ -133,16 +134,28 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
     }
   };
 
-  QString prefix, suffix;
   int pos = 0;
   for (; pos < text.size(); pos++) {
     const QChar &ch = text[pos];
     auto u = ch.unicode();
+    if (u == '<') {
+      int closePos = text.indexOf('>', pos);
+      if (closePos != -1) {
+        // TODO: Avoid HTML tags from being broken in the middle
+        //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
+        //  // do nothing
+        //}
+        QString tag = text.mid(pos, closePos - pos + 1);
+        (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).append(tag);
+        pos = closePos;
+        continue;
+      }
+    }
     if (u == openChar) {
       if (rubyOpenFound) // error
         cancel();
       if (!plainText.isEmpty()) {
-        if (!fun(plainText, QString(), pos, prefix, suffix))
+        if (!fun(plainText, QString(), pos))
           return;
         plainText.clear();
       }
@@ -164,7 +177,7 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
         cancel();
         plainText.push_back(ch);
       } else {
-        if (!fun(rb, rt, pos + 1, prefix, suffix))
+        if (!fun(rb, rt, pos + 1))
           return;
         rubySplitFound = rubyOpenFound = false;
         rb.clear();
@@ -174,11 +187,11 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
       (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).push_back(ch);
   }
   if (!rb.isEmpty() && !rt.isEmpty())
-    fun(rb, rt, pos, prefix, suffix);
+    fun(rb, rt, pos);
   else
     cancel();
   if (!plainText.isEmpty())
-    fun(plainText, QString(), pos, prefix, suffix);
+    fun(plainText, QString(), pos);
 }
 
 void RichRubyParserPrivate::removeRuby(QString &ret) const
@@ -267,7 +280,7 @@ QString RichRubyParserPrivate::renderTable(const QString &text, int width, const
     rtList.clear();
     tableWidth = 0;
   };
-  auto iter = [&](const QString &_rb, const QString &rt, int pos, const QString &prefix, const QString &suffix) -> bool {
+  auto iter = [&](const QString &_rb, const QString &rt, int pos) -> bool {
     QString rb = _rb;
     const bool atLast = pos == text.size();
     if (rt.isEmpty() && ret.isEmpty() && atLast && rb == text) {
