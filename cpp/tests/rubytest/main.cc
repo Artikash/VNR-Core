@@ -14,8 +14,9 @@ int main(int argc, char *argv[])
   RichRubyParser p;
 
   auto w = new QTextEdit;
+  w->setWordWrapMode(QTextOption::WordWrap);
 
-  QString h = "{hello|ruby} what {hello|ruby}  again {hello|ruby}  another {hello|ruby} very long long text";
+  QString h = "first text very long {hello|ruby} what {hello|ruby}  again very longaweflong text another long long long text {ruby|a} later text that is very very long abcdawefaw awfawef awef";
   w->resize(200, 300);
   int contentWidth = w->contentsRect().width();
   QFont rbFont = w->font(),
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
   h = p.renderTable(h, contentWidth, rbFont, rtFont);
   h.prepend(
     "<style type='text/css'>"
-    ".rb { text-decoration: underline; }"
+    ".rt { text-decoration: underline; }"
     "</style>"
   );
   qDebug() << h;

@@ -1,10 +1,11 @@
 // richrubyparser.cc
 // 6/25/2015 jichi
 #include "qtrichruby/richrubyparser.h"
+#include <QtCore/QStringList>
 #include <QtGui/QFont>
 #include <QtGui/QFontMetrics>
 #include <functional>
-
+#include<QDebug>
 /** Private class */
 
 class RichRubyParserPrivate
@@ -15,24 +16,32 @@ public:
   RichRubyParserPrivate()
     : openChar('{'), closeChar('}'), splitChar('|') {}
 
-  typedef std::function<bool (const QString &rb, const QString &rt)> ruby_fun_t; // return if stop iteration
+  // return if stop iteration. pos it the parsed offset
+  typedef std::function<bool (const QString &rb, const QString &rt, int pos)> ruby_fun_t;
   void iterRuby(const QString &text,  const ruby_fun_t &fun) const;
 
   void removeRuby(QString &text) const;
 
-  static QString partition(const QString &text, int width, const QFontMetrics &font);
+  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap);
 };
 
-QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font)
+QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap)
 {
   QString ret;
   if (width <= 0 || text.isEmpty())
     return ret;
   int retWidth = 0;
-  foreach (const QChar &ch, text) {
+  int spacePos = -1;
+  for (int pos = 0; pos < text.size(); pos++) {
+    const QChar &ch = text[pos];
+    if (wordWrap && ch.isSpace())
+      spacePos = pos;
     retWidth += font.width(ch);
-    if (retWidth > width)
+    if (retWidth > width) {
+      if (wordWrap && spacePos >= 0 && spacePos < pos)
+        ret = ret.left(spacePos + 1);
       break;
+    }
     ret.push_back(ch);
   }
   return ret;
@@ -42,34 +51,56 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
 {
   QString rb, rt, plainText;
   bool rubyOpenFound = false,
-       rubySepFound = false;
-  foreach (const QChar &ch, text) {
+       rubySplitFound = false;
+  int pos = 0;
+  for (; pos < text.size(); pos++) {
+    const QChar &ch = text[pos];
     auto u = ch.unicode();
     if (u == openChar) {
-      if (!plainText.isEmpty()) {
-        if (!fun(plainText, rt))
-          return;
-        plainText.clear();
+      if (!rubyOpenFound) {
+        rubyOpenFound = true;
+        if (!plainText.isEmpty()) {
+          if (!fun(plainText, QString(), pos))
+            return;
+          plainText.clear();
+        }
+      } else { // error
+        if (!rb.isEmpty()) {
+          plainText.push_back(openChar);
+          plainText.append(rb);
+          rb.clear();
+        }
+        if (rubySplitFound) {
+          rubySplitFound = false;
+          plainText.push_back(splitChar);
+        }
+        if (!rt.isEmpty()) {
+          plainText.push_back(closeChar);
+          plainText.append(rt);
+          rt.clear();
+        }
       }
-      rubyOpenFound = true;
     } else if (u == splitChar) {
-      if (rubyOpenFound)
-        rubySepFound = true;
+      if (rubyOpenFound && !rubySplitFound)
+        rubySplitFound = true;
+      else // error
+        plainText.push_back(ch);
     } else if (u == closeChar) {
       if (rubyOpenFound) {
-        if ((!rb.isEmpty() || !rt.isEmpty()) && !fun(rb, rt))
+        if ((!rb.isEmpty() || !rt.isEmpty()) && !fun(rb, rt, pos + 1))
            return;
-        rubySepFound = rubyOpenFound = false;
+        rubySplitFound = rubyOpenFound = false;
         rb.clear();
         rt.clear();
-      }
+      } else // error
+        plainText.push_back(ch);
     } else
-      (!rubyOpenFound ? plainText : rubySepFound ? rt : rb).push_back(ch);
+      (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).push_back(ch);
   }
   if (!plainText.isEmpty())
     rb = plainText;
   if (!rb.isEmpty() || !rt.isEmpty())
-    fun(rb, rt);
+    fun(rb, rt, pos);
 }
 
 
@@ -103,7 +134,6 @@ void RichRubyParser::setCloseChar(int v) { d_->closeChar = v; }
 int RichRubyParser::splitChar() const { return d_->splitChar; }
 void RichRubyParser::setSplitChar(int v) { d_->splitChar = v; }
 
-
 bool RichRubyParser::containsRuby(const QString &text) const
 {
   int pos = text.indexOf(d_->openChar);
@@ -131,66 +161,120 @@ QString RichRubyParser::removeRuby(const QString &text) const
   return ret;
 }
 
-QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace) const
+QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
   if (!containsRuby((text)))
     return text;
 
-  QString ret,
-          tr_rb,
-          tr_rt;
+  QString ret;
+  QStringList rbList,
+              rtList;
   int tableWidth = 0;
-
   auto reduce = [&]() {
-    ret.append("<table>")
-       .append("<tr class='rb'>").append(tr_rt).append("</tr>")
-       .append("<tr class='rt'>").append(tr_rb).append("</tr>")
-       .append("</table>");
-  };
+    bool rbEmpty = true,
+         rtEmpty = true;
+    if (!rbList.isEmpty())
+      foreach (const QString &it, rbList)
+        if (!it.isEmpty()) {
+          rbEmpty = false;
+          break;
+        }
+    if (!rtList.isEmpty())
+      foreach (const QString &it, rtList)
+        if (!it.isEmpty()) {
+          rtEmpty = false;
+          break;
+        }
+    if (!rbEmpty || !rtEmpty) {
+      if (rbEmpty)
+        ret.append("<div class='rt'>")
+           .append(rtList.join(QString()))
+           .append("</div>");
+      else if (rtEmpty)
+        ret.append("<div class='rb'>")
+           .append(rbList.join(QString()))
+           .append("</div>");
+      else {
+        QString rbtd,
+                rttd;
+        foreach (const QString &it, rbList)
+          if (it.isEmpty())
+            rbtd.append("<td/>");
+          else
+            rbtd.append("<td align='center'>")
+                .append(it)
+                .append("</td>");
+        foreach (const QString &it, rtList)
+          if (it.isEmpty())
+            rttd.append("<td/>");
+          else
+            rttd.append("<td align='center'>")
+                .append(it)
+                .append("</td>");
+        ret.append("<table>")
+           .append("<tr class='rt' valigh='bottom'>").append(rttd).append("</tr>")
+           .append("<tr class='rb'>").append(rbtd).append("</tr>")
+           .append("</table>");
+      }
+    }
 
-  d_->iterRuby(text, [&](const QString &_rb, const QString &rt) -> bool {
+    rbList.clear();
+    rtList.clear();
+    tableWidth = 0;
+  };
+  d_->iterRuby(text, [&](const QString &_rb, const QString &rt, int pos) -> bool {
     QString rb = _rb;
-    if (rt.isEmpty() && ret.isEmpty() && rb == text) {
+    const bool atLast = pos == text.size();
+    if (rt.isEmpty() && ret.isEmpty() && atLast && rb == text) {
       ret = text;
       return false;
     }
-    int rbWidth =  rb.isEmpty() ? 0 : rbFont.width(rb),
-        rtWidth =  rt.isEmpty() ? 0 : rtFont.width(rt),
-        cellWidth = qMax(rbWidth, rtWidth);
-    if (width > 0 && tableWidth < width - cellSpace && tableWidth + cellWidth > width - cellSpace && rb.size() > 1) { // split very long text
-      QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont);
+    int cellWidth =  qMax(
+      rb.isEmpty() ? 0 : rbFont.width(rb),
+      rt.isEmpty() ? 0 : rtFont.width(rt)
+    );
+    if (rt.isEmpty() && rb.size() > 1
+        && width > 0 && tableWidth < width - cellSpace && tableWidth + cellWidth > width - cellSpace) { // split very long text
+      QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont, wordWrap);
       if (!left.isEmpty()) {
         tableWidth += rbFont.width(left);
         rb = rb.mid(left.size());
-        tr_rb.append("<td>")
-             .append(left)
-             .append("</td>");
-        tr_rt.append("<td/>");
+        cellWidth = rb.isEmpty() ? 0 : rbFont.width(rb);
+        rbList.append(left);
+        rtList.append(QString());
+        reduce();
       }
     }
     if (tableWidth > 0 && width > 0 && tableWidth + cellWidth + cellSpace > width // reduce table here
-        && (!tr_rb.isEmpty() || !tr_rt.isEmpty())) {
+        && (!rbList.isEmpty() || !rtList.isEmpty()))
       reduce();
-      tr_rb.clear();
-      tr_rt.clear();
-      tableWidth = 0;
+    if (rt.isEmpty() && width > 0 && !tableWidth) {
+      if (atLast) {
+        rbList.append(rb);
+        rtList.append(QString());
+        return false;
+      }
+
+      while (rb.size() > 1 && cellWidth > width - cellSpace) { // split very long text
+        QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont, wordWrap);
+        if (left.isEmpty())
+          break;
+        else {
+          tableWidth += rbFont.width(left);
+          rb = rb.mid(left.size());
+          cellWidth = rb.isEmpty() ? 0 : rbFont.width(rb);
+          rbList.append(left);
+          rtList.append(QString());
+          reduce();
+        }
+      }
     }
     tableWidth += cellWidth + cellSpace;
-    if (rb.isEmpty())
-      tr_rb.append("<td/>");
-    else
-      tr_rb.append("<td>")
-           .append(rb)
-           .append("</td>");
-    if (rt.isEmpty())
-      tr_rt.append("<td/>");
-    else
-      tr_rt.append("<td>")
-           .append(rt)
-           .append("</td>");
+    rbList.append(rb);
+    rtList.append(rt);
     return true;
   });
-  if (!tr_rb.isEmpty() || !tr_rt.isEmpty())
+  if (!rbList.isEmpty() || !rtList.isEmpty())
     reduce();
   return ret;
 }
