@@ -19,7 +19,24 @@ public:
   void iterRuby(const QString &text,  const ruby_fun_t &fun) const;
 
   void removeRuby(QString &text) const;
+
+  static QString partition(const QString &text, int width, const QFontMetrics &font);
 };
+
+QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font)
+{
+  QString ret;
+  if (width <= 0 || text.isEmpty())
+    return ret;
+  int retWidth = 0;
+  foreach (const QChar &ch, text) {
+    retWidth += font.width(ch);
+    if (retWidth > width)
+      break;
+    ret.push_back(ch);
+  }
+  return ret;
+}
 
 void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun) const
 {
@@ -114,7 +131,7 @@ QString RichRubyParser::removeRuby(const QString &text) const
   return ret;
 }
 
-QString RichRubyParser::renderTable(const QString &text, int width, const QFont &rbFont, const QFont &rtFont, int cellSpan) const
+QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace) const
 {
   if (!containsRuby((text)))
     return text;
@@ -122,29 +139,43 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFont 
   QString ret,
           tr_rb,
           tr_rt;
-  QFontMetrics rbfm(rbFont),
-               rtfm(rtFont);
   int tableWidth = 0;
-  auto fun = [&](const QString &rb, const QString &rt) -> bool {
+
+  auto reduce = [&]() {
+    ret.append("<table>")
+       .append("<tr class='rb'>").append(tr_rt).append("</tr>")
+       .append("<tr class='rt'>").append(tr_rb).append("</tr>")
+       .append("</table>");
+  };
+
+  d_->iterRuby(text, [&](const QString &_rb, const QString &rt) -> bool {
+    QString rb = _rb;
     if (rt.isEmpty() && ret.isEmpty() && rb == text) {
       ret = text;
       return false;
     }
-    int cellWidth = qMax(
-      rb.isEmpty() ? 0 : rbfm.width(rb),
-      rt.isEmpty() ? 0 : rbfm.width(rt)
-    );
-    if (tableWidth + cellWidth + cellSpan > width // reduce table here
+    int rbWidth =  rb.isEmpty() ? 0 : rbFont.width(rb),
+        rtWidth =  rt.isEmpty() ? 0 : rtFont.width(rt),
+        cellWidth = qMax(rbWidth, rtWidth);
+    if (width > 0 && tableWidth < width - cellSpace && tableWidth + cellWidth > width - cellSpace && rb.size() > 1) { // split very long text
+      QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont);
+      if (!left.isEmpty()) {
+        tableWidth += rbFont.width(left);
+        rb = rb.mid(left.size());
+        tr_rb.append("<td>")
+             .append(left)
+             .append("</td>");
+        tr_rt.append("<td/>");
+      }
+    }
+    if (tableWidth > 0 && width > 0 && tableWidth + cellWidth + cellSpace > width // reduce table here
         && (!tr_rb.isEmpty() || !tr_rt.isEmpty())) {
-      ret.append("<table>")
-         .append("<tr class='rb'>").append(tr_rt).append("</tr>")
-         .append("<tr class='rt'>").append(tr_rb).append("</tr>")
-         .append("</table>");
+      reduce();
       tr_rb.clear();
       tr_rt.clear();
       tableWidth = 0;
     }
-    tableWidth += cellWidth + cellSpan;
+    tableWidth += cellWidth + cellSpace;
     if (rb.isEmpty())
       tr_rb.append("<td/>");
     else
@@ -158,13 +189,9 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFont 
            .append(rt)
            .append("</td>");
     return true;
-  };
-  d_->iterRuby(text, fun);
+  });
   if (!tr_rb.isEmpty() || !tr_rt.isEmpty())
-    ret.append("<table>")
-       .append("<tr class='rb'>").append(tr_rt).append("</tr>")
-       .append("<tr class='rt'>").append(tr_rb).append("</tr>")
-       .append("</table>");
+    reduce();
   return ret;
 }
 

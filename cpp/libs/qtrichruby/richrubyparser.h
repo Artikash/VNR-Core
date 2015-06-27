@@ -7,7 +7,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QString>
 
-QT_FORWARD_DECLARE_CLASS(QFont)
+QT_FORWARD_DECLARE_CLASS(QFontMetrics)
 class RichRubyParserPrivate;
 class RichRubyParser
 {
@@ -29,13 +29,12 @@ public:
   void setSplitChar(int v);
   int splitChar() const;
 
-
   bool containsRuby(const QString &text) const; // return if it contains ruby tag
   QString createRuby(const QString &rb, const QString &rt) const; // create one ruby tag
   QString removeRuby(const QString &text) const; // remove all ruby tags
 
   // render to html-like rich text
-  QString renderTable(const QString &text, int width, const QFont &rbFont, const QFont &rtFont, int cellSpan = 1) const;
+  QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace = 1) const;
 };
 
 #endif // RICHRUBYPARSER_H
