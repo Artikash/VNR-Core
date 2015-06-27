@@ -18,9 +18,16 @@ public:
 
   static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
 
-  // return if stop iteration. pos it the parsed offset
-  typedef std::function<bool (const QString &rb, const QString &rt, int pos)> ruby_fun_t;
-  void iterRuby(const QString &text,  const ruby_fun_t &fun) const;
+  /**
+   *  @param  rb
+   *  @param  rt
+   *  @param  pos  the postion in the original text directly after ruby
+   *  @param  prefix  html prefix tag
+   *  @param  suffix  html suffix tag
+   *  @return  if stop iteration. pos it the parsed offset
+   */
+  typedef std::function<bool (const QString &rb, const QString &rt, int pos, const QString &prefix, const QString &suffix)> ruby_fun_t;
+  void iterRuby(const QString &text, const ruby_fun_t &fun) const;
 
   void removeRuby(QString &text) const;
 
@@ -90,6 +97,7 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
     }
   };
 
+  QString prefix, suffix;
   int pos = 0;
   for (; pos < text.size(); pos++) {
     const QChar &ch = text[pos];
@@ -98,7 +106,7 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
       if (rubyOpenFound) // error
         cancel();
       if (!plainText.isEmpty()) {
-        if (!fun(plainText, QString(), pos))
+        if (!fun(plainText, QString(), pos, prefix, suffix))
           return;
         plainText.clear();
       }
@@ -120,7 +128,7 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
         cancel();
         plainText.push_back(ch);
       } else {
-        if (!fun(rb, rt, pos + 1))
+        if (!fun(rb, rt, pos + 1, prefix, suffix))
           return;
         rubySplitFound = rubyOpenFound = false;
         rb.clear();
@@ -130,11 +138,11 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
       (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).push_back(ch);
   }
   if (!rb.isEmpty() && !rt.isEmpty())
-    fun(rb, rt, pos);
+    fun(rb, rt, pos, prefix, suffix);
   else
     cancel();
   if (!plainText.isEmpty())
-    fun(plainText, QString(), pos);
+    fun(plainText, QString(), pos, prefix, suffix);
 }
 
 void RichRubyParserPrivate::removeRuby(QString &ret) const
@@ -252,7 +260,7 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
     rtList.clear();
     tableWidth = 0;
   };
-  d_->iterRuby(text, [&](const QString &_rb, const QString &rt, int pos) -> bool {
+  auto iter = [&](const QString &_rb, const QString &rt, int pos, const QString &prefix, const QString &suffix) -> bool {
     QString rb = _rb;
     const bool atLast = pos == text.size();
     if (rt.isEmpty() && ret.isEmpty() && atLast && rb == text) {
@@ -303,7 +311,8 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
     rbList.append(rb);
     rtList.append(rt);
     return true;
-  });
+  };
+  d_->iterRuby(text, iter);
   if (!rbList.isEmpty() || !rtList.isEmpty())
     reduce();
   return ret;
