@@ -22,10 +22,10 @@ public:
 
   void removeRuby(QString &text) const;
 
-  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap);
+  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
 };
 
-QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap)
+QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize)
 {
   QString ret;
   if (width <= 0 || text.isEmpty())
@@ -38,7 +38,7 @@ QString RichRubyParserPrivate::partition(const QString &text, int width, const Q
       spacePos = pos;
     retWidth += font.width(ch);
     if (retWidth > width) {
-      if (wordWrap && spacePos >= 0 && spacePos < pos)
+      if (wordWrap && spacePos >= 0 && spacePos < pos && pos - spacePos < maximumWordSize)
         ret = ret.left(spacePos + 1);
       break;
     }
@@ -169,6 +169,7 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
   QString ret;
   QStringList rbList,
               rtList;
+  int maximumWordSize = width / 4 + 1;
   int tableWidth = 0;
   auto reduce = [&]() {
     bool rbEmpty = true,
@@ -235,7 +236,7 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
     );
     if (rt.isEmpty() && rb.size() > 1
         && width > 0 && tableWidth < width - cellSpace && tableWidth + cellWidth > width - cellSpace) { // split very long text
-      QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont, wordWrap);
+      QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont, wordWrap, maximumWordSize);
       if (!left.isEmpty()) {
         tableWidth += rbFont.width(left);
         rb = rb.mid(left.size());
@@ -256,7 +257,7 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
       }
 
       while (rb.size() > 1 && cellWidth > width - cellSpace) { // split very long text
-        QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont, wordWrap);
+        QString left = D::partition(rb, width - cellSpace - tableWidth, rbFont, wordWrap, maximumWordSize);
         if (left.isEmpty())
           break;
         else {

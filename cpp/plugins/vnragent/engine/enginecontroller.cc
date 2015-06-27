@@ -180,24 +180,39 @@ public:
     return ret;
   }
 
-  static QString limitTextWidth(const QString &text, int limit)
+  static QString limitTextWidth(const QString &text, int limit, bool wordWrap = true)
   {
     if (limit <= 0 || text.size() <= limit / 2)
       return text;
 
     const char br = '\n';
+    int maximumWordSize = limit / 4 + 1;
 
     QString ret;
     int width = 0;
-    foreach (const QChar &ch, text) {
+    int spacePos = -1,
+        brPos = -1;
+    for (int pos = 0; pos < text.size(); pos++) {
+      const QChar &ch = text[pos];
       ret.push_back(ch);
-
       wchar_t w = ch.unicode();
+      if (wordWrap && ch.isSpace()) {
+        spacePos = pos;
+        if (w == br)
+          brPos = pos;
+      }
       width += w <= 127 ? 1 : 2;
       if (width >= limit) {
         width = 0;
-        if (w != br)
-          ret.push_back(br);
+        if (w != br) {
+          if (spacePos > brPos && pos - spacePos < maximumWordSize) {
+            ret[ret.size() - 1 - (pos - spacePos)] = br;
+            brPos = spacePos;
+          } else {
+            ret.push_back(br);
+            brPos = pos;
+          }
+        }
       }
       //else if (w == br)
       //  ret[ret.size() - 1] = ' '; // replace '\n' by ' '
