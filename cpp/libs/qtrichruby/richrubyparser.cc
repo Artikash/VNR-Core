@@ -16,13 +16,31 @@ public:
   RichRubyParserPrivate()
     : openChar('{'), closeChar('}'), splitChar('|') {}
 
+  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
+
   // return if stop iteration. pos it the parsed offset
   typedef std::function<bool (const QString &rb, const QString &rt, int pos)> ruby_fun_t;
   void iterRuby(const QString &text,  const ruby_fun_t &fun) const;
 
   void removeRuby(QString &text) const;
 
-  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
+  bool containsRuby(const QString &text) const
+  {
+    int pos = text.indexOf(openChar);
+    return pos != -1
+        && (pos = text.indexOf(splitChar, pos)) != -1
+        && (pos = text.indexOf(closeChar, pos)) != -1;
+  }
+
+  QString createRuby(const QString &rb, const QString &rt) const
+  {
+    return QString()
+        .append(openChar)
+        .append(rb)
+        .append(splitChar)
+        .append(rt)
+        .append(closeChar);
+  }
 };
 
 QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize)
@@ -52,57 +70,72 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
   QString rb, rt, plainText;
   bool rubyOpenFound = false,
        rubySplitFound = false;
+
+  auto cancel = [&]() {
+    if (rubyOpenFound) {
+      rubyOpenFound = false;
+      plainText.push_back(openChar);
+    } if (!rb.isEmpty()) {
+      plainText.append(rb);
+      rb.clear();
+    }
+    if (rubySplitFound) {
+      rubySplitFound = false;
+      plainText.push_back(splitChar);
+    }
+    if (!rt.isEmpty()) {
+      //plainText.push_back(closeChar);
+      plainText.append(rt);
+      rt.clear();
+    }
+  };
+
   int pos = 0;
   for (; pos < text.size(); pos++) {
     const QChar &ch = text[pos];
     auto u = ch.unicode();
     if (u == openChar) {
-      if (!rubyOpenFound) {
-        rubyOpenFound = true;
-        if (!plainText.isEmpty()) {
-          if (!fun(plainText, QString(), pos))
-            return;
-          plainText.clear();
-        }
-      } else { // error
-        if (!rb.isEmpty()) {
-          plainText.push_back(openChar);
-          plainText.append(rb);
-          rb.clear();
-        }
-        if (rubySplitFound) {
-          rubySplitFound = false;
-          plainText.push_back(splitChar);
-        }
-        if (!rt.isEmpty()) {
-          plainText.push_back(closeChar);
-          plainText.append(rt);
-          rt.clear();
-        }
+      if (rubyOpenFound) // error
+        cancel();
+      if (!plainText.isEmpty()) {
+        if (!fun(plainText, QString(), pos))
+          return;
+        plainText.clear();
       }
+      rubyOpenFound = true;
     } else if (u == splitChar) {
-      if (rubyOpenFound && !rubySplitFound)
-        rubySplitFound = true;
-      else // error
+      if (!rubyOpenFound) // error
         plainText.push_back(ch);
+      else if (rb.isEmpty()) { // error, do not allow having only rt
+        cancel();
+        plainText.push_back(ch);
+      } else if (rubySplitFound) // error
+        rt.push_back(ch);
+      else
+        rubySplitFound = true;
     } else if (u == closeChar) {
-      if (rubyOpenFound) {
-        if ((!rb.isEmpty() || !rt.isEmpty()) && !fun(rb, rt, pos + 1))
-           return;
+      if (!rubyOpenFound) // error
+        plainText.push_back(ch);
+      else if (rt.isEmpty() || rb.isEmpty()) { // error, do not allow having only rb or rt
+        cancel();
+        plainText.push_back(ch);
+      } else {
+        if (!fun(rb, rt, pos + 1))
+          return;
         rubySplitFound = rubyOpenFound = false;
         rb.clear();
         rt.clear();
-      } else // error
-        plainText.push_back(ch);
+      }
     } else
       (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).push_back(ch);
   }
-  if (!plainText.isEmpty())
-    rb = plainText;
-  if (!rb.isEmpty() || !rt.isEmpty())
+  if (!rb.isEmpty() && !rt.isEmpty())
     fun(rb, rt, pos);
+  else
+    cancel();
+  if (!plainText.isEmpty())
+    fun(plainText, QString(), pos);
 }
-
 
 void RichRubyParserPrivate::removeRuby(QString &ret) const
 {
@@ -135,22 +168,10 @@ int RichRubyParser::splitChar() const { return d_->splitChar; }
 void RichRubyParser::setSplitChar(int v) { d_->splitChar = v; }
 
 bool RichRubyParser::containsRuby(const QString &text) const
-{
-  int pos = text.indexOf(d_->openChar);
-  return pos != -1
-      && (pos = text.indexOf(d_->closeChar, pos)) != -1
-      && (pos = text.indexOf(d_->splitChar, pos)) != -1;
-}
+{ return d_->containsRuby(text); }
 
 QString RichRubyParser::createRuby(const QString &rb, const QString &rt) const
-{
-  return QString()
-      .append(d_->openChar)
-      .append(rb)
-      .append(d_->splitChar)
-      .append(rt)
-      .append(d_->closeChar);
-}
+{ return d_->createRuby(rb, rt); }
 
 QString RichRubyParser::removeRuby(const QString &text) const
 {

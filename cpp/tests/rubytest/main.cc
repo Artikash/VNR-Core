@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
   auto w = new QTextEdit;
   w->setWordWrapMode(QTextOption::WordWrap);
 
-  QString h = "first text very long {hello|ruby} what {hello|ruby}  again very longaweflong text another long long long text {ruby|a} later text that is very very long abcdawefaw awfawef awef";
+  QString h = "{a|b{he{llo|world}{hell";
   w->resize(200, 300);
   int contentWidth = w->contentsRect().width();
   QFont rbFont = w->font(),
