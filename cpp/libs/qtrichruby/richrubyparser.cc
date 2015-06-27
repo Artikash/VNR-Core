@@ -16,21 +16,6 @@ public:
   RichRubyParserPrivate()
     : openChar('{'), closeChar('}'), splitChar('|') {}
 
-  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
-
-  /**
-   *  @param  rb
-   *  @param  rt
-   *  @param  pos  the postion in the original text directly after ruby
-   *  @param  prefix  html prefix tag
-   *  @param  suffix  html suffix tag
-   *  @return  if stop iteration. pos it the parsed offset
-   */
-  typedef std::function<bool (const QString &rb, const QString &rt, int pos, const QString &prefix, const QString &suffix)> ruby_fun_t;
-  void iterRuby(const QString &text, const ruby_fun_t &fun) const;
-
-  void removeRuby(QString &text) const;
-
   bool containsRuby(const QString &text) const
   {
     int pos = text.indexOf(openChar);
@@ -48,7 +33,31 @@ public:
         .append(rt)
         .append(closeChar);
   }
+
+  void removeRuby(QString &text) const;
+
+  QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const;
+
+private:
+  /**
+   *  @param  rb
+   *  @param  rt
+   *  @param  pos  the postion in the original text directly after ruby
+   *  @param  prefix  html prefix tag
+   *  @param  suffix  html suffix tag
+   *  @return  if stop iteration. pos it the parsed offset
+   */
+  typedef std::function<bool (const QString &rb, const QString &rt, int pos, const QString &prefix, const QString &suffix)> ruby_fun_t;
+  void iterRuby(const QString &text, const ruby_fun_t &fun) const;
+
+  static int textWidth(const QString &text, const QFontMetrics &font);
+  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
 };
+
+int RichRubyParserPrivate::textWidth(const QString &text, const QFontMetrics &font)
+{
+  return font.width(text);
+}
 
 QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize)
 {
@@ -161,36 +170,7 @@ void RichRubyParserPrivate::removeRuby(QString &ret) const
   return;
 }
 
-/** Public class */
-
-RichRubyParser::RichRubyParser() : d_(new D) {}
-RichRubyParser::~RichRubyParser() { delete d_; }
-
-int RichRubyParser::openChar() const { return d_->openChar; }
-void RichRubyParser::setOpenChar(int v) { d_->openChar = v; }
-
-int RichRubyParser::closeChar() const { return d_->closeChar; }
-void RichRubyParser::setCloseChar(int v) { d_->closeChar = v; }
-
-int RichRubyParser::splitChar() const { return d_->splitChar; }
-void RichRubyParser::setSplitChar(int v) { d_->splitChar = v; }
-
-bool RichRubyParser::containsRuby(const QString &text) const
-{ return d_->containsRuby(text); }
-
-QString RichRubyParser::createRuby(const QString &rb, const QString &rt) const
-{ return d_->createRuby(rb, rt); }
-
-QString RichRubyParser::removeRuby(const QString &text) const
-{
-  if (!containsRuby((text)))
-    return text;
-  QString ret = text;
-  d_->removeRuby(ret);
-  return ret;
-}
-
-QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
+QString RichRubyParserPrivate::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
   if (!containsRuby((text)))
     return text;
@@ -268,16 +248,16 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
       return false;
     }
     int cellWidth =  qMax(
-      rb.isEmpty() ? 0 : rbFont.width(rb),
-      rt.isEmpty() ? 0 : rtFont.width(rt)
+      rb.isEmpty() ? 0 : textWidth(rb, rbFont),
+      rt.isEmpty() ? 0 : textWidth(rt, rtFont)
     );
     if (rt.isEmpty() && rb.size() > 1
         && width && tableWidth < width && tableWidth + cellWidth > width) { // split very long text
-      QString left = D::partition(rb, width + rbMinCharWidth - tableWidth, rbFont, wordWrap, maximumWordSize);
+      QString left = partition(rb, width + rbMinCharWidth - tableWidth, rbFont, wordWrap, maximumWordSize);
       if (!left.isEmpty()) {
-        tableWidth += rbFont.width(left);
+        tableWidth += textWidth(left, rbFont);
         rb = rb.mid(left.size());
-        cellWidth = rb.isEmpty() ? 0 : rbFont.width(rb);
+        cellWidth = rb.isEmpty() ? 0 : textWidth(rb, rbFont);
         rbList.append(left);
         rtList.append(QString());
         reduce();
@@ -294,13 +274,13 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
       }
 
       while (rb.size() > 1 && cellWidth > width) { // split very long text
-        QString left = D::partition(rb, width + rbMinCharWidth - tableWidth, rbFont, wordWrap, maximumWordSize);
+        QString left = partition(rb, width + rbMinCharWidth - tableWidth, rbFont, wordWrap, maximumWordSize);
         if (left.isEmpty())
           break;
         else {
-          tableWidth += rbFont.width(left);
+          tableWidth += textWidth(left, rbFont);
           rb = rb.mid(left.size());
-          cellWidth = rb.isEmpty() ? 0 : rbFont.width(rb);
+          cellWidth = rb.isEmpty() ? 0 : textWidth(rb, rbFont);
           rbList.append(left);
           rtList.append(QString());
           reduce();
@@ -312,10 +292,42 @@ QString RichRubyParser::renderTable(const QString &text, int width, const QFontM
     rtList.append(rt);
     return true;
   };
-  d_->iterRuby(text, iter);
+  iterRuby(text, iter);
   if (!rbList.isEmpty() || !rtList.isEmpty())
     reduce();
   return ret;
 }
+
+/** Public class */
+
+RichRubyParser::RichRubyParser() : d_(new D) {}
+RichRubyParser::~RichRubyParser() { delete d_; }
+
+int RichRubyParser::openChar() const { return d_->openChar; }
+void RichRubyParser::setOpenChar(int v) { d_->openChar = v; }
+
+int RichRubyParser::closeChar() const { return d_->closeChar; }
+void RichRubyParser::setCloseChar(int v) { d_->closeChar = v; }
+
+int RichRubyParser::splitChar() const { return d_->splitChar; }
+void RichRubyParser::setSplitChar(int v) { d_->splitChar = v; }
+
+bool RichRubyParser::containsRuby(const QString &text) const
+{ return d_->containsRuby(text); }
+
+QString RichRubyParser::createRuby(const QString &rb, const QString &rt) const
+{ return d_->createRuby(rb, rt); }
+
+QString RichRubyParser::removeRuby(const QString &text) const
+{
+  if (!containsRuby((text)))
+    return text;
+  QString ret = text;
+  d_->removeRuby(ret);
+  return ret;
+}
+
+QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
+{ return d_->renderTable(text, width, rbFont, rtFont, cellSpace, wordWrap); }
 
 // EOF
