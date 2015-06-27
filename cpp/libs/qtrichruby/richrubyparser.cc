@@ -1,11 +1,13 @@
+#include <QDebug>
 // richrubyparser.cc
 // 6/25/2015 jichi
 #include "qtrichruby/richrubyparser.h"
-#include <QtCore/QStringList>
 #include <QtGui/QFont>
 #include <QtGui/QFontMetrics>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
 #include <functional>
-#include<QDebug>
+
 /** Private class */
 
 class RichRubyParserPrivate
@@ -56,7 +58,17 @@ private:
 
 int RichRubyParserPrivate::textWidth(const QString &text, const QFontMetrics &font)
 {
-  return font.width(text);
+  if (text.isEmpty())
+    return 0;
+  if (text.contains('<') && text.contains('>'))
+    return font.width(text);
+
+  static QRegExp rx("<.+>");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+
+  QString t = QString(text).remove(rx);
+  return font.width(t);
 }
 
 QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize)
@@ -66,8 +78,21 @@ QString RichRubyParserPrivate::partition(const QString &text, int width, const Q
     return ret;
   int retWidth = 0;
   int spacePos = -1;
+  QString suffix;
   for (int pos = 0; pos < text.size(); pos++) {
     const QChar &ch = text[pos];
+    if (ch.unicode() == '<') { // skip
+      int closePos = text.indexOf('>', pos);
+      if (closePos != -1) {
+        // TODO: Avoid HTML tags from being broken in the middle
+        //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
+        //  // do nothing
+        //}
+        ret.append(text.mid(pos, closePos - pos + 1));
+        pos = closePos;
+        continue;
+      }
+    }
     if (wordWrap && ch.isSpace())
       spacePos = pos;
     retWidth += font.width(ch);
@@ -78,6 +103,8 @@ QString RichRubyParserPrivate::partition(const QString &text, int width, const Q
     }
     ret.push_back(ch);
   }
+  if (!suffix.isEmpty())
+    ret.append(suffix);
   return ret;
 }
 
@@ -247,10 +274,7 @@ QString RichRubyParserPrivate::renderTable(const QString &text, int width, const
       ret = text;
       return false;
     }
-    int cellWidth =  qMax(
-      rb.isEmpty() ? 0 : textWidth(rb, rbFont),
-      rt.isEmpty() ? 0 : textWidth(rt, rtFont)
-    );
+    int cellWidth =  qMax(textWidth(rb, rbFont), textWidth(rt, rtFont));
     if (rt.isEmpty() && rb.size() > 1
         && width && tableWidth < width && tableWidth + cellWidth > width) { // split very long text
       QString left = partition(rb, width + rbMinCharWidth - tableWidth, rbFont, wordWrap, maximumWordSize);
@@ -280,7 +304,7 @@ QString RichRubyParserPrivate::renderTable(const QString &text, int width, const
         else {
           tableWidth += textWidth(left, rbFont);
           rb = rb.mid(left.size());
-          cellWidth = rb.isEmpty() ? 0 : textWidth(rb, rbFont);
+          cellWidth = textWidth(rb, rbFont);
           rbList.append(left);
           rtList.append(QString());
           reduce();
@@ -328,6 +352,13 @@ QString RichRubyParser::removeRuby(const QString &text) const
 }
 
 QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
-{ return d_->renderTable(text, width, rbFont, rtFont, cellSpace, wordWrap); }
+{
+  QString t = text;
+  if (t.contains("  ")) {
+    static QRegExp rx(" +(\\s)"); // remove spaces before any other space
+    t.replace(rx, "\\1");
+  }
+  return d_->renderTable(t, width, rbFont, rtFont, cellSpace, wordWrap);
+}
 
 // EOF

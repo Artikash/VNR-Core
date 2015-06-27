@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
   auto w = new QTextEdit;
   w->setWordWrapMode(QTextOption::WordWrap);
 
-  QString h = "{a|b{he{llo|world}{hell";
+  QString h = "awe awf  abhe{llo|world}{<u>hellafawewafe</u> awef";
   w->resize(200, 300);
   int contentWidth = w->contentsRect().width();
   QFont rbFont = w->font(),
