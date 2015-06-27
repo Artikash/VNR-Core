@@ -6,6 +6,7 @@
 
 #include <QtGui>
 
+//class TextEdit : public QTextBrowser
 class TextEdit : public QTextEdit
 {
   Q_OBJECT

@@ -16,11 +16,12 @@ SUBDIRS += \
   pinyintest \
   pytest \
   qttest \
+  rubytest \
+  socktest \
+  tahtest \
   trcodectest \
   troscripttest \
   trscripttest \
-  socktest \
-  tahtest \
   uitest
 
 win32: SUBDIRS += \
