@@ -261,7 +261,7 @@ static PyObject* Sbk_RichRubyParserFunc_removeRuby(PyObject* self, PyObject* pyA
         return 0;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_renderTable(PyObject* self, PyObject* args, PyObject* kwds)
+static PyObject* Sbk_RichRubyParserFunc_renderToHtmlTable(PyObject* self, PyObject* args, PyObject* kwds)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -278,58 +278,58 @@ static PyObject* Sbk_RichRubyParserFunc_renderTable(PyObject* self, PyObject* ar
 
     // invalid argument lengths
     if (numArgs + numNamedArgs > 6) {
-        PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderTable(): too many arguments");
+        PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderToHtmlTable(): too many arguments");
         return 0;
     } else if (numArgs < 4) {
-        PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderTable(): not enough arguments");
+        PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderToHtmlTable(): not enough arguments");
         return 0;
     }
 
-    if (!PyArg_ParseTuple(args, "|OOOOOO:renderTable", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2]), &(pyArgs[3]), &(pyArgs[4]), &(pyArgs[5])))
+    if (!PyArg_ParseTuple(args, "|OOOOOO:renderToHtmlTable", &(pyArgs[0]), &(pyArgs[1]), &(pyArgs[2]), &(pyArgs[3]), &(pyArgs[4]), &(pyArgs[5])))
         return 0;
 
 
     // Overloaded function decisor
-    // 0: renderTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
+    // 0: renderToHtmlTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
     if (numArgs >= 4
         && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[0])))
         && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1])))
         && (pythonToCpp[2] = Shiboken::Conversions::isPythonToCppReferenceConvertible((SbkObjectType*)SbkPySide_QtGuiTypes[SBK_QFONTMETRICS_IDX], (pyArgs[2])))
         && (pythonToCpp[3] = Shiboken::Conversions::isPythonToCppReferenceConvertible((SbkObjectType*)SbkPySide_QtGuiTypes[SBK_QFONTMETRICS_IDX], (pyArgs[3])))) {
         if (numArgs == 4) {
-            overloadId = 0; // renderTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
+            overloadId = 0; // renderToHtmlTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
         } else if ((pythonToCpp[4] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[4])))) {
             if (numArgs == 5) {
-                overloadId = 0; // renderTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
+                overloadId = 0; // renderToHtmlTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
             } else if ((pythonToCpp[5] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[5])))) {
-                overloadId = 0; // renderTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
+                overloadId = 0; // renderToHtmlTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
             }
         }
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_RichRubyParserFunc_renderTable_TypeError;
+    if (overloadId == -1) goto Sbk_RichRubyParserFunc_renderToHtmlTable_TypeError;
 
     // Call function/method
     {
         if (kwds) {
             PyObject* value = PyDict_GetItemString(kwds, "cellSpace");
             if (value && pyArgs[4]) {
-                PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderTable(): got multiple values for keyword argument 'cellSpace'.");
+                PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderToHtmlTable(): got multiple values for keyword argument 'cellSpace'.");
                 return 0;
             } else if (value) {
                 pyArgs[4] = value;
                 if (!(pythonToCpp[4] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[4]))))
-                    goto Sbk_RichRubyParserFunc_renderTable_TypeError;
+                    goto Sbk_RichRubyParserFunc_renderToHtmlTable_TypeError;
             }
             value = PyDict_GetItemString(kwds, "wordWrap");
             if (value && pyArgs[5]) {
-                PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderTable(): got multiple values for keyword argument 'wordWrap'.");
+                PyErr_SetString(PyExc_TypeError, "pyrich.RichRubyParser.renderToHtmlTable(): got multiple values for keyword argument 'wordWrap'.");
                 return 0;
             } else if (value) {
                 pyArgs[5] = value;
                 if (!(pythonToCpp[5] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[5]))))
-                    goto Sbk_RichRubyParserFunc_renderTable_TypeError;
+                    goto Sbk_RichRubyParserFunc_renderToHtmlTable_TypeError;
             }
         }
         ::QString cppArg0 = ::QString();
@@ -360,9 +360,9 @@ static PyObject* Sbk_RichRubyParserFunc_renderTable(PyObject* self, PyObject* ar
         if (pythonToCpp[5]) pythonToCpp[5](pyArgs[5], &cppArg5);
 
         if (!PyErr_Occurred()) {
-            // renderTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
+            // renderToHtmlTable(QString,int,QFontMetrics,QFontMetrics,int,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->renderTable(cppArg0, cppArg1, *cppArg2, *cppArg3, cppArg4, cppArg5);
+            QString cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->renderToHtmlTable(cppArg0, cppArg1, *cppArg2, *cppArg3, cppArg4, cppArg5);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
@@ -374,9 +374,56 @@ static PyObject* Sbk_RichRubyParserFunc_renderTable(PyObject* self, PyObject* ar
     }
     return pyResult;
 
-    Sbk_RichRubyParserFunc_renderTable_TypeError:
+    Sbk_RichRubyParserFunc_renderToHtmlTable_TypeError:
         const char* overloads[] = {"unicode, int, PySide.QtGui.QFontMetrics, PySide.QtGui.QFontMetrics, int = 1, bool = true", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pyrich.RichRubyParser.renderTable", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pyrich.RichRubyParser.renderToHtmlTable", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_RichRubyParserFunc_renderToPlainText(PyObject* self, PyObject* pyArg)
+{
+    ::RichRubyParser* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::RichRubyParser*)Shiboken::Conversions::cppPointer(SbkpyrichTypes[SBK_RICHRUBYPARSER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: renderToPlainText(QString)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // renderToPlainText(QString)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_RichRubyParserFunc_renderToPlainText_TypeError;
+
+    // Call function/method
+    {
+        ::QString cppArg0 = ::QString();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // renderToPlainText(QString)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            QString cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->renderToPlainText(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_RichRubyParserFunc_renderToPlainText_TypeError:
+        const char* overloads[] = {"unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.renderToPlainText", overloads);
         return 0;
 }
 
@@ -546,7 +593,8 @@ static PyMethodDef Sbk_RichRubyParser_methods[] = {
     {"createRuby", (PyCFunction)Sbk_RichRubyParserFunc_createRuby, METH_VARARGS},
     {"openChar", (PyCFunction)Sbk_RichRubyParserFunc_openChar, METH_NOARGS},
     {"removeRuby", (PyCFunction)Sbk_RichRubyParserFunc_removeRuby, METH_O},
-    {"renderTable", (PyCFunction)Sbk_RichRubyParserFunc_renderTable, METH_VARARGS|METH_KEYWORDS},
+    {"renderToHtmlTable", (PyCFunction)Sbk_RichRubyParserFunc_renderToHtmlTable, METH_VARARGS|METH_KEYWORDS},
+    {"renderToPlainText", (PyCFunction)Sbk_RichRubyParserFunc_renderToPlainText, METH_O},
     {"setCloseChar", (PyCFunction)Sbk_RichRubyParserFunc_setCloseChar, METH_O},
     {"setOpenChar", (PyCFunction)Sbk_RichRubyParserFunc_setOpenChar, METH_O},
     {"setSplitChar", (PyCFunction)Sbk_RichRubyParserFunc_setSplitChar, METH_O},

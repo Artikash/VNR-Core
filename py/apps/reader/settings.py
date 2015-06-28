@@ -1793,6 +1793,13 @@ class Settings(QSettings):
       self.setValue('TermMarked', t)
       self.termMarkedChanged.emit(t)
 
+  termRubyEnabledChanged = Signal(bool)
+  def isTermRubyEnabled(self): return to_bool(self.value('TermRuby', True))
+  def setTermRubyEnabled(self, t):
+    if t != self.isTermRubyEnabled():
+      self.setValue('TermRuby', t)
+      self.termRubyEnabledChanged.emit(t)
+
   hentaiEnabledChanged = Signal(bool)
   def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
   def setHentaiEnabled(self, t):

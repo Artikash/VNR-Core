@@ -2327,20 +2327,31 @@ class _TermTab(object):
   @memoizedproperty
   def generalGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.underlineButton)
+    layout.addWidget(self.markButton)
+    layout.addWidget(self.rubButton)
     layout.addWidget(self.hentaiButton)
     ret = QtWidgets.QGroupBox(my.tr("Machine translation option"))
     ret.setLayout(layout)
     return ret
 
   @memoizedproperty
-  def underlineButton(self):
+  def markButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Underline the text modified by the Shared Dictionary if possible"),
         tr_("default")))
     ss = settings.global_()
     ret.setChecked(ss.isTermMarked())
     ret.toggled.connect(ss.setTermMarked)
+    return ret
+
+  @memoizedproperty
+  def rubyButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Display ruby definition above translation if exists"),
+        tr_("default")))
+    ss = settings.global_()
+    ret.setChecked(ss.isTermRubyEnabled())
+    ret.toggled.connect(ss.setTermRubyEnabled)
     return ret
 
   @memoizedproperty

@@ -14,13 +14,14 @@ def containsRuby(text):
   @return  bool
   """
   #return '{' in text and bool(_rx_ruby.search(text))
-  i = text.find('{')
-  if i != -1:
-    i = text.find('|', i)
+  if text:
+    i = text.find('{')
     if i != -1:
-      i = text.find('}', i)
+      i = text.find('|', i)
       if i != -1:
-        return True
+        i = text.find('}', i)
+        if i != -1:
+          return True
   return False
 
 def renderRubyToHtmlTable(text, width, rbFont, rtFont, cellSpace=1, wordWrap=True):
@@ -34,7 +35,7 @@ def renderRubyToHtmlTable(text, width, rbFont, rtFont, cellSpace=1, wordWrap=Tru
   """
   if not containsRuby(text):
     return text
-  return _RP.renderTable(text, width, rbFont, rtFont, cellSpace, wordWrap)
+  return _RP.renderToHtmlTable(text, width, rbFont, rtFont, cellSpace, wordWrap)
 
 _rx_ruby1 = re.compile(r'{(.+?)\|.+?}')
 def removeRuby(text):
@@ -52,6 +53,6 @@ def renderRubyToPlainText(text):
   """
   if not containsRuby(text):
     return text
-  return _rx_ruby2.sub(r' \1(\2)', text)
+  return _rx_ruby2.sub(r'\1(\2)', text)
 
 # EOF

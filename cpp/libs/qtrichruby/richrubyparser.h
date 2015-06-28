@@ -34,7 +34,8 @@ public:
   QString removeRuby(const QString &text) const; // remove all ruby tags
 
   // render to html-like rich text
-  QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace = 1, bool wordWrap = true) const;
+  QString renderToHtmlTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace = 1, bool wordWrap = true) const;
+  QString renderToPlainText(const QString &text) const;
 };
 
 #endif // RICHRUBYPARSER_H

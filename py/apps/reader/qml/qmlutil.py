@@ -8,7 +8,7 @@ from PySide.QtGui import QFontMetrics
 from sakurakit import skmeta
 from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
-import bbcode, convutil
+import bbcode, convutil, richutil
 
 #@QmlObject
 class BBCodeParser(QObject):
@@ -88,12 +88,10 @@ class TextUtil(QObject):
 
   @Slot(unicode, int, QFontMetrics, QFontMetrics, result=unicode)
   def renderRubyToHtml(self, text, width, rbFont, rtFont):
-    import richutil
     return richutil.renderRubyToHtmlTable(text, width, rbFont, rtFont)
 
   @Slot(unicode, result=unicode)
   def renderRubyToPlainText(self, text):
-    import richutil
     return richutil.renderRubyToPlainText(text)
 
 # EOF

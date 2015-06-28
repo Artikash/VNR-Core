@@ -151,17 +151,15 @@ a{color:#add8ff}
 			</tr>
 %endif
 			<hr>
+%if source
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Matched text')}}: </td>
-%if source
 				<td class="pp-value">
 					{{source|e}}
 					{{' '}}<a href="javascript://main.searchDictionary('{{source|e}}','pattern')">({{tr('Search')}})</a>
 				</td>
-%else
-				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
-%endif
 			</tr>
+%endif
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Replaced text')}}: </td>
 %if target

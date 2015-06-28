@@ -23,8 +23,9 @@ int main(int argc, char *argv[])
         rtFont = w->font();
   rbFont.setBold(true);
   rtFont.setUnderline(true);
-  qDebug() << p.removeRuby(h);
-  h = p.renderTable(h, contentWidth, rbFont, rtFont);
+  qDebug() << "no ruby:" << p.removeRuby(h);
+  qDebug() << "plain text:" << p.renderToPlainText(h);
+  h = p.renderToHtmlTable(h, contentWidth, rbFont, rtFont);
   h.prepend(
     "<style type='text/css'>"
     ".rt { text-decoration: underline; }"

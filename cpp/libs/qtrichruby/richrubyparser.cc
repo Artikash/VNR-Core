@@ -38,6 +38,7 @@ public:
 
   void removeRuby(QString &text) const;
 
+  QString renderText(const QString &text) const;
   QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const;
 
 private:
@@ -210,6 +211,14 @@ void RichRubyParserPrivate::removeRuby(QString &ret) const
   return;
 }
 
+QString RichRubyParserPrivate::renderText(const QString &text) const
+{
+  static QRegExp rx("\\{(.+)\\|(.+)\\}");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1(\\2)");
+}
+
 QString RichRubyParserPrivate::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
   QString ret;
@@ -361,7 +370,14 @@ QString RichRubyParser::removeRuby(const QString &text) const
   return ret;
 }
 
-QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
+QString RichRubyParser::renderToPlainText(const QString &text) const
+{
+  if (!containsRuby((text)))
+    return text;
+  return d_->renderText(text);
+}
+
+QString RichRubyParser::renderToHtmlTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
   if (!containsRuby((text)))
     return text;
