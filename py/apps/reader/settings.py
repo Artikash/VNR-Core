@@ -2518,6 +2518,8 @@ class SettingsProxy(QObject):
 
     g.blockedLanguagesChanged.connect(self.blockedLanguagesChanged)
 
+    g.termRubyEnabledChanged.connect(self.termRubyEnabledChanged)
+
   hentaiChanged = Signal(bool)
   hentai = Property(bool,
       lambda _: global_().isHentaiEnabled(),
@@ -2588,6 +2590,9 @@ class SettingsProxy(QObject):
 
   subtitleVoiceEnabledChanged = Signal(bool)
   subtitleVoiceEnabled = bool_property('SubtitleVoice', False, notify=subtitleVoiceEnabledChanged)
+
+  termRubyEnabledChanged = Signal(bool)
+  termRubyEnabled = unicode_property('TermRuby', True, notify=termRubyEnabledChanged)
 
   blockedLanguagesChanged = Signal(unicode)
   blockedLanguages = unicode_property('BlockedLanguages', '', notify=blockedLanguagesChanged)

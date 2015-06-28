@@ -87,7 +87,7 @@ class TextUtil(QObject):
     super(TextUtil, self).__init__(parent)
 
   @Slot(unicode, int, QFontMetrics, QFontMetrics, result=unicode)
-  def renderRubyToHtml(self, text, width, rbFont, rtFont):
+  def renderRubyToHtmlTable(self, text, width, rbFont, rtFont):
     return richutil.renderRubyToHtmlTable(text, width, rbFont, rtFont)
 
   @Slot(unicode, result=unicode)

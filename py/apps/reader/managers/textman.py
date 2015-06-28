@@ -896,7 +896,7 @@ class _TextManager(object):
       if not h in self.windowTranslation:
         context = textutil.remove_illegal_text(context)
         sub, lang, provider = translateOne(context, self.gameLanguage,
-            async=True, online=True, mark=False)
+            async=True, online=True, mark=False, rubyEnabled=False)
         if sub:
           changedTranslation[h] = sub
     if changedTranslation:
@@ -1100,7 +1100,7 @@ class TextManager(QObject):
       if not sub:
         async = role == OTHER_THREAD_TYPE
         sub, lang, provider = trman.manager().translateOne(text, d.gameLanguage,
-            async=async, online=True, mark=False, keepsNewLine=True)
+            async=async, online=True, mark=False, keepsNewLine=True, rubyEnabled=False) # TODO: preserve ruby in the future
       if sub:
         if lang.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()

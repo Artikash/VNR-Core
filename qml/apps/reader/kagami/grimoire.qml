@@ -137,6 +137,8 @@ Item { id: root_
   property bool translationVisible: true
   //onTranslationVisibleChanged: console.log("grimoire.qml: translation visible =", translationVisible)
 
+  property bool termRubyEnabled: true
+
   property bool commentVisible: true
   //onCommentVisibleChanged: console.log("grimoire.qml: comment visible =", commentVisible)
 
@@ -456,6 +458,13 @@ Item { id: root_
       return t.replace(/([.?!」\n])(?![.!?)」\n]|$)/g, '$1<br/>').replace(/\.\.<br\/>/g, '.. ') // do not split ".."
   }
 
+  function renderTranslation(t) { // string -> string
+    if (!termRubyEnabled || t.indexOf('[') === -1 || t.indexOf('|') === -1)
+      return t
+    // CHECKPOINT: Need to handle qtextedit font here here
+    //return textPlugin_.renderRubyToHtmlTable(t)
+    return t
+  }
 
   //Rectangle {
   //  anchors.fill: parent
@@ -1357,8 +1366,12 @@ Item { id: root_
             t = root_.renderRuby(t, model.language, textItem_.hover)
           else if (model.alignObject)
             t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
-          else if (root_.splitsTranslation && model.type === 'tr')
-            t = root_.splitTranslation(t, model.language)
+          else {
+            if (model.type === 'tr' || model.type === 'name.tr')
+              t = root_.renderTranslation(t)
+            if (root_.splitsTranslation && model.type === 'tr')
+              t = root_.splitTranslation(t, model.language)
+          }
           if (~t.indexOf("</a>"))
             t = '<style>a{color:"' + root_.fontColor + '"}</style>' + t
           //clipboardPlugin_.text = t // for debugging purpose

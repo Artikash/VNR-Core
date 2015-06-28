@@ -317,7 +317,7 @@ class TermWriter:
               repl = _unescape_term_text(td.text)
               if repl and td.type in RUBY_TYPES:
                 if td.ruby:
-                  if self.rubyEnabled:
+                  if self.rubyEnabled and repl != td.ruby:
                     repl = richutil.createRuby(repl, td.ruby)
                 elif not self.rubyEnabled:
                   repl = richutil.removeRuby(repl)
