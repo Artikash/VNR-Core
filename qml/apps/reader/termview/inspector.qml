@@ -117,8 +117,9 @@ Item { id: root_
     if (!currentItem)
       return ""
 
-    var pattern = Underscore.escape(currentItem.pattern) // cached
+    var pattern = Underscore.escape(currentItem.pattern)
     var text = Underscore.escape(currentItem.text)
+    var ruby = Underscore.escape(currentItem.ruby)
     var type = currentItem.type
     var lang = currentItem.language
 
@@ -137,6 +138,9 @@ Item { id: root_
       ret += "(" + Sk.tr("Not changed") + ")"
     else
       ret += text
+
+    if (ruby)
+      ret += "<br/>" + My.tr("Ruby") + ": " + ruby
 
     if (text) {
       if (type == 'yomi')
@@ -319,6 +323,7 @@ Item { id: root_
     case -101: return qsTr("Pattern does not need enabling regex") // E_USELESS_REGEX
     case -800: return qsTr("Entry type does not allow being translator-specific") // E_BAD_HOST
     case -801: return qsTr("Please use only ASCII characters for translation role") // E_BAD_ROLE
+    case -802: return qsTr("Rule type does not support ruby") // E_BAD_RUBY
     case -900: return qsTr("New line characters are not allowed in text") // E_NEWLINE
     case -901: return qsTr("Tab characters are not allowed in text") // E_TAB
     case -999: return qsTr("Missing translation") // E_EMPTY_TEXT

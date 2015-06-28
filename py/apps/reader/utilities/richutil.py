@@ -15,11 +15,11 @@ def containsRuby(text):
   """
   #return '{' in text and bool(_rx_ruby.search(text))
   if text:
-    i = text.find('{')
+    i = text.find('[')
     if i != -1:
       i = text.find('|', i)
       if i != -1:
-        i = text.find('}', i)
+        i = text.find(']', i)
         if i != -1:
           return True
   return False
@@ -37,19 +37,21 @@ def renderRubyToHtmlTable(text, width, rbFont, rtFont, cellSpace=1, wordWrap=Tru
     return text
   return _RP.renderToHtmlTable(text, width, rbFont, rtFont, cellSpace, wordWrap)
 
-_rx_ruby1 = re.compile(r'{(.+?)\|.+?}')
+_rx_ruby1 = re.compile(r'\[(.+?)\|.+?\]')
 def removeRuby(text):
   """
   @param  text  unicode
+  @return  unicode
   """
   if not containsRuby(text):
     return text
   return _rx_ruby1.sub(r'\1', text)
 
-_rx_ruby2 = re.compile(r'{(.+?)\|(.+?)}')
+_rx_ruby2 = re.compile(r'\[(.+?)\|(.+?)\]')
 def renderRubyToPlainText(text):
   """
   @param  text  unicode
+  @return  unicode
   """
   if not containsRuby(text):
     return text

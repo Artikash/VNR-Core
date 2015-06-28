@@ -131,6 +131,15 @@ Item { id: root_
     }
   }
 
+  function typeAllowsRuby(type) { // string -> bool
+    switch (type) {
+    case 'trans': case 'output':
+    case 'name': case 'yomi': case 'prefix': case 'suffix':
+      return true
+    default: return false
+    }
+  }
+
   function typeAllowsHost(type) { // string -> bool
     switch (type) {
     case 'input': case 'output': case 'trans':
@@ -176,6 +185,7 @@ Item { id: root_
     case -101: return qsTr("Regex") // E_USELESS_REGEX
     case -800: return My.tr("Translator") // E_BAD_HOST
     case -801: return Sk.tr("Role") // E_BAD_ROLE
+    case -802: return My.tr("Ruby") // E_BAD_RUBY
     case -900: return "\\n" // E_NEWLINE
     case -901: return "\\t" // E_TAB
     case -999: return Sk.tr("Invalid") // E_MEMPTY_TEXT
@@ -808,7 +818,7 @@ Item { id: root_
     // Column: Pattern
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Pattern")
-      width: 80
+      width: 70
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -857,7 +867,7 @@ Item { id: root_
     // Column: Translation text
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Translation")
-      width: 80
+      width: 70
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -895,6 +905,56 @@ Item { id: root_
               var t = Util.trim(text)
               if (t !== itemValue.text) {
                 itemValue.text = t
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Column: Ruby
+
+    Desktop.TableColumn {
+      role: 'object'; title: My.tr("Ruby")
+      width: 50
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+                             && (!!itemValue.ruby || root_.typeAllowsRuby(itemValue.type))
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          visible: !itemSelected //|| !editable
+          text: itemValue.ruby ? itemValue.ruby : root_.typeAllowsRuby(itemValue.type) ? '-' : ''
+          color: itemSelected ? 'white' : root_.typeAllowsRuby(itemValue.type) ? itemColor(itemValue) : itemValue.ruby ? 'red' : 'black'
+          font.strikeout: !itemSelected && itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        TextInput {
+          anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
+          color: 'white'
+          selectByMouse: true
+          selectionColor: 'white'
+          selectedTextColor: 'black'
+          visible: itemSelected //&& editable
+          readOnly: !editable
+          maximumLength: _MAX_TEXT_LENGTH
+          //property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
+          //font.bold: itemValue.regex || itemValue.syntax
+
+          Component.onCompleted: text = itemValue.ruby
+
+          onTextChanged: save()
+          onAccepted: save()
+          function save() {
+            if (editable) {
+              var t = Util.trim(text)
+              if (t !== itemValue.ruby) {
+                itemValue.ruby = t
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
               }

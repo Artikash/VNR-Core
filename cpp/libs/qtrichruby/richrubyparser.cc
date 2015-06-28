@@ -16,7 +16,7 @@ public:
   wchar_t openChar, closeChar, splitChar;
 
   RichRubyParserPrivate()
-    : openChar('{'), closeChar('}'), splitChar('|') {}
+    : openChar('['), closeChar(']'), splitChar('|') {}
 
   bool containsRuby(const QString &text) const
   {

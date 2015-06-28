@@ -637,6 +637,7 @@ class _MainObject(object):
     for sig in (
         ss.userIdChanged, ss.userLanguageChanged,
         ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        ss.termRubyEnabledChanged,
         ss.romajiMacronEnabledChanged,
         #ss.translationSyntaxEnabledChanged,
         self.gameManager.processChanged,

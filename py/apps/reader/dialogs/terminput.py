@@ -117,6 +117,10 @@ class _TermInput(object):
     grid.addWidget(self.yomiEdit, r, 1) # span for two rows
     r += 1
 
+    grid.addWidget(create_label(mytr_("Ruby")), r, 0)
+    grid.addWidget(self.rubyEdit, r, 1) # span for two rows
+    r += 1
+
     grid.addWidget(create_label(tr_("Role")), r, 0)
     grid.addWidget(self.roleEdit, r, 1)
     r += 1
@@ -336,6 +340,15 @@ class _TermInput(object):
     return ret
 
   @memoizedproperty
+  def rubyEdit(self):
+    ret = QtWidgets.QLineEdit()
+    skqss.class_(ret, 'normal')
+    ret.setPlaceholderText(my.tr("Note above or after the translation"))
+    ret.setToolTip(ret.placeholderText())
+    ret.textChanged.connect(self.refresh)
+    return ret
+
+  @memoizedproperty
   def patternEdit(self):
     ret = QtWidgets.QLineEdit()
     skqss.class_(ret, 'normal')
@@ -413,8 +426,9 @@ class _TermInput(object):
 
   def _isUseless(self): # -> bool  has no effect
     pattern = self.patternEdit.text().strip()
+    ruby = self.rubyEdit.text().strip()
     #if self._getLanguage() not in ('zhs', 'zht', 'ko') or # allow people to force save sth
-    if self._getType() in ('input', 'output', 'game', 'ocr', 'tts'):
+    if not ruby and self._getType() in ('input', 'output', 'game', 'ocr', 'tts'):
       text = self.textEdit.text().strip()
       if pattern == text:
         return True
@@ -469,6 +483,7 @@ class _TermInput(object):
       type = self._getType()
       host = self._getHost() if type in dataman.Term.HOST_TYPES else ''
       role = self.roleEdit.text().strip() if type in dataman.Term.ROLE_TYPES else ''
+      ruby = self.rubyEdit.text().strip() if type in dataman.Term.RUBY_TYPES else ''
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
@@ -484,7 +499,7 @@ class _TermInput(object):
           language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
           special=special, regex=regex, phrase=phrase, icase=icase, #syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
-          pattern=pattern, text=text, role=role, comment=comment)
+          pattern=pattern, text=text, ruby=ruby, role=role, comment=comment)
 
       self.clear()
       self.q.hide()
@@ -498,7 +513,7 @@ class _TermInput(object):
       )))
 
   def clear(self):
-    for it in self.patternEdit, self.textEdit: #, self.commentEdit:
+    for it in self.patternEdit, self.textEdit: #, self.commentEdit, self.rubyEdit:
       it.clear()
 
   #def autofill(self):
@@ -515,6 +530,7 @@ class _TermInput(object):
     type = self._getType()
     self.hostEdit.setEnabled(type in dataman.Term.HOST_TYPES)
     self.roleEdit.setEnabled(type in dataman.Term.ROLE_TYPES)
+    self.rubyEdit.setEnabled(type in dataman.Term.RUBY_TYPES)
 
     self._refreshTypeLabel()
     self._refreshKanji()
@@ -680,6 +696,7 @@ class TermInput(QtWidgets.QDialog):
   def setBlockedLanguages(self, v): self.__d.blockedLanguages = v
 
   def setPattern(self, v): self.__d.patternEdit.setText(v)
+  def setRuby(self, v): self.__d.rubyEdit.setText(v)
   def setText(self, v): self.__d.textEdit.setText(v)
   def setComment(self, v): self.__d.commentEdit.setText(v)
   def setType(self, v): self.__d.setType(v)

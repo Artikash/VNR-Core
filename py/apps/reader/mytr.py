@@ -128,6 +128,8 @@ class reader(QObject):
       self.tr('Ecchi'),
       self.tr('Easy'),
 
+      self.tr('Ruby'),
+
       #self.tr("ATLAS"),
       self.tr("Baidu"),
       self.tr("Youdao"),
