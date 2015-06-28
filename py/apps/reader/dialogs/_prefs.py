@@ -2328,7 +2328,7 @@ class _TermTab(object):
   def generalGroup(self):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.markButton)
-    layout.addWidget(self.rubButton)
+    layout.addWidget(self.rubyButton)
     layout.addWidget(self.hentaiButton)
     ret = QtWidgets.QGroupBox(my.tr("Machine translation option"))
     ret.setLayout(layout)

@@ -348,7 +348,8 @@ class _MTTester(object):
         mark = self._isMarkEnabled()
         t = trman.manager().translate(t, emit=True, mark=mark, scriptEnabled=scriptEnabled, **params)
         if t:
-          t = richutil.renderRubyToPlainText(t)
+          if settings.global_().isTermRubyEnabled():
+            t = richutil.renderRubyToPlainText(t)
           self.finalTranslationEdit.setHtml(t)
       dprint("leave")
 

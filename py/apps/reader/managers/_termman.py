@@ -19,7 +19,7 @@ from opencc import opencc
 from unitraits import jpchars, jpmacros, kochars
 from convutil import toalphabet, kana2name, zhs2zht, zht2zhs, \
                      ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
-import config, dataman, defs, i18n
+import config, dataman, defs, i18n, richutil
 
 ## Translation proxy
 
@@ -224,11 +224,12 @@ class TermWriter:
 
   RE_MACRO = re.compile('{{(.+?)}}')
 
-  def __init__(self, createTime, termData, gameIds, hentai, parent):
+  def __init__(self, createTime, termData, gameIds, hentai, rubyEnabled, parent):
     self.createTime = createTime # float
     self.termData = termData # [_Term]
     self.gameIds = gameIds # set(ing gameId)
     self.hentai = hentai # bool
+    self.rubyEnabled = rubyEnabled # bool
     self.parent = parent # _TermManager.instance
 
   def isOutdated(self): # -> bool
@@ -272,6 +273,8 @@ class TermWriter:
 
     #padding = trans_input or toLatinLanguage and td.type in ('trans', 'name', 'yomi')
 
+    RUBY_TYPES = dataman.Term.RUBY_TYPES
+
     empty = True
     count = len(self.termData)
     try:
@@ -309,14 +312,22 @@ class TermWriter:
             if not repl: # this should never happen
               continue
           else:
-            repl = _unescape_term_text(td.text)
-            repl = self._applyMacros(repl, macros)
-            if zs:
-              repl = zht2zhs(repl)
-            elif zt:
-              repl = zhs2zht(repl)
-              if role == defs.TERM_NAME_ROLE:
-                repl = ja2zht_name_fix(repl)
+            repl = td.text
+            if repl:
+              repl = _unescape_term_text(td.text)
+              if repl and td.type in RUBY_TYPES:
+                if td.ruby:
+                  if self.rubyEnabled:
+                    repl = richutil.createRuby(repl, td.ruby)
+                elif not self.rubyEnabled:
+                  repl = richutil.removeRuby(repl)
+              repl = self._applyMacros(repl, macros)
+              if zs:
+                repl = zht2zhs(repl)
+              elif zt:
+                repl = zhs2zht(repl)
+                if role == defs.TERM_NAME_ROLE:
+                  repl = ja2zht_name_fix(repl)
             if td.type == 'yomi':
               repl = kana2name(repl, to) or repl
             elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek

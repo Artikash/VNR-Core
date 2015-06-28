@@ -17,7 +17,7 @@ from sakurakit import skevents, skthreads
 from sakurakit.skclass import  memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from share.mt import mtinfo
-import config, features, settings, textutil
+import config, features, richutil, settings, textutil
 import _trman
 
 _RETRANS_DEFAULT_LANG = 'en'
@@ -37,6 +37,7 @@ class _TranslatorManager(object):
 
     self.allTranslators = [] # all created translators
     self.marked = False
+    self.rubyEnabled = False
 
     self.romajiEnabled = \
     self.infoseekEnabled = \
@@ -300,7 +301,7 @@ class _TranslatorManager(object):
         postprocess=self.postprocessCharacterset))
 
   @staticmethod
-  def translateAndApply(func, kw, tr, text, align=None, **kwargs):
+  def translateAndApply(func, kw, tr, text, align=None, rubyEnabled=None, **kwargs):
     """
     @param  func  function to apply
     @param  kw  arguments passed to func
@@ -318,7 +319,10 @@ class _TranslatorManager(object):
     #else:
     r = tr(text, align=align, **kwargs)
     if r and r[0]:
-      func(r[0], r[1], r[2], align, **kw)
+      text = r[0]
+      if self.rubyEnabled and rubyEnabled == False:
+        text = richutil.removeRuby(text)
+      func(text, r[1], r[2], align, **kw)
 
   def _getTranslatorPropertyName(self, key):
     """
@@ -512,6 +516,9 @@ class TranslatorManager(QObject):
 
   def isMarked(self): return self.__d.marked
   def setMarked(self, t): self.__d.marked = t
+
+  def isRubyEnabled(self): return self.__d.rubyEnabled
+  def setRubyEnabled(self, t): self.__d.rubyEnabled = t
 
   def language(self): return self.__d.language
   def setLanguage(self, t): self.__d.language = t
@@ -823,7 +830,7 @@ class TranslatorManager(QObject):
         kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
       return it.translateTest(text, **kw)
 
-  def translateOne(self, text, fr='ja', to='', engine='', mark=None, online=True, async=False, cached=True, emit=False, keepsNewLine=None, scriptEnabled=None, ehndEnabled=None):
+  def translateOne(self, text, fr='ja', to='', engine='', mark=None, online=True, async=False, cached=True, emit=False, keepsNewLine=None, scriptEnabled=None, ehndEnabled=None, rubyEnabled=None):
     """Translate using any translator
     @param  text  unicode
     @param* fr  unicode  language
@@ -838,6 +845,7 @@ class TranslatorManager(QObject):
     """
     if not features.MACHINE_TRANSLATION or not text:
       return None, None, None
+    ret = None
     d = self.__d
     it = d.findTranslator(engine)
     if it:
@@ -863,15 +871,18 @@ class TranslatorManager(QObject):
         else:
           kw['scriptEnabled'] = scriptEnabled or d.getScriptEnabled(it.key)
       if emit or not it.onlineRequired or not it.asyncSupported:
-        return it.translate(text, **kw)
+        ret = it.translate(text, **kw)
       else: # not emit and asyncSupported
         kw['async'] = False # force using single thread
-        return skthreads.runsync(partial(it.translate, text, **kw),
+        ret = skthreads.runsync(partial(it.translate, text, **kw),
           abortSignal=self.abortionRequested,
-        ) or (None, None, None)
-    return None, None, None
+        )
+    if ret and ret[0] and d.rubyEnabled and rubyEnabled == False:
+      text = richutil.removeRuby(r[0])
+      ret = text, ret[1], ret[2]
+    return ret or (None, None, None)
 
-  def translateApply(self, func, text, fr='ja', to='', keepsNewLine=None, mark=None, scriptEnabled=None, ehndEnabled=None, **kwargs):
+  def translateApply(self, func, text, fr='ja', to='', keepsNewLine=None, mark=None, scriptEnabled=None, ehndEnabled=None, rubyEnabled=None, **kwargs):
     """Specialized for textman
     @param  func  function(unicode sub, unicode lang, unicode provider)
     @param  text  unicode
@@ -908,6 +919,8 @@ class TranslatorManager(QObject):
             align = []
       kw['align'] = align
 
+      thisRubyEnabled = rubyEnabled if align is None else False
+
       if scriptEnabled != False:
         if it.key == 'retr':
           kw['scriptEnabled1'] = scriptEnabled or d.getScriptEnabled(it.first.key)
@@ -919,11 +932,14 @@ class TranslatorManager(QObject):
         kw['ehndEnabled'] = ehndEnabled if ehndEnabled is not None else d.ehndEnabled
       if it.onlineRequired: #or it.parallelEnabled: # rush offline translation speed
         skevents.runlater(partial(d.translateAndApply,
-            func, kwargs, it.translate, text, **kw))
+            func, kwargs, it.translate, text, rubyEnabled=thisRubyEnabled, **kw))
       else:
         r = it.translate(text, **kw)
         if r and r[0]:
-          func(r[0], r[1], r[2], align, **kwargs)
+          text = r[0]
+          if d.rubyEnabled and thisRubyEnabled == False:
+            text = richutil.removeRuby(text)
+          func(text, r[1], r[2], align, **kwargs)
 
 @memoized
 def manager(): return TranslatorManager()
@@ -958,6 +974,6 @@ class TranslatorQmlBean(QObject):
   def translate(self, text, language, engine):
     # I should not hardcode fr = 'ja' here
     # Force async
-    return manager().translate(text, engine=engine, fr=language, mark=False, async=True, scriptEnabled=False) or ''
+    return manager().translate(text, engine=engine, fr=language, mark=False, async=True, scriptEnabled=False, rubyEnabled=False) or ''
 
 # EOF

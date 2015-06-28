@@ -37,6 +37,16 @@ def renderRubyToHtmlTable(text, width, rbFont, rtFont, cellSpace=1, wordWrap=Tru
     return text
   return _RP.renderToHtmlTable(text, width, rbFont, rtFont, cellSpace, wordWrap)
 
+def createRuby(rb, rt):
+  """
+  @param  rb  unicode
+  @param  rt  unicode
+  @return  unicode
+  """
+  if rb and rt:
+    return '[%s|%s]' % (rb, rt)
+  return rb
+
 _rx_ruby1 = re.compile(r'\[(.+?)\|.+?\]')
 def removeRuby(text):
   """
