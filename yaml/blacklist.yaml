@@ -49,6 +49,7 @@ processes:
   - AlphaROM Cracker Build20121001.exe  # AlphaROM
   - AlphaROMdiE.exe     # AlphaROM
   - alpharomdie.exe     # AlphaROM
+  #- Anemone.exe         # Anemone
   - AppUpdate.exe       # JBeijing
   - AralTrans.exe       # Aral Trans
   - Atlas.exe           # Atlas

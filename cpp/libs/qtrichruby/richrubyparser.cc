@@ -212,9 +212,6 @@ void RichRubyParserPrivate::removeRuby(QString &ret) const
 
 QString RichRubyParserPrivate::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
-  if (!containsRuby((text)))
-    return text;
-
   QString ret;
   QStringList rbList,
               rtList;
@@ -366,6 +363,8 @@ QString RichRubyParser::removeRuby(const QString &text) const
 
 QString RichRubyParser::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
+  if (!containsRuby((text)))
+    return text;
   QString t = text;
   if (t.contains("  ")) {
     static QRegExp rx(" +(\\s)"); // remove spaces before any other space
