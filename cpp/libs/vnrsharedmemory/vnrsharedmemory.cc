@@ -8,11 +8,14 @@
 class VnrSharedMemoryPrivate
 {
 public:
+  enum { LanguageCapacity = 4 };
+
   struct Cell {
     qint8 status;
     qint64 hash;
     //qint32 signature;
     qint8 role;
+    char language[LanguageCapacity];
     qint32 textSize;
     wchar_t text[1];
   private:
@@ -138,6 +141,26 @@ void VnrSharedMemory::setDataRole(int i, qint8 v)
     p->role = v;
 }
 
+QString VnrSharedMemory::dataLanguage(int i) const
+{
+  if (auto p = d_->constCell(i))
+    return QString::fromAscii(p->language);
+  else
+    return QString();
+}
+
+void VnrSharedMemory::setDataLanguage(int i, const QString &v)
+{
+  if (auto p = d_->cell(i)) {
+    if (v.isEmpty())
+      ::memset(p->language, 0, D::LanguageCapacity);
+    else {
+      ::strncpy(p->language, v.toAscii(), D::LanguageCapacity);
+      p->language[D::LanguageCapacity - 1] = 0;
+    }
+  }
+}
+
 QString VnrSharedMemory::dataText(int i) const
 {
   if (auto p = d_->constCell(i))
@@ -151,12 +174,12 @@ void VnrSharedMemory::setDataText(int i, const QString &v)
   if (auto p = d_->cell(i)) {
     int limit = d_->textCapacity();
     if (v.size() <= limit) {
-      v.toWCharArray(p->text);
       p->textSize = v.size();
+      v.toWCharArray(p->text);
     } else {
       QString w = v.left(limit);
-      w.toWCharArray(p->text);
       p->textSize = w.size();
+      w.toWCharArray(p->text);
     }
   }
 }

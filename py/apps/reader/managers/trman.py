@@ -876,7 +876,7 @@ class TranslatorManager(QObject):
           abortSignal=self.abortionRequested,
         )
     if ret and ret[0] and d.rubyEnabled and rubyEnabled == False:
-      t = richutil.removeRuby(r[0])
+      t = richutil.removeRuby(ret[0])
       ret = t, ret[1], ret[2]
     return ret or (None, None, None)
 

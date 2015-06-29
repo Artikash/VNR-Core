@@ -73,5 +73,6 @@ class VnrAgentSharedMemory:
   def setDataHash(self, i, v): self.__d.setDataHash(i, v)
   def setDataRole(self, i, v): self.__d.setDataRole(i, v)
   def setDataText(self, i, v): self.__d.setDataText(i, v)
+  def setDataLanguage(self, i, v): self.__d.setDataLanguage(i, v)
 
 # EOF
