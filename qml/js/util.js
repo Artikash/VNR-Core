@@ -413,6 +413,16 @@ function removeTextName(text, limit) {
   return text;
 }
 
+/**
+ *  @param  text  string
+ *  @return  string
+ */
+function removeBBCode(text) { // string ->  string  remove HTML tags
+  if (!~text.indexOf('['))
+    return text
+  return text.replace(/\[[^\]]+\]/g, '') // remove all bbcode tags between []
+}
+
 // - Datetime -
 
 // See: http://www.electrictoolbox.com/unix-timestamp-javascript/
