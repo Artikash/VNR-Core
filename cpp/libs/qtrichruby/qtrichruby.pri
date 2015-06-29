@@ -7,7 +7,11 @@ QT += core
 
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/richrubyparser.h
-SOURCES += $$PWD/richrubyparser.cc
+HEADERS += \
+  $$PWD/richrubyconfig.h \
+  $$PWD/richrubyparser.h
+
+SOURCES += \
+  $$PWD/richrubyparser.cc
 
 # EOF

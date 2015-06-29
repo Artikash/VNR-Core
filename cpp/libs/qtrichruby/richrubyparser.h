@@ -5,7 +5,9 @@
 // 6/25/2015 jichi
 
 #include "sakurakit/skglobal.h"
+#include "qtrichruby/richrubyconfig.h"
 #include <QtCore/QString>
+#include <functional>
 
 QT_FORWARD_DECLARE_CLASS(QFontMetrics)
 class RichRubyParserPrivate;
@@ -33,9 +35,15 @@ public:
   QString createRuby(const QString &rb, const QString &rt) const; // create one ruby tag
   QString removeRuby(const QString &text) const; // remove all ruby tags
 
+  typedef std::function<QString (const QString &rb, const QString &rt)> ruby_fun_t;
+  QString renderRuby(const QString &text, const ruby_fun_t &fun) const;
+
+  QString renderToPlainText(const QString &text) const;
+
+#ifdef RICHRUBY_GUI_LIB
   // render to html-like rich text
   QString renderToHtmlTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace = 1, bool wordWrap = true) const;
-  QString renderToPlainText(const QString &text) const;
+#endif // RICHRUBY_GUI_LIB
 };
 
 #endif // RICHRUBYPARSER_H

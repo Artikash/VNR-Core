@@ -15,6 +15,7 @@
 #include "util/textutil.h"
 #include "dyncodec/dynsjis.h"
 //#include "windbg/util.h"
+#include "qtrichruby/richrubyparser.h"
 #include "winhook/hookcode.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
@@ -31,6 +32,8 @@
 class EngineControllerPrivate
 {
   typedef EngineController Q;
+
+  RichRubyParser rubyParser;
 
 public:
   static Q *globalInstance;
@@ -159,6 +162,22 @@ private:
     return ret;
   }
 
+  // Get paintable text distance while skipping intermediate BBCode tags
+  static int getTextDistance(const QString &text, int startPos, int stopPos, bool skipBBCode)
+  {
+    if (!skipBBCode)
+      return stopPos - startPos;
+    int ret = 0;
+    for (int i = startPos; i <= stopPos; i++)
+      if (text[i] == '[') {
+        int closePos = text.indexOf(']', i + 1);
+        if (closePos != -1)
+          i = closePos;
+      } else
+        ret++;
+    return ret;
+  }
+
 public:
   static size_t getLineCapacity(const QString &text)
   { return getLineCapacity(static_cast<const wchar_t *>(text.utf16())); }
@@ -181,13 +200,22 @@ public:
     return ret;
   }
 
-  static QString limitTextWidth(const QString &text, int limit, bool wordWrap = true)
+  /**
+   *  @param  text
+   *  @param  limit
+   *  @param  wordWrap
+   *  @param  skipBBCode  skip bbcode such as [ruby]
+   */
+  static QString limitTextWidth(const QString &text, int limit, bool wordWrap = true, bool skipBBCode = true)
   {
     if (limit <= 0 || text.size() <= limit / 2)
       return text;
 
+    if (skipBBCode)
+      skipBBCode = text.contains('[');
+
     const char br = '\n';
-    int maximumWordSize = limit / 4 + 1;
+    int maximumWordSize = limit / 3 + 1;
 
     QString ret;
     int width = 0;
@@ -195,8 +223,16 @@ public:
         brPos = -1;
     for (int pos = 0; pos < text.size(); pos++) {
       const QChar &ch = text[pos];
-      ret.push_back(ch);
       wchar_t w = ch.unicode();
+      if (skipBBCode && w == '[') {
+        int closePos = text.indexOf(']', pos + 1);
+        if (closePos != -1) {
+          ret.append(text.mid(pos, closePos - pos + 1));
+          pos = closePos;
+          continue;
+        }
+      }
+      ret.push_back(ch);
       if (wordWrap && ch.isSpace()) {
         spacePos = pos;
         if (w == br)
@@ -206,7 +242,7 @@ public:
       if (width >= limit) {
         width = 0;
         if (w != br) {
-          if (spacePos > brPos && pos - spacePos < maximumWordSize) {
+          if (spacePos > brPos && getTextDistance(text, spacePos, pos, skipBBCode) < maximumWordSize) {
             ret[ret.size() - 1 - (pos - spacePos)] = br;
             brPos = spacePos;
           } else {
@@ -278,6 +314,16 @@ public:
     if (model->translationFilterFunction)
       ret = model->translationFilterFunction(ret, role);
     return ret;
+  }
+
+  QString renderRuby(const QString &text) const
+  {
+    if (text.isEmpty() || !rubyParser.containsRuby(text))
+      return text;
+    else if (model->rubyCreateFunction)
+      return rubyParser.renderRuby(text, model->rubyCreateFunction);
+    else
+      return rubyParser.removeRuby(text);
   }
 };
 
@@ -517,21 +563,24 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   } else if (repl != trimmedText) {
     if (!repl.isEmpty() && d_->model->newLineString) {
       bool wordWrap = Util::languageNeedsWordWrap(language);
+      bool containsBBCode = role == Engine::ScenarioRole && d_->model->rubyCreateFunction;
       if (role == Engine::ScenarioRole) {
         if (d_->scenarioLineCapacity) {
           int capacity = D::getLineCapacity(d_->filterText(text, role));
           if (d_->scenarioLineCapacity < capacity)
             d_->scenarioLineCapacity = capacity;
-          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity, wordWrap);
+          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity, wordWrap, containsBBCode);
         } else if (d_->settings.scenarioWidth)
-          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth, wordWrap);
+          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth, wordWrap, containsBBCode);
       } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
         int capacity = D::getLineCapacity(d_->filterText(text, role));
         if (d_->otherLineCapacity < capacity)
           d_->otherLineCapacity = capacity;
-        repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap);
+        repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap, containsBBCode);
       }
     }
+    if (role == Engine::ScenarioRole)
+      repl = d_->renderRuby(repl);
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
@@ -678,21 +727,24 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
   } else if (repl != trimmedText) {
     if (!repl.isEmpty() && d_->model->newLineString) {
       bool wordWrap = Util::languageNeedsWordWrap(language);
+      bool containsBBCode = role == Engine::ScenarioRole && d_->model->rubyCreateFunction;
       if (role == Engine::ScenarioRole) {
         if (d_->scenarioLineCapacity) {
           int capacity = D::getLineCapacity(d_->filterText(text, role));
           if (d_->scenarioLineCapacity < capacity)
             d_->scenarioLineCapacity = capacity;
-          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity, wordWrap);
+          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity, wordWrap, containsBBCode);
         } else if (d_->settings.scenarioWidth)
-          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth, wordWrap);
+          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth, wordWrap, containsBBCode);
       } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
         int capacity = D::getLineCapacity(d_->filterText(text, role));
         if (d_->otherLineCapacity < capacity)
           d_->otherLineCapacity = capacity;
-        repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap);
+        repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap, containsBBCode);
       }
     }
+    if (role == Engine::ScenarioRole)
+      repl = d_->renderRuby(repl);
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:

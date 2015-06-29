@@ -249,7 +249,7 @@ bool CircusEngine::attach() { return ScenarioHook::attach(); }
 QString CircusEngine::rubyCreate(const QString &rb, const QString &rt)
 {
   static QString fmt = QString::fromWCharArray(L"\xff5b%2\xff0f%1\xff5d");
-  return fmt.arg(rb).arg(rt);
+  return fmt.arg(rb, rt);
 }
 
 // Remove furigana in scenario thread.

@@ -1,27 +1,25 @@
 // richrubyparser.cc
 // 6/25/2015 jichi
 #include "qtrichruby/richrubyparser.h"
-#include <QtGui/QFont>
-#include <QtGui/QFontMetrics>
 #include <QtCore/QRegExp>
 #include <QtCore/QStringList>
 #include <functional>
 
+#ifdef RICHRUBY_GUI_LIB
+# include <QtGui/QFont>
+# include <QtGui/QFontMetrics>
+#endif // RICHRUBY_GUI_LIB
+
 /** Private class */
-
-#define OPEN_MARK   "[ruby="
-#define SPLIT_MARK  "]"
-#define CLOSE_MARK  "[/ruby]"
-
-//#define RB_PLAINTEXT "%1(%2)"
 
 class RichRubyParserPrivate
 {
+  typedef RichRubyParser Q;
 public:
   QString openMark, closeMark, splitMark;
 
   RichRubyParserPrivate()
-    : openMark(OPEN_MARK), closeMark(CLOSE_MARK), splitMark(SPLIT_MARK) {}
+    : openMark(RICHRUBY_OPEN_MARK), closeMark(RICHRUBY_CLOSE_MARK), splitMark(RICHRUBY_SPLIT_MARK) {}
 
   bool containsRuby(const QString &text) const
   {
@@ -35,9 +33,7 @@ public:
   { return QString(openMark).append(rt).append(splitMark).append(rb).append(closeMark); }
 
   void removeRuby(QString &text) const;
-  void renderText(QString &text) const;
-
-  QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const;
+  void renderRuby(QString &text, const Q::ruby_fun_t &fun) const;
 
 private:
   /**
@@ -50,9 +46,6 @@ private:
    */
   typedef std::function<bool (const QString &rb, const QString &rt, int pos)> ruby_fun_t;
   void iterRuby(const QString &text, const ruby_fun_t &fun) const;
-
-  static int textWidth(const QString &text, const QFontMetrics &font);
-  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
 
   // Get html close tag at position. For example, given "</a>", it will return "a"
   static QString get_html_close_tag(const QString &text, int startPos = 0, int *stopPos = nullptr)
@@ -74,60 +67,15 @@ private:
     }
     return QString();
   }
+
+#ifdef RICHRUBY_GUI_LIB
+public:
+  QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const;
+private:
+  static int textWidth(const QString &text, const QFontMetrics &font);
+  static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
+#endif // RICHRUBY_GUI_LIB
 };
-
-int RichRubyParserPrivate::textWidth(const QString &text, const QFontMetrics &font)
-{
-  if (text.isEmpty())
-    return 0;
-  if (!text.contains('<') || !text.contains('>'))
-    return font.width(text);
-
-  static QRegExp rx("<.+>");
-  if (!rx.isMinimal())
-    rx.setMinimal(true);
-
-  QString t = QString(text).remove(rx);
-  return font.width(t);
-}
-
-QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize)
-{
-  QString ret;
-  if (width <= 0 || text.isEmpty())
-    return ret;
-  int retWidth = 0;
-  int spacePos = -1;
-  QString suffix;
-  for (int pos = 0; pos < text.size(); pos++) {
-    const QChar &ch = text[pos];
-    if (ch.unicode() == '<') { // skip
-      int closePos = text.indexOf('>', pos);
-      if (closePos != -1) {
-        // TODO: Avoid HTML tags from being broken in the middle
-        //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
-        //  // do nothing
-        //}
-        QString tag = text.mid(pos, closePos - pos + 1);
-        ret.append(tag);
-        pos = closePos;
-        continue;
-      }
-    }
-    if (wordWrap && ch.isSpace())
-      spacePos = pos;
-    retWidth += font.width(ch);
-    if (retWidth > width) {
-      if (wordWrap && spacePos >= 0 && spacePos < pos && pos - spacePos < maximumWordSize)
-        ret = ret.left(spacePos + 1);
-      break;
-    }
-    ret.push_back(ch);
-  }
-  if (!suffix.isEmpty())
-    ret.append(suffix);
-  return ret;
-}
 
 void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun) const
 {
@@ -193,7 +141,7 @@ void RichRubyParserPrivate::removeRuby(QString &ret) const
   }
 }
 
-void RichRubyParserPrivate::renderText(QString &ret) const
+void RichRubyParserPrivate::renderRuby(QString &ret, const Q::ruby_fun_t &fun) const
 {
   for (int pos = ret.indexOf(openMark); pos != -1; pos = ret.indexOf(openMark, pos)) {
     int splitPos = ret.indexOf(splitMark, pos);
@@ -202,20 +150,68 @@ void RichRubyParserPrivate::renderText(QString &ret) const
     int closePos = ret.indexOf(closeMark, splitPos);
     if (closePos == -1)
       return;
-    QStringRef rt = ret.midRef(pos + openMark.size(), splitPos - pos - openMark.size()),
-               rb = ret.midRef(splitPos + splitMark.size(), closePos - splitPos - splitMark.size());
-    //QString repl = QString(RB_PLAINTEXT).arg(rb, rt);
-    QString repl = rb.toString();
-    if (!rt.isEmpty()) {
-      repl.push_back('(');
-      repl.append(rt);
-      repl.push_back(')');
-    }
-
+    QString rt = ret.mid(pos + openMark.size(), splitPos - pos - openMark.size()),
+            rb = ret.mid(splitPos + splitMark.size(), closePos - splitPos - splitMark.size()),
+            repl = fun(rb, rt);
     ret.remove(pos, closePos + closeMark.size() - pos);
     ret.insert(pos, repl);
     pos += repl.size();
   }
+}
+
+#ifdef RICHRUBY_GUI_LIB
+
+int RichRubyParserPrivate::textWidth(const QString &text, const QFontMetrics &font)
+{
+  if (text.isEmpty())
+    return 0;
+  if (!text.contains('<') || !text.contains('>'))
+    return font.width(text);
+
+  static QRegExp rx("<.+>");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+
+  QString t = QString(text).remove(rx);
+  return font.width(t);
+}
+
+QString RichRubyParserPrivate::partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize)
+{
+  QString ret;
+  if (width <= 0 || text.isEmpty())
+    return ret;
+  int retWidth = 0;
+  int spacePos = -1;
+  QString suffix;
+  for (int pos = 0; pos < text.size(); pos++) {
+    const QChar &ch = text[pos];
+    if (ch.unicode() == '<') { // skip
+      int closePos = text.indexOf('>', pos);
+      if (closePos != -1) {
+        // TODO: Avoid HTML tags from being broken in the middle
+        //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
+        //  // do nothing
+        //}
+        QString tag = text.mid(pos, closePos - pos + 1);
+        ret.append(tag);
+        pos = closePos;
+        continue;
+      }
+    }
+    if (wordWrap && ch.isSpace())
+      spacePos = pos;
+    retWidth += font.width(ch);
+    if (retWidth > width) {
+      if (wordWrap && spacePos >= 0 && spacePos < pos && pos - spacePos < maximumWordSize)
+        ret = ret.left(spacePos + 1);
+      break;
+    }
+    ret.push_back(ch);
+  }
+  if (!suffix.isEmpty())
+    ret.append(suffix);
+  return ret;
 }
 
 QString RichRubyParserPrivate::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
@@ -340,6 +336,8 @@ QString RichRubyParserPrivate::renderTable(const QString &text, int width, const
   return ret;
 }
 
+#endif // RICHRUBY_GUI_LIB
+
 /** Public class */
 
 RichRubyParser::RichRubyParser() : d_(new D) {}
@@ -369,14 +367,24 @@ QString RichRubyParser::removeRuby(const QString &text) const
   return ret;
 }
 
-QString RichRubyParser::renderToPlainText(const QString &text) const
+QString RichRubyParser::renderRuby(const QString &text, const ruby_fun_t &fun) const
 {
   if (!containsRuby((text)))
     return text;
   QString ret = text;
-  d_->renderText(ret);
+  d_->renderRuby(ret, fun);
   return ret;
 }
+
+QString RichRubyParser::renderToPlainText(const QString &text) const
+{
+  return renderRuby(text, [](const QString &rb, const QString &rt) -> QString {
+    static QString fmt = RICHRUBY_PLAINTEXT_FORMAT;
+    return fmt.arg(rb, rt);
+  });
+}
+
+#ifdef RICHRUBY_GUI_LIB
 
 QString RichRubyParser::renderToHtmlTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
 {
@@ -389,6 +397,8 @@ QString RichRubyParser::renderToHtmlTable(const QString &text, int width, const 
   }
   return d_->renderTable(t, width, rbFont, rtFont, cellSpace, wordWrap);
 }
+
+#endif // RICHRUBY_GUI_LIB
 
 // EOF
 
