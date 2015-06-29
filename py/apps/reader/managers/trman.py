@@ -918,7 +918,7 @@ class TranslatorManager(QObject):
       kw['align'] = align
 
       if align is None:
-        kw['mark'] = mark = False
+        kw['mark'] = False
 
       thisRubyEnabled = rubyEnabled if align is None else False
 
