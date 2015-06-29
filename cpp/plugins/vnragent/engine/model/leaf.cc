@@ -920,7 +920,7 @@ QString LeafEngine::textFilter(const QString &text, int role)
 QString LeafEngine::rubyCreate(const QString &rb, const QString &rt)
 {
   static QString fmt = "<R%1|%2>";
-  return fmt.arg(rb).arg(rt);
+  return fmt.arg(rb, rt);
 }
 
 // Remove furigana in scenario thread.

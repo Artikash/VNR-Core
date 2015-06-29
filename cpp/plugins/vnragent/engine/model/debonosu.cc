@@ -1240,12 +1240,10 @@ bool DebonosuEngine::attach()
   else
     DOUT("other text NOT FOUND");
 
-
   //if (ChoiceHook::attach(startAddress, stopAddress))
   //  DOUT("choice text found");
   //else
   //  DOUT("choice text NOT FOUND");
-
 
   HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
   HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
@@ -1258,7 +1256,7 @@ bool DebonosuEngine::attach()
 QString DebonosuEngine::rubyCreate(const QString &rb, const QString &rt)
 {
   static QString fmt = "{%1/%2}";
-  return fmt.arg(rb).arg(rt);
+  return fmt.arg(rb, rt);
 }
 QString DebonosuEngine::rubyRemove(const QString &text)
 {
