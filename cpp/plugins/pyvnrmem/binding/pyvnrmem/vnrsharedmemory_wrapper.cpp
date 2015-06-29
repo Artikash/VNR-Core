@@ -726,6 +726,53 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataHash(PyObject* self, PyObject* pyAr
         return 0;
 }
 
+static PyObject* Sbk_VnrSharedMemoryFunc_dataLanguage(PyObject* self, PyObject* pyArg)
+{
+    VnrSharedMemoryWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: dataLanguage(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // dataLanguage(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_dataLanguage_TypeError;
+
+    // Call function/method
+    {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // dataLanguage(int)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            QString cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataLanguage(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_VnrSharedMemoryFunc_dataLanguage_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyvnrmem.VnrSharedMemory.dataLanguage", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_VnrSharedMemoryFunc_dataRole(PyObject* self, PyObject* pyArg)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
@@ -1120,6 +1167,63 @@ static PyObject* Sbk_VnrSharedMemoryFunc_setDataHash(PyObject* self, PyObject* a
         return 0;
 }
 
+static PyObject* Sbk_VnrSharedMemoryFunc_setDataLanguage(PyObject* self, PyObject* args)
+{
+    VnrSharedMemoryWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (VnrSharedMemoryWrapper*)((::VnrSharedMemory*)Shiboken::Conversions::cppPointer(SbkpyvnrmemTypes[SBK_VNRSHAREDMEMORY_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
+    SBK_UNUSED(pythonToCpp)
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+
+
+    if (!PyArg_UnpackTuple(args, "setDataLanguage", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
+
+    // Overloaded function decisor
+    // 0: setDataLanguage(int,QString)
+    if (numArgs == 2
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))
+        && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[1])))) {
+        overloadId = 0; // setDataLanguage(int,QString)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_VnrSharedMemoryFunc_setDataLanguage_TypeError;
+
+    // Call function/method
+    {
+        int cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        ::QString cppArg1 = ::QString();
+        pythonToCpp[1](pyArgs[1], &cppArg1);
+
+        if (!PyErr_Occurred()) {
+            // setDataLanguage(int,QString)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setDataLanguage(cppArg0, cppArg1);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_VnrSharedMemoryFunc_setDataLanguage_TypeError:
+        const char* overloads[] = {"int, unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyvnrmem.VnrSharedMemory.setDataLanguage", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_VnrSharedMemoryFunc_setDataRole(PyObject* self, PyObject* args)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
@@ -1370,6 +1474,7 @@ static PyMethodDef Sbk_VnrSharedMemory_methods[] = {
     {"constData", (PyCFunction)Sbk_VnrSharedMemoryFunc_constData, METH_O},
     {"create", (PyCFunction)Sbk_VnrSharedMemoryFunc_create, METH_VARARGS|METH_KEYWORDS},
     {"dataHash", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataHash, METH_O},
+    {"dataLanguage", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataLanguage, METH_O},
     {"dataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataRole, METH_O},
     {"dataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataStatus, METH_O},
     {"dataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataText, METH_O},
@@ -1381,6 +1486,7 @@ static PyMethodDef Sbk_VnrSharedMemory_methods[] = {
     {"key", (PyCFunction)Sbk_VnrSharedMemoryFunc_key, METH_NOARGS},
     {"lock", (PyCFunction)Sbk_VnrSharedMemoryFunc_lock, METH_NOARGS},
     {"setDataHash", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataHash, METH_VARARGS},
+    {"setDataLanguage", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataLanguage, METH_VARARGS},
     {"setDataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataRole, METH_VARARGS},
     {"setDataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataStatus, METH_VARARGS},
     {"setDataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_setDataText, METH_VARARGS},

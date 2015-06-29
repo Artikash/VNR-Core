@@ -57,6 +57,9 @@ public:
   qint8 dataRole(int i) const;
   void setDataRole(int i, qint8 v);
 
+  QString dataLanguage(int i) const;
+  void setDataLanguage(int i, const QString &v);
+
   QString dataText(int i) const;
   void setDataText(int i, const QString &v);
   int dataTextCapacity() const; // number of characters allowed in text
