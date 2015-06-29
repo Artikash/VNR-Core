@@ -268,6 +268,8 @@ Item { id: root_
 
   Plugin.SystemStatus { id: statusPlugin_ }
 
+  //Plugin.TextUtil { id: textPlugin_ }
+
   Comet.GlobalComet { id: globalComet_ }
 
   Comet.GameComet { id: gameComet_
@@ -544,6 +546,8 @@ Item { id: root_
         turkishFont: settings_.turkishFont
         ukrainianFont: settings_.ukrainianFont
         romanianFont: settings_.romanianFont
+
+        termRubyEnabled: settings_.termRubyEnabled
 
         rubyTextEnabled: settings_.rubyTextEnabled
         rubyTranslationEnabled: settings_.rubyTranslationEnabled

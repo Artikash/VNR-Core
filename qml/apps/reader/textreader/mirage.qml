@@ -51,6 +51,8 @@ Item { id: root_
 
   property bool shadowEnabled: true
 
+  property bool termRubyEnabled: settings_.termRubyEnabled
+
   //property bool revertsColor: false
 
   property string rubyType: settings_.japaneseRubyType
@@ -109,6 +111,8 @@ Item { id: root_
 
   Plugin.Settings { id: settings_ } // Already defined in kagami
 
+  Plugin.TextUtil { id: textutil_ }
+
   property real zoomFactor: 1.0 // settings_.grimoireZoomFactor
 
   property real zoomStep: 0.05
@@ -124,6 +128,12 @@ Item { id: root_
     var v = zoomFactor - zoomStep
     if (v > minimumZoomFactor)
       zoomFactor = v
+  }
+
+  function renderTranslationRuby(text) {
+    if (~text.indexOf('[ruby='))
+      return textutil_.renderRubyToPlainText(text)
+    return text
   }
 
   //property alias shadowOpacity: shadow_.opacity
@@ -981,6 +991,7 @@ Item { id: root_
               , root_.rubyInverted
               , root_.alignCenter
             ) :
+          model.type === 'tr' && root_.termRubyEnabled ? renderTranslationRuby(model.text)
           model.text
         )
         readOnly: true

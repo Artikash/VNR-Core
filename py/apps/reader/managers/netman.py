@@ -1574,6 +1574,11 @@ class _NetworkManager(object):
           if len(td.text) <= defs.MAX_TEXT_LENGTH
           else td.text[:defs.MAX_TEXT_LENGTH])
 
+    if td.ruby:
+      params['ruby'] = (td.ruby
+          if len(td.ruby) <= defs.MAX_TEXT_LENGTH
+          else td.ruby[:defs.MAX_TEXT_LENGTH])
+
     if td.comment:
       params['comment'] = (td.comment
           if len(td.comment) <= defs.MAX_TEXT_LENGTH
@@ -1660,7 +1665,7 @@ class _NetworkManager(object):
         params[k.lower()] = getattr(term, k)
 
     # Note: actually, there is no 'delpattern'
-    for k in 'pattern', 'text', 'role', 'comment', 'updateComment':
+    for k in 'pattern', 'text', 'ruby', 'role', 'comment', 'updateComment':
       if k in pty:
         v = getattr(td, k)
         if v:

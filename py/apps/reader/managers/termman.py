@@ -51,6 +51,7 @@ class _TermManager:
     self.enabled = True # bool
     self.hentai = False # bool
     self.marked = False # bool
+    self.rubyEnabled = False # bool
     #self.syntax = False # bool
 
     # For saving terms
@@ -134,6 +135,7 @@ class _TermManager:
       termData=l,
       gameIds=gameIds,
       hentai=self.hentai,
+      rubyEnabled=self.rubyEnabled,
       createTime=createTime,
       parent=self,
     )
@@ -378,6 +380,9 @@ class TermManager(QObject):
 
     #  for it in d.rbmt.itervalues():
     #    it.setUnderline(t and it.isEscape())
+
+  def isRubyEnabled(self): return self.__d.rubyEnabled
+  def setRubyEnabled(self, t): self.__d.rubyEnabled = t
 
   ## Marks ##
 

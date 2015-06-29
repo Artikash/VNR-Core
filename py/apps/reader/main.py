@@ -630,6 +630,9 @@ class _MainObject(object):
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
+    ret.setRubyEnabled(ss.isTermRubyEnabled())
+    ss.termRubyEnabledChanged.connect(ret.setRubyEnabled)
+
     from jaconv import jaconv
     jaconv.setopt(macron=ss.isRomajiMacronEnabled())
     ss.romajiMacronEnabledChanged.connect(lambda t: jaconv.setopt(macron=t))
@@ -637,6 +640,7 @@ class _MainObject(object):
     for sig in (
         ss.userIdChanged, ss.userLanguageChanged,
         ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        ss.termRubyEnabledChanged,
         ss.romajiMacronEnabledChanged,
         #ss.translationSyntaxEnabledChanged,
         self.gameManager.processChanged,
@@ -707,6 +711,9 @@ class _MainObject(object):
 
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
+
+    ret.setRubyEnabled(ss.isTermRubyEnabled())
+    ss.termRubyEnabledChanged.connect(ret.setRubyEnabled)
 
     ret.setConvertsAlphabet(ss.translatesAlphabet())
     ss.translatesAlphabetChanged.connect(ret.setConvertsAlphabet)

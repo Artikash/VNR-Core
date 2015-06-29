@@ -12,7 +12,7 @@
 # I have to disable existing plugins before adding new one.
 # This can be done by merging plugin manager with main plugin
 #
-# One extra plugin can be added.
+# No more plugins can be added.
 
 from Qt5.QtQml import qmlRegisterType
 import features
@@ -64,6 +64,7 @@ reg(settings.SettingsProxy, 'Settings')
 import qmlutil
 reg(qmlutil.QmlUtil, 'Util')
 reg(qmlutil.JlpUtil, 'JlpUtil')
+reg(qmlutil.TextUtil, 'TextUtil')
 reg(qmlutil.BBCodeParser, 'BBCodeParser')
 
 #import qmlbeans

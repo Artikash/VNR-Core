@@ -20,21 +20,22 @@ public:
   RichRubyParser();
   ~RichRubyParser();
 
-  void setOpenChar(int v);
-  int openChar() const;
+  void setOpenMark(const QString &v);
+  QString openMark() const;
 
-  void setCloseChar(int v);
-  int closeChar() const;
+  void setCloseMark(const QString &v);
+  QString closeMark() const;
 
-  void setSplitChar(int v);
-  int splitChar() const;
+  void setSplitMark(const QString &v);
+  QString splitMark() const;
 
   bool containsRuby(const QString &text) const; // return if it contains ruby tag
   QString createRuby(const QString &rb, const QString &rt) const; // create one ruby tag
   QString removeRuby(const QString &text) const; // remove all ruby tags
 
   // render to html-like rich text
-  QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace = 1, bool wordWrap = true) const;
+  QString renderToHtmlTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace = 1, bool wordWrap = true) const;
+  QString renderToPlainText(const QString &text) const;
 };
 
 #endif // RICHRUBYPARSER_H

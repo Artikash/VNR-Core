@@ -50,6 +50,9 @@
 %		if it.text
 			<text>{{it.text|e}}</text>
 %		endif
+%		if it.ruby
+			<ruby>{{it.ruby|e}}</ruby>
+%		endif
 %		if it.role
 			<role>{{it.role|e}}</role>
 %		endif

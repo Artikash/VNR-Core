@@ -4,10 +4,11 @@
 
 import os
 from PySide.QtCore import Slot, QObject, QUrl
+from PySide.QtGui import QFontMetrics
 from sakurakit import skmeta
 from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
-import bbcode, convutil
+import bbcode, convutil, richutil
 
 #@QmlObject
 class BBCodeParser(QObject):
@@ -80,5 +81,17 @@ class JlpUtil(QObject):
   def render_hanzi(self, text):
     import dictman
     return '\n'.join(dictman.manager().renderHanzi(text))
+
+class TextUtil(QObject):
+  def __init__(self, parent=None):
+    super(TextUtil, self).__init__(parent)
+
+  @Slot(unicode, int, QFontMetrics, QFontMetrics, result=unicode)
+  def renderRubyToHtmlTable(self, text, width, rbFont, rtFont):
+    return richutil.renderRubyToHtmlTable(text, width, rbFont, rtFont)
+
+  @Slot(unicode, result=unicode)
+  def renderRubyToPlainText(self, text):
+    return richutil.renderRubyToPlainText(text)
 
 # EOF

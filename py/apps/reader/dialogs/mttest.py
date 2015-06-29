@@ -20,7 +20,7 @@ from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
 from share.mt import mtinfo
-import config, dataman, evalutil, i18n, rc, settings, textutil, termman, trman
+import config, dataman, evalutil, i18n, rc, richutil, settings, textutil, termman, trman
 
 class MTTester(QtWidgets.QDialog):
 
@@ -348,6 +348,8 @@ class _MTTester(object):
         mark = self._isMarkEnabled()
         t = trman.manager().translate(t, emit=True, mark=mark, scriptEnabled=scriptEnabled, **params)
         if t:
+          if settings.global_().isTermRubyEnabled():
+            t = richutil.renderRubyToPlainText(t)
           self.finalTranslationEdit.setHtml(t)
       dprint("leave")
 

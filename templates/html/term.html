@@ -54,6 +54,15 @@ a{color:#add8ff}
 				</td>
 %endif
 			</tr>
+%if td.ruby
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Ruby')}}: </td>
+				<td class="pp-value">
+					{{td.ruby|e}}
+					{{' '}}<a href="javascript://main.searchDictionary('{{td.ruby|e}}','ruby')">({{tr('Search')}})</a>
+				</td>
+			</tr>
+%endif
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Language')}}: </td>
 %if td.language == 'ja'
@@ -151,17 +160,15 @@ a{color:#add8ff}
 			</tr>
 %endif
 			<hr>
+%if source
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Matched text')}}: </td>
-%if source
 				<td class="pp-value">
 					{{source|e}}
 					{{' '}}<a href="javascript://main.searchDictionary('{{source|e}}','pattern')">({{tr('Search')}})</a>
 				</td>
-%else
-				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
-%endif
 			</tr>
+%endif
 			<tr class="pp-row">
 				<td class="pp-name" align="right">{{tr('Replaced text')}}: </td>
 %if target

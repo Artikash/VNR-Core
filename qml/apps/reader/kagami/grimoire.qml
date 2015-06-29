@@ -137,6 +137,8 @@ Item { id: root_
   property bool translationVisible: true
   //onTranslationVisibleChanged: console.log("grimoire.qml: translation visible =", translationVisible)
 
+  property bool termRubyEnabled: true
+
   property bool commentVisible: true
   //onCommentVisibleChanged: console.log("grimoire.qml: comment visible =", commentVisible)
 
@@ -272,6 +274,16 @@ Item { id: root_
       , chperline
       , 10 * root_._zoomFactor // ruby size of furigana
       , colorize // colorize
+      , root_.alignCenter
+    )
+  }
+
+  function renderTranslationRuby(text, lang, width, fontFamily) {
+    return bean_.renderTranslationRuby(text, lang, width
+      , fontFamily // rb font
+      , 18 * root_.zoomFactor || 1 // rb pixel size
+      , 'Tahoma' // rt font
+      , 14 * root_.zoomFactor || 1 // rt pixel size
       , root_.alignCenter
     )
   }
@@ -455,7 +467,6 @@ Item { id: root_
     else
       return t.replace(/([.?!」\n])(?![.!?)」\n]|$)/g, '$1<br/>').replace(/\.\.<br\/>/g, '.. ') // do not split ".."
   }
-
 
   //Rectangle {
   //  anchors.fill: parent
@@ -1357,8 +1368,13 @@ Item { id: root_
             t = root_.renderRuby(t, model.language, textItem_.hover)
           else if (model.alignObject)
             t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
-          else if (root_.splitsTranslation && model.type === 'tr')
-            t = root_.splitTranslation(t, model.language)
+          else {
+            if ((model.type === 'tr' || model.type === 'name.tr')
+                && root_.termRubyEnabled && ~t.indexOf('[ruby='))
+              t = root_.renderTranslationRuby(t, model.language, textEdit_.width, font.family)
+            if (root_.splitsTranslation && model.type === 'tr')
+              t = root_.splitTranslation(t, model.language)
+          }
           if (~t.indexOf("</a>"))
             t = '<style>a{color:"' + root_.fontColor + '"}</style>' + t
           //clipboardPlugin_.text = t // for debugging purpose
