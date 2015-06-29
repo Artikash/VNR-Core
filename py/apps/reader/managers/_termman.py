@@ -331,7 +331,7 @@ class TermWriter:
               if td.type == 'yomi':
                 repl = kana2name(repl, to) or repl
               elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
-                ruby = repl if not td.ruby and self.rubyEnabled else ''
+                ruby = repl if self.rubyEnabled and (not td.ruby or td.ruby == repl) else ''
                 repl = toalphabet(repl, to=to, fr=td.language)
                 if ruby and ruby != repl:
                   repl = richutil.createRuby(repl, ruby)
