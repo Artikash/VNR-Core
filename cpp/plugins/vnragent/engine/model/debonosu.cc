@@ -819,28 +819,32 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const quint8 bytes[] = {
-    0x50,            // 0010fb80   50               push eax
-    0xff,0x75, 0x14, // 0010fb81   ff75 14          push dword ptr ss:[ebp+0x14]
-    0x8b,0xce,       // 0010fb84   8bce             mov ecx,esi
-    0xff,0x75, 0x10  // 0010fb86   ff75 10          push dword ptr ss:[ebp+0x10]
-  };
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  if (addr)
-    DOUT("instruction pattern found");
-  else  {
-    DOUT("instruction pattern not found, try string pattern instead");
+  ulong addr = 0;
+  {
     const char *msg = "D3DFont::Draw";
-    ulong addr = MemDbg::findBytes(msg, ::strlen(msg+1), startAddress, stopAddress);
-    if (!addr)
-      return false;
-    addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
-    if (!addr)
-      return false;
+    if (addr = MemDbg::findBytes(msg, ::strlen(msg+1), startAddress, stopAddress))
+      addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
   }
-  addr = MemDbg::findEnclosingAlignedFunction(addr);
-  if (!addr)
+  if (!addr) {
+    DOUT("string pattern not found, try instruction pattern instead");
+    const quint8 bytes[] = {
+      0x50,            // 0010fb80   50               push eax
+      0xff,0x75, 0x14, // 0010fb81   ff75 14          push dword ptr ss:[ebp+0x14]
+      0x8b,0xce,       // 0010fb84   8bce             mov ecx,esi
+      0xff,0x75, 0x10  // 0010fb86   ff75 10          push dword ptr ss:[ebp+0x10]
+    };
+    addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  }
+  if (!addr) {
+    DOUT("pattern not found");
     return false;
+  }
+  //addr = MemDbg::findEnclosingAlignedFunction(addr); // This might not work
+  addr = MemDbg::findEnclosingFunctionAfterInt3(addr);
+  if (!addr) {
+    DOUT("function not found");
+    return false;
+  }
   return winhook::hook_before(addr, Private::hookBefore);
 }
 

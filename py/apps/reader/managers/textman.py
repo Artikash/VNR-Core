@@ -895,19 +895,22 @@ class _TextManager(object):
     #  pass
     translateOne = trman.manager().translateOne
     changedTranslation = {} # {long hash: unicode text}
-    for h, context in self.windowTexts.iteritems():
-      if not h in self.windowTranslation:
-        context = textutil.remove_illegal_text(context)
-        sub, lang, provider = translateOne(context, self.gameLanguage,
-            async=True, online=True, mark=False, rubyEnabled=False)
-        if sub:
-          changedTranslation[h] = sub
-    if changedTranslation:
-      growl.msg(my.tr("Updating window text ..."))
-      self.windowTranslation.update(changedTranslation)
-      self.q.windowTranslationChanged.emit(changedTranslation)
-    else:
-      growl.msg(my.tr("Not found machine translation"))
+    try:
+      for h, context in self.windowTexts.iteritems():
+        if not h in self.windowTranslation:
+          context = textutil.remove_illegal_text(context)
+          sub, lang, provider = translateOne(context, self.gameLanguage,
+              async=True, online=True, mark=False, rubyEnabled=False)
+          if sub:
+            changedTranslation[h] = sub
+      if changedTranslation:
+        growl.msg(my.tr("Updating window text ..."))
+        self.windowTranslation.update(changedTranslation)
+        self.q.windowTranslationChanged.emit(changedTranslation)
+      else:
+        growl.msg(my.tr("Not found machine translation"))
+   except Exception, e: # this function could raise if the windowTexts is changed by another thread
+     dwarn(e)
 
   #def adjustWindowTranslation(self, trs):
   #  """
