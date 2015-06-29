@@ -278,6 +278,16 @@ Item { id: root_
     )
   }
 
+  function renderTranslationRuby(text, lang, width, fontFamily) {
+    return bean_.renderTranslationRuby(text, lang, width
+      , fontFamily // rb font
+      , 18 * root_.zoomFactor || 1 // rb pixel size
+      , 'Tahoma' // rt font
+      , 14 * root_.zoomFactor || 1 // rt pixel size
+      , root_.alignCenter
+    )
+  }
+
   function translatorColor(host) { // string -> color
     switch(host) {
     case 'hanviet': return root_.hanVietColor
@@ -456,14 +466,6 @@ Item { id: root_
       return t.replace(/([。？！」\n])(?![。！？）」\n]|$)/g, '$1<br/>')
     else
       return t.replace(/([.?!」\n])(?![.!?)」\n]|$)/g, '$1<br/>').replace(/\.\.<br\/>/g, '.. ') // do not split ".."
-  }
-
-  function renderTranslation(t) { // string -> string
-    if (!termRubyEnabled || t.indexOf('[') === -1 || t.indexOf('|') === -1)
-      return t
-    // CHECKPOINT: Need to handle qtextedit font here here
-    //return textPlugin_.renderRubyToHtmlTable(t)
-    return t
   }
 
   //Rectangle {
@@ -1367,8 +1369,9 @@ Item { id: root_
           else if (model.alignObject)
             t = root_.renderAlignment(t || model.text, model.language, model.alignObject, textItem_.hover)
           else {
-            if (model.type === 'tr' || model.type === 'name.tr')
-              t = root_.renderTranslation(t)
+            if ((model.type === 'tr' || model.type === 'name.tr')
+                && root_.termRubyEnabled && ~t.indexOf('[ruby='))
+              t = root_.renderTranslationRuby(t, model.language, textEdit_.width, font.family)
             if (root_.splitsTranslation && model.type === 'tr')
               t = root_.splitTranslation(t, model.language)
           }

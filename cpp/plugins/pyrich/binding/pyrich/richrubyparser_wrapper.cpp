@@ -51,7 +51,7 @@ Sbk_RichRubyParser_Init(PyObject* self, PyObject* args, PyObject* kwds)
     return 1;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_closeChar(PyObject* self)
+static PyObject* Sbk_RichRubyParserFunc_closeMark(PyObject* self)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -64,11 +64,11 @@ static PyObject* Sbk_RichRubyParserFunc_closeChar(PyObject* self)
     {
 
         if (!PyErr_Occurred()) {
-            // closeChar()const
+            // closeMark()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            int cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->closeChar();
+            QString cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->closeMark();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -186,7 +186,7 @@ static PyObject* Sbk_RichRubyParserFunc_createRuby(PyObject* self, PyObject* arg
         return 0;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_openChar(PyObject* self)
+static PyObject* Sbk_RichRubyParserFunc_openMark(PyObject* self)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -199,11 +199,11 @@ static PyObject* Sbk_RichRubyParserFunc_openChar(PyObject* self)
     {
 
         if (!PyErr_Occurred()) {
-            // openChar()const
+            // openMark()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            int cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->openChar();
+            QString cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->openMark();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -427,7 +427,7 @@ static PyObject* Sbk_RichRubyParserFunc_renderToPlainText(PyObject* self, PyObje
         return 0;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_setCloseChar(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_RichRubyParserFunc_setCloseMark(PyObject* self, PyObject* pyArg)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -439,23 +439,23 @@ static PyObject* Sbk_RichRubyParserFunc_setCloseChar(PyObject* self, PyObject* p
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: setCloseChar(int)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
-        overloadId = 0; // setCloseChar(int)
+    // 0: setCloseMark(QString)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // setCloseMark(QString)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_RichRubyParserFunc_setCloseChar_TypeError;
+    if (overloadId == -1) goto Sbk_RichRubyParserFunc_setCloseMark_TypeError;
 
     // Call function/method
     {
-        int cppArg0;
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // setCloseChar(int)
+            // setCloseMark(QString)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setCloseChar(cppArg0);
+            cppSelf->setCloseMark(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -465,13 +465,13 @@ static PyObject* Sbk_RichRubyParserFunc_setCloseChar(PyObject* self, PyObject* p
     }
     Py_RETURN_NONE;
 
-    Sbk_RichRubyParserFunc_setCloseChar_TypeError:
-        const char* overloads[] = {"int", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.setCloseChar", overloads);
+    Sbk_RichRubyParserFunc_setCloseMark_TypeError:
+        const char* overloads[] = {"unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.setCloseMark", overloads);
         return 0;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_setOpenChar(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_RichRubyParserFunc_setOpenMark(PyObject* self, PyObject* pyArg)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -483,23 +483,23 @@ static PyObject* Sbk_RichRubyParserFunc_setOpenChar(PyObject* self, PyObject* py
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: setOpenChar(int)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
-        overloadId = 0; // setOpenChar(int)
+    // 0: setOpenMark(QString)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // setOpenMark(QString)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_RichRubyParserFunc_setOpenChar_TypeError;
+    if (overloadId == -1) goto Sbk_RichRubyParserFunc_setOpenMark_TypeError;
 
     // Call function/method
     {
-        int cppArg0;
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // setOpenChar(int)
+            // setOpenMark(QString)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setOpenChar(cppArg0);
+            cppSelf->setOpenMark(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -509,13 +509,13 @@ static PyObject* Sbk_RichRubyParserFunc_setOpenChar(PyObject* self, PyObject* py
     }
     Py_RETURN_NONE;
 
-    Sbk_RichRubyParserFunc_setOpenChar_TypeError:
-        const char* overloads[] = {"int", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.setOpenChar", overloads);
+    Sbk_RichRubyParserFunc_setOpenMark_TypeError:
+        const char* overloads[] = {"unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.setOpenMark", overloads);
         return 0;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_setSplitChar(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_RichRubyParserFunc_setSplitMark(PyObject* self, PyObject* pyArg)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -527,23 +527,23 @@ static PyObject* Sbk_RichRubyParserFunc_setSplitChar(PyObject* self, PyObject* p
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: setSplitChar(int)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
-        overloadId = 0; // setSplitChar(int)
+    // 0: setSplitMark(QString)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // setSplitMark(QString)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_RichRubyParserFunc_setSplitChar_TypeError;
+    if (overloadId == -1) goto Sbk_RichRubyParserFunc_setSplitMark_TypeError;
 
     // Call function/method
     {
-        int cppArg0;
+        ::QString cppArg0 = ::QString();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // setSplitChar(int)
+            // setSplitMark(QString)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setSplitChar(cppArg0);
+            cppSelf->setSplitMark(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -553,13 +553,13 @@ static PyObject* Sbk_RichRubyParserFunc_setSplitChar(PyObject* self, PyObject* p
     }
     Py_RETURN_NONE;
 
-    Sbk_RichRubyParserFunc_setSplitChar_TypeError:
-        const char* overloads[] = {"int", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.setSplitChar", overloads);
+    Sbk_RichRubyParserFunc_setSplitMark_TypeError:
+        const char* overloads[] = {"unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyrich.RichRubyParser.setSplitMark", overloads);
         return 0;
 }
 
-static PyObject* Sbk_RichRubyParserFunc_splitChar(PyObject* self)
+static PyObject* Sbk_RichRubyParserFunc_splitMark(PyObject* self)
 {
     ::RichRubyParser* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -572,11 +572,11 @@ static PyObject* Sbk_RichRubyParserFunc_splitChar(PyObject* self)
     {
 
         if (!PyErr_Occurred()) {
-            // splitChar()const
+            // splitMark()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            int cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->splitChar();
+            QString cppResult = const_cast<const ::RichRubyParser*>(cppSelf)->splitMark();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
     }
 
@@ -588,17 +588,17 @@ static PyObject* Sbk_RichRubyParserFunc_splitChar(PyObject* self)
 }
 
 static PyMethodDef Sbk_RichRubyParser_methods[] = {
-    {"closeChar", (PyCFunction)Sbk_RichRubyParserFunc_closeChar, METH_NOARGS},
+    {"closeMark", (PyCFunction)Sbk_RichRubyParserFunc_closeMark, METH_NOARGS},
     {"containsRuby", (PyCFunction)Sbk_RichRubyParserFunc_containsRuby, METH_O},
     {"createRuby", (PyCFunction)Sbk_RichRubyParserFunc_createRuby, METH_VARARGS},
-    {"openChar", (PyCFunction)Sbk_RichRubyParserFunc_openChar, METH_NOARGS},
+    {"openMark", (PyCFunction)Sbk_RichRubyParserFunc_openMark, METH_NOARGS},
     {"removeRuby", (PyCFunction)Sbk_RichRubyParserFunc_removeRuby, METH_O},
     {"renderToHtmlTable", (PyCFunction)Sbk_RichRubyParserFunc_renderToHtmlTable, METH_VARARGS|METH_KEYWORDS},
     {"renderToPlainText", (PyCFunction)Sbk_RichRubyParserFunc_renderToPlainText, METH_O},
-    {"setCloseChar", (PyCFunction)Sbk_RichRubyParserFunc_setCloseChar, METH_O},
-    {"setOpenChar", (PyCFunction)Sbk_RichRubyParserFunc_setOpenChar, METH_O},
-    {"setSplitChar", (PyCFunction)Sbk_RichRubyParserFunc_setSplitChar, METH_O},
-    {"splitChar", (PyCFunction)Sbk_RichRubyParserFunc_splitChar, METH_NOARGS},
+    {"setCloseMark", (PyCFunction)Sbk_RichRubyParserFunc_setCloseMark, METH_O},
+    {"setOpenMark", (PyCFunction)Sbk_RichRubyParserFunc_setOpenMark, METH_O},
+    {"setSplitMark", (PyCFunction)Sbk_RichRubyParserFunc_setSplitMark, METH_O},
+    {"splitMark", (PyCFunction)Sbk_RichRubyParserFunc_splitMark, METH_NOARGS},
 
     {0} // Sentinel
 };

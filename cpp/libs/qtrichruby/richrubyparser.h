@@ -20,14 +20,14 @@ public:
   RichRubyParser();
   ~RichRubyParser();
 
-  void setOpenChar(int v);
-  int openChar() const;
+  void setOpenMark(const QString &v);
+  QString openMark() const;
 
-  void setCloseChar(int v);
-  int closeChar() const;
+  void setCloseMark(const QString &v);
+  QString closeMark() const;
 
-  void setSplitChar(int v);
-  int splitChar() const;
+  void setSplitMark(const QString &v);
+  QString splitMark() const;
 
   bool containsRuby(const QString &text) const; // return if it contains ruby tag
   QString createRuby(const QString &rb, const QString &rt) const; // create one ruby tag

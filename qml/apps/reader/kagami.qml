@@ -268,7 +268,7 @@ Item { id: root_
 
   Plugin.SystemStatus { id: statusPlugin_ }
 
-  Plugin.TextUtil { id: textPlugin_ }
+  //Plugin.TextUtil { id: textPlugin_ }
 
   Comet.GlobalComet { id: globalComet_ }
 

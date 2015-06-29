@@ -16,21 +16,23 @@ int main(int argc, char *argv[])
   auto w = new QTextEdit;
   w->setWordWrapMode(QTextOption::WordWrap);
 
-  QString h = "awf</a></a></a></a></a>    abhe{llo|world} <u>hellafawewafe</u> awef";
+  //QString h = "awf    abhe<u>[ruby=hello]world[/ruby]</u> <u>hellafawewafe</u> awef";
+  QString h = "yes <u>[ruby=hello]world[/ruby]</u> and";
   w->resize(200, 300);
   int contentWidth = w->contentsRect().width();
   QFont rbFont = w->font(),
         rtFont = w->font();
   rbFont.setBold(true);
   rtFont.setUnderline(true);
+  qDebug() << p.createRuby("rb", "rt");
   qDebug() << "no ruby:" << p.removeRuby(h);
   qDebug() << "plain text:" << p.renderToPlainText(h);
   h = p.renderToHtmlTable(h, contentWidth, rbFont, rtFont);
-  h.prepend(
-    "<style type='text/css'>"
-    ".rt { text-decoration: underline; }"
-    "</style>"
-  );
+  //h.prepend(
+  //  "<style type='text/css'>"
+  //  ".rt { text-decoration: underline; }"
+  //  "</style>"
+  //);
   qDebug() << h;
   w->setHtml(h);
   w->show();

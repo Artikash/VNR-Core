@@ -7,22 +7,12 @@ import pyrich
 
 _RP = pyrich.RichRubyParser()
 
-#_rx_ruby = re.compile('{.+|.+}')
 def containsRuby(text):
   """
   @param  text  unicode
   @return  bool
   """
-  #return '{' in text and bool(_rx_ruby.search(text))
-  if text:
-    i = text.find('[')
-    if i != -1:
-      i = text.find('|', i)
-      if i != -1:
-        i = text.find(']', i)
-        if i != -1:
-          return True
-  return False
+  return '[ruby=' in text
 
 def renderRubyToHtmlTable(text, width, rbFont, rtFont, cellSpace=1, wordWrap=True):
   """
@@ -44,10 +34,10 @@ def createRuby(rb, rt):
   @return  unicode
   """
   if rb and rt:
-    return '[%s|%s]' % (rb, rt)
+    return '[ruby=%s]%s[/ruby]' % (rt, rb)
   return rb
 
-_rx_ruby1 = re.compile(r'\[(.+?)\|.+?\]')
+_rx_ruby1 = re.compile(r'\[ruby=.+?\](.+?)\[/ruby\]')
 def removeRuby(text):
   """
   @param  text  unicode
@@ -57,7 +47,7 @@ def removeRuby(text):
     return text
   return _rx_ruby1.sub(r'\1', text)
 
-_rx_ruby2 = re.compile(r'\[(.+?)\|(.+?)\]')
+_rx_ruby2 = re.compile(r'\[ruby=(.+?)\](.+?)\[/ruby\]')
 def renderRubyToPlainText(text):
   """
   @param  text  unicode
@@ -65,6 +55,6 @@ def renderRubyToPlainText(text):
   """
   if not containsRuby(text):
     return text
-  return _rx_ruby2.sub(r'\1(\2)', text)
+  return _rx_ruby2.sub(r'\2(\1)', text)
 
 # EOF

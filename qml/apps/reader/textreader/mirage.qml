@@ -130,10 +130,10 @@ Item { id: root_
       zoomFactor = v
   }
 
-  function renderRuby(text) {
-    if (text.indexOf('[') === -1 || text.indexOf('|') === -1)
-      return text
-    return textutil_.renderRubyToPlainText(text)
+  function renderTranslationRuby(text) {
+    if (~text.indexOf('[ruby='))
+      return textutil_.renderRubyToPlainText(text)
+    return text
   }
 
   //property alias shadowOpacity: shadow_.opacity
@@ -991,7 +991,7 @@ Item { id: root_
               , root_.rubyInverted
               , root_.alignCenter
             ) :
-          model.type === 'tr' && root_.termRubyEnabled ? renderRuby(model.text)
+          model.type === 'tr' && root_.termRubyEnabled ? renderTranslationRuby(model.text)
           model.text
         )
         readOnly: true

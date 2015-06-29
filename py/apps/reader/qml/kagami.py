@@ -7,6 +7,7 @@
 #import textwrap
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
+from PySide.QtGui import QFont, QFontMetrics
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
 from sakurakit.skdebug import dprint, dwarn
@@ -16,7 +17,7 @@ from sakurakit.skqml import SkValueObject
 #from msime import msime
 from convutil import zhs2zht
 from mytr import my
-import bbcode, config, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings, textutil
+import bbcode, config, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, richutil, settings, textutil
 
 ## Kagami ##
 
@@ -130,6 +131,21 @@ class _GrimoireBean:
 
   def __init__(self):
     self.features = {} # {unicode text:unicode feature}
+    self.fontMetrics = {} # {(int size, str family): QFontMetrics}, cached font metrics
+
+  def getFontMetrics(self, family, pixelSize):
+    """
+    @param  family  str
+    @param  pixelSize  int
+    @return  QFontMetrics
+    """
+    key = pixelSize, family
+    ret = self.fontMetrics.get(key)
+    if not ret:
+      font = QFont(family)
+      font.setPixelSize(pixelSize)
+      ret = self.fontMetrics[key] = QFontMetrics(font)
+    return ret
 
   #def renderJapanese(self, text, feature, **kwargs):
   #  return mecabman.rendertable(text, features=self.features if feature else None, **kwargs);
@@ -240,6 +256,23 @@ class GrimoireBean(QObject):
     import renderman
     return renderman.manager().renderAlignment(
         text, language, align, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+
+  @Slot(unicode, unicode, int, unicode, int, unicode, int, bool, result=unicode)
+  def renderTranslationRuby(self, text, language, width, rbFamily, rbSize, rtFamily, rtSize, center):
+    """
+    @return  unicode  html
+    """
+    d = self.__d
+    rbFont = d.getFontMetrics(rbFamily, rbSize)
+    rtFont = d.getFontMetrics(rtFamily, rtSize)
+    wordWrap = language not in ('zhs', 'zht', 'ja')
+    h = richutil.renderRubyToHtmlTable(text, width, rbFont, rtFont, wordWrap=wordWrap)
+    if h != text:
+      if center:
+        h = "<center>%s</center>" % h
+      css = '<style type="text/css">.rt{font-family:%s;font-size:%spx}</style>' % (rtFamily, rtSize)
+      h = css + h
+    return h
 
 class _GrimoireController:
 

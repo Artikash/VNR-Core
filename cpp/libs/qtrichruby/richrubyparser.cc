@@ -1,4 +1,3 @@
-#include <QDebug>
 // richrubyparser.cc
 // 6/25/2015 jichi
 #include "qtrichruby/richrubyparser.h"
@@ -10,35 +9,34 @@
 
 /** Private class */
 
+#define OPEN_MARK   "[ruby="
+#define SPLIT_MARK  "]"
+#define CLOSE_MARK  "[/ruby]"
+
+//#define RB_PLAINTEXT "%1(%2)"
+
 class RichRubyParserPrivate
 {
 public:
-  wchar_t openChar, closeChar, splitChar;
+  QString openMark, closeMark, splitMark;
 
   RichRubyParserPrivate()
-    : openChar('['), closeChar(']'), splitChar('|') {}
+    : openMark(OPEN_MARK), closeMark(CLOSE_MARK), splitMark(SPLIT_MARK) {}
 
   bool containsRuby(const QString &text) const
   {
-    int pos = text.indexOf(openChar);
+    int pos = text.indexOf(openMark);
     return pos != -1
-        && (pos = text.indexOf(splitChar, pos)) != -1
-        && (pos = text.indexOf(closeChar, pos)) != -1;
+        && (pos = text.indexOf(splitMark, pos)) != -1
+        && (pos = text.indexOf(closeMark, pos)) != -1;
   }
 
   QString createRuby(const QString &rb, const QString &rt) const
-  {
-    return QString()
-        .append(openChar)
-        .append(rb)
-        .append(splitChar)
-        .append(rt)
-        .append(closeChar);
-  }
+  { return QString(openMark).append(rt).append(splitMark).append(rb).append(closeMark); }
 
   void removeRuby(QString &text) const;
+  void renderText(QString &text) const;
 
-  QString renderText(const QString &text) const;
   QString renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const;
 
 private:
@@ -55,6 +53,27 @@ private:
 
   static int textWidth(const QString &text, const QFontMetrics &font);
   static QString partition(const QString &text, int width, const QFontMetrics &font, bool wordWrap, int maximumWordSize);
+
+  // Get html close tag at position. For example, given "</a>", it will return "a"
+  static QString get_html_close_tag(const QString &text, int startPos = 0, int *stopPos = nullptr)
+  {
+    if (text.size() < 4 || text[startPos] != '<' || text[startPos + 1] != '/')
+      return QString();
+    startPos += 2;
+    for (int i = startPos; i < text.size(); i++) {
+      const QChar &ch = text[i];
+      wchar_t w = ch.unicode();
+      if (w > 127)
+        break;
+      if (w == '>') {
+        QString ret = text.mid(startPos, i - startPos);
+        if (stopPos)
+          *stopPos = i + 1;
+        return ret.trimmed();
+      }
+    }
+    return QString();
+  }
 };
 
 int RichRubyParserPrivate::textWidth(const QString &text, const QFontMetrics &font)
@@ -112,111 +131,91 @@ QString RichRubyParserPrivate::partition(const QString &text, int width, const Q
 
 void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun) const
 {
-  QString rb, rt, plainText;
-  bool rubyOpenFound = false,
-       rubySplitFound = false;
-
-  auto cancel = [&]() {
-    if (rubyOpenFound) {
-      rubyOpenFound = false;
-      plainText.push_back(openChar);
-    } if (!rb.isEmpty()) {
-      plainText.append(rb);
-      rb.clear();
-    }
-    if (rubySplitFound) {
-      rubySplitFound = false;
-      plainText.push_back(splitChar);
-    }
-    if (!rt.isEmpty()) {
-      //plainText.push_back(closeChar);
-      plainText.append(rt);
-      rt.clear();
-    }
-  };
-
+  const bool html = text.contains("</");
+  QString plainText;
   int pos = 0;
-  for (; pos < text.size(); pos++) {
-    const QChar &ch = text[pos];
-    auto u = ch.unicode();
-    if (u == '<') {
-      int closePos = text.indexOf('>', pos);
-      if (closePos != -1) {
-        // TODO: Avoid HTML tags from being broken in the middle
-        //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
-        //  // do nothing
-        //}
-        QString tag = text.mid(pos, closePos - pos + 1);
-        (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).append(tag);
-        pos = closePos;
-        continue;
+  for (int openPos = text.indexOf(openMark); openPos != -1; openPos = text.indexOf(openMark, pos)) {
+    int splitPos = text.indexOf(splitMark, openPos);
+    if (splitPos == -1)
+      break;
+    int closePos = text.indexOf(closeMark, splitPos);
+    if (closePos == -1)
+      break;
+    if (pos != openPos)
+      plainText = text.mid(pos, openPos - pos);
+    QString rt = text.mid(openPos + openMark.size(), splitPos - openPos - openMark.size()),
+            rb = text.mid(splitPos + splitMark.size(), closePos - splitPos - splitMark.size());
+    pos = closePos + closeMark.size();
+    // Move the most enclosing links into that for rb
+    if (html && openPos > 0 && text[openPos-1] == '>' && pos != text.size() && text[pos] == '<' && !plainText.isEmpty()) {
+      int stopPos;
+      QString tag = get_html_close_tag(text, pos, &stopPos);
+      if (!tag.isEmpty())  {
+        tag.push_front('<');
+        int startPos = plainText.lastIndexOf(tag);
+        if (startPos != -1) {
+          QString leftTag = plainText.mid(startPos),
+                  rightTag = text.mid(pos, stopPos - pos);
+          rb.prepend(leftTag)
+            .append(rightTag);
+          plainText = plainText.left(startPos);
+          pos = stopPos;
+        }
       }
     }
-    if (u == openChar) {
-      if (rubyOpenFound) // error
-        cancel();
-      if (!plainText.isEmpty()) {
-        if (!fun(plainText, QString(), pos))
-          return;
-        plainText.clear();
-      }
-      rubyOpenFound = true;
-    } else if (u == splitChar) {
-      if (!rubyOpenFound) // error
-        plainText.push_back(ch);
-      else if (rb.isEmpty()) { // error, do not allow having only rt
-        cancel();
-        plainText.push_back(ch);
-      } else if (rubySplitFound) // error
-        rt.push_back(ch);
-      else
-        rubySplitFound = true;
-    } else if (u == closeChar) {
-      if (!rubyOpenFound) // error
-        plainText.push_back(ch);
-      else if (rt.isEmpty() || rb.isEmpty()) { // error, do not allow having only rb or rt
-        cancel();
-        plainText.push_back(ch);
-      } else {
-        if (!fun(rb, rt, pos + 1))
-          return;
-        rubySplitFound = rubyOpenFound = false;
-        rb.clear();
-        rt.clear();
-      }
-    } else
-      (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).push_back(ch);
+    if (!plainText.isEmpty()) {
+      if (!fun(plainText, QString(), openPos))
+        return;
+      plainText.clear();
+    }
+    if (!fun(rb, rt, pos))
+      return;
   }
-  if (!rb.isEmpty() && !rt.isEmpty())
-    fun(rb, rt, pos);
-  else
-    cancel();
-  if (!plainText.isEmpty())
-    fun(plainText, QString(), pos);
+
+  if (pos < text.size()) {
+    plainText = text.mid(pos);
+    fun(plainText, QString(), text.size());
+  }
 }
 
 void RichRubyParserPrivate::removeRuby(QString &ret) const
 {
-  for (int pos = ret.indexOf(openChar); pos != -1; pos = ret.indexOf(openChar, pos)) {
-    int splitPos = ret.indexOf(splitChar, pos);
+  for (int pos = ret.indexOf(openMark); pos != -1; pos = ret.indexOf(openMark, pos)) {
+    int splitPos = ret.indexOf(splitMark, pos);
     if (splitPos == -1)
       return;
-    int closePos = ret.indexOf(closeChar, splitPos);
+    int closePos = ret.indexOf(closeMark, splitPos);
     if (closePos == -1)
       return;
-    ret.remove(closePos, 1);
-    ret.remove(pos, splitPos - pos + 1);
-    pos += closePos - splitPos - 1;
+    ret.remove(closePos, closeMark.size());
+    ret.remove(pos, splitPos - pos + splitMark.size());
+    pos += closePos - splitPos - splitMark.size();
   }
-  return;
 }
 
-QString RichRubyParserPrivate::renderText(const QString &text) const
+void RichRubyParserPrivate::renderText(QString &ret) const
 {
-  static QRegExp rx("\\{(.+)\\|(.+)\\}");
-  if (!rx.isMinimal())
-    rx.setMinimal(true);
-  return QString(text).replace(rx, "\\1(\\2)");
+  for (int pos = ret.indexOf(openMark); pos != -1; pos = ret.indexOf(openMark, pos)) {
+    int splitPos = ret.indexOf(splitMark, pos);
+    if (splitPos == -1)
+      return;
+    int closePos = ret.indexOf(closeMark, splitPos);
+    if (closePos == -1)
+      return;
+    QStringRef rt = ret.midRef(pos + openMark.size(), splitPos - pos - openMark.size()),
+               rb = ret.midRef(splitPos + splitMark.size(), closePos - splitPos - splitMark.size());
+    //QString repl = QString(RB_PLAINTEXT).arg(rb, rt);
+    QString repl = rb.toString();
+    if (!rt.isEmpty()) {
+      repl.push_back('(');
+      repl.append(rt);
+      repl.push_back(')');
+    }
+
+    ret.remove(pos, closePos + closeMark.size() - pos);
+    ret.insert(pos, repl);
+    pos += repl.size();
+  }
 }
 
 QString RichRubyParserPrivate::renderTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
@@ -346,14 +345,14 @@ QString RichRubyParserPrivate::renderTable(const QString &text, int width, const
 RichRubyParser::RichRubyParser() : d_(new D) {}
 RichRubyParser::~RichRubyParser() { delete d_; }
 
-int RichRubyParser::openChar() const { return d_->openChar; }
-void RichRubyParser::setOpenChar(int v) { d_->openChar = v; }
+QString RichRubyParser::openMark() const { return d_->openMark; }
+void RichRubyParser::setOpenMark(const QString &v) { d_->openMark = v; }
 
-int RichRubyParser::closeChar() const { return d_->closeChar; }
-void RichRubyParser::setCloseChar(int v) { d_->closeChar = v; }
+QString RichRubyParser::closeMark() const { return d_->closeMark; }
+void RichRubyParser::setCloseMark(const QString &v) { d_->closeMark = v; }
 
-int RichRubyParser::splitChar() const { return d_->splitChar; }
-void RichRubyParser::setSplitChar(int v) { d_->splitChar = v; }
+QString RichRubyParser::splitMark() const { return d_->splitMark; }
+void RichRubyParser::setSplitMark(const QString &v) { d_->splitMark = v; }
 
 bool RichRubyParser::containsRuby(const QString &text) const
 { return d_->containsRuby(text); }
@@ -374,7 +373,9 @@ QString RichRubyParser::renderToPlainText(const QString &text) const
 {
   if (!containsRuby((text)))
     return text;
-  return d_->renderText(text);
+  QString ret = text;
+  d_->renderText(ret);
+  return ret;
 }
 
 QString RichRubyParser::renderToHtmlTable(const QString &text, int width, const QFontMetrics &rbFont, const QFontMetrics &rtFont, int cellSpace, bool wordWrap) const
@@ -390,3 +391,90 @@ QString RichRubyParser::renderToHtmlTable(const QString &text, int width, const 
 }
 
 // EOF
+
+/*
+void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun) const
+{
+  QString rb, rt, plainText;
+  bool rubyOpenFound = false,
+       rubySplitFound = false;
+
+  auto cancel = [&]() {
+    if (rubyOpenFound) {
+      rubyOpenFound = false;
+      plainText.push_back(openChar);
+    } if (!rb.isEmpty()) {
+      plainText.append(rb);
+      rb.clear();
+    }
+    if (rubySplitFound) {
+      rubySplitFound = false;
+      plainText.push_back(splitChar);
+    }
+    if (!rt.isEmpty()) {
+      //plainText.push_back(closeChar);
+      plainText.append(rt);
+      rt.clear();
+    }
+  };
+
+  int pos = 0;
+  for (; pos < text.size(); pos++) {
+    const QChar &ch = text[pos];
+    auto u = ch.unicode();
+    if (u == '<') {
+      int closePos = text.indexOf('>', pos);
+      if (closePos != -1) {
+        // TODO: Avoid HTML tags from being broken in the middle
+        //if (text[pos + 1] != '/' && text[closePos - 1] != '/') {
+        //  // do nothing
+        //}
+        QString tag = text.mid(pos, closePos - pos + 1);
+        (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).append(tag);
+        pos = closePos;
+        continue;
+      }
+    }
+    if (u == openChar) {
+      if (rubyOpenFound) // error
+        cancel();
+      if (!plainText.isEmpty()) {
+        if (!fun(plainText, QString(), pos))
+          return;
+        plainText.clear();
+      }
+      rubyOpenFound = true;
+    } else if (u == splitChar) {
+      if (!rubyOpenFound) // error
+        plainText.push_back(ch);
+      else if (rb.isEmpty()) { // error, do not allow having only rt
+        cancel();
+        plainText.push_back(ch);
+      } else if (rubySplitFound) // error
+        rt.push_back(ch);
+      else
+        rubySplitFound = true;
+    } else if (u == closeChar) {
+      if (!rubyOpenFound) // error
+        plainText.push_back(ch);
+      else if (rt.isEmpty() || rb.isEmpty()) { // error, do not allow having only rb or rt
+        cancel();
+        plainText.push_back(ch);
+      } else {
+        if (!fun(rb, rt, pos + 1))
+          return;
+        rubySplitFound = rubyOpenFound = false;
+        rb.clear();
+        rt.clear();
+      }
+    } else
+      (!rubyOpenFound ? plainText : rubySplitFound ? rt : rb).push_back(ch);
+  }
+  if (!rb.isEmpty() && !rt.isEmpty())
+    fun(rb, rt, pos);
+  else
+    cancel();
+  if (!plainText.isEmpty())
+    fun(plainText, QString(), pos);
+}
+*/
