@@ -583,7 +583,6 @@ class _TextManager(object):
     #with SkProfiler():
     if not text:
       text = self._decodeText(renderedData).strip()
-    text = u"debug"
     #text = u"「ほら、早く質問に答えないとツンツンしちゃうぞ」"
     #text = u"常人ならば正気を失う魔星の威圧に、しかし怯まず、なお堂々と。"
     #text = u"ゴメン"
