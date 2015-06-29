@@ -87,6 +87,7 @@ HEADERS += \
   window/windowmanager.h \
   util/codepage.h \
   util/dyncodec.h \
+  util/i18n.h \
   util/location.h \
   util/msghandler.h \
   util/textutil.h \
@@ -117,6 +118,7 @@ SOURCES += \
   window/windowmanager.cc \
   util/codepage.cc \
   util/dyncodec.cc \
+  util/i18n.cc \
   util/location.cc \
   util/msghandler.cc \
   util/textutil.cc \

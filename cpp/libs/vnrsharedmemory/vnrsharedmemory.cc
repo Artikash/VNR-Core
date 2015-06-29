@@ -153,10 +153,16 @@ void VnrSharedMemory::setDataLanguage(int i, const QString &v)
 {
   if (auto p = d_->cell(i)) {
     if (v.isEmpty())
-      ::memset(p->language, 0, D::LanguageCapacity);
-    else {
-      ::strncpy(p->language, v.toAscii(), D::LanguageCapacity);
+      p->language[0] = 0;
+    else if (v.size() < D::LanguageCapacity) {
+      auto data = v.toAscii();
+      for (int i = v.size() - 1; i >= 0; i--) // iterate in reverse order
+        p->language[i] = data[i];
+    } else {// truncate string
+      auto data = v.toAscii();
       p->language[D::LanguageCapacity - 1] = 0;
+      for (int i = D::LanguageCapacity - 2; i >= 0; i--) // iterate in reverse order
+        p->language[i] = data[i];
     }
   }
 }

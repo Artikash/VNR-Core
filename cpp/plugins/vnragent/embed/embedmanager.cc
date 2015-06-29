@@ -32,9 +32,18 @@
 class EmbedManagerPrivate
 {
 public:
+  struct TextEntry
+  {
+    QString text,
+            language;
+    TextEntry() {}
+    TextEntry(const QString &text, const QString &language) : text(text), language(language) {}
+    explicit TextEntry(const QString &text) : text(text) {}
+  };
+  QHash<qint64, TextEntry> translations;   // cached, {key:text}
+
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex; // mutex to lock translations
-  QHash<qint64, QString> translations;   // cached, {key:text}
 
   int waitTime;
 
@@ -144,31 +153,49 @@ void EmbedManager::sendText(const QString &text, qint64 hash, long signature, in
   emit textReceived(text, hash, signature, role, needsTranslation);
 }
 
-QString EmbedManager::findTranslation(qint64 hash, int role) const
+QString EmbedManager::findTranslation(qint64 hash, int role, QString *language) const
 {
   D_LOCK;
   if (role <= 1) {
     qint64 key = Engine::hashTextKey(hash, role);
-    return d_->translations.value(key);
+    auto p = d_->translations.constFind(key);
+    if (p != d_->translations.constEnd()) {
+      const auto &v = p.value();
+      if (language)
+        *language = v.language;
+      return v.text;
+    }
   } else {
     QString ret;
     for (int i = role; i > 0; i--) {
       qint64 key = Engine::hashTextKey(hash, i);
-      ret = d_->translations.value(key);
-      if (!ret.isEmpty())
-        return ret;
+      auto p = d_->translations.constFind(key);
+      if (p != d_->translations.constEnd()) {
+        const auto &v = p.value();
+        if (language)
+          *language = v.language;
+        return v.text;
+      }
     }
-    return ret;
   }
+  return QString();
 }
 
-QString EmbedManager::waitForTranslation(qint64 hash, int role) const
+QString EmbedManager::waitForTranslation(qint64 hash, int role, QString *language) const
 {
   qint64 key = Engine::hashTextKey(hash, role);
-  d_->mutex.lock();
-  QString ret = d_->translations.value(key);
-  d_->mutex.unlock();
+  {
+    D_LOCK;
+    auto p = d_->translations.constFind(key);
+    if (p != d_->translations.constEnd()) {
+      const auto &v = p.value();
+      if (language)
+        *language = v.language;
+      return v.text;
+    }
+  }
 
+  QString ret;
   auto m = d_->memory;
   if (ret.isEmpty() && m->isAttached()) {
     QString eventName = D::createEventName(hash, role);
@@ -185,11 +212,13 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
           if (m->isDataCanceled(i))
             return ret;
           if (m->isDataReady(i)) {
+            QString lang = m->dataLanguage(i);
+            if (language)
+              *language = lang;
             ret = d_->memory->dataText(i);
             if (!ret.isEmpty()) {
-              d_->mutex.lock();
-              d_->translations[key] = ret;
-              d_->mutex.unlock();
+              D_LOCK;
+              d_->translations[key] = D::TextEntry(ret, lang);
             }
             return ret;
           }

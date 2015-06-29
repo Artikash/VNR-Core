@@ -11,6 +11,7 @@
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
 #include "util/dyncodec.h"
+#include "util/i18n.h"
 #include "util/textutil.h"
 #include "dyncodec/dynsjis.h"
 //#include "windbg/util.h"
@@ -469,6 +470,8 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
 
   qint64 hash = Engine::hashWString(trimmedText);
 
+  QString language;
+
   auto p = EmbedManager::instance();
   QString repl;
   if (role == Engine::OtherRole) { // skip sending text
@@ -476,7 +479,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
       return QByteArray();
     if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(trimmedText))
       return data;
-    repl = p->findTranslation(hash, role);
+    repl = p->findTranslation(hash, role, &language);
   }
 
   bool sent = false;
@@ -495,7 +498,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     return d_->settings.transcodingEnabled[role] ? d_->encode(text) : data;
 
   if (repl.isEmpty())
-    repl = p->findTranslation(hash, role);
+    repl = p->findTranslation(hash, role, &language);
 
   if (sendAllowed && !sent) {
     needsTranslation = repl.isEmpty();
@@ -505,7 +508,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     }
   }
   if (sent && needsTranslation)
-    repl = p->waitForTranslation(hash, role);
+    repl = p->waitForTranslation(hash, role, &language);
 
   if (repl.isEmpty()) {
     if (timeout)
@@ -513,19 +516,20 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     repl = trimmedText;
   } else if (repl != trimmedText) {
     if (!repl.isEmpty() && d_->model->newLineString) {
+      bool wordWrap = Util::languageNeedsWordWrap(language);
       if (role == Engine::ScenarioRole) {
         if (d_->scenarioLineCapacity) {
           int capacity = D::getLineCapacity(d_->filterText(text, role));
           if (d_->scenarioLineCapacity < capacity)
             d_->scenarioLineCapacity = capacity;
-          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
+          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity, wordWrap);
         } else if (d_->settings.scenarioWidth)
-          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth, wordWrap);
       } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
         int capacity = D::getLineCapacity(d_->filterText(text, role));
         if (d_->otherLineCapacity < capacity)
           d_->otherLineCapacity = capacity;
-        repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
+        repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap);
       }
     }
     repl = d_->filterTranslation(repl, role);
@@ -627,6 +631,8 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
 
   qint64 hash = Engine::hashWString(trimmedText);
 
+  QString language;
+
   auto p = EmbedManager::instance();
   QString repl;
   if (role == Engine::OtherRole) { // skip sending text
@@ -634,7 +640,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
       return QString();
     if (!d_->settings.translationEnabled[role] || !Util::needsTranslation(trimmedText))
       return text;
-    repl = p->findTranslation(hash, role);
+    repl = p->findTranslation(hash, role, &language);
   }
 
   bool sent = false;
@@ -653,7 +659,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     return text;
 
   if (repl.isEmpty())
-    repl = p->findTranslation(hash, role);
+    repl = p->findTranslation(hash, role, &language);
 
   if (sendAllowed && !sent) {
     needsTranslation = repl.isEmpty();
@@ -663,7 +669,7 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     }
   }
   if (sent && needsTranslation)
-    repl = p->waitForTranslation(hash, role);
+    repl = p->waitForTranslation(hash, role, &language);
 
   if (repl.isEmpty()) {
     if (timeout)
@@ -671,19 +677,20 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
     repl = trimmedText; // prevent from deleting text
   } else if (repl != trimmedText) {
     if (!repl.isEmpty() && d_->model->newLineString) {
+      bool wordWrap = Util::languageNeedsWordWrap(language);
       if (role == Engine::ScenarioRole) {
         if (d_->scenarioLineCapacity) {
           int capacity = D::getLineCapacity(d_->filterText(text, role));
           if (d_->scenarioLineCapacity < capacity)
             d_->scenarioLineCapacity = capacity;
-          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity);
+          repl = d_->limitTextWidth(repl, d_->scenarioLineCapacity, wordWrap);
         } else if (d_->settings.scenarioWidth)
-          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth);
+          repl = d_->limitTextWidth(repl, d_->settings.scenarioWidth, wordWrap);
       } else if (role == Engine::OtherRole && d_->otherLineCapacity) {
         int capacity = D::getLineCapacity(d_->filterText(text, role));
         if (d_->otherLineCapacity < capacity)
           d_->otherLineCapacity = capacity;
-        repl = d_->limitTextWidth(repl, d_->otherLineCapacity);
+        repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap);
       }
     }
     repl = d_->filterTranslation(repl, role);

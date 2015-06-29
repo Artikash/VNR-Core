@@ -951,7 +951,7 @@ class TextManager(QObject):
   nameTextReceived = Signal(unicode, unicode)  # text, lang
   nameTranslationReceived = Signal(unicode, unicode, unicode)  # text, lang, provider
 
-  agentTranslationProcessed = Signal(unicode, str, int) # text, hash, role
+  agentTranslationProcessed = Signal(unicode, str, int, str) # text, hash, role, language
   agentTranslationCancelled = Signal(unicode, str, int) # text, hash, role
 
   #def setMachineTranslator(self, value):
@@ -1118,7 +1118,7 @@ class TextManager(QObject):
         sub = textutil.remove_html_tags(sub)
         if config.is_reversed_language(lang):
           sub = sub[::-1]
-        self.agentTranslationProcessed.emit(sub, rawHash, role)
+        self.agentTranslationProcessed.emit(sub, rawHash, role, lang)
       else:
         self.agentTranslationCancelled.emit(text, rawHash, role)
 

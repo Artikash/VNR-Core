@@ -122,7 +122,7 @@ void MainDriverPrivate::createEmbedDriver()
   connect(eng, SIGNAL(engineNameChanged(QString)), rpc, SLOT(sendEngineName(QString)));
   connect(rpc, SIGNAL(clearTranslationRequested()), eng, SLOT(clearTranslation()));
   //connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
-  //connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)));
+  //connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int,QString)), eng, SLOT(updateTranslation(QString,qint64,int,QString)));
 
   connect(rpc, SIGNAL(reconnected()), eng, SLOT(sendEngineName()));
 

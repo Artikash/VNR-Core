@@ -128,11 +128,12 @@ class GameAgent(QObject):
 
   # Shared memory
 
-  def sendEmbeddedTranslation(self, text, hash, role):
+  def sendEmbeddedTranslation(self, text, hash, role, language):
     """
     @param  text  unicode
     @param  hash  str or int64
     @param  role  int
+    @param  language  str
     """
     if isinstance(hash, basestring):
       hash = long(hash)
@@ -143,6 +144,7 @@ class GameAgent(QObject):
       m.setDataStatus(index, m.STATUS_BUSY)
       m.setDataHash(index, hash)
       m.setDataRole(index, role)
+      m.setDataLanguage(index, language)
       m.setDataText(index, text)
       m.setDataStatus(index, m.STATUS_READY)
       #m.unlock()
