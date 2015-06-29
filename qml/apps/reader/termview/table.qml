@@ -578,7 +578,7 @@ Item { id: root_
     // Column: Context
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Context")
-      width: 60
+      width: 50
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
