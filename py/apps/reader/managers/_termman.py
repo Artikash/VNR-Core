@@ -39,7 +39,7 @@ class TranslationProxy(object):
     self.role = td.role
     self.input = _unescape_term_text(td.pattern)
     self.output = _unescape_term_text(td.text)
-    self.category = host_categories(td.host)
+    self.category = make_categories(context=td.context, host=td.host)
 
   def match_category(self, v): # str -> bool
     return self.category & v
@@ -62,11 +62,20 @@ def _mutate_ko_role(role, text):
       return role + suf
   return role
 
-# http://sakuradite.com/wiki/en/Machine_Translators
-def host_category(host):
+def _get_context_category(context):
+  """
+  @param  context  str  single context
+  @return  int  category flag mark or 0
+  """
+  if context:
+    try: return 1 << dataman.Term.CONTEXTS.index(host)
+    except: pass
+  return 0
+
+def _get_host_category(host):
   """
   @param  host  str  single host
-  @return  int  category flag mark
+  @return  int  category flag mark or 0
   """
   if host:
     if host == 'lecol':
@@ -75,26 +84,56 @@ def host_category(host):
       host = 'jbeijing'
     elif host == 'nifty':
       host = 'atlas'
-    try: return 1 << dataman.Term.HOSTS.index(host)
+    try: return 1 << dataman.Term.HOSTS.index(host) + len(dataman.Term.CONTEXTS)
     except: pass
-  return -1
+  return 0
 
-def host_categories(host): # str -> int
+def _get_context_categories(context):
+  """
+  @param  context  str  context separated by ','
+  @return  int  category flag mark or 0
+  """
+  if not context:
+    return 0
+  sep = ','
+  if sep not in context:
+    return _get_context_category(context)
+  ret = 0
+  for h in context.split(sep):
+    ret |= _get_context_category(h)
+  return ret
+
+def _get_host_categories(host):
   """
   @param  host  str  host separated by ','
-  @return  int  category flag mark
+  @return  int  category flag mark or 0
   """
   if not host:
-    return -1
+    return 0
   sep = ','
   if sep not in host:
-    return host_category(host)
+    return _get_host_category(host)
   ret = 0
   for h in host.split(sep):
-    h = host_category(h)
-    if h > 0:
-      ret |= h
-  return ret or -1 # if no match, apply to all hosts
+    ret |= _get_host_category(h)
+  return ret
+
+# http://sakuradite.com/wiki/en/Machine_Translators
+def make_category(context='', host=''):
+  """
+  @param  context  str  single context
+  @param  host  str  single host
+  @return  int  category flag mark or -1
+  """
+  return (_get_host_category(host) | _get_context_category(context)) or -1
+
+def make_categories(context='', host=''): # str -> int
+  """
+  @param  context  str  context separated by ','
+  @param  host  str  host separated by ','
+  @return  int  category flag mark or -1
+  """
+  return (_get_host_categories(host) | _get_context_categories(context)) or -1
 
 def _lang_level(lang):
   """Larger applied first
@@ -399,7 +438,7 @@ class TermWriter:
     if '\n' in pattern or '\n' in repl or '\t' in pattern or '\t' in repl:
       dwarn("skip tab or new line in term: id = %s" % tid)
       return
-    cat = host_categories(host)
+    cat = make_categories(host=host)
     cols = [str(tid), str(cat), pattern]
     if repl:
       cols.append(repl)
@@ -427,7 +466,7 @@ class TermWriter:
     if '\n' in pattern or '\n' in repl:
       dwarn("skip new line in term: id = %s" % tid)
       return
-    cat = host_categories(host)
+    cat = make_categories(host=host)
     features = [str(tid), str(cat)]
     flags = ''
     if icase:

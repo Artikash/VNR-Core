@@ -183,7 +183,7 @@ class _TermManager:
         times[scriptKey] = createTime
     dprint("leave")
 
-  def applyTerms(self, text, type, to, fr, host='', mark=False, ignoreIfNotReady=False):
+  def applyTerms(self, text, type, to, fr, context='', host='', mark=False, ignoreIfNotReady=False):
     """
     @param  text  unicode
     @param  type  str
@@ -218,7 +218,7 @@ class _TermManager:
     if not man or man.isEmpty():
       return text
 
-    category = _termman.host_category(host)
+    category = _termman.make_category(context=context, host=host)
     if type == 'encode':
       return man.encode(text, category)
     elif type == 'decode':
@@ -232,11 +232,12 @@ class _TermManager:
       r"<[-0-9<>]+>"
     r"}}"
   )
-  def delegateTranslation(self, text, to, fr, host, proxies, proxyDigit):
+  def delegateTranslation(self, text, to, fr, context, host, proxies, proxyDigit):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
+    @param  context  str
     @param  host  str
     @param  proxies  {unicode input:unicode output}
     @param  proxyDigit  proxy using letters or digits
@@ -253,7 +254,7 @@ class _TermManager:
     used_proxy_input = set() # [unicode]
     used_proxy_output = set() # [unicode]
 
-    category = _termman.host_category(host)
+    category = _termman.make_category(context=context, host=host)
 
     def fn(m): # re.match -> unicode
       matched_text = m.group()
@@ -276,12 +277,11 @@ class _TermManager:
 
   _rx_undelegate_latin = re.compile(r"Z[A-Y]+Z")
   _rx_undelegate_digit = re.compile(r"9[0-8]+9")
-  def undelegateTranslation(self, text, to, fr, host, proxies, proxyDigit=False):
+  def undelegateTranslation(self, text, to, fr, proxies, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
-    @param  host  str
     @param* proxies  {unicode input:unicode output}
     @param* proxyDigit  proxy using letters or digits
     @return  unicode
@@ -486,7 +486,7 @@ class TermManager(QObject):
       return text
     return d.applyTerms(text, 'ocr', 'ja', language or 'ja')
 
-  def applyPlainOutputTerms(self, text, to, fr, host='', mark=None):
+  def applyPlainOutputTerms(self, text, to, fr, context='', host='', mark=None):
     """
     @param  text  unicode
     @param  to  str  language
@@ -502,13 +502,13 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.0005 seconds, underline = True
     # 3/11/2015: 0.01 seconds new trscript
     #with SkProfiler("output term"):
-    return d.applyTerms(text, 'output_nosyntax', to, fr, host=host, mark=mark)
+    return d.applyTerms(text, 'output_nosyntax', to, fr, context=context, host=host, mark=mark)
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
     #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 
-  def applySyntacticOutputTerms(self, text, to, fr, host='', mark=None):
+  def applySyntacticOutputTerms(self, text, to, fr, context='', host='', mark=None):
     """
     @param  text  unicode
     @param  to  str  language
@@ -520,9 +520,9 @@ class TermManager(QObject):
     d = self.__d
     if not d.enabled or not text:
       return text
-    return d.applyTerms(text, 'output_syntax', to, fr, host=host, mark=mark)
+    return d.applyTerms(text, 'output_syntax', to, fr, context=context, host=host, mark=mark)
 
-  def applyPlainInputTerms(self, text, to, fr, host=''):
+  def applyPlainInputTerms(self, text, to, fr, context='', host=''):
     """
     @param  text  unicode
     @param  to  str  language
@@ -537,7 +537,7 @@ class TermManager(QObject):
     # 9/26/2014: Boost 0.001 seconds
     # 3/11/2015: 0.002 seconds new trscript
     #with SkProfiler("input term"):
-    return d.applyTerms(text, 'input', to, fr, host=host)
+    return d.applyTerms(text, 'input', to, fr, context=context, host=host)
     #dm = dataman.manager()
     #d = self.__d
     #text = d.applyTerms(dm.iterSourceTerms(), text, language)
@@ -549,7 +549,7 @@ class TermManager(QObject):
     #  except Exception, e: dwarn(e)
     #  text = text.rstrip() # remove trailing spaces
 
-  def encodeTranslation(self, text, to, fr, host=''):
+  def encodeTranslation(self, text, to, fr, context='', host=''):
     """
     @param  text  unicode
     @param  to  str  language
@@ -565,11 +565,11 @@ class TermManager(QObject):
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     # 3/11/2015: 0.003 seconds with codec
     #with SkProfiler("encode trans"): # 1/8/2015: 0.048 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'encode', to, fr, host=host)
+    return d.applyTerms(text, 'encode', to, fr, context=context, host=host)
 
   _rx_decode_open = re.compile(r'(?<=[,.?!]|\w){{', re.UNICODE)
   _rx_decode_close = re.compile(r'}}(?=\w)', re.UNICODE)
-  def decodeTranslation(self, text, to, fr, host='', mark=None):
+  def decodeTranslation(self, text, to, fr, context='', host='', mark=None):
     """
     @param  text  unicode
     @param  to  str  language
@@ -589,9 +589,9 @@ class TermManager(QObject):
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     # 3/11/2015: 0.00016 seconds with codec
     #with SkProfiler("decode trans"): # 1/8/2015: 0.051 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'decode', to, fr, host=host, mark=mark)
+    return d.applyTerms(text, 'decode', to, fr, context=context, host=host, mark=mark)
 
-  def delegateTranslation(self, text, to, fr, host='', proxies={}, proxyDigit=False):
+  def delegateTranslation(self, text, to, fr, context='', host='', proxies={}, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
@@ -606,14 +606,15 @@ class TermManager(QObject):
       return text
     # 3/11/2015: 5e-5 seconds with codec
     #with SkProfiler("delegate term"):
-    return d.delegateTranslation(text, to, fr, host, proxies, proxyDigit=proxyDigit)
+    return d.delegateTranslation(text, to, fr, context, host, proxies, proxyDigit=proxyDigit)
 
-  def undelegateTranslation(self, text, to, fr, host='', proxies={}, proxyDigit=False):
+  def undelegateTranslation(self, text, to, fr, context='', host='', proxies={}, proxyDigit=False):
     """
     @param  text  unicode
     @param  to  str  language
     @param  fr  str  language
-    @param* host  str
+    @param* context  str  not used
+    @param* host  str  not used
     @param* proxies  {unicode input:unicode output}
     @param* proxyDigit  proxy using letters or digits
     @return  unicode
@@ -623,6 +624,6 @@ class TermManager(QObject):
       return text
     # 3/11/2015: 4e-5 seconds with codec
     #with SkProfiler("undelegate term"):
-    return d.undelegateTranslation(text, to, fr, host, proxies, proxyDigit=proxyDigit)
+    return d.undelegateTranslation(text, to, fr, proxies, proxyDigit=proxyDigit)
 
 # EOF
