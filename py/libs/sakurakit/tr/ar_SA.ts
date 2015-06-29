@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ar_SA">
+<!DOCTYPE TS><TS version="1.1" language="ar_SA">
 <context>
     <name>sakurakit</name>
     <message>
@@ -226,7 +225,7 @@
     <message>
         <location filename="sktr.py" line="440"/>
         <source>Version</source>
-        <translation>نسخة</translation>
+        <translation>الإصدار</translation>
     </message>
     <message>
         <location filename="sktr.py" line="236"/>
@@ -371,7 +370,7 @@
     <message>
         <location filename="sktr.py" line="403"/>
         <source>Script</source>
-        <translation>سيناريو</translation>
+        <translation>النصي</translation>
     </message>
     <message>
         <location filename="sktr.py" line="404"/>
@@ -496,7 +495,7 @@
     <message>
         <location filename="sktr.py" line="481"/>
         <source>Found</source>
-        <translation>أسس</translation>
+        <translation>وجدت</translation>
     </message>
     <message>
         <location filename="sktr.py" line="482"/>
@@ -611,7 +610,7 @@
     <message>
         <location filename="sktr.py" line="198"/>
         <source>Remove</source>
-        <translation>نقل</translation>
+        <translation>إزالة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="199"/>
@@ -651,7 +650,7 @@
     <message>
         <location filename="sktr.py" line="302"/>
         <source>Author</source>
-        <translation>الكاتب</translation>
+        <translation>مؤلف</translation>
     </message>
     <message>
         <location filename="sktr.py" line="363"/>
@@ -671,7 +670,7 @@
     <message>
         <location filename="sktr.py" line="402"/>
         <source>Screenshot</source>
-        <translation>لقطة</translation>
+        <translation>لقطة شاشة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="424"/>
@@ -791,7 +790,7 @@
     <message>
         <location filename="sktr.py" line="217"/>
         <source>START</source>
-        <translation>START</translation>
+        <translation>بداية</translation>
     </message>
     <message>
         <location filename="sktr.py" line="218"/>
@@ -836,7 +835,7 @@
     <message>
         <location filename="sktr.py" line="330"/>
         <source>Folder</source>
-        <translation>ملف</translation>
+        <translation>مجلد</translation>
     </message>
     <message>
         <location filename="sktr.py" line="212"/>
@@ -1016,7 +1015,7 @@
     <message>
         <location filename="sktr.py" line="157"/>
         <source>Escape</source>
-        <translation>فرار</translation>
+        <translation>هرب</translation>
     </message>
     <message>
         <location filename="sktr.py" line="222"/>
@@ -1056,7 +1055,7 @@
     <message>
         <location filename="sktr.py" line="187"/>
         <source>Pause</source>
-        <translation>وقفة</translation>
+        <translation>إيقاف مؤقت</translation>
     </message>
     <message>
         <location filename="sktr.py" line="202"/>
@@ -1071,7 +1070,7 @@
     <message>
         <location filename="sktr.py" line="223"/>
         <source>Type</source>
-        <translation>نوع</translation>
+        <translation>اكتب</translation>
     </message>
     <message>
         <location filename="sktr.py" line="324"/>
@@ -1306,7 +1305,7 @@
     <message>
         <location filename="sktr.py" line="192"/>
         <source>Read</source>
-        <translation>قرأ</translation>
+        <translation>اقرأ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="331"/>
@@ -1316,7 +1315,7 @@
     <message>
         <location filename="sktr.py" line="332"/>
         <source>Font family</source>
-        <translation>عائلة الخط</translation>
+        <translation>خط العائلة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="159"/>
@@ -1416,7 +1415,7 @@
     <message>
         <location filename="sktr.py" line="416"/>
         <source>Title</source>
-        <translation>لقب</translation>
+        <translation>عنوان</translation>
     </message>
     <message>
         <location filename="sktr.py" line="483"/>
@@ -1666,7 +1665,7 @@
     <message>
         <location filename="sktr.py" line="416"/>
         <source>title</source>
-        <translation>لقب</translation>
+        <translation>عنوان</translation>
     </message>
     <message>
         <location filename="sktr.py" line="318"/>
@@ -1696,7 +1695,7 @@
     <message>
         <location filename="sktr.py" line="294"/>
         <source>Year</source>
-        <translation>عام</translation>
+        <translation>سنة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="295"/>
@@ -1721,22 +1720,22 @@
     <message>
         <location filename="sktr.py" line="114"/>
         <source>Left Click</source>
-        <translation>انقر فوق اليسار</translation>
+        <translation>الزر الأيسر</translation>
     </message>
     <message>
         <location filename="sktr.py" line="114"/>
         <source>Left click</source>
-        <translation>انقر على اليسار</translation>
+        <translation>الزر الأيسر</translation>
     </message>
     <message>
         <location filename="sktr.py" line="115"/>
         <source>Left-Click</source>
-        <translation>انقر بزر الماوس الأيسر</translation>
+        <translation>الزر الأيسر</translation>
     </message>
     <message>
         <location filename="sktr.py" line="115"/>
         <source>Left-click</source>
-        <translation>اليسار فوق</translation>
+        <translation>الزر الأيسر</translation>
     </message>
     <message>
         <location filename="sktr.py" line="116"/>
@@ -1986,7 +1985,7 @@
     <message>
         <location filename="sktr.py" line="468"/>
         <source>Public</source>
-        <translation>جمهور</translation>
+        <translation>عامة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="469"/>
@@ -2026,7 +2025,7 @@
     <message>
         <location filename="sktr.py" line="133"/>
         <source>Chat</source>
-        <translation>ثرثرة</translation>
+        <translation>دردشة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="47"/>
@@ -2056,7 +2055,7 @@
     <message>
         <location filename="sktr.py" line="269"/>
         <source>Down</source>
-        <translation>إلى</translation>
+        <translation>أسفل</translation>
     </message>
     <message>
         <location filename="sktr.py" line="270"/>
@@ -2296,7 +2295,7 @@
     <message>
         <location filename="sktr.py" line="431"/>
         <source>Volume</source>
-        <translation>حجم</translation>
+        <translation>الصوت</translation>
     </message>
     <message>
         <location filename="sktr.py" line="308"/>
@@ -2346,7 +2345,7 @@
     <message>
         <location filename="sktr.py" line="133"/>
         <source>chat</source>
-        <translation>ثرثرة</translation>
+        <translation>دردشة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="251"/>
@@ -2386,7 +2385,7 @@
     <message>
         <location filename="sktr.py" line="459"/>
         <source>Recent</source>
-        <translation>آخر</translation>
+        <translation>الأخيرة</translation>
     </message>
     <message>
         <location filename="sktr.py" line="460"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>أوتوماتيكي</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

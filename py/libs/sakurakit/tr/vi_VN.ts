@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="vi_VN">
+<!DOCTYPE TS><TS version="1.1" language="vi_VN">
 <context>
     <name>sakurakit</name>
     <message>
@@ -71,7 +70,7 @@
     <message>
         <location filename="sktr.py" line="68"/>
         <source>Simplified Chinese</source>
-        <translation>Trung giản thể</translation>
+        <translation>Tiếng Trung Giản Thể</translation>
     </message>
     <message>
         <location filename="sktr.py" line="123"/>
@@ -701,7 +700,7 @@
     <message>
         <location filename="sktr.py" line="441"/>
         <source>Zoom</source>
-        <translation>Zoom</translation>
+        <translation>Thu Phóng</translation>
     </message>
     <message>
         <location filename="sktr.py" line="507"/>
@@ -841,7 +840,7 @@
     <message>
         <location filename="sktr.py" line="212"/>
         <source>Software Update</source>
-        <translation>Cập nhật phần mềm</translation>
+        <translation>Cập Nhật Phần Mềm</translation>
     </message>
     <message>
         <location filename="sktr.py" line="389"/>
@@ -871,12 +870,12 @@
     <message>
         <location filename="sktr.py" line="474"/>
         <source>Case-insensitive</source>
-        <translation>Case-insensitive</translation>
+        <translation>Trường hợp không nhạy cảm</translation>
     </message>
     <message>
         <location filename="sktr.py" line="474"/>
         <source>case-insensitive</source>
-        <translation>case-insensitive</translation>
+        <translation>trường hợp không nhạy cảm</translation>
     </message>
     <message>
         <location filename="sktr.py" line="473"/>
@@ -1216,7 +1215,7 @@
     <message>
         <location filename="sktr.py" line="259"/>
         <source>Keyboard shortcuts</source>
-        <translation>Phím tắt</translation>
+        <translation>Các phím tắt bàn phím</translation>
     </message>
     <message>
         <location filename="sktr.py" line="151"/>
@@ -1406,7 +1405,7 @@
     <message>
         <location filename="sktr.py" line="395"/>
         <source>Release Date</source>
-        <translation>Ngày phát hành</translation>
+        <translation>Ngày Phát Hành</translation>
     </message>
     <message>
         <location filename="sktr.py" line="395"/>
@@ -1606,7 +1605,7 @@
     <message>
         <location filename="sktr.py" line="27"/>
         <source>Mainland China</source>
-        <translation>Trung Quốc đại lục</translation>
+        <translation>Trung Hoa Đại Lục</translation>
     </message>
     <message>
         <location filename="sktr.py" line="299"/>
@@ -1761,22 +1760,22 @@
     <message>
         <location filename="sktr.py" line="118"/>
         <source>Right Click</source>
-        <translation>Right Click</translation>
+        <translation>Click Chuột Phải</translation>
     </message>
     <message>
         <location filename="sktr.py" line="118"/>
         <source>Right click</source>
-        <translation>Nhấp chuột phải</translation>
+        <translation>Click chuột phải</translation>
     </message>
     <message>
         <location filename="sktr.py" line="119"/>
         <source>Right-Click</source>
-        <translation>Right-Click</translation>
+        <translation>Click Chuột Phải</translation>
     </message>
     <message>
         <location filename="sktr.py" line="119"/>
         <source>Right-click</source>
-        <translation>Nhấp chuột phải</translation>
+        <translation>Click chuột phải</translation>
     </message>
     <message>
         <location filename="sktr.py" line="137"/>
@@ -2071,7 +2070,7 @@
     <message>
         <location filename="sktr.py" line="478"/>
         <source>Network Error</source>
-        <translation>Lỗi mạng</translation>
+        <translation>Lỗi Mạng</translation>
     </message>
     <message>
         <location filename="sktr.py" line="128"/>
@@ -2296,7 +2295,7 @@
     <message>
         <location filename="sktr.py" line="431"/>
         <source>Volume</source>
-        <translation>Thể tích</translation>
+        <translation>Âm Lượng</translation>
     </message>
     <message>
         <location filename="sktr.py" line="308"/>
@@ -2471,7 +2470,7 @@
     <message>
         <location filename="sktr.py" line="493"/>
         <source>Unknown error</source>
-        <translation>Lỗi không xác định</translation>
+        <translation>Lỗi không rõ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="494"/>
@@ -2501,7 +2500,7 @@
     <message>
         <location filename="sktr.py" line="67"/>
         <source>Traditional Chinese</source>
-        <translation>Truyền thống Trung Quốc</translation>
+        <translation>Truyền Thống Trung Quốc</translation>
     </message>
     <message>
         <location filename="sktr.py" line="461"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>Tự động</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

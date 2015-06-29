@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ms_MY">
+<!DOCTYPE TS><TS version="1.1" language="ms_MY">
 <context>
     <name>sakurakit</name>
     <message>
@@ -166,7 +165,7 @@
     <message>
         <location filename="sktr.py" line="180"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>OKAY</translation>
     </message>
     <message>
         <location filename="sktr.py" line="181"/>
@@ -296,7 +295,7 @@
     <message>
         <location filename="sktr.py" line="327"/>
         <source>Features</source>
-        <translation>Ciri-ciri</translation>
+        <translation>Ciri-Ciri</translation>
     </message>
     <message>
         <location filename="sktr.py" line="336"/>
@@ -356,7 +355,7 @@
     <message>
         <location filename="sktr.py" line="384"/>
         <source>Plug-in</source>
-        <translation>Plug-in</translation>
+        <translation>Pasangkan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="385"/>
@@ -501,7 +500,7 @@
     <message>
         <location filename="sktr.py" line="482"/>
         <source>Not found</source>
-        <translation>Tidak dijumpai</translation>
+        <translation>Tidak ditemui</translation>
     </message>
     <message>
         <location filename="sktr.py" line="126"/>
@@ -921,12 +920,12 @@
     <message>
         <location filename="sktr.py" line="201"/>
         <source>Restart</source>
-        <translation>Mulakan semula</translation>
+        <translation>Mula Semula</translation>
     </message>
     <message>
         <location filename="sktr.py" line="499"/>
         <source>For example</source>
-        <translation>Sebagai contoh</translation>
+        <translation>Contohnya</translation>
     </message>
     <message>
         <location filename="sktr.py" line="499"/>
@@ -981,7 +980,7 @@
     <message>
         <location filename="sktr.py" line="112"/>
         <source>Double Click</source>
-        <translation>Double Klik</translation>
+        <translation>Klik Dua Kali</translation>
     </message>
     <message>
         <location filename="sktr.py" line="112"/>
@@ -991,17 +990,17 @@
     <message>
         <location filename="sktr.py" line="112"/>
         <source>double click</source>
-        <translation>klik dua kali</translation>
+        <translation>Klik dua kali</translation>
     </message>
     <message>
         <location filename="sktr.py" line="113"/>
         <source>Double-click</source>
-        <translation>Klik dua kali pada</translation>
+        <translation>Klik dua kali</translation>
     </message>
     <message>
         <location filename="sktr.py" line="113"/>
         <source>double-click</source>
-        <translation>Klik dua kali pada</translation>
+        <translation>Klik dua kali</translation>
     </message>
     <message>
         <location filename="sktr.py" line="140"/>
@@ -1406,7 +1405,7 @@
     <message>
         <location filename="sktr.py" line="395"/>
         <source>Release Date</source>
-        <translation>Tarikh Siaran</translation>
+        <translation>Tarikh Keluaran</translation>
     </message>
     <message>
         <location filename="sktr.py" line="395"/>
@@ -1761,7 +1760,7 @@
     <message>
         <location filename="sktr.py" line="118"/>
         <source>Right Click</source>
-        <translation>Hak Klik</translation>
+        <translation>Klik Kanan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="118"/>
@@ -1771,7 +1770,7 @@
     <message>
         <location filename="sktr.py" line="119"/>
         <source>Right-Click</source>
-        <translation>Klik kanan</translation>
+        <translation>Klik Kanan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="119"/>
@@ -2236,12 +2235,12 @@
     <message>
         <location filename="sktr.py" line="442"/>
         <source>Zoom In</source>
-        <translation>Zoom Dalam</translation>
+        <translation>Mengezum Masuk</translation>
     </message>
     <message>
         <location filename="sktr.py" line="442"/>
         <source>Zoom in</source>
-        <translation>Zum masuk</translation>
+        <translation>Mengezum masuk</translation>
     </message>
     <message>
         <location filename="sktr.py" line="443"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>Automatik</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

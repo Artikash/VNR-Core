@@ -197,6 +197,14 @@ TRANSLATOR_NAMES = { # [TranslatorTraits]
 }
 def translator_name(key): return TRANSLATOR_NAMES.get(key) or ''
 
+GAME_CONTEXT_NAMES = {
+  'scene': mytr_("Dialog"),
+  'name': mytr_("Name"),
+  'other': tr_("Other"),
+  'window': tr_("Window"),
+}
+def game_context_name(key): return GAME_CONTEXT_NAMES.get(key) or ''
+
 GENDER_NAMES = {
   'm': tr_("Male"),
   'f': tr_("Female"),

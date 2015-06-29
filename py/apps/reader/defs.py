@@ -36,6 +36,16 @@ UNKNOWN_TEXT_ROLE = 0
 SCENARIO_TEXT_ROLE = 1
 NAME_TEXT_ROLE = 2
 OTHER_TEXT_ROLE = 3
+#WINDOW_TEXT_ROLE = 4 # not used
+
+THREAD_ROLE_CONTEXTS = {
+  SCENARIO_TEXT_ROLE: 'scene',
+  NAME_TEXT_ROLE: 'name',
+  OTHER_TEXT_ROLE: 'other',
+  #WINDOW_TEXT_ROLE: 'window',
+}
+def thread_role_context(role): # int -> str
+  return THREAD_ROLE_CONTEXTS.get(role) or ''
 
 # Text constraints
 

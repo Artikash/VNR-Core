@@ -69,10 +69,17 @@ class _TermInput(object):
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(create_label(mytr_("Translator")), r, 0)
+    grid.addWidget(create_label(tr_("Context")), r, 0)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.contextEdit)
+    row.addWidget(self._createInfoLabel(my.tr("only enable under selected context")))
+    grid.addLayout(row, r, 1)
+    r += 1
+
+    grid.addWidget(create_label(tr_("Translator")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.hostEdit)
-    row.addStretch()
+    row.addWidget(self._createInfoLabel(my.tr("only enable for selected translator")))
     grid.addLayout(row, r, 1)
     r += 1
 
@@ -185,6 +192,18 @@ class _TermInput(object):
     ret.setEditable(False)
     ret.addItem(tr_('All'))
     ret.addItems(dataman.Term.TR_HOSTS)
+    #ret.setCurrentIndex(0) # default index
+    ret.setMaxVisibleItems(ret.count())
+    ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
+    ret.currentIndexChanged.connect(self.refresh)
+    return ret
+
+  @memoizedproperty
+  def contextEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItem(tr_('All'))
+    ret.addItems(dataman.Term.TR_CONTEXTS)
     #ret.setCurrentIndex(0) # default index
     ret.setMaxVisibleItems(ret.count())
     ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
@@ -461,6 +480,10 @@ class _TermInput(object):
     i = self.hostEdit.currentIndex()
     return dataman.Term.HOSTS[i - 1] if i else ''
 
+  def _getContext(self): # -> str
+    i = self.contextEdit.currentIndex()
+    return dataman.Term.CONTEXTS[i - 1] if i else ''
+
   def setType(self, v): # str ->
     try: index = dataman.Term.TYPES.index(v)
     except ValueError:
@@ -482,6 +505,7 @@ class _TermInput(object):
       sourceLang = self._getSourceLanguage()
       type = self._getType()
       host = self._getHost() if type in dataman.Term.HOST_TYPES else ''
+      context = self._getContext() if type in dataman.Term.CONTEXT_TYPES else ''
       role = self.roleEdit.text().strip() if type in dataman.Term.ROLE_TYPES else ''
       ruby = self.rubyEdit.text().strip() if type in dataman.Term.RUBY_TYPES else ''
       pattern = self.patternEdit.text().strip()
@@ -496,7 +520,7 @@ class _TermInput(object):
       private = (type == 'proxy' or self.privateButton.isChecked()) and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
-          language=lang, sourceLanguage=sourceLang, type=type, host=host, private=private,
+          language=lang, sourceLanguage=sourceLang, type=type, host=host, context=context, private=private,
           special=special, regex=regex, phrase=phrase, icase=icase, #syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, ruby=ruby, role=role, comment=comment)
@@ -531,6 +555,7 @@ class _TermInput(object):
     self.hostEdit.setEnabled(type in dataman.Term.HOST_TYPES)
     self.roleEdit.setEnabled(type in dataman.Term.ROLE_TYPES)
     self.rubyEdit.setEnabled(type in dataman.Term.RUBY_TYPES)
+    self.contextEdit.setEnabled(type in dataman.Term.CONTEXT_TYPES)
 
     self._refreshTypeLabel()
     self._refreshKanji()

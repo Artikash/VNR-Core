@@ -375,9 +375,9 @@ class _TextManager(object):
     #return qunicode(data, self.encoding)
     return textutil.to_unicode(data, self.encoding)
 
-  def _translateTextAndShow(self, text, time):
+  def _translateTextAndShow(self, text, time, context=''):
     trman.manager().translateApply(self._showTranslation,
-        text, self.gameLanguage,
+        text, self.gameLanguage, context=context,
         time=time)
 
   def _showComment(self, c):
@@ -757,7 +757,7 @@ class _TextManager(object):
         skclip.settext(text)
       # Profiler: 0.35 seconds because of the machine translation
       #with SkProfiler():
-      self._translateTextAndShow(text, timestamp)
+      self._translateTextAndShow(text, timestamp, context='scene')
 
   def showNameText(self, data=None, text=None, agent=True):
     """
@@ -787,7 +787,7 @@ class _TextManager(object):
   def _translateNameAndShow(self, text):
     # Disable translation script for name
     sub, lang, provider = trman.manager().translateOne(text,
-        self.gameLanguage, scriptEnabled=False)
+        self.gameLanguage, context='name', scriptEnabled=False)
     if sub:
       self.q.nameTranslationReceived.emit(sub, lang, provider)
 
@@ -838,7 +838,7 @@ class _TextManager(object):
     if text:
       if settings.global_().copiesGameText():
         skclip.settext(text)
-      self._translateTextAndShow(text, timestamp)
+      self._translateTextAndShow(text, timestamp, context='other')
 
   def showRecognizedText(self, text):
     """
@@ -900,7 +900,7 @@ class _TextManager(object):
         if not h in self.windowTranslation:
           context = textutil.remove_illegal_text(context)
           sub, lang, provider = translateOne(context, self.gameLanguage,
-              async=True, online=True, mark=False, rubyEnabled=False)
+              async=True, online=True, mark=False, rubyEnabled=False, context='window')
           if sub:
             changedTranslation[h] = sub
       if changedTranslation:
@@ -1106,8 +1106,9 @@ class TextManager(QObject):
       if not sub:
         async = role == OTHER_THREAD_TYPE
         rubyEnabled = role == SCENARIO_THREAD_TYPE
+        context = defs.thread_role_context(role)
         sub, lang, provider = trman.manager().translateOne(text, d.gameLanguage,
-            async=async, online=True, mark=False, keepsNewLine=True, rubyEnabled=rubyEnabled)
+            async=async, online=True, mark=False, keepsNewLine=True, rubyEnabled=rubyEnabled, context=context)
       if sub:
         if lang.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()

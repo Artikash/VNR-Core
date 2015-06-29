@@ -433,7 +433,7 @@ class sakurakit(QObject):
       self.tr("Warn"),
       self.tr("Warning"),
       self.tr("Width"),
-      self.tr("Window"),
+      self.tr("Window"), self.tr("window"),
       self.tr("Window title"),
       self.tr("Wiki"),
       self.tr("Wikipedia"),

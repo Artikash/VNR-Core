@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ro_RO">
+<!DOCTYPE TS><TS version="1.1" language="ro_RO">
 <context>
     <name>sakurakit</name>
     <message>
@@ -71,7 +70,7 @@
     <message>
         <location filename="sktr.py" line="68"/>
         <source>Simplified Chinese</source>
-        <translation>Chineza simplificată</translation>
+        <translation>Chineză Simplificată</translation>
     </message>
     <message>
         <location filename="sktr.py" line="123"/>
@@ -191,7 +190,7 @@
     <message>
         <location filename="sktr.py" line="204"/>
         <source>Save</source>
-        <translation>Salvare</translation>
+        <translation>Salvați</translation>
     </message>
     <message>
         <location filename="sktr.py" line="211"/>
@@ -231,7 +230,7 @@
     <message>
         <location filename="sktr.py" line="236"/>
         <source>All files</source>
-        <translation>Toate fișierele</translation>
+        <translation>Toate fisierele</translation>
     </message>
     <message>
         <location filename="sktr.py" line="237"/>
@@ -621,7 +620,7 @@
     <message>
         <location filename="sktr.py" line="204"/>
         <source>save</source>
-        <translation>salva</translation>
+        <translation>Salvați</translation>
     </message>
     <message>
         <location filename="sktr.py" line="211"/>
@@ -771,7 +770,7 @@
     <message>
         <location filename="sktr.py" line="215"/>
         <source>Spell Check</source>
-        <translation>Spell check</translation>
+        <translation>Verificare A Ortografiei</translation>
     </message>
     <message>
         <location filename="sktr.py" line="215"/>
@@ -841,22 +840,22 @@
     <message>
         <location filename="sktr.py" line="212"/>
         <source>Software Update</source>
-        <translation>Actualizarea software-ului</translation>
+        <translation>Actualizare Software</translation>
     </message>
     <message>
         <location filename="sktr.py" line="389"/>
         <source>Regular Expression</source>
-        <translation>Expresie regulată</translation>
+        <translation>Expresie Uzuala</translation>
     </message>
     <message>
         <location filename="sktr.py" line="389"/>
         <source>Regular expression</source>
-        <translation>Expresie regulată</translation>
+        <translation>Expresie uzuala</translation>
     </message>
     <message>
         <location filename="sktr.py" line="389"/>
         <source>regular expression</source>
-        <translation>expresie regulată</translation>
+        <translation>expresie uzuala</translation>
     </message>
     <message>
         <location filename="sktr.py" line="475"/>
@@ -1041,7 +1040,7 @@
     <message>
         <location filename="sktr.py" line="501"/>
         <source>Check for updates</source>
-        <translation>Verificați dacă există actualizări</translation>
+        <translation>Verifică pentru actualizări</translation>
     </message>
     <message>
         <location filename="sktr.py" line="111"/>
@@ -2046,7 +2045,7 @@
     <message>
         <location filename="sktr.py" line="349"/>
         <source>Keyboard</source>
-        <translation>Claviatură</translation>
+        <translation>Tastatură</translation>
     </message>
     <message>
         <location filename="sktr.py" line="268"/>
@@ -2071,7 +2070,7 @@
     <message>
         <location filename="sktr.py" line="478"/>
         <source>Network Error</source>
-        <translation>Eroare rețea</translation>
+        <translation>Eroare De Rețea</translation>
     </message>
     <message>
         <location filename="sktr.py" line="128"/>
@@ -2236,22 +2235,22 @@
     <message>
         <location filename="sktr.py" line="442"/>
         <source>Zoom In</source>
-        <translation>Zoom In</translation>
+        <translation>Mareste</translation>
     </message>
     <message>
         <location filename="sktr.py" line="442"/>
         <source>Zoom in</source>
-        <translation>Zoom in</translation>
+        <translation>Mareste</translation>
     </message>
     <message>
         <location filename="sktr.py" line="443"/>
         <source>Zoom Out</source>
-        <translation>Zoom Out</translation>
+        <translation>A Micsora</translation>
     </message>
     <message>
         <location filename="sktr.py" line="443"/>
         <source>Zoom out</source>
-        <translation>Micșora</translation>
+        <translation>A micsora</translation>
     </message>
     <message>
         <location filename="sktr.py" line="203"/>
@@ -2501,7 +2500,7 @@
     <message>
         <location filename="sktr.py" line="67"/>
         <source>Traditional Chinese</source>
-        <translation>Tradițională chineză</translation>
+        <translation>Chineză Tradițională</translation>
     </message>
     <message>
         <location filename="sktr.py" line="461"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>Automat</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

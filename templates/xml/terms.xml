@@ -19,6 +19,9 @@
 %		if it.host
 			<host>{{it.host}}</host>
 %		endif
+%		if it.context
+			<context>{{it.context}}</context>
+%		endif
 			<sourceLanguage>{{it.sourceLanguage}}</sourceLanguage>
 			<language>{{it.language}}</language>
 			<timestamp>{{it.timestamp}}</timestamp>

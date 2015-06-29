@@ -150,6 +150,10 @@ Item { id: root_
     }
   }
 
+  function typeAllowsContext(type) { // string -> bool
+    return typeAllowsHost(type)
+  }
+
   function gameSummary(id) { // int -> string
     if (id <= 0)
       return ""
@@ -186,6 +190,7 @@ Item { id: root_
     case -800: return My.tr("Translator") // E_BAD_HOST
     case -801: return Sk.tr("Role") // E_BAD_ROLE
     case -802: return My.tr("Ruby") // E_BAD_RUBY
+    case -803: return My.tr("Context") // E_BAD_CONTEXT
     case -900: return "\\n" // E_NEWLINE
     case -901: return "\\t" // E_TAB
     case -999: return Sk.tr("Invalid") // E_MEMPTY_TEXT
@@ -210,6 +215,16 @@ Item { id: root_
   }
   function typeName(type) {
     return _TYPE_NAMES[type] // string -> string
+  }
+
+  property variant _CONTEXT_NAMES: {
+    scene: My.tr("Dialog")
+    , name: My.tr("Name")
+    , window: Sk.tr("Window")
+    , other: Sk.tr("Other")
+  }
+  function contextName(ctx) {
+    return _CONTEXT_NAMES[ctx] // string -> string
   }
 
   property int _MIN_TEXT_LENGTH: 1
@@ -515,8 +530,10 @@ Item { id: root_
             }
 
           selectedText: model.get(selectedIndex).text
-          Component.onCompleted:
-            selectedIndex = Util.TERM_TYPES.indexOf(itemValue.type) || 0
+          Component.onCompleted: {
+            var i = Util.TERM_TYPES.indexOf(itemValue.type)
+            selectedIndex = i === -1 ? 0 : i
+          }
 
         }
       }
@@ -554,6 +571,60 @@ Item { id: root_
               itemValue.updateUserId = root_.userId
               itemValue.updateTimestamp = Util.currentUnixTime()
             }
+        }
+      }
+    }
+
+    // Column: Context
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Context")
+      width: 50
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+                             && (!!itemValue.context || root_.typeAllowsContext(itemValue.type))
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          text: itemValue.context ? root_.contextName(itemValue.context) : root_.typeAllowsContext(itemValue.type) ? '*' : '-'
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : root_.typeAllowsContext(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        Desktop.ComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          model: ListModel { //id: contextModel_
+            Component.onCompleted: {
+              append({value:'', text:Sk.tr("All")})
+              for (var i in Util.TERM_CONTEXTS) {
+                var key = Util.TERM_CONTEXTS[i]
+                append({value:key, text:root_.contextName(key)})
+              }
+            }
+          }
+
+          tooltip: Sk.tr("Context")
+          visible: itemSelected && editable
+
+          onSelectedIndexChanged:
+            if (editable) {
+              var t = model.get(selectedIndex).value
+              if (t !== itemValue.context) {
+                itemValue.context = t
+                //if (t === 'macro' && !itemValue.regex)
+                //  itemValue.regex = true
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+
+          selectedText: model.get(selectedIndex).text
+          Component.onCompleted:
+            selectedIndex = Util.TERM_CONTEXTS.indexOf(itemValue.context) + 1
+
         }
       }
     }
