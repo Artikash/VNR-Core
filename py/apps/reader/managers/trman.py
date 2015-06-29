@@ -318,10 +318,10 @@ class _TranslatorManager(object):
     #else:
     r = tr(text, align=align, **kwargs)
     if r and r[0]:
-      text = r[0]
+      t = r[0]
       if self.rubyEnabled and rubyEnabled == False:
-        text = richutil.removeRuby(text)
-      func(text, r[1], r[2], align, **kw)
+        t = richutil.removeRuby(t)
+      func(t, r[1], r[2], align, **kw)
 
   def _getTranslatorPropertyName(self, key):
     """
@@ -876,8 +876,8 @@ class TranslatorManager(QObject):
           abortSignal=self.abortionRequested,
         )
     if ret and ret[0] and d.rubyEnabled and rubyEnabled == False:
-      text = richutil.removeRuby(r[0])
-      ret = text, ret[1], ret[2]
+      t = richutil.removeRuby(r[0])
+      ret = t, ret[1], ret[2]
     return ret or (None, None, None)
 
   def translateApply(self, func, text, fr='ja', to='', keepsNewLine=None, mark=None, scriptEnabled=None, ehndEnabled=None, rubyEnabled=None, **kwargs):
@@ -937,10 +937,10 @@ class TranslatorManager(QObject):
       else:
         r = it.translate(text, **kw)
         if r and r[0]:
-          text = r[0]
+          t = r[0]
           if d.rubyEnabled and thisRubyEnabled == False:
-            text = richutil.removeRuby(text)
-          func(text, r[1], r[2], align, **kwargs)
+            t = richutil.removeRuby(t)
+          func(t, r[1], r[2], align, **kwargs)
 
 @memoized
 def manager(): return TranslatorManager()
