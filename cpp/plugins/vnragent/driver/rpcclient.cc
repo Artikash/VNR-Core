@@ -180,11 +180,12 @@ void RpcClientPrivate::onCall(const QStringList &args)
   //case H_ENG_ENABLE:    q_->emit enableEngineRequested(true); break;
   //case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
   case H_ENG_TEXT:
-    if (args.size() == 4) {
+    if (args.size() == 5) {
       QString text = args[1];
       qint64 hash = unmarshalLongLong(args[2]);
       int role = unmarshalInt(args[3]);
-      q_->emit engineTranslationReceived(text, hash, role);
+      QString lang = args[4];
+      q_->emit engineTranslationReceived(text, hash, role, lang);
     }
     break;
 

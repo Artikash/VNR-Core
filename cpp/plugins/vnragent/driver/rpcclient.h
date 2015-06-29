@@ -43,7 +43,7 @@ signals:
   // Engine
   void clearEngineRequested();
   void enableEngineRequested(bool t);
-  void engineTranslationReceived(QString text, qint64 hash, int role); // json: {hash:text}
+  void engineTranslationReceived(QString text, qint64 hash, int role, QString language);
 
 public slots:
   void sendEngineName(const QString &name);

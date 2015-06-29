@@ -32,10 +32,10 @@ public: // synchronized methods
 
   // Interface to engine
 public: // unsynchronized methods
-  QString findTranslation(qint64 hash, int role) const;
+  QString findTranslation(qint64 hash, int role, QString *language = nullptr) const;
 
   void setTranslationWaitTime(int msecs);
-  QString waitForTranslation(qint64 hash, int role) const;
+  QString waitForTranslation(qint64 hash, int role, QString *language = nullptr) const;
 
   void sendText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation);
 
