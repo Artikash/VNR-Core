@@ -909,8 +909,8 @@ class _TextManager(object):
         self.q.windowTranslationChanged.emit(changedTranslation)
       else:
         growl.msg(my.tr("Not found machine translation"))
-   except Exception, e: # this function could raise if the windowTexts is changed by another thread
-     dwarn(e)
+    except Exception, e: # this function could raise if the windowTexts is changed by another thread
+      dwarn(e)
 
   #def adjustWindowTranslation(self, trs):
   #  """
