@@ -279,7 +279,8 @@ Item { id: root_
   }
 
   function renderTranslationRuby(text, lang, width, fontFamily) {
-    return bean_.renderTranslationRuby(text, lang, width
+    return bean_.renderTranslationRuby(text, lang
+      , Math.max(width - 10, 0) // - 10 in case it is out of screen
       , fontFamily // rb font
       , 18 * root_.zoomFactor || 1 // rb pixel size
       , 'Tahoma' // rt font
