@@ -270,7 +270,7 @@ class GrimoireBean(QObject):
     if h != text:
       if center:
         h = "<center>%s</center>" % h
-      css = '<style type="text/css">.rt{font-family:%s;font-size:%spx}</style>' % (rtFamily, rtSize)
+      css = '<style>.rt{font-family:%s;font-size:%spx}</style>' % (rtFamily, rtSize)
       h = css + h
     return h
 

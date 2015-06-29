@@ -1373,7 +1373,7 @@ Item { id: root_
             if ((model.type === 'tr' || model.type === 'name.tr')
                 && root_.termRubyEnabled && ~t.indexOf('[ruby='))
               t = root_.renderTranslationRuby(t, model.language, textEdit_.width, font.family)
-            if (root_.splitsTranslation && model.type === 'tr')
+            else if (root_.splitsTranslation && model.type === 'tr')
               t = root_.splitTranslation(t, model.language)
           }
           if (~t.indexOf("</a>"))
