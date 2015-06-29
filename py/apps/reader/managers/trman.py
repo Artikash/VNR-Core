@@ -858,7 +858,6 @@ class TranslatorManager(QObject):
         'async': async,
         'emit': emit,
         'keepsNewLine': keepsNewLine,
-        'align': False,
       }
       it = d.findRetranslator(it, to=to, fr=fr) or it
       if it.key == 'eztrans':
