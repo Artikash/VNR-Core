@@ -213,7 +213,10 @@ Item { id: root_
   //}
 
   function normalizeTtsText(text) { // string ->  string  remove HTML tags
-    return Util.removeHtmlTags(text).replace(/^【[^】]+】/, '') // remove character name for tts
+    text = Util.removeHtmlTags(text)
+    text = text.replace(/^【[^】]+】/, '') // remove character name for tts
+    text = Util.removeBBCode(text)
+    return text
   }
 
   function isRubyLanguage(lang) { // string -> bool
