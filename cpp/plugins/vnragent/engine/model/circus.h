@@ -27,7 +27,7 @@ public:
     scenarioLineCapacity =
     otherLineCapacity = 40; // 61 in D.C.III, around 50 in 水夏弐律(vertical)
     attachFunction = &Self::attach;
-    //rubyCreateFunction = &Self::rubyCreate;   // no idea why manual ruby does not work
+    //rubyCreateFunction = &Self::rubyCreate; // ruby only works for double-width characters
     rubyRemoveFunction = &Self::rubyRemove;
   }
 };
