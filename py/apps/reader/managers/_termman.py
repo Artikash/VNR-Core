@@ -328,10 +328,13 @@ class TermWriter:
                 repl = zhs2zht(repl)
                 if role == defs.TERM_NAME_ROLE:
                   repl = ja2zht_name_fix(repl)
-            if td.type == 'yomi':
-              repl = kana2name(repl, to) or repl
-            elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
-              repl = toalphabet(repl, to=to, fr=td.language)
+              if td.type == 'yomi':
+                repl = kana2name(repl, to) or repl
+              elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
+                ruby = repl if not td.ruby and self.rubyEnabled else ''
+                repl = toalphabet(repl, to=to, fr=td.language)
+                if ruby and ruby != repl:
+                  repl = richutil.createRuby(repl, ruby)
 
           if td.phrase:
             left = pattern[0]
