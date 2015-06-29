@@ -300,8 +300,7 @@ class _TranslatorManager(object):
         session=self.session,
         postprocess=self.postprocessCharacterset))
 
-  @staticmethod
-  def translateAndApply(func, kw, tr, text, align=None, rubyEnabled=None, **kwargs):
+  def translateAndApply(self, func, kw, tr, text, align=None, rubyEnabled=None, **kwargs):
     """
     @param  func  function to apply
     @param  kw  arguments passed to func
