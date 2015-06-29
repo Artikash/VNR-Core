@@ -735,6 +735,17 @@ DWORD findEnclosingAlignedFunction(DWORD start, DWORD back_range)
   return 0;
 }
 
+DWORD findEnclosingFunctionAfterInt3(DWORD start, DWORD back_range)
+{
+  start &= ~0xf;
+  for (DWORD i = start, j = start - back_range; i > j; i-=0x10) {
+    DWORD k = *(DWORD *)(i-4);
+    if (k == 0xcccccccc)
+      return i;
+  }
+  return 0;
+}
+
 DWORD findBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
 {
   DWORD reladdr = searchPattern(lowerBound, upperBound - lowerBound, pattern, patternSize);
