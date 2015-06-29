@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ko_KR">
+<!DOCTYPE TS><TS version="1.1" language="ko_KR">
 <context>
     <name>sakurakit</name>
     <message>
@@ -2516,7 +2515,7 @@
     <message>
         <location filename="sktr.py" line="464"/>
         <source>Disagree</source>
-        <translation>동의하지 않음</translation>
+        <translation>반대</translation>
     </message>
     <message>
         <location filename="sktr.py" line="375"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>자동적 인</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -85,6 +85,16 @@ Item { id: root_
     return _TYPE_NAMES[type] // string -> string
   }
 
+  property variant _CONTEXT_NAMES: {
+    scene: My.tr("Dialog")
+    , name: My.tr("Name")
+    , window: Sk.tr("Window")
+    , other: Sk.tr("Other")
+  }
+  function contextName(ctx) {
+    return _CONTEXT_NAMES[ctx] // string -> string
+  }
+
   function hostName(host) { // string -> string
     if (~host.indexOf(',')) {
       var names = []
@@ -165,6 +175,8 @@ Item { id: root_
         + " (" + (Sk.tr(Util.languageName(currentItem.sourceLanguage)) || currentItem.sourceLanguage)
         + " &rArr; " + (Sk.tr(currentItem.language == 'ja' ? "All" : Util.languageName(currentItem.language)) || currentItem.Language)
         + ")"
+    if (currentItem.context)
+      ret += " #" + contextName(currentItem.context)
     if (currentItem.host)
       ret += " " + hostName(currentItem.host)
     var role = currentItem.role || typeDefaultRole(currentItem.type)
@@ -324,6 +336,7 @@ Item { id: root_
     case -800: return qsTr("Entry type does not allow being translator-specific") // E_BAD_HOST
     case -801: return qsTr("Please use only ASCII characters for translation role") // E_BAD_ROLE
     case -802: return qsTr("Rule type does not support ruby") // E_BAD_RUBY
+    case -803: return qsTr("Rule type does not support context") // E_BAD_CONTEXT
     case -900: return qsTr("New line characters are not allowed in text") // E_NEWLINE
     case -901: return qsTr("Tab characters are not allowed in text") // E_TAB
     case -999: return qsTr("Missing translation") // E_EMPTY_TEXT

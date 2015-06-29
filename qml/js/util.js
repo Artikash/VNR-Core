@@ -272,6 +272,13 @@ var TERM_TYPES = [
   , 'proxy'
 ];
 
+var TERM_CONTEXTS = [
+  'scene'
+  , 'name'
+  , 'window'
+  , 'other'
+];
+
 // - Cast -
 
 /**

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="nl_NL">
+<!DOCTYPE TS><TS version="1.1" language="nl_NL">
 <context>
     <name>sakurakit</name>
     <message>
@@ -101,12 +100,12 @@
     <message>
         <location filename="sktr.py" line="322"/>
         <source>Default</source>
-        <translation>Verzuim</translation>
+        <translation>Standaard</translation>
     </message>
     <message>
         <location filename="sktr.py" line="322"/>
         <source>default</source>
-        <translation>verzuim</translation>
+        <translation>standaard</translation>
     </message>
     <message>
         <location filename="sktr.py" line="143"/>
@@ -221,7 +220,7 @@
     <message>
         <location filename="sktr.py" line="225"/>
         <source>Update</source>
-        <translation>Bijwerken</translation>
+        <translation>Update</translation>
     </message>
     <message>
         <location filename="sktr.py" line="440"/>
@@ -456,12 +455,12 @@
     <message>
         <location filename="sktr.py" line="447"/>
         <source>No</source>
-        <translation>Geen</translation>
+        <translation>Nee</translation>
     </message>
     <message>
         <location filename="sktr.py" line="447"/>
         <source>no</source>
-        <translation>geen</translation>
+        <translation>Nee</translation>
     </message>
     <message>
         <location filename="sktr.py" line="448"/>
@@ -546,7 +545,7 @@
     <message>
         <location filename="sktr.py" line="151"/>
         <source>Edit</source>
-        <translation>Uitgeven</translation>
+        <translation>Bewerk</translation>
     </message>
     <message>
         <location filename="sktr.py" line="153"/>
@@ -841,7 +840,7 @@
     <message>
         <location filename="sktr.py" line="212"/>
         <source>Software Update</source>
-        <translation>Software-update</translation>
+        <translation>Software-Update</translation>
     </message>
     <message>
         <location filename="sktr.py" line="389"/>
@@ -1166,7 +1165,7 @@
     <message>
         <location filename="sktr.py" line="155"/>
         <source>enabled</source>
-        <translation>enabled</translation>
+        <translation>ingeschakeld</translation>
     </message>
     <message>
         <location filename="sktr.py" line="188"/>
@@ -1216,12 +1215,12 @@
     <message>
         <location filename="sktr.py" line="259"/>
         <source>Keyboard shortcuts</source>
-        <translation>Sneltoetsen</translation>
+        <translation>Toetsenbord sneltoetsen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="151"/>
         <source>edit</source>
-        <translation>uitgeven</translation>
+        <translation>Bewerk</translation>
     </message>
     <message>
         <location filename="sktr.py" line="144"/>
@@ -1346,7 +1345,7 @@
     <message>
         <location filename="sktr.py" line="340"/>
         <source>Homepage</source>
-        <translation>Homepage</translation>
+        <translation>Startpagina</translation>
     </message>
     <message>
         <location filename="sktr.py" line="306"/>
@@ -1561,7 +1560,7 @@
     <message>
         <location filename="sktr.py" line="370"/>
         <source>Order</source>
-        <translation>Orde</translation>
+        <translation>Bestellen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="509"/>
@@ -1606,7 +1605,7 @@
     <message>
         <location filename="sktr.py" line="27"/>
         <source>Mainland China</source>
-        <translation>Het vasteland van China</translation>
+        <translation>Vasteland Van China</translation>
     </message>
     <message>
         <location filename="sktr.py" line="299"/>
@@ -1721,22 +1720,22 @@
     <message>
         <location filename="sktr.py" line="114"/>
         <source>Left Click</source>
-        <translation>Left Click</translation>
+        <translation>Linkermuisklik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="114"/>
         <source>Left click</source>
-        <translation>Klik met de linkermuisknop</translation>
+        <translation>Links klikken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="115"/>
         <source>Left-Click</source>
-        <translation>Left-Click</translation>
+        <translation>Linkermuisklik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="115"/>
         <source>Left-click</source>
-        <translation>Left-click</translation>
+        <translation>Links klikken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="116"/>
@@ -1946,7 +1945,7 @@
     <message>
         <location filename="sktr.py" line="179"/>
         <source>Note</source>
-        <translation>Notitie</translation>
+        <translation>Aantekening</translation>
     </message>
     <message>
         <location filename="sktr.py" line="296"/>
@@ -2071,7 +2070,7 @@
     <message>
         <location filename="sktr.py" line="478"/>
         <source>Network Error</source>
-        <translation>Network Error</translation>
+        <translation>Netwerkfout</translation>
     </message>
     <message>
         <location filename="sktr.py" line="128"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>Automatisch</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -1490,6 +1490,7 @@ class _NetworkManager(object):
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
                 'host': elem.get('host') or '',
+                'context': elem.get('context') or '',
                 'deleted': elem.get('deleted') == 'true',
               }
           else:
@@ -1552,8 +1553,11 @@ class _NetworkManager(object):
       'sourcelang': td.sourceLanguage,
       'type': td.type,
     }
-    if td.host:
-      params['host'] = td.host
+    for k in 'host', 'context':
+      v = getattr(td, k)
+      if v:
+        params[k.lower()] = v
+
     if td.gameId:
       params['gameid'] = td.gameId
     elif td.gameMd5:
@@ -1660,7 +1664,7 @@ class _NetworkManager(object):
     if 'sourceLanguage' in pty:   params['sourcelang'] = td.sourceLanguage
     if 'disabled' in pty:         params['disable'] = td.disabled
 
-    for k in 'gameId', 'type', 'host', 'special', 'private', 'hentai', 'icase', 'regex', 'phrase':
+    for k in 'gameId', 'type', 'host', 'context', 'special', 'private', 'hentai', 'icase', 'regex', 'phrase':
       if k in pty:
         params[k.lower()] = getattr(term, k)
 

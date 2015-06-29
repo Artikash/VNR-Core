@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="id_ID">
+<!DOCTYPE TS><TS version="1.1" language="id_ID">
 <context>
     <name>sakurakit</name>
     <message>
@@ -426,7 +425,7 @@
     <message>
         <location filename="sktr.py" line="430"/>
         <source>Username</source>
-        <translation>Nama pengguna</translation>
+        <translation>Nama Pengguna</translation>
     </message>
     <message>
         <location filename="sktr.py" line="432"/>
@@ -771,12 +770,12 @@
     <message>
         <location filename="sktr.py" line="215"/>
         <source>Spell Check</source>
-        <translation>Periksa Ejaan</translation>
+        <translation>Cek Ejaan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="215"/>
         <source>Spell check</source>
-        <translation>Spell check</translation>
+        <translation>Cek ejaan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="217"/>
@@ -881,12 +880,12 @@
     <message>
         <location filename="sktr.py" line="473"/>
         <source>Case-sensitive</source>
-        <translation>Case-sensitive</translation>
+        <translation>Hal - hal sensitif</translation>
     </message>
     <message>
         <location filename="sktr.py" line="473"/>
         <source>case-sensitive</source>
-        <translation>case-sensitive</translation>
+        <translation>hal - hal sensitif</translation>
     </message>
     <message>
         <location filename="sktr.py" line="311"/>
@@ -936,7 +935,7 @@
     <message>
         <location filename="sktr.py" line="189"/>
         <source>Pop-up</source>
-        <translation>Pop-up</translation>
+        <translation>Muncul</translation>
     </message>
     <message>
         <location filename="sktr.py" line="193"/>
@@ -1271,7 +1270,7 @@
     <message>
         <location filename="sktr.py" line="189"/>
         <source>pop-up</source>
-        <translation>pop-up</translation>
+        <translation>muncul</translation>
     </message>
     <message>
         <location filename="sktr.py" line="418"/>
@@ -1331,7 +1330,7 @@
     <message>
         <location filename="sktr.py" line="48"/>
         <source>Indonesian</source>
-        <translation>Indonesia</translation>
+        <translation>Bahasa Indonesia</translation>
     </message>
     <message>
         <location filename="sktr.py" line="301"/>
@@ -1761,7 +1760,7 @@
     <message>
         <location filename="sktr.py" line="118"/>
         <source>Right Click</source>
-        <translation>Klik kanan</translation>
+        <translation>Klik Kanan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="118"/>
@@ -1771,7 +1770,7 @@
     <message>
         <location filename="sktr.py" line="119"/>
         <source>Right-Click</source>
-        <translation>Klik kanan</translation>
+        <translation>Klik Kanan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="119"/>
@@ -2016,12 +2015,12 @@
     <message>
         <location filename="sktr.py" line="190"/>
         <source>Popup</source>
-        <translation>Popup</translation>
+        <translation>Muncul</translation>
     </message>
     <message>
         <location filename="sktr.py" line="175"/>
         <source>Lookup</source>
-        <translation>Lookup</translation>
+        <translation>Mencari</translation>
     </message>
     <message>
         <location filename="sktr.py" line="133"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>Otomatis</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

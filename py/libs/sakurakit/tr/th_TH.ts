@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="th_TH">
+<!DOCTYPE TS><TS version="1.1" language="th_TH">
 <context>
     <name>sakurakit</name>
     <message>
@@ -31,7 +30,7 @@
     <message>
         <location filename="sktr.py" line="32"/>
         <source>Chinese</source>
-        <translation>จีน</translation>
+        <translation>ชาวจีน</translation>
     </message>
     <message>
         <location filename="sktr.py" line="33"/>
@@ -101,12 +100,12 @@
     <message>
         <location filename="sktr.py" line="322"/>
         <source>Default</source>
-        <translation>ผิดนัด</translation>
+        <translation>ค่าเริ่มต้น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="322"/>
         <source>default</source>
-        <translation>ผิดนัด</translation>
+        <translation>ค่าเริ่มต้น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="143"/>
@@ -146,7 +145,7 @@
     <message>
         <location filename="sktr.py" line="163"/>
         <source>Finish</source>
-        <translation>เสร็จสิ้น</translation>
+        <translation>เสร็จ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="164"/>
@@ -231,7 +230,7 @@
     <message>
         <location filename="sktr.py" line="236"/>
         <source>All files</source>
-        <translation>ไฟล์ทั้งหมด</translation>
+        <translation>เอกสารทั้งหมด</translation>
     </message>
     <message>
         <location filename="sktr.py" line="237"/>
@@ -296,7 +295,7 @@
     <message>
         <location filename="sktr.py" line="327"/>
         <source>Features</source>
-        <translation>คุณสมบัติ</translation>
+        <translation>คุณลักษณะเด่น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="336"/>
@@ -311,7 +310,7 @@
     <message>
         <location filename="sktr.py" line="339"/>
         <source>Help</source>
-        <translation>ช่วย</translation>
+        <translation>ช่วยด้วย</translation>
     </message>
     <message>
         <location filename="sktr.py" line="341"/>
@@ -356,7 +355,7 @@
     <message>
         <location filename="sktr.py" line="384"/>
         <source>Plug-in</source>
-        <translation>Plug-in</translation>
+        <translation>ปลั๊กอิน</translation>
     </message>
     <message>
         <location filename="sktr.py" line="385"/>
@@ -476,12 +475,12 @@
     <message>
         <location filename="sktr.py" line="450"/>
         <source>Read-only</source>
-        <translation>อ่านอย่างเดียว</translation>
+        <translation>อ่านเท่านั้น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="450"/>
         <source>read-only</source>
-        <translation>อ่านอย่างเดียว</translation>
+        <translation>อ่านเท่านั้น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="451"/>
@@ -516,7 +515,7 @@
     <message>
         <location filename="sktr.py" line="382"/>
         <source>Properties</source>
-        <translation>สรรพคุณ</translation>
+        <translation>คุณสมบัติ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="125"/>
@@ -881,12 +880,12 @@
     <message>
         <location filename="sktr.py" line="473"/>
         <source>Case-sensitive</source>
-        <translation>กรณีที่มีความอ่อนไหว</translation>
+        <translation>กรณีที่สำคัญ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="473"/>
         <source>case-sensitive</source>
-        <translation>กรณีที่มีความอ่อนไหว</translation>
+        <translation>กรณีที่สำคัญ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="311"/>
@@ -916,7 +915,7 @@
     <message>
         <location filename="sktr.py" line="136"/>
         <source>Close</source>
-        <translation>ใกล้</translation>
+        <translation>ปิด</translation>
     </message>
     <message>
         <location filename="sktr.py" line="201"/>
@@ -926,12 +925,12 @@
     <message>
         <location filename="sktr.py" line="499"/>
         <source>For example</source>
-        <translation>เช่น</translation>
+        <translation>ตัวอย่างเช่น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="499"/>
         <source>for example</source>
-        <translation>เช่น</translation>
+        <translation>ตัวอย่างเช่น</translation>
     </message>
     <message>
         <location filename="sktr.py" line="189"/>
@@ -981,7 +980,7 @@
     <message>
         <location filename="sktr.py" line="112"/>
         <source>Double Click</source>
-        <translation>ดับเบิ้ลคลิก</translation>
+        <translation>ดับเบิลคลิก</translation>
     </message>
     <message>
         <location filename="sktr.py" line="112"/>
@@ -1121,7 +1120,7 @@
     <message>
         <location filename="sktr.py" line="316"/>
         <source>Context</source>
-        <translation>สิ่งแวดล้อม</translation>
+        <translation>บริบท</translation>
     </message>
     <message>
         <location filename="sktr.py" line="177"/>
@@ -1276,7 +1275,7 @@
     <message>
         <location filename="sktr.py" line="418"/>
         <source>Time zone</source>
-        <translation>โซนเวลา</translation>
+        <translation>เขตเวลา</translation>
     </message>
     <message>
         <location filename="sktr.py" line="353"/>
@@ -1351,7 +1350,7 @@
     <message>
         <location filename="sktr.py" line="306"/>
         <source>Avatar</source>
-        <translation>Avatar</translation>
+        <translation>สัญลักษณ์</translation>
     </message>
     <message>
         <location filename="sktr.py" line="183"/>
@@ -1486,7 +1485,7 @@
     <message>
         <location filename="sktr.py" line="162"/>
         <source>Full screen</source>
-        <translation>เต็มหน้าจอ</translation>
+        <translation>เต็มจอ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="401"/>
@@ -2246,7 +2245,7 @@
     <message>
         <location filename="sktr.py" line="443"/>
         <source>Zoom Out</source>
-        <translation>Zoom Out</translation>
+        <translation>ซูมออก</translation>
     </message>
     <message>
         <location filename="sktr.py" line="443"/>
@@ -2276,7 +2275,7 @@
     <message>
         <location filename="sktr.py" line="319"/>
         <source>Desktop</source>
-        <translation>สก์ท็อป</translation>
+        <translation>เดสก์ทอป</translation>
     </message>
     <message>
         <location filename="sktr.py" line="359"/>
@@ -2391,7 +2390,7 @@
     <message>
         <location filename="sktr.py" line="460"/>
         <source>Like</source>
-        <translation>เช่น</translation>
+        <translation>ชอบ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="383"/>
@@ -2401,7 +2400,7 @@
     <message>
         <location filename="sktr.py" line="156"/>
         <source>Equal</source>
-        <translation>เท่ากัน</translation>
+        <translation>เท่ากับ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="471"/>
@@ -2411,7 +2410,7 @@
     <message>
         <location filename="sktr.py" line="156"/>
         <source>equal</source>
-        <translation>เท่ากัน</translation>
+        <translation>เท่ากับ</translation>
     </message>
     <message>
         <location filename="sktr.py" line="283"/>
@@ -2511,7 +2510,7 @@
     <message>
         <location filename="sktr.py" line="463"/>
         <source>Agree</source>
-        <translation>เห็นด้วย</translation>
+        <translation>ตกลง</translation>
     </message>
     <message>
         <location filename="sktr.py" line="464"/>
@@ -2698,6 +2697,11 @@
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
         <translation>อัตโนมัติ</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="436"/>
+        <source>window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
