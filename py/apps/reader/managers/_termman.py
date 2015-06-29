@@ -68,7 +68,7 @@ def _get_context_category(context):
   @return  int  category flag mark or 0
   """
   if context:
-    try: return 1 << dataman.Term.CONTEXTS.index(host)
+    try: return 1 << dataman.Term.CONTEXTS.index(context)
     except: pass
   return 0
 
@@ -408,9 +408,9 @@ class TermWriter:
                   repl = "%s[[]]" % repl
 
           if type_trans:
-            self._writeCodecLine(f, td.id, pattern, repl, regex, td.icase, td.host, role)
+            self._writeCodecLine(f, td.id, pattern, repl, regex, td.icase, td.context, td.host, role)
           else:
-            self._writeTransformLine(f, td.id, pattern, repl, regex, td.icase, td.host)
+            self._writeTransformLine(f, td.id, pattern, repl, regex, td.icase, td.context, td.host)
 
           empty = False
 
@@ -424,7 +424,7 @@ class TermWriter:
     return False
 
   @staticmethod
-  def _writeTransformLine(f, tid, pattern, repl, regex, icase, host):
+  def _writeTransformLine(f, tid, pattern, repl, regex, icase, context, host):
     """
     @param  f  file
     @param  tid  long
@@ -432,13 +432,14 @@ class TermWriter:
     @param  repl  unicode
     @param  regex  bool
     @param  icase  bool
+    @param  context  str
     @param  host  str
     @return  unicode or None
     """
     if '\n' in pattern or '\n' in repl or '\t' in pattern or '\t' in repl:
       dwarn("skip tab or new line in term: id = %s" % tid)
       return
-    cat = make_categories(host=host)
+    cat = make_categories(context=context, host=host)
     cols = [str(tid), str(cat), pattern]
     if repl:
       cols.append(repl)
@@ -451,7 +452,7 @@ class TermWriter:
     f.write(line)
 
   @staticmethod
-  def _writeCodecLine(f, tid, pattern, repl, regex, icase, host, role):
+  def _writeCodecLine(f, tid, pattern, repl, regex, icase, context, host, role):
     """
     @param  f  file
     @param  tid  long
@@ -459,6 +460,7 @@ class TermWriter:
     @param  repl  unicode
     @param  regex  bool
     @param  icase  bool
+    @param  context  str
     @param  host  str
     @param  role  str
     @return  unicode or None
@@ -466,7 +468,7 @@ class TermWriter:
     if '\n' in pattern or '\n' in repl:
       dwarn("skip new line in term: id = %s" % tid)
       return
-    cat = make_categories(host=host)
+    cat = make_categories(context=context, host=host)
     features = [str(tid), str(cat)]
     flags = ''
     if icase:
