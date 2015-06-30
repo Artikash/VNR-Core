@@ -2810,7 +2810,11 @@ class _Term(object):
   CONTEXTS = 'scene', 'name', 'window', 'other'
   TR_CONTEXTS = tuple(map(i18n.game_context_name, CONTEXTS))
   HOST_TYPES = 'input', 'output', 'trans', 'suffix', 'prefix', 'name', 'yomi', 'proxy' # types allow host
-  CONTEXT_TYPES = HOST_TYPES
+
+  CONTEXT_TYPES = list(HOST_TYPES)
+  CONTEXT_TYPES.append('game')
+  CONTEXT_TYPES = tuple(CONTEXT_TYPES)
+
   ROLE_TYPES = 'trans', 'yomi', 'proxy' # types allow role
   RUBY_TYPES = 'trans', 'output', 'name', 'yomi', 'prefix', 'suffix' # types allow ruby
 

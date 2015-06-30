@@ -343,7 +343,7 @@ class _TextManager(object):
             tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng, gender=cd.gender)
     self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
-  def _repairText(self, text, to=None, fr=None):
+  def _repairText(self, text, to=None, fr=None, context=''):
     """
     @param  text  unicode
     @param  to  unicode
@@ -361,7 +361,7 @@ class _TextManager(object):
     if fr or to:
       #with SkProfiler(): # 0.046 seconds
       text = termman.manager().applyGameTerms(text, to=to, fr=fr,
-          ignoreIfNotReady=True)
+          context=context, ignoreIfNotReady=True)
       if not text:
         return ''
     if self.removesRepeat and text: # and nochange:
@@ -608,7 +608,7 @@ class _TextManager(object):
     if not text:
       return
     if not agent: # only repair text for ITH
-      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage, context='scene')
     if not text:
       #dprint("ignore text")
       return
@@ -774,7 +774,7 @@ class _TextManager(object):
     if not text:
       return
     if not agent:
-      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage, context='name')
       if not text:
         return
     text = textutil.normalize_name(text)
@@ -804,7 +804,7 @@ class _TextManager(object):
 
     text = self._decodeText(data).strip()
     if text: #and not agent: # always repair text for other text
-      text = self._repairText(text, to=self.language, fr=self.gameLanguage)
+      text = self._repairText(text, to=self.language, fr=self.gameLanguage, context='other')
     if not text:
       #dprint("no text")
       return
