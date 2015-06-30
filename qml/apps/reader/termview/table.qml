@@ -539,42 +539,6 @@ Item { id: root_
       }
     }
 
-    // Column: Host
-    Desktop.TableColumn {
-      role: 'object'; title: My.tr("Translator")
-      width: 50
-      delegate: Item {
-        height: table_.cellHeight
-        property bool editable: canEdit(itemValue)
-                             && (!!itemValue.host || root_.typeAllowsHost(itemValue.type))
-        Text {
-          anchors { fill: parent; leftMargin: table_.cellSpacing }
-          textFormat: Text.PlainText
-          clip: true
-          verticalAlignment: Text.AlignVCenter
-          text: itemValue.host ? root_.hostName(itemValue.host) : root_.typeAllowsHost(itemValue.type) ? '*' : '-'
-          visible: !itemSelected || !editable
-          color: itemSelected ? 'white' : root_.typeAllowsHost(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
-          font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex //|| itemValue.syntax
-        }
-        TermView.HostComboBox {
-          anchors { fill: parent; leftMargin: table_.cellSpacing }
-
-          visible: itemSelected && editable
-
-          selectedValue: itemValue.host
-
-          onSelectedValueChanged:
-            if (editable && itemValue.host !== selectedValue) {
-              itemValue.host = selectedValue
-              itemValue.updateUserId = root_.userId
-              itemValue.updateTimestamp = Util.currentUnixTime()
-            }
-        }
-      }
-    }
-
     // Column: Context
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Context")
@@ -625,6 +589,42 @@ Item { id: root_
           Component.onCompleted:
             selectedIndex = Util.TERM_CONTEXTS.indexOf(itemValue.context) + 1
 
+        }
+      }
+    }
+
+    // Column: Host
+    Desktop.TableColumn {
+      role: 'object'; title: My.tr("Translator")
+      width: 50
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+                             && (!!itemValue.host || root_.typeAllowsHost(itemValue.type))
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          text: itemValue.host ? root_.hostName(itemValue.host) : root_.typeAllowsHost(itemValue.type) ? '*' : '-'
+          visible: !itemSelected || !editable
+          color: itemSelected ? 'white' : root_.typeAllowsHost(itemValue.type) ? itemColor(itemValue) : itemValue.host ? 'red' : 'black'
+          font.strikeout: itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        TermView.HostComboBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+
+          visible: itemSelected && editable
+
+          selectedValue: itemValue.host
+
+          onSelectedValueChanged:
+            if (editable && itemValue.host !== selectedValue) {
+              itemValue.host = selectedValue
+              itemValue.updateUserId = root_.userId
+              itemValue.updateTimestamp = Util.currentUnixTime()
+            }
         }
       }
     }
