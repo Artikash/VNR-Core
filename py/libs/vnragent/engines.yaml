@@ -19,6 +19,11 @@
   #exist: AdvData/DAT/NAMES.DAT
   #encoding: sjis
 
+- name: EmbedCotopha  # 6/5/2014  CIRCUS2
+  exist: "*.noa|data/*.noa"
+  #exist: AdvData/DAT/NAMES.DAT
+  #encoding: utf16
+
 - name: EmbedDebonosu # 6/18/2015 jichi
   exist:
     - bmp.pak

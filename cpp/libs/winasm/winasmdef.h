@@ -34,8 +34,11 @@
 #define s1_pushfd       0x9c    // pushfd
 #define s1_popfd        0x9d    // popfd
 
-#define s1_mov_edi_eax  0x8b,0xf8   // move edi,eax
-#define s2_mov_edi_eax  0xf88b      // move edi,eax
+#define s1_mov_edi_eax  0x8b,0xf8   // mov edi,eax
+#define s2_mov_edi_eax  0xf88b
+
+#define s1_mov_ecx_edi  0x8b,0xcf   // mov ecx,edi
+#define s2_mov_ecx_edi  0xcf8b
 
 #define s1_mov_ecx_0d   0xb9, s1_0d // mov ecx, 0x0000
 

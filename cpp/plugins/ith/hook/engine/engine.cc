@@ -6110,7 +6110,7 @@ bool InsertCotophaHook()
   HookParam hp = {};
   hp.address = addr;
   hp.offset = 4;
-  hp.split = -0x1c;
+  hp.split = -0x1c; // jichi: esp?
   hp.type = USING_UNICODE|USING_SPLIT|USING_STRING;
   ConsoleOutput("vnreng: INSERT Cotopha");
   NewHook(hp, L"Cotopha");

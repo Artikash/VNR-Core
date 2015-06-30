@@ -10,9 +10,10 @@
 #include "engine/model/age.h"
 #include "engine/model/aoi.h"
 #include "engine/model/bgi.h"
+#include "engine/model/circus.h"
+#include "engine/model/cotopha.h"
 //#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
-#include "engine/model/circus.h"
 #include "engine/model/elf.h"
 //#include "engine/model/horkeye.h"
 #include "engine/model/leaf.h"
@@ -48,6 +49,7 @@ EngineController *EngineFactory::createEngine()
     //, new HorkEyeEngine
     , new ElfEngine
     , new DebonosuEngine
+    , new CotophaEngine
     , new CircusEngine
     , new BGIEngine
     , new ARCGameEngine

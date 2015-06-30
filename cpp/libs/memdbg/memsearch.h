@@ -142,6 +142,7 @@ inline dword_t findPushAddress(dword_t value, dword_t lowerBound, dword_t upperB
  */
 dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumFunctionSize);
 dword_t findEnclosingFunctionAfterInt3(dword_t addr, dword_t searchSize = MaximumFunctionSize);
+dword_t findEnclosingFunctionAfterNop(dword_t addr, dword_t searchSize = MaximumFunctionSize);
 
 /**
  *  Return the address of the first matched pattern.

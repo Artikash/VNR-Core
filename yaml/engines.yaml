@@ -60,6 +60,7 @@ embed:
   - BGI2
   #- CatSystem2
   #- CatSystem3
+  - Cotopha
   - Debonosu
   - DebonosuName
   - Elf
@@ -580,6 +581,7 @@ wchar:
   - sceFontGetShadowGlyphImage
   - sceFontGetShadowGlyphImage_Clip
   # Embed
+  - EmbedCotopha
   - EmbedSiglusEngine
   - EmbedSystemAoiW
   # Engines
@@ -645,6 +647,7 @@ focus:
   - BootupLstrW
   - CatSystem2
   - CatSystem3
+  - Cotopha
   - Circus
   - Circus1
   - Debonosu
@@ -653,6 +656,7 @@ focus:
   - EmbedARCGameEngine
   #- EmbedCatSystem2
   - EmbedCircus
+  - EmbedCotopha
   - EmbedDebonosu
   #- EmbedHorkEye
   - EmbedLeaf
