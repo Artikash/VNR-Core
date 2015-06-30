@@ -132,6 +132,7 @@ HEADERS += \
   engine/model/aoi.h \
   engine/model/bgi.h \
   engine/model/circus.h \
+  engine/model/cotopha.h \
   engine/model/debonosu.h \
   engine/model/elf.h \
   engine/model/leaf.h \
@@ -157,6 +158,7 @@ SOURCES += \
   engine/model/aoi.cc \
   engine/model/bgi.cc \
   engine/model/circus.cc \
+  engine/model/cotopha.cc \
   engine/model/debonosu.cc \
   engine/model/elf.cc \
   engine/model/leaf.cc \

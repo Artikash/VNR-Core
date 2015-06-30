@@ -410,6 +410,17 @@ DWORD findLastByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD ran
 //  return 0;
 //}
 
+DWORD findEnclosingFunctionAfterDword(DWORD start, DWORD back_range, DWORD value)
+{
+  start &= ~0xf;
+  for (DWORD i = start, j = start - back_range; i > j; i-=0x10) {
+    DWORD k = *(DWORD *)(i-4);
+    if (k == value)
+      return i;
+  }
+  return 0;
+}
+
 } // namespace unnamed
 
 MEMDBG_BEGIN_NAMESPACE
@@ -736,15 +747,10 @@ DWORD findEnclosingAlignedFunction(DWORD start, DWORD back_range)
 }
 
 DWORD findEnclosingFunctionAfterInt3(DWORD start, DWORD back_range)
-{
-  start &= ~0xf;
-  for (DWORD i = start, j = start - back_range; i > j; i-=0x10) {
-    DWORD k = *(DWORD *)(i-4);
-    if (k == 0xcccccccc)
-      return i;
-  }
-  return 0;
-}
+{ return findEnclosingFunctionAfterDword(start, back_range, 0xcccccccc); }
+
+DWORD findEnclosingFunctionAfterNop(DWORD start, DWORD back_range)
+{ return findEnclosingFunctionAfterDword(start, back_range, 0x90909090); }
 
 DWORD findBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
 {

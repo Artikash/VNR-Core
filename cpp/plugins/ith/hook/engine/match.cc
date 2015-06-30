@@ -151,7 +151,7 @@ bool DetermineEngineByFile1()
     InsertCircusHook2();
     return true;
   }
-  if (IthFindFile(L"*.noa")) {
+  if (IthFindFile(L"*.noa") || IthFindFile(L"data\\*.noa")) {
     InsertCotophaHook();
     return true;
   }
