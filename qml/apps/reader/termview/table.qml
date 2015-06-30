@@ -151,7 +151,7 @@ Item { id: root_
   }
 
   function typeAllowsContext(type) { // string -> bool
-    return typeAllowsHost(type)
+    return type === 'game' || typeAllowsHost(type)
   }
 
   function gameSummary(id) { // int -> string

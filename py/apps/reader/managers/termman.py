@@ -439,11 +439,12 @@ class TermManager(QObject):
   #  """
   #  return self.__d.iterTerms(terms, language)
 
-  def applyGameTerms(self, text, to=None, fr=None, ignoreIfNotReady=False):
+  def applyGameTerms(self, text, to=None, fr=None, context='', ignoreIfNotReady=False):
     """
     @param  text  unicode
     @param* to  str
     @param* fr  str
+    @param* context  str
     @param* ignoreIfNotReady  bool
     @return  unicode
     """
@@ -453,7 +454,7 @@ class TermManager(QObject):
     #with SkProfiler():
     if not d.enabled or not text:
       return text
-    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja', ignoreIfNotReady=ignoreIfNotReady)
+    return d.applyTerms(text, 'game', to or d.targetLanguage, fr or 'ja', context=context, ignoreIfNotReady=ignoreIfNotReady)
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
