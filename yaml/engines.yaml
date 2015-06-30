@@ -647,7 +647,6 @@ focus:
   - BootupLstrW
   - CatSystem2
   - CatSystem3
-  - Cotopha
   - Circus
   - Circus1
   - Debonosu
@@ -656,7 +655,6 @@ focus:
   - EmbedARCGameEngine
   #- EmbedCatSystem2
   - EmbedCircus
-  - EmbedCotopha
   - EmbedDebonosu
   #- EmbedHorkEye
   - EmbedLeaf
@@ -684,6 +682,7 @@ focus:
 # No focus:
   #- AliceRunPatch43
   #- AOS
+  #- Cotopha
   #- Elf
   #- EmbedRGSS
   #- LunaSoft
