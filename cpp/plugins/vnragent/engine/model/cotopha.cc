@@ -528,11 +528,6 @@ bool attach()
 
 /** Public class */
 
-bool CotophaEngine::attach()
-{
-  if (!ScenarioHook::attach())
-    return false;
-  return true;
-}
+bool CotophaEngine::attach() { return ScenarioHook::attach(); }
 
 // EOF
