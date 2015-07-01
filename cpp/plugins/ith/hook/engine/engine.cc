@@ -3958,8 +3958,6 @@ bool InsertCMVS1Hook()
     ConsoleOutput("vnreng:CMVS1: failed to get memory range");
     return false;
   }
-  // jichi 4/19/2014: There must be a function in Majiro game which contains 6 TextOutA.
-  // That function draws all texts.
   enum { sub_esp = 0xec83 }; // caller pattern: sub esp = 0x83,0xec
   ULONG addr = MemDbg::findCallerAddress((ULONG)::GetGlyphOutlineA, sub_esp, startAddress, stopAddress);
   if (!addr) {
