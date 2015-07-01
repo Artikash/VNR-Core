@@ -138,6 +138,20 @@ bool Engine::exists(const QString &relPath)
 //  return true;
 //}
 
+bool Engine::matchFiles(const QString &pattern)
+{
+  if (pattern.isEmpty())
+    return false;
+
+  if (pattern[0].unicode() == '!' && pattern.size() > 1)
+    return !matchFiles(pattern.mid(1));
+
+  if (pattern.contains('*'))
+    return globs(pattern);
+
+  return exists(pattern);
+}
+
 // - Process and threads -
 
 QString Engine::getNormalizedProcessName()

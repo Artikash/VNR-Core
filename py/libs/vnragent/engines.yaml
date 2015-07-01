@@ -77,6 +77,10 @@
 #  exist: AoiLib.dll
 #  #encoding: sjis
 
+#- name: EmbedSystemC  # 6/5/2014  CIRCUS2
+#  exist: "*.fpk|data/*.fpk" #"!SystemC.exe"
+#  #encoding: sjis
+
 - name: EmbedRGSS # 6/7/2015
   exist: System/RGSS3*.dll # such as RGSS301.dll
   #encoding: utf16
