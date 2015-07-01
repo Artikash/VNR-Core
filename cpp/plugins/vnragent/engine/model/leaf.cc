@@ -14,8 +14,9 @@
 #include "winhook/hookutil.h"
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
+#include <cstdint>
 
-#define DEBUG "leaf"
+#define DEBUG "model/leaf"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -825,8 +826,8 @@ bool attach() // attach scenario
 
   // 0045165E   8B8497 14080000  MOV EAX,DWORD PTR DS:[EDI+EDX*4+0x814]  ; jichi: text in eax, hook1 hook after here to replace eax
   // 0045169D   8B8C97 14080000  MOV ECX,DWORD PTR DS:[EDI+EDX*4+0x814]  ; jichi: text in ecx, hook2 hook after here to replace ecx
-  const BYTE bytes1[] = { 0x8b,0x84,0x97, 0x14,0x08,0x00,0x00 },
-             bytes2[] = { 0x8b,0x8c,0x97, 0x14,0x08,0x00,0x00 };
+  const uint8_t bytes1[] = { 0x8b,0x84,0x97, 0x14,0x08,0x00,0x00 },
+                bytes2[] = { 0x8b,0x8c,0x97, 0x14,0x08,0x00,0x00 };
 
   ulong addr1 = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress),
         addr2 = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);

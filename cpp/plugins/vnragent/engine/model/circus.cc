@@ -11,7 +11,7 @@
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
 
-#define DEBUG "circus"
+#define DEBUG "model/circus"
 #include "sakurakit/skdebug.h"
 
 /** Private data */
@@ -213,7 +213,7 @@ bool attach()
 {
   ulong startAddress, stopAddress;
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
   ulong addr = Private::findFunctionAddress(startAddress, stopAddress);
   if (!addr)
     return false;

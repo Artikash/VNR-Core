@@ -15,6 +15,10 @@
   #exist: AdvData/DAT/NAMES.DAT
   #encoding: sjis
 
+- name: EmbedCMVS  # 6/5/2014  CMVS
+  exist: data/pack/*.cpz
+  #encoding: sjis
+
 - name: EmbedCotopha  # 6/5/2014  CIRCUS2
   exist: "*.noa|data/*.noa"
   #exist: AdvData/DAT/NAMES.DAT
@@ -79,7 +83,7 @@
 #  exist: "*.int"
 #  #encoding: sjis
 
-#- name: EmbedUnicorn # 6/22/2015 jichi
+#- name: EmbedUnicorn # 6/22/2015 jichi Unicorn
 #  exist: "*.szs|data/*.szs"
 #  #encoding: sjis
 
@@ -87,7 +91,7 @@
 #  exist: "*.fpk|data/*.fpk" #"!SystemC.exe"
 #  #encoding: sjis
 
-#- name: EmbedHorkEye # 6/24/2015
+#- name: EmbedHorkEye # 6/24/2015 HorkEye
 #  exist:
 #  - arc0.dat
 #  - arc1.dat
