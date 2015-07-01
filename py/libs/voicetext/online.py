@@ -102,12 +102,28 @@ VOICES = (
 )
 VOICES = OrderedDict(((it.key,it) for it in VOICES))
 
-API = "http://dws.voicetext.jp/tomcat/servlet/vt"
-RESULT_URL = "http://dis.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"
+#API = "http://dws.voicetext.jp/tomcat/servlet/vt"
+API = "http://dws2.voicetext.jp/tomcat/servlet/vt"
+
+#RESULT_URL = "http://dis.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"
+RESULT_URL = "http://dws2.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"
 
 HEADERS = {
   'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8', # UTF-8 is indispensable
-  'Referer': 'http://dws.voicetext.jp/tomcat/demonstration/top.html', # referrer is not needed, but used in case something is wrong
+  #'Referer': 'http://dws.voicetext.jp/tomcat/demonstration/top.html', # referrer is not needed, but used in case something is wrong
+  'Referer': 'http://dws2.voicetext.jp/tomcat/demonstration/top.html',
+
+  #'X-Requested-With': 'XMLHttpRequest',
+  #'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:38.0) Gecko/20100101 Firefox/38.0',
+  #'Pragma': 'no-cache',
+  #'Host': 'dws2.voicetext.jp',
+  #'DNT': 1,
+  #'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+  #'Connection': 'keep-alive',
+  #'Cache-Control': 'no-cache',
+  #'Accept-Language': 'en-US,en;q=0.5',
+  #'Accept-Encoding': 'gzip, deflate',
+  #'Accept': 'text/plain, */*; q=0.01',
 }
 
 MAX_TEXT_LENGTH = 200
