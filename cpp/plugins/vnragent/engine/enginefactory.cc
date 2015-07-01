@@ -22,9 +22,9 @@
 #include "engine/model/siglus.h"
 #include "engine/model/silkys.h"
 #include "engine/model/system4.h"
-#include "engine/model/systemc.h"
-//#include "engine/model/unicorn.h"
 #include "engine/model/wolf.h"
+//#include "engine/model/systemc.h"
+//#include "engine/model/unicorn.h"
 //#include "engine/model/eushully.h"
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
@@ -39,8 +39,6 @@ EngineController *EngineFactory::createEngine()
 {
   static EngineModel *models[] = { // sort reversely
     new WolfRPGEngine
-    //, new UnicornEngine
-    , new SystemCEngine
     , new System4Engine
     , new SystemAoiWEngine
     , new SilkysEngine
@@ -48,15 +46,15 @@ EngineController *EngineFactory::createEngine()
     , new RGSSEngine
     , new RetouchEngine
     , new LeafEngine
-    //, new HorkEyeEngine
     , new ElfEngine
     , new DebonosuEngine
     , new CotophaEngine
     , new CircusEngine
     , new BGIEngine
     , new ARCGameEngine
-    //, new ElfEngine
-    //, new EushullyEngine
+    //, new UnicornEngine
+    //, new SystemCEngine
+    //, new HorkEyeEngine
     //, new MajiroEngine
     //, new SideBEngine
   };

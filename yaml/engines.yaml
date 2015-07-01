@@ -85,12 +85,10 @@ embed_en:
   #- HorkEye
   - Leaf
   - System43+
-  #- SystemC
 
   - EmbedCircus
   - EmbedLeaf
   - EmbedSystem43
-  #- EmbedSystemC
 
 gui:
   # User32
@@ -411,7 +409,6 @@ char:
   # Embed
   - EmbedARCGameEngine
   - EmbedBGI
-  #- EmbedCatSystem2
   - EmbedCircus
   - EmbedDebonosu
   - EmbedElf
@@ -419,8 +416,6 @@ char:
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
-  - EmbedSystemC
-  #- EmbedUnicorn
   - EmbedWolfRPG
   # Engines
   - 2RM
@@ -654,10 +649,8 @@ focus:
   - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
-  #- EmbedCatSystem2
   - EmbedCircus
   - EmbedDebonosu
-  - EmbedSystemC
   - EmbedLeaf
   - EmbedRetouch
   - EmbedSiglusEngine

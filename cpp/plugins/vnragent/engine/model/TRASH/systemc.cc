@@ -25,13 +25,13 @@ namespace Private {
    */
   bool hookBefore(winhook::hook_stack *s)
   {
-    static QByteArray data_; // persistent storage, which makes this function not thread-safe
     enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    auto text = (LPCSTR)s->stack[1]; // arg1
+    auto text = (LPSTR)s->stack[1]; // arg1
     if (!text || !*text)
       return true;
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
-    s->stack[1] = (ulong)data_.constData(); // reset arg1
+    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    //::strcpy(text, data.constData());
+    //s->stack[1] = (ulong)data_.constData(); // reset arg1
     return true;
   }
 

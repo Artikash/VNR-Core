@@ -2,6 +2,8 @@
 
 // horkeye.h
 // 6/24/2015 jichi
+//
+// FIXME: Engine does not work as it would crash when get modified
 
 #include "engine/enginemodel.h"
 
