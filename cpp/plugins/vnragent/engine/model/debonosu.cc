@@ -14,8 +14,9 @@
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
 #include <QtCore/QSet>
+#include <cstdint>
 
-#define DEBUG "debonosu"
+#define DEBUG "model/debonosu"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -649,7 +650,7 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
                      // 0032f659   32c0             xor al,al
                      // 0032f65b   5b               pop ebx
                      // 0032f65c   8be5             mov esp,ebp
@@ -827,7 +828,7 @@ bool attach(ulong startAddress, ulong stopAddress)
   }
   if (!addr) {
     DOUT("string pattern not found, try instruction pattern instead");
-    const quint8 bytes[] = {
+    const uint8_t bytes[] = {
       0x50,            // 0010fb80   50               push eax
       0xff,0x75, 0x14, // 0010fb81   ff75 14          push dword ptr ss:[ebp+0x14]
       0x8b,0xce,       // 0010fb84   8bce             mov ecx,esi
@@ -2146,7 +2147,7 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0x89,0x45, 0xd0, // 01378c88   8945 d0          mov dword ptr ss:[ebp-0x30],eax
     0x8b,0x45, 0xf8, // 01378c8b   8b45 f8          mov eax,dword ptr ss:[ebp-0x8]
     0x89,0x45, 0xd4, // 01378c8e   8945 d4          mov dword ptr ss:[ebp-0x2c],eax
@@ -2446,7 +2447,7 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
                       // 013fffe8   8903             mov dword ptr ds:[ebx],eax
                       // 013fffea   8b47 60          mov eax,dword ptr ds:[edi+0x60]
                       // 013fffed   8b48 0c          mov ecx,dword ptr ds:[eax+0xc]

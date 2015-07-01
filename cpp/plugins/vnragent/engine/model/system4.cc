@@ -10,8 +10,9 @@
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <cstdint>
 
-#define DEBUG "system4"
+#define DEBUG "model/system4"
 #include "sakurakit/skdebug.h"
 
 using namespace std::placeholders; // for _1
@@ -36,7 +37,7 @@ bool getMemoryRange(ulong *startAddress, ulong *stopAddress)
 
 ulong searchScenarioAddress(ulong startAddress, ulong stopAddress)
 {
-  const BYTE bytes[] = {
+  const uint8_t bytes[] = {
     0xe8, XX4,              // 005c71e0   e8 2bcfffff      call .005c4110  ; original function call
     0xeb, 0xa5,             // 005c71e5  ^eb a5            jmp short .005c718c
     0x8b,0x47, 0x08,        // 005c71e7   8b47 08          mov eax,dword ptr ds:[edi+0x8]
@@ -47,7 +48,7 @@ ulong searchScenarioAddress(ulong startAddress, ulong stopAddress)
 
 ulong searchNameAddress(ulong startAddress, ulong stopAddress)
 {
-  const BYTE bytes[] = {
+  const uint8_t bytes[] = {
     0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here
     0x39,0x6c,0x24, 0x28,   // 004eeb39   396c24 28        cmp dword ptr ss:[esp+0x28],ebp
     0x72, 0x0d,             // 004eeb3d   72 0d            jb short .004eeb4c
@@ -61,7 +62,7 @@ ulong searchNameAddress(ulong startAddress, ulong stopAddress)
 ulong searchOtherAddress(ulong startAddress, ulong stopAddress)
 {
   const char *pattern = "S_ASSIGN";
-  BYTE bytes[] = {
+  const uint8_t bytes[] = {
     //0xc3,       // 005b6492   c3               retn
     //0x52,       // 005b6493   52               push edx
     0xe8, XX4,    // 005b6494   e8 77dc0000      call .005c4110     ; jichi: hook here
@@ -279,26 +280,22 @@ bool System4Engine::attach()
     ulong addr = ::searchScenarioAddress(startAddress, stopAddress);
     if (!addr)
       return false;
-    auto h = new ScenarioHook;
+    static auto h = new ScenarioHook; // never deleted
     if (!winhook::hook_both(addr,
         std::bind(&ScenarioHook::hookBefore, h, _1),
-        std::bind(&ScenarioHook::hookAfter, h, _1))) {
-      delete h;
+        std::bind(&ScenarioHook::hookAfter, h, _1)))
       return false;
-    }
     DOUT("text thread address" << QString::number(addr, 16));
   }
 
   if (ulong addr = ::searchOtherAddress(startAddress, stopAddress)) {
-    auto h = new OtherHook;
+    static auto h = new OtherHook; // never deleted
     if (!winhook::hook_both(addr,
         std::bind(&OtherHook::hookBefore, h, _1),
-        std::bind(&OtherHook::hookAfter, h, _1))) {
+        std::bind(&OtherHook::hookAfter, h, _1)))
       DOUT("other text NOT FOUND");
-      delete h;
-    } else {
+    else
       DOUT("other text address" << QString::number(addr, 16));
-    }
   }
 
   if (ulong addr = ::searchNameAddress(startAddress, stopAddress)) {

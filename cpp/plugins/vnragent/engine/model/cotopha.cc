@@ -11,7 +11,7 @@
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 
-#define DEBUG "cotopha"
+#define DEBUG "model/cotopha"
 #include "sakurakit/skdebug.h"
 
 /** Private data */
@@ -509,7 +509,7 @@ bool attach()
 {
   ulong startAddress, stopAddress;
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return 0;
+    return false;
   // 004D52AF   90               NOP
   // 004D52B0   55               PUSH EBP
   // 004D52B1   8BEC             MOV EBP,ESP

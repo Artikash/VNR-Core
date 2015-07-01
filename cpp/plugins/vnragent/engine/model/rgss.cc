@@ -13,8 +13,9 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QSet>
 #include <boost/foreach.hpp>
+#include <cstdint>
 
-#define DEBUG "rgss"
+#define DEBUG "model/rgss"
 #include "sakurakit/skdebug.h"
 
 //#pragma intrinsic(_ReturnAddress)
@@ -668,7 +669,7 @@ namespace Private {
 
 bool attach(ulong startAddress, ulong stopAddress) // attach scenario
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0x8b,0x54,0x24, 0x24,           // 1004155c   8b5424 24        mov edx,dword ptr ss:[esp+0x24]
     0x8b,0x02,                      // 10041560   8b02             mov eax,dword ptr ds:[edx]
     0x8b,0xc8,                      // 10041562   8bc8             mov ecx,eax
@@ -817,7 +818,7 @@ namespace Private {
 ulong functionAddress; // the function address being hooked
 bool attach(ulong startAddress, ulong stopAddress) // attach other text
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0x89,0x45, 0xfc,  // 100075b5   8945 fc          mov dword ptr ss:[ebp-0x4],eax
     0x8b,0x4d, 0xfc,  // 100075b8   8b4d fc          mov ecx,dword ptr ss:[ebp-0x4]
     0x8b,0x51, 0x10,  // 100075bb   8b51 10          mov edx,dword ptr ds:[ecx+0x10]

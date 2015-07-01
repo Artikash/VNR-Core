@@ -12,8 +12,9 @@
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
 #include <qt_windows.h>
+#include <cstdint>
 
-#define DEBUG "siglus"
+#define DEBUG "model/siglus"
 #include "sakurakit/skdebug.h"
 
 // Used to get function's return address
@@ -186,7 +187,7 @@ namespace Private {
 
     ulong addr;
     {
-      const BYTE bytes1[] = {
+      const uint8_t bytes1[] = {
         0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
         0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
       };
@@ -195,7 +196,7 @@ namespace Private {
         *type = Type1;
     }
     if (!addr) {
-      const BYTE bytes2[] = { // 81fe0c300000
+      const uint8_t bytes2[] = { // 81fe0c300000
         0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
       };
       addr = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);
@@ -205,7 +206,7 @@ namespace Private {
     if (!addr)
       return 0;
 
-    const BYTE bytes[] = {
+    const uint8_t bytes[] = {
       0x55,      // 013bac70  /$ 55       push ebp ; jichi: function starts
       0x8b,0xec, // 013bac71  |. 8bec     mov ebp,esp
       0x6a,0xff  // 013bac73  |. 6a ff    push -0x1
@@ -298,7 +299,7 @@ namespace Private {
           stopAddress;
     if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
       return false;
-    const BYTE bytes[] = {
+    const uint8_t bytes[] = {
       0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
       0xc7,0x47, 0x10, 0x00,0x00,0x00,0x00,   // 0042cf27   c747 10 00000000 mov dword ptr ds:[edi+0x10],0x0
       0x66,0x89,0x0f,                         // 0042cf2e   66:890f          mov word ptr ds:[edi],cx

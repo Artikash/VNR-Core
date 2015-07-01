@@ -11,8 +11,9 @@
 #include "winhook/hookfun.h"
 #include <qt_windows.h>
 #include <QtCore/QSet>
+#include <cstdint>
 
-#define DEBUG "wolf"
+#define DEBUG "model/wolf"
 #include "sakurakit/skdebug.h"
 
 //#pragma intrinsic(_ReturnAddress)
@@ -46,7 +47,7 @@ namespace Private {
   // Skip non-printable and special ASCII characters on the left
   inline char *ltrim(char *s)
   {
-    while (*s && (quint8)*s <= 39)
+    while (*s && (uint8_t)*s <= 39)
       s++;
     return s;
   }
@@ -617,7 +618,7 @@ bool attach() // attach other text
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0x55,               // 00471690   55               push ebp
     0x8b,0xec,          // 00471691   8bec             mov ebp,esp
     0x83,0xec, 0x3c,    // 00471693   83ec 3c          sub esp,0x3c
@@ -643,7 +644,7 @@ bool attach() // attach other text
     enum { role = Engine::ScenarioRole }; //, sig = Engine::ScenarioThreadSignature };
     auto self = (FunctionSelf *)s->ecx;
     auto text = self->text;
-    if (self->isValid() && (quint8)*text > 127) {
+    if (self->isValid() && (uint8_t)*text > 127) {
       QByteArray oldData = text;
       if (newData_ != oldData) {
         auto split = s->stack[0]; // retaddr

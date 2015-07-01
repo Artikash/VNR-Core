@@ -60,6 +60,8 @@ embed:
   - BGI2
   #- CatSystem2
   #- CatSystem3
+  - CMVS
+  - CMVS2
   - Cotopha
   - Debonosu
   - DebonosuName
@@ -410,6 +412,7 @@ char:
   - EmbedARCGameEngine
   - EmbedBGI
   - EmbedCircus
+  - EmbedCMVS
   - EmbedDebonosu
   - EmbedElf
   - EmbedLeaf
@@ -645,11 +648,14 @@ focus:
   - CatSystem3
   - Circus
   - Circus1
+  - CMVS
+  - CMVS2
   - Debonosu
   - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
   - EmbedCircus
+  - EmbedCMVS
   - EmbedDebonosu
   - EmbedLeaf
   - EmbedRetouch

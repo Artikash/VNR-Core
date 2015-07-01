@@ -13,8 +13,9 @@
 #include "winhook/hookcode.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
+#include <cstdint>
 
-#define DEBUG "elf"
+#define DEBUG "model/elf"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -147,7 +148,7 @@ bool attach()
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  const BYTE bytes[] = {
+  const uint8_t bytes[] = {
     0x66,0x89,0x45, 0xf9,   // 00a1a062   66:8945 f9       mov word ptr ss:[ebp-0x7],ax
     0x39,0x47, 0x14         // 00a1a066   3947 14          cmp dword ptr ds:[edi+0x14],eax
   };

@@ -15,8 +15,9 @@
 #include "winhook/hookfun.h"
 #include "winhook/hookcall.h"
 #include <qt_windows.h>
+#include <cstdint>
 
-#define DEBUG "age"
+#define DEBUG "model/age"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -1468,7 +1469,7 @@ QString ARCGameEngine::textFilter(const QString &text, int role)
  *  Caller of the -1 GetTextExtentPoint32A: 0x4699b1
  *
  */
-static DWORD searchEushully(DWORD startAddress, DWORD stopAddress)
+static ulong searchEushully(ulong startAddress, ulong stopAddress)
 {
   //const BYTE bytes[] = { // size = 14
   //  0x01,0x53, 0x58,                // 0153 58          add dword ptr ds:[ebx+58],edx
@@ -1478,18 +1479,18 @@ static DWORD searchEushully(DWORD startAddress, DWORD stopAddress)
   //};
   //enum { cur_ins_size = 2 };
   //enum { hook_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
-  const BYTE bytes1[] = {
+  const uint8_t bytes1[] = {
     0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
     0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
   };
   //enum { hook_offset = 0 };
   //DWORD range1 = qMin(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD addr = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress);
+  ulong addr = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress);
   if (!addr)
     //ConsoleOutput("vnreng:Siglus2: pattern not found");
     return 0;
 
-  const BYTE bytes2[] = {
+  const uint8_t bytes2[] = {
     0x55,      // 013bac70  /$ 55       push ebp ; jichi: function starts
     0x8b,0xec, // 013bac71  |. 8bec     mov ebp,esp
     0x6a,0xff  // 013bac73  |. 6a ff    push -0x1

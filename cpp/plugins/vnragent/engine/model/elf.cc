@@ -12,8 +12,9 @@
 #include "memdbg/memsearch.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
+#include <cstdint>
 
-#define DEBUG "elf"
+#define DEBUG "model/elf"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -104,7 +105,7 @@ bool attach()
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  const BYTE bytes[] = {
+  const uint8_t bytes[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
       //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
       //0x83,0xec, 0x08,                  // 0093f9b3  |. 83ec 08        sub esp,0x8

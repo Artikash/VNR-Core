@@ -12,7 +12,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-#define DEBUG "age"
+#define DEBUG "model/aoi"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed

@@ -15,7 +15,7 @@
 #include "winhook/hookcall.h"
 #include <qt_windows.h>
 
-#define DEBUG "retouch"
+#define DEBUG "model/retouch"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed

@@ -1,7 +1,6 @@
 // enginefactory.cc
 // 4/26/2014 jichi
 // List of all engines
-
 #include "engine/enginecontroller.h"
 #include "engine/enginefactory.h"
 #include "windbg/util.h"
@@ -11,6 +10,7 @@
 #include "engine/model/aoi.h"
 #include "engine/model/bgi.h"
 #include "engine/model/circus.h"
+#include "engine/model/cmvs.h"
 #include "engine/model/cotopha.h"
 //#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
@@ -49,6 +49,7 @@ EngineController *EngineFactory::createEngine()
     , new ElfEngine
     , new DebonosuEngine
     , new CotophaEngine
+    , new CMVSEngine
     , new CircusEngine
     , new BGIEngine
     , new ARCGameEngine

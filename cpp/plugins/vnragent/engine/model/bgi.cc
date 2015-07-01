@@ -9,8 +9,9 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <cstdint>
 
-#define DEBUG "bgi"
+#define DEBUG "model/bgi"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -230,7 +231,7 @@ namespace Private {
     //};
     //enum { hook_offset = 0x4207e0 - 0x420822 }; // distance to the beginning of the function
 
-    const BYTE bytes[] = { // 0fafcbf7e9c1fa058bc2c1e81f03d08bfa85ff
+    const uint8_t bytes[] = { // 0fafcbf7e9c1fa058bc2c1e81f03d08bfa85ff
        0x0f,0xaf,0xcb,   // 004208de  |. 0fafcb         imul ecx,ebx
        0xf7,0xe9,        // 004208e1  |. f7e9           imul ecx
        0xc1,0xfa, 0x05,  // 004208e3  |. c1fa 05        sar edx,0x5
@@ -352,7 +353,7 @@ namespace Private {
   static ulong search2(ulong startAddress, ulong stopAddress)
   {
     //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
-    const BYTE bytes[] = { // 3c207d750fbec083c0fe83f806776a
+    const uint8_t bytes[] = { // 3c207d750fbec083c0fe83f806776a
       0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
       0x7d, 0x75,      // 011d4d33  |. 7d 75          jge short sekachu.011d4daa
       0x0f,0xbe,0xc0,  // 011d4d35  |. 0fbec0         movsx eax,al
@@ -368,8 +369,8 @@ namespace Private {
       return 0;
 
     addr += hook_offset;
-    enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-    if (*(BYTE *)addr != push_ebp)
+    enum : uint8_t { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
+    if (*(uint8_t *)addr != push_ebp)
       //ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
       return 0;
 
@@ -533,7 +534,7 @@ namespace Private {
   static ulong search3(ulong startAddress, ulong stopAddress)
   {
     //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
-    const BYTE bytes[] = { // 3c207d580fbec083c0fe83f806774d
+    const uint8_t bytes[] = { // 3c207d580fbec083c0fe83f806774d
       0x3c, 0x20,       // 01312d8e   3c 20          cmp al,0x20     ; jichi: pattern starts
       0x7d, 0x58,       // 01312d90   7d 58          jge short 蒼の彼方.01312dea
       0x0f,0xbe,0xc0,   // 01312d92   0fbec0         movsx eax,al
@@ -547,8 +548,8 @@ namespace Private {
       return 0;
 
     addr += hook_offset;
-    enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-    if (*(BYTE *)addr != push_ebp)
+    enum : uint8_t { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
+    if (*(uint8_t *)addr != push_ebp)
       return 0;
 
     return addr;
