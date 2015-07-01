@@ -2,6 +2,8 @@
 
 // systemc.h
 // 6/30/2015 jichi
+//
+// FIXME: This engine does not work as text is broken into lines.
 
 #include "engine/enginemodel.h"
 
