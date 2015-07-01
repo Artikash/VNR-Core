@@ -249,7 +249,8 @@ namespace Private {
 
     LPCWSTR text = arg->text();
     auto g = EngineController::instance();
-    if (!text || !*text || ::isdigit(*text) || ::wcslen(text) > g->settings()->otherCapacity || Util::allHangul(text)) // there could be garbage
+    // Skip all ascii and hangul characters
+    if (!text || !*text || *text <= 127 || ::wcslen(text) > g->settings()->otherCapacity || Util::allHangul(text)) // there could be garbage
       return true;
 
     int role = Engine::OtherRole;
