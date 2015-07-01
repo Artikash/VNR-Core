@@ -459,14 +459,14 @@ bool EngineController::matchFiles(const QStringList &relpaths)
     if (path.contains('|')) {
       bool found = false;
       foreach (const QString &it, path.split('|')) {
-        if ((it.contains('*') ? Engine::globs(it) : Engine::exists(it))) {
+        if (Engine::matchFiles(it)) {
           found = true;
           break;
         }
       }
       if (!found)
         return false;
-    } else if (!(path.contains('*') ? Engine::globs(path) : Engine::exists(path)))
+    } else if (!Engine::matchFiles(path))
       return false;
 
   DOUT("ret = true, relpaths =" << relpaths);

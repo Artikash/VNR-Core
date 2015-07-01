@@ -85,11 +85,12 @@ embed_en:
   #- HorkEye
   - Leaf
   - System43+
+  #- SystemC
 
   - EmbedCircus
-  #- EmbedHorkEye
   - EmbedLeaf
   - EmbedSystem43
+  #- EmbedSystemC
 
 gui:
   # User32
@@ -415,10 +416,10 @@ char:
   - EmbedDebonosu
   - EmbedElf
   - EmbedLeaf
-  #- EmbedHorkEye
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
+  - EmbedSystemC
   #- EmbedUnicorn
   - EmbedWolfRPG
   # Engines
@@ -656,7 +657,7 @@ focus:
   #- EmbedCatSystem2
   - EmbedCircus
   - EmbedDebonosu
-  #- EmbedHorkEye
+  - EmbedSystemC
   - EmbedLeaf
   - EmbedRetouch
   - EmbedSiglusEngine
@@ -675,6 +676,7 @@ focus:
   - SiglusEngine3
   - SiglusEngine4
   - SilkysPlus
+  - SystemC
   - Syuntada
   - Unicorn
   - WillPlus

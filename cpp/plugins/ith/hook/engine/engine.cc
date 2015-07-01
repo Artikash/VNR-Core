@@ -7170,7 +7170,7 @@ bool InsertCandyHook1()
         if (*(DWORD *)j == 0xc0330a8a) { // mov cl,[edx]; xor eax,eax
           HookParam hp = {};
           hp.address = j;
-          hp.offset = -0x10;
+          hp.offset = -0x10;    // jichi: text in ecx
           hp.type = USING_STRING;
           ConsoleOutput("vnreng: INSERT SystemC#1");
           NewHook(hp, L"SystemC");
@@ -7191,7 +7191,7 @@ bool InsertCandyHook2()
         if ((*(DWORD *)j & 0xffff) == 0x8b55) { // push ebp, mov ebp,esp, sub esp,*
           HookParam hp = {};
           hp.address = j;
-          hp.offset = 4;
+          hp.offset = 4;    // jichi: text in arg1
           hp.type = USING_STRING;
           ConsoleOutput("vnreng: INSERT SystemC#2");
           NewHook(hp, L"SystemC");

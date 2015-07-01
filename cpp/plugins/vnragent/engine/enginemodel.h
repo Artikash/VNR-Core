@@ -33,6 +33,8 @@ public:
     , detachFunction(nullptr)   // remove the applied engine
     , textFilterFunction(nullptr)   // fix scenario text before sending out
     , translationFilterFunction(nullptr)    // fix translation text before sending out
+    , rubyCreateFunction(nullptr)
+    , rubyRemoveFunction(nullptr)
   {}
 
   const char *name;

@@ -42,6 +42,8 @@ inline size_t getTextLength(const charT *s, size_t capacity = MaxTextSize)
 bool globs(const QString &relpath);
 bool exists(const QString &relPath);
 
+bool matchFiles(const QString &pattern);
+
 QStringList glob(const QString &nameFilter);
 
 // Thread and process
