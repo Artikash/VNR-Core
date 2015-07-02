@@ -15,7 +15,7 @@
 #include <qt_windows.h>
 #include <cstdint>
 
-#define DEBUG "model/elf"
+#define DEBUG "model/silkys"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -61,8 +61,8 @@ namespace Private {
       auto text = arg->shortText;
       QByteArray data(text, arg->size);
       data = q->dispatchTextA(data, sig, role);
-      arg->size = qMax<size_t>(data.size(), ShortTextCapacity - 1); // truncate
-      ::memcpy(text, data.constData(), qMin<size_t>(data.size() + 1, ShortTextCapacity));
+      arg->size = qMin<size_t>(data.size(), ShortTextCapacity - 1); // truncate
+      ::memcpy(text, data.constData(), arg->size + 1);
     }
     return true;
   }
