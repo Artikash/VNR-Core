@@ -9073,6 +9073,8 @@ class DataManager(QObject):
     return self.__d.currentGame.id if self.__d.currentGame else 0
   def currentGameMd5(self):
     return self.__d.currentGame.md5 if self.__d.currentGame else ""
+  def currentGameLanguage(self):
+    return self.__d.currentGame.language if self.__d.currentGame else ''
   def currentGameIds(self):
     return self.__d.currentGameIds
   def currentGameItemId(self):
@@ -9932,10 +9934,18 @@ class DataManager(QObject):
     g = d.games.get(game.md5)
     oldCommentCount = g.commentCount if g else 0
 
+    # Update twice as updateGame might be blocked when online
+    dprint("change current game")
+    g = d.currentGame = d.games[game.md5]
+    d.currentGameObject = None
+    d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
+
     if not d.updateGame(game):
       growl.warn(my.tr("Failed to get game information"))
       return
 
+    # Update twice as updateGame might be blocked when online
+    dprint("update current game")
     g = d.currentGame = d.games[game.md5]
     d.currentGameObject = None
     d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []

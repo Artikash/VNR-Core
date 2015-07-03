@@ -796,6 +796,47 @@ class TranslatorManager(QObject):
   #    return 'en'
   #  return d.language
 
+  def getTranslationTargetLanguages(self): # -> [str]
+    ret = []
+    if not features.MACHINE_TRANSLATION:
+      return ret
+
+    d = self.__d
+
+    if d.jbeijingEnabled or d.fastaitEnabled or d.youdaoEnabled: #or d.vtransEnabled
+      if d.language in ('zhs', 'vi'):
+        ret.append(d.language)
+      else:
+        ret.append('zht')
+
+    if d.ezTransEnabled or d.transcatEnabled or d.naverEnabled:
+      ret.append('ko')
+
+    if d.hanVietEnabled:
+      ret.append('vi')
+
+    if d.atlasEnabled or d.lecEnabled:
+      ret.append('en')
+
+    if (d.bingEnabled
+        or d.googleEnabled
+        or d.baiduEnabled
+        or d.infoseekEnabled
+        or d.exciteEnabled
+        or d.niftyEnabled
+        or d.systranEnabled
+        or d.babylonEnabled
+        or d.lecOnlineEnabled
+        or d.transruEnabled
+      ):
+      if d.language not in ret:
+        ret.append(d.language)
+
+    if 'ja' in ret:
+      ret.remove('ja')
+
+    return ret
+
   def translate(self, *args, **kwargs):
     """
     @return  unicode

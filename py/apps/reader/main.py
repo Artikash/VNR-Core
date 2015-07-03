@@ -648,6 +648,8 @@ class _MainObject(object):
       ):
       sig.connect(ret.invalidateCache)
 
+    self.dataManager.currentGameChanged.connect(ret.warmup, Qt.QueuedConnection)
+
     #for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
     #  sig.connect(self.translatorManager.clearCache)
     #ret.cacheChanged.connect(self.translatorManager.clearCache)
