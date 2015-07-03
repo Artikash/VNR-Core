@@ -189,7 +189,8 @@ class _TermManager:
     @param  type  str
     @param  to  str  language
     @param* fr  str  language
-    @param* key  str
+    @param* context  str
+    @param* host  str
     @param* mark  bool or None
     @param* ignoreIfNotReady  bool
     """
@@ -225,6 +226,20 @@ class _TermManager:
       return man.decode(text, category, mark)
     else:
       return man.transform(text, category, mark)
+
+  def warmupTerms(self, type, to, fr):
+    """
+    @param  type  str
+    @param  to  str  language
+    @param* fr  str  language
+    """
+    if type in ('encode', 'decode'):
+      key = 'trans', to, fr # share the same manager
+    else:
+      key = type, to, fr
+    if key not in self.scripts:
+      self.scriptTimes[key] = 0
+      self.rebuildCacheLater()
 
   _rx_delegate = re.compile(
     r"{{"
@@ -406,12 +421,30 @@ class TermManager(QObject):
     d.updateTime = time()
     d.rebuildCacheLater()
 
-  #def warmup(self, async=True, interval=0): # bool, int
-  #  d = self.__d
-  #  if not d.enabled or d.locked:
-  #    return
-  #  dprint("enter")
-  #  dm = dataman.manager()
+  def warmup(self, async=True, interval=0): # bool, int
+    d = self.__d
+    if not d.enabled:
+      return
+    fr = dataman.manager().currentGameLanguage()
+    dprint("fr = %s" % fr)
+    if not fr:
+      return
+
+    import gameagent, settings
+    t = not settings.global_().isGameAgentEnabled() or not gameagent.global_().isConnected()
+    dprint("game = %s" % t)
+    if t:
+      d.warmupTerms('game', d.targetLanguage, fr)
+
+    import trman
+    tos = trman.manager().getTranslationTargetLanguages()
+    if not tos:
+      return
+
+    dprint("to = %s" % tos)
+    for to in tos:
+      for type in 'input', 'trans', 'output_nosyntax': #'output_syntax':
+        d.warmupTerms(type, to, fr)
 
   #  task = partial(d.warmup,
   #      terms=dm.terms(),
