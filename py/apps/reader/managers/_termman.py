@@ -465,7 +465,7 @@ class TermWriter:
     @param  role  str
     @return  unicode or None
     """
-    if '\n' in pattern or '\n' in repl:
+    if '\n' in pattern or '\n' in repl or '\n' in role:
       dwarn("skip new line in term: id = %s" % tid)
       return
     cat = make_categories(context=context, host=host)
@@ -533,6 +533,11 @@ class TermWriter:
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
           td.type in types
+
+          and '\n' not in td.pattern and '\t' not in td.pattern
+          and '\n' not in td.text and '\t' not in td.text
+          and '\n' not in td.role and '\t' not in td.role
+
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, to)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
