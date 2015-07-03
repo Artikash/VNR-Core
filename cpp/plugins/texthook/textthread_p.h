@@ -42,7 +42,7 @@ public:
   int threadNumber() const;
   qint32 signature() const;
   QString name() const;
-  bool nameEquals(const wchar_t *that) const; // optimized
+  bool nameEquals(const char *that) const; // optimized
 
   // Maximum text size
   static int capacity();

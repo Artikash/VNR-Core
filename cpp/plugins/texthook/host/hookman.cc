@@ -16,6 +16,9 @@
 #include "ith/sys/sys.h"
 //#include <emmintrin.h>
 
+#define DEBUG "hookman.cc"
+#include "sakurakit/skdebug.h"
+
 namespace { // unnamed
 //enum { MAX_ENTRY = 0x40 };
 
@@ -78,7 +81,7 @@ DWORD clipboard_flag,
       global_filter,
       cyclic_remove;
 
-DWORD GetHookName(LPWSTR str, DWORD pid, DWORD hook_addr, DWORD max)
+DWORD GetHookName(LPSTR str, DWORD pid, DWORD hook_addr, DWORD max)
 {
   if (!pid)
     return 0;
@@ -106,7 +109,7 @@ DWORD GetHookName(LPWSTR str, DWORD pid, DWORD hook_addr, DWORD max)
       len = hks[i].NameLength();
       if (len >= max)
         len = max;
-      NtReadVirtualMemory(pr->process_handle, hks[i].Name(), str, len << 1, &len);
+      NtReadVirtualMemory(pr->process_handle, hks[i].Name(), str, len, &len);
       if (str[len - 1] == 0)
         len--;
       else
@@ -133,29 +136,30 @@ DWORD GetHookName(LPWSTR str, DWORD pid, DWORD hook_addr, DWORD max)
   return len;
 }
 
-int GetHookNameByIndex(LPWSTR str, DWORD pid, DWORD index)
-{
-  if (!pid)
-    return 0;
-
-  //if (pid == 0) {
-  //  wcscpy(str, HookNameInitTable[0]);
-  //  return wcslen(HookNameInitTable[0]);
-  //}
-  DWORD len = 0;
-  //::man->LockProcessHookman(pid);
-  ProcessRecord *pr = ::man->GetProcessRecord(pid);
-  if (!pr)
-    return 0;
-  //NtWaitForSingleObject(pr->hookman_mutex,0,0); //already locked
-  Hook *hks = (Hook *)pr->hookman_map;
-  if (hks[index].Address()) {
-    NtReadVirtualMemory(pr->process_handle, hks[index].Name(), str, hks[index].NameLength() << 1, &len);
-    len = hks[index].NameLength();
-  }
-  //NtReleaseMutant(pr->hookman_mutex,0);
-  return len;
-}
+// 7/2/2015 jichi: This function is not used and removed
+//int GetHookNameByIndex(LPSTR str, DWORD pid, DWORD index)
+//{
+//  if (!pid)
+//    return 0;
+//
+//  //if (pid == 0) {
+//  //  wcscpy(str, HookNameInitTable[0]);
+//  //  return wcslen(HookNameInitTable[0]);
+//  //}
+//  DWORD len = 0;
+//  //::man->LockProcessHookman(pid);
+//  ProcessRecord *pr = ::man->GetProcessRecord(pid);
+//  if (!pr)
+//    return 0;
+//  //NtWaitForSingleObject(pr->hookman_mutex,0,0); //already locked
+//  Hook *hks = (Hook *)pr->hookman_map;
+//  if (hks[index].Address()) {
+//    NtReadVirtualMemory(pr->process_handle, hks[index].Name(), str, hks[index].NameLength() << 1, &len);
+//    len = hks[index].NameLength();
+//  }
+//  //NtReleaseMutant(pr->hookman_mutex,0);
+//  return len;
+//}
 
 //int GetHookString(LPWSTR str, DWORD pid, DWORD hook_addr, DWORD status)
 //{
@@ -260,8 +264,6 @@ HookManager::HookManager() :
   // jichi 9/21/2013: Zero memory
   //CRITICAL_SECTION hmcs;
   current(nullptr)
-  , console(nullptr)
-  , wconsole(nullptr)
   , create(nullptr)
   , remove(nullptr)
   , reset(nullptr)
@@ -518,7 +520,7 @@ void HookManager::RegisterProcess(DWORD pid, DWORD hookman, DWORD module)
       &oa,&id)))
     record[register_count - 1].process_handle = hProc;
   else {
-    ConsoleOutput("failed to open process");
+    DOUT("failed to open process");
     //::man->AddConsoleOutput(ErrorOpenProcess);
     //LeaveCriticalSection(&hmcs);
     //ConsoleOutput("vnrhost:RegisterProcess: unlock");
@@ -633,21 +635,21 @@ void HookManager::AddLink(WORD from, WORD to)
              *to_thread = thread_table->FindThread(to);
   if (to_thread && from_thread) {
     if (from_thread->GetThreadParameter()->pid != to_thread->GetThreadParameter()->pid)
-      ConsoleOutput("vnrhost:AddLink: link to different process");
+      DOUT("vnrhost:AddLink: link to different process");
     else if (from_thread->Link()==to_thread)
-      ConsoleOutput("vnrhost:AddLink: link already exists");
+      DOUT("vnrhost:AddLink: link already exists");
     else if (to_thread->CheckCycle(from_thread))
-      ConsoleOutput("vnrhost:AddLink: cyclic link");
+      DOUT("vnrhost:AddLink: cyclic link");
     else {
       from_thread->Link()=to_thread;
       from_thread->LinkNumber()=to;
-      ConsoleOutput("vnrhost:AddLink: thread linked");
+      DOUT("vnrhost:AddLink: thread linked");
       //WCHAR str[0x40];
       //swprintf(str,FormatLink,from,to);
       //AddConsoleOutput(str);
     }
   } else
-    ConsoleOutput("vnrhost:AddLink: error link");
+    DOUT("vnrhost:AddLink: error link");
   //else
   //  AddConsoleOutput(ErrorLink);
   //LeaveCriticalSection(&hmcs);
@@ -662,7 +664,7 @@ void HookManager::UnLink(WORD from)
   if (TextThread *from_thread = thread_table->FindThread(from)) {
     from_thread->Link() = nullptr;
     from_thread->LinkNumber() = 0xffff;
-    ConsoleOutput("vnrhost:UnLink: link deleted");
+    DOUT("vnrhost:UnLink: link deleted");
   }
   //else // jichi 12/25/2013: This could happen when the game exist
   //  ConsoleOutput("vnrhost:UnLink: thread does not exist");
@@ -677,7 +679,7 @@ void HookManager::UnLinkAll(WORD from)
   //EnterCriticalSection(&hmcs);
   if (TextThread *from_thread = thread_table->FindThread(from)) {
     from_thread->UnLinkAll();
-    ConsoleOutput("vnrhost:UnLinkAll: link deleted");
+    DOUT("vnrhost:UnLinkAll: link deleted");
   }
   //else // jichi 12/25/2013: This could happen after the process exists
   //  ConsoleOutput("vnrhost:UnLinkAll: thread not exist");
@@ -707,17 +709,17 @@ void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD re
       static bool once = true; // output only once
       if (once) {
         once = false;
-        ConsoleOutput("vnrhost:DispatchText: so many new threads, skip");
+        DOUT("vnrhost:DispatchText: so many new threads, skip");
       }
       return;
     } else { // New thread
       Insert(&tp, new_thread_number);
       it = new TextThread(pid, hook, retn, spl, new_thread_number);
       RegisterThread(it, new_thread_number);
-      ConsoleOutput("vnrhost:DispatchText: found new thread");
-      WCHAR entstr[0x200];
+      DOUT("vnrhost:DispatchText: found new thread");
+      char entstr[0x200];
       it->GetEntryString(entstr);
-      ConsoleOutputW(entstr);
+      DOUT(entstr);
       while (thread_table->FindThread(++new_thread_number));
       if (create)
         create(it);

@@ -13,8 +13,8 @@
 
 // Use LPASTE to convert to wchar_t
 // http://bytes.com/topic/c/answers/135834-defining-wide-character-strings-macros
-#define LPASTE(s) L##s
-#define L(s) LPASTE(s)
+//#define LPASTE(s) L##s
+//#define L(s) LPASTE(s)
 #define NEW_HOOK_AT(_addr, _fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
   { \
     HookParam hp = {}; \
@@ -25,7 +25,7 @@
     hp.split_index = _split_ind; \
     hp.type = _type; \
     hp.length_offset = _len_off; \
-    NewHook(hp, L(#_fun)); \
+    NewHook(hp, #_fun); \
   }
 
 // Static hook

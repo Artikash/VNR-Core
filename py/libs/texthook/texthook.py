@@ -144,11 +144,6 @@ if skos.WIN:
       self.__d.setParentWinId(hwnd)
     def parentWinId(self, hwnd): return self.__d.parentWinId(hwnd)
 
-    def isDebug(self): return self.__d.isDebug()
-    def setDebug(self, t):
-      dprint(t)
-      self.__d.setDebug(t)
-
     def isEnabled(self): return self.__d.isEnabled()
     def setEnabled(self, t):
       dprint(t)
@@ -387,9 +382,6 @@ else:
     def parentWinId(self, hwnd): return 0
     def setEnabled(self, enabled): pass
     def isEnabled(self): return False
-
-    def setDebug(self, enabled): pass
-    def isDebug(self): return False
 
     def setWhitelistEnabled(self, enabled): pass
     def isWhitelistEnabled(self): return False

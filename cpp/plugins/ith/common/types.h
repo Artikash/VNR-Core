@@ -76,7 +76,7 @@ struct SendParam {
 
 struct Hook { // size: 0x80
   HookParam hp;
-  LPWSTR hook_name;
+  LPSTR hook_name;
   int name_length;
   BYTE recover[0x68 - sizeof(HookParam)];
   BYTE original[0x10];
@@ -84,7 +84,7 @@ struct Hook { // size: 0x80
   DWORD Address() const { return hp.address; }
   DWORD Type() const { return hp.type; }
   WORD Length() const { return hp.hook_len; }
-  LPWSTR Name() const { return hook_name; }
+  LPSTR Name() const { return hook_name; }
   int NameLength() const { return name_length; }
 };
 

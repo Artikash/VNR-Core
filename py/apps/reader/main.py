@@ -95,7 +95,7 @@ class _MainObject(object):
     dprint("create text hook")
     from texthook import texthook
     ret = texthook.global_()
-    ret.setDebug(config.APP_DEBUG)
+    #ret.setDebug(config.APP_DEBUG)
     ret.setParent(self.q)
 
     ret.setParentWinId(self.topWindow.winId())

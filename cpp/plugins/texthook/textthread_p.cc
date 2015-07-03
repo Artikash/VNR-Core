@@ -11,7 +11,7 @@
 //#define DEBUG "textthread_p.cc"
 #include "sakurakit/skdebug.h"
 
-enum { ITH_MAX_THREAD_NAME = 0x200 }; // used internally by ITH
+enum { ITH_THREAD_NAME_CAPACITY = 0x200 }; // used internally by ITH
 
 #define REPEAT_RX_1 "(.{2,})\\1+$" // The pattern has at least 2 bytes, and repeats at least once
 
@@ -37,7 +37,7 @@ public:
   WinTimer flushTimer; // as QTimer does not work with windows remote thread, use native WM_TIMER instead
 
   ulong signature; // buffered
-  wchar_t sourceBuffer[ITH_MAX_THREAD_NAME]; // buffered
+  char sourceBuffer[ITH_THREAD_NAME_CAPACITY]; // buffered
   QString source; // buffered
 
   int bufferSize;
@@ -92,8 +92,9 @@ public:
   {
     signature = signatureOf(t);
 
-    size_t size = t->GetThreadString(sourceBuffer, ITH_MAX_THREAD_NAME);
-    source = QString::fromWCharArray(sourceBuffer, size);
+    //size_t size =
+    t->GetThreadString(sourceBuffer, ITH_THREAD_NAME_CAPACITY);
+    source = sourceBuffer;
   }
 
   ~TextThreadDelegatePrivate() { delete[] buffer; }
@@ -285,8 +286,8 @@ bool TextThreadDelegate::delegateOf(const Self *that) const
   return that
       && !D::contextOf(that->d_->t) && !D::contextOf(d_->t)
       && D::subcontextOf(that->d_->t) >= D::subcontextOf(d_->t)
-      && nameEquals(that->d_->sourceBuffer)
-      && nameEquals(L"Malie");
+      && ::strcmp(d_->sourceBuffer, that->d_->sourceBuffer) == 0
+      && nameEquals("Malie");
 }
 
 // - Properties -
@@ -301,8 +302,8 @@ qint32 TextThreadDelegate::signature() const
 QString TextThreadDelegate::name() const
 { return d_->source; }
 
-bool TextThreadDelegate::nameEquals(const wchar_t *that) const
-{ return !::wcscmp(d_->sourceBuffer, that); }
+bool TextThreadDelegate::nameEquals(const char *that) const
+{ return !::strcmp(d_->sourceBuffer, that); }
 
 int TextThreadDelegate::capacity() { return D::globalCapacity; }
 void TextThreadDelegate::setCapacity(int value) { D::globalCapacity = value; }

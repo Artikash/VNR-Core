@@ -10,6 +10,10 @@
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
 //#include "CommandQueue.h"
+#include <QtCore/QDebug>
+
+#define DEBUG "pipe.cc"
+#include "sakurakit/skdebug.h"
 
 //DWORD WINAPI UpdateWindows(LPVOID lpThreadParameter);
 
@@ -102,7 +106,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    ConsoleOutput("vnrhost:CreateNewPipe: failed to create recv pipe");
+    DOUT("vnrhost:CreateNewPipe: failed to create recv pipe");
     return;
   }
 
@@ -120,7 +124,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    ConsoleOutput("vnrhost:CreateNewPipe: failed to create cmd pipe");
+    DOUT("vnrhost:CreateNewPipe: failed to create cmd pipe");
     return;
   }
 
@@ -215,9 +219,10 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   enum { module_struct_size = 12 };
   NtReadFile(hTextPipe, 0, 0, 0, &ios, buff, module_struct_size, 0, 0);
 
+  // jichi 7/2/2015:This must be consistent with the struct declared in vnrhook/pipe.cc
   DWORD pid = *(DWORD *)buff,
-        hookman = *(DWORD *)(buff + 0x4),
-        module = *(DWORD *)(buff + 0x8);
+        module = *(DWORD *)(buff + 0x4),
+        hookman = *(DWORD *)(buff + 0x8);
         //engine = *(DWORD *)(buff + 0xc);
   man->RegisterProcess(pid, hookman, module);
 
@@ -262,7 +267,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
           lock = 0;
         } break;
       case HOST_NOTIFICATION_TEXT:
-        ConsoleOutput((LPCSTR)(buff + 8));
+        qDebug() << ((LPCSTR)(buff + 8));
         break;
       }
     } else {
@@ -309,7 +314,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   delete[] buff;
 
   if (::running)
-    ConsoleOutput("vnrhost:DetachFromProcess: detached");
+    DOUT("vnrhost:DetachFromProcess: detached");
 
   //if (::running) {
   //  swprintf((LPWSTR)buff, FormatDetach, pid);

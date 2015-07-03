@@ -19,7 +19,7 @@ void IHFAPI ConsoleOutput(LPCSTR text); // jichi 12/25/2013: Used to return leng
 //DWORD IHFAPI OutputDWORD(DWORD d);
 //DWORD IHFAPI OutputRegister(DWORD *base);
 DWORD IHFAPI NotifyHookInsert(DWORD addr);
-DWORD IHFAPI NewHook(const HookParam &hp, LPCWSTR name, DWORD flag = HOOK_ENGINE);
+DWORD IHFAPI NewHook(const HookParam &hp, LPCSTR name, DWORD flag = HOOK_ENGINE);
 DWORD IHFAPI RemoveHook(DWORD addr);
 DWORD IHFAPI SwitchTrigger(DWORD on);
 DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *size, LPWSTR *base_name);

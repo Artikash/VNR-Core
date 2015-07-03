@@ -25,6 +25,9 @@
 //#define ITH_USE_UX_DLLS  IthIsWine()
 #define ITH_USE_XP_DLLS  (IthIsWindowsXp() && !IthIsWine())
 
+#define DEBUG "host.cc"
+#include "sakurakit/skdebug.h"
+
 namespace { // unnamed
 
 //enum { HOOK_TIMEOUT = -50000000 }; // in nanoseconds = 5 seconds
@@ -136,7 +139,7 @@ DWORD Inject(HANDLE hProc)
   NtWriteVirtualMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
   hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
   if (hTH == 0 || hTH == INVALID_HANDLE_VALUE) {
-    ConsoleOutput("vnrhost:inject: ERROR: failed to create remote cli thread");
+    DOUT("vnrhost:inject: ERROR: failed to create remote cli thread");
     //ConsoleOutput(ErrorRemoteThread);
     return -1;
   }
@@ -224,9 +227,6 @@ HANDLE IthOpenPipe(LPWSTR name, ACCESS_MASK direction)
   else
     return INVALID_HANDLE_VALUE;
 }
-
-void ConsoleOutput(LPCSTR text) { man->ConsoleOutput(text); }
-void ConsoleOutputW(LPCWSTR text) { man->ConsoleOutputW(text); }
 
 enum { IHS_SIZE = 0x80 };
 enum { IHS_BUFF_SIZE  = IHS_SIZE - sizeof(HookParam) };
@@ -334,7 +334,7 @@ DWORD Host_GetPIDByName(LPCWSTR pwcTarget)
     }
   }
   if (!dwPid)
-    ConsoleOutput("vnrhost:Host_GetPIDByName: pid not found");
+    DOUT("vnrhost:Host_GetPIDByName: pid not found");
   //if (dwPid == 0) ConsoleOutput(ErrorNoProcess);
 _end:
   NtFreeVirtualMemory(NtCurrentProcess(),&pBuffer,&dwSize,MEM_RELEASE);
@@ -348,12 +348,12 @@ DWORD Host_InjectByPID(DWORD pid)
     return 0;
   if (pid == current_process_id) {
     //ConsoleOutput(SelfAttach);
-    ConsoleOutput("vnrhost:Host_InjectByPID: refuse to inject myself");
+    DOUT("vnrhost:Host_InjectByPID: refuse to inject myself");
     return -1;
   }
   if (man->GetProcessRecord(pid)) {
     //ConsoleOutput(AlreadyAttach);
-    ConsoleOutput("vnrhost:Host_InjectByPID: already attached");
+    DOUT("vnrhost:Host_InjectByPID: already attached");
     return -1;
   }
   swprintf(str, ITH_HOOKMAN_MUTEX_ L"%d", pid);
@@ -375,7 +375,7 @@ DWORD Host_InjectByPID(DWORD pid)
       PROCESS_VM_WRITE,
       &oa, &id))) {
     //ConsoleOutput(ErrorOpenProcess);
-    ConsoleOutput("vnrhost:Host_InjectByPID: failed to open process");
+    DOUT("vnrhost:Host_InjectByPID: failed to open process");
     return -1;
   }
 
@@ -387,7 +387,7 @@ DWORD Host_InjectByPID(DWORD pid)
     return -1;
   //swprintf(str, FormatInject, pid, module);
   //ConsoleOutput(str);
-  ConsoleOutput("vnrhost:Host_InjectByPID: inject succeed");
+  DOUT("vnrhost:Host_InjectByPID: inject succeed");
   return module;
 }
 
@@ -435,7 +435,7 @@ DWORD Host_ActiveDetachProcess(DWORD pid)
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
-    ConsoleOutput("vnrhost::activeDetach: process has terminated");
+    DOUT("vnrhost::activeDetach: process has terminated");
     return FALSE;
   }
 
@@ -446,9 +446,9 @@ DWORD Host_ActiveDetachProcess(DWORD pid)
   SendParam sp = {};
   sp.type = 4;
 
-  ConsoleOutput("vnrhost:Host_ActiveDetachProcess: sending cmd");
+  DOUT("vnrhost:Host_ActiveDetachProcess: sending cmd");
   NtWriteFile(hCmd, 0,0,0, &ios, &sp, sizeof(SendParam), 0,0);
-  ConsoleOutput("vnrhost:Host_ActiveDetachProcess: cmd sent");
+  DOUT("vnrhost:Host_ActiveDetachProcess: cmd sent");
 
   //cmdq->AddRequest(sp, pid);
 ////#ifdef ITH_WINE // Nt series crash on wine
@@ -466,7 +466,7 @@ DWORD Host_ActiveDetachProcess(DWORD pid)
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
-    ConsoleOutput("vnrhost:activeDetach: process has terminated");
+    DOUT("vnrhost:activeDetach: process has terminated");
     return FALSE;
   }
 
@@ -525,7 +525,7 @@ DWORD Host_HijackProcess(DWORD pid)
   return 0;
 }
 
-DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPWSTR name)
+DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPCSTR name)
 {
   ITH_SYNC_HOOK;
 
@@ -536,13 +536,16 @@ DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPWSTR name)
   InsertHookStruct s;
   s.sp.type = HOST_COMMAND_NEW_HOOK;
   s.sp.hp = *hp;
-  DWORD len;
-  if (name) len = wcslen(name) << 1;
-  else len = 0;
-  if (len >= IHS_BUFF_SIZE - 2) len = IHS_BUFF_SIZE - 2;
-  memcpy(s.name_buffer, name, len);
+  size_t len;
+  if (name)
+    len = ::strlen(name);
+  else
+    len = 0;
+  if (len) {
+    if (len >= IHS_BUFF_SIZE) len = IHS_BUFF_SIZE - 1;
+    memcpy(s.name_buffer, name, len);
+  }
   s.name_buffer[len] = 0;
-  s.name_buffer[len + 1] = 0;
   IO_STATUS_BLOCK ios;
   NtWriteFile(hCmd, 0,0,0, &ios, &s, IHS_SIZE, 0, 0);
 

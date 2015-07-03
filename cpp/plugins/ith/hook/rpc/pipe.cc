@@ -73,10 +73,11 @@ HANDLE IthOpenPipe(LPWSTR name, ACCESS_MASK direction)
 DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH main module status.
 {
   CC_UNUSED(lpThreadParameter);
+  // jichi 7/2/2015:This must be consistent with the struct declared in vnrhost/pipe.cc
   struct {
     DWORD pid;
-    TextHook *man;
     DWORD module;
+    TextHook *man;
     //DWORD engine;
   } u;
   HANDLE hMutex,
@@ -199,8 +200,8 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
         case HOST_COMMAND_NEW_HOOK:
           //IthBreak();
           buff[ios.uInformation] = 0;
-          buff[ios.uInformation + 1] = 0;
-          NewHook(*(HookParam *)(buff + 4), (LPWSTR)(buff + 4 + sizeof(HookParam)), 0);
+          //buff[ios.uInformation + 1] = 0;
+          NewHook(*(HookParam *)(buff + 4), (LPSTR)(buff + 4 + sizeof(HookParam)), 0);
           break;
         case HOST_COMMAND_REMOVE_HOOK:
           {

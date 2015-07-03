@@ -33,8 +33,6 @@ GLOBAL CRITICAL_SECTION detach_cs;
 DWORD WINAPI RecvThread(LPVOID lpThreadParameter);
 DWORD WINAPI CmdThread(LPVOID lpThreadParameter);
 
-void ConsoleOutput(LPCSTR text);
-void ConsoleOutputW(LPCWSTR text);
 DWORD  GetCurrentPID();
 //DWORD  GetProcessIDByPath(LPWSTR str);
 HANDLE  GetCmdHandleByPID(DWORD pid);
