@@ -87,12 +87,6 @@ void TextHook::setDefaultHookName(const QString &name)
   //Ihf::setUserDefinedThreadName(name);
 }
 
-bool TextHook::isDebug() const
-{ return Ihf::isDebug(); }
-
-void TextHook::setDebug(bool t)
-{ Ihf::setDebug(t); }
-
 bool TextHook::isEnabled() const
 { return d_->enabled; }
 

@@ -23,7 +23,7 @@ DWORD Host_GetPIDByName(LPCWSTR pwcTarget);
 DWORD Host_InjectByPID(DWORD pid);
 DWORD Host_ActiveDetachProcess(DWORD pid);
 DWORD Host_HijackProcess(DWORD pid);
-DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPWSTR name = nullptr);
+DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPCSTR name = nullptr);
 DWORD Host_ModifyHook(DWORD pid, HookParam *hp);
 DWORD Host_RemoveHook(DWORD pid, DWORD addr);
 DWORD Host_AddLink(DWORD from, DWORD to);

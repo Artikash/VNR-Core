@@ -73,11 +73,11 @@ public:
   DWORD GetCurrentPID();
   HANDLE GetCmdHandleByPID(DWORD pid);
 
-  ConsoleCallback RegisterConsoleCallback(ConsoleCallback cf)
-  { return (ConsoleCallback)_InterlockedExchange((long*)&console,(long)cf); }
+  //ConsoleCallback RegisterConsoleCallback(ConsoleCallback cf)
+  //{ return (ConsoleCallback)_InterlockedExchange((long*)&console,(long)cf); }
 
-  ConsoleWCallback RegisterConsoleWCallback(ConsoleWCallback cf)
-  { return (ConsoleWCallback)_InterlockedExchange((long*)&wconsole,(long)cf); }
+  //ConsoleWCallback RegisterConsoleWCallback(ConsoleWCallback cf)
+  //{ return (ConsoleWCallback)_InterlockedExchange((long*)&wconsole,(long)cf); }
 
   ThreadEventCallback RegisterThreadCreateCallback(ThreadEventCallback cf)
   { return (ThreadEventCallback)_InterlockedExchange((long*)&create,(long)cf); }
@@ -106,16 +106,16 @@ public:
   //DWORD& RepeatCount() { return repeat_count; }
   //DWORD& CyclicRemove() { return cyclic_remove; }
   //DWORD& GlobalFilter() { return global_filter; }
-  void ConsoleOutput(LPCSTR text) { if (console) console(text); } // not thread safe
-  void ConsoleOutputW(LPCWSTR text) { if (wconsole) wconsole(text); } // not thread safe
+  //void ConsoleOutput(LPCSTR text) { if (console) console(text); } // not thread safe
+  //void ConsoleOutputW(LPCWSTR text) { if (wconsole) wconsole(text); } // not thread safe
 
 private:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type hmcs;
 
   TextThread *current;
-  ConsoleCallback console; // jichi 12/25/2013: add console output callback
-  ConsoleWCallback wconsole;
+  //ConsoleCallback console; // jichi 12/25/2013: add console output callback
+  //ConsoleWCallback wconsole;
   ThreadEventCallback create,
                       remove,
                       reset;

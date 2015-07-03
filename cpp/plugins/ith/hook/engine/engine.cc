@@ -467,7 +467,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
                     hp.length_offset = 1;
                     hp.type = USING_UNICODE|NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
                     ConsoleOutput("vnreng: INSERT KiriKiri2");
-                    NewHook(hp, L"KiriKiri2");
+                    NewHook(hp, "KiriKiri2");
                     return true;
                   }
                 }
@@ -482,7 +482,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
               hp.length_offset = 1;
               hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
               ConsoleOutput("vnreng: INSERT KiriKiri1");
-              NewHook(hp, L"KiriKiri1");
+              NewHook(hp, "KiriKiri1");
               return true;
             }
             return false;
@@ -678,7 +678,7 @@ bool InsertKAGParserHook()
   hp.filter_fun = KAGParserFilter;
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
   ConsoleOutput("vnreng: INSERT KAGParser");
-  NewHook(hp, L"KAGParser");
+  NewHook(hp, "KAGParser");
   return true;
 }
 bool InsertKAGParserExHook()
@@ -718,7 +718,7 @@ bool InsertKAGParserExHook()
   hp.filter_fun = KAGParserFilter;
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
   ConsoleOutput("vnreng: INSERT KAGParserEx");
-  NewHook(hp, L"KAGParserEx");
+  NewHook(hp, "KAGParserEx");
   return true;
 }
 #endif // 0
@@ -1278,7 +1278,7 @@ void NewKiriKiriZHook(DWORD addr)
   hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
   //hp.filter_fun = NewLineWideCharFilter;
   ConsoleOutput("vnreng: INSERT KiriKiriZ");
-  NewHook(hp, L"KiriKiriZ");
+  NewHook(hp, "KiriKiriZ");
 
   ConsoleOutput("vnreng:KiriKiriZ: disable GDI hooks");
   DisableGDIHooks();
@@ -1316,7 +1316,7 @@ bool InsertKiriKiriZHook1()
   hp.type = HOOK_EMPTY;
   hp.hook_fun = KiriKiriZHook1;
   ConsoleOutput("vnreng: INSERT KiriKiriZ1 empty hook");
-  NewHook(hp, L"KiriKiriZ Hook");
+  NewHook(hp, "KiriKiriZ Hook");
   return true;
 }
 
@@ -1407,7 +1407,7 @@ static bool FindBGIHook(DWORD fun, DWORD size, DWORD pt, WORD sig)
                 hp.length_offset = 1;
                 hp.type = BIG_ENDIAN|USING_SPLIT;
                 ConsoleOutput("vnreng:INSERT DynamicBGI");
-                NewHook(hp, L"BGI");
+                NewHook(hp, "BGI");
                 return true;
               }
           }
@@ -1508,7 +1508,7 @@ bool InsertBGI1Hook()
           hp.type = BIG_ENDIAN|USING_SPLIT;
           hp.length_offset = 1;
           ConsoleOutput("vnreng:INSERT BGI#1");
-          NewHook(hp, L"BGI");
+          NewHook(hp, "BGI");
           //RegisterEngineType(ENGINE_BGI);
           return true;
         }
@@ -1524,7 +1524,7 @@ bool InsertBGI1Hook()
           hp.type = BIG_ENDIAN|USING_SPLIT;
           hp.length_offset = 1;
           ConsoleOutput("vnreng: INSERT BGI#2");
-          NewHook(hp, L"BGI");
+          NewHook(hp, "BGI");
           //RegisterEngineType(ENGINE_BGI);
           return true;
         }
@@ -1836,7 +1836,7 @@ bool InsertBGI2Hook()
   //ITH_GROWL_DWORD2(hp.address, module_base_);
 
   ConsoleOutput("vnreng: INSERT BGI2");
-  NewHook(hp, L"BGI2");
+  NewHook(hp, "BGI2");
 
   // Disable TextOutA, which is cached and hence missing characters.
   ConsoleOutput("vnreng:BGI2: disable GDI hooks");
@@ -1924,7 +1924,7 @@ bool InsertBGI3Hook()
   //ITH_GROWL_DWORD2(hp.address, module_base_);
 
   ConsoleOutput("vnreng: INSERT BGI3");
-  NewHook(hp, L"BGI3");
+  NewHook(hp, "BGI3");
   return true;
 }
 #endif // 0
@@ -2016,7 +2016,7 @@ static bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         hp.length_offset = 1;
         hp.type = BIG_ENDIAN|USING_SPLIT;
         //ITH_GROWL_DWORD(hp.address);
-        NewHook(hp, L"RealLive");
+        NewHook(hp, "RealLive");
         //RegisterEngineType(ENGINE_REALLIVE);
         ConsoleOutput("vnreng:RealLive: disable GDI hooks");
         DisableGDIHooks();
@@ -2138,7 +2138,7 @@ bool InsertSiglus3Hook()
   //hp.text_fun = SpecialHookSiglus3;
 
   ConsoleOutput("vnreng: INSERT Siglus3");
-  NewHook(hp, L"SiglusEngine3");
+  NewHook(hp, "SiglusEngine3");
 
   ConsoleOutput("vnreng:Siglus3: disable GDI hooks");
   DisableGDIHooks();
@@ -2289,7 +2289,7 @@ bool InsertSiglus4Hook()
   //hp.split = pusha_edx_off - 4;
 
   ConsoleOutput("vnreng: INSERT Siglus4");
-  NewHook(hp, L"SiglusEngine4");
+  NewHook(hp, "SiglusEngine4");
 
   ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
   DisableGDIHooks();
@@ -2479,7 +2479,7 @@ bool InsertSiglus4Hook()
   //ITH_GROWL_DWORD(addr);
 
   ConsoleOutput("vnreng: INSERT Siglus4");
-  NewHook(hp, L"SiglusEngine4");
+  NewHook(hp, "SiglusEngine4");
 
   ConsoleOutput("vnreng:Siglus4: disable GDI hooks");
   DisableGDIHooks();
@@ -3597,7 +3597,7 @@ bool InsertSiglus2Hook()
   hp.length_offset = 1;
 
   ConsoleOutput("vnreng: INSERT Siglus2");
-  NewHook(hp, L"SiglusEngine2");
+  NewHook(hp, "SiglusEngine2");
   //ConsoleOutput("SiglusEngine2");
   return true;
 }
@@ -3640,7 +3640,7 @@ bool InsertSiglus1Hook()
       hp.text_fun = SpecialHookSiglus1;
       //hp.type = USING_UNICODE; // string type not needed
       ConsoleOutput("vnreng: INSERT Siglus");
-      NewHook(hp, L"SiglusEngine");
+      NewHook(hp, "SiglusEngine");
       //RegisterEngineType(ENGINE_SIGLUS);
       return true;
     }
@@ -3930,10 +3930,10 @@ bool InsertMajiroHook()
   if (newMajiro) {
     hp.type = NO_CONTEXT; // do not use return address for new majiro
     ConsoleOutput("vnreng: INSERT Majiro2");
-    NewHook(hp, L"Majiro2");
+    NewHook(hp, "Majiro2");
   } else {
     ConsoleOutput("vnreng: INSERT Majiro");
-    NewHook(hp, L"Majiro");
+    NewHook(hp, "Majiro");
   }
   //RegisterEngineType(ENGINE_MAJIRO);
   return true;
@@ -3973,7 +3973,7 @@ bool InsertCMVS1Hook()
   hp.length_offset = 1;
 
   ConsoleOutput("vnreng: INSERT CMVS1");
-  NewHook(hp, L"CMVS");
+  NewHook(hp, "CMVS");
   //RegisterEngineType(ENGINE_CMVS);
   return true;
 }
@@ -4093,7 +4093,7 @@ bool InsertCMVS2Hook()
   hp.length_offset = 1;
 
   ConsoleOutput("vnreng: INSERT CMVS2");
-  NewHook(hp, L"CMVS2");
+  NewHook(hp, "CMVS2");
   return true;
 }
 
@@ -4172,7 +4172,7 @@ bool InsertRUGP1Hook()
       hp.text_fun = SpecialHookRUGP1;
       hp.type = BIG_ENDIAN;
       ConsoleOutput("vnreng: INSERT rUGP#1");
-      NewHook(hp, L"rUGP");
+      NewHook(hp, "rUGP");
       return true;
     }
   } else {
@@ -4196,7 +4196,7 @@ bool InsertRUGP1Hook()
         hp.length_offset = 1;
         hp.type = BIG_ENDIAN;
         ConsoleOutput("vnreng:INSERT rUGP#2");
-        NewHook(hp, L"rUGP");
+        NewHook(hp, "rUGP");
         //RegisterEngineType(ENGINE_RUGP);
         return true;
       }
@@ -4321,7 +4321,7 @@ bool InsertRUGP2Hook()
   hp.offset = -8;
   hp.type = NO_CONTEXT|BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT rUGP2");
-  NewHook(hp, L"rUGP2");
+  NewHook(hp, "rUGP2");
   return true;
 }
 
@@ -4350,7 +4350,7 @@ void InsertLucifenHook()
   hp.length_offset = 3;
   hp.type = USING_STRING|USING_SPLIT;
   ConsoleOutput("vnreng: INSERT Lucifen");
-  NewHook(hp, L"Lucifen");
+  NewHook(hp, "Lucifen");
   //RegisterEngineType(ENGINE_LUCIFEN);
 }
 /********************************************************************************************
@@ -4404,7 +4404,7 @@ static void InsertAliceHook1(DWORD addr, DWORD module, DWORD limit)
         hp.type = USING_STRING|USING_SPLIT;
         //if (s>j) hp.type^=USING_SPLIT;
         ConsoleOutput("vnreng: INSERT AliceHook1");
-        NewHook(hp, L"System40");
+        NewHook(hp, "System40");
         //RegisterEngineType(ENGINE_SYS40);
         return;
       }
@@ -4424,7 +4424,7 @@ static void InsertAliceHook2(DWORD addr)
   hp.length_offset = 1;
   hp.type = DATA_INDIRECT;
   ConsoleOutput("vnreng: INSERT AliceHook2");
-  NewHook(hp, L"System40");
+  NewHook(hp, "System40");
   //RegisterEngineType(ENGINE_SYS40);
 }
 
@@ -4528,7 +4528,7 @@ bool InsertAliceHook()
  *    005C410B   CC               INT3
  *    005C410C   CC               INT3 *
  */
-static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
+static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCSTR hookName)
 {
   // i.e. 83c40c5f5eb0015bc20400cccc without leading 0xe8
   //const BYTE ins[] = {  //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
@@ -5290,7 +5290,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCWSTR
  *  005C418B   C2 0400          RETN 0x4
  *  005C418E   CC               INT3
  */
-static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCWSTR hookName)
+static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCSTR hookName)
 {
   const BYTE bytes[] = {
     0xe8, XX4,              // 004eeb34   e8 67cb0100      call .0050b6a0  ; jichi: hook here, text on the top of the stack
@@ -5339,8 +5339,8 @@ bool InsertSystem43Hook()
     return false;
   }
   // Insert new hook first
-  bool ok = InsertSystem43OldHook(startAddress, stopAddress, patched ? L"AliceRunPatch43" : L"System43");
-  ok = InsertSystem43NewHook(startAddress, stopAddress, L"System43+") || ok;
+  bool ok = InsertSystem43OldHook(startAddress, stopAddress, patched ? "AliceRunPatch43" : "System43");
+  ok = InsertSystem43NewHook(startAddress, stopAddress, "System43+") || ok;
   return ok;
 }
 
@@ -5378,7 +5378,7 @@ bool InsertAtelierHook()
         hp.length_offset = 1;
         hp.type = USING_SPLIT;
         ConsoleOutput("vnreng: INSERT Aterlier KAGUYA");
-        NewHook(hp, L"Atelier KAGUYA");
+        NewHook(hp, "Atelier KAGUYA");
         //RegisterEngineType(ENGINE_ATELIER);
         return true;
       }
@@ -5416,7 +5416,7 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
             hp.length_offset = 1;
             hp.type = DATA_INDIRECT|USING_SPLIT;
             ConsoleOutput("vnreng: INSERT CIRCUS#1");
-            NewHook(hp, L"Circus1");
+            NewHook(hp, "Circus1");
             //RegisterEngineType(ENGINE_CIRCUS);
             return true;
           }
@@ -5466,7 +5466,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
         //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 0x4201d0 for DC3
-        NewHook(hp, L"Circus");
+        NewHook(hp, "Circus");
         //RegisterEngineType(ENGINE_CIRCUS);
         return true;
       }
@@ -5602,7 +5602,7 @@ bool InsertShinaHook()
     hp.text_fun = SpecialHookShina2;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: INSERT ShinaRio > 2.47");
-    NewHook(hp, L"ShinaRio");
+    NewHook(hp, "ShinaRio");
     //RegisterEngineType(ENGINE_SHINA);
     return true;
 
@@ -5628,7 +5628,7 @@ bool InsertShinaHook()
       ConsoleOutput("vnreng: INSERT ShinaRio <= 2.47 dynamic split");
       hp.split = *(DWORD *)(s + 2) + 4;
        //RegisterEngineType(ENGINE_SHINA);
-      NewHook(hp, L"ShinaRio");
+      NewHook(hp, "ShinaRio");
 
     } else {
       // jichi 3/13/2015: GetTextExtentPoint32A is not statically invoked in ＲＩＮ×ＳＥＮ　(PK)
@@ -5652,7 +5652,7 @@ bool InsertShinaHook()
       hp.split = 0x44;
       //hp.type |= FIXING_SPLIT|NO_CONTEXT; // merge all threads
       //hp.text_fun = SpecialHookShina1;
-      NewHook(hp, L"ShinaRio2"); // jichi: mark as ShinaRio2 so that VNR is able to warn user about the text speed issue
+      NewHook(hp, "ShinaRio2"); // jichi: mark as ShinaRio2 so that VNR is able to warn user about the text speed issue
     }
     return true;
   }
@@ -5694,7 +5694,7 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         hp.length_offset = 1;
         hp.type = DATA_INDIRECT;
         ConsoleOutput("vnreng: INSERT Dynamic Waffle");
-        NewHook(hp, L"Waffle");
+        NewHook(hp, "Waffle");
         return true;
       }
   ConsoleOutput("vnreng:DynamicWaffle: failed");
@@ -5735,7 +5735,7 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 //        hp.index = 4;
 //        //hp.split = 0x1E8;
 //        hp.type = DATA_INDIRECT;
-//        NewHook(hp, L"WAFFLE");
+//        NewHook(hp, "WAFFLE");
 //        //RegisterEngineType(ENGINE_WAFFLE);
 //        return true;
 //      }
@@ -5756,7 +5756,7 @@ void InsertWaffleHook()
       hp.split = 0x1e8;
       hp.type = DATA_INDIRECT|USING_SPLIT;
       ConsoleOutput("vnreng: INSERT WAFFLE");
-      NewHook(hp, L"WAFFLE");
+      NewHook(hp, "WAFFLE");
       return;
     }
   //ConsoleOutput("Probably Waffle. Wait for text.");
@@ -5789,9 +5789,9 @@ void InsertTinkerBellHook()
         }
       }
       if (hp.address) {
-        WCHAR hook_name[0x20];
-        memcpy(hook_name, L"TinkerBell", 0x14);
-        hook_name[0xa] = L'0' + count;
+        char hook_name[0x20];
+        ::strcpy(hook_name, "TinkerBell"); // size = 0xa
+        hook_name[0xa] = '0' + count;
         hook_name[0xb] = 0;
         ConsoleOutput("vnreng:INSERT TinkerBell");
         NewHook(hp, hook_name);
@@ -5811,7 +5811,7 @@ void InsertTinkerBellHook()
 //      if (*(WORD*)(module_base_+i)==0xec83)
 //      {
 //        hp.address=module_base_+i;
-//        NewHook(hp, L"C.System");
+//        NewHook(hp, "C.System");
 //        break;
 //      }
 //    }
@@ -5824,7 +5824,7 @@ void InsertTinkerBellHook()
 //      if (*(WORD*)(module_base_+i)==0xec83)
 //      {
 //        hp.address=module_base_+i;
-//        NewHook(hp, L"TinkerBell");
+//        NewHook(hp, "TinkerBell");
 //        break;
 //      }
 //    }
@@ -5845,7 +5845,7 @@ bool InsertMBLHook()
       hp.offset = 4;
       hp.type = USING_STRING;
       ConsoleOutput("vnreng:INSERT MBL-Furigana");
-      NewHook(hp, L"MBL-Furigana");
+      NewHook(hp, "MBL-Furigana");
       ret = true;
     }
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
@@ -5857,7 +5857,7 @@ bool InsertMBLHook()
       hp.length_offset = 1;
       hp.type = BIG_ENDIAN|USING_SPLIT;
       ConsoleOutput("vnreng:INSERT MBL");
-      NewHook(hp, L"MBL");
+      NewHook(hp, "MBL");
       ret = true;
     }
   if (!ret)
@@ -5898,7 +5898,7 @@ bool InsertEaglsHook()
   //hp.split = arg7_lpmat2;
   hp.length_offset = 1;
   ConsoleOutput("vnreng:INSERT EAGLS");
-  NewHook(hp, L"EAGLS");
+  NewHook(hp, "EAGLS");
   return true;
 }
 
@@ -5964,7 +5964,7 @@ static bool InsertYuris1Hook()
   hp.type = USING_STRING|USING_SPLIT;
   ConsoleOutput("vnreng: INSERT YU-RIS");
   //ITH_GROWL_DWORD(hp.address);
-  NewHook(hp, L"YU-RIS");
+  NewHook(hp, "YU-RIS");
   //RegisterEngineType(ENGINE_WHIRLPOOL);
   return true;
 }
@@ -6084,7 +6084,7 @@ static bool InsertYuris2Hook()
   hp.split = arg6_split;
 
   ConsoleOutput("vnreng: INSERT YU-RIS 2");
-  NewHook(hp, L"YU-RIS2");
+  NewHook(hp, "YU-RIS2");
   return true;
 }
 
@@ -6111,7 +6111,7 @@ bool InsertCotophaHook()
   hp.split = -0x1c; // jichi: esp?
   hp.type = USING_UNICODE|USING_SPLIT|USING_STRING;
   ConsoleOutput("vnreng: INSERT Cotopha");
-  NewHook(hp, L"Cotopha");
+  NewHook(hp, "Cotopha");
   //RegisterEngineType(ENGINE_COTOPHA);
   return true;
 }
@@ -6298,12 +6298,12 @@ bool InsertCatSystemHook()
   bool newEngine = IthCheckFile(L"cs2conf.dll");
   if (newEngine) {
     hp.text_fun = SpecialHookCatSystem3; // type not needed
-    NewHook(hp, L"CatSystem3");
+    NewHook(hp, "CatSystem3");
     ConsoleOutput("vnreng: INSERT CatSystem3");
   } else {
     hp.type = BIG_ENDIAN|USING_SPLIT;
     hp.split = pusha_edx_off - 4; // -0x10
-    NewHook(hp, L"CatSystem2");
+    NewHook(hp, "CatSystem2");
     ConsoleOutput("vnreng: INSERT CatSystem2");
   }
   //RegisterEngineType(ENGINE_CATSYSTEM);
@@ -6328,7 +6328,7 @@ bool InsertNitroPlusHook()
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT NitroPlus");
-  NewHook(hp, L"NitroPlus");
+  NewHook(hp, "NitroPlus");
   //RegisterEngineType(ENGINE_NITROPLUS);
   return true;
 }
@@ -6368,7 +6368,7 @@ bool InsertRetouch1Hook()
   hp.type = USING_STRING|NO_CONTEXT;
   hp.text_fun = SpecialHookRetouch1;
   ConsoleOutput("vnreng: INSERT Retouch");
-  NewHook(hp, L"Retouch");
+  NewHook(hp, "Retouch");
   return true;
 }
 
@@ -6392,7 +6392,7 @@ bool InsertRetouch2Hook()
   hp.offset = 4;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT Retouch");
-  NewHook(hp, L"Retouch");
+  NewHook(hp, "Retouch");
   return true;
 }
 
@@ -6441,7 +6441,7 @@ bool InsertMalieHook1()
   hp.length_offset = 1;
   hp.type = USING_UNICODE|USING_SPLIT|DATA_INDIRECT|SPLIT_INDIRECT;
   ConsoleOutput("vnreng: INSERT MalieHook1");
-  NewHook(hp, L"Malie");
+  NewHook(hp, "Malie");
   //RegisterEngineType(ENGINE_MALIE);
   return true;
 }
@@ -6497,7 +6497,7 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
   //hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT; // full type not needed
   hp.type = NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT MalieHook2");
-  NewHook(hp, L"Malie");
+  NewHook(hp, "Malie");
   //RegisterEngineType(ENGINE_MALIE);
   ConsoleOutput("vnreng:Malie2: disable GDI hooks");
   DisableGDIHooks();
@@ -6598,7 +6598,7 @@ bool InsertMalie2Hook()
   hp.type = USING_SPLIT|NO_CONTEXT; // |USING_UNICODE string type not needed
   hp.text_fun = SpecialHookMalie2;
   ConsoleOutput("vnreng: INSERT Malie2");
-  NewHook(hp, L"Malie2");
+  NewHook(hp, "Malie2");
 
   //ITH_GROWL_DWORD2(hp.address, reladdr);
   //RegisterEngineType(ENGINE_MALIE);
@@ -6746,7 +6746,7 @@ bool InsertMalie3Hook()
   hp.type = NO_CONTEXT; //|USING_UNICODE string type not needed
   //hp.filter_fun = Malie3Filter;
   ConsoleOutput("vnreng: INSERT Malie3");
-  NewHook(hp, L"Malie3");
+  NewHook(hp, "Malie3");
   ConsoleOutput("vnreng:Malie3: disable GDI hooks");
   DisableGDIHooks();
   return true;
@@ -6822,7 +6822,7 @@ bool InsertEMEHook()
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   ConsoleOutput("vnreng: INSERT EmonEngine");
-  NewHook(hp, L"EmonEngine");
+  NewHook(hp, "EmonEngine");
   //ConsoleOutput("EmonEngine, hook will only work with text speed set to slow or normal!");
   //else ConsoleOutput("Unknown EmonEngine engine");
   return true;
@@ -6851,11 +6851,11 @@ bool InsertRREHook()
   if ((*(WORD *)(addr-2) != sig)) {
     hp.text_fun = SpecialRunrunEngine;
     ConsoleOutput("vnreng: INSERT Runrun#1");
-    NewHook(hp, L"RunrunEngine Old");
+    NewHook(hp, "RunrunEngine Old");
   } else {
     hp.offset = -0x8;
     ConsoleOutput("vnreng: INSERT Runrun#2");
-    NewHook(hp, L"RunrunEngine");
+    NewHook(hp, "RunrunEngine");
   }
   return true;
   //ConsoleOutput("RunrunEngine, hook will only work with text speed set to slow or normal!");
@@ -6875,7 +6875,7 @@ bool InsertMEDHook()
             hp.length_offset = 1;
             hp.type = BIG_ENDIAN;
             ConsoleOutput("vnreng: INSERT MED");
-            NewHook(hp, L"MED");
+            NewHook(hp, "MED");
             //RegisterEngineType(ENGINE_MED);
             return true;
           }
@@ -6904,7 +6904,7 @@ bool InsertAbelHook()
         hp.offset = 4;
         hp.type = USING_STRING|NO_CONTEXT;
         ConsoleOutput("vnreng: INSERT AbelSoftware");
-        NewHook(hp, L"AbelSoftware");
+        NewHook(hp, "AbelSoftware");
         //RegisterEngineType(ENGINE_ABEL);
         return true;
       }
@@ -6928,7 +6928,7 @@ bool InsertLiveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     hp.length_offset = 1;
     hp.type = BIG_ENDIAN;
     ConsoleOutput("vnreng: INSERT DynamicLive");
-    NewHook(hp, L"Live");
+    NewHook(hp, "Live");
     //RegisterEngineType(ENGINE_LIVE);
     return true;
   }
@@ -6955,7 +6955,7 @@ bool InsertLiveHook()
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT Live");
-  NewHook(hp, L"Live");
+  NewHook(hp, "Live");
   //RegisterEngineType(ENGINE_LIVE);
   //else ConsoleOutput("Unknown Live engine");
   return true;
@@ -6981,7 +6981,7 @@ void InsertBrunsHook()
       hp.module = 0xd571d760; // 3581007712;
     if (hp.module) {
       ConsoleOutput("vnreng: INSERT Brus#1");
-      NewHook(hp, L"Bruns");
+      NewHook(hp, "Bruns");
     }
   }
   //else
@@ -7023,7 +7023,7 @@ void InsertBrunsHook()
               hp.length_offset = 1;
               hp.type = USING_UNICODE|DATA_INDIRECT;
               ConsoleOutput("vnreng: INSERT Brus#2");
-              NewHook(hp, L"Bruns2");
+              NewHook(hp, "Bruns2");
               return;
             }
           }
@@ -7093,7 +7093,7 @@ bool InsertQLIE2Hook()
   hp.address = addr;
 
   ConsoleOutput("vnreng: INSERT QLIE2");
-  NewHook(hp, L"QLIE2");
+  NewHook(hp, "QLIE2");
   //ConsoleOutput("QLIE2");
   return true;
 }
@@ -7120,7 +7120,7 @@ bool InsertQLIE1Hook()
             hp.length_offset = 1;
             hp.type = DATA_INDIRECT|USING_SPLIT;
             ConsoleOutput("vnreng: INSERT QLIE1");
-            NewHook(hp, L"QLIE");
+            NewHook(hp, "QLIE");
             //RegisterEngineType(ENGINE_FRONTWING);
             return true;
           }
@@ -7171,7 +7171,7 @@ bool InsertCandyHook1()
           hp.offset = -0x10;    // jichi: text in ecx
           hp.type = USING_STRING;
           ConsoleOutput("vnreng: INSERT SystemC#1");
-          NewHook(hp, L"SystemC");
+          NewHook(hp, "SystemC");
           //RegisterEngineType(ENGINE_CANDY);
           return true;
         }
@@ -7192,7 +7192,7 @@ bool InsertCandyHook2()
           hp.offset = 4;    // jichi: text in arg1
           hp.type = USING_STRING;
           ConsoleOutput("vnreng: INSERT SystemC#2");
-          NewHook(hp, L"SystemC");
+          NewHook(hp, "SystemC");
           //RegisterEngineType(ENGINE_CANDY);
           return true;
         }
@@ -7233,7 +7233,7 @@ bool InsertCandyHook2()
 //  hp.address = module_base_ + reladdr + addr_offset;
 //  hp.offset = -8;
 //  hp.type = USING_STRING|NO_CONTEXT;
-//  NewHook(hp, L"Candy");
+//  NewHook(hp, "Candy");
 //  return true;
 //}
 
@@ -7380,7 +7380,7 @@ bool InsertApricoTHook()
           hp.type = USING_STRING|NO_CONTEXT; // |USING_UNICODE string type not needed
           ConsoleOutput("vnreng: INSERT ApricoT");
           //ITH_GROWL_DWORD3(hp.address, module_base_, module_limit_);
-          NewHook(hp, L"ApRicoT");
+          NewHook(hp, "ApRicoT");
           //RegisterEngineType(ENGINE_APRICOT);
           // jichi 2/14/2015: disable cached GDI functions
           ConsoleOutput("vnreng:ApRicoT: disable GDI hooks");
@@ -7405,7 +7405,7 @@ void InsertStuffScriptHook()
   hp.split = -0x18; // jichi 8/12/2014: = -4 - pusha_esp_off
   hp.type = USING_STRING | USING_SPLIT;
   ConsoleOutput("vnreng: INSERT StuffScriptEngine");
-  NewHook(hp, L"StuffScriptEngine");
+  NewHook(hp, "StuffScriptEngine");
   //RegisterEngine(ENGINE_STUFFSCRIPT);
 }
 bool InsertTriangleHook()
@@ -7421,7 +7421,7 @@ bool InsertTriangleHook()
             hp.offset = 4;
             hp.type = USING_STRING;
             ConsoleOutput("vnreng: INSERT Triangle");
-            NewHook(hp, L"Triangle");
+            NewHook(hp, "Triangle");
             //RegisterEngineType(ENGINE_TRIANGLE);
             return true;
           }
@@ -7440,7 +7440,7 @@ bool InsertPensilHook()
         hp.offset = 8;
         hp.length_offset = 1;
         ConsoleOutput("vnreng: INSERT Pensil");
-        NewHook(hp, L"Pensil");
+        NewHook(hp, "Pensil");
         return true;
         //RegisterEngineType(ENGINE_PENSIL);
       }
@@ -7514,7 +7514,7 @@ bool InsertDebonosuScenarioHook()
             //hp.type = USING_STRING;
             hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|FIXING_SPLIT; // there is only one thread
             ConsoleOutput("vnreng: INSERT Debonosu");
-            NewHook(hp, L"Debonosu");
+            NewHook(hp, "Debonosu");
             //RegisterEngineType(ENGINE_DEBONOSU);
             ConsoleOutput("vnreng:Debonosu: disable GDI+ hooks");
             DisableGDIPlusHooks();
@@ -7571,7 +7571,7 @@ bool InsertDebonosuNameHook()
   //hp.type = USING_STRING;
   hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT; //|FIXING_SPLIT; // there is only one thread
   ConsoleOutput("vnreng: INSERT DebonosuName");
-  NewHook(hp, L"DebonosuName");
+  NewHook(hp, "DebonosuName");
   return true;
 }
 
@@ -7742,14 +7742,14 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         hp.address = i + k;
       else
         hp.address = *(DWORD *)i; // jichi: long jump, this is what is happening in Aoi5
-      //NewHook(hp, L"SofthouseChara");
+      //NewHook(hp, "SofthouseChara");
       //ITH_GROWL_DWORD(hp.address); // BUNNYBLACK: 0x10024730, base 0x01d0000
       if (hp.address) {
         ConsoleOutput("vnreng: INSERT SystemAoi");
         if (addr == ::GetGlyphOutlineW)
-          NewHook(hp, L"SystemAoi2"); // jichi 2/12/2015
+          NewHook(hp, "SystemAoi2"); // jichi 2/12/2015
         else
-          NewHook(hp, L"SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
+          NewHook(hp, "SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
         ConsoleOutput("vnreng:SystemAoi: disable GDI hooks");
         DisableGDIHooks();
       } else
@@ -7851,7 +7851,7 @@ bool InsertCaramelBoxHook()
             return false;
           }
           ConsoleOutput("vnreng: INSERT CaramelBox");
-          NewHook(hp, L"CaramelBox");
+          NewHook(hp, "CaramelBox");
           //RegisterEngineType(ENGINE_CARAMEL);
           return true;
         }
@@ -7931,7 +7931,7 @@ bool InsertOldWolfHook()
           hp.length_offset = 1;
           //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 淫乱勇者セフィのRPG = 0x50a400
           ConsoleOutput("vnreng: INSERT WolfRPG");
-          NewHook(hp, L"WolfRPG");
+          NewHook(hp, "WolfRPG");
           return true;
         }
     }
@@ -7989,7 +7989,7 @@ bool InsertWolf2Hook()
   hp.text_fun = SpecialHookWolf2;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT WolfRPG2");
-  NewHook(hp, L"WolfRPG2");
+  NewHook(hp, "WolfRPG2");
   return true;
 }
 #endif // 0
@@ -8021,7 +8021,7 @@ bool InsertIGSDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
       hp.length_offset = 1;
       hp.type = USING_UNICODE|USING_SPLIT;
       ConsoleOutput("vnreng: INSERT IronGameSystem");
-      NewHook(hp, L"IronGameSystem");
+      NewHook(hp, "IronGameSystem");
       //ConsoleOutput("IGS - Please set text(テキスト) display speed(表示速度) to fastest(瞬間)");
       //RegisterEngineType(ENGINE_IGS);
       return true;
@@ -8142,7 +8142,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
                 hp.text_fun = SpecialHookAB2Try;
                 hp.type = USING_STRING|NO_CONTEXT; //|USING_UNICODE string type not needed
                 ConsoleOutput("vnreng: INSERT AB2Try");
-                NewHook(hp, L"AB2Try");
+                NewHook(hp, "AB2Try");
                 //ConsoleOutput("Please adjust text speed to fastest/immediate.");
                 //RegisterEngineType(ENGINE_AB2T);
                 return TRUE;
@@ -8195,7 +8195,7 @@ bool InsertC4Hook()
   hp.type = DATA_INDIRECT|NO_CONTEXT;
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT C4");
-  NewHook(hp, L"C4");
+  NewHook(hp, "C4");
   //RegisterEngineType(ENGINE_C4);
   return true;
 }
@@ -8345,7 +8345,7 @@ static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
   //hp.type = USING_STRING|NO_CONTEXT|FIXING_SPLIT; // merge different scenario threads
 
   ConsoleOutput("vnreng: INSERT WillPlus2");
-  NewHook(hp, L"WillPlus2");
+  NewHook(hp, "WillPlus2");
   return true;
 }
 #endif // 0
@@ -8416,7 +8416,7 @@ bool InsertWillPlusHook()
   hp.text_fun = SpecialHookWillPlus;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT WillPlus");
-  NewHook(hp, L"WillPlus");
+  NewHook(hp, "WillPlus");
   //RegisterEngineType(ENGINE_WILLPLUS);
   return true;
 }
@@ -8451,7 +8451,7 @@ bool InsertTanukiHook()
         hp.offset = 4;
         hp.type = USING_STRING | NO_CONTEXT;
         ConsoleOutput("vnreng: INSERT TanukiSoft");
-        NewHook(hp, L"TanukiSoft");
+        NewHook(hp, "TanukiSoft");
         return true;
       }
 
@@ -8501,7 +8501,7 @@ bool InsertRyokuchaDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     hp.text_fun = SpecialHookRyokucha;
     hp.type = BIG_ENDIAN;
     ConsoleOutput("vnreng: INSERT StudioRyokucha");
-    NewHook(hp, L"StudioRyokucha");
+    NewHook(hp, "StudioRyokucha");
     return true;
   }
   //else ConsoleOutput("Unknown Ryokucha engine.");
@@ -8777,7 +8777,7 @@ static bool InsertGXP1Hook()
             //ITH_GROWL_DWORD3(call, module_base_, call - module_base_);
 
             ConsoleOutput("vnreng: INSERT GXP");
-            NewHook(hp, L"GXP");
+            NewHook(hp, "GXP");
 
             // jichi 5/13/2015: Disable hooking to GetGlyphOutlineW
             // FIXME: GetGlyphOutlineW can extract name, but GXP cannot
@@ -8822,7 +8822,7 @@ static bool InsertGXP2Hook()
   hp.type = USING_UNICODE|NO_CONTEXT|DATA_INDIRECT|FIXING_SPLIT;
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT GXP2");
-  NewHook(hp, L"GXP2");
+  NewHook(hp, "GXP2");
   ConsoleOutput("vnreng:GXP: disable GDI hooks");
   DisableGDIHooks();
   return true;
@@ -8924,7 +8924,7 @@ bool InsertAnex86Hook()
         //hp.type = EXTERN_HOOK;
         hp.length_offset = 1;
         ConsoleOutput("vnreng: INSERT Anex86");
-        NewHook(hp, L"Anex86");
+        NewHook(hp, "Anex86");
         return true;
       }
   ConsoleOutput("vnreng:Anex86: failed");
@@ -8984,7 +8984,7 @@ bool InsertShinyDaysHook()
   hp.text_fun = SpecialHookShinyDays;
   hp.type = USING_UNICODE|USING_STRING|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT ShinyDays");
-  NewHook(hp, L"ShinyDays 1.00");
+  NewHook(hp, "ShinyDays 1.00");
   return true;
 }
 
@@ -9071,7 +9071,7 @@ bool InsertNextonHook()
   //ITH_GROWL_DWORD3(addr, -hp.offset, hp.type);
 
   ConsoleOutput("vnreng: INSERT NEXTON");
-  NewHook(hp, L"NEXTON");
+  NewHook(hp, "NEXTON");
 
   //ConsoleOutput("NEXTON");
   return true;
@@ -9327,7 +9327,7 @@ bool InsertNexton1Hook()
   hp.offset = 4; // [esp+4] == arg0
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT NEXTON1");
-  NewHook(hp, L"NEXTON1");
+  NewHook(hp, "NEXTON1");
   return true;
 }
 
@@ -9369,7 +9369,7 @@ bool InsertUnicornHook()
   //ITH_GROWL_DWORD2(base, index);
 
   ConsoleOutput("vnreng: INSERT Unicorn");
-  NewHook(hp, L"Unicorn");
+  NewHook(hp, "Unicorn");
   return true;
 }
 
@@ -9459,7 +9459,7 @@ bool InsertArtemisHook()
   //ITH_GROWL_DWORD(hp.address);
 
   ConsoleOutput("vnreng: INSERT Artemis");
-  NewHook(hp, L"Artemis");
+  NewHook(hp, "Artemis");
   //ConsoleOutput("Artemis");
   return true;
 }
@@ -9622,7 +9622,7 @@ bool InsertTaskforce2Hook()
   //hp.address = 0x1948e9 + module_base_;
 
   ConsoleOutput("vnreng: INSERT Taskforce2");
-  NewHook(hp, L"Taskforce2");
+  NewHook(hp, "Taskforce2");
   return true;
 }
 
@@ -9753,7 +9753,7 @@ namespace { // unnamed Rejet
  *    01113578     68 dc6a5401    push kengakim.01546adc
  *    0111357d     e8 3eaff6ff    call kengakim.0107e4c0    ; hook here
  */
-bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD hook_offset, LPCWSTR hook_name = L"Rejet")
+bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD hook_offset, LPCSTR hook_name = "Rejet")
 {
   // Offset to the function call from the beginning of the function
   //enum { addr_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
@@ -9889,7 +9889,7 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
   //hp.offset = -0x8; // Type1
   //hp.offset = -0xc; // Type2
 
-  NewHook(hp, L"Rejet");
+  NewHook(hp, "Rejet");
   return true;
 }
 } // unnamed Rejet
@@ -9989,7 +9989,7 @@ bool InsertTencoHook()
   hp.type = NO_CONTEXT|DATA_INDIRECT;
 
   ConsoleOutput("vnreng: INSERT Tenco");
-  NewHook(hp, L"Tenco");
+  NewHook(hp, "Tenco");
   return true;
 }
 
@@ -10106,7 +10106,7 @@ bool InsertAOSHook()
   hp.type = DATA_INDIRECT;
 
   ConsoleOutput("vnreng: INSERT AOS");
-  NewHook(hp, L"AOS");
+  NewHook(hp, "AOS");
   return true;
 }
 
@@ -10311,11 +10311,11 @@ bool InsertScenarioPlayerHook()
   if (addr - start == addr_offset_W) {
     hp.type = USING_UNICODE;
     ConsoleOutput("vnreng: INSERT ScenarioPlayerW");
-    NewHook(hp, L"ScenarioPlayerW");
+    NewHook(hp, "ScenarioPlayerW");
   } else {
     hp.type = BIG_ENDIAN; // 4
     ConsoleOutput("vnreng: INSERT ScenarioPlayerA");
-    NewHook(hp, L"ScenarioPlayerA");
+    NewHook(hp, "ScenarioPlayerA");
   }
   return true;
 }
@@ -10436,7 +10436,7 @@ bool InsertMarineHeartHook()
   hp.type = USING_STRING|DATA_INDIRECT; // = 9
 
   ConsoleOutput("vnreng: INSERT MarineHeart");
-  NewHook(hp, L"MarineHeart");
+  NewHook(hp, "MarineHeart");
   return true;
 }
 
@@ -10579,7 +10579,7 @@ bool InsertElfHook()
       hp.type = USING_STRING|NO_CONTEXT; // = 9
 
       ConsoleOutput("vnreng: INSERT Elf");
-      NewHook(hp, L"Elf");
+      NewHook(hp, "Elf");
       return true;
     }
   ConsoleOutput("vnreng:Elf: function not found");
@@ -10855,7 +10855,7 @@ bool InsertSilkysHook()
   hp.type = USING_STRING|NO_CONTEXT; // = 9
 
   ConsoleOutput("vnreng: INSERT Silkys");
-  NewHook(hp, L"SilkysPlus");
+  NewHook(hp, "SilkysPlus");
   return true;
 }
 
@@ -11336,7 +11336,7 @@ bool InsertEushullyHook()
   hp.type = USING_STRING|FIXING_SPLIT; // merging all threads
   hp.offset = arg2_lpString; // arg2 = 0x4 * 2
   ConsoleOutput("vnreng: INSERT Eushully");
-  NewHook(hp, L"ARCGameEngine");
+  NewHook(hp, "ARCGameEngine");
   return true;
 }
 
@@ -11431,7 +11431,7 @@ bool InsertAmuseCraftHook()
   hp.split = 0x20; // arg6
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT AMUSE CRAFT");
-  NewHook(hp, L"AMUSE CRAFT");
+  NewHook(hp, "AMUSE CRAFT");
   return true;
 }
 
@@ -11710,7 +11710,7 @@ bool InsertNeXASHook()
   //hp.split = arg7_lpmat2; // = 0x18, arg7
 
   ConsoleOutput("vnreng: INSERT NeXAS");
-  NewHook(hp, L"NeXAS");
+  NewHook(hp, "NeXAS");
   return true;
 }
 
@@ -11835,7 +11835,7 @@ bool InsertYukaSystem2Hook()
   hp.type = NO_CONTEXT|USING_STRING|USING_UTF8; // UTF-8, though
   hp.text_fun = SpecialHookYukaSystem2;
   ConsoleOutput("vnreng: INSERT YukaSystem2");
-  NewHook(hp, L"YukaSystem2");
+  NewHook(hp, "YukaSystem2");
   return true;
 }
 
@@ -12001,7 +12001,7 @@ bool Insert2RMHook()
   hp.offset = -0x24;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   ConsoleOutput("vnreng: INSERT 2RM");
-  NewHook(hp, L"2RM");
+  NewHook(hp, "2RM");
   return true;
 }
 
@@ -12141,7 +12141,7 @@ bool InsertSideBHook()
   hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|RELATIVE_SPLIT; // NO_CONTEXT && RELATIVE_SPLIT to get rid of floating return address
   //hp.split = 0; // use retaddr as split
   ConsoleOutput("vnreng: INSERT SideB");
-  NewHook(hp, L"SideB");
+  NewHook(hp, "SideB");
   return true;
 }
 
@@ -12360,7 +12360,7 @@ bool InsertExpHook()
   hp.type = NO_CONTEXT|USING_STRING; // NO_CONTEXT to get rid of floating address
   hp.text_fun = SpecialHookExp;
   ConsoleOutput("vnreng: INSERT EXP");
-  NewHook(hp, L"EXP");
+  NewHook(hp, "EXP");
 
   ConsoleOutput("vnreng:EXP: disable GDI hooks");
   DisableGDIHooks();
@@ -12500,7 +12500,7 @@ bool InsertHorkEyeHook()
   hp.type = USING_STRING|NO_CONTEXT|FIXING_SPLIT; // floating address
   hp.filter_fun = HorkEyeFilter;
   ConsoleOutput("vnreng: INSERT HorkEye");
-  NewHook(hp, L"HorkEye");
+  NewHook(hp, "HorkEye");
   return true;
 }
 
@@ -12655,7 +12655,7 @@ bool Insert5pbHook1()
   hp.offset = pusha_edx_off - 4;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT 5pb1");
-  NewHook(hp, L"5pb1");
+  NewHook(hp, "5pb1");
 
   // GDI functions are not used by 5pb games anyway.
   //ConsoleOutput("vnreng:5pb: disable GDI hooks");
@@ -12706,7 +12706,7 @@ bool Insert5pbHook2()
   //hp.offset = pusha_eax_off - 4;
   //hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT 5pb2");
-  NewHook(hp, L"5pb2");
+  NewHook(hp, "5pb2");
 
   // GDI functions are not used by 5pb games anyway.
   //ConsoleOutput("vnreng:5pb: disable GDI hooks");
@@ -12862,7 +12862,7 @@ bool Insert5pbHook3()
   hp.extra_text_count = 1; // extract character name in arg1
   hp.filter_fun = NewLineCharToSpaceFilter; // replace '\n' by ' '
   ConsoleOutput("vnreng: INSERT 5pb3");
-  NewHook(hp, L"5pb3");
+  NewHook(hp, "5pb3");
   // GDI functions are not used by 5pb games anyway.
   //ConsoleOutput("vnreng:5pb: disable GDI hooks");
   //DisableGDIHooks();
@@ -13011,7 +13011,7 @@ static bool InsertMinkDynamicHook(LPVOID fun, DWORD frame, DWORD stack)
   hp.offset = 4 * 1; // text character is in arg1
   hp.length_offset = 1; // only 1 character
   hp.type = BIG_ENDIAN;
-  NewHook(hp, L"Mink");
+  NewHook(hp, "Mink");
 
   ConsoleOutput("vnreng:Mink: disable GDI hooks");
   DisableGDIHooks();
@@ -13068,7 +13068,7 @@ bool InsertMinkHook()
   hp.type = USING_SPLIT|DATA_INDIRECT; // 0x18
   hp.text_fun = SpecialHookMink;
   ConsoleOutput("vnreng: INSERT Mink");
-  NewHook(hp, L"Mink");
+  NewHook(hp, "Mink");
 
   //ConsoleOutput("vnreng:Mink: disable GDI hooks");
   //DisableGDIHooks();
@@ -13493,7 +13493,7 @@ bool InsertLeafHook()
   //hp.filter_fun = NewLineStringFilter; // remove two characters of "\\n"
   hp.filter_fun = LeafFilter; // remove two characters
   ConsoleOutput("vnreng: INSERT Leaf");
-  NewHook(hp, L"Leaf");
+  NewHook(hp, "Leaf");
 
   //ConsoleOutput("vnreng:Leaf: disable GDI hooks");
   //DisableGDIHooks();
@@ -13604,7 +13604,7 @@ bool InsertLunaSoftHook()
   hp.type = USING_STRING;
   //hp.filter_fun = LunaSoftFilter; // remove \n
   ConsoleOutput("vnreng: INSERT LunaSoft");
-  NewHook(hp, L"LunaSoft");
+  NewHook(hp, "LunaSoft");
 
   // There are no GDI functions anyway
   //ConsoleOutput("vnreng:LunaSoft: disable GDI hooks");
@@ -13748,7 +13748,7 @@ bool InsertFocasLensHook()
   hp.text_fun = SpecialHookFocasLens; // use special hook to force byte access
   hp.type = USING_STRING|USING_SPLIT|FIXING_SPLIT|NO_CONTEXT; // no context to get rid of relative function address
   ConsoleOutput("vnreng: INSERT FocasLens");
-  NewHook(hp, L"FocasLens");
+  NewHook(hp, "FocasLens");
 
   // GDI functions are kept in case the font is not cached
   //DisableGDIHooks();
@@ -13920,7 +13920,7 @@ bool InsertSyuntadaHook()
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN; // 0x4
   ConsoleOutput("vnreng: INSERT Syuntada");
-  NewHook(hp, L"Syuntada");
+  NewHook(hp, "Syuntada");
 
   // TextOutA will produce repeated texts
   ConsoleOutput("vnreng:Syuntada: disable GDI hooks");
@@ -14136,7 +14136,7 @@ bool InsertBootupGDIHook()
   hp.hook_fun = BootupGDIHook; // adjust hook parameter at runtime
 
   ConsoleOutput("vnreng: INSERT BootupGDI");
-  NewHook(hp, widechar ? L"BootupW" : L"BootupA");
+  NewHook(hp, widechar ? "BootupW" : "BootupA");
 
   ConsoleOutput("vnreng:BootupGDI: disable GDI hooks");
   DisableGDIHooks();
@@ -14172,7 +14172,7 @@ bool InsertBootupLstrHook() // for character name
   //hp.split = 0;
 
   ConsoleOutput("vnreng: INSERT BootupLstr");
-  NewHook(hp, widechar ? L"BootupLstrW" : L"BootupLstrA");
+  NewHook(hp, widechar ? "BootupLstrW" : "BootupLstrA");
   return true;
 }
 } // unnamed namespace
@@ -14283,7 +14283,7 @@ bool InsertAdobeAirHook()
   hp.type = USING_SPLIT|USING_UNICODE|DATA_INDIRECT;
 
   ConsoleOutput("vnreng: INSERT Adobe AIR");
-  NewHook(hp, L"Adobe AIR");
+  NewHook(hp, "Adobe AIR");
   return true;
 }
 
@@ -14539,7 +14539,7 @@ bool InsertAdobeFlash10Hook()
   hp.type = USING_UNICODE;
   hp.filter_fun = AdobeFlashFilter;
   ConsoleOutput("vnreng: INSERT Adobe Flash 10");
-  NewHook(hp, L"Adobe Flash 10");
+  NewHook(hp, "Adobe Flash 10");
 
   ConsoleOutput("vnreng:AdobeFlash10: disable GDI hooks");
   DisableGDIHooks();
@@ -14584,7 +14584,7 @@ bool InsertMonoHooks()
       hp.length_offset = it.lengthIndex * 4;
       hp.text_fun = (HookParam::text_fun_t)it.text_fun;
       ConsoleOutput("vnreng: Mono: INSERT");
-      NewHook(hp, it.hookName);
+      NewHook(hp, it.functionName);
       ret = true;
     }
   }
@@ -14774,7 +14774,7 @@ bool InsertVanillawareGCHook()
     hp.text_fun = SpecialGCHookVanillaware;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Vanillaware GC: INSERT");
-    NewHook(hp, L"Vanillaware GC");
+    NewHook(hp, "Vanillaware GC");
   }
 
   ConsoleOutput("vnreng: Vanillaware GC: leave");
@@ -15085,7 +15085,7 @@ bool InsertAlchemistPSPHook()
     hp.text_fun = SpecialPSPHookAlchemist;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
-    NewHook(hp, L"Alchemist PSP");
+    NewHook(hp, "Alchemist PSP");
   }
 
   ConsoleOutput("vnreng: Alchemist PSP: leave");
@@ -15184,7 +15184,7 @@ bool InsertAlchemist2PSPHook()
     hp.text_fun = SpecialPSPHookAlchemist2;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
-    NewHook(hp, L"Alchemist2 PSP");
+    NewHook(hp, "Alchemist2 PSP");
   }
 
   ConsoleOutput("vnreng: Alchemist2 PSP: leave");
@@ -15428,7 +15428,7 @@ bool Insert5pbPSPHook()
     hp.text_fun = SpecialPSPHook5pb;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: 5pb PSP: INSERT");
-    NewHook(hp, L"5pb PSP");
+    NewHook(hp, "5pb PSP");
   }
 
   ConsoleOutput("vnreng: 5pb PSP: leave");
@@ -15537,7 +15537,7 @@ bool InsertImageepochPSPHook()
     //hp.text_fun = SpecialPSPHook;
     hp.text_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameAddress
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
-    NewHook(hp, L"Imageepoch PSP");
+    NewHook(hp, "Imageepoch PSP");
   }
 
   ConsoleOutput("vnreng: Imageepoch PSP: leave");
@@ -15620,7 +15620,7 @@ bool InsertImageepoch2PSPHook()
     hp.split = pusha_ecx_off - 4;
     hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: Imageepoch2 PSP: INSERT");
-    NewHook(hp, L"Imageepoch2 PSP");
+    NewHook(hp, "Imageepoch2 PSP");
   }
 
   ConsoleOutput("vnreng: Imageepoch2 PSP: leave");
@@ -16146,7 +16146,7 @@ bool InsertYetiPSPHook()
     hp.text_fun = SpecialPSPHook;
     hp.offset = pusha_eax_off - 4;
     ConsoleOutput("vnreng: Yeti PSP: INSERT");
-    NewHook(hp, L"Yeti PSP");
+    NewHook(hp, "Yeti PSP");
   }
 
   ConsoleOutput("vnreng: Yeti PSP: leave");
@@ -16296,7 +16296,7 @@ bool InsertKidPSPHook()
     //hp.text_fun = SpecialPSPHook;
 
     ConsoleOutput("vnreng: KID PSP: INSERT");
-    NewHook(hp, L"KID PSP");
+    NewHook(hp, "KID PSP");
   }
 
   ConsoleOutput("vnreng: KID PSP: leave");
@@ -16427,7 +16427,7 @@ bool InsertCyberfrontPSPHook()
     //hp.split = pusha_edi_off - 4;
     hp.text_fun = SpecialPSPHookCyberfront;
     ConsoleOutput("vnreng: CYBERFRONT PSP: INSERT");
-    NewHook(hp, L"CYBERFRONT PSP");
+    NewHook(hp, "CYBERFRONT PSP");
   }
 
   ConsoleOutput("vnreng: CYBERFRONT PSP: leave");
@@ -16667,7 +16667,7 @@ bool InsertYeti2PSPHook()
     //hp.split = hp.offset; // directly use text address to split
     hp.text_fun = SpecialPSPHookYeti2;
     ConsoleOutput("vnreng: Yeti2 PSP: INSERT");
-    NewHook(hp, L"Yeti2 PSP");
+    NewHook(hp, "Yeti2 PSP");
   }
 
   ConsoleOutput("vnreng: Yeti2 PSP: leave");
@@ -16848,7 +16848,7 @@ bool InsertBandaiNamePSPHook()
     hp.split = pusha_ebx_off - 4;
     hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: BANDAI Name PSP: INSERT");
-    NewHook(hp, L"BANDAI Name PSP");
+    NewHook(hp, "BANDAI Name PSP");
   }
 
   ConsoleOutput("vnreng: BANDAI Name PSP: leave");
@@ -16940,7 +16940,7 @@ bool InsertBandaiPSPHook()
     //hp.split = pusha_ecx_off - 4;
     hp.text_fun = SpecialPSPHookBandai;
     ConsoleOutput("vnreng: BANDAI PSP: INSERT");
-    NewHook(hp, L"BANDAI PSP");
+    NewHook(hp, "BANDAI PSP");
   }
 
   ConsoleOutput("vnreng: BANDAI PSP: leave");
@@ -17028,7 +17028,7 @@ bool InsertNippon1PSPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
-    NewHook(hp, L"Nippon1 PSP");
+    NewHook(hp, "Nippon1 PSP");
   }
 
   ConsoleOutput("vnreng: Nippon1 PSP: leave");
@@ -17128,7 +17128,7 @@ bool InsertNippon2PSPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon2 PSP: INSERT");
-    NewHook(hp, L"Nippon2 PSP");
+    NewHook(hp, "Nippon2 PSP");
   }
 
   ConsoleOutput("vnreng: Nippon2 PSP: leave");
@@ -17271,7 +17271,7 @@ bool InsertBroccoliPSPHook()
     hp.text_fun = SpecialPSPHookBroccoli;
     //ITH_GROWL_DWORD(hp.address);
     ConsoleOutput("vnreng: Broccoli PSP: INSERT");
-    NewHook(hp, L"Broccoli PSP");
+    NewHook(hp, "Broccoli PSP");
   }
 
   ConsoleOutput("vnreng: Broccoli PSP: leave");
@@ -17375,7 +17375,7 @@ bool InsertOtomatePSPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookOtomate;
     ConsoleOutput("vnreng: Otomate PSP: INSERT");
-    NewHook(hp, L"Otomate PSP");
+    NewHook(hp, "Otomate PSP");
   }
 
   ConsoleOutput("vnreng: Otomate PSP: leave");
@@ -17467,7 +17467,7 @@ bool InsertOtomatePPSSPPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPPSSPPHookOtomate;
     ConsoleOutput("vnreng: Otomate PPSSPP: INSERT");
-    NewHook(hp, L"Otomate PPSSPP");
+    NewHook(hp, "Otomate PPSSPP");
   }
 
   ConsoleOutput("vnreng: Otomate PPSSPP: leave");
@@ -17578,7 +17578,7 @@ bool InsertOtomate2PSPHook()
   hp.type = USING_STRING|NO_CONTEXT;
   hp.text_fun = SpecialPSPHookOtomate2;
   ConsoleOutput("vnreng: Otomate2 PSP: INSERT");
-  NewHook(hp, L"Otomate PSP");
+  NewHook(hp, "Otomate PSP");
 
   ConsoleOutput("vnreng: Otomate2 PSP: leave");
   return addr;
@@ -17699,7 +17699,7 @@ bool InsertIntensePSPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookIntense;
     ConsoleOutput("vnreng: Intense PSP: INSERT");
-    NewHook(hp, L"Intense PSP");
+    NewHook(hp, "Intense PSP");
   }
 
   ConsoleOutput("vnreng: Intense PSP: leave");
@@ -17862,7 +17862,7 @@ bool InsertKonamiPSPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookKonami;
     ConsoleOutput("vnreng: KONAMI PSP: INSERT");
-    NewHook(hp, L"KONAMI PSP");
+    NewHook(hp, "KONAMI PSP");
   }
 
   ConsoleOutput("vnreng: KONAMI PSP: leave");
@@ -18030,7 +18030,7 @@ bool InsertKadokawaNamePSPHook()
 
     //ITH_GROWL_DWORD2(hp.address, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa Name PSP: INSERT");
-    NewHook(hp, L"Kadokawa Name PSP");
+    NewHook(hp, "Kadokawa Name PSP");
   }
 
   ConsoleOutput("vnreng: Kadokawa Name PSP: leave");
@@ -18163,7 +18163,7 @@ bool InsertFelistellaPSPHook()
     //hp.split = pusha_ecx_off - 4; // cause main thread to split
     //hp.split = pusha_edx_off - 4; // cause main thread to split for different lines
     ConsoleOutput("vnreng: FELISTELLA PSP: INSERT");
-    NewHook(hp, L"FELISTELLA PSP");
+    NewHook(hp, "FELISTELLA PSP");
   }
 
   ConsoleOutput("vnreng: FELISTELLA PSP: leave");
@@ -18225,7 +18225,7 @@ bool InsertKadokawaPSPHook()
 
     //ITH_GROWL_DWORD2(hp.address, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa PSP: INSERT");
-    NewHook(hp, L"Kadokawa PSP");
+    NewHook(hp, "Kadokawa PSP");
   }
 
   ConsoleOutput("vnreng: Kadokawa PSP: leave");
@@ -18380,7 +18380,7 @@ bool InsertTypeMoonPSPHook()
     hp.type = USING_STRING|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookTypeMoon;
     ConsoleOutput("vnreng: TypeMoon PSP: INSERT");
-    NewHook(hp, L"TypeMoon PSP");
+    NewHook(hp, "TypeMoon PSP");
   }
 
   ConsoleOutput("vnreng: TypeMoon PSP: leave");
@@ -18461,7 +18461,7 @@ bool InsertTecmoPSPHook()
     hp.split = pusha_ecx_off - 4;
     hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: Tecmo PSP: INSERT");
-    NewHook(hp, L"Tecmo PSP");
+    NewHook(hp, "Tecmo PSP");
   }
 
   ConsoleOutput("vnreng: Tecmo PSP: leave");
@@ -18690,7 +18690,7 @@ bool InsertTypeMoonPS2Hook()
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
     //ITH_GROWL_DWORD(hp.address);
-    NewHook(hp, L"TypeMoon PS2");
+    NewHook(hp, "TypeMoon PS2");
   }
 
   ConsoleOutput("vnreng: TypeMoon PS2: leave");
@@ -18938,7 +18938,7 @@ bool InsertMarvelousPS2Hook()
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous PS2: INSERT");
     //ITH_GROWL_DWORD(hp.address);
-    NewHook(hp, L"Marvelous PS2");
+    NewHook(hp, "Marvelous PS2");
   }
 
   ConsoleOutput("vnreng: Marvelous PS2: leave");
@@ -19124,7 +19124,7 @@ bool InsertMarvelous2PS2Hook()
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous2 PS2: INSERT");
     //ITH_GROWL_DWORD(hp.address);
-    NewHook(hp, L"Marvelous2 PS2");
+    NewHook(hp, "Marvelous2 PS2");
   }
 
   ConsoleOutput("vnreng: Marvelous2 PS2: leave");
@@ -19156,7 +19156,7 @@ bool InsertNamcoPS2Hook()
     hp.split = hp.offset; // use ecx address to split
     ConsoleOutput("vnreng: Namco PS2: INSERT");
     //ITH_GROWL_DWORD(hp.address);
-    NewHook(hp, L"Namco PS2");
+    NewHook(hp, "Namco PS2");
   }
 
   ConsoleOutput("vnreng: Namco PS2: leave");
@@ -19257,7 +19257,7 @@ bool InsertSegaPSPHook()
     hp.type = USING_STRING|NO_CONTEXT; // UTF-8
     hp.text_fun = SpecialPSPHookSega;
     ConsoleOutput("vnreng: SEGA PSP: INSERT");
-    NewHook(hp, L"SEGA PSP");
+    NewHook(hp, "SEGA PSP");
   }
 
   ConsoleOutput("vnreng: SEGA PSP: leave");
@@ -19385,7 +19385,7 @@ bool InsertShadePSPHook()
 
     // CHECKPOINT 7/14/2014: This would crash vnrcli
     // I do not have permission to modify the JIT code region?
-    NewHook(hp, L"Shade PSP");
+    NewHook(hp, "Shade PSP");
   }
 
   //DWORD peek = 0x13400e14;
@@ -19502,7 +19502,7 @@ bool InsertAlchemist3PSPHook()
     hp.text_fun = SpecialPSPHookAlchemist3;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist3 PSP: INSERT");
-    NewHook(hp, L"Alchemist3 PSP");
+    NewHook(hp, "Alchemist3 PSP");
   }
 
   ConsoleOutput("vnreng: Alchemist3 PSP: leave");
@@ -19614,7 +19614,7 @@ bool InsertMonoHook()
   hp.type = NO_CONTEXT|USING_SPLIT|USING_UNICODE|DATA_INDIRECT;
 
   ConsoleOutput("vnreng: INSERT Mono");
-  NewHook(hp, L"Mono");
+  NewHook(hp, "Mono");
   return true;
 }
 #endif // 0

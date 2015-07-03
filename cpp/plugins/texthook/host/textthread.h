@@ -32,8 +32,8 @@ struct ThreadParameter {
 #define REPEAT_NEWLINE 0x40000
 
 class TextThread;
-typedef void (* ConsoleCallback)(LPCSTR text);
-typedef void (* ConsoleWCallback)(LPCWSTR text);
+//typedef void (* ConsoleCallback)(LPCSTR text);
+//typedef void (* ConsoleWCallback)(LPCWSTR text);
 typedef DWORD (* ThreadOutputFilterCallback)(TextThread *, BYTE *, DWORD, DWORD, PVOID, bool space); // jichi 10/27/2013: Add space
 typedef DWORD (* ThreadEventCallback)(TextThread *);
 
@@ -49,8 +49,8 @@ public:
   //virtual void ExportTextToFile(LPWSTR filename);
 
   virtual bool CheckCycle(TextThread *start);
-  virtual DWORD GetThreadString(LPWSTR str, DWORD max);
-  virtual DWORD GetEntryString(LPWSTR str, DWORD max = 0x200);
+  virtual DWORD GetThreadString(LPSTR str, DWORD max);
+  virtual DWORD GetEntryString(LPSTR str, DWORD max = 0x200);
 
   void Reset();
   void AddText(const BYTE *con,int len, bool new_line, bool space); // jichi 10/27/2013: add const; remove console; add space
@@ -122,8 +122,7 @@ private:
   //ThreadOutputFilterCallback filter;  // jichi 10/27/2013: Remove filter
   ThreadOutputFilterCallback output;
   PVOID app_data;
-  //LPWSTR comment,
-  LPWSTR thread_string;
+  LPSTR thread_string;
   UINT_PTR timer;
   DWORD status,repeat_detect_limit;
   DWORD last_sentence,

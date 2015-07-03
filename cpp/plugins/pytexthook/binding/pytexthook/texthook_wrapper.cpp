@@ -900,34 +900,6 @@ static PyObject* Sbk_TextHookFunc_isActive(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_TextHookFunc_isDebug(PyObject* self)
-{
-    TextHookWrapper* cppSelf = 0;
-    SBK_UNUSED(cppSelf)
-    if (!Shiboken::Object::isValid(self))
-        return 0;
-    cppSelf = (TextHookWrapper*)((::TextHook*)Shiboken::Conversions::cppPointer(SbkpytexthookTypes[SBK_TEXTHOOK_IDX], (SbkObject*)self));
-    PyObject* pyResult = 0;
-
-    // Call function/method
-    {
-
-        if (!PyErr_Occurred()) {
-            // isDebug()const
-            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::TextHookWrapper*>(cppSelf)->isDebug();
-            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
-        }
-    }
-
-    if (PyErr_Occurred() || !pyResult) {
-        Py_XDECREF(pyResult);
-        return 0;
-    }
-    return pyResult;
-}
-
 static PyObject* Sbk_TextHookFunc_isEmpty(PyObject* self)
 {
     TextHookWrapper* cppSelf = 0;
@@ -1212,50 +1184,6 @@ static PyObject* Sbk_TextHookFunc_setDataCapacity(PyObject* self, PyObject* pyAr
     Sbk_TextHookFunc_setDataCapacity_TypeError:
         const char* overloads[] = {"int", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pytexthook.TextHook.setDataCapacity", overloads);
-        return 0;
-}
-
-static PyObject* Sbk_TextHookFunc_setDebug(PyObject* self, PyObject* pyArg)
-{
-    TextHookWrapper* cppSelf = 0;
-    SBK_UNUSED(cppSelf)
-    if (!Shiboken::Object::isValid(self))
-        return 0;
-    cppSelf = (TextHookWrapper*)((::TextHook*)Shiboken::Conversions::cppPointer(SbkpytexthookTypes[SBK_TEXTHOOK_IDX], (SbkObject*)self));
-    int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
-    SBK_UNUSED(pythonToCpp)
-
-    // Overloaded function decisor
-    // 0: setDebug(bool)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArg)))) {
-        overloadId = 0; // setDebug(bool)
-    }
-
-    // Function signature not found.
-    if (overloadId == -1) goto Sbk_TextHookFunc_setDebug_TypeError;
-
-    // Call function/method
-    {
-        bool cppArg0;
-        pythonToCpp(pyArg, &cppArg0);
-
-        if (!PyErr_Occurred()) {
-            // setDebug(bool)
-            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setDebug(cppArg0);
-            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-        }
-    }
-
-    if (PyErr_Occurred()) {
-        return 0;
-    }
-    Py_RETURN_NONE;
-
-    Sbk_TextHookFunc_setDebug_TypeError:
-        const char* overloads[] = {"bool", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pytexthook.TextHook.setDebug", overloads);
         return 0;
 }
 
@@ -1860,7 +1788,6 @@ static PyMethodDef Sbk_TextHook_methods[] = {
     {"hijackProcess", (PyCFunction)Sbk_TextHookFunc_hijackProcess, METH_O},
     {"interval", (PyCFunction)Sbk_TextHookFunc_interval, METH_NOARGS},
     {"isActive", (PyCFunction)Sbk_TextHookFunc_isActive, METH_NOARGS},
-    {"isDebug", (PyCFunction)Sbk_TextHookFunc_isDebug, METH_NOARGS},
     {"isEmpty", (PyCFunction)Sbk_TextHookFunc_isEmpty, METH_NOARGS},
     {"isEnabled", (PyCFunction)Sbk_TextHookFunc_isEnabled, METH_NOARGS},
     {"isThreadWhitelistEnabled", (PyCFunction)Sbk_TextHookFunc_isThreadWhitelistEnabled, METH_NOARGS},
@@ -1870,7 +1797,6 @@ static PyMethodDef Sbk_TextHook_methods[] = {
     {"removeHookCode", (PyCFunction)Sbk_TextHookFunc_removeHookCode, METH_O},
     {"removesRepeat", (PyCFunction)Sbk_TextHookFunc_removesRepeat, METH_NOARGS},
     {"setDataCapacity", (PyCFunction)Sbk_TextHookFunc_setDataCapacity, METH_O},
-    {"setDebug", (PyCFunction)Sbk_TextHookFunc_setDebug, METH_O},
     {"setDefaultHookName", (PyCFunction)Sbk_TextHookFunc_setDefaultHookName, METH_O},
     {"setEnabled", (PyCFunction)Sbk_TextHookFunc_setEnabled, METH_O},
     {"setInterval", (PyCFunction)Sbk_TextHookFunc_setInterval, METH_O},

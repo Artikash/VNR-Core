@@ -15,13 +15,12 @@ class HookManager; // opaque in ith/host/hookman.h
 class TextThread; // opaque in ith/host/textthread.h
 class TextThreadDelegate;
 
-enum { ITH_MAX_THREAD_NAME = 0x200 }; // used internally by ITH
+enum { ITH_THREAD_NAME_CAPACITY = 0x200 }; // used internally by ITH
 
 class Ihf
 {
   Ihf() {} // Singleton
 
-  static bool debug_;
   static bool enabled_;
 
   //static Settings *settings_;
@@ -36,7 +35,7 @@ class Ihf
   enum { WhitelistSize = 0x20 + 1 }; // ITH capacity is 0x20
   static qint32 whitelist_[WhitelistSize]; // List of signatures. The last element is zero. I.e., at most BlackSize-1 threads.
   static bool whitelistEnabled_;
-  static wchar_t keptThreadName_[ITH_MAX_THREAD_NAME];
+  static char keptThreadName_[ITH_THREAD_NAME_CAPACITY];
   //static QString userDefinedThreadName_;
 
 public:
@@ -50,9 +49,6 @@ public:
   static void unload();
 
   // - Properties -
-
-  static bool isDebug() { return debug_; }
-  static void setDebug(bool t) { debug_ = t; }
 
   static bool isEnabled() { return enabled_; }
   static void setEnabled(bool t) { enabled_ = t; }
@@ -86,16 +82,14 @@ public:
 
   //static QString userDefinedThreadName() { return userDefinedThreadName_; }
   //static void setUserDefinedThreadName(const QString &val) { userDefinedThreadName_ = val; }
-  static QString keptThreadName()
-  {  return QString::fromWCharArray(keptThreadName_);  }
+  static const char *keptThreadName() { return keptThreadName_;  }
 
   static void setKeptThreadName(const QString &v)
   {
-    if (v.size() < ITH_MAX_THREAD_NAME) {
-      keptThreadName_[v.size()] = 0;
-      v.toWCharArray(keptThreadName_);
-    } else
-      setKeptThreadName(v.left(ITH_MAX_THREAD_NAME - 1));
+    if (v.size() < ITH_THREAD_NAME_CAPACITY)
+      ::strcpy(keptThreadName_, v.toAscii());
+    else
+      setKeptThreadName(v.left(ITH_THREAD_NAME_CAPACITY - 1));
   }
 
 private:
@@ -111,8 +105,8 @@ private:
   static ulong threadOutput(_In_ TextThread *t, _In_ uchar *data, _In_ ulong dataLength, _In_ ulong bNewLine, _In_ void *pUserData, _In_ bool space);
   //static ulong threadFilter(_In_ TextThread *t, _Out_ uchar *data, _In_ ulong dataLength, _In_ ulong bNewLine, _In_ void *pUserData);
   //static ulong threadReset(TextThread *t);
-  static void consoleOutput(const char *text);
-  static void consoleOutputW(const wchar_t *text);
+  //static void consoleOutput(const char *text);
+  //static void consoleOutputW(const wchar_t *text);
 
   // - Linked threasds -
 private:

@@ -54,7 +54,7 @@ class TextHook : public Hook
 public:
   int InsertHook();
   int InsertHookCode();
-  int InitHook(const HookParam &hp, LPCWSTR name = 0, WORD set_flag = 0);
+  int InitHook(const HookParam &hp, LPCSTR name = 0, WORD set_flag = 0);
   int InitHook(LPVOID addr, DWORD data, DWORD data_ind,
       DWORD split_off, DWORD split_ind, WORD type, DWORD len_off = 0);
   DWORD Send(DWORD dwDataBase, DWORD dwRetn);
@@ -62,7 +62,7 @@ public:
   int RemoveHook();
   int ClearHook();
   int ModifyHook(const HookParam&);
-  int SetHookName(LPCWSTR name);
+  int SetHookName(LPCSTR name);
   int GetLength(DWORD base, DWORD in); // jichi 12/25/2013: Return 0 if failed
   void CoolDown(); // jichi 9/28/2013: flush instruction cache on wine
 };

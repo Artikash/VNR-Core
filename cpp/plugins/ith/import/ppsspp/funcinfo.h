@@ -58,7 +58,7 @@
 
 struct PPSSPPFunction
 {
-  const wchar_t *hookName; // hook name
+  const char *hookName; // hook name
   size_t argIndex;      // argument index
   unsigned long hookType;       // hook parameter type
   unsigned long hookSplit;      // hook parameter split, positive: stack, negative: registers
@@ -73,34 +73,34 @@ struct PPSSPPFunction
 // Example: { L"sceFontGetCharInfo", 2, USING_UNICODE, 4, "sceFontGetCharInfo(" }
 // Text is at arg2, using arg1 as split
 #define PPSSPP_FUNCTIONS_INITIALIZER \
-    { L"sceCccStrlenSJIS",  1, USING_STRING,  0, "sceCccStrlenSJIS(" } \
-  , { L"sceCccStrlenUTF8",  1, USING_UTF8,    0, "sceCccStrlenUTF8(" } \
-  , { L"sceCccStrlenUTF16", 1, USING_UNICODE, 0, "sceCccStrlenUTF16(" } \
+    { "sceCccStrlenSJIS",  1, USING_STRING,  0, "sceCccStrlenSJIS(" } \
+  , { "sceCccStrlenUTF8",  1, USING_UTF8,    0, "sceCccStrlenUTF8(" } \
+  , { "sceCccStrlenUTF16", 1, USING_UNICODE, 0, "sceCccStrlenUTF16(" } \
 \
-  , { L"sceCccSJIStoUTF8",  3, USING_UTF8,    0, "sceCccSJIStoUTF8(" } \
-  , { L"sceCccSJIStoUTF16", 3, USING_STRING,  0, "sceCccSJIStoUTF16(" } \
-  , { L"sceCccUTF8toSJIS",  3, USING_UTF8,    0, "sceCccUTF8toSJIS(" } \
-  , { L"sceCccUTF8toUTF16", 3, USING_UTF8,    0, "sceCccUTF8toUTF16(" } \
-  , { L"sceCccUTF16toSJIS", 3, USING_UNICODE, 0, "sceCccUTF16toSJIS(" } \
-  , { L"sceCccUTF16toUTF8", 3, USING_UNICODE, 0, "sceCccUTF16toUTF8(" } \
+  , { "sceCccSJIStoUTF8",  3, USING_UTF8,    0, "sceCccSJIStoUTF8(" } \
+  , { "sceCccSJIStoUTF16", 3, USING_STRING,  0, "sceCccSJIStoUTF16(" } \
+  , { "sceCccUTF8toSJIS",  3, USING_UTF8,    0, "sceCccUTF8toSJIS(" } \
+  , { "sceCccUTF8toUTF16", 3, USING_UTF8,    0, "sceCccUTF8toUTF16(" } \
+  , { "sceCccUTF16toSJIS", 3, USING_UNICODE, 0, "sceCccUTF16toSJIS(" } \
+  , { "sceCccUTF16toUTF8", 3, USING_UNICODE, 0, "sceCccUTF16toUTF8(" } \
 \
-  , { L"sceFontGetCharInfo",              2, USING_UNICODE, 4, "sceFontGetCharInfo(" } \
-  , { L"sceFontGetShadowInfo",            2, USING_UNICODE, 4, "sceFontGetShadowInfo("} \
-  , { L"sceFontGetCharImageRect",         2, USING_UNICODE, 4, "sceFontGetCharImageRect(" } \
-  , { L"sceFontGetShadowImageRect",       2, USING_UNICODE, 4, "sceFontGetShadowImageRect(" } \
-  , { L"sceFontGetCharGlyphImage",        2, USING_UNICODE, 4, "sceFontGetCharGlyphImage(" } \
-  , { L"sceFontGetCharGlyphImage_Clip",   2, USING_UNICODE, 4, "sceFontGetCharGlyphImage_Clip(" } \
-  , { L"sceFontGetShadowGlyphImage",      2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage(" } \
-  , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage_Clip(" } \
+  , { "sceFontGetCharInfo",              2, USING_UNICODE, 4, "sceFontGetCharInfo(" } \
+  , { "sceFontGetShadowInfo",            2, USING_UNICODE, 4, "sceFontGetShadowInfo("} \
+  , { "sceFontGetCharImageRect",         2, USING_UNICODE, 4, "sceFontGetCharImageRect(" } \
+  , { "sceFontGetShadowImageRect",       2, USING_UNICODE, 4, "sceFontGetShadowImageRect(" } \
+  , { "sceFontGetCharGlyphImage",        2, USING_UNICODE, 4, "sceFontGetCharGlyphImage(" } \
+  , { "sceFontGetCharGlyphImage_Clip",   2, USING_UNICODE, 4, "sceFontGetCharGlyphImage_Clip(" } \
+  , { "sceFontGetShadowGlyphImage",      2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage(" } \
+  , { "sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage_Clip(" } \
 \
-  , { L"sysclib_strcat", 2, USING_STRING, 0, "Untested sysclib_strcat(" } \
-  , { L"sysclib_strcpy", 2, USING_STRING, 0, "Untested sysclib_strcpy(" } \
-  , { L"sysclib_strlen", 1, USING_STRING, 0, "Untested sysclib_strlen(" }
+  , { "sysclib_strcat", 2, USING_STRING, 0, "Untested sysclib_strcat(" } \
+  , { "sysclib_strcpy", 2, USING_STRING, 0, "Untested sysclib_strcpy(" } \
+  , { "sysclib_strlen", 1, USING_STRING, 0, "Untested sysclib_strlen(" }
 
   // Disabled as I am not sure how to deal with the source string
-  //, { L"sceCccEncodeSJIS", 2, USING_STRING, 0, "sceCccEncodeSJIS(" }
-  //, { L"sceCccEncodeUTF8", 2, USING_UTF8,   0, "sceCccEncodeUTF8(" }
-  //, { L"sceCccEncodeUTF16", 2, USING_UNICODE, 0, "sceCccEncodeUTF16(" }
-  //, { L"sysclib_strcmp", 2, USING_STRING, 0, "Untested sysclib_strcmp(" }
+  //, { "sceCccEncodeSJIS", 2, USING_STRING, 0, "sceCccEncodeSJIS(" }
+  //, { "sceCccEncodeUTF8", 2, USING_UTF8,   0, "sceCccEncodeUTF8(" }
+  //, { "sceCccEncodeUTF16", 2, USING_UNICODE, 0, "sceCccEncodeUTF16(" }
+  //, { "sysclib_strcmp", 2, USING_STRING, 0, "Untested sysclib_strcmp(" }
 
 // EOF

@@ -271,7 +271,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 }
 
 //extern "C" {
-DWORD IHFAPI NewHook(const HookParam &hp, LPCWSTR name, DWORD flag)
+DWORD IHFAPI NewHook(const HookParam &hp, LPCSTR name, DWORD flag)
 {
   //WCHAR str[0x80];
   int current = ::current_available - ::hookman;

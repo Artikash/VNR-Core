@@ -26,7 +26,7 @@
 
 // - Construction -
 
-bool Ihf::debug_ = true;
+//bool Ihf::debug_ = true;
 bool Ihf::enabled_ = true;
 
 //Settings *Ihf::settings_;
@@ -38,17 +38,17 @@ QHash<TextThread *, TextThreadDelegate *> Ihf::threadDelegates_;
 //QHash<TextThreadDelegate *, TextThreadDelegate *> Ihf::linkedDelegates_;
 QHash<QString, ulong> Ihf::hookAddresses_;
 
-wchar_t Ihf::keptThreadName_[ITH_MAX_THREAD_NAME];
+char Ihf::keptThreadName_[ITH_THREAD_NAME_CAPACITY];
 
 bool Ihf::whitelistEnabled_;
 qint32 Ihf::whitelist_[Ihf::WhitelistSize];
 
 // Debugging output
-void Ihf::consoleOutput(const char *text)
-{ if (debug_) qDebug() << "texthook:console:" << text; }
+//void Ihf::consoleOutput(const char *text)
+//{ if (debug_) qDebug() << "texthook:console:" << text; }
 
-void Ihf::consoleOutputW(const wchar_t *text)
-{ if (debug_) qDebug() << "texthook:console:" << QString::fromWCharArray(text); }
+//void Ihf::consoleOutputW(const wchar_t *text)
+//{ if (debug_) qDebug() << "texthook:console:" << QString::fromWCharArray(text); }
 
 void Ihf::init()
 {
@@ -100,8 +100,8 @@ bool Ihf::load()
       //::Host_GetSettings(&settings_);
       //settings_->debug = debug_;
 
-      hookManager_->RegisterConsoleCallback(consoleOutput);
-      hookManager_->RegisterConsoleWCallback(consoleOutputW);
+      //hookManager_->RegisterConsoleCallback(consoleOutput);
+      //hookManager_->RegisterConsoleWCallback(consoleOutputW);
       //hookManager_->RegisterProcessAttachCallback(processAttach);
       //hookManager_->RegisterProcessDetachCallback(processDetach);
       //hookManager_->RegisterProcessNewHookCallback(processNewHook);
@@ -368,22 +368,13 @@ bool Ihf::addHook(ulong pid, const QString &code, const QString &name, bool verb
     return false;
   }
 
-  wchar_t *nameBuf = 0;
-  if (!name.isEmpty()) {
-    size_t nameBufSize = name.size() + 1;
-    nameBuf = new wchar_t[nameBufSize];
-    name.toWCharArray(nameBuf);
-    nameBuf[name.size()] = 0;
-  }
-  DWORD hh = ::Host_InsertHook(pid, &hp, nameBuf);
+  DWORD hh = ::Host_InsertHook(pid, &hp, name.toAscii());
   //DWORD hh = ::NewHook(hp, nameBuf);
   bool ok = ~hh;
   if (ok && hp.address) {
     DOUT("hook address =" << hp.address);
     hookAddresses_[code] = hp.address;
   }
-  if (nameBuf)
-    delete[] nameBuf;
   DOUT("leave: ok =" << ok);
   return ok;
 }

@@ -28,7 +28,7 @@ static DWORD MIN_REDETECT = 0x80;
 # define REPEAT_NUMBER_DECIDED  0x2000
 #endif
 
-DWORD GetHookName(LPWSTR str, DWORD pid, DWORD hook_addr,DWORD max);
+DWORD GetHookName(LPSTR str, DWORD pid, DWORD hook_addr,DWORD max);
 
 extern Settings *settings;
 extern HWND hMainWnd;
@@ -544,26 +544,26 @@ void TextThread::AddTextDirect(const BYTE* con, int len, bool space) // Add to s
   AddToStore(data, len);
 }
 
-DWORD TextThread::GetEntryString(LPWSTR str, DWORD max)
+DWORD TextThread::GetEntryString(LPSTR str, DWORD max)
 {
   DWORD len = 0;
   if (str && max > 0x40) {
     max--;
     if (thread_string) {
-      len = wcslen(thread_string);
+      len = ::strlen(thread_string);
       len = len < max ? len : max;
-      memcpy(str, thread_string, len << 1);
+      memcpy(str, thread_string, len);
       str[len] = 0;
 
     } else {
-      len = swprintf(str, L"%.4X:%.4d:0x%08X:0x%08X:0x%08X:",
+      len = ::sprintf(str, "%.4X:%.4d:0x%08X:0x%08X:0x%08X:",
           thread_number, tp. pid, tp.hook, tp.retn, tp.spl);
 
       len += GetHookName(str + len, tp.pid, tp.hook, max - len);
-      thread_string = new wchar_t[len + 1];
+      thread_string = new char[len + 1];
       //ITH_MEMSET_HEAP(thread_string, 0, (len+1) * sizeof(wchar_t)); // jichi 9/26/2013: zero memory
       thread_string[len] = 0;
-      memcpy(thread_string, str, len * sizeof(wchar_t));
+      ::memcpy(thread_string, str, len);
     }
     //if (comment) {
     //  str += len;
@@ -751,28 +751,28 @@ void TextThread::SetNewLineTimer()
         (UINT_PTR)this, settings->splittingInterval, NewLineBuff);
 }
 
-DWORD TextThread::GetThreadString(LPWSTR str, DWORD max)
+DWORD TextThread::GetThreadString(LPSTR str, DWORD max)
 {
   DWORD len = 0;
   if (max) {
-    wchar_t buffer[0x200];
-    wchar_t c;
+    char buffer[0x200];
+    char c;
     if (thread_string == nullptr)
       GetEntryString(buffer, 0x200); //This will allocate thread_string.
-    LPWSTR p1,
-           end;
-    for (end = thread_string; *end; end++);
+    LPSTR end = thread_string;
+    for (; *end; end++);
     c = thread_string[0];
-    thread_string[0] = L':';
-    for (p1 = end; *p1 != L':'; p1--);
+    thread_string[0] = ':';
+    LPSTR p1 = end;
+    for (; *p1 != ':'; p1--);
     thread_string[0] = c;
     if (p1 == thread_string)
       return 0;
     p1++;
     len = end - p1;
     if (len >= max)
-      len = max;
-    memcpy(str, p1, len << 1);
+      len = max - 1;
+    ::memcpy(str, p1, len);
     str[len] = 0;
   }
 
