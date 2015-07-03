@@ -8,6 +8,7 @@
 #include "engine/enginehash.h"
 #include "engine/enginesettings.h"
 #include "engine/engineutil.h"
+#include "hijack/hijackmanager.h"
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
@@ -333,14 +334,16 @@ bool attach()
 
 bool SiglusEngine::attach()
 {
-  if (ScenarioHook::attach()) {
-    if (OtherHook::attach())
-      DOUT("other hook found");
-    else
-      DOUT("other hook NOT FOUND");
-    return true;
-  }
-  return false;
+  if (!ScenarioHook::attach())
+    return false;
+
+  if (OtherHook::attach())
+    DOUT("other hook found");
+  else
+    DOUT("other hook NOT FOUND");
+  // Allow change font
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
+  return true;
 }
 
 // EOF
