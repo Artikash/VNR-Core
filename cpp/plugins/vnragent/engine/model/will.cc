@@ -1,15 +1,18 @@
 // will.cc
 // 7/3/2015 jichi
-// See: http://capita.tistory.com/m/post/251
 #include "engine/model/will.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginehash.h"
 #include "engine/enginedef.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
+#include "dyncodec/dynsjis.h"
 #include "memdbg/memsearch.h"
+#include "winhook/hookcall.h"
 #include "winhook/hookcode.h"
+#include "winhook/hookutil.h"
 #include <qt_windows.h>
+#include <QtCore/QRegExp>
 #include <cstdint>
 
 #define DEBUG "model/will"
@@ -55,6 +58,40 @@ QString trimW(const QString &text, QString *prefix, QString *suffix)
   return ret;
 }
 
+QByteArray trimA(const QByteArray &text, QByteArray *prefix, QByteArray *suffix)
+{
+  QByteArray ret = text;
+  if (text.startsWith('%')) {
+    int pos = 0;
+    while (pos < text.size() - 1 && text[pos] == '%' && ::isupper(text[pos+1])) {
+      pos += 2;
+      while (::isupper(text[pos]))
+        pos++;
+    }
+    if (prefix)
+      *prefix = ret.left(pos);
+    ret = ret.mid(pos);
+  }
+  if (ret.contains('%')) {
+    int pos = ret.size();
+    for (int i = ret.size() - 1; i >= 0; i--) {
+      quint8 ch = ret[i];
+      if (::isupper(ch))
+        ;
+      else if (ch == '%')
+        pos = i;
+      else
+        break;
+    }
+    if (pos != ret.size()) {
+      if (suffix)
+        *suffix = ret.mid(pos);
+      ret = ret.left(pos);
+    }
+  }
+  return ret;
+}
+
 class TextHookW
 {
   typedef TextHookW Self;
@@ -68,10 +105,9 @@ class TextHookW
     auto text = (LPCWSTR)s->stack[stackIndex_];
     if (!text || !*text)
       return true;
-    QString oldText = QString::fromWCharArray(text),
-            prefix,
-            suffix;
-    oldText = trimW(oldText, &prefix, &suffix);
+    QString prefix,
+            suffix,
+            oldText = trimW(QString::fromWCharArray(text), &prefix, &suffix);
     if (oldText.isEmpty())
       return true;
     auto sig = Engine::hashThreadSignature(role_);
@@ -100,6 +136,7 @@ public:
 
 /**
  *  Sample game: なついろレシピ
+ *  See: http://capita.tistory.com/m/post/251
  *
  *  Scenario:
  *  00452A8F   77 05            JA SHORT .00452A96
@@ -186,6 +223,7 @@ bool attachScenarioHookW(ulong startAddress, ulong stopAddress)
 
 /**
  *  Sample game: なついろレシピ
+ *  See: http://capita.tistory.com/m/post/251
  *
  *  Name:
  *
@@ -255,6 +293,7 @@ bool attachNameHookW(ulong startAddress, ulong stopAddress)
 
 /**
  *  Sample game: なついろレシピ
+ *  See: http://capita.tistory.com/m/post/251
  *
  *  Choice:
  *  00470D95   72 05                           JB SHORT .00470D9C
@@ -319,6 +358,391 @@ bool attachOtherHookW(ulong startAddress, ulong stopAddress)
   return h->attach(bytes, sizeof(bytes), startAddress, stopAddress);
 }
 
+namespace ScenarioHookA {
+
+namespace Private {
+
+  void dispatch(LPSTR text, int role)
+  {
+    if (!Engine::isAddressWritable(text) || !*text) // isAddressWritable is not needed for correct games
+      return;
+    QByteArray prefix,
+               suffix,
+               oldData = trimA(text, &prefix, &suffix);
+    if (oldData.isEmpty())
+      return;
+    auto sig = Engine::hashThreadSignature(role);
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    if (newData == oldData)
+      return;
+    if (!prefix.isEmpty())
+      newData.prepend(prefix);
+    if (!suffix.isEmpty())
+      newData.append(suffix);
+    ::strcpy(text, newData.constData());
+  }
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    auto text = (LPSTR)s->eax;
+    if (!text)
+      return true;
+    dispatch(text - 1024, Engine::NameRole);
+    dispatch(text, Engine::ScenarioRole);
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample games
+ *  - [111028][PULLTOP] 神聖にして侵すべからず
+ *  - Re：BIRTHDAY SONG～恋を唄う死神～（体験版）
+ *  See: http://capita.tistory.com/m/post/84
+ *
+ *  ENCODEKOR,FORCEFONT(5),HOOK(0x0042B5E0,TRANS(0x004FFBF8,OVERWRITE(IGNORE)),RETNPOS(COPY),TRANS(0x004FF7F8,OVERWRITE(IGNORE))),HOOK(0x00413204,TRANS([ESP+0x1c],PTRCHEAT),RETNPOS(SOURCE)),HOOK(0x00424004,TRANS([ESP+0x1c],PTRCHEAT),RETNPOS(SOURCE)),HOOK(0x004242B9,TRANS([ESP+0x1c],PTRCHEAT),RETNPOS(SOURCE)),HOOK(0x00424109,TRANS([ESP+0x1c],PTRCHEAT),RETNPOS(SOURCE))
+ *
+ *  Scenario in eax
+ *  Name in (eax - 1024)
+ *  Memory can be directly overridden.
+ *
+ *  0042B5DE   CC               INT3
+ *  0042B5DF   CC               INT3
+ *  0042B5E0   81EC 14080000    SUB ESP,0x814	; jichi: text in eax, name in eax - 1024, able to copy
+ *  0042B5E6   53               PUSH EBX
+ *  0042B5E7   55               PUSH EBP
+ *  0042B5E8   56               PUSH ESI
+ *  0042B5E9   33DB             XOR EBX,EBX
+ *  0042B5EB   57               PUSH EDI
+ *  0042B5EC   8BF8             MOV EDI,EAX
+ *  0042B5EE   399C24 28080000  CMP DWORD PTR SS:[ESP+0x828],EBX
+ *  0042B5F5   75 13            JNZ SHORT .0042B60A
+ *  0042B5F7   68 74030000      PUSH 0x374
+ *  0042B5FC   53               PUSH EBX
+ *  0042B5FD   68 7CC44F00      PUSH .004FC47C
+ *  0042B602   E8 09E60500      CALL .00489C10
+ *  0042B607   83C4 0C          ADD ESP,0xC
+ *  0042B60A   33F6             XOR ESI,ESI
+ *  0042B60C   895C24 1C        MOV DWORD PTR SS:[ESP+0x1C],EBX
+ *  0042B610   895C24 10        MOV DWORD PTR SS:[ESP+0x10],EBX
+ *  0042B614   381F             CMP BYTE PTR DS:[EDI],BL
+ *  0042B616   0F84 0D020000    JE .0042B829
+ *  0042B61C   8D6424 00        LEA ESP,DWORD PTR SS:[ESP]
+ *  0042B620   8A4C37 01        MOV CL,BYTE PTR DS:[EDI+ESI+0x1]
+ *  0042B624   84C9             TEST CL,CL
+ *  0042B626   0F84 E6010000    JE .0042B812
+ *  0042B62C   66:0FB6043E      MOVZX AX,BYTE PTR DS:[ESI+EDI]
+ *  0042B631   8D2C3E           LEA EBP,DWORD PTR DS:[ESI+EDI]
+ *  0042B634   66:C1E0 08       SHL AX,0x8
+ *  0042B638   0FB7C0           MOVZX EAX,AX
+ *  0042B63B   0FB6C9           MOVZX ECX,CL
+ *  0042B63E   0BC1             OR EAX,ECX
+ *  0042B640   50               PUSH EAX
+ *  0042B641   E8 34B40500      CALL .00486A7A
+ *  0042B646   83C4 04          ADD ESP,0x4
+ *  0042B649   85C0             TEST EAX,EAX
+ *  0042B64B   74 14            JE SHORT .0042B661
+ *  0042B64D   66:8B55 00       MOV DX,WORD PTR SS:[EBP]
+ *  0042B651   66:89541C 24     MOV WORD PTR SS:[ESP+EBX+0x24],DX
+ *  0042B656   83C3 02          ADD EBX,0x2
+ *  0042B659   83C6 02          ADD ESI,0x2
+ *  0042B65C   E9 BA010000      JMP .0042B81B
+ *  0042B661   807D 00 7B       CMP BYTE PTR SS:[EBP],0x7B
+ *  0042B665   0F85 60010000    JNZ .0042B7CB
+ *  0042B66B   8BC3             MOV EAX,EBX
+ *  0042B66D   2B4424 1C        SUB EAX,DWORD PTR SS:[ESP+0x1C]
+ *  0042B671   46               INC ESI
+ *  0042B672   33ED             XOR EBP,EBP
+ *  0042B674   894424 20        MOV DWORD PTR SS:[ESP+0x20],EAX
+ *  0042B678   896C24 14        MOV DWORD PTR SS:[ESP+0x14],EBP
+ *  0042B67C   8D6424 00        LEA ESP,DWORD PTR SS:[ESP]
+ *  0042B680   8A0C3E           MOV CL,BYTE PTR DS:[ESI+EDI]
+ *  0042B683   84C9             TEST CL,CL
+ *  0042B685   0F84 B5010000    JE .0042B840
+ *  0042B68B   0FB64437 01      MOVZX EAX,BYTE PTR DS:[EDI+ESI+0x1]
+ *  0042B690   66:0FB6C9        MOVZX CX,CL
+ *  0042B694   66:C1E1 08       SHL CX,0x8
+ *  0042B698   0FB7D1           MOVZX EDX,CX
+ *  0042B69B   0BC2             OR EAX,EDX
+ *  0042B69D   50               PUSH EAX
+ *  0042B69E   E8 D7B30500      CALL .00486A7A
+ *  0042B6A3   83C4 04          ADD ESP,0x4
+ *  0042B6A6   85C0             TEST EAX,EAX
+ *  0042B6A8   74 1A            JE SHORT .0042B6C4
+ *  0042B6AA   66:8B043E        MOV AX,WORD PTR DS:[ESI+EDI]
+ *  0042B6AE   834424 14 02     ADD DWORD PTR SS:[ESP+0x14],0x2
+ *  0042B6B3   66:89441C 24     MOV WORD PTR SS:[ESP+EBX+0x24],AX
+ *  0042B6B8   83C3 02          ADD EBX,0x2
+ *  0042B6BB   895C24 10        MOV DWORD PTR SS:[ESP+0x10],EBX
+ *  0042B6BF   83C6 02          ADD ESI,0x2
+ *  0042B6C2  ^EB BC            JMP SHORT .0042B680
+ *  0042B6C4   8A043E           MOV AL,BYTE PTR DS:[ESI+EDI]
+ *  0042B6C7   3C 3A            CMP AL,0x3A
+ *  0042B6C9   74 10            JE SHORT .0042B6DB
+ *  0042B6CB   FF4424 14        INC DWORD PTR SS:[ESP+0x14]
+ *  0042B6CF   88441C 24        MOV BYTE PTR SS:[ESP+EBX+0x24],AL
+ *  0042B6D3   43               INC EBX
+ *  0042B6D4   895C24 10        MOV DWORD PTR SS:[ESP+0x10],EBX
+ *  0042B6D8   46               INC ESI
+ *  0042B6D9  ^EB A5            JMP SHORT .0042B680
+ *  0042B6DB   896C24 18        MOV DWORD PTR SS:[ESP+0x18],EBP
+ *  0042B6DF   46               INC ESI
+ *  0042B6E0   8A0C3E           MOV CL,BYTE PTR DS:[ESI+EDI]
+ *  0042B6E3   84C9             TEST CL,CL
+ *  0042B6E5   0F84 55010000    JE .0042B840
+ *  0042B6EB   0FB64437 01      MOVZX EAX,BYTE PTR DS:[EDI+ESI+0x1]
+ *  0042B6F0   66:0FB6C9        MOVZX CX,CL
+ *  0042B6F4   66:C1E1 08       SHL CX,0x8
+ *  0042B6F8   0FB7D1           MOVZX EDX,CX
+ *  0042B6FB   0BC2             OR EAX,EDX
+ *  0042B6FD   50               PUSH EAX
+ *  0042B6FE   E8 77B30500      CALL .00486A7A
+ *  0042B703   83C4 04          ADD ESP,0x4
+ *  0042B706   85C0             TEST EAX,EAX
+ *  0042B708   74 18            JE SHORT .0042B722
+ *  0042B70A   66:8B043E        MOV AX,WORD PTR DS:[ESI+EDI]
+ *  0042B70E   FF4424 18        INC DWORD PTR SS:[ESP+0x18]
+ *  0042B712   66:89842C 240400>MOV WORD PTR SS:[ESP+EBP+0x424],AX
+ *  0042B71A   83C5 02          ADD EBP,0x2
+ *  0042B71D   83C6 02          ADD ESI,0x2
+ *  0042B720  ^EB BE            JMP SHORT .0042B6E0
+ *  0042B722   8A043E           MOV AL,BYTE PTR DS:[ESI+EDI]
+ *  0042B725   3C 7D            CMP AL,0x7D
+ *  0042B727   74 0E            JE SHORT .0042B737
+ *  0042B729   FF4424 18        INC DWORD PTR SS:[ESP+0x18]
+ *  0042B72D   88842C 24040000  MOV BYTE PTR SS:[ESP+EBP+0x424],AL
+ *  0042B734   45               INC EBP
+ *  0042B735  ^EB A8            JMP SHORT .0042B6DF
+ *  0042B737   8D8424 24040000  LEA EAX,DWORD PTR SS:[ESP+0x424]
+ *  0042B73E   46               INC ESI
+ *  0042B73F   C6842C 24040000 >MOV BYTE PTR SS:[ESP+EBP+0x424],0x0
+ *  0042B747   8D50 01          LEA EDX,DWORD PTR DS:[EAX+0x1]
+ *  0042B74A   8D9B 00000000    LEA EBX,DWORD PTR DS:[EBX]
+ *  0042B750   8A08             MOV CL,BYTE PTR DS:[EAX]
+ *  0042B752   40               INC EAX
+ *  0042B753   84C9             TEST CL,CL
+ *  0042B755  ^75 F9            JNZ SHORT .0042B750
+ *  0042B757   2BC2             SUB EAX,EDX
+ *  0042B759   83F8 1E          CMP EAX,0x1E
+ *  0042B75C   0F87 DE000000    JA .0042B840
+ *  0042B762   8B15 7CC44F00    MOV EDX,DWORD PTR DS:[0x4FC47C]
+ *  0042B768   83FA 14          CMP EDX,0x14
+ *  0042B76B   0F8D AE000000    JGE .0042B81F
+ *  0042B771   6BD2 2C          IMUL EDX,EDX,0x2C
+ *  0042B774   8D8C24 24040000  LEA ECX,DWORD PTR SS:[ESP+0x424]
+ *  0042B77B   81C2 8CC44F00    ADD EDX,.004FC48C
+ *  0042B781   8A01             MOV AL,BYTE PTR DS:[ECX]
+ *  0042B783   8802             MOV BYTE PTR DS:[EDX],AL
+ *  0042B785   41               INC ECX
+ *  0042B786   42               INC EDX
+ *  0042B787   84C0             TEST AL,AL
+ *  0042B789  ^75 F6            JNZ SHORT .0042B781
+ *  0042B78B   8B0D 7CC44F00    MOV ECX,DWORD PTR DS:[0x4FC47C]
+ *  0042B791   8B5424 14        MOV EDX,DWORD PTR SS:[ESP+0x14]
+ *  0042B795   6BC9 2C          IMUL ECX,ECX,0x2C
+ *  0042B798   8991 88C44F00    MOV DWORD PTR DS:[ECX+0x4FC488],EDX
+ *  0042B79E   A1 7CC44F00      MOV EAX,DWORD PTR DS:[0x4FC47C]
+ *  0042B7A3   8B4C24 20        MOV ECX,DWORD PTR SS:[ESP+0x20]
+ *  0042B7A7   6BC0 2C          IMUL EAX,EAX,0x2C
+ *  0042B7AA   8988 80C44F00    MOV DWORD PTR DS:[EAX+0x4FC480],ECX
+ *  0042B7B0   8B15 7CC44F00    MOV EDX,DWORD PTR DS:[0x4FC47C]
+ *  0042B7B6   8B4424 18        MOV EAX,DWORD PTR SS:[ESP+0x18]
+ *  0042B7BA   6BD2 2C          IMUL EDX,EDX,0x2C
+ *  0042B7BD   8982 84C44F00    MOV DWORD PTR DS:[EDX+0x4FC484],EAX
+ *  0042B7C3   FF05 7CC44F00    INC DWORD PTR DS:[0x4FC47C]
+ *  0042B7C9   EB 54            JMP SHORT .0042B81F
+ *  0042B7CB   55               PUSH EBP
+ *  0042B7CC   E8 7F000000      CALL .0042B850
+ *  0042B7D1   8BD8             MOV EBX,EAX
+ *  0042B7D3   83C4 04          ADD ESP,0x4
+ *  0042B7D6   85DB             TEST EBX,EBX
+ *  0042B7D8   74 23            JE SHORT .0042B7FD
+ *  0042B7DA   53               PUSH EBX
+ *  0042B7DB   55               PUSH EBP
+ *  0042B7DC   8B6C24 18        MOV EBP,DWORD PTR SS:[ESP+0x18]
+ *  0042B7E0   8D4C2C 2C        LEA ECX,DWORD PTR SS:[ESP+EBP+0x2C]
+ *  0042B7E4   51               PUSH ECX
+ *  0042B7E5   E8 A6E40500      CALL .00489C90
+ *  0042B7EA   03EB             ADD EBP,EBX
+ *  0042B7EC   03F3             ADD ESI,EBX
+ *  0042B7EE   83C4 0C          ADD ESP,0xC
+ *  0042B7F1   015C24 1C        ADD DWORD PTR SS:[ESP+0x1C],EBX
+ *  0042B7F5   896C24 10        MOV DWORD PTR SS:[ESP+0x10],EBP
+ *  0042B7F9   8BDD             MOV EBX,EBP
+ *  0042B7FB   EB 22            JMP SHORT .0042B81F
+ *  0042B7FD   8B4424 10        MOV EAX,DWORD PTR SS:[ESP+0x10]
+ *  0042B801   8A55 00          MOV DL,BYTE PTR SS:[EBP]
+ *  0042B804   40               INC EAX
+ *  0042B805   885404 23        MOV BYTE PTR SS:[ESP+EAX+0x23],DL
+ *  0042B809   894424 10        MOV DWORD PTR SS:[ESP+0x10],EAX
+ *  0042B80D   46               INC ESI
+ *  0042B80E   8BD8             MOV EBX,EAX
+ *  0042B810   EB 0D            JMP SHORT .0042B81F
+ *  0042B812   8A043E           MOV AL,BYTE PTR DS:[ESI+EDI]
+ *  0042B815   88441C 24        MOV BYTE PTR SS:[ESP+EBX+0x24],AL
+ *  0042B819   43               INC EBX
+ *  0042B81A   46               INC ESI
+ *  0042B81B   895C24 10        MOV DWORD PTR SS:[ESP+0x10],EBX
+ *  0042B81F   803C3E 00        CMP BYTE PTR DS:[ESI+EDI],0x0
+ *  0042B823  ^0F85 F7FDFFFF    JNZ .0042B620
+ *  0042B829   8D4424 24        LEA EAX,DWORD PTR SS:[ESP+0x24]
+ *  0042B82D   8BC8             MOV ECX,EAX
+ *  0042B82F   C6441C 24 00     MOV BYTE PTR SS:[ESP+EBX+0x24],0x0
+ *  0042B834   2BF9             SUB EDI,ECX
+ *  0042B836   8A08             MOV CL,BYTE PTR DS:[EAX]
+ *  0042B838   880C07           MOV BYTE PTR DS:[EDI+EAX],CL
+ *  0042B83B   40               INC EAX
+ *  0042B83C   84C9             TEST CL,CL
+ *  0042B83E  ^75 F6            JNZ SHORT .0042B836
+ *  0042B840   5F               POP EDI
+ *  0042B841   5E               POP ESI
+ *  0042B842   5D               POP EBP
+ *  0042B843   5B               POP EBX
+ *  0042B844   81C4 14080000    ADD ESP,0x814
+ *  0042B84A   C3               RETN
+ *  0042B84B   CC               INT3
+ *  0042B84C   CC               INT3
+ *  0042B84D   CC               INT3
+ *  0042B84E   CC               INT3
+ *
+ *  Skip scenario text:
+ *  00438EF1   51               PUSH ECX
+ *  00438EF2   56               PUSH ESI
+ *  00438EF3   57               PUSH EDI
+ *  00438EF4   52               PUSH EDX
+ *  00438EF5   6A 03            PUSH 0x3    ; jichi: scenario arg1 is always 3
+ *  00438EF7   E8 14F3FDFF      CALL .00418210  ; jichi: text called here
+ *  00438EFC   894424 4C        MOV DWORD PTR SS:[ESP+0x4C],EAX
+ *  00438F00   8D4424 78        LEA EAX,DWORD PTR SS:[ESP+0x78]
+ *  00438F04   83C4 30          ADD ESP,0x30
+ *  00438F07   897C24 34        MOV DWORD PTR SS:[ESP+0x34],EDI
+ *  00438F0B   897424 38        MOV DWORD PTR SS:[ESP+0x38],ESI
+ *  00438F0F   8D48 01          LEA ECX,DWORD PTR DS:[EAX+0x1]
+ *  00438F12   8A10             MOV DL,BYTE PTR DS:[EAX]
+ *  00438F14   40               INC EAX
+ *  00438F15   84D2             TEST DL,DL
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x81,0xec, 0x14,0x08,0x00,0x00 // 0042B5E0   81EC 14080000    SUB ESP,0x814	; jichi: text in eax, name in eax - 1024, able to copy
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  return addr && winhook::hook_before(addr, Private::hookBefore);
+}
+
+} // namespace ScenarioHookA
+
+namespace OtherHookA {
+
+namespace Private {
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QByteArray data_;
+    if (s->stack[1] == 3) // skip scenario hook where arg1 is 3
+      return true;
+    auto text = (LPCSTR)s->stack[8]; // text in arg8
+    if (!Engine::isAddressReadable(text) || !*text || ::strlen(text) <= 2) // do not translate single character
+      return true;
+    enum { role = Engine::OtherRole };
+    auto split = s->stack[0]; // use retaddr as split
+    auto sig = Engine::hashThreadSignature(role, split);
+    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    if (data_.isEmpty()) // do not allow delete other text
+      return true;
+    s->stack[8] = (ulong)data_.constData(); // arg8
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample games: Re：BIRTHDAY SONG～恋を唄う死神～（体験版）
+ *
+ *  There are two GetGlyphOutlineA, that are called in the same functions.
+ *
+ *  Caller of GetGlyphOutlineA, text in arg8.
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::GetGlyphOutlineA, startAddress, stopAddress);
+  return addr && winhook::hook_before(addr, Private::hookBefore);
+}
+
+} // namespace OtherHookA
+
+namespace PatchA {
+
+namespace Private {
+  // The second argument is always 0 and not used
+  bool isLeadByteChar(int ch, int)
+  {
+    return dynsjis::isleadchar(ch);
+    //return ::IsDBCSLeadByte(HIBYTE(testChar));
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: Re:BIRTHDAY SONG
+ *
+ *  0x8140 is found by tracing the call of the caller of GetGlyphOutlineA.
+
+ *  00487F8D   25 FF7F0000      AND EAX,0x7FFF
+ *  00487F92   C3               RETN
+ *  00487F93   8BFF             MOV EDI,EDI
+ *  00487F95   55               PUSH EBP
+ *  00487F96   8BEC             MOV EBP,ESP
+ *  00487F98   83EC 10          SUB ESP,0x10
+ *  00487F9B   FF75 0C          PUSH DWORD PTR SS:[EBP+0xC]
+ *  00487F9E   8D4D F0          LEA ECX,DWORD PTR SS:[EBP-0x10]
+ *  00487FA1   E8 02EEFFFF      CALL .00486DA8
+ *  00487FA6   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  00487FA9   C1E8 08          SHR EAX,0x8
+ *  00487FAC   0FB6C8           MOVZX ECX,AL
+ *  00487FAF   8B45 F4          MOV EAX,DWORD PTR SS:[EBP-0xC]
+ *  00487FB2   F64401 1D 04     TEST BYTE PTR DS:[ECX+EAX+0x1D],0x4
+ *  00487FB7   74 10            JE SHORT .00487FC9
+ *  00487FB9   0FB64D 08        MOVZX ECX,BYTE PTR SS:[EBP+0x8]
+ *  00487FBD   F64401 1D 08     TEST BYTE PTR DS:[ECX+EAX+0x1D],0x8
+ *  00487FC2   74 05            JE SHORT .00487FC9
+ *  00487FC4   33C0             XOR EAX,EAX
+ *  00487FC6   40               INC EAX
+ *  00487FC7   EB 02            JMP SHORT .00487FCB
+ *  00487FC9   33C0             XOR EAX,EAX
+ *  00487FCB   807D FC 00       CMP BYTE PTR SS:[EBP-0x4],0x0
+ *  00487FCF   74 07            JE SHORT .00487FD8
+ *  00487FD1   8B4D F8          MOV ECX,DWORD PTR SS:[EBP-0x8]
+ *  00487FD4   8361 70 FD       AND DWORD PTR DS:[ECX+0x70],0xFFFFFFFD
+ *  00487FD8   C9               LEAVE
+ *  00487FD9   C3               RETN
+ *  00487FDA   8BFF             MOV EDI,EDI	; jichi: called here, text in arg1
+ *  00487FDC   55               PUSH EBP
+ *  00487FDD   8BEC             MOV EBP,ESP
+ *  00487FDF   6A 00            PUSH 0x0
+ *  00487FE1   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
+ *  00487FE4   E8 AAFFFFFF      CALL .00487F93	; jichi: called here
+ *  00487FE9   59               POP ECX
+ *  00487FEA   59               POP ECX
+ *  00487FEB   5D               POP EBP
+ *  00487FEC   C3               RETN
+ */
+
+bool patchEncoding(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x6a, 0x00,                 // 00487fdf   6a 00            push 0x0
+    0xff,0x75, 0x08,            // 00487fe1   ff75 08          push dword ptr ss:[ebp+0x8]
+    0xe8, 0xaa,0xff,0xff,0xff   // 00487fe4   e8 aaffffff      call .00487f93	; jichi: called here
+  };
+  enum { addr_offset = 5 };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  return addr && winhook::replace_near_call(addr + addr_offset, (ulong)Private::isLeadByteChar);
+}
+
+} // namespace PatchA
+
 } // unnamed namespace
 
 /** Public class */
@@ -328,21 +752,69 @@ bool WillPlusEngine::attach()
   ulong startAddress, stopAddress;
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
-  if (!::attachScenarioHookW(startAddress, stopAddress))
-    return false;
 
-  if (::attachNameHookW(startAddress, stopAddress))
-    DOUT("name text found");
-  else
-    DOUT("name text NOT FOUND");
+  if (::attachScenarioHookW(startAddress, stopAddress)) {
+    DOUT("wide char supported");
+    name = "EmbedWillPlusW";
+    encoding = Utf16Encoding;
 
-  if (::attachOtherHookW(startAddress, stopAddress))
-    DOUT("other text found");
-  else
-    DOUT("other text NOT FOUND");
+    if (::attachNameHookW(startAddress, stopAddress))
+      DOUT("name text found");
+    else
+      DOUT("name text NOT FOUND");
 
-  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
-  return true;
+    if (::attachOtherHookW(startAddress, stopAddress))
+      DOUT("other text found");
+    else
+      DOUT("other text NOT FOUND");
+    // Font can already be changed and hence not needed
+    //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
+    return true;
+  }
+
+  if (ScenarioHookA::attach(startAddress, stopAddress)) {
+    DOUT("wide char not supported");
+    name = "EmbedWillPlusA";
+
+    if (enableDynamicEncoding) {
+      if (PatchA::patchEncoding(startAddress, stopAddress))
+        DOUT("patch encoding succeeded");
+      else
+        DOUT("patch encoding FAILED");
+    }
+
+    if (OtherHookA::attach(startAddress, stopAddress))
+      DOUT("other text found");
+    else
+      DOUT("other text NOT FOUND");
+
+    HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
+    HijackManager::instance()->attachFunction((ulong)::TextOutA); // not called. hijack incase it is used
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Sample ruby: {風峰涼香:かざみねすずか}
+ */
+
+QString WillPlusEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "{%1:%2}";
+  return fmt.arg(rb, rt);
+}
+
+// Remove furigana in scenario thread.
+QString WillPlusEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains('{'))
+    return text;
+  static QRegExp rx("\\{(.+):.+\\}");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
 }
 
 // EOF

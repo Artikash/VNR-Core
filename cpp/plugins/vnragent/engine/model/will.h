@@ -8,17 +8,20 @@
 class WillPlusEngine : public EngineModel
 {
   SK_EXTEND_CLASS(WillPlusEngine, EngineModel)
-  static bool attach();
+  bool attach();
+  static QString rubyCreate(const QString &rb, const QString &rt);
+  static QString rubyRemove(const QString &text);
 
 public:
   WillPlusEngine()
   {
     name = "EmbedWillPlus";
-    encoding = Utf16Encoding;
-    //enableDynamicEncoding = true;
+    enableDynamicEncoding = true;
     newLineString = "\\n";
     matchFiles << "Rio.arc" << "Chip*.arc";
-    attachFunction = &Self::attach;
+    attachFunction = std::bind(&Self::attach, this);
+    rubyCreateFunction = &Self::rubyCreate;
+    rubyRemoveFunction = &Self::rubyRemove;
   }
 };
 

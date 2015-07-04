@@ -342,7 +342,12 @@ bool NewLineStringFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
       "\\n", 2);
   return true;
 }
-
+bool NewLineWideStringFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
+{
+  WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
+      L"\\n", 2);
+  return true;
+}
 bool NewLineCharToSpaceFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
   CharReplacer(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), '\n', ' ');
@@ -8310,6 +8315,7 @@ bool InsertC4Hook()
  *  0012ed64   00951d88  ascii "2015/01/18"
  */
 
+namespace { // unnamed
 #if 0
 static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
 {
@@ -8350,7 +8356,7 @@ static bool InsertWillPlusHook2() // jichi 1/18/2015: Add new hook
 }
 #endif // 0
 
-static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   //static DWORD detect_offset; // jichi 1/18/2015: this makes sure it only runs once
   //if (detect_offset)
@@ -8401,7 +8407,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam *hp, BYTE, DWORD *data
 }
 
 // Although the new hook also works for the old game, the old hook is still used by default for compatibility
-bool InsertWillPlusHook()
+bool InsertOldWillPlusHook()
 {
   //__debugbreak();
   enum { sub_esp = 0xec81 }; // jichi: caller pattern: sub esp = 0x81,0xec byte
@@ -8419,6 +8425,155 @@ bool InsertWillPlusHook()
   NewHook(hp, "WillPlus");
   //RegisterEngineType(ENGINE_WILLPLUS);
   return true;
+}
+
+const char *_willplus_trim_a(const char *text, size_t *size)
+{
+  int textSize = ::strlen(text);
+  int prefix = 0;
+  if (text[0] == '%') {
+    while (prefix < textSize - 1 && text[prefix] == '%' && ::isupper(text[prefix+1])) {
+      prefix += 2;
+      while (::isupper(text[prefix]))
+        prefix++;
+    }
+  }
+  {
+    int pos = textSize;
+    for (int i = textSize - 1; i >= prefix; i--) {
+      char ch = text[i];
+      if (::isupper(ch))
+        ;
+      else if (ch == '%')
+        pos = i;
+      else
+        break;
+    }
+    int suffix = textSize - pos;
+    if (size)
+      *size = textSize - prefix - suffix;
+  }
+  return text + prefix;
+}
+
+const wchar_t *_willplus_trim_w(const wchar_t *text, size_t *size)
+{
+  int textSize = ::wcslen(text);
+  int prefix = 0;
+  if (text[0] == '%') {
+    while (prefix < textSize - 1 && text[prefix] == '%' && ::isupper(text[prefix+1])) {
+      prefix += 2;
+      while (::isupper(text[prefix]))
+        prefix++;
+    }
+  }
+  {
+    int pos = textSize;
+    for (int i = textSize - 1; i >= prefix; i--) {
+      wchar_t ch = text[i];
+      if (::isupper(ch))
+        ;
+      else if (ch == '%')
+        pos = i;
+      else
+        break;
+    }
+    int suffix = textSize - pos;
+    if (size)
+      *size = textSize - prefix - suffix;
+  }
+  return text + prefix;
+}
+
+void SpecialHookWillPlusA(DWORD esp_base, HookParam *, BYTE index, DWORD *data, DWORD *split, DWORD *len)
+{
+  auto text = (LPCSTR)regof(eax, esp_base);
+  if (!text)
+    return;
+  if (index) // index == 1 is name
+    text -= 1024;
+  if (!*text)
+    return;
+  text = _willplus_trim_a(text, (size_t *)len);
+  *data = (DWORD)text;
+  *split = FIXED_SPLIT_VALUE << index;
+}
+
+bool InsertWillPlusAHook()
+{
+  const BYTE bytes[] = {
+    0x81,0xec, 0x14,0x08,0x00,0x00 // 0042B5E0   81EC 14080000    SUB ESP,0x814	; jichi: text in eax, name in eax - 1024, able to copy
+  };
+  DWORD addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
+  if (!addr) {
+    ConsoleOutput("vnreng:WillPlusA: pattern not found");
+    return false;
+  }
+  HookParam hp = {};
+  hp.address = addr;
+  hp.text_fun = SpecialHookWillPlusA;
+  hp.type = NO_CONTEXT;
+  hp.extra_text_count = 1;
+  hp.filter_fun = NewLineStringFilter; // remove two characters of "\\n"
+  ConsoleOutput("vnreng: INSERT WillPlusA");
+  NewHook(hp, "WillPlusA");
+  return true;
+}
+
+void SpecialHookWillPlusW(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  auto text = (LPCWSTR)regof(ecx, esp_base);
+  if (!text || !*text)
+    return;
+  text = _willplus_trim_w(text, (size_t *)len);
+  *len *= 2;
+  *data = (DWORD)text;
+  *split = FIXED_SPLIT_VALUE << hp->user_value;
+}
+
+bool InsertWillPlusWHook()
+{
+  const BYTE bytes1[] = { // scenario
+    0x83,0xc0, 0x20,     // 00452b02   83c0 20     add eax,0x20    ; jichi: hook before here, text in ecx
+    0x33,0xd2,           // 00452b05   33d2        xor edx,edx
+    0x8b,0xc1,           // 00452b07   8bc1        mov eax,ecx
+    0xc7,0x84,0x24, 0xe0,0x01,0x00,0x00, 0x07,0x00,0x00,0x00  // 00452b09   c78424 e0010000 07000000      mov dword ptr ss:[esp+0x1e0],0x7
+                                                              // 00452b14   c78424 dc010000 00000000      mov dword ptr ss:[esp+0x1dc],0x0
+  };
+  const BYTE bytes2[] = { // name
+    0x33,0xdb,   // 00453521   33db                            xor ebx,ebx  ; jichi: hook here, text in ecx
+    0x33,0xd2,   // 00453523   33d2                            xor edx,edx
+    0x8b,0xc1,   // 00453525   8bc1                            mov eax,ecx
+    0xc7,0x84,0x24, 0x88,0x00,0x00,0x00, 0x07,0x00,0x00,0x00 // 00453527   c78424 88000000 07000000        mov dword ptr ss:[esp+0x88],0x7
+                                                             // 00453532   899c24 84000000                 mov dword ptr ss:[esp+0x84],ebx
+  };
+  const BYTE *bytes[] = {bytes1, bytes2};
+  const size_t sizes[] = {sizeof(bytes1), sizeof(bytes2)};
+  for (int i = 0; i < 2; i++) {
+    DWORD addr = MemDbg::findBytes(bytes[i], sizes[i], module_base_, module_limit_);
+    if (!addr) {
+      ConsoleOutput("vnreng:WillPlusW: pattern not found");
+      return false;
+    }
+    HookParam hp = {};
+    hp.address = addr;
+    hp.text_fun = SpecialHookWillPlusW;
+    hp.type = NO_CONTEXT;
+    hp.user_value = i;
+    hp.filter_fun = NewLineWideStringFilter; // remove two characters of "\\n"
+    ConsoleOutput("vnreng: INSERT WillPlusW");
+    NewHook(hp, "WillPlusW");
+  }
+  return true;
+}
+
+} // unnamed namespace
+
+bool InsertWillPlusHook()
+{
+  bool ok = InsertOldWillPlusHook();
+  ok = InsertWillPlusWHook() || InsertWillPlusAHook() || ok;
+  return ok;
 }
 
 /** jichi 9/14/2013
