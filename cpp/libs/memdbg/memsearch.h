@@ -43,6 +43,9 @@ bool iterLongJumpAddress(const address_fun_t &fun, dword_t funcAddr, dword_t low
 bool iterShortJumpAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t offset = MemoryPaddingOffset, dword_t range = 0);
 
 bool iterAlignedNearCallerAddress(const address_fun_t &fun, dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize, dword_t offset = MemoryPaddingOffset);
+
+bool iterFindBytes(const address_fun_t &fun, const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
+bool iterMatchBytes(const address_fun_t &fun, const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
 #endif // MEMDBG_NO_STL
 
 /**

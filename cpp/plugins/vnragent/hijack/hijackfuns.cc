@@ -315,7 +315,7 @@ LPSTR WINAPI Hijack::newCharNextA(LPCSTR lpString)
 {
   DOUT("pass");
   //if (::GetACP() == 932)
-  return const_cast<char *>(dynsjis::next_char(lpString));
+  return const_cast<char *>(dynsjis::nextchar(lpString));
   //return oldCharNextA(lpString);
 }
 
@@ -377,6 +377,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
       bool dynamic; \
       UINT ch = p->decodeChar(uChar, &dynamic); \
       if (dynamic && ch) { \
+        DOUT("dynamic"); \
         uChar = ch; \
         return (__VA_ARGS__); \
       } \
@@ -391,6 +392,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
       QByteArray data(lpString, cchString); \
       QString text = p->decode(data, &dynamic); \
       if (dynamic && !text.isEmpty()) { \
+        DOUT("dynamic"); \
         LPCWSTR lpString = (LPCWSTR)text.utf16(); \
         cchString = text.size(); \
         return (__VA_ARGS__); \

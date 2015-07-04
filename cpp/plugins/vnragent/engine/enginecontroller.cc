@@ -620,7 +620,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     int capacity = maxSize - prefixData.size() - suffixData.size(); // excluding trailing \0
     if (capacity < ret.size()) {
       if (capacity >= 2) {
-        const char *end = dynsjis::prev_char(ret.constData() + capacity, ret.constData());
+        const char *end = dynsjis::prevchar(ret.constData() + capacity, ret.constData());
         ret = ret.left(end - data.constData());
       } else
         ret = ret.left(capacity);

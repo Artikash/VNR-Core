@@ -494,6 +494,26 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
 
 #ifndef MEMDBG_NO_STL
 
+bool iterFindBytes(const address_fun_t &fun, const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
+{
+  for (DWORD addr = lowerBound; addr < upperBound - patternSize; addr += patternSize) {
+    addr = findBytes(pattern, patternSize, addr, upperBound);
+    if (!addr || !fun(addr))
+      return false;
+  }
+  return true;
+}
+
+bool iterMatchBytes(const address_fun_t &fun, const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
+{
+  for (DWORD addr = lowerBound; addr < upperBound - patternSize; addr += patternSize) { ;
+    addr = matchBytes(pattern, patternSize, addr, upperBound);
+    if (!addr || !fun(addr))
+      return false;
+  }
+  return true;
+}
+
 bool iterWordCall(const address_fun_t &callback, WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, DWORD range)
 {
   typedef WORD optype;

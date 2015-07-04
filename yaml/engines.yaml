@@ -76,6 +76,9 @@ embed:
   - SystemAoi
   - SystemAoi2
   #- Unicorn
+  - WillPlus
+  - WillPlusA
+  - WillPlusW
   - WolfRPG
   #- AMUSE CRAFT
   #- Majiro
@@ -149,6 +152,7 @@ optgui:
   - SiglusEngine3 # SiglusEngine2 is better
   - SiglusEngine4 # SiglusEngine2 is better
   - System43 # System43+ is better
+  - WillPlus # WillPlusA and WillPlusW are better
   #- WolfRPG # WolfRPG2 is better
 
 nongui:
@@ -294,6 +298,8 @@ simple:
   - WAFFLE
   - Waffle
   - WillPlus
+  - WillPlusA
+  - WillPlusW
   - Yeti PSP
   - Yeti2 PSP
   - YukaSystem2
@@ -419,6 +425,7 @@ char:
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
+  - EmbedWillPlusA
   - EmbedWolfRPG
   # Engines
   - 2RM
@@ -531,6 +538,7 @@ char:
   - WAFFLE
   - Waffle
   - WillPlus
+  - WillPlusA
   - WolfRPG
   - Yeti PSP
   - Yeti2 PSP
@@ -583,6 +591,8 @@ wchar:
   - EmbedCotopha
   - EmbedSiglusEngine
   - EmbedSystemAoiW
+  - EmbedWillPlus
+  - EmbedWillPlusW
   # Engines
   - Adobe AIR
   - Adobe Flash 10
@@ -616,6 +626,7 @@ wchar:
   - SystemAoi # It could also be SHIFT-JIS for Aoi<4
   - SystemAoi2
   - Unity # removed
+  - WillPlusW
 
 # UTF-8
 utf8:
@@ -661,7 +672,9 @@ focus:
   - EmbedRetouch
   - EmbedSiglusEngine
   - EmbedSilkysPlus
-  - EmbedUnicorn
+  - EmbedWillPlus
+  - EmbedWillPlusA
+  - EmbedWillPlusW
   - FocasLens
   - HorkEye
   - KAGParser
@@ -679,6 +692,8 @@ focus:
   - Syuntada
   - Unicorn
   - WillPlus
+  - WillPlusA
+  - WillPlusW
   - YU-RIS2
 # No focus:
   #- AliceRunPatch43

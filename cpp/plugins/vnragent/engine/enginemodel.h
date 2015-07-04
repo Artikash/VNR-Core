@@ -5,6 +5,7 @@
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QStringList>
+#include <functional>
 
 class EngineModel
 {
@@ -28,9 +29,9 @@ public:
     , otherLineCapacity(0)      // estimated maximum number of thin characters for other text per line, 0 to disable it
     , newLineString("\n")       // new line deliminator, nullptr if does not work
 
-    , matchFunction(nullptr)    // determine whether apply engine
-    , attachFunction(nullptr)   // apply the engine
-    , detachFunction(nullptr)   // remove the applied engine
+    //, matchFunction(nullptr)    // determine whether apply engine
+    //, attachFunction(nullptr)   // apply the engine
+    //, detachFunction(nullptr)   // remove the applied engine
     , textFilterFunction(nullptr)   // fix scenario text before sending out
     , translationFilterFunction(nullptr)    // fix translation text before sending out
     , rubyCreateFunction(nullptr)
@@ -51,7 +52,8 @@ public:
   QStringList matchFiles; // files existing in the game directory
 
   // Global match functions
-  typedef bool (* match_function)();
+  //typedef bool (* match_function)();
+  typedef std::function<bool ()> match_function;
   match_function matchFunction, // override match files
                  attachFunction, // override searchFunction and hookFunction
                  detachFunction; // not used
