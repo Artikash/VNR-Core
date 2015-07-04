@@ -2081,6 +2081,14 @@ class Settings(QSettings):
   #      self.isEmbeddedNameTranslationEnabled() or
   #      self.isEmbeddedOtherTranslationEnabled())
 
+  embeddedScenarioTranslatorChanged = Signal(unicode)
+  def embeddedScenarioTranslator(self):
+    return to_unicode(self.value('EmbeddedScenarioTranslator'))
+  def setEmbeddedScenarioTranslator(self, value):
+    if value != self.embeddedScenarioTranslator():
+      self.setValue('EmbeddedScenarioTranslator', value)
+      self.embeddedScenarioTranslatorChanged.emit(value)
+
   embeddedScenarioWidthChanged = Signal(int)
   def embeddedScenarioWidth(self):
     return to_int(self.value('EmbeddedScenarioWidth'))
