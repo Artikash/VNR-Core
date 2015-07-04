@@ -15,7 +15,7 @@ public:
     name = "EmbedSystemAoiW";
     encoding = Utf16Encoding;
     matchFiles << "Ags*.dll" << "Aoi*.dll";
-    //newLineString = true;
+    //newLineString = "\n";
     attachFunction = &Self::attach;
   }
 };

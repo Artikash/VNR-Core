@@ -17,7 +17,7 @@ public:
     encoding = Utf16Encoding;
     enableGDIFont = true;
     matchFiles << "SiglusEngine*.exe";
-    //newLineString = true;
+    //newLineString = "\n";
     attachFunction = &Self::attach;
   }
 };

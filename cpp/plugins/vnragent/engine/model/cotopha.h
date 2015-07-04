@@ -15,6 +15,7 @@ public:
   {
     name = "EmbedCotopha";
     encoding = Utf16Encoding;
+    //newLineString = "\n";
     matchFiles << "*.noa|data/*.noa";
     attachFunction = &Self::attach;
   }

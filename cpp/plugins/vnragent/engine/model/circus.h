@@ -21,7 +21,7 @@ public:
     matchFiles << "AdvData/GRP/NAMES.DAT"; // New circus games
     //matchFiles << "AdvData/DAT/NAMES.DAT"; // Old circus games
 
-    //newLineString = true;
+    //newLineString = "\n";
 
     //enableDynamicEncoding = true;
     scenarioLineCapacity =

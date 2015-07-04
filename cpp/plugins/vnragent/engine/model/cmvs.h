@@ -15,6 +15,7 @@ public:
   {
     name = "EmbedCMVS";
     enableDynamicEncoding = true;
+    //newLineString = "\n";
     matchFiles << "data/pack/*.cpz";
     attachFunction = &Self::attach;
   }

@@ -17,7 +17,7 @@ public:
     encoding = Utf16Encoding;
     enableGDIFont = true;
     matchFiles << "System/RGSS3*.dll";
-    //newLineString = true;
+    //newLineString = "\n";
     //matchFiles << "Game.rgss3a";
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
