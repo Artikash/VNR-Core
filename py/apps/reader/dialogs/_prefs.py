@@ -34,12 +34,13 @@ def create_toggle_button(*args, **kwargs): # -> QPushButton
   ret.setMaximumHeight(18)  # qss sometimes does not work, bug?
   return ret
 
-def create_label(text=""): # unicode -> QLabel
+def create_label(text="", align=True): # unicode -> QLabel
   ret = QtWidgets.QLabel()
   if text:
     ret.setText(text + ":")
-  ret.setAlignment(Qt.AlignRight|Qt.AlignTop)
-  #ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+  if align:
+    ret.setAlignment(Qt.AlignRight|Qt.AlignTop)
+    #ret.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
   return ret
 
 ALL_LANGUAGES = config.LANGUAGES2 # merge zhs
@@ -8672,7 +8673,7 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.textGroup)
-    layout.addWidget(self.timeGroup)
+    layout.addWidget(self.translationGroup)
     layout.addWidget(self.fontGroup)
 
     if 'zh' not in blans:
@@ -8684,7 +8685,7 @@ class _EngineTab(object):
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    l = [self.textGroup, self.fontGroup, self.timeGroup]
+    l = [self.translationGroup, self.textGroup, self.fontGroup]
     if 'zh' not in blans:
       l.append(self.chineseGroup)
     for w in l:
@@ -8762,7 +8763,7 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.chineseEnableButton)
 
-    info = QtWidgets.QLabel(my.tr(
+    info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr(
       "Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed."
     ))
     info.setWordWrap(True)
@@ -8813,14 +8814,18 @@ class _EngineTab(object):
   #  ret.setWordWrap(True)
   #  return ret
 
-  ## Options ##
+  ## Translation ##
 
   @memoizedproperty
-  def timeGroup(self):
+  def translationGroup(self):
     layout = QtWidgets.QVBoxLayout()
 
-    # CTRL detection
-    #layout.addWidget(self.ctrlButton)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(create_label(mytr_("Dialog"), align=False))
+    row.addWidget(self.scenarioTranslatorButton)
+    row.addStretch()
+    layout.addLayout(row)
+
 
     # Translation wait time
     row = QtWidgets.QHBoxLayout()
@@ -8829,9 +8834,57 @@ class _EngineTab(object):
     row.addStretch()
     layout.addLayout(row)
 
-    layout.addWidget(self.optionInfoLabel)
-    ret = QtWidgets.QGroupBox(my.tr("Translation timeout options"))
+    info = QtWidgets.QLabel("%s: %s\n%s\n%s" % (
+      tr_("Note"),
+      my.tr("By default, VNR prefers available offline translators over online ones."),
+      my.tr("A large wait time might also slow down the game when your machine translator is slow."),
+      my.tr("You can always press Shift or Control to pause embedding translation and stop slowdown."),
+    ))
+    #info.setWordWrap(True)
+    layout.addWidget(info)
+
+    ret = QtWidgets.QGroupBox(my.tr("Preferred machine translators"))
     ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def scenarioTranslatorButton(self):
+    TRANSLATORS = self._getTranslators()
+
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItem("(%s)" % tr_('Automatic'))
+    ret.addItems(map(i18n.translator_name, TRANSLATORS))
+    ret.setMaxVisibleItems(ret.count())
+    try:
+      index = TRANSLATORS.index(settings.global_().embeddedScenarioTranslator())
+      ret.setCurrentIndex(index + 1)
+    except ValueError: pass
+    ret.currentIndexChanged[int].connect(lambda index:
+        settings.global_().setEmbeddedScenarioTranslator(TRANSLATORS[index - 1] if index else ''))
+    return ret
+
+  @staticmethod
+  def _getTranslators():
+    ret = list(dataman.Term.HOSTS)
+    blans = settings.global_().blockedLanguages()
+    try:
+      ret.remove('vtrans')
+      if blans:
+        if 'zh' in blans:
+          for it in 'youdao', 'jbeijing', 'fastait', 'dreye':
+            ret.remove(it)
+        if 'ko' in blans:
+          for it in 'naver', 'eztrans', 'transcat':
+            ret.remove(it)
+        if 'vi' in blans:
+          ret.remove('hanviet')
+        if 'en' in blans:
+          for it in 'lec', 'atlas':
+            ret.remove(it)
+        if 'ru' in blans:
+          ret.remove('transru')
+    except Exception, e: dwarn(e) # in case I forget to update translator name
     return ret
 
   @memoizedproperty
@@ -8852,16 +8905,6 @@ class _EngineTab(object):
     ss = settings.global_()
     ret.setValue(ss.embeddedTranslationWaitTime() / 1000.0)
     ret.valueChanged[float].connect(lambda v: ss.setEmbeddedTranslationWaitTime(int(v * 1000)))
-    return ret
-
-  @memoizedproperty
-  def optionInfoLabel(self):
-    ret = QtWidgets.QLabel("%s: %s\n%s" % (
-      tr_("Note"),
-      my.tr("A large wait time might also slow down the game when your machine translator is slow."),
-      my.tr("You can always press Shift or Control to pause embedding translation and stop slowdown."),
-    ))
-    #ret.setWordWrap(True)
     return ret
 
   #@memoizedproperty
@@ -9144,7 +9187,7 @@ class _EngineTab(object):
         #('window', tr_("Window")),
       ):
       row = QtWidgets.QHBoxLayout()
-      row.addWidget(create_label(label))
+      row.addWidget(create_label(label, align=False))
       group = getattr(self, key + 'TextGroup')
       group.setParent(ret)
       l = group.buttons()
@@ -9364,7 +9407,7 @@ class _EngineTab(object):
   def windowTextLayout(self):
     ret = QtWidgets.QHBoxLayout()
 
-    ret.addWidget(create_label(tr_("Window")))
+    ret.addWidget(create_label(tr_("Window"), align=False))
 
     self.windowDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
     ret.addWidget(self.windowDisableButton)

@@ -1106,9 +1106,10 @@ class TextManager(QObject):
       if not sub:
         async = role == OTHER_THREAD_TYPE
         rubyEnabled = role == SCENARIO_THREAD_TYPE
+        engine = settings.global_().embeddedScenarioTranslator() if role == SCENARIO_THREAD_TYPE else ''
         context = defs.thread_role_context(role)
         sub, lang, provider = trman.manager().translateOne(text, d.gameLanguage,
-            async=async, online=True, mark=False, keepsNewLine=True, rubyEnabled=rubyEnabled, context=context)
+            async=async, online=True, mark=False, keepsNewLine=True, rubyEnabled=rubyEnabled, context=context, engine=engine)
       if sub:
         if lang.startswith('zh'):
           convertsKanji = settings.global_().gameAgentConvertsKanji()
