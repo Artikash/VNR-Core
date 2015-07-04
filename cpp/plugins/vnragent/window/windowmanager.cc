@@ -85,11 +85,11 @@ public:
     touchTexts();
   }
 
-  QString decodeText(const QByteArray &data, int role = 0) const
+  QString decodeText(const QByteArray &data) const
   {
     const wchar_t *ws = (LPCWSTR)data.constData();
     const int wsSize = data.size() / 2;
-    if (!wsSize || !isTranscodingNeeded() || role == Window::MenuTextRole) // never transcode windows text
+    if (!wsSize || !isTranscodingNeeded()) // || role == Window::MenuTextRole) // never transcode windows text
       return QString::fromWCharArray(ws, wsSize);
     return encodingCodec->toUnicode(
         systemCodec->fromUnicode(
@@ -175,8 +175,8 @@ void WindowManager::setEncodingEnabled(bool t)
 
 // - Queries -
 
-QString WindowManager::decodeText(const QByteArray &data, int role) const
-{ return d_->decodeText(data, role); }
+QString WindowManager::decodeText(const QByteArray &data) const
+{ return d_->decodeText(data); }
 
 const WindowManager::TextEntry &WindowManager::findEntryWithAnchor(ulong anchor) const
 {

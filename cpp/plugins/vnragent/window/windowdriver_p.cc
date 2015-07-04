@@ -184,7 +184,8 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
         else if (enabled && h && sz) {
           QByteArray data((const char *)buffer, sz * 2);
           QString t = QString::fromWCharArray(buffer, sz);
-          repl = manager->decodeText(data);
+          //repl = manager->decodeText(data); // disable transcoding menu text
+          repl = QString::fromWCharArray(buffer, sz);
           manager->addEntry(data, repl, h, anchor, TextRole);
         }
 
