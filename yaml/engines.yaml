@@ -76,6 +76,7 @@ embed:
   - SystemAoi
   - SystemAoi2
   #- Unicorn
+  - WillPlus
   - WolfRPG
   #- AMUSE CRAFT
   #- Majiro
@@ -583,6 +584,7 @@ wchar:
   - EmbedCotopha
   - EmbedSiglusEngine
   - EmbedSystemAoiW
+  - EmbedWillPlus
   # Engines
   - Adobe AIR
   - Adobe Flash 10
@@ -661,7 +663,7 @@ focus:
   - EmbedRetouch
   - EmbedSiglusEngine
   - EmbedSilkysPlus
-  - EmbedUnicorn
+  - EmbedWillPlus
   - FocasLens
   - HorkEye
   - KAGParser

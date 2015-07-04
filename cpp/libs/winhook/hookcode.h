@@ -4,7 +4,11 @@
 // 5/25/2015 jichi
 
 #include "winhook/hookdef.h"
+#include <cstddef>
 #include <functional>
+
+#define winhook_stack_indexof(_reg) \
+  (((int)offsetof(winhook::hook_stack, _reg) - (int)offsetof(winhook::hook_stack, stack)) / (int)sizeof(ulong))
 
 WINHOOK_BEGIN_NAMESPACE
 
