@@ -384,8 +384,8 @@ void EngineController::setCodePage(uint v)
 void EngineController::setEncoding(const QString &v)
 { setCodePage(Util::codePageForEncoding(v)); }
 
-bool EngineController::isTranscodingNeeded() const
-{ return d_->encoder != d_->decoder; }
+//bool EngineController::isTranscodingNeeded() const
+//{ return d_->encoder != d_->decoder; }
 
 void EngineController::setSpacePolicyEncoding(const QString &v)
 { d_->spaceCodec = v.isEmpty() ? nullptr : Util::codecForName(v.toAscii()); }

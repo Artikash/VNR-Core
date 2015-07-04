@@ -444,6 +444,13 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1435945343:
+      ss.remove('EmbeddedScenarioText') # reset scenario text visibility
+      ss.remove('WindowTranscoding') # disable transcoding by default
+      ss.remove('EmbeddedScenarioText') # enable charset detection by default
+      ss.remove('EmbeddedOtherText') # enable charset detection by default
+    else:
+      return
     if ss_version <= 1434217165:
       dst = rc.xml_path('terms')
       if dst and not os.path.exists(dst):
@@ -452,13 +459,6 @@ def migrate(ss_version): # long ->
           try: os.rename(src, dst)
           except Exception, e: dwarn(e)
 
-    if ss_version <= 1433033162:
-      ss.remove('EmbeddedScenarioText') # reset scenario text visibility
-      ss.remove('WindowTranscoding') # disable transcoding by default
-      ss.remove('EmbeddedScenarioText') # enable charset detection by default
-      ss.remove('EmbeddedOtherText') # enable charset detection by default
-    else:
-      return
     if ss_version <= 1432306894:
       ss.remove('GameAgentConvertsKanji') # use default settings
     else:

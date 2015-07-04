@@ -89,7 +89,7 @@ public:
   {
     const wchar_t *ws = (LPCWSTR)data.constData();
     const int wsSize = data.size() / 2;
-    if (!wsSize || !isTranscodingNeeded()) //|| role == Window::MenuTextRole
+    if (!wsSize || !isTranscodingNeeded()) // || role == Window::MenuTextRole) // never transcode windows text
       return QString::fromWCharArray(ws, wsSize);
     return encodingCodec->toUnicode(
         systemCodec->fromUnicode(
@@ -191,8 +191,7 @@ QString WindowManager::findTranslationWithHash(qint64 hash) const
 
 // - Update -
 
-void WindowManager::clearTranslation()
-{ d_->clearTranslation(); }
+void WindowManager::clearTranslation() { d_->clearTranslation(); }
 
 void WindowManager::addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor, uint role)
 {

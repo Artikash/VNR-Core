@@ -2136,7 +2136,7 @@ class Settings(QSettings):
   # Whether fix window translation encoding
   windowTranscodingEnabledChanged = Signal(bool)
   def isWindowTranscodingEnabled(self):
-    return to_bool(self.value('WindowTranscoding', False)) # disable window transcoding by default
+    return to_bool(self.value('WindowTranscoding')) # disable window transcoding by default
   def setWindowTranscodingEnabled(self, value):
     if value != self.isWindowTranscodingEnabled():
       self.setValue('WindowTranscoding', value)
@@ -2153,7 +2153,7 @@ class Settings(QSettings):
 
   embeddedScenarioTranscodingEnabledChanged = Signal(bool)
   def isEmbeddedScenarioTranscodingEnabled(self):
-    return to_bool(self.value('EmbeddedScenarioTranscoding', True))
+    return to_bool(self.value('EmbeddedScenarioTranscoding'))
   def setEmbeddedScenarioTranscodingEnabled(self, value):
     if value != self.isEmbeddedScenarioTranscodingEnabled():
       self.setValue('EmbeddedScenarioTranscoding', value)
@@ -2194,7 +2194,7 @@ class Settings(QSettings):
 
   embeddedNameTranscodingEnabledChanged = Signal(bool)
   def isEmbeddedNameTranscodingEnabled(self):
-    return to_bool(self.value('EmbeddedNameTranscoding', True))
+    return to_bool(self.value('EmbeddedNameTranscoding'))
   def setEmbeddedNameTranscodingEnabled(self, value):
     if value != self.isEmbeddedNameTranscodingEnabled():
       self.setValue('EmbeddedNameTranscoding', value)
@@ -2226,7 +2226,7 @@ class Settings(QSettings):
 
   embeddedOtherTranscodingEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranscodingEnabled(self):
-    return to_bool(self.value('EmbeddedOtherTranscoding', True))
+    return to_bool(self.value('EmbeddedOtherTranscoding'))
   def setEmbeddedOtherTranscodingEnabled(self, value):
     if value != self.isEmbeddedOtherTranscodingEnabled():
       self.setValue('EmbeddedOtherTranscoding', value)
