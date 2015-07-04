@@ -8862,6 +8862,12 @@ class _EngineTab(object):
     except ValueError: pass
     ret.currentIndexChanged[int].connect(lambda index:
         settings.global_().setEmbeddedScenarioTranslator(TRANSLATORS[index - 1] if index else ''))
+
+    b = self.scenarioDisableButton
+    ret.setEnabled(not b.isChecked())
+    b.toggled.connect(partial(
+      lambda ret, t: ret.setEnabled(not t)
+    , ret))
     return ret
 
   @staticmethod
