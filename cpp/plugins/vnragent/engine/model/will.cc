@@ -757,6 +757,7 @@ bool WillPlusEngine::attach()
     DOUT("wide char supported");
     name = "EmbedWillPlusW";
     encoding = Utf16Encoding;
+    enableLocaleEmulation = true; // fix thread codepage in MultiByteToWideChar
 
     if (::attachNameHookW(startAddress, stopAddress))
       DOUT("name text found");
@@ -767,14 +768,16 @@ bool WillPlusEngine::attach()
       DOUT("other text found");
     else
       DOUT("other text NOT FOUND");
-    // Font can already be changed and hence not needed
-    //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
+
+    HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
+    //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW); // Font can already be changed and hence not needed
     return true;
   }
 
   if (ScenarioHookA::attach(startAddress, stopAddress)) {
     DOUT("wide char not supported");
     name = "EmbedWillPlusA";
+    enableDynamicEncoding = true;
 
     if (enableDynamicEncoding) {
       if (PatchA::patchEncoding(startAddress, stopAddress))
