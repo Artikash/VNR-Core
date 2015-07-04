@@ -9141,16 +9141,18 @@ class _EngineTab(object):
         ('scenario', mytr_("Dialog")),
         ('name', tr_("Name")),
         ('other', tr_("Other")),
-        ('window', tr_("Window")),
+        #('window', tr_("Window")),
       ):
       row = QtWidgets.QHBoxLayout()
-      row.addWidget(QtWidgets.QLabel(label + ":"))
+      row.addWidget(create_label(label))
       group = getattr(self, key + 'TextGroup')
       group.setParent(ret)
       l = group.buttons()
       map(row.addWidget, l)
       row.addStretch()
       cols.addLayout(row)
+
+    cols.addLayout(self.windowTextLayout)
 
     #cols.addWidget(self.textInfoEdit)
 
@@ -9163,11 +9165,11 @@ class _EngineTab(object):
   def scenarioTextGroup(self):
     ret = QtWidgets.QButtonGroup()
 
+    #self.scenarioTranscodeButton = QtWidgets.QCheckBox(tr_("Transcode"))
+    #ret.addButton(self.scenarioTranscodeButton)
+
     self.scenarioDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
     ret.addButton(self.scenarioDisableButton)
-
-    self.scenarioTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
-    ret.addButton(self.scenarioTranscodeButton)
 
     self.scenarioTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
     ret.addButton(self.scenarioTranslateButton)
@@ -9190,8 +9192,8 @@ class _EngineTab(object):
       self.scenarioVisibleButton.setChecked(True)
     elif ss.isEmbeddedScenarioTranslationEnabled():
       self.scenarioTranslateButton.setChecked(True)
-    elif ss.isEmbeddedScenarioTranscodingEnabled():
-      self.scenarioTranscodeButton.setChecked(True)
+    #elif ss.isEmbeddedScenarioTranscodingEnabled():
+    #  self.scenarioTranscodeButton.setChecked(True)
     else:
       self.scenarioDisableButton.setChecked(True)
 
@@ -9199,29 +9201,29 @@ class _EngineTab(object):
     ss = settings.global_()
     if self.scenarioVisibleButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
-      ss.setEmbeddedScenarioTranscodingEnabled(True)
+      #ss.setEmbeddedScenarioTranscodingEnabled(True)
       ss.setEmbeddedScenarioTranslationEnabled(True)
       ss.setEmbeddedScenarioTextVisible(True)
     elif self.scenarioTranslateButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
-      ss.setEmbeddedScenarioTranscodingEnabled(True)
+      #ss.setEmbeddedScenarioTranscodingEnabled(True)
       ss.setEmbeddedScenarioTranslationEnabled(True)
-      ss.setEmbeddedScenarioTextVisible(False)
-    elif self.scenarioTranscodeButton.isChecked():
-      ss.setEmbeddedScenarioVisible(True)
-      ss.setEmbeddedScenarioTranscodingEnabled(True)
-      ss.setEmbeddedScenarioTranslationEnabled(False)
       ss.setEmbeddedScenarioTextVisible(False)
     elif self.scenarioDisableButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
-      ss.setEmbeddedScenarioTranscodingEnabled(False)
+      #ss.setEmbeddedScenarioTranscodingEnabled(False)
       ss.setEmbeddedScenarioTranslationEnabled(False)
       ss.setEmbeddedScenarioTextVisible(False)
     elif self.scenarioHideButton.isChecked():
       ss.setEmbeddedScenarioVisible(False)
-      ss.setEmbeddedScenarioTranscodingEnabled(False)
+      #ss.setEmbeddedScenarioTranscodingEnabled(False)
       ss.setEmbeddedScenarioTranslationEnabled(False)
       ss.setEmbeddedScenarioTextVisible(False)
+    #elif self.scenarioTranscodeButton.isChecked():
+    #  ss.setEmbeddedScenarioVisible(True)
+    #  ss.setEmbeddedScenarioTranscodingEnabled(True)
+    #  ss.setEmbeddedScenarioTranslationEnabled(False)
+    #  ss.setEmbeddedScenarioTextVisible(False)
 
   # Name
 
@@ -9229,11 +9231,11 @@ class _EngineTab(object):
   def nameTextGroup(self):
     ret = QtWidgets.QButtonGroup()
 
+    #self.nameTranscodeButton = QtWidgets.QCheckBox(tr_("Transcode"))
+    #ret.addButton(self.nameTranscodeButton)
+
     self.nameDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
     ret.addButton(self.nameDisableButton)
-
-    self.nameTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
-    ret.addButton(self.nameTranscodeButton)
 
     self.nameTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
     ret.addButton(self.nameTranslateButton)
@@ -9256,8 +9258,8 @@ class _EngineTab(object):
       self.nameVisibleButton.setChecked(True)
     elif ss.isEmbeddedNameTranslationEnabled():
       self.nameTranslateButton.setChecked(True)
-    elif ss.isEmbeddedNameTranscodingEnabled():
-      self.nameTranscodeButton.setChecked(True)
+    #elif ss.isEmbeddedNameTranscodingEnabled():
+    #  self.nameTranscodeButton.setChecked(True)
     else:
       self.nameDisableButton.setChecked(True)
 
@@ -9265,27 +9267,27 @@ class _EngineTab(object):
     ss = settings.global_()
     if self.nameVisibleButton.isChecked():
       ss.setEmbeddedNameVisible(True)
-      ss.setEmbeddedNameTranscodingEnabled(True)
+      #ss.setEmbeddedNameTranscodingEnabled(True)
       ss.setEmbeddedNameTranslationEnabled(True)
       ss.setEmbeddedNameTextVisible(True)
     elif self.nameTranslateButton.isChecked():
       ss.setEmbeddedNameVisible(True)
-      ss.setEmbeddedNameTranscodingEnabled(True)
+      #ss.setEmbeddedNameTranscodingEnabled(True)
       ss.setEmbeddedNameTranslationEnabled(True)
       ss.setEmbeddedNameTextVisible(False)
-    elif self.nameTranscodeButton.isChecked():
+    #elif self.nameTranscodeButton.isChecked():
       ss.setEmbeddedNameVisible(True)
       ss.setEmbeddedNameTranscodingEnabled(True)
       ss.setEmbeddedNameTranslationEnabled(False)
       ss.setEmbeddedNameTextVisible(False)
     elif self.nameDisableButton.isChecked():
       ss.setEmbeddedNameVisible(True)
-      ss.setEmbeddedNameTranscodingEnabled(False)
+      #ss.setEmbeddedNameTranscodingEnabled(False)
       ss.setEmbeddedNameTranslationEnabled(False)
       ss.setEmbeddedNameTextVisible(False)
     elif self.nameHideButton.isChecked():
       ss.setEmbeddedNameVisible(False)
-      ss.setEmbeddedNameTranscodingEnabled(False)
+      #ss.setEmbeddedNameTranscodingEnabled(False)
       ss.setEmbeddedNameTranslationEnabled(False)
       ss.setEmbeddedNameTextVisible(False)
 
@@ -9295,11 +9297,11 @@ class _EngineTab(object):
   def otherTextGroup(self):
     ret = QtWidgets.QButtonGroup()
 
+    #self.otherTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    #ret.addButton(self.otherTranscodeButton)
+
     self.otherDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
     ret.addButton(self.otherDisableButton)
-
-    self.otherTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
-    ret.addButton(self.otherTranscodeButton)
 
     self.otherTranslateButton = QtWidgets.QRadioButton(
         "%s (%s)" % (tr_("Translate"), tr_("slow")))
@@ -9324,33 +9326,33 @@ class _EngineTab(object):
       self.otherVisibleButton.setChecked(True)
     elif ss.isEmbeddedOtherTranslationEnabled():
       self.otherTranslateButton.setChecked(True)
-    elif ss.isEmbeddedOtherTranscodingEnabled():
-      self.otherTranscodeButton.setChecked(True)
     else:
       self.otherDisableButton.setChecked(True)
+    #elif ss.isEmbeddedOtherTranscodingEnabled():
+    #  self.otherTranscodeButton.setChecked(True)
 
   def _saveOtherTextGroup(self):
     ss = settings.global_()
     if self.otherVisibleButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
-      ss.setEmbeddedOtherTranscodingEnabled(True)
+      #ss.setEmbeddedOtherTranscodingEnabled(True)
       ss.setEmbeddedOtherTranslationEnabled(True)
       ss.setEmbeddedOtherTextVisible(True)
     elif self.otherTranslateButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
-      ss.setEmbeddedOtherTranscodingEnabled(True)
+      #ss.setEmbeddedOtherTranscodingEnabled(True)
       ss.setEmbeddedOtherTranslationEnabled(True)
-      ss.setEmbeddedOtherTextVisible(False)
-    elif self.otherTranscodeButton.isChecked():
-      ss.setEmbeddedOtherVisible(True)
-      ss.setEmbeddedOtherTranscodingEnabled(True)
-      ss.setEmbeddedOtherTranslationEnabled(False)
       ss.setEmbeddedOtherTextVisible(False)
     elif self.otherDisableButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
-      ss.setEmbeddedOtherTranscodingEnabled(False)
+      #ss.setEmbeddedOtherTranscodingEnabled(False)
       ss.setEmbeddedOtherTranslationEnabled(False)
       ss.setEmbeddedOtherTextVisible(False)
+    #elif self.otherTranscodeButton.isChecked():
+    #  ss.setEmbeddedOtherVisible(True)
+    #  ss.setEmbeddedOtherTranscodingEnabled(True)
+    #  ss.setEmbeddedOtherTranslationEnabled(False)
+    #  ss.setEmbeddedOtherTextVisible(False)
     #elif self.otherHideButton.isChecked():
     #  ss.setEmbeddedOtherVisible(False)
     #  ss.setEmbeddedOtherTranscodingEnabled(False)
@@ -9359,40 +9361,52 @@ class _EngineTab(object):
   # Window
 
   @memoizedproperty
-  def windowTextGroup(self):
-    ret = QtWidgets.QButtonGroup()
+  def windowTextLayout(self):
+    ret = QtWidgets.QHBoxLayout()
+
+    ret.addWidget(create_label(tr_("Window")))
 
     self.windowDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
-    ret.addButton(self.windowDisableButton)
-
-    self.windowTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
-    ret.addButton(self.windowTranscodeButton)
+    ret.addWidget(self.windowDisableButton)
 
     self.windowTranslateButton = QtWidgets.QRadioButton(
         "%s (%s)" % (tr_("Translate"), tr_("slow")))
-    ret.addButton(self.windowTranslateButton)
+    ret.addWidget(self.windowTranslateButton)
 
     self.windowVisibleButton = QtWidgets.QRadioButton(
         "%s (%s)" % (tr_("Both"), tr_("slow")))
-    ret.addButton(self.windowVisibleButton)
+    ret.addWidget(self.windowVisibleButton)
+
+    self.windowTranscodeButton = QtWidgets.QCheckBox(tr_("Transcode"))
+    ret.addWidget(self.windowTranscodeButton)
+
+    ret.addStretch()
 
     #self.windowHideButton = QtWidgets.QRadioButton(tr_("Hide"))
     #ret.addButton(self.windowHideButton)
 
     self._loadWindowTextGroup()
-    ret.buttonClicked.connect(self._saveWindowTextGroup)
+
+    self.windowTranscodeButton.toggled.connect(settings.global_().setWindowTranscodingEnabled)
+
+    for b in self.windowDisableButton, self.windowTranslateButton, self.windowVisibleButton:
+      b.toggled.connect(self._saveWindowTextGroup)
+
     return ret
 
   def _loadWindowTextGroup(self):
     ss = settings.global_()
+
+    self.windowTranscodeButton.setChecked(ss.isWindowTranscodingEnabled())
+
     #if not ss.isWindowVisible():
     #  self.windowHideButton.setChecked(True)
     if ss.isWindowTextVisible():
       self.windowVisibleButton.setChecked(True)
     elif ss.isWindowTranslationEnabled():
       self.windowTranslateButton.setChecked(True)
-    elif ss.isWindowTranscodingEnabled():
-      self.windowTranscodeButton.setChecked(True)
+    #elif ss.isWindowTranscodingEnabled():
+    #  self.windowTranscodeButton.setChecked(True)
     else:
       self.windowDisableButton.setChecked(True)
 
@@ -9400,24 +9414,24 @@ class _EngineTab(object):
     ss = settings.global_()
     if self.windowVisibleButton.isChecked():
       #ss.setWindowVisible(True)
-      ss.setWindowTranscodingEnabled(True)
+      #ss.setWindowTranscodingEnabled(True)
       ss.setWindowTranslationEnabled(True)
       ss.setWindowTextVisible(True)
     elif self.windowTranslateButton.isChecked():
       #ss.setWindowVisible(True)
-      ss.setWindowTranscodingEnabled(False) # Transcoding disabled
+      #ss.setWindowTranscodingEnabled(False) # Transcoding disabled
       ss.setWindowTranslationEnabled(True)
-      ss.setWindowTextVisible(False)
-    elif self.windowTranscodeButton.isChecked():
-      #ss.setWindowVisible(True)
-      ss.setWindowTranscodingEnabled(True)
-      ss.setWindowTranslationEnabled(False)
       ss.setWindowTextVisible(False)
     elif self.windowDisableButton.isChecked():
       #ss.setWindowVisible(True)
-      ss.setWindowTranscodingEnabled(False)
+      #ss.setWindowTranscodingEnabled(False)
       ss.setWindowTranslationEnabled(False)
       ss.setWindowTextVisible(False)
+    #elif self.windowTranscodeButton.isChecked():
+    #  #ss.setWindowVisible(True)
+    #  #ss.setWindowTranscodingEnabled(True)
+    #  ss.setWindowTranslationEnabled(False)
+    #  ss.setWindowTextVisible(False)
     #elif self.windowHideButton.isChecked():
     #  ss.setWindowVisible(False)
     #  ss.setWindowTranscodingEnabled(False)

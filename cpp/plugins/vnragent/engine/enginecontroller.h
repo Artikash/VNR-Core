@@ -43,7 +43,7 @@ public:
   // Encoding for inserting spaces
   void setSpacePolicyEncoding(const QString &v);
 
-  bool isTranscodingNeeded() const;
+  //bool isTranscodingNeeded() const;
 
   bool match(); // match files
   bool load();

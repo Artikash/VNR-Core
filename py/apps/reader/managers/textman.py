@@ -1324,10 +1324,16 @@ class TextManager(QObject):
     """
     @param  texts  {long hash, unicode text}
     """
-    if not features.MACHINE_TRANSLATION: #or not trman.manager().hasOfflineTranslators():
+    if not features.MACHINE_TRANSLATION:
       return
     self.__d.windowTexts.update(texts)
     self.__d.updateWindowTranslation()
+
+  def clearWindowTexts(self):
+    if not features.MACHINE_TRANSLATION:
+      return
+    self.__d.resetWindowTexts()
+    self.__d.resetWindowTranslation()
 
   def hasWindowTexts(self):
     return bool(self.__d.windowTexts)

@@ -461,6 +461,8 @@ class _MainObject(object):
     ret.setBlockedLanguages(ss.blockedLanguages())
     ss.blockedLanguagesChanged.connect(ret.setBlockedLanguages)
 
+    ss.windowTranscodingEnabledChanged.connect(ret.clearWindowTexts)
+
     dm = self.dataManager
     for sig in (
         ss.machineTranslatorChanged,

@@ -49,7 +49,7 @@ public:
 
   // Queries:
 
-  QString decodeText(const QByteArray &data) const;
+  QString decodeText(const QByteArray &data, int role = 0) const;
 
   const TextEntry &findEntryWithAnchor(ulong anchor) const;
   QString findTranslationWithHash(qint64 hash) const;
