@@ -769,12 +769,11 @@ bool WillPlusEngine::attach()
     else
       DOUT("other text NOT FOUND");
 
-    HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
-    //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW); // Font can already be changed and hence not needed
+    //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW); // Font can already be dynamically changed and hence not needed
     return true;
-  }
 
-  if (ScenarioHookA::attach(startAddress, stopAddress)) {
+  } else if (ScenarioHookA::attach(startAddress, stopAddress)) { // try widechar pattern first, which is more unique
+
     DOUT("wide char not supported");
     name = "EmbedWillPlusA";
     enableDynamicEncoding = true;
@@ -792,7 +791,7 @@ bool WillPlusEngine::attach()
       DOUT("other text NOT FOUND");
 
     HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
-    HijackManager::instance()->attachFunction((ulong)::TextOutA); // not called. hijack incase it is used
+    HijackManager::instance()->attachFunction((ulong)::TextOutA); // not called. hijack in case it is used
     return true;
   }
 
