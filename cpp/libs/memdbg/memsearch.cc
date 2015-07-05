@@ -312,8 +312,7 @@ DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offset, D
       if (t > start && t < stop) {
         if (arg1 == *(argtype *)t) // absolute address
           return start + i;
-        else
-          i += sizeof(optype) + sizeof(argtype) - 1; // == 5
+        //i += sizeof(optype) + sizeof(argtype) - 1; // == 5
       }
     }
   return 0;
@@ -331,7 +330,7 @@ DWORD findLastWordCall(WORD op, DWORD arg1, DWORD start, DWORD stop, DWORD offse
       if (t > start && t < stop) {
         if (arg1 == *(argtype *)t) // absolute address
           ret = start + i;
-        i += sizeof(optype) + sizeof(argtype) - 1; // == 5
+        //i += sizeof(optype) + sizeof(argtype) - 1; // == 5
       }
     }
   return ret;
@@ -360,8 +359,7 @@ DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD range)
       //if (t > start && t < stop) {
       if (arg1 == t + start + i + sizeof(optype) + sizeof(argtype)) // relative address
         return start + i;
-      else
-        i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+      //i += sizeof(optype) + sizeof(argtype) - 1; // == 4
       //}
     }
   return 0;
@@ -378,7 +376,7 @@ DWORD findLastByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD ran
       //if (t > start && t < stop) {
       if (arg1 == t + start + i + sizeof(optype) + sizeof(argtype)) // relative address
         ret = start + i;
-      i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+      //i += sizeof(optype) + sizeof(argtype) - 1; // == 4
       //}
     }
   return ret;
@@ -526,7 +524,7 @@ bool iterWordCall(const address_fun_t &callback, WORD op, DWORD arg1, DWORD star
         if (arg1 == *(argtype *)t // absolute address
             && !callback(start + i))
           return false;
-        i += sizeof(optype) + sizeof(argtype) - 1; // == 5
+        //i += sizeof(optype) + sizeof(argtype) - 1; // == 5
       }
     }
   return true;
@@ -544,7 +542,7 @@ bool iterByteCall(const address_fun_t &callback, BYTE op, DWORD arg1, DWORD star
       if (arg1 == t + start + i + sizeof(optype) + sizeof(argtype) // relative address
           && !callback(start + i))
         return false;
-      i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+      //i += sizeof(optype) + sizeof(argtype) - 1; // == 4
       //}
     }
   return true;
