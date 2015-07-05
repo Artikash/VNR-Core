@@ -1324,7 +1324,7 @@ bool attachScenarioHook(ulong startAddress, ulong stopAddress)
  *  0044B008   CC               INT3
  */
 
-bool attachBacklogHook(ulong startAddress, ulong stopAddress)
+bool attachHistoryHook(ulong startAddress, ulong stopAddress)
 {
   const uint8_t bytes[] = {
     0xb8, 0xcd,0xcc,0xcc,0xcc,  // 0044ae11   b8 cdcccccc      mov eax,0xcccccccd
@@ -1350,7 +1350,7 @@ bool CMVSEngine::attach()
   if (!::attachScenarioHook(startAddress, stopAddress))
     return false;
 
-  if (::attachBacklogHook(startAddress, stopAddress))
+  if (::attachHistoryHook(startAddress, stopAddress))
     DOUT("backlog text found");
   else
     DOUT("backlog text NOT FOUND");

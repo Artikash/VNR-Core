@@ -7,7 +7,7 @@
 WINASM_BEGIN_NAMESPACE
 
 /**
- *  @param  inst  address of the jmp/call instruction
+ *  @param  inst  address of the short jmp/near call instruction
  *  @return  absolute target address to jump to/call
  */
 // FIXME: I didn't check short jump here

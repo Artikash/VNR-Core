@@ -34,7 +34,7 @@ const char *dynsjis::prevchar(const char *s, const char *begin)
   size_t dist = s - p;
   if (!isleadbyte(*p))
     dist++;
-  return s - 1 - (dist % 2);
+  return s - 2 + (dist % 2);
 }
 
 // EOF
