@@ -9936,7 +9936,7 @@ class DataManager(QObject):
 
     # Update twice as updateGame might be blocked when online
     dprint("change current game")
-    g = d.currentGame = d.games[game.md5]
+    g = d.currentGame = d.games.get(game.md5)
     d.currentGameObject = None
     d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
 
@@ -9946,7 +9946,7 @@ class DataManager(QObject):
 
     # Update twice as updateGame might be blocked when online
     dprint("update current game")
-    g = d.currentGame = d.games[game.md5]
+    g = d.currentGame = d.games.get(game.md5)
     d.currentGameObject = None
     d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
 
