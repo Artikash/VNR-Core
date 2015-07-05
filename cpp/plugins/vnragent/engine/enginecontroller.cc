@@ -303,6 +303,13 @@ public:
     }
     if (model->textFilterFunction)
       ret = model->textFilterFunction(ret, role);
+    if (!model->textSeperators.isEmpty()) {
+      char s[2] = {};
+      for (int i = 0; i < model->textSeperators.size(); i++) {
+        s[0] = i + 1;
+        ret.replace(model->textSeperators[i], s);
+      }
+    }
     return ret;
   }
 
@@ -311,6 +318,13 @@ public:
     QString ret = text;
     if (role == Engine::ScenarioRole && model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
       ret.replace("\n", model->newLineString);
+    if (!model->textSeperators.isEmpty()) {
+      char s[2] = {};
+      for (int i = 0; i < model->textSeperators.size(); i++) {
+        s[0] = i + 1;
+        ret.replace(s, model->textSeperators[i]);
+      }
+    }
     if (model->translationFilterFunction)
       ret = model->translationFilterFunction(ret, role);
     return ret;

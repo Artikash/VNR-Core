@@ -47,16 +47,15 @@ namespace Private {
   wstrT ltrimTextW(wstrT text)
   {
     static const char *quotes[] = { "<>", "[]" }; // skip leading quotes
-    BOOST_FOREACH (const char *q, quotes) {
-      if (text[0] == q[0]) {
+    BOOST_FOREACH (const char *q, quotes)
+      while (text[0] == q[0]) {
         if (auto p = ::wcschr(text, q[1])) {
           text = p + 1;
           if (*text == 0x3000) // skip \u3000 leading space
             text++;
-        }
-        break;
+        } else
+          break;
       }
-    }
     return text;
   }
 
@@ -77,9 +76,11 @@ namespace Private {
   {
     // All threads including character names are linked together
 
-    LPWSTR text = (LPWSTR)s->stack[1]; // arg1
+    auto text = (LPWSTR)s->stack[1]; // arg1
     if (!text || !*text || !Engine::isAddressWritable(text)) // skip modifying readonly text in code region
       return true;
+
+    bool containsTags = ::wcsstr(text, L"[u]");
 
     text = ltrimTextW(text);
     if (!*text)
@@ -88,14 +89,15 @@ namespace Private {
     int role = Engine::OtherRole;
     //ulong split = s->stack[0]; // retaddr
     ulong split = s->stack[2]; // arg2
-    switch (split) {
-    case 0x63a1:
-      role = Engine::NameRole;
-      break;
-    case 0x639e:
-      role = Engine::ScenarioRole;
-      break;
-    }
+    if (!containsTags)
+      switch (split) {
+      case 0x63a1:
+        role = Engine::NameRole;
+        break;
+      case 0x639e:
+          role = Engine::ScenarioRole;
+        break;
+      }
     auto sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text),
@@ -110,8 +112,12 @@ namespace Private {
 
   bool beforeAgsSpriteCreateTextEx(winhook::hook_stack *s)
   {
-    LPWSTR text = (LPWSTR)s->stack[2]; // arg2
+    auto text = (LPWSTR)s->stack[2]; // arg2
     if (!text || !*text || !Engine::isAddressWritable(text))
+      return true;
+
+    text = ltrimTextW(text);
+    if (!*text)
       return true;
 
     enum { role = Engine::OtherRole };

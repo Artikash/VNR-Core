@@ -15,7 +15,7 @@ public:
   {
     name = "EmbedElf";
     enableDynamicEncoding = true;
-    //newLineString = nullptr; // TODO: not verified
+    newLineString = nullptr;
     // "Silkys.exe" or AI6WIN.exe might not exist
     // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
     // mes.arc is the scenario

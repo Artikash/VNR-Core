@@ -51,6 +51,8 @@ public:
 
   QStringList matchFiles; // files existing in the game directory
 
+  QStringList textSeperators; // strings that will split sentences
+
   // Global match functions
   //typedef bool (* match_function)();
   typedef std::function<bool ()> match_function;
