@@ -6,7 +6,8 @@
 namespace Engine {
 
 // These values must be consistent with VNR's textman.py
-enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole, ChoiceRole = OtherRole, // TODO: Add support for choice
+enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole,
+                ChoiceRole = OtherRole, HistoryRole = OtherRole,
                 RoleCount };
 
 // Dummy fixed signature the same as ITH for single text thread

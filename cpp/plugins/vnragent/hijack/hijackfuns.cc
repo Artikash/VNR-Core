@@ -47,6 +47,8 @@
   //DEF_FUN(CharNextW)
   //DEF_FUN(CharNextExA)
   //DEF_FUN(CharNextExW)
+  DEF_FUN(CharPrevA)
+  //DEF_FUN(CharPrevW)
   DEF_FUN(MultiByteToWideChar)
   DEF_FUN(WideCharToMultiByte)
 #undef DEF_FUN
@@ -319,6 +321,14 @@ LPSTR WINAPI Hijack::newCharNextA(LPCSTR lpString)
   //return oldCharNextA(lpString);
 }
 
+LPSTR WINAPI Hijack::newCharPrevA(LPCSTR lpStart, LPCSTR lpCurrent)
+{
+  DOUT("pass");
+  //if (::GetACP() == 932)
+  return const_cast<char *>(dynsjis::prevchar(lpCurrent, lpStart));
+  //return oldCharNextA(lpStart, lpCurrent);
+}
+
 int WINAPI Hijack::newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
 {
   //DOUT("pass");
@@ -465,6 +475,23 @@ BOOL WINAPI Hijack::newGetTextExtentPoint32W(HDC hdc, LPCWSTR lpString, int cchS
   DCFontSwitcher fs(hdc);
   //TRANSLATE_TEXT_W(lpString, cchString, oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize))
   return oldGetTextExtentPoint32W(hdc, lpString, cchString, lpSize);
+}
+
+BOOL WINAPI Hijack::newGetTextExtentExPointA(HDC hdc, LPCSTR lpString, int cchString, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  //TRANSLATE_TEXT_A(lpString, cchString, oldGetTextExtentExPointW(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize))
+  DECODE_TEXT(lpString, cchString, oldGetTextExtentExPointW(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize))
+  return oldGetTextExtentExPointA(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize);
+}
+
+BOOL WINAPI Hijack::newGetTextExtentExPointW(HDC hdc, LPCWSTR lpString, int cchString, int nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  //TRANSLATE_TEXT_W(lpString, cchString, oldGetTextExtentExPointW(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize))
+  return oldGetTextExtentExPointW(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize);
 }
 
 BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)

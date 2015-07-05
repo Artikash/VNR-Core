@@ -46,6 +46,8 @@ namespace Hijack {
   //DEF_FUN(CharNextW, LPWSTR, LPCWSTR lpString)
   //DEF_FUN(CharNextExA, LPSTR, WORD COdePage, LPCSTR lpString, DWORD dwFlags)
   //DEF_FUN(CharNextExW, LPWSTR, WORD COdePage, LPCWSTR lpString, DWORD dwFlags)
+  DEF_FUN(CharPrevA, LPSTR, LPCSTR lpStart, LPCSTR lpCurrent)
+  //DEF_FUN(CharNextW, LPWSTR, LPCWSTR lpStart, LPCWSTR lpCurrent)
 #undef DEF_FUN
 
 // Global variables
