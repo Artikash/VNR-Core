@@ -14,7 +14,7 @@ public:
   {
     name = "EmbedRetouch";
     enableDynamicEncoding = true;
-    enableGDIFont = true;
+    enableDynamicFont = true;
     //newLineString = "\n";
     matchFiles << "resident.dll"; // the process name is usually Exhibit.EXE.
     attachFunction = &Self::attach;

@@ -15,7 +15,7 @@ public:
   {
     name = "EmbedWolfRPG";
     enableDynamicEncoding = true;
-    enableGDIFont = true;
+    enableDynamicFont = true;
     matchFiles << "data.wolf|data/*.wolf";
     //newLineString = "\n";
     attachFunction = &Self::attach;

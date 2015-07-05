@@ -14,8 +14,9 @@ public:
   {
     name = "EmbedBGI";
     enableDynamicEncoding = true;
-    matchFiles << "BGI.*";
-    //newLineString = nullptr; // TODO: not verified
+    //enableDynamicFont = true; // disabled since font is cached
+    matchFiles << "BGI.*|BHVC.exe";
+    //newLineString = "\n";
     attachFunction = &Self::attach;
   }
 };

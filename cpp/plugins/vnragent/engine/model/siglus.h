@@ -15,7 +15,7 @@ public:
   {
     name = "EmbedSiglusEngine";
     encoding = Utf16Encoding;
-    enableGDIFont = true;
+    enableDynamicFont = true;
     matchFiles << "SiglusEngine*.exe";
     //newLineString = "\n";
     attachFunction = &Self::attach;
