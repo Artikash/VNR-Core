@@ -105,7 +105,7 @@ bool DetermineEngineByFile1()
     InsertSideBHook();
     return true;
   }
-  if (IthFindFile(L"bgi.*")) {
+  if (IthFindFile(L"bgi.*") || IthFindFile(L"BHVC.exe")) {
     InsertBGIHook();
     return true;
   }

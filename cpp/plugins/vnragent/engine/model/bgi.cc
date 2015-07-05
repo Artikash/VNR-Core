@@ -577,7 +577,6 @@ bool attach()
     return false;
   if (!winhook::hook_before(addr, Private::hookBefore))
     return false;
-  HijackManager::instance()->attachFunction((ulong)::TextOutA);
   DOUT("type =" << Private::type_);
   return true;
 }
@@ -585,6 +584,11 @@ bool attach()
 } // unnamed namespace
 
 bool BGIEngine::attach()
-{ return ScenarioHook::attach(); }
+{
+  if (!ScenarioHook::attach())
+    return false;
+  HijackManager::instance()->attachFunction((ulong)::TextOutA);
+  return true;
+}
 
 // EOF

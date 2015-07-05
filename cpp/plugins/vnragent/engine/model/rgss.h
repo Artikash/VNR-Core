@@ -15,7 +15,7 @@ public:
   {
     name = "EmbedRGSS";
     encoding = Utf16Encoding;
-    enableGDIFont = true;
+    enableDynamicFont = true;
     matchFiles << "System/RGSS3*.dll";
     //newLineString = "\n";
     //matchFiles << "Game.rgss3a";

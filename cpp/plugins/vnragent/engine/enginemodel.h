@@ -23,7 +23,7 @@ public:
 
     , enableDynamicEncoding(false) // whether use dynamic codec to fix ascii text
     , enableLocaleEmulation(false) // fix inconsistent game locale
-    , enableGDIFont(false)      // change GDI device context font
+    , enableDynamicFont(false)      // change GDI device context font
 
     , scenarioLineCapacity(0)   // estimated maximum number of thin characters for scenario text per line, 0 to disable it
     , otherLineCapacity(0)      // estimated maximum number of thin characters for other text per line, 0 to disable it
@@ -42,7 +42,7 @@ public:
   Encoding encoding;
   bool enableDynamicEncoding;
   bool enableLocaleEmulation;
-  bool enableGDIFont;
+  bool enableDynamicFont;
 
   int scenarioLineCapacity,
       otherLineCapacity;
