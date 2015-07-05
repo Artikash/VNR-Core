@@ -10,6 +10,7 @@
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
+#include <cstdint>
 
 #define DEBUG "model/circus"
 #include "sakurakit/skdebug.h"
@@ -18,17 +19,17 @@
 
 namespace { // unnamed
 
+// Skip leading tags such as @K and @c5
+template <typename strT>
+strT ltrim(strT s)
+{
+  if (s && *s == '@')
+    while ((signed char)*++s > 0);
+  return s;
+}
+
 namespace ScenarioHook {
-
 namespace Private {
-
-  // Skip leading tags such as @K and @c5
-  LPCSTR ltrim(LPCSTR s)
-  {
-    if (*s == '@')
-      while ((signed char)*++s > 0);
-    return s;
-  }
 
   DWORD nameReturnAddress_,
         scenarioReturnAddress_;
@@ -55,9 +56,9 @@ namespace Private {
   bool hookBefore(winhook::hook_stack *s)
   {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
-    auto text = (LPCSTR)s->stack[2], // arg2
-         trimmedText = ltrim(text);
-    if (!*trimmedText)
+    LPCSTR text = (LPCSTR)s->stack[2], // arg2
+           trimmedText = ltrim(text);
+    if (!trimmedText || !*trimmedText)
       return true;
     auto retaddr = s->stack[0]; // retaddr
     auto role = retaddr == scenarioReturnAddress_ ? Engine::ScenarioRole :
@@ -72,7 +73,7 @@ namespace Private {
     auto split = retaddr;
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData = trimmedText,
-               newData = EngineController::instance()->dispatchTextA(trimmedText, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
     if (oldData == newData)
       return true;
     if (trimmedText != text)
@@ -209,11 +210,8 @@ namespace Private {
  *  0042DCA9   C705 50F9AC00 59>MOV DWORD PTR DS:[0xACF950],0x59
  *  0042DCB3   A3 3C70AE00      MOV DWORD PTR DS:[0xAE703C],EAX
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
   ulong addr = Private::findFunctionAddress(startAddress, stopAddress);
   if (!addr)
     return false;
@@ -241,15 +239,130 @@ bool attach()
 
 } // namespace ScenarioHook
 
+namespace OtherHook {
+namespace Private {
+
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    LPSTR text = ltrim((LPSTR)s->stack[5]);// arg5
+    if (!text || !*text)
+      return true;
+    auto retaddr = s->stack[0]; // retaddr
+    enum { role = Engine::OtherRole };
+    auto split = retaddr;
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    ::strcpy(text, data.constData());
+    //if (trimmedText != text)
+    //  newData.prepend(text, trimmedText - text);
+    //data_ = newData;
+    //s->stack[5] = (DWORD)data_.constData(); // reset arg5
+    return true;
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: DC3 XRated
+ *  See: http://capita.tistory.com/m/post/117
+ *
+ *  HOOK(0x00401DF0,TRANS([ESP+0x14],PTRBACKUP,OVERWRITE(IGNORE)),RETNPOS(COPY)),HOOK(0x00421A90,TRANS([ESP+0x4],PTRBACKUP,OVERWRITE(IGNORE)),RETNPOS(COPY)),FORCEFONT(5),ENCODEKOR,HOOK(0x0042B74F,TRANS([ESP+0x4],PTRCHEAT,PTRBACKUP),RETNPOS(COPY)),FONT(돋움,-13)
+ *
+ *  The first hook is Other hook.
+ *  The last hook is name, that is exactly the same as my name hook (mine is better).
+ *  The second hook is equivalent to my scenario hook, and invoked after my scenario threads (mine is better).
+ *
+ *  00401DEE   CC               INT3
+ *  00401DEF   CC               INT3
+ *  00401DF0   55               PUSH EBP
+ *  00401DF1   56               PUSH ESI
+ *  00401DF2   8B7424 0C        MOV ESI,DWORD PTR SS:[ESP+0xC]
+ *  00401DF6   6A 00            PUSH 0x0
+ *  00401DF8   6A 04            PUSH 0x4
+ *  00401DFA   56               PUSH ESI
+ *  00401DFB   E8 10FBFFFF      CALL .00401910
+ *  00401E00   8BE8             MOV EBP,EAX
+ *  00401E02   83C4 0C          ADD ESP,0xC
+ *  00401E05   83FD FF          CMP EBP,-0x1
+ *  00401E08   0F84 95000000    JE .00401EA3
+ *  00401E0E   57               PUSH EDI
+ *  00401E0F   E8 9CFFFFFF      CALL .00401DB0
+ *  00401E14   6BF6 58          IMUL ESI,ESI,0x58
+ *  00401E17   8B8E A0C84800    MOV ECX,DWORD PTR DS:[ESI+0x48C8A0]
+ *  00401E1D   8B5424 14        MOV EDX,DWORD PTR SS:[ESP+0x14]
+ *  00401E21   8B7424 18        MOV ESI,DWORD PTR SS:[ESP+0x18]
+ *  00401E25   03CD             ADD ECX,EBP
+ *  00401E27   6BC9 4C          IMUL ECX,ECX,0x4C
+ *  00401E2A   8991 50CE4800    MOV DWORD PTR DS:[ECX+0x48CE50],EDX
+ *  00401E30   89B1 54CE4800    MOV DWORD PTR DS:[ECX+0x48CE54],ESI
+ *  00401E36   8BF8             MOV EDI,EAX
+ *  00401E38   8B4424 1C        MOV EAX,DWORD PTR SS:[ESP+0x1C]
+ *  00401E3C   89B9 2CCE4800    MOV DWORD PTR DS:[ECX+0x48CE2C],EDI
+ *  00401E42   8BCF             MOV ECX,EDI
+ *  00401E44   69C9 54110000    IMUL ECX,ECX,0x1154
+ *  00401E4A   8981 208F4900    MOV DWORD PTR DS:[ECX+0x498F20],EAX
+ *  00401E50   8B4424 24        MOV EAX,DWORD PTR SS:[ESP+0x24]
+ *  00401E54   8991 5CA04900    MOV DWORD PTR DS:[ECX+0x49A05C],EDX
+ *  00401E5A   8991 64A04900    MOV DWORD PTR DS:[ECX+0x49A064],EDX
+ *  00401E60   8B5424 20        MOV EDX,DWORD PTR SS:[ESP+0x20]
+ *  00401E64   C781 1C8F4900 00>MOV DWORD PTR DS:[ECX+0x498F1C],0x0
+ *  00401E6E   8981 248F4900    MOV DWORD PTR DS:[ECX+0x498F24],EAX
+ *  00401E74   C681 CC904900 00 MOV BYTE PTR DS:[ECX+0x4990CC],0x0
+ *  00401E7B   89B1 60A04900    MOV DWORD PTR DS:[ECX+0x49A060],ESI
+ *  00401E81   89B1 68A04900    MOV DWORD PTR DS:[ECX+0x49A068],ESI
+ *  00401E87   8D89 2C8F4900    LEA ECX,DWORD PTR DS:[ECX+0x498F2C]
+ *  00401E8D   2BCA             SUB ECX,EDX
+ *  00401E8F   90               NOP
+ *  00401E90   8A02             MOV AL,BYTE PTR DS:[EDX]
+ *  00401E92   880411           MOV BYTE PTR DS:[ECX+EDX],AL
+ *  00401E95   42               INC EDX
+ *  00401E96   84C0             TEST AL,AL
+ *  00401E98  ^75 F6            JNZ SHORT .00401E90
+ *  00401E9A   893D 24C84800    MOV DWORD PTR DS:[0x48C824],EDI
+ *  00401EA0   8BC5             MOV EAX,EBP
+ *  00401EA2   5F               POP EDI
+ *  00401EA3   5E               POP ESI
+ *  00401EA4   5D               POP EBP
+ *  00401EA5   C3               RETN
+ *  00401EA6   CC               INT3
+ *  00401EA7   CC               INT3
+ *  00401EA8   CC               INT3
+ *  00401EA9   CC               INT3
+ *  00401EAA   CC               INT3
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x0f,0x84, 0x95,0x00,0x00,0x00, // 00401e08   0f84 95000000    je .00401ea3
+    0x57                            // 00401e0e   57               push edi
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+}
+
+} // namespace OtherHook
+
 } // unnamed namespace
 
 /** Public class */
 
 bool CircusEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
-  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
+  if (!ScenarioHook::attach(startAddress, stopAddress))
+    return false;
+  if (OtherHook::attach(startAddress, stopAddress))
+    DOUT("other text found");
+  else
+    DOUT("other text NOT FOUND");
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // this is only needed for ruby
   return true;
 }
 
