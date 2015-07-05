@@ -798,8 +798,8 @@ bool RetouchEngine::attach()
 
   if (HistoryHook::attach()) {
     DOUT("history text found");
-    h->attachFunction((ulong)::GetTextExtentPoint32A);
-    h->attachFunction((ulong)::GetTextExtentExPointA);
+    //h->attachFunction((ulong)::GetTextExtentPoint32A);    // This will cause problem for measuring text width ...
+    //h->attachFunction((ulong)::GetTextExtentExPointA);
     //h->attachFunction((ulong)::CharPrevA);
   } else
     DOUT("history text NOT FOUND");
