@@ -9938,7 +9938,7 @@ class DataManager(QObject):
     dprint("change current game")
     g = d.currentGame = d.games.get(game.md5)
     d.currentGameObject = None
-    d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g and g.itemId else [g.id] if g.id else []
+    d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g and g.itemId else [g.id] if g and g.id else []
 
     if not d.updateGame(game):
       growl.warn(my.tr("Failed to get game information"))

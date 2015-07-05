@@ -5,7 +5,7 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
-//#include "hijack/hijackmanager.h"
+#include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
@@ -220,6 +220,8 @@ bool attach()
   // Find the nearest two callers (distance within 100)
   ulong lastCall = 0;
   auto fun = [&lastCall](ulong call) -> bool {
+    // scenario: 0x42b78c
+    // name: 0x42b754
     if (call - lastCall < 100) {
       Private::scenarioReturnAddress_ = call + 5;
       Private::nameReturnAddress_ = lastCall + 5;
@@ -230,6 +232,10 @@ bool attach()
     return true; // replace all functions
   };
   MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
+  if (!Private::scenarioReturnAddress_ && lastCall) {
+    Private::scenarioReturnAddress_ = lastCall + 5;
+    DOUT("scenario and name calls NOT FOUND");
+  }
   return winhook::hook_before(addr, Private::hookBefore);
 }
 
@@ -239,7 +245,13 @@ bool attach()
 
 /** Public class */
 
-bool CircusEngine::attach() { return ScenarioHook::attach(); }
+bool CircusEngine::attach()
+{
+  if (!ScenarioHook::attach())
+    return false;
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
+  return true;
+}
 
 /**
  *  Get rid of ruby. Examples:
@@ -261,6 +273,7 @@ QString CircusEngine::rubyRemove(const QString &text)
   if (!rx.isMinimal())
     rx.setMinimal(true);
   return QString(text).replace(rx, "\\1");
+}
 
   //const wchar_t
   //  w_open = 0xff5b    /* ｛ */
@@ -282,7 +295,6 @@ QString CircusEngine::rubyRemove(const QString &text)
   //  pos += close_pos - split_pos - 1;
   //}
   //return ret;
-}
 
 // EOF
 
