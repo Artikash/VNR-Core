@@ -269,22 +269,24 @@ public:
     return text;
   }
 
+  static bool isCharTrimmable(const QChar &ch) { return ch.unicode() <= 32 || ch.isSpace() };
+
   static QString trimText(const QString &text, QString *prefix = nullptr, QString *suffix = nullptr)
   {
     if (text.isEmpty() ||
-        !text[0].isSpace() && !text[text.size() - 1].isSpace())
+        !isCharTrimmable(text[0]) && !isCharTrimmable(text[text.size() - 1]))
       return text;
     QString ret = text;
-    if (ret[0].isSpace()) {
+    if (isCharTrimmable(ret[0])) {
       int pos = 1;
-      for (; pos < ret.size() && ret[pos].isSpace(); pos++);
+      for (; pos < ret.size() && isCharTrimmable(ret[pos]); pos++);
       if (prefix)
         *prefix = ret.left(pos);
       ret = ret.mid(pos);
     }
-    if (!ret.isEmpty() && ret[ret.size() - 1].isSpace()) {
+    if (!ret.isEmpty() && isCharTrimmable(ret[ret.size() - 1])) {
       int pos = ret.size() - 2;
-      for (; pos >= 0 && ret[pos].isSpace(); pos--);
+      for (; pos >= 0 && isCharTrimmable(ret[pos]); pos--);
       if (suffix)
         *suffix = ret.mid(pos + 1);
       ret = ret.left(pos + 1);
@@ -295,12 +297,10 @@ public:
   QString filterText(const QString &text, int role) const
   {
     QString ret = text;
-    if (role == Engine::ScenarioRole) {
-      if (model->newLineString && ::strcmp(model->newLineString, "\n"))
-        ret.replace(model->newLineString, "\n");
-      if (model->rubyRemoveFunction)
-        ret = model->rubyRemoveFunction(ret);
-    }
+    if (model->newLineString && ::strcmp(model->newLineString, "\n"))
+      ret.replace(model->newLineString, "\n");
+    if (model->rubyRemoveFunction)
+       ret = model->rubyRemoveFunction(ret);
     if (model->textFilterFunction)
       ret = model->textFilterFunction(ret, role);
     if (!model->textSeperators.isEmpty()) {
@@ -316,7 +316,7 @@ public:
   QString filterTranslation(const QString &text, int role) const
   {
     QString ret = text;
-    if (role == Engine::ScenarioRole && model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
+    if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
       ret.replace("\n", model->newLineString);
     if (!model->textSeperators.isEmpty()) {
       char s[2] = {};

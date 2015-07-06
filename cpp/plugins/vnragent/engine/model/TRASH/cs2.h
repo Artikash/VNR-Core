@@ -15,6 +15,9 @@ public:
     name = "EmbedCatSystem2";
     enableDynamicEncoding = true;
     matchFiles << "*.int";
+    //enableDynamicFont = true; // ???
+    textSeperators << "\\pc";
+    newLineString = "\\n";
     attachFunction = &Self::attach;
   }
 };

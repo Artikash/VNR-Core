@@ -144,10 +144,10 @@ HEADERS += \
   engine/model/system4.h \
   engine/model/will.h \
   engine/model/wolf.h
+  #engine/model/cs2.h
   #engine/model/systemc.h
   #engine/model/horkeye.h
   #engine/model/unicorn.h
-  #engine/model/cs2.h
   #engine/model/majiro.h
   #engine/model/sideb.h
   ##engine/model/nexas.h
@@ -169,10 +169,10 @@ SOURCES += \
   engine/model/system4.cc \
   engine/model/will.cc \
   engine/model/wolf.cc
+  #engine/model/cs2.cc
   #engine/model/systemc.cc
   #engine/model/horkeye.cc
   #engine/model/unicorn.cc
-  #engine/model/cs2.cc
   #engine/model/majiro.cc
   #engine/model/sideb.cc
   #engine/model/nexas.cc
