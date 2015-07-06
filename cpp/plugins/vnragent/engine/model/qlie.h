@@ -15,7 +15,7 @@ public:
   {
     name = "EmbedQLiE";
     enableDynamicEncoding = true;
-    //newLineString = "\n";
+    newLineString = nullptr;
     matchFiles << "GameData/*.pack";
     attachFunction = &Self::attach;
   }

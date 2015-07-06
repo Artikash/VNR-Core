@@ -22,9 +22,11 @@ namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
 
-  LPCSTR trim(LPCSTR text, int *size)
+  template <typename strT>
+  strT trim(strT text, int *size)
   {
-    int length = ::strlen(text);
+    //int length = ::strlen(text);
+    int length = *size;
     if (text[0] == '[') {
       if (Util::allAscii(text))
         return nullptr;
@@ -32,12 +34,13 @@ namespace Private {
         length--;
       for (int i = 1; i < length; i++)
         if ((signed char)text[i] <= 0) {
-          text += i - 1;
+          text += i;
+          length -= i - 1;
           break;
         }
+      length--; // skip the leading '['
     }
-    if (size)
-      *size = length;
+    *size = length;
     return text;
   }
 
@@ -122,28 +125,68 @@ namespace Private {
    *  EDI 0E9F7110
    *  EIP 00513234 .00513234
    */
+  struct TextArgument // root at [edx - 4]
+  {
+    DWORD size;     // in [edx-4]
+    char text[1];   // in edx
+
+    bool isValid() const
+    {
+      return text && size
+          && Engine::isAddressReadable(text, size)
+          && ::strlen(text) == size;
+    }
+  };
+
   bool hookBefore(winhook::hook_stack *s)
   {
-    static QByteArray data_; // persistent storage, which makes this function not thread-safe
-    auto text = (LPCSTR)s->edx; // text in arg1
-    if (!text || !*text)
+    static QByteArray data_;
+    auto arg = (TextArgument *)(s->edx - 4);
+    if (!arg->isValid())
       return true;
-    int trimmedSize = 0;
-    LPCSTR trimmedText = trim(text, &trimmedSize);
-    if (!trimmedSize || !trimmedText || !*trimmedText)
+    int trimmedSize = arg->size;
+    auto trimmedText = trim(arg->text, &trimmedSize);
+    if (trimmedSize < 0 || !trimmedText || !*trimmedText)
       return true;
+
+    enum : uint16_t {
+      w_name_open = 0x7981,   /* 【 */
+      w_name_close = 0x7a81   /* 】 */
+    };
+
     auto role = Engine::ScenarioRole;
+    if (trimmedText[trimmedSize]) // text ending withb ']' is other text
+      role = Engine::OtherRole;
+    else if (trimmedSize > 4
+        && w_name_open == *(uint16_t *)trimmedText
+        && w_name_close == *(uint16_t *)(trimmedText + trimmedSize - 2)) {
+      role = Engine::NameRole;
+      trimmedText += 2;
+      trimmedSize -= 4;
+      /* Skip sjis 名前 = 96bc914f */
+      if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
+        return true;
+    }
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData(trimmedText, trimmedSize),
                newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
     if (newData == oldData)
       return true;
-    if (trimmedText != text)
-      newData.prepend(text, trimmedText - text);
-    if (trimmedText[trimmedSize])
-      newData.append(trimmedText + trimmedSize, ::strlen(trimmedText) - trimmedSize);
-    //s->edx = (ulong)data_.constData(); // reset arg1
+    int prefixSize = trimmedText - arg->text,
+        suffixSize = arg->size - prefixSize - trimmedSize;
+    if (prefixSize)
+      newData.prepend(arg->text, prefixSize);
+    if (suffixSize)
+      newData.append(trimmedText + trimmedSize, suffixSize);
+
+    data_ = newData;
+    s->edx = (ulong)data_.constData(); // reset arg1
+    *(DWORD *)(s->edx - 4) = data_.size();
+    //arg->size = data_.size(); // no idea why this will crash ...
+
+    //*(DWORD *)(s->edx - 4) = newData.size() + trimmedText - text;
+    //::strcpy(trimmedText, newData.constData());
     return true;
   }
 } // namespace Private
@@ -153,7 +196,7 @@ namespace Private {
  *  See: http://capita.tistory.com/m/post/236
  *
  *  This function is not aligned.
- *  Text in edx.
+ *  Text in edx. Length in [edx - 4]
  *
  *  00513234   55               PUSH EBP
  *  00513235   8BEC             MOV EBP,ESP

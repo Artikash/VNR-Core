@@ -11,6 +11,7 @@
 
 - Test if \n works (if not, set new line string to zero)
 - Test if font can be changed (enforce GDI font)
+  If cannot, try insert GDI font first before enabling dynamic font
 - Test if contains ruby
 
 - Compare with ITH and AralTrans
