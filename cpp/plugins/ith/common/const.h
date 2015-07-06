@@ -42,6 +42,7 @@
   , DrawTextW \
   , DrawTextExW
   //, CharNextA
+  //, CharPrevA
 //enum { HOOK_FUN_COUNT = 30 }; // total number of GDI hooks
 // jichi 1/16/2015: Though called max hook, it means max number of text threads
 enum { MAX_HOOK = 64 }; // must be larger than HOOK_FUN_COUNT

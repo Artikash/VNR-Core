@@ -264,6 +264,8 @@ void PcHooks::hookCharNextFunctions()
   DPRINT("enter");
   NEW_HOOK(CharNextA, s_arg1, 0,0,0, USING_STRING|DATA_INDIRECT, 1) // LPTSTR WINAPI CharNext(_In_ LPCTSTR lpsz);
   NEW_HOOK(CharNextW, s_arg1, 0,0,0, USING_UNICODE|DATA_INDIRECT, 1)
+  NEW_HOOK(CharPrevA, s_arg1, 0,0,0, USING_STRING|DATA_INDIRECT, 1) // LPTSTR WINAPI CharPrev(_In_ LPCTSTR lpszStart, _In_ LPCTSTR lpszCurrent);
+  NEW_HOOK(CharPrevW, s_arg1, 0,0,0, USING_UNICODE|DATA_INDIRECT, 1)
   //NEW_HOOK(CharNextExA, s_arg2, 0,0,0, USING_STRING|DATA_INDIRECT, 1) // LPSTR WINAPI CharNextExA(_In_ WORD   CodePage, _In_ LPCSTR lpCurrentChar, _In_ DWORD  dwFlags);
   //NEW_HOOK(CharNextExW, s_arg2, 0,0,0, USING_UNICODE|DATA_INDIRECT, 1)
   DPRINT("leave");

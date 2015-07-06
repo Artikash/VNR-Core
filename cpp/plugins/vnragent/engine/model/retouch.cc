@@ -787,10 +787,6 @@ bool RetouchEngine::attach()
 {
   if (!ScenarioHook::attach())
     return false;
-
-  auto h = HijackManager::instance();
-  h->attachFunction((ulong)::GetGlyphOutlineA);
-
   if (OtherHook::attach())
     DOUT("other text found");
   else
@@ -803,6 +799,8 @@ bool RetouchEngine::attach()
     //h->attachFunction((ulong)::CharPrevA);
   } else
     DOUT("history text NOT FOUND");
+
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;
 }
 

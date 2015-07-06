@@ -769,6 +769,7 @@ bool WillPlusEngine::attach()
     else
       DOUT("other text NOT FOUND");
 
+    HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar); // Font can already be dynamically changed and hence not needed
     //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW); // Font can already be dynamically changed and hence not needed
     return true;
 

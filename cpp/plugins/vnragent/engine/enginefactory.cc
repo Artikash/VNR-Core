@@ -12,10 +12,8 @@
 #include "engine/model/circus.h"
 #include "engine/model/cmvs.h"
 #include "engine/model/cotopha.h"
-//#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
-//#include "engine/model/horkeye.h"
 #include "engine/model/leaf.h"
 #include "engine/model/retouch.h"
 #include "engine/model/rgss.h"
@@ -24,6 +22,8 @@
 #include "engine/model/system4.h"
 #include "engine/model/will.h"
 #include "engine/model/wolf.h"
+//#include "engine/model/cs2.h"
+//#include "engine/model/horkeye.h"
 //#include "engine/model/systemc.h"
 //#include "engine/model/unicorn.h"
 //#include "engine/model/eushully.h"
@@ -55,6 +55,7 @@ EngineController *EngineFactory::createEngine()
     , new CircusEngine
     , new BGIEngine
     , new ARCGameEngine
+    //, new CatSystem2Engine
     //, new UnicornEngine
     //, new SystemCEngine
     //, new HorkEyeEngine
