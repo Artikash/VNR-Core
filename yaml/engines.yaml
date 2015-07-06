@@ -11,6 +11,8 @@ rename:
   Gesen18: Unicorn
   MAJIRO: Majiro
   Pencil: Pensil
+  QLIE: QLiE
+  QLIE2: QLiE2
   RetouchSystem: Retouch
   Silkys: Elf
   SolfaSoft: ScenarioPlayerA
@@ -336,8 +338,8 @@ norepeat:
   - BALDR # removed
   - EXP # there could be different type of threads, but it is OK to merge them
   - KiriKiri2  # might float, http://sakuradite.com/game/4633
-  - QLIE
-  - QLIE2
+  - QLiE
+  - QLiE2
   - NEXTON
   - NEXTON1 # I am not sure if it could be floating like NEXTON
   - TanukiSoft # But this thread is floating
@@ -501,8 +503,10 @@ char:
   - Otomate PPSSPP
   - Pencil # renamed
   - Pensil
-  - QLIE
-  - QLIE2
+  - QLiE
+  - QLiE2
+  - QLIE # renamed
+  - QLIE2 # renamed
   - RealLive
   - Rejet
   - Retouch
@@ -682,6 +686,8 @@ focus:
   - KiriKiriZ
   - Leaf
   - Majiro2
+  - QLiE
+  - QLiE2
   - Retouch
   - Retouch2
   - SiglusEngine2

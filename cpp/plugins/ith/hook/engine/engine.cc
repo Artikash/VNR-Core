@@ -7098,7 +7098,7 @@ bool InsertQLIE2Hook()
   hp.address = addr;
 
   ConsoleOutput("vnreng: INSERT QLIE2");
-  NewHook(hp, "QLIE2");
+  NewHook(hp, "QLiE2");
   //ConsoleOutput("QLIE2");
   return true;
 }
@@ -7125,7 +7125,7 @@ bool InsertQLIE1Hook()
             hp.length_offset = 1;
             hp.type = DATA_INDIRECT|USING_SPLIT;
             ConsoleOutput("vnreng: INSERT QLIE1");
-            NewHook(hp, "QLIE");
+            NewHook(hp, "QLiE");
             //RegisterEngineType(ENGINE_FRONTWING);
             return true;
           }
