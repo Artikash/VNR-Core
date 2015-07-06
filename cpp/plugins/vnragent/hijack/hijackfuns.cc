@@ -41,8 +41,8 @@
   DEF_FUN(TextOutW)
   DEF_FUN(ExtTextOutA)
   DEF_FUN(ExtTextOutW)
-  //DEF_FUN(TabbedTextOutA)
-  //DEF_FUN(TabbedTextOutW)
+  DEF_FUN(TabbedTextOutA)
+  DEF_FUN(TabbedTextOutW)
   DEF_FUN(CharNextA)
   //DEF_FUN(CharNextW)
   //DEF_FUN(CharNextExA)
@@ -512,6 +512,46 @@ BOOL WINAPI Hijack::newTextOutW(HDC hdc, int nXStart, int nYStart, LPCWSTR lpStr
   if (HijackManager::instance()->isFunctionTranslated((ulong)::TextOutW))
     TRANSLATE_TEXT_W(lpString, cchString, oldTextOutW(hdc, nXStart, nYStart, lpString, cchString))
   return oldTextOutW(hdc, nXStart, nYStart, lpString, cchString);
+}
+
+BOOL WINAPI Hijack::newExtTextOutA(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCSTR lpString, UINT cchString, const INT *lpDx)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::ExtTextOutA))
+    TRANSLATE_TEXT_A(lpString, cchString, oldExtTextOutW(hdc, X, Y, fuOptions, lprc, lpString, cchString, lpDx))
+  else
+    DECODE_TEXT(lpString, cchString, oldExtTextOutW(hdc, X, Y, fuOptions, lprc, lpString, cchString, lpDx))
+  return oldExtTextOutA(hdc, X, Y, fuOptions, lprc, lpString, cchString, lpDx);
+}
+
+BOOL WINAPI Hijack::newExtTextOutW(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCWSTR lpString, UINT cchString, const INT *lpDx)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::ExtTextOutW))
+    TRANSLATE_TEXT_W(lpString, cchString, oldExtTextOutW(hdc, X, Y, fuOptions, lprc, lpString, cchString, lpDx))
+  return oldExtTextOutW(hdc, X, Y, fuOptions, lprc, lpString, cchString, lpDx);
+}
+
+LONG WINAPI Hijack::newTabbedTextOutA(HDC hdc, int X, int Y, LPCSTR lpString, int cchString, int nTabPositions, const int *lpnTabStopPositions, int nTabOrigin)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::TabbedTextOutA))
+    TRANSLATE_TEXT_A(lpString, cchString, oldTabbedTextOutW(hdc, X, Y, lpString, cchString, nTabPositions, lpnTabStopPositions, nTabOrigin))
+  else
+    DECODE_TEXT(lpString, cchString, oldTabbedTextOutW(hdc, X, Y, lpString, cchString, nTabPositions, lpnTabStopPositions, nTabOrigin))
+  return oldTabbedTextOutA(hdc, X, Y, lpString, cchString, nTabPositions, lpnTabStopPositions, nTabOrigin);
+}
+
+LONG WINAPI Hijack::newTabbedTextOutW(HDC hdc, int X, int Y, LPCWSTR lpString, int cchString, int nTabPositions, const int *lpnTabStopPositions, int nTabOrigin)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::TabbedTextOutW))
+    TRANSLATE_TEXT_W(lpString, cchString, oldTabbedTextOutW(hdc, X, Y, lpString, cchString, nTabPositions, lpnTabStopPositions, nTabOrigin))
+  return oldTabbedTextOutW(hdc, X, Y, lpString, cchString, nTabPositions, lpnTabStopPositions, nTabOrigin);
 }
 
 // EOF
