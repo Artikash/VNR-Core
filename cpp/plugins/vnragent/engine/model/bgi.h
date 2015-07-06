@@ -14,7 +14,7 @@ public:
   {
     name = "EmbedBGI";
     enableDynamicEncoding = true;
-    //enableDynamicFont = true; // disabled since font is cached
+    enableDynamicFont = true; // FIXME: Check if it can be fixed by manually inserting font creation function
     matchFiles << "BGI.*|BHVC.exe";
     //newLineString = "\n";
     attachFunction = &Self::attach;

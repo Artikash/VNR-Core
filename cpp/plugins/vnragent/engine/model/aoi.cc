@@ -44,7 +44,7 @@ namespace AgsHookW {
 namespace Private {
 
   template<typename wstrT>
-  wstrT ltrimTextW(wstrT text)
+  wstrT ltrimW(wstrT text)
   {
     static const char *quotes[] = { "<>", "[]" }; // skip leading quotes
     BOOST_FOREACH (const char *q, quotes)
@@ -82,7 +82,7 @@ namespace Private {
 
     bool containsTags = ::wcsstr(text, L"[u]");
 
-    text = ltrimTextW(text);
+    text = ltrimW(text);
     if (!*text)
       return true;
 
@@ -116,7 +116,7 @@ namespace Private {
     if (!text || !*text || !Engine::isAddressWritable(text))
       return true;
 
-    text = ltrimTextW(text);
+    text = ltrimW(text);
     if (!*text)
       return true;
 

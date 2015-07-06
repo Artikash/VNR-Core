@@ -15,6 +15,7 @@
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
 #include "engine/model/leaf.h"
+#include "engine/model/qlie.h"
 #include "engine/model/retouch.h"
 #include "engine/model/rgss.h"
 #include "engine/model/siglus.h"
@@ -47,6 +48,7 @@ EngineController *EngineFactory::createEngine()
     , new SiglusEngine
     , new RGSSEngine
     , new RetouchEngine
+    , new QLiEEngine
     , new LeafEngine
     , new ElfEngine
     , new DebonosuEngine

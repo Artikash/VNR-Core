@@ -41,6 +41,10 @@
   exist: bak.pak
   #encoding: sjis
 
+- name: EmbedQLiE # 7/5/2015
+  exist: GameData/*.pack
+  #encoding: sjis
+
 - name: EmbedRetouch # 6/27/2014, for Retouch
   exist: resident.dll
   #encoding: sjis

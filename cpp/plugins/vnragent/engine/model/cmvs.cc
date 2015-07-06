@@ -1351,9 +1351,9 @@ bool CMVSEngine::attach()
     return false;
 
   if (::attachHistoryHook(startAddress, stopAddress))
-    DOUT("backlog text found");
+    DOUT("history text found");
   else
-    DOUT("backlog text NOT FOUND");
+    DOUT("history text NOT FOUND");
 
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;

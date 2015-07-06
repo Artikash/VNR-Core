@@ -17,6 +17,8 @@ enum { MaximumFunctionSize = 0x800 };
 /// Offset added to the beginning of the searched address
 enum { MemoryPaddingOffset = 0x1000 };
 
+enum { MemoryAlignedStep = 0x10 };
+
 #ifndef MEMDBG_NO_STL
 ///  Iterate address and return false if abort iteration.
 typedef std::function<bool (dword_t)> address_fun_t;
@@ -144,8 +146,10 @@ inline dword_t findPushAddress(dword_t value, dword_t lowerBound, dword_t upperB
  *  @exception  illegal memory access
  */
 dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumFunctionSize);
-dword_t findEnclosingFunctionAfterInt3(dword_t addr, dword_t searchSize = MaximumFunctionSize);
-dword_t findEnclosingFunctionAfterNop(dword_t addr, dword_t searchSize = MaximumFunctionSize);
+dword_t findEnclosingFunctionBeforeDword(dword_t sig, dword_t addr, dword_t searchSize = MaximumFunctionSize, dword_t step = MemoryAlignedStep);
+dword_t findEnclosingFunctionAfterDword(dword_t sig, dword_t addr, dword_t searchSize = MaximumFunctionSize, dword_t step = MemoryAlignedStep);
+dword_t findEnclosingFunctionAfterInt3(dword_t addr, dword_t searchSize = MaximumFunctionSize, dword_t step = MemoryAlignedStep);
+dword_t findEnclosingFunctionAfterNop(dword_t addr, dword_t searchSize = MaximumFunctionSize, dword_t step = MemoryAlignedStep);
 
 /**
  *  Return the address of the first matched pattern.
