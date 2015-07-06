@@ -408,17 +408,6 @@ DWORD findLastByteCall(BYTE op, DWORD arg1, DWORD start, DWORD offset, DWORD ran
 //  return 0;
 //}
 
-DWORD findEnclosingFunctionAfterDword(DWORD start, DWORD back_range, DWORD value)
-{
-  start &= ~0xf;
-  for (DWORD i = start, j = start - back_range; i > j; i-=0x10) {
-    DWORD k = *(DWORD *)(i-4);
-    if (k == value)
-      return i;
-  }
-  return 0;
-}
-
 } // namespace unnamed
 
 MEMDBG_BEGIN_NAMESPACE
@@ -764,11 +753,30 @@ DWORD findEnclosingAlignedFunction(DWORD start, DWORD back_range)
   return 0;
 }
 
-DWORD findEnclosingFunctionAfterInt3(DWORD start, DWORD back_range)
-{ return findEnclosingFunctionAfterDword(start, back_range, 0xcccccccc); }
+DWORD findEnclosingFunctionAfterDword(DWORD sig, DWORD start, DWORD back_range, DWORD step)
+{
+  start &= ~0xf;
+  for (DWORD i = start, j = start - back_range; i > j; i-=step) { // 0x10 is aligned
+    DWORD k = *(DWORD *)(i-4); // 4 = sizeof(DWORD)
+    if (k == sig)
+      return i;
+  }
+  return 0;
+}
 
-DWORD findEnclosingFunctionAfterNop(DWORD start, DWORD back_range)
-{ return findEnclosingFunctionAfterDword(start, back_range, 0x90909090); }
+DWORD findEnclosingFunctionBeforeDword(DWORD sig, DWORD start, DWORD back_range,DWORD step)
+{
+  DWORD addr = findEnclosingFunctionAfterDword(sig, start, back_range, step);
+  if (addr)
+    addr -= sizeof(DWORD);
+  return addr;
+}
+
+DWORD findEnclosingFunctionAfterInt3(DWORD start, DWORD back_range, DWORD step)
+{ return findEnclosingFunctionAfterDword(0xcccccccc, start, back_range, step); }
+
+DWORD findEnclosingFunctionAfterNop(DWORD start, DWORD back_range, DWORD step)
+{ return findEnclosingFunctionAfterDword(0x90909090,start, back_range, step); }
 
 DWORD findBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
 {

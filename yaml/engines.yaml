@@ -68,6 +68,8 @@ embed:
   - Debonosu
   - DebonosuName
   - Elf
+  - QLiE
+  - QLiE2
   - Retouch
   - Retouch2
   - SiglusEngine2
@@ -424,6 +426,7 @@ char:
   - EmbedDebonosu
   - EmbedElf
   - EmbedLeaf
+  - EmbedQLiE
   - EmbedRetouch
   - EmbedSilkysPlus
   - EmbedSystem43
@@ -673,6 +676,7 @@ focus:
   - EmbedCMVS
   - EmbedDebonosu
   - EmbedLeaf
+  - EmbedQLiE
   - EmbedRetouch
   - EmbedSiglusEngine
   - EmbedSilkysPlus

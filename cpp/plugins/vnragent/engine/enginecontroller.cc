@@ -1,4 +1,4 @@
-// enginecontroller.cc
+a// enginecontroller.cc
 // 4/20/2014 jichi
 
 #include "config.h"
@@ -9,11 +9,11 @@
 //#include "engine/enginememory.h"
 #include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
+#include "hijack/hijackfuns.h"
 #include "util/codepage.h"
 #include "util/dyncodec.h"
 #include "util/i18n.h"
 #include "util/textutil.h"
-#include "dyncodec/dynsjis.h"
 //#include "windbg/util.h"
 #include "qtrichruby/richrubyparser.h"
 #include "winhook/hookcode.h"
@@ -634,7 +634,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
     int capacity = maxSize - prefixData.size() - suffixData.size(); // excluding trailing \0
     if (capacity < ret.size()) {
       if (capacity >= 2) {
-        const char *end = dynsjis::prevchar(ret.constData() + capacity, ret.constData());
+        const char *end = Hijack::oldCharPrevA(ret.constData(), ret.constData() + capacity);
         ret = ret.left(end - data.constData());
       } else
         ret = ret.left(capacity);
