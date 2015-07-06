@@ -269,7 +269,7 @@ public:
     return text;
   }
 
-  static bool isCharTrimmable(const QChar &ch) { return ch.unicode() <= 32 || ch.isSpace() };
+  static bool isCharTrimmable(const QChar &ch) { return ch.unicode() <= 32 || ch.isSpace(); }
 
   static QString trimText(const QString &text, QString *prefix = nullptr, QString *suffix = nullptr)
   {
