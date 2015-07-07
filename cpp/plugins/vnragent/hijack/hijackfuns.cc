@@ -15,7 +15,7 @@
 #include <list>
 #include <utility>
 
-//#define DEBUG "hijackfuns"
+#define DEBUG "hijackfuns"
 #include "sakurakit/skdebug.h"
 
 #pragma intrinsic(_ReturnAddress)

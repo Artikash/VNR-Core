@@ -14,7 +14,7 @@ public:
   {
     name = "EmbedRetouch";
     enableDynamicEncoding = true;
-    enableDynamicFont = true; // FIXME: Check if it can be fixed by manually inserting font creation function
+    enableDynamicFont = true; // hijack CreateFontIndirectA does not work
     //newLineString = "\n";
     matchFiles << "resident.dll"; // the process name is usually Exhibit.EXE.
     attachFunction = &Self::attach;

@@ -801,6 +801,7 @@ bool RetouchEngine::attach()
     DOUT("history text NOT FOUND");
 
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
+  //HijackManager::instance()->attachFunction((ulong)::CreateFontIndirectA); // in resident.dll, but does not work
   return true;
 }
 
