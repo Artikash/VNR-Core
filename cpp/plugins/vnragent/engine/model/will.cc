@@ -24,72 +24,36 @@ namespace { // unnamed
 
 // Sample prefix: %LF
 // Sample suffix: %L%P%W
-QString trimW(const QString &text, QString *prefix, QString *suffix)
+template <typename strT>
+strT trim(strT text, int *size)
 {
-  QString ret = text;
-  if (text.startsWith('%')) {
+  int length = *size;
+  if (text[0] == '%') { // handle prefix
     int pos = 0;
-    while (pos < text.size() - 1 && text[pos].unicode() == '%' && ::isupper(text[pos+1].unicode())) {
-      pos += 2;
-      while (::isupper(text[pos].unicode()))
-        pos++;
-    }
-    if (prefix)
-      *prefix = ret.left(pos);
-    ret = ret.mid(pos);
-  }
-  if (ret.contains('%')) {
-    int pos = ret.size();
-    for (int i = ret.size() - 1; i >= 0; i--) {
-      wchar_t w = ret[i].unicode();
-      if (::isupper(w))
-        ;
-      else if (w == '%')
-        pos = i;
-      else
-        break;
-    }
-    if (pos != ret.size()) {
-      if (suffix)
-        *suffix = ret.mid(pos);
-      ret = ret.left(pos);
-    }
-  }
-  return ret;
-}
-
-QByteArray trimA(const QByteArray &text, QByteArray *prefix, QByteArray *suffix)
-{
-  QByteArray ret = text;
-  if (text.startsWith('%')) {
-    int pos = 0;
-    while (pos < text.size() - 1 && text[pos] == '%' && ::isupper(text[pos+1])) {
+    while (pos < length - 1 && text[pos] == '%' && ::isupper(text[pos+1])) {
       pos += 2;
       while (::isupper(text[pos]))
         pos++;
     }
-    if (prefix)
-      *prefix = ret.left(pos);
-    ret = ret.mid(pos);
+    if (pos) {
+      length -= pos;
+      text += pos;
+    }
   }
-  if (ret.contains('%')) {
-    int pos = ret.size();
-    for (int i = ret.size() - 1; i >= 0; i--) {
-      quint8 ch = ret[i];
-      if (::isupper(ch))
+  { // handle suffix
+    int pos = length;
+    for (int i = length - 1; i >= 0; i--) {
+      if (::isupper(text[i]))
         ;
-      else if (ch == '%')
+      else if (text[i] == '%' && ::isupper(text[i+1]))
         pos = i;
       else
         break;
     }
-    if (pos != ret.size()) {
-      if (suffix)
-        *suffix = ret.mid(pos);
-      ret = ret.left(pos);
-    }
+    length = pos;
   }
-  return ret;
+  *size = length;
+  return text;
 }
 
 class TextHookW
@@ -105,19 +69,22 @@ class TextHookW
     auto text = (LPCWSTR)s->stack[stackIndex_];
     if (!text || !*text)
       return true;
-    QString prefix,
-            suffix,
-            oldText = trimW(QString::fromWCharArray(text), &prefix, &suffix);
-    if (oldText.isEmpty())
+    int size = ::wcslen(text),
+        trimmedSize = size;
+    auto trimmedText = trim(text, &trimmedSize);
+    if (!trimmedSize || !*trimmedText)
       return true;
     auto sig = Engine::hashThreadSignature(role_);
-    QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role_);
+    QString oldText = QString::fromWCharArray(trimmedText, trimmedSize),
+            newText = EngineController::instance()->dispatchTextW(oldText, sig, role_);
     if (newText == oldText)
       return true;
-    if (!prefix.isEmpty())
-      newText.prepend(prefix);
-    if (!suffix.isEmpty())
-      newText.append(suffix);
+    int prefixSize = trimmedText - text,
+        suffixSize = size - prefixSize - trimmedSize;
+    if (prefixSize)
+      newText.prepend(QString::fromWCharArray(text, prefixSize));
+    if (suffixSize)
+      newText.append(QString::fromWCharArray(trimmedText + trimmedSize, suffixSize));
     text_ = newText;
     s->stack[stackIndex_] = (ulong)text_.utf16();
     return true;
@@ -366,19 +333,18 @@ namespace Private {
   {
     if (!Engine::isAddressWritable(text) || !*text) // isAddressWritable is not needed for correct games
       return;
-    QByteArray prefix,
-               suffix,
-               oldData = trimA(text, &prefix, &suffix);
-    if (oldData.isEmpty())
+    int size = ::strlen(text),
+        trimmedSize = size;
+    auto trimmedText = trim(text, &trimmedSize);
+    if (!trimmedSize || !*trimmedText)
       return;
     auto sig = Engine::hashThreadSignature(role);
-    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    QByteArray oldData(trimmedText, trimmedSize),
+               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
     if (newData == oldData)
       return;
-    if (!prefix.isEmpty())
-      newData.prepend(prefix);
-    if (!suffix.isEmpty())
-      newData.append(suffix);
+    if (trimmedText[trimmedSize])
+      newData.append(trimmedText + trimmedSize); //, size - trimmedSize - (trimmedText - text));
     ::strcpy(text, newData.constData());
   }
 
@@ -821,3 +787,75 @@ QString WillPlusEngine::rubyRemove(const QString &text)
 }
 
 // EOF
+
+/*
+// Sample prefix: %LF
+// Sample suffix: %L%P%W
+QString trimW(const QString &text, QString *prefix, QString *suffix)
+{
+  QString ret = text;
+  if (text.startsWith('%')) {
+    int pos = 0;
+    while (pos < text.size() - 1 && text[pos].unicode() == '%' && ::isupper(text[pos+1].unicode())) {
+      pos += 2;
+      while (::isupper(text[pos].unicode()))
+        pos++;
+    }
+    if (prefix)
+      *prefix = ret.left(pos);
+    ret = ret.mid(pos);
+  }
+  if (ret.contains('%')) {
+    int pos = ret.size();
+    for (int i = ret.size() - 1; i >= 0; i--) {
+      wchar_t w = ret[i].unicode();
+      if (::isupper(w))
+        ;
+      else if (w == '%')
+        pos = i;
+      else
+        break;
+    }
+    if (pos != ret.size()) {
+      if (suffix)
+        *suffix = ret.mid(pos);
+      ret = ret.left(pos);
+    }
+  }
+  return ret;
+}
+
+QByteArray trimA(const QByteArray &text, QByteArray *prefix, QByteArray *suffix)
+{
+  QByteArray ret = text;
+  if (text.startsWith('%')) {
+    int pos = 0;
+    while (pos < text.size() - 1 && text[pos] == '%' && ::isupper(text[pos+1])) {
+      pos += 2;
+      while (::isupper(text[pos]))
+        pos++;
+    }
+    if (prefix)
+      *prefix = ret.left(pos);
+    ret = ret.mid(pos);
+  }
+  if (ret.contains('%')) {
+    int pos = ret.size();
+    for (int i = ret.size() - 1; i >= 0; i--) {
+      quint8 ch = ret[i];
+      if (::isupper(ch))
+        ;
+      else if (ch == '%')
+        pos = i;
+      else
+        break;
+    }
+    if (pos != ret.size()) {
+      if (suffix)
+        *suffix = ret.mid(pos);
+      ret = ret.left(pos);
+    }
+  }
+  return ret;
+}
+*/
