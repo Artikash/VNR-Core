@@ -128,6 +128,40 @@ namespace Private {
    *  ESI 0A24AA90
    *  EDI 0E9F7110
    *  EIP 00513234 .00513234
+   *
+   *  Backlog:
+   *  FIXME: I don't have a way to distinguish Backlog out.
+   *
+   *  0A9775D8  5B 66 2C 32 5D 5B 63 2C 24 46 46 65 64 64 31 66  [f,2][c,$FFedd1f
+   *  0A9775E8  66 5D 5B 72 63 2C 24 46 46 65 64 64 31 66 66 5D  f][rc,$FFedd1ff]
+   *  0A9775F8  81 75 82 CD 82 A2 81 41 82 B1 82 B1 82 CD 93 FA  「はい、ここは日
+   *  0A977608  96 7B 82 C5 82 B7 81 42 8B F3 8D 60 82 CC 90 45  本です。空港の職
+   *  0A977618  88 F5 82 E0 81 41 83 56 83 87 83 62 83 76 82 CC  員も、ショップの
+   *  0A977628  93 58 88 F5 82 E0 81 41 83 8D 83 72 81 5B 82 C9  店員も、ロビーに
+   *
+   *  EAX 0FF32FE0
+   *  ECX 00000002
+   *  EDX 0A9775D8
+   *  EBX 0041D17C .0041D17C
+   *  ESP 0012FBCC
+   *  EBP 0012FD90
+   *  ESI 0A909350
+   *  EDI 0B843690
+   *  EIP 00513234 .00513234
+   *
+   *  0012FBCC   0055553D  RETURN to .0055553D from .00513234
+   *  0012FBD0   0012FDB8  Pointer to next SEH record
+   *  0012FBD4   005555A5  SE handler
+   *  0012FBD8   0012FD90
+   *  0012FBDC   0B843690
+   *  0012FBE0   0B843690
+   *  0012FBE4   0A909350
+   *  0012FBE8   00000000
+   *  0012FBEC   00000000
+   *  0012FBF0   0FF25558  ASCII ""[f,2][c,$FFedd1ff][rc,$FFedd1ff]"+text"
+   *  0012FBF4   00000000
+   *  0012FBF8   00000000
+   *  0012FBFC   00000000
    */
   struct TextArgument // root at [edx - 4]
   {
