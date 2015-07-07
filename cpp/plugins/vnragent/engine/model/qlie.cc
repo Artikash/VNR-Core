@@ -30,8 +30,11 @@ namespace Private {
     if (text[0] == '[') {
       if (Util::allAscii(text))
         return nullptr;
-      if (text[length - 1] == ']' && ::CharPrevA(text, text + length) == text + length - 1)
+      if (text[length - 1] == ']' && ::CharPrevA(text, text + length) == text + length - 1) {
         length--;
+        if (text[length - 1] == 'n' && text[length - 2] == '[')
+          length -= 2;
+      }
       for (int i = 1; i < length; i++)
         if ((signed char)text[i] <= 0) {
           text += i;
@@ -157,16 +160,22 @@ namespace Private {
     auto role = Engine::ScenarioRole;
     if (trimmedText[trimmedSize]) // text ending withb ']' is other text
       role = Engine::OtherRole;
-    else if (trimmedSize > 4
+    //else
+    if (trimmedSize > 4
         && w_name_open == *(uint16_t *)trimmedText
         && w_name_close == *(uint16_t *)(trimmedText + trimmedSize - 2)) {
-      role = Engine::NameRole;
       trimmedText += 2;
       trimmedSize -= 4;
       /* Skip sjis 名前 = 96bc914f */
       if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
         return true;
+      if (role != Engine::OtherRole)
+        role = Engine::NameRole;
     }
+    /* Skip ああああああ */
+    if (role == Engine::OtherRole && 0 == ::strncmp(trimmedText, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0", trimmedSize))
+      return true;
+
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData(trimmedText, trimmedSize),
