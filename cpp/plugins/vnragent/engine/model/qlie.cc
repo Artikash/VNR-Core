@@ -162,6 +162,58 @@ namespace Private {
    *  0012FBF4   00000000
    *  0012FBF8   00000000
    *  0012FBFC   00000000
+   *
+   *
+   *  Sample game ワルキューレロマンツェ more&more (QLiE2):
+   *  Name:
+   *  0012FB84   00546877  RETURN to .00546877 from .00504AD0
+   *  0012FB88   0012FDBC  Pointer to next SEH record
+   *  0012FB8C   00546B1B  SE handler
+   *  0012FB90   0012FD94
+   *  0012FB94   11832DC0
+   *  0012FB98   11832DC0
+   *  0012FB9C   09278EA0
+   *  0012FBA0   00000000
+   *  0012FBA4   00000000
+   *  0012FBA8   00000000
+   *  0012FBAC   00000000
+   *  0012FBB0   00000000
+   *  0012FBB4   00000000
+   *
+   *  0A702400  5B 70 63 2C 94 FC 8D F7 5D 00 00 00 70 B6 6F 0A  [pc,美桜]...pｶo.
+   *
+   *  EAX 0C2763E0 ASCII "HHP"
+   *  ECX 00000003
+   *  EDX 0A702400
+   *  EBX 0041D168 .0041D168
+   *  ESP 0012FB84 ASCII "whT"
+   *  EBP 0012FD94
+   *  ESI 09278EA0
+   *  EDI 11832DC0
+   *  EIP 00504AD0 .00504AD0
+   *
+   *  Scenario:
+   *  09E0D7C8  5B 63 2C 24 46 46 46 46 46 46 44 44 5D 5B 72 63  [c,$FFFFFFDD][rc
+   *  09E0D7D8  2C 24 46 46 46 46 46 46 44 44 5D 81 75 82 A4 82  ,$FFFFFFDD]「う・
+   *
+   *  0012FB84   00546877  RETURN to .00546877 from .00504AD0
+   *  0012FB88   0012FDBC  Pointer to next SEH record
+   *  0012FB8C   00546B1B  SE handler
+   *  0012FB90   0012FD94
+   *  0012FB94   118314E0
+   *  0012FB98   118314E0
+   *  0012FB9C   09278EA0
+   *  0012FBA0   00000000
+   *
+   *  EAX 0A72D820 ASCII "HHP"
+   *  ECX 00000002
+   *  EDX 09E0D7C8
+   *  EBX 0041D168 .0041D168
+   *  ESP 0012FB84 ASCII "whT"
+   *  EBP 0012FD94
+   *  ESI 09278EA0
+   *  EDI 118314E0
+   *  EIP 00504AD0 .00504AD0
    */
   struct TextArgument // root at [edx - 4]
   {
@@ -187,6 +239,10 @@ namespace Private {
     if (trimmedSize < 0 || !trimmedText || !*trimmedText)
       return true;
 
+    /* Skip text containing ああああああ */
+    if (::strstr(arg->text, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0"))
+      return true;
+
     enum : uint16_t {
       w_name_open = 0x7981,   /* 【 */
       w_name_close = 0x7a81   /* 】 */
@@ -202,14 +258,14 @@ namespace Private {
       trimmedText += 2;
       trimmedSize -= 4;
       if (role == Engine::ScenarioRole)
-        role = Engine::NameRole;
+        role = Engine::NameRole;    // FIXME: This name recognition logic does not work for ワルキューレロマンツェ
     }
+    //else if (trimmedText == arg->text + 4 &&
+    //    0 == ::strncmp("[pc,", trimmedText - 4, 4))  // make prefix ending with [pc, as pname
+    //  role = Engine::NameRole;
 
     /* Skip sjis 名前 = 96bc914f */
     if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
-      return true;
-    /* Skip ああああああ */
-    if (role == Engine::OtherRole && 0 == ::strncmp(trimmedText, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0", trimmedSize))
       return true;
 
     auto split = s->stack[0]; // retaddr
