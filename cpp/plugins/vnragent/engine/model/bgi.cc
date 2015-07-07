@@ -58,6 +58,40 @@ namespace Private {
    *  Guessed function signature:
    *  - typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); // __stdcall will crash the game
    *  - static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
+   *
+   *  History: 0x12b37ba
+   *  012B37AC   52               PUSH EDX
+   *  012B37AD   50               PUSH EAX
+   *  012B37AE   8D8D 38FFFFFF    LEA ECX,DWORD PTR SS:[EBP-0xC8]
+   *  012B37B4   51               PUSH ECX
+   *  012B37B5   E8 96E0FFFF      CALL .012B1850    ; jichi: called here
+   *  012B37BA   83C4 34          ADD ESP,0x34
+   *  012B37BD   837D 24 00       CMP DWORD PTR SS:[EBP+0x24],0x0 ; jichi: used to distinguish choice out
+   *  012B37C1   74 19            JE SHORT .012B37DC
+   *  012B37C3   8B45 44          MOV EAX,DWORD PTR SS:[EBP+0x44]
+   *  012B37C6   8D55 80          LEA EDX,DWORD PTR SS:[EBP-0x80]
+   *  012B37C9   52               PUSH EDX
+   *  012B37CA   56               PUSH ESI
+   *  012B37CB   50               PUSH EAX
+   *  012B37CC   8D8D 38FFFFFF    LEA ECX,DWORD PTR SS:[EBP-0xC8]
+   *
+   *  Scenario: 0x12b38ac
+   *  012B3898   51               PUSH ECX
+   *  012B3899   8B4D 10          MOV ECX,DWORD PTR SS:[EBP+0x10]
+   *  012B389C   52               PUSH EDX
+   *  012B389D   8B55 0C          MOV EDX,DWORD PTR SS:[EBP+0xC]
+   *  012B38A0   50               PUSH EAX
+   *  012B38A1   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+   *  012B38A4   51               PUSH ECX
+   *  012B38A5   52               PUSH EDX
+   *  012B38A6   50               PUSH EAX
+   *  012B38A7   E8 A4DFFFFF      CALL .012B1850    ; jichi: called here
+   *  012B38AC   83C4 34          ADD ESP,0x34
+   *  012B38AF   5D               POP EBP
+   *  012B38B0   C2 3400          RETN 0x34
+   *  012B38B3   CC               INT3
+   *  012B38B4   CC               INT3
+
    */
   bool hookBefore(winhook::hook_stack *s)
   {
@@ -75,7 +109,7 @@ namespace Private {
     //enum { role = Engine::UnknownRole };
 
     //DWORD split = s->stack[8]; // this is a good split, but usually game-specific
-    DWORD split = s->stack[0]; // retaddr
+    DWORD retaddr = s->stack[0]; // retaddr
     int role = Engine::OtherRole;
     switch (type_) {
     case Type3:
@@ -88,7 +122,13 @@ namespace Private {
       } break;
     case Type2:
       switch (s->stack[textIndex_+1]) {
-      case 1: role = Engine::ScenarioRole; break;
+      case 1:
+        // Return address for history text
+        // 012B37BA   83C4 34          ADD ESP,0x34
+        // 012B37BD   837D 24 00       CMP DWORD PTR SS:[EBP+0x24],0x0
+        if (*(WORD *)(retaddr + 3) != 0x7d83)
+          role = Engine::ScenarioRole;
+        break;
       case 0:
         if (s->stack[12] == 0x00ffffff && s->stack[12 - 3] == 2)
          role = Engine::NameRole;
@@ -104,7 +144,7 @@ namespace Private {
       } break;
     }
 
-    auto sig = Engine::hashThreadSignature(role, split);
+    auto sig = Engine::hashThreadSignature(role, retaddr);
     data_ = EngineController::instance()->dispatchTextA(text, sig, role);
     s->stack[textIndex_] = (DWORD)data_.constData();
     return true;
@@ -217,7 +257,7 @@ namespace Private {
    *  004208bc  |. 53             push ebx
    *  004208bd  |. e8 7e080000    call bgi.00421140
    */
-  static ulong search1(ulong startAddress, ulong stopAddress)
+  ulong search1(ulong startAddress, ulong stopAddress)
   {
     //return 0x4207e0; // FORTUNE ARTERIAL
     //const BYTE bytes[] = {
@@ -350,7 +390,7 @@ namespace Private {
    *  011d4d3e  |. 77 6a          ja short sekachu.011d4daa
    *  011d4d40  |. ff2485 38691d0>jmp dword ptr ds:[eax*4+0x11d6938]
    */
-  static ulong search2(ulong startAddress, ulong stopAddress)
+  ulong search2(ulong startAddress, ulong stopAddress)
   {
     //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
     const uint8_t bytes[] = { // 3c207d750fbec083c0fe83f806776a
@@ -379,7 +419,7 @@ namespace Private {
 
 
   /**
-   *  蒼の彼方 体験版 (8/6/2014)
+   *  Sample Game: type 3: 蒼の彼方 体験版 (8/6/2014)
    *  01312cce     cc             int3    ; jichi: reladdr = 0x32cd0
    *  01312ccf     cc             int3
    *  01312cd0   $ 55             push ebp
@@ -531,7 +571,7 @@ namespace Private {
    *  01312ed8   . 33f6           xor esi,esi
    *  01312eda   . 83c4 04        add esp,0x4
    */
-  static ulong search3(ulong startAddress, ulong stopAddress)
+  ulong search3(ulong startAddress, ulong stopAddress)
   {
     //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
     const uint8_t bytes[] = { // 3c207d580fbec083c0fe83f806774d
