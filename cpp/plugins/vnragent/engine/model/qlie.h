@@ -18,7 +18,7 @@ public:
     name = "EmbedQLiE";
     enableDynamicEncoding = true;
     newLineString = "[n]";
-    matchFiles << "GameData/*.pack";
+    matchFiles << "GameData/data*.pack"; // mostly data0.pack, data1.pack, ...
     attachFunction = &Self::attach;
     rubyCreateFunction = &Self::rubyCreate;
     rubyRemoveFunction = &Self::rubyRemove;
