@@ -10,6 +10,7 @@
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <QtCore/QRegExp>
 #include <cstdint>
 
 #define DEBUG "model/qlie"
@@ -166,12 +167,13 @@ namespace Private {
         && w_name_close == *(uint16_t *)(trimmedText + trimmedSize - 2)) {
       trimmedText += 2;
       trimmedSize -= 4;
-      /* Skip sjis 名前 = 96bc914f */
-      if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
-        return true;
-      if (role != Engine::OtherRole)
+      if (role == Engine::ScenarioRole)
         role = Engine::NameRole;
     }
+
+    /* Skip sjis 名前 = 96bc914f */
+    if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
+      return true;
     /* Skip ああああああ */
     if (role == Engine::OtherRole && 0 == ::strncmp(trimmedText, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0", trimmedSize))
       return true;
@@ -378,6 +380,26 @@ bool QLiEEngine::attach()
   HijackManager::instance()->attachFunction((ulong)::GetTextExtentPoint32A);
   HijackManager::instance()->attachFunction((ulong)::ExtTextOutA);
   return true;
+}
+
+/**
+ *  Sample game: 催眠演舞
+ *  Sample ruby: [rb,神楽,かぐら]
+ */
+QString QLiEEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "[rb,%1,%2]";
+  return fmt.arg(rb, rt);
+}
+
+QString QLiEEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains("[rb"))
+    return text;
+  static QRegExp rx("\\[rb,(.+),.+\\]");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
 }
 
 // EOF
