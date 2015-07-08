@@ -219,10 +219,10 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   enum { module_struct_size = 12 };
   NtReadFile(hTextPipe, 0, 0, 0, &ios, buff, module_struct_size, 0, 0);
 
-  // jichi 7/2/2015:This must be consistent with the struct declared in vnrhook/pipe.cc
+  // jichi 7/2/2015: This must be consistent with the struct declared in vnrhook/pipe.cc
   DWORD pid = *(DWORD *)buff,
-        hookman = *(DWORD *)(buff + 0x4),
-        module = *(DWORD *)(buff + 0x8);
+        module = *(DWORD *)(buff + 0x8),
+        hookman = *(DWORD *)(buff + 0x4);
         //engine = *(DWORD *)(buff + 0xc);
   man->RegisterProcess(pid, hookman, module);
 
