@@ -334,15 +334,17 @@ namespace Private {
 
     LPCSTR text() const
     {
-      if (textFlag == 0) // QLiE2
+      if (textFlag == 0) // QLiE1
         return Engine::isAddressReadable(textAddress) ? textAddress : nullptr;
-      else // QLiE1
+      else // QLiE2
         return textData;
     }
 
     // Return UnknownRole(0) if not sure
     Engine::TextRole role() const
     {
+      if (textFlag > 0xff)
+        return Engine::OtherRole;
       LPCSTR t = text();
       if (!t || !*t)
         return Engine::UnknownRole;
@@ -354,35 +356,35 @@ namespace Private {
           return Engine::OtherRole;
       }
 
-      // Convert o small case
+      // Convert to lower case
       std::string s = t;
       std::transform(s.begin(), s.end(), s.begin(), ::tolower);
       t = s.c_str();
 
       if (::strchr(t, '_')) {
-
-        // QLiE1
-        if (::strstr(t, "_messagetext,"))
-          return Engine::ScenarioRole;
-        if (::strstr(t, "_nametext,"))
-          return Engine::NameRole;
-        if (::strstr(t, "_message,") ||
-            ::strstr(t, "_statetext,") ||
-            ::strstr(t, "_databutton,"))
-          return Engine::OtherRole;
-
         // QLiE2
         if (::strstr(t, "_imo_message,"))
           return Engine::ScenarioRole;
         if (::strstr(t, "_dialogmessage,"))
           return Engine::OtherRole;
+
+        // QLiE1
+        if (::strstr(t, "_messagetext,"))
+          return Engine::ScenarioRole;
+
+        if (::strstr(t, "_nametext,"))
+          return Engine::NameRole;
+        if (::strstr(t, "_message,") || // this is ambiguous and will overwrite imo_message
+            ::strstr(t, "_statetext,") ||
+            ::strstr(t, "_databutton,"))
+          return Engine::OtherRole;
+
       }
 
-      if (::strstr(t, "newfileindex"))
-        return Engine::OtherRole;
-      if (::strchr(t, '.'))
+      if (s.find_first_of(".[!@*\\") != std::string::npos)
         return Engine::OtherRole;
 
+      //DOUT("unknown text type:" << t);
       return Engine::UnknownRole;
     }
   };
@@ -398,16 +400,18 @@ namespace Private {
     if (trimmedSize < 0 || !trimmedText || !*trimmedText)
       return true;
 
-    /* Skip text containing ああああああ */
-    if (::strstr(arg->text, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0"))
+    if (::strstr(arg->text, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0")) /* Skip text containing あああああ */
       return true;
+
+    auto role = Engine::ScenarioRole;
+    if (Util::allAscii(trimmedText)) // This is optional, but I don't want to translate English
+      role = Engine::OtherRole;
 
     enum : uint16_t {
       w_name_open = 0x7981,   /* 【 */
       w_name_close = 0x7a81   /* 】 */
     };
 
-    auto role = Engine::ScenarioRole;
     if (trimmedText[trimmedSize]) // text ending withb ']' is other text
       role = Engine::OtherRole;
 
@@ -424,10 +428,15 @@ namespace Private {
     if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
       return true;
 
-    if (s->stack[4] == s->stack[5]) // && s->edi == s->stack[4]
-      if (auto t = (TypeArgument *)s->stack[4])
+    if (s->stack[4] == s->stack[5]) { // && s->edi == s->stack[4]
+      auto t = (TypeArgument *)s->stack[4];
+      if (Engine::isAddressReadable((ulong *)t)) {
+        //if (!t->isValid())
+        //  return true;
         if (auto r = t->role())
           role = r;
+      }
+    }
 
     //auto split = s->stack[0]; // retaddr is always the same anyway
     auto sig = Engine::hashThreadSignature(role);
