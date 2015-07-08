@@ -11,7 +11,9 @@
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 #include <QtCore/QRegExp>
+#include <algorithm>
 #include <cstdint>
+#include <cstring>
 
 #define DEBUG "model/qlie"
 #include "sakurakit/skdebug.h"
@@ -85,6 +87,14 @@ namespace Private {
    *  ESI 0A24AA90
    *  EDI 0E9F72D0
    *  EIP 00513234 .00513234
+   *
+   *
+   *  Dialog's arg4:
+   *
+   *  04A9BAD0  48 DB 51 00 B8 BA A9 04 F8 BA A9 04 07 02 00 00  HﾛQ.ｸｺｩｩ..
+   *  04A9BAE0  B8 67 66 00 D0 AF A6 04 00 00 00 00 90 AC A9 04  ｸgf.ﾐｯｦ....成ｩ
+   *  04A9BAF0  01 00 00 00 11 00 00 00 30 5F 64 69 61 6C 6F 67  ......0_dialog
+   *  04A9BB00  6D 65 73 73 61 67 65 2C 30 00 00 00 90 AC A9 04  message,0...成ｩ
    *
    *  Scenario:
    *
@@ -162,7 +172,145 @@ namespace Private {
    *  0012FBF4   00000000
    *  0012FBF8   00000000
    *  0012FBFC   00000000
+   *
+   *  Sample game ワルキューレロマンツェ more&more (QLiE2):
+   *  Name:
+   *  0012FB84   00546877  RETURN to .00546877 from .00504AD0
+   *  0012FB88   0012FDBC  Pointer to next SEH record
+   *  0012FB8C   00546B1B  SE handler
+   *  0012FB90   0012FD94
+   *  0012FB94   11832DC0
+   *  0012FB98   11832DC0
+   *  0012FB9C   09278EA0
+   *  0012FBA0   00000000
+   *  0012FBA4   00000000
+   *  0012FBA8   00000000
+   *  0012FBAC   00000000
+   *  0012FBB0   00000000
+   *  0012FBB4   00000000
+   *
+   *  0A702400  5B 70 63 2C 94 FC 8D F7 5D 00 00 00 70 B6 6F 0A  [pc,美桜]...pｶo.
+   *
+   *  EAX 0C2763E0 ASCII "HHP"
+   *  ECX 00000003
+   *  EDX 0A702400
+   *  EBX 0041D168 .0041D168
+   *  ESP 0012FB84 ASCII "whT"
+   *  EBP 0012FD94
+   *  ESI 09278EA0
+   *  EDI 11832DC0
+   *  EIP 00504AD0 .00504AD0
+   *
+   *  Scenario:
+   *  09E0D7C8  5B 63 2C 24 46 46 46 46 46 46 44 44 5D 5B 72 63  [c,$FFFFFFDD][rc
+   *  09E0D7D8  2C 24 46 46 46 46 46 46 44 44 5D 81 75 82 A4 82  ,$FFFFFFDD]「う・
+   *
+   *  0012FB84   00546877  RETURN to .00546877 from .00504AD0
+   *  0012FB88   0012FDBC  Pointer to next SEH record
+   *  0012FB8C   00546B1B  SE handler
+   *  0012FB90   0012FD94
+   *  0012FB94   118314E0
+   *  0012FB98   118314E0
+   *  0012FB9C   09278EA0
+   *  0012FBA0   00000000
+   *
+   *  EAX 0A72D820 ASCII "HHP"
+   *  ECX 00000002
+   *  EDX 09E0D7C8
+   *  EBX 0041D168 .0041D168
+   *  ESP 0012FB84 ASCII "whT"
+   *  EBP 0012FD94
+   *  ESI 09278EA0
+   *  EDI 118314E0
+   *  EIP 00504AD0 .00504AD0
+   *
+   *  Sample game ワルキューレロマンツェ (QLiE1):
+   *  Garbage:
+   *  0A5115D0  83 56 83 69 83 8A 83 49 5C 8B A4 92 CA 5C 6B 79  シナリオ\共通\ky
+   *  0A5115E0  6F 5F 30 30 31 5F 30 30 2E 73 00 00 50 FF 50 0A  o_001_00.s..PP.
+   *
+   *  Name:
+   *  0012FB84   00544913  RETURN to .00544913 from .004FFB04
+   *  0012FB88   0012FDBC  Pointer to next SEH record
+   *  0012FB8C   00544BB1  SE handler
+   *  0012FB90   0012FD94
+   *  0012FB94   01A139A8
+   *  0012FB98   01A139A8
+   *  0012FB9C   07D35D00
+   *  0012FBA0   00000000
+   *
+   *  EAX 0C303340
+   *  ECX 00000003
+   *  EDX 0ED8A620
+   *  EBX 0041D6A8 .0041D6A8
+   *  ESP 0012FB84
+   *  EBP 0012FD94
+   *  ESI 07D35D00
+   *  EDI 01A139A8
+   *  EIP 004FFB04 .004FFB04
+   *
+   *  01A139A8  60 27 52 00 00 00 00 00 00 00 00 00 00 00 80 3F  `'R...........?
+   *  01A139B8  00 00 80 3F 00 00 00 00 00 00 00 00 00 00 80 3F  ..?..........?
+   *  01A139C8  00 00 00 00 48 D9 14 0A 68 D9 14 0A 07 02 00 00  ....Hﾙ.hﾙ...
+   *  01A139D8  3C F1 07 00 93 9A 5C 00 1C 01 00 00 F4 01 00 00  <・.答\...・..
+   *  01A139E8  40 33 30 0C A0 D9 A0 01 C0 29 52 00 00 00 00 00  @30.ﾙﾀ)R.....
+   *  01A139F8  00 00 00 00 00 00 80 3F 00 00 80 3F 00 00 00 00  ......?..?....
+   *
+   *  Scenario:
+   *  0012FB84   00544913  RETURN to .00544913 from .004FFB04
+   *  0012FB88   0012FDBC  Pointer to next SEH record
+   *  0012FB8C   00544BB1  SE handler
+   *  0012FB90   0012FD94
+   *  0012FB94   01A13960 ; jichi: type string is saved here in edi and arg4/arg5
+   *  0012FB98   01A13960
+   *  0012FB9C   07D35D00
+   *  0012FBA0   00000000
+   *
+   *  0A14D7C8  30 5F 4D 65 73 73 61 67 65 54 65 78 74 2C 30 00  0_MessageText,0.
+   *
+   *  EAX 0C308500
+   *  ECX 00000006
+   *  EDX 0B100590
+   *  EBX 0041D6A8 .0041D6A8
+   *  ESP 0012FB84
+   *  EBP 0012FD94
+   *  ESI 07D35D00
+   *  EDI 01A13960
+   *  EIP 004FFB04 .004FFB04
+   *
+   *
+   *  01A13960  60 27 52 00 00 00 00 00 00 00 00 00 00 00 80 3F  `'R...........?
+   *  01A13970  00 00 80 3F 00 00 00 00 00 00 00 00 00 00 80 3F  ..?..........?
+   *  01A13980  00 00 00 00 C8 D7 14 0A A8 D8 14 0A 07 02 00 00  ....ﾈﾗ.ｨﾘ...
+   *  01A13990  34 90 3F 00 BE 0A 5B 00 D3 02 00 00 EC 01 00 00  4・.ｾ.[.ﾓ..・..
+   *  01A139A0  00 85 30 0C A0 D9 A0 01 60 27 52 00 00 00 00 00  .・.ﾙ`'R.....
+   *  01A139B0  00 00 00 00 00 00 80 3F 00 00 80 3F 00 00 00 00  ......?..?....
+   *
+   *  0A14D948  30 5F 4E 61 6D 65 54 65 78 74 2C 30 00 00 00 00  0_NameText,0....
    */
+
+  /**
+   *  Known Type strings
+   *  These strings seems to be different for different games
+   *
+   *  ワルキューレロマンツェ(QLiE1)
+   *  七つのふしぎの終わるとき (QLiE1)
+   *
+   *  0_NameText,0
+   *  0_MessageText,0
+   *  0_Message,0
+   *
+   *  ワルキューレロマンツェ More&More (QLiE2)
+   *  0_nametext,0
+   *  0_imo_message,0
+   *
+   *  月に寄りそう乙女の作法２ (QLiE2):
+   *  0_dialogmessage,0
+   *  $windowapril
+   *  fontsize:30:30
+   *
+   */
+
   struct TextArgument // root at [edx - 4]
   {
     DWORD size;     // in [edx-4]
@@ -173,6 +321,69 @@ namespace Private {
       return text && size
           && Engine::isAddressReadable(text, size)
           && ::strlen(text) == size;
+    }
+  };
+
+  struct TypeArgument
+  {
+    DWORD unknown[8]; // 0x20
+
+    DWORD textFlag; // +0x20, 0 for QLiE1, 1 for QLie2
+    LPCSTR textAddress; // for QLiE1
+    char textData[1];   // for QLiE2
+
+    LPCSTR text() const
+    {
+      if (textFlag == 0) // QLiE2
+        return Engine::isAddressReadable(textAddress) ? textAddress : nullptr;
+      else // QLiE1
+        return textData;
+    }
+
+    // Return UnknownRole(0) if not sure
+    Engine::TextRole role() const
+    {
+      LPCSTR t = text();
+      if (!t || !*t)
+        return Engine::UnknownRole;
+      for (int i = 0; t[i]; i++) {
+        if (i > 0x40) // text too large
+          return Engine::OtherRole;
+        BYTE ch = t[0];
+        if (ch <= 32 || ch > 127) // non-printable or not ascii
+          return Engine::OtherRole;
+      }
+
+      // Convert o small case
+      std::string s = t;
+      std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+      t = s.c_str();
+
+      if (::strchr(t, '_')) {
+
+        // QLiE1
+        if (::strstr(t, "_messagetext,"))
+          return Engine::ScenarioRole;
+        if (::strstr(t, "_nametext,"))
+          return Engine::NameRole;
+        if (::strstr(t, "_message,") ||
+            ::strstr(t, "_statetext,") ||
+            ::strstr(t, "_databutton,"))
+          return Engine::OtherRole;
+
+        // QLiE2
+        if (::strstr(t, "_imo_message,"))
+          return Engine::ScenarioRole;
+        if (::strstr(t, "_dialogmessage,"))
+          return Engine::OtherRole;
+      }
+
+      if (::strstr(t, "newfileindex"))
+        return Engine::OtherRole;
+      if (::strchr(t, '.'))
+        return Engine::OtherRole;
+
+      return Engine::UnknownRole;
     }
   };
 
@@ -187,6 +398,10 @@ namespace Private {
     if (trimmedSize < 0 || !trimmedText || !*trimmedText)
       return true;
 
+    /* Skip text containing ああああああ */
+    if (::strstr(arg->text, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0"))
+      return true;
+
     enum : uint16_t {
       w_name_open = 0x7981,   /* 【 */
       w_name_close = 0x7a81   /* 】 */
@@ -195,25 +410,27 @@ namespace Private {
     auto role = Engine::ScenarioRole;
     if (trimmedText[trimmedSize]) // text ending withb ']' is other text
       role = Engine::OtherRole;
-    //else
+
     if (trimmedSize > 4
         && w_name_open == *(uint16_t *)trimmedText
         && w_name_close == *(uint16_t *)(trimmedText + trimmedSize - 2)) {
       trimmedText += 2;
       trimmedSize -= 4;
       if (role == Engine::ScenarioRole)
-        role = Engine::NameRole;
+        role = Engine::NameRole;    // FIXME: This name recognition logic does not work for ワルキューレロマンツェ
     }
 
     /* Skip sjis 名前 = 96bc914f */
     if (0 == ::strncmp(trimmedText, "\x96\xbc\x91\x4f", trimmedSize))
       return true;
-    /* Skip ああああああ */
-    if (role == Engine::OtherRole && 0 == ::strncmp(trimmedText, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0", trimmedSize))
-      return true;
 
-    auto split = s->stack[0]; // retaddr
-    auto sig = Engine::hashThreadSignature(role, split);
+    if (s->stack[4] == s->stack[5]) // && s->edi == s->stack[4]
+      if (auto t = (TypeArgument *)s->stack[4])
+        if (auto r = t->role())
+          role = r;
+
+    //auto split = s->stack[0]; // retaddr is always the same anyway
+    auto sig = Engine::hashThreadSignature(role);
     QByteArray oldData(trimmedText, trimmedSize),
                newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
     if (newData == oldData)
@@ -255,7 +472,7 @@ namespace Private {
  *  00513242   68 AD325100      PUSH .005132AD
  *  00513247   64:FF30          PUSH DWORD PTR FS:[EAX]
  *  0051324A   64:8920          MOV DWORD PTR FS:[EAX],ESP
- *  0051324D   80BB 0A160000 00 CMP BYTE PTR DS:[EBX+0x160A],0x0 ; jichi: instruction used as pattern
+ *  0051324D   80BB 0A160000 00 CMP BYTE PTR DS:[EBX+0x160A],0x0 ; jichi: can be used as pattern to distinguish QLiE1/2
  *  00513254   74 07            JE SHORT .0051325D
  *  00513256   8BC3             MOV EAX,EBX
  *  00513258   8B10             MOV EDX,DWORD PTR DS:[EAX]
@@ -376,11 +593,100 @@ namespace Private {
  *  005289F1   8BEC             MOV EBP,ESP
  *  005289F3   83C4 F8          ADD ESP,-0x8
  *  005289F6   53               PUSH EBX
+ *
+ *  Sample game: ワルキューレロマンツェ (QLiE1)
+ *
+ *  This function is found by looking all all matches of the following pattern
+ *  And then lookup up for push ebp
+ *  005132E5   3BD0             CMP EDX,EAX
+ *  005132E7   7C 02            JL SHORT .005132EB
+ *  005132E9   8BC2             MOV EAX,EDX
+ *
+ *  004FFB04   55               PUSH EBP
+ *  004FFB05   8BEC             MOV EBP,ESP
+ *  004FFB07   6A 00            PUSH 0x0
+ *  004FFB09   53               PUSH EBX
+ *  004FFB0A   56               PUSH ESI
+ *  004FFB0B   8BF2             MOV ESI,EDX
+ *  004FFB0D   8BD8             MOV EBX,EAX
+ *  004FFB0F   33C0             XOR EAX,EAX
+ *  004FFB11   55               PUSH EBP
+ *  004FFB12   68 7DFB4F00      PUSH .004FFB7D
+ *  004FFB17   64:FF30          PUSH DWORD PTR FS:[EAX]
+ *  004FFB1A   64:8920          MOV DWORD PTR FS:[EAX],ESP
+ *  004FFB1D   80BB FA150000 00 CMP BYTE PTR DS:[EBX+0x15FA],0x0
+ *  004FFB24   74 07            JE SHORT .004FFB2D
+ *  004FFB26   8BC3             MOV EAX,EBX
+ *  004FFB28   8B10             MOV EDX,DWORD PTR DS:[EAX]
+ *  004FFB2A   FF52 1C          CALL DWORD PTR DS:[EDX+0x1C]
+ *  004FFB2D   8BC3             MOV EAX,EBX
+ *  004FFB2F   E8 04CFFFFF      CALL .004FCA38
+ *  004FFB34   84C0             TEST AL,AL
+ *  004FFB36   74 07            JE SHORT .004FFB3F
+ *  004FFB38   8BC3             MOV EAX,EBX
+ *  004FFB3A   8B10             MOV EDX,DWORD PTR DS:[EAX]
+ *  004FFB3C   FF52 1C          CALL DWORD PTR DS:[EDX+0x1C]
+ *  004FFB3F   8D4D FC          LEA ECX,DWORD PTR SS:[EBP-0x4]
+ *  004FFB42   8BD6             MOV EDX,ESI
+ *  004FFB44   8BC3             MOV EAX,EBX
+ *  004FFB46   E8 69320000      CALL .00502DB4
+ *  004FFB4B   8B55 FC          MOV EDX,DWORD PTR SS:[EBP-0x4]
+ *  004FFB4E   8BC3             MOV EAX,EBX
+ *  004FFB50   E8 23120000      CALL .00500D78
+ *  004FFB55   8BC3             MOV EAX,EBX
+ *  004FFB57   E8 58310000      CALL .00502CB4
+ *  004FFB5C   85C0             TEST EAX,EAX
+ *  004FFB5E   75 07            JNZ SHORT .004FFB67
+ *  004FFB60   8BC3             MOV EAX,EBX
+ *  004FFB62   E8 5D070000      CALL .005002C4
+ *  004FFB67   33C0             XOR EAX,EAX
+ *  004FFB69   5A               POP EDX
+ *  004FFB6A   59               POP ECX
+ *  004FFB6B   59               POP ECX
+ *  004FFB6C   64:8910          MOV DWORD PTR FS:[EAX],EDX
+ *  004FFB6F   68 84FB4F00      PUSH .004FFB84
+ *  004FFB74   8D45 FC          LEA EAX,DWORD PTR SS:[EBP-0x4]
+ *  004FFB77   E8 5859F0FF      CALL .004054D4
+ *  004FFB7C   C3               RETN
+ *  004FFB7D  ^E9 0652F0FF      JMP .00404D88
+ *  004FFB82  ^EB F0            JMP SHORT .004FFB74
+ *  004FFB84   5E               POP ESI
+ *  004FFB85   5B               POP EBX
+ *  004FFB86   59               POP ECX
+ *  004FFB87   5D               POP EBP
+ *  004FFB88   C3               RETN
+ *  004FFB89   8D40 00          LEA EAX,DWORD PTR DS:[EAX]
+ *  004FFB8C   55               PUSH EBP
+ *  004FFB8D   8BEC             MOV EBP,ESP
+ *  004FFB8F   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  004FFB92   8B40 FC          MOV EAX,DWORD PTR DS:[EAX-0x4]
+ *  004FFB95   80B8 4F180000 00 CMP BYTE PTR DS:[EAX+0x184F],0x0
+ *  004FFB9C   74 23            JE SHORT .004FFBC1
+ *  004FFB9E   A1 E4CA5600      MOV EAX,DWORD PTR DS:[0x56CAE4]
+ *  004FFBA3   8B80 CC020000    MOV EAX,DWORD PTR DS:[EAX+0x2CC]
+ *  004FFBA9   8B15 E4CA5600    MOV EDX,DWORD PTR DS:[0x56CAE4]          ; .005740E8
+ *  004FFBAF   8B92 B8020000    MOV EDX,DWORD PTR DS:[EDX+0x2B8]
+ *  004FFBB5   3BD0             CMP EDX,EAX
+ *  004FFBB7   7C 02            JL SHORT .004FFBBB
+ *  004FFBB9   8BC2             MOV EAX,EDX
+ *  004FFBBB   0105 64C45600    ADD DWORD PTR DS:[0x56C464],EAX
+ *  004FFBC1   5D               POP EBP
+ *  004FFBC2   C3               RETN
+ *  004FFBC3   90               NOP
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const uint8_t bytes[] = {
-    0x80,0xBB, 0x0A,0x16,0x00,0x00, 0x00  // 0051324D   80BB 0A160000 00 CMP BYTE PTR DS:[EBX+0x160A],0x0
+
+  // QLiE1
+  // 004FFB1D   80BB FA150000 00 CMP BYTE PTR DS:[EBX+0x15FA],0x0
+  // QLiE2
+  // 0051324D   80BB 0A160000 00 CMP BYTE PTR DS:[EBX+0x160A],0x0 ; jichi: instruction used as pattern
+
+  const uint8_t bytes[] = { // i.e. 3BD0 7C 02 8BC2 0105
+    0x3B,0xD0,              // 004FFBB5   3BD0             CMP EDX,EAX
+    0x7C, 0x02,             // 004FFBB7   7C 02            JL SHORT .004FFBBB
+    0x8B,0xC2,              // 004FFBB9   8BC2             MOV EAX,EDX
+    0x01,0x05 //64C45600    // 004FFBBB   0105 64C45600    ADD DWORD PTR DS:[0x56C464],EAX
   };
   ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   if (!addr)
@@ -391,7 +697,8 @@ bool attach(ulong startAddress, ulong stopAddress)
   // 00513239   53               PUSH EBX
   // 0051323A   56               PUSH ESI
   enum : DWORD { sig = 0x6aec8b55 };
-  addr = MemDbg::findEnclosingFunctionBeforeDword(sig, addr, 0x100, 1); // 25 = 0x0051324D - 0x00513234, step = 1
+  enum { AlignedStep = 1 }; // function not aligned
+  addr = MemDbg::findEnclosingFunctionBeforeDword(sig, addr, MemDbg::MaximumFunctionSize, AlignedStep);
   if (!addr)
     return false;
   return winhook::hook_before(addr, Private::hookBefore);
