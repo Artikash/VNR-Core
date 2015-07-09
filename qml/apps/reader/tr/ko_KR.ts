@@ -195,7 +195,7 @@
     </message>
     <message>
         <source>Original</source>
-        <translation type="obsolete">원문</translation>
+        <translation>원문</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="409"/>
@@ -361,7 +361,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1420"/>
         <source>Text box width</source>
-        <translation>글상자 너비</translation>
+        <translation>상자크기</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1471"/>
@@ -416,7 +416,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1380"/>
         <source>Length</source>
-        <translation>최대 번역 길이</translation>
+        <translation>문장길이</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1384"/>
@@ -569,7 +569,7 @@
     </message>
     <message>
         <source>VNR will read translations instead of game texts if TTS&apos;s language is different from game&apos;s</source>
-        <translation type="obsolete">게임 언어와 TTS언어가 다르면, VNR에서 게임원문 대신에 번역문을 읽습니다</translation>
+        <translation>게임 언어와 TTS언어가 다르면, VNR에서 게임원문 대신에 번역문을 읽습니다</translation>
     </message>
 </context>
 <context>
@@ -774,7 +774,7 @@
     </message>
     <message>
         <source>Click to copy the game information to the clipboard</source>
-        <translation type="obsolete">클릭해서 클립보드에 게임 정보 복사</translation>
+        <translation>클릭해서 클립보드에 게임 정보 복사</translation>
     </message>
     <message>
         <location filename="../springboard/inspector.qml" line="162"/>
@@ -874,12 +874,12 @@
     <message>
         <location filename="../termview/inspector.qml" line="338"/>
         <source>Type does not support ruby</source>
-        <translation type="unfinished"></translation>
+        <translation>루비입력을 지원하지 않는 종류</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="339"/>
         <source>Type does not support context</source>
-        <translation type="unfinished"></translation>
+        <translation>위치를 고려하지 않는 종류</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="340"/>
@@ -1007,12 +1007,12 @@
     <message>
         <location filename="../termview/maintoolbar.qml" line="88"/>
         <source>Lookup pattern in the dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>사전에서 원문찾기</translation>
     </message>
     <message>
         <location filename="../termview/maintoolbar.qml" line="96"/>
         <source>Speak pattern using TTS</source>
-        <translation type="unfinished"></translation>
+        <translation>TTS를 사용해서 원문 읽기</translation>
     </message>
     <message>
         <location filename="../termview/maintoolbar.qml" line="139"/>
@@ -1037,15 +1037,15 @@
     <name>mirage</name>
     <message>
         <source>You can drag me to move the text box.</source>
-        <translation type="obsolete">여기를 끌어 글상자를 움직일 수 있습니다.</translation>
+        <translation>여기를 끌어 글상자를 움직일 수 있습니다.</translation>
     </message>
     <message>
         <source>You can drag this black bar to move the text box.</source>
-        <translation type="obsolete">검은 막대를 끌어서 글상자를 움직여보세요.</translation>
+        <translation>검은 막대를 끌어서 글상자를 움직여보세요.</translation>
     </message>
     <message>
         <source>you can drag me!</source>
-        <translation type="obsolete">끌어보세요!</translation>
+        <translation>끌어보세요!</translation>
     </message>
 </context>
 <context>
@@ -1294,7 +1294,7 @@
     </message>
     <message>
         <source>lang</source>
-        <translation type="obsolete">언어</translation>
+        <translation>언어</translation>
     </message>
 </context>
 <context>
@@ -1400,43 +1400,43 @@
     <message>
         <location filename="../termview/table.qml" line="178"/>
         <source>Short</source>
-        <translation type="unfinished">짧음</translation>
+        <translation>짧음</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="177"/>
         <source>Long</source>
-        <translation type="unfinished">길음</translation>
+        <translation>길음</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="179"/>
         <source>Missing</source>
-        <translation type="unfinished">누락</translation>
+        <translation>누락</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="183"/>
         <source>Brackets</source>
-        <translation type="unfinished">괄호</translation>
+        <translation>괄호</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="184"/>
         <source>Useless</source>
-        <translation type="unfinished">쓸모없음</translation>
+        <translation>쓸모없음</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="185"/>
         <location filename="../termview/table.qml" line="582"/>
         <source>Regex</source>
-        <translation type="unfinished">정규식</translation>
+        <translation>정규식</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="618"/>
         <source>Case-insensitive</source>
-        <translation type="unfinished">대소문자 구분</translation>
+        <translation>대소문자 구분</translation>
     </message>
     <message>
         <location filename="../termview/table.qml" line="672"/>
         <source>Series</source>
-        <translation type="unfinished">시리즈</translation>
+        <translation>시리즈</translation>
     </message>
 </context>
 <context>

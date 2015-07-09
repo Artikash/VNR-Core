@@ -777,12 +777,12 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="managers/_trman.py" line="662"/>
         <source>ATLAS translator is loaded</source>
-        <translation type="obsolete">ATLAS 영ㆍ일 번역기 준비됨</translation>
+        <translation>ATLAS 영ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
         <location filename="managers/_trman.py" line="739"/>
         <source>LEC translator is loaded</source>
-        <translation type="obsolete">LEC 영ㆍ일 번역기 준비됨</translation>
+        <translation>LEC 영ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
         <location filename="managers/_trman.py" line="1572"/>
@@ -797,7 +797,7 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="managers/_trman.py" line="1064"/>
         <source>JBeijing translator is loaded</source>
-        <translation type="obsolete">JBeijing(J北京) 중ㆍ일 번역기 준비됨</translation>
+        <translation>JBeijing(J北京) 중ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
         <location filename="managers/_trman.py" line="1290"/>
@@ -927,7 +927,7 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="main.py" line="1578"/>
         <source>Please close the current game first before opening new games</source>
-        <translation type="obsolete">새로운 게임을 열기전에, 현재 게임을 먼저 닫아주세요.</translation>
+        <translation>새로운 게임을 열기전에, 현재 게임을 먼저 닫아주세요.</translation>
     </message>
     <message>
         <location filename="main.py" line="1888"/>
@@ -1109,7 +1109,7 @@ It might take a couple of seconds to complete.</source>
     <message>
         <location filename="managers/_trman.py" line="828"/>
         <source>ezTrans XP is loaded</source>
-        <translation type="obsolete">ezTrans XP 한ㆍ일 번역기 준비됨</translation>
+        <translation>ezTrans XP 한ㆍ일 번역기 준비됨</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="7089"/>
@@ -2106,7 +2106,7 @@ Show는 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/sp
     <message>
         <location filename="dialogs/mttest.py" line="377"/>
         <source>Current game for game-specific terms in the Shared Dictionary</source>
-        <translation type="obsolete">공유사전에 현재게임 지정 용어</translation>
+        <translation>공유사전에 현재게임 지정 용어</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="431"/>
@@ -2728,7 +2728,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
     <message>
         <location filename="dialogs/_prefs.py" line="89"/>
         <source>OVDP Japanese-Vietnamese dictionary</source>
-        <translation type="obsolete">OVDP 일본어ㆍ베트남어 사전</translation>
+        <translation>OVDP 일본어ㆍ베트남어 사전</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="92"/>
@@ -2763,7 +2763,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
     <message>
         <location filename="dialogs/_prefs.py" line="5394"/>
         <source>Using phrase dictionaries requires at least one MeCab dictionary to be installed.</source>
-        <translation type="obsolete">구문분석 사전을 이용하려면 적어도 하나의 MeCab 사전이 설치되어야 합니다.</translation>
+        <translation>구문분석 사전을 이용하려면 적어도 하나의 MeCab 사전이 설치되어야 합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="300"/>
@@ -2778,7 +2778,7 @@ VNR이 대만국립대학교에서 pAppLocale를 자동으로 다운로드 할 �
     <message>
         <location filename="dialogs/_prefs.py" line="3381"/>
         <source>recommended for European</source>
-        <translation type="obsolete">유럽계열 언어에 추천</translation>
+        <translation>유럽계열 언어에 추천</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1052"/>
@@ -2947,7 +2947,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="dialogs/_prefs.py" line="8719"/>
         <source>Changing the text extraction method requires restarting the game.</source>
-        <translation type="obsolete">텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
+        <translation>텍스트 추출방법을 바꾸려면 게임을 재시작해야합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8830"/>
@@ -2957,7 +2957,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="dialogs/_prefs.py" line="8805"/>
         <source>Embedding options</source>
-        <translation type="obsolete">내장 텍스트 설정</translation>
+        <translation>내장 텍스트 설정</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8863"/>
@@ -2967,7 +2967,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="dialogs/_prefs.py" line="8840"/>
         <source>Disable text extraction when Ctrl is pressed</source>
-        <translation type="obsolete">Ctrl을 눌러 텍스트 추출을 일시중지</translation>
+        <translation>Ctrl을 눌러 텍스트 추출을 일시중지</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9197"/>
@@ -3075,12 +3075,12 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
     <message>
         <location filename="dialogs/_prefs.py" line="8720"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
-        <translation type="obsolete">이 기능은 현재 개발중입니다. ITH의 일부 게임만을 지원합니다.</translation>
+        <translation>이 기능은 현재 개발중입니다. ITH의 일부 게임만을 지원합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8721"/>
         <source>The current supported game engines are: {0}</source>
-        <translation type="obsolete">현재 지원하는 게임 엔진은:{0}</translation>
+        <translation>현재 지원하는 게임 엔진은:{0}</translation>
     </message>
     <message>
         <location filename="managers/gameagent.py" line="278"/>
@@ -3110,7 +3110,7 @@ C형 언어에는, 일본어 문자를 인코딩하는 문제가 있습니다. �
     <message>
         <location filename="dialogs/embedprefs.py" line="340"/>
         <source>H-code is not supported by VNR&apos;s embedded text hook</source>
-        <translation type="obsolete">VNR 내장 후커는 H코드를 지원하지 않음</translation>
+        <translation>VNR 내장 후커는 H코드를 지원하지 않음</translation>
     </message>
     <message>
         <location filename="main.py" line="2111"/>
@@ -3609,7 +3609,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
     <message>
         <location filename="dialogs/_prefs.py" line="8739"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
-        <translation type="obsolete">내장 번역에서는 중국어 간체를 중국어 번체나 일본어 간지로 변환합니다. 적용하지 않으면 중국어가 물음표로 표시 될 겁니다.</translation>
+        <translation>내장 번역에서는 중국어 간체를 중국어 번체나 일본어 간지로 변환합니다. 적용하지 않으면 중국어가 물음표로 표시 될 겁니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8782"/>
@@ -3634,12 +3634,12 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
     <message>
         <location filename="dialogs/mttest.py" line="582"/>
         <source>Apply game terms</source>
-        <translation type="obsolete">게임 용어 적용</translation>
+        <translation>게임 용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="585"/>
         <source>Apply game terms in the Shared Dictionary to correct game text</source>
-        <translation type="obsolete">공유사전의 게임용어를 적용하여 게임원문 고치기</translation>
+        <translation>공유사전의 게임용어를 적용하여 게임원문 고치기</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="237"/>
@@ -3674,7 +3674,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
     <message>
         <location filename="dialogs/mttest.py" line="674"/>
         <source>Apply output terms</source>
-        <translation type="obsolete">출력 용어 사용</translation>
+        <translation>출력 용어 사용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="552"/>
@@ -4274,7 +4274,7 @@ TransCAT이 다음 위치에서 탐색되었습니다</translation>
     <message>
         <location filename="managers/_trman.py" line="913"/>
         <source>TransCAT JK is loaded</source>
-        <translation type="obsolete">TransCAT JK 로드됨</translation>
+        <translation>TransCAT JK 로드됨</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="7472"/>
@@ -4318,12 +4318,12 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="630"/>
         <source>Apply input terms</source>
-        <translation type="obsolete">입력용어 적용</translation>
+        <translation>입력용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="633"/>
         <source>Apply input terms in the Shared Dictionary to correct input text</source>
-        <translation type="obsolete">입력할 텍스트를 교정하기위해서 공유 사전에서 입력용어 적용</translation>
+        <translation>입력할 텍스트를 교정하기위해서 공유 사전에서 입력용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="639"/>
@@ -4333,7 +4333,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="640"/>
         <source>Apply name and translation terms in Shared Dictionary</source>
-        <translation type="obsolete">공유사전의 이름과 번역문 용어를 적용합니다</translation>
+        <translation>공유사전의 이름과 번역문 용어를 적용합니다</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="646"/>
@@ -4343,7 +4343,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="647"/>
         <source>Apply proxy terms in the Shared Dictionary to hide translation replacement</source>
-        <translation type="obsolete">공유사전의 프록시 용어는 번역문이 교체되는 것을 숨기는데 사용됩니다.</translation>
+        <translation>공유사전의 프록시 용어는 번역문이 교체되는 것을 숨기는데 사용됩니다.</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="653"/>
@@ -4353,7 +4353,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="654"/>
         <source>Recover applied proxy terms in the Shared Dictionary</source>
-        <translation type="obsolete">공유사전에서 적용된 프록시 용어 복구</translation>
+        <translation>공유사전에서 적용된 프록시 용어 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="660"/>
@@ -4363,12 +4363,12 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="661"/>
         <source>Recover applied name and translation terms in the Shared Dictionary</source>
-        <translation type="obsolete">적용된 공유사전의 이름과 번역 용어를 복구</translation>
+        <translation>적용된 공유사전의 이름과 번역 용어를 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="656"/>
         <source>Apply output terms in the Shared Dictionary to correct output translations</source>
-        <translation type="obsolete">출력할 번역문에 출력용어를 적용해 교정합니다.</translation>
+        <translation>출력할 번역문에 출력용어를 적용해 교정합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3539"/>
@@ -4549,284 +4549,286 @@ The dictionary will be installed to {1}.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="4485"/>
         <source>Colorize Japanese phrases based on their grammatic roles</source>
-        <translation type="unfinished"></translation>
+        <translation>문법역할에 기반하여 일본어 구문 색칠하기</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="4495"/>
         <source>Annotate Japanese phrases with their grammatic roles in footnote</source>
-        <translation type="unfinished"></translation>
+        <translation>일본어 구문 아래에 문법역할 표시하기</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="576"/>
         <source>Download font</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 다운로드</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="79"/>
         <source>for uncommon CJK hanzi and radicals</source>
-        <translation type="unfinished"></translation>
+        <translation>희귀 한자와 완전형을 위하여</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="4782"/>
         <source>CJK hanzi radical dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>한중일 한자 완전형 사전</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6378"/>
         <source>Adding fonts require restarting VNR to take effect.</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 추가 후 VNR이 다시시작해야합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6379"/>
         <source>Removing fonts being used might require closing VNR.</source>
-        <translation type="unfinished"></translation>
+        <translation>폰트를 제거한 후 VNR을 종료하실 필요가 있을 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6396"/>
         <source>Reload font caches</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 캐시 다시불러오기</translation>
     </message>
     <message>
         <location filename="dialogs/prefs.py" line="141"/>
         <source>Manage fonts</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 관리</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="579"/>
         <source>Do you want to download the {0}?
 It requires Internet access and might take a couple of minutes.
 The font will be installed to {1}.</source>
-        <translation type="unfinished"></translation>
+        <translation>{0}을 다운로드 하시겠습니까?
+인터넷 연결이 필요하며 몇 분이 소요됩니다.
+글꼴은 {1}에 설치됩니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="4764"/>
         <source>Preferred Japanese kanji dictionaries</source>
-        <translation type="unfinished"></translation>
+        <translation>선호하는 일본어 간지 사전</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5637"/>
         <source>Dictionaries for looking up Japanese kanji</source>
-        <translation type="unfinished"></translation>
+        <translation>일본어 간지 사전 선택</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6386"/>
         <source>Additional fonts</source>
-        <translation type="unfinished"></translation>
+        <translation>추가 글꼴</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="379"/>
         <source>Current game for game-specific definitions in the Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전에서 현재 게임으로 시리즈지정된 용어</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="584"/>
         <source>Apply game rules</source>
-        <translation type="unfinished"></translation>
+        <translation>게임 규칙 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="587"/>
         <source>Apply game definitions in the Shared Dictionary to correct game text</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전에서 게임원문 교정으로 지정된 게임용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="632"/>
         <source>Apply input rules</source>
-        <translation type="unfinished"></translation>
+        <translation>입력 규칙 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="635"/>
         <source>Apply input definitions in the Shared Dictionary to correct input text</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전의 입력용어를 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="642"/>
         <source>Apply name and translation definitions in Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전의 이름과 번역을 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="649"/>
         <source>Apply proxy definitions in the Shared Dictionary to hide translation replacement</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전의 프록시로 정의된 용어로 바꾸어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="656"/>
         <source>Recover applied proxy definitions in the Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>프록시로 정의된 용어를 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="663"/>
         <source>Recover applied name and translation definitions in the Shared Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>공유사전에 이름과 번역으로 지정된 용어 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="668"/>
         <source>Apply output rules w/ grammar</source>
-        <translation type="unfinished"></translation>
+        <translation>출력에 지정된 w/ 문법규칙 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="671"/>
         <source>Apply output definitions with grammatic roles in the Shared Dictionary to correct output translations</source>
-        <translation type="unfinished"></translation>
+        <translation>출력 번역을 교정하기 위해서 공유사전에 지정된 문법규칙을 적용합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="676"/>
         <source>Apply output rules w/o grammar</source>
-        <translation type="unfinished"></translation>
+        <translation>출력 w/o 문법을 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="679"/>
         <source>Apply output definitions without grammatic roles in the Shared Dictionary to correct output translations</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문을 교정하기 문법규칙이 적용되지 않은 출력정의를 적용합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="127"/>
         <source>KanjiDic {0} kanji dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>간지사전 {0} 간지 사전</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9046"/>
         <source>Insert spaces after every character</source>
-        <translation type="unfinished"></translation>
+        <translation>문자사이에 공백삽입</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9059"/>
         <source>Do not insert any spaces</source>
-        <translation type="unfinished"></translation>
+        <translation>공백삽입하지 않음</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8835"/>
         <source>Translation timeout options</source>
-        <translation type="unfinished"></translation>
+        <translation>번역시간 제한옵션</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8769"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation if not properly displayed.</source>
-        <translation type="unfinished"></translation>
+        <translation>제대로 표시되지 않을경우, 내장번역의 중국어 간체를 중국어 번체나 일본어 한자로 변환합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8864"/>
         <source>You can always press Shift or Control to pause embedding translation and stop slowdown.</source>
-        <translation type="unfinished"></translation>
+        <translation>내장번역 느려질 경우, Shift나 Control를 눌러서 내장번역을 일시중지하실 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8927"/>
         <source>Font options</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 옵션</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8935"/>
         <source>Customize game font</source>
-        <translation type="unfinished"></translation>
+        <translation>게임글꼴 변경</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8936"/>
         <source>Global font for game text to override default game font</source>
-        <translation type="unfinished"></translation>
+        <translation>게임원문에 출력하는 게임 기본글꼴을 바꿉니다</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8947"/>
         <source>Game font</source>
-        <translation type="unfinished"></translation>
+        <translation>게임 글꼴</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8962"/>
         <source>Enforce font character set</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 문자집합을 강제적용합니다</translation>
     </message>
     <message>
         <location filename="i18n.py" line="139"/>
         <source>Unknown charSet</source>
-        <translation type="unfinished"></translation>
+        <translation>알 수 없는 문자집합</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8963"/>
         <source>Character set hint for selecting fonts</source>
-        <translation type="unfinished"></translation>
+        <translation>선택된 글꼴에서 문자집합을 알아냅니다</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8908"/>
         <source>Insert spaces between overlapped characters</source>
-        <translation type="unfinished"></translation>
+        <translation>내장번역할 문자사이에 공백삽입</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9052"/>
         <source>Insert spaces after unencodable characters</source>
-        <translation type="unfinished"></translation>
+        <translation>인코딩할 수 없는 문자뒤에 공백삽입</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8743"/>
         <source>See {0}</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 보기</translation>
     </message>
     <message>
         <location filename="dialogs/embedprefs.py" line="347"/>
         <source>All settings are read-only.</source>
-        <translation type="unfinished"></translation>
+        <translation>모든 설정은 읽기전용입니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9116"/>
         <source>Limit scenario width</source>
-        <translation type="unfinished"></translation>
+        <translation>시나리오 길이제한</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9125"/>
         <source>Maximum number of thin characters in a line</source>
-        <translation type="unfinished"></translation>
+        <translation>한 줄 들어갈 문자의 최대값</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8917"/>
         <source>Limit maximum text width by truncating or inserting new lines</source>
-        <translation type="unfinished"></translation>
+        <translation>길이를 줄여서 최대글자수를 제한하거나 새로운 줄로 개행합니다</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="8991"/>
         <source>Change font weight</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 스타일 변경</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9013"/>
         <source>Change font size</source>
-        <translation type="unfinished"></translation>
+        <translation>글꼴 크기 변경</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2934"/>
         <source>Display macron during Japanese name romajization</source>
-        <translation type="unfinished"></translation>
+        <translation>일본어 이름 로마자표기를 하는데 장음표시사용</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="92"/>
         <source>English-only</source>
-        <translation type="unfinished"></translation>
+        <translation>영어전용</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1306"/>
         <source>Embed translation might only work for English for this game</source>
-        <translation type="unfinished"></translation>
+        <translation>이 게임의 내장번역은 영어로만 작동합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2351"/>
         <source>Display ruby definition above translation if exists</source>
-        <translation type="unfinished"></translation>
+        <translation>루비가 존재할 경우 번역문 위에 표시하기</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="365"/>
         <source>Note above or after the translation</source>
-        <translation type="unfinished"></translation>
+        <translation>번역문 위나 후에 표시</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="75"/>
         <source>only enable under selected context</source>
-        <translation type="unfinished"></translation>
+        <translation>선택된 문맥에만 활성화</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="82"/>
         <source>only enable for selected translator</source>
-        <translation type="unfinished"></translation>
+        <translation>선택된 번역기로만 활성화</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="9147"/>
         <source>By default, VNR prefers available offline translators over online ones.</source>
-        <translation type="unfinished"></translation>
+        <translation>기본값으로, VNR은 온라인보다 오프라인 번역기를 이용합니다.</translation>
     </message>
 </context>
 </TS>
