@@ -280,7 +280,7 @@
     <message>
         <location filename="sktr.py" line="298"/>
         <source>Account</source>
-        <translation type="obsolete">ユーザー</translation>
+        <translation>계정</translation>
     </message>
     <message>
         <location filename="sktr.py" line="325"/>
@@ -1950,7 +1950,7 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>Engine</source>
-        <translation type="obsolete">エンジン</translation>
+        <translation>엔진</translation>
     </message>
     <message>
         <location filename="sktr.py" line="307"/>
@@ -2585,8 +2585,7 @@
     <message>
         <location filename="sktr.py" line="60"/>
         <source>Swedish</source>
-        <translation>
-スウェーデン語</translation>
+        <translation>스웨덴어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="55"/>
@@ -2676,7 +2675,7 @@
     <message>
         <location filename="sktr.py" line="368"/>
         <source>optional</source>
-        <translation>선택</translation>
+        <translation>선택적</translation>
     </message>
     <message>
         <location filename="sktr.py" line="50"/>
@@ -2691,17 +2690,17 @@
     <message>
         <location filename="sktr.py" line="485"/>
         <source>System default</source>
-        <translation>시스템 기본</translation>
+        <translation>시스템 기본값</translation>
     </message>
     <message>
         <location filename="sktr.py" line="305"/>
         <source>Automatic</source>
-        <translation>자동적 인</translation>
+        <translation>자동설정</translation>
     </message>
     <message>
         <location filename="sktr.py" line="436"/>
         <source>window</source>
-        <translation type="unfinished"></translation>
+        <translation>윈도우</translation>
     </message>
 </context>
 </TS>
