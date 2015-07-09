@@ -376,9 +376,10 @@ namespace Private {
           return Engine::NameRole;
         if (::strstr(t, "_message,") || // this is ambiguous and will overwrite imo_message
             ::strstr(t, "_statetext,") ||
-            ::strstr(t, "_databutton,"))
+            //::strstr(t, "_databutton,") ||
+            //::strstr(t, "_selectbutton,") ||
+            ::strstr(t, "button,"))
           return Engine::OtherRole;
-
       }
 
       if (s.find_first_of(".[!@*\\") != std::string::npos)
@@ -403,9 +404,11 @@ namespace Private {
     if (::strstr(arg->text, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0")) /* Skip text containing あああああ */
       return true;
 
-    auto role = Engine::ScenarioRole;
     if (Util::allAscii(trimmedText)) // This is optional, but I don't want to translate English
-      role = Engine::OtherRole;
+      return true;
+      //role = Engine::OtherRole;
+
+    auto role = Engine::ScenarioRole;
 
     enum : uint16_t {
       w_name_open = 0x7981,   /* 【 */
