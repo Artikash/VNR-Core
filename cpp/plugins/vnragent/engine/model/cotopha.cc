@@ -319,7 +319,7 @@ namespace Private {
     auto role = *(WORD *)retaddr != s2_mov_ecx_edi ? Engine::OtherRole : // 8bcf
                 s->stack[5] == 0 ? Engine::NameRole : Engine::ScenarioRole;
     auto sig = Engine::hashThreadSignature(role, retaddr);
-    text_ = EngineController::instance()->dispatchTextW(QString::fromWCharArray(text), sig, role);
+    text_ = EngineController::instance()->dispatchTextW(QString::fromWCharArray(text), role, sig);
     s->stack[1] = (ulong)text_.utf16(); // reset arg1
     return true;
   }
@@ -505,11 +505,8 @@ namespace Private {
  *  005C2E55   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
  *  005C2E5C   5F               POP EDI
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
   // 004D52AF   90               NOP
   // 004D52B0   55               PUSH EBP
   // 004D52B1   8BEC             MOV EBP,ESP
@@ -528,6 +525,11 @@ bool attach()
 
 /** Public class */
 
-bool CotophaEngine::attach() { return ScenarioHook::attach(); }
+bool CotophaEngine::attach()
+{
+  ulong startAddress, stopAddress;
+  return Engine::getProcessMemoryRange(&startAddress, &stopAddress)
+      && ScenarioHook::attach(startAddress, stopAddress);
+}
 
 // EOF

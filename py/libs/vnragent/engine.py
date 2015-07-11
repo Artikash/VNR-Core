@@ -75,4 +75,11 @@ class EngineFinder:
     """
     return bool(self.dirpath) and os.path.exists(os.path.join(self.dirpath, relpath))
 
+  def getAbsPath(self, relpath):
+    """
+    @param  relpath  unicode
+    @return  unicode
+    """
+    return os.path.join(self.dirpath, relpath)
+
 # EOF

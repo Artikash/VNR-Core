@@ -50,20 +50,20 @@ namespace Private {
 
     // Scenario
     if (arg->scenarioFlag == 0) {
-      enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+      enum { role = Engine::ScenarioRole, sig = 0 };
       // Text from scenario could be bad when open backlog while the character is speaking
       auto text = arg->scenarioText;
       if (!Engine::isAddressReadable(text))
         return true;
-      data_ = q->dispatchTextA(text, sig, role);
+      data_ = q->dispatchTextA(text, role, sig);
       scenarioArg_ = arg;
       scenarioText_ = arg->scenarioText;
       arg->scenarioText = (LPCSTR)data_.constData();
     } else if (arg->nameFlag == 0) {
-      enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
+      enum { role = Engine::NameRole, sig = 0 };
       auto text = arg->nameText;
       QByteArray oldData = text,
-                 newData = q->dispatchTextA(oldData, sig, role);
+                 newData = q->dispatchTextA(oldData, role, sig);
       if (!newData.isEmpty() && newData != oldData) {
         nameArg_ = arg;
         ::memcpy(nameText_, oldData.constData(), qMin<size_t>(oldData.size() + 1, MaxNameSize));
@@ -99,12 +99,8 @@ namespace Private {
  *
  *  The hooked function is the caller of the caller of TextOutA.
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
   const uint8_t bytes[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
       //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
@@ -153,7 +149,10 @@ bool attach()
 
 bool ElfEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
   HijackManager::instance()->attachFunction((ulong)::TextOutA);
   return true;
@@ -261,7 +260,7 @@ bool ElfEngine::attach()
       auto text = arg->scenarioText;
       if (!Engine::isAddressReadable(text))
         return oldHookFun(self, arg1, arg2, arg3);
-      QByteArray data = q->dispatchTextA(text, sig, role);
+      QByteArray data = q->dispatchTextA(text, role, sig);
       auto oldText = arg->scenarioText;
       arg->scenarioText = (LPCSTR)data.constData();
       LPCSTR ret = oldHookFun(self, arg1, arg2, arg3);
@@ -274,7 +273,7 @@ bool ElfEngine::attach()
       enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
       auto text = arg->nameText;
       QByteArray oldData = text,
-                 newData = q->dispatchTextA(oldData, sig, role);
+                 newData = q->dispatchTextA(oldData, role, sig);
       if (!newData.isEmpty())
         ::memcpy(text, newData.constData(), qMin(oldData.size(), newData.size()));
       int left = oldData.size() - newData.size();

@@ -101,7 +101,7 @@ namespace Private {
     auto sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text),
-            newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (newText == oldText)
       return true;
     text[newText.size()] = 0;
@@ -125,7 +125,7 @@ namespace Private {
     auto sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text),
-            newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (newText == oldText)
       return true;
     text[newText.size()] = 0;

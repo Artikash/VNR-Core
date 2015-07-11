@@ -145,7 +145,7 @@ namespace Private {
     }
 
     auto sig = Engine::hashThreadSignature(role, retaddr);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[textIndex_] = (DWORD)data_.constData();
     return true;
   }

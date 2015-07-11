@@ -41,11 +41,11 @@ namespace Private {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
     // All threads including character names are linked together
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+    enum { role = Engine::ScenarioRole, sig = 0 };
 
     LPCSTR text = (LPCSTR)s->stack[2]; // arg2
 
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[2] = (ulong)data_.constData(); // arg2
     return true;
   }
@@ -946,11 +946,8 @@ namespace Private {
  *  00469639   CC               INT3
  *  0046963A   CC               INT3
  */
-bool attach(bool hijackGDI) // attach scenario
+bool attach(ulong startAddress, ulong stopAddress, bool hijackGDI) // attach scenario
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
   ulong lastCaller = 0,
         lastCall = 0;
   auto fun = [&lastCaller, &lastCall](ulong caller, ulong call) -> bool {
@@ -1045,24 +1042,21 @@ namespace Private {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
     // All threads including character names are linked together
-    enum { role = Engine::OtherRole, sig = Engine::OtherThreadSignature };
+    enum { role = Engine::OtherRole, sig = 0 };
 
     LPCSTR text = (LPCSTR)s->stack[6]; // arg6
     if (!text || ::strlen(text) <= 2) // skip single character
       return true;
 
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[6] = (ulong)data_.constData(); // arg2
     return true;
   }
 
 } // namespace Private
 
-bool attach(bool hijackGDI) // attach scenario
+bool attach(ulong startAddress, ulong stopAddress, bool hijackGDI) // attach scenario
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
   ulong thisCaller = 0,
         thisCall = 0,
         prevCall = 0;
@@ -1167,12 +1161,8 @@ namespace Private {
 
 } // namespace Private
 
-bool removePopups()
+bool removePopups(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
   // hexstr: データが壊れています．
   // Prepend 00 at the beginning
   const char *msg = "\x00\x83\x66\x81\x5b\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xa2\x82\xdc\x82\xb7\x81\x44";
@@ -1206,14 +1196,17 @@ bool removePopups()
 
 bool ARCGameEngine::attach()
 {
-  enum { DynamicEncoding = true };
-  if (!ScenarioHook::attach(DynamicEncoding))
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
-  if (OtherHook::attach(DynamicEncoding))
+  enum { DynamicEncoding = true };
+  if (!ScenarioHook::attach(startAddress, stopAddress, DynamicEncoding))
+    return false;
+  if (OtherHook::attach(startAddress, stopAddress, DynamicEncoding))
     DOUT("other text found");
   else
     DOUT("other text NOT FOUND");
-  if (Patch::removePopups())
+  if (Patch::removePopups(startAddress, stopAddress))
     DOUT("remove popups succeed");
   else
     DOUT("remove popups FAILED");

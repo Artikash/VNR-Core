@@ -52,7 +52,7 @@ namespace Private {
     auto sig = Engine::hashThreadSignature(role, split);
     sig = addr; // use return address as split
     QByteArray oldData(text, arg->size),
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData == oldData)
       return true;
     return true;

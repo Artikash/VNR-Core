@@ -28,7 +28,7 @@ int __fastcall newHookFun(void *ecx, void *edx)
 {
   Q_UNUSED(edx);
   //auto q = EngineController::instance();
-  //QByteArray data = q->dispatchTextA("hello", Engine::ScenarioThreadSignature, Engine::ScenarioRole);
+  //QByteArray data = q->dispatchTextA("hello", Engine::ScenarioRole, Engine::ScenarioThreadSignature);
   return oldHookFun(ecx, edx);
 }
 
@@ -171,7 +171,7 @@ void NeXASEngine::hook(HookStack *stack)
   DWORD eax = deref(edi); // eax = [edi]
   LPCSTR ch = (char *)(eax + 0x1a8); // lea eax+0x1a8
   QString text = QString::fromLocal8Bit(ch);
-  EngineController::instance()->dispatchTextW(text, Engine::ScenarioThreadSignature, Engine::ScenarioRole);
+  EngineController::instance()->dispatchTextW(text, Engine::ScenarioRole, Engine::ScenarioThreadSignature);
   //dmsg(QString::fromLocal8Bit(ret));
  // stack->args[2] = (DWORD)data_.constData(); // reset arg3
 #undef deref

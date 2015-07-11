@@ -51,20 +51,19 @@ namespace Private {
       //s->ebx > 0x0fffffff ? Engine::ChoiceRole : // edx is a pointer for choice
       Engine::ScenarioRole;
 
-    auto sig = Engine::hashThreadSignature(role);
-
     auto q = EngineController::instance();
+    enum { sig = 0 };
 
     arg_ = arg;
     argValue_ = *arg;
     if (arg->size >= ShortTextCapacity && Engine::isAddressReadable(arg->longText, arg->size)) {
-      data_ = q->dispatchTextA(arg->longText, sig, role);
+      data_ = q->dispatchTextA(arg->longText, role, sig);
       arg->longText = (LPCSTR)data_.constData();
       arg->size = data_.size(); // not needed and could crash on the other hand
     } else {
       auto text = arg->shortText;
       QByteArray data(text, arg->size);
-      data = q->dispatchTextA(data, sig, role);
+      data = q->dispatchTextA(data, role, sig);
       arg->size = qMin<size_t>(data.size(), ShortTextCapacity - 1); // truncate
       ::memcpy(text, data.constData(), arg->size + 1);
     }
@@ -248,12 +247,8 @@ namespace Private {
  *  EDI 00318728 ASCII "neyuki06_04.mes"
  *  EIP 011F0580 .011F0580
  */
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
   const uint8_t bytes[] = {
     0x66,0x89,0x45, 0xf9,   // 00a1a062   66:8945 f9       mov word ptr ss:[ebp-0x7],ax
     0x39,0x47, 0x14         // 00a1a066   3947 14          cmp dword ptr ds:[edi+0x14],eax
@@ -299,7 +294,10 @@ bool attach()
 
 bool SilkysEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;

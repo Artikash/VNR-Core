@@ -155,7 +155,7 @@ void SideBEngine::hook(HookStack *stack)
 
   LPCSTR text = (LPCSTR)stack->args[0]; // arg1
   auto sig = Engine::hashThreadSignature(0, stack->retaddr - startAddress_); // use relative address
-  data_ = EngineController::instance()->dispatchTextA(text, sig);
+  data_ = EngineController::instance()->dispatchTextA(text, role, sig);
   stack->args[0] = (ulong)data_.constData(); // arg1
 }
 

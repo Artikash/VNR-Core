@@ -72,6 +72,7 @@ embed:
   - QLiE2
   - Retouch
   - Retouch2
+  - ShinaRio
   - SiglusEngine2
   #- SiglusEngine3
   #- SiglusEngine4
@@ -428,6 +429,7 @@ char:
   - EmbedLeaf
   - EmbedQLiE
   - EmbedRetouch
+  - EmbedRio
   - EmbedSilkysPlus
   - EmbedSystem43
   - EmbedWillPlusA
@@ -722,6 +724,7 @@ focus:
   #- KiriKiri1
   #- KiriKiri2
   #- ScenarioPlayerW
+  #- ShinaRio
   #- SystemAoi
   #- SystemAoi2
   #- System40

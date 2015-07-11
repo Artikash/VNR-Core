@@ -45,6 +45,10 @@
   exist: GameData/data*.pack # mostly data0.pack, data1.pack, ...
   #encoding: sjis
 
+#- name: EmbedRio # 7/11/2015, for ShinaRio
+#  exist: rio.ini
+#  #encoding: sjis
+
 - name: EmbedRetouch # 6/27/2014, for Retouch
   exist: resident.dll
   #encoding: sjis

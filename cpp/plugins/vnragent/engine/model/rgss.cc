@@ -598,7 +598,7 @@ namespace Private {
         if (!trimmedText.contains('\n')) {
           auto role = guessTextRole(trimmedText);
           auto sig = Engine::hashThreadSignature(role);
-          newText = q->dispatchTextW(trimmedText, sig, role, 0, sendAllowed);
+          newText = q->dispatchTextW(trimmedText, role, sig, 0, sendAllowed);
         } else { // handle each line one by one
           QStringList newTexts;
           foreach (const QString &eachOldText, trimmedText.split('\n')) {
@@ -610,7 +610,7 @@ namespace Private {
             else {
               auto role = guessTextRole(eachTrimmedText);
               auto sig = Engine::hashThreadSignature(role);
-              QString eachNewText = q->dispatchTextW(eachTrimmedText, sig, role, 0, sendAllowed);
+              QString eachNewText = q->dispatchTextW(eachTrimmedText, role, sig, 0, sendAllowed);
               if (eachNewText == eachTrimmedText)
                  newTexts.append(eachOldText);
               else {
@@ -724,7 +724,7 @@ namespace Private {
       auto split = s->stack[0]; // return address
       auto sig = Engine::hashThreadSignature(role, split);
 
-      QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+      QString newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
       if (newText != oldText) {
         if (newText.size() < oldText.size())
           ::memset(arg->text, 0, ::strlen(arg->text));
@@ -853,7 +853,7 @@ namespace Private {
       if (oldText.size() > 1) {
         auto sig = Engine::hashThreadSignature(role, retaddr);
 
-        QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+        QString newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
         if (newText != oldText)
           ::wcscpy(text, (LPCWSTR)newText.utf16());
       }
@@ -1290,7 +1290,7 @@ bool beforeStrcpy(winhook::hook_stack *s)
   //QString text = QString::fromUtf8((LPCSTR)arg, s->stack[3]);
   //if (!text.isEmpty() && text[0].unicode() >= 128 && text.size() == 5)
   //if (!text.isEmpty() && sig == 0x100378ed)
-  EngineController::instance()->dispatchTextW(text, sig, role);
+  EngineController::instance()->dispatchTextW(text, role, sig);
   return true;
 }
 
@@ -1374,7 +1374,7 @@ QString RGSSEngine::textFilter(const QString &text, int role)
         ulong split = (ulong)_ReturnAddress();
         auto sig = Engine::hashThreadSignature(role, split);
 
-        QString newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+        QString newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
         if (newText != oldText) {
           static QByteArray data;
           data = newText.toUtf8();

@@ -70,10 +70,9 @@ namespace Private {
                 //*(BYTE *)(retaddr + 3) == 0xe9 // old name
                 //? Engine::NameRole : // retaddr+3 is jmp
                 //Engine::ScenarioRole;
-    auto split = retaddr;
-    auto sig = Engine::hashThreadSignature(role, split);
+    auto sig = Engine::hashThreadSignature(role, retaddr);
     QByteArray oldData = trimmedText,
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (oldData == newData)
       return true;
     if (trimmedText != text)
@@ -249,9 +248,8 @@ namespace Private {
       return true;
     auto retaddr = s->stack[0]; // retaddr
     enum { role = Engine::OtherRole };
-    auto split = retaddr;
-    auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    auto sig = Engine::hashThreadSignature(role, retaddr);
+    QByteArray data = EngineController::instance()->dispatchTextA(text, role, sig);
     ::strcpy(text, data.constData());
     //if (trimmedText != text)
     //  newData.prepend(text, trimmedText - text);

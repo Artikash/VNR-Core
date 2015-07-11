@@ -64,7 +64,7 @@ int __stdcall newHookFun(LPCSTR text1, LPCSTR text2, LPCSTR text3, LPCSTR text4,
 #endif // DEBUG
   //return oldHookFun(text1, text2, text3, text4, size5);
   auto q = AbstractEngine::instance();
-  QByteArray data = q->dispatchTextA(text1, signature, role);
+  QByteArray data = q->dispatchTextA(text1, role, signature);
   if (!data.isEmpty())
     return oldHookFun(data, text2, text3, text4, size5);
   else

@@ -66,6 +66,7 @@ class TextHookW
 
   bool hookBefore(winhook::hook_stack *s)
   {
+    enum { sig = 0 };
     auto text = (LPCWSTR)s->stack[stackIndex_];
     if (!text || !*text)
       return true;
@@ -74,9 +75,8 @@ class TextHookW
     auto trimmedText = trim(text, &trimmedSize);
     if (!trimmedSize || !*trimmedText)
       return true;
-    auto sig = Engine::hashThreadSignature(role_);
     QString oldText = QString::fromWCharArray(trimmedText, trimmedSize),
-            newText = EngineController::instance()->dispatchTextW(oldText, sig, role_);
+            newText = EngineController::instance()->dispatchTextW(oldText, role_, sig);
     if (newText == oldText)
       return true;
     int prefixSize = trimmedText - text,
@@ -331,6 +331,7 @@ namespace Private {
 
   void dispatch(LPSTR text, int role)
   {
+    enum { sig = 0 };
     if (!Engine::isAddressWritable(text) || !*text) // isAddressWritable is not needed for correct games
       return;
     int size = ::strlen(text),
@@ -338,9 +339,8 @@ namespace Private {
     auto trimmedText = trim(text, &trimmedSize);
     if (!trimmedSize || !*trimmedText)
       return;
-    auto sig = Engine::hashThreadSignature(role);
     QByteArray oldData(trimmedText, trimmedSize),
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData == oldData)
       return;
     if (trimmedText[trimmedSize])
@@ -614,7 +614,7 @@ namespace Private {
     enum { role = Engine::OtherRole };
     auto split = s->stack[0]; // use retaddr as split
     auto sig = Engine::hashThreadSignature(role, split);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     if (data_.isEmpty()) // do not allow delete other text
       return true;
     s->stack[8] = (ulong)data_.constData(); // arg8

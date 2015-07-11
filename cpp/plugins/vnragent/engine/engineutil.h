@@ -65,6 +65,11 @@ bool isAddressWritable(const ulong *p);
 bool isAddressWritable(const char *p, size_t count = 1);
 bool isAddressWritable(const wchar_t *p, size_t count = 1);
 
+inline bool isAddressReadable(const void *addr) { return isAddressReadable((const ulong *)addr); }
+inline bool isAddressReadable(ulong addr) { return isAddressReadable((const void *)addr); }
+inline bool isAddressWritable(const void *addr) { return isAddressWritable((const ulong *)addr); }
+inline bool isAddressWritable(ulong addr) { return isAddressWritable((const void *)addr); }
+
 // find the near call instruction address in between two addresses
 ulong findNearCall(ulong startAddress, ulong stopAddress = 0); // 0 stop address means no limit
 

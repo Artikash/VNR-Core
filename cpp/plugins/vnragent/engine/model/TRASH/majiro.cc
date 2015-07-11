@@ -76,7 +76,7 @@ void MajiroEngine::hook(HookStack *stack)
   auto sig = Engine::hashThreadSignature(returnAddress, split);
 
   LPCSTR text3 = (LPCSTR)stack->args[2]; // arg3
-  data_ = EngineController::instance()->dispatchTextA(text3, sig);
+  data_ = EngineController::instance()->dispatchTextA(text3, role, sig);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[2] = (DWORD)data_.constData(); // reset arg3
 }
@@ -107,7 +107,7 @@ int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR
            << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
   auto q = EngineController::instance();
-  QByteArray data = q->dispatchTextA(text3, signature, Engine::UnknownRole);
+  QByteArray data = q->dispatchTextA(text3, Engine::UnknownRole, signature);
   if (!data.isEmpty())
     return oldHookFun(fontName1, canvasSize2, data, output4, const5);
   else {

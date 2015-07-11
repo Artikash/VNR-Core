@@ -33,7 +33,7 @@ namespace Private {
       //Engine::OtherRole; // ruby is not skipped
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[1] = (ulong)data_.constData(); // arg1
     return true;
   }
@@ -155,7 +155,7 @@ namespace Private {
     enum { role = Engine::OtherRole };
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[1] = (ulong)data_.constData(); // arg1
     return true;
   }
@@ -185,7 +185,7 @@ namespace Private {
     enum { role = Engine::HistoryRole };
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[1] = (ulong)data_.constData(); // arg1
     return true;
   }

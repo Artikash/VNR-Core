@@ -140,6 +140,7 @@ HEADERS += \
   engine/model/qlie.h \
   engine/model/retouch.h \
   engine/model/rgss.h \
+  engine/model/rio.h \
   engine/model/siglus.h \
   engine/model/silkys.h \
   engine/model/system4.h \
@@ -166,6 +167,7 @@ SOURCES += \
   engine/model/qlie.cc \
   engine/model/retouch.cc \
   engine/model/rgss.cc \
+  engine/model/rio.cc \
   engine/model/siglus.cc \
   engine/model/silkys.cc \
   engine/model/system4.cc \

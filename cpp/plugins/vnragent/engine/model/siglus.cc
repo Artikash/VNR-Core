@@ -132,11 +132,11 @@ namespace Private {
     if (!arg)
       return oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+    enum { role = Engine::ScenarioRole, sig = 0 };
     //return oldHookFun(arg, arg1, arg2);
 
     QString oldText = QString::fromWCharArray(arg->text(), arg->size),
-            newText = EngineController::instance()->dispatchTextW(oldText, sig, role);
+            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (newText == oldText)
       return oldHookFun(ecx, arg1, arg2); // ret = size * 2
     if (newText.isEmpty())
@@ -180,12 +180,8 @@ namespace Private {
    *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
    *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
    */
-  ulong search(Type *type)
+  ulong search(ulong startAddress, ulong stopAddress, Type *type)
   {
-    ulong startAddress, stopAddress;
-    if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-      return false;
-
     ulong addr;
     {
       const uint8_t bytes1[] = {
@@ -225,9 +221,9 @@ namespace Private {
 
 } // namespace Private
 
-bool attach() // attach scenario
+bool attach(ulong startAddress, ulong stopAddress) // attach scenario
 {
-  ulong addr = Private::search(&Private::type_);
+  ulong addr = Private::search(startAddress, stopAddress, &Private::type_);
   if (!addr)
     return false;
   return Private::oldHookFun = (Private::hook_fun_t)winhook::replace_fun(addr, (ulong)Private::newHookFun);
@@ -256,7 +252,7 @@ namespace Private {
 
     int role = Engine::OtherRole;
     ulong split = s->stack[3];
-    if (split <= 0xffff || !Engine::isAddressReadable((LPDWORD)split)) { // skip modifying scenario thread
+    if (split <= 0xffff || !Engine::isAddressReadable(split)) { // skip modifying scenario thread
       //role = Engine::ScenarioRole;
       return true;
     } else {
@@ -270,7 +266,7 @@ namespace Private {
     auto sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text, arg->size),
-            newText = g->dispatchTextW(oldText, sig, role);
+            newText = g->dispatchTextW(oldText, role, sig);
     if (oldText == newText)
       return true;
 
@@ -295,12 +291,8 @@ namespace Private {
     return true;
   }
 
-  ulong search()
+  ulong search(ulong startAddress, ulong stopAddress)
   {
-    ulong startAddress,
-          stopAddress;
-    if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-      return false;
     const uint8_t bytes[] = {
       0xc7,0x47, 0x14, 0x07,0x00,0x00,0x00,   // 0042cf20   c747 14 07000000 mov dword ptr ds:[edi+0x14],0x7
       0xc7,0x47, 0x10, 0x00,0x00,0x00,0x00,   // 0042cf27   c747 10 00000000 mov dword ptr ds:[edi+0x10],0x0
@@ -318,12 +310,10 @@ namespace Private {
 
 } // namespace Private
 
-bool attach()
+bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong addr = Private::search();
-  if (!addr)
-    return false;
-  return winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
+  ulong addr = Private::search(startAddress, stopAddress);
+  return addr && winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
 }
 
 } // namespace OtherHook
@@ -334,10 +324,13 @@ bool attach()
 
 bool SiglusEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
 
-  if (OtherHook::attach())
+  if (OtherHook::attach(startAddress, stopAddress))
     DOUT("other hook found");
   else
     DOUT("other hook NOT FOUND");

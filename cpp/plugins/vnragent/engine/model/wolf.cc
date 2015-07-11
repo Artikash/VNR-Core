@@ -71,7 +71,7 @@ namespace Private {
           bool timeout;
           int prefixSize = text - self->text,
               capacity = self->capacity - prefixSize;
-          data = EngineController::instance()->dispatchTextA(data, sig, role, capacity, SendAllowed, &timeout);
+          data = EngineController::instance()->dispatchTextA(data, role, sig, capacity, SendAllowed, &timeout);
           if (timeout)
             return true;
 
@@ -578,18 +578,13 @@ namespace Private {
  *  00471898   CC               INT3
  *  00471899   CC               INT3
  */
-bool attach() // attach other text
+bool attach(ulong startAddress, ulong stopAddress) // attach other text
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
   ulong addr = MemDbg::findCallerAddressAfterInt3((ulong)::CharNextA, startAddress, stopAddress);
-  if (!addr)
-    return false;
   //addr = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
   //if (!addr)
   //  return false;
-  return winhook::hook_before(addr, Private::hookBefore);
+  return addr && winhook::hook_before(addr, Private::hookBefore);
 }
 
 } // namespace ScenarioHook
@@ -600,7 +595,10 @@ bool attach() // attach other text
 
 bool WolfRPGEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
 
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA); // for dynamic encoding
@@ -649,7 +647,7 @@ bool attach() // attach other text
       if (newData_ != oldData) {
         auto split = s->stack[0]; // retaddr
         auto sig = Engine::hashThreadSignature(role, split);
-        newData_ = EngineController::instance()->dispatchTextA(oldData, sig, role);
+        newData_ = EngineController::instance()->dispatchTextA(oldData, role, sig);
         if (newData_ != oldData) {
           self_->size = newData_.size();
           if (newData_.size() < oldData.size())
@@ -679,7 +677,7 @@ bool attach() // attach other text
     if (self_ && self_->isValid()) {
       //auto sig = Engine::hashThreadSignature(role, split);
       QByteArray oldData = self_->text,
-                 newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+                 newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
       if (newData != oldData) {
         ::strcpy(self_->text, newData.constData());
         self_->size = newData.size();

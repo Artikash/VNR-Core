@@ -156,7 +156,7 @@ public:
     enum { role = Engine::ScenarioRole };
     auto sig = Engine::hashThreadSignature(role, split);
     //int size = arg->size; // size not used as not needed
-    buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    buffer_ = EngineController::instance()->dispatchTextA(text, role, sig);
 
     if (editable_) {
       arg_ = arg;
@@ -187,7 +187,7 @@ public:
     if (!enabled_)
       return true;
     DWORD splitBase = *(DWORD *)(s->edi + 0x284); // [edi + 0x284]
-    if (!Engine::isAddressReadable((LPDWORD)splitBase)) {
+    if (!Engine::isAddressReadable(splitBase)) {
       enabled_ = false;
       DOUT("ILLEGAL ACCESS and stop modifying other text");
       return true;
@@ -207,7 +207,7 @@ public:
 
     enum { role = Engine::OtherRole };
     auto sig = Engine::hashThreadSignature(role, split2);
-    buffer_ = g->dispatchTextA(text, sig, role);
+    buffer_ = g->dispatchTextA(text, role, sig);
 
     if (editable_) {
       arg_ = arg;
@@ -261,7 +261,7 @@ bool fixedTextHook(winhook::hook_stack *s)
     sig = Engine::hashThreadSignature(role, arg->type);
   }
 
-  QByteArray buffer_ = EngineController::instance()->dispatchTextA(text, sig, role);
+  QByteArray buffer_ = EngineController::instance()->dispatchTextA(text, role, sig);
   ::strncpy(text, buffer_.constData(), FixedSize - 1);
   text[FixedSize - 1] = 0;
   return true;
