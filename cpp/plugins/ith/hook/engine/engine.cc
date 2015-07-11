@@ -5506,7 +5506,7 @@ void SpecialHookShina2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
   int skip = 0;
   for (str = text_buffer; *str; str++)
     if (str[0] == 0x5f) {   // jichi 7/10/2015: Skip _r (new line)
-      if (str[1] == 0x72)
+      if (str[1] == 0x72)   // jichi 7/10/2015: Skip _t until /
         str[0] = str[1]=1;
       else if (str[1] == 0x74) {
         while (str[0] != 0x2f)

@@ -20,6 +20,7 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <QtCore/QRegExp>
 #include <climits>
 #include <fstream>
 
@@ -297,6 +298,22 @@ bool ShinaRioEngine::attach()
 
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;
+}
+
+/**
+ *  Remove dots
+ *  Sample sentence:
+ *  もう一つは、この事実を受けて自分はどうするべきなのか――正確には、_t!250,6,6,・・・・・・・/どうしたいのかという決断に直面したからだった。
+ */
+
+QString ShinaRioEngine::textFilter(const QString &text, int role)
+{
+  if (role != Engine::ScenarioRole || !text.contains("_t"))
+    return text;
+  static QRegExp rx("_t.*/");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).remove(rx);
 }
 
 // EOF
