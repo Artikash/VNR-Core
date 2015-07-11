@@ -38,7 +38,7 @@ def match(pid=0, path=''):
   path = _complete_path(path)
   finder = EngineFinder(pid=pid, exepath=path)
   for eng in get_engine_data():
-    if finder.eval(eng['exist']):
+    if finder.eval(eng['exist']): #or True:
       dprint("engine = %s" % eng['name'])
       return Engine(**eng)
 
