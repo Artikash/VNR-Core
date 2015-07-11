@@ -23,6 +23,7 @@
 #include <QtCore/QRegExp>
 #include <climits>
 #include <fstream>
+#include <unordered_set>
 
 #define DEBUG "model/rio"
 #include "sakurakit/skdebug.h"
@@ -66,20 +67,85 @@ int getRioVersion()
 namespace ScenarioHook {
 namespace Private {
 
-  struct HookArgument
+  class HookArgument
   {
-    DWORD offset[0x58]; // [esi]+0x160
+    DWORD split,
+          offset[0x57]; // [esi]+0x160
     LPSTR text;   // [esi]+0x160
 
-    //Engine::TextRole role() const
-    //{
-    //  // Scenario: 0x418, Name: 0x500
-    //  return offset[0x67] ? Engine::ScenarioRole : Engine::NameRole;
-    //  //offset[0] == 0 ? Engine::ScenarioRole :
-    //  //offset[0] == 1 ? Engine::NameRole :
-    //  //Engine::OtherRole;
+    template <typename strT>
+    static strT nextText(strT t)
+    {
+      t += ::strlen(t);
+      return (t[6] && !t[5] && !t[4] && !t[3] && !t[2] && !t[1]) ? t + 6 : nullptr; // 6 continuous zeros
+    }
 
-    //}
+    bool isList() const { return nextText(text); }
+
+    Engine::TextRole textRole() const
+    {
+      static ulong minSplit_ = UINT_MAX;
+      minSplit_ = qMin(minSplit_, split);
+      return split == minSplit_ ? Engine::ScenarioRole :
+             split == minSplit_ + 1 ? Engine::NameRole :
+             Engine::OtherRole;
+    }
+
+    void dispatchText()
+    {
+      enum { NameCapacity = 0x10 }; // including ending '\0'
+      static QByteArray data_;
+
+      if (0 == ::strcmp(text, data_.constData()))
+        return;
+
+      //LPSIZE lpSize = (LPSIZE)s->stack[4]; // arg4 of GetTextExtentPoint32A
+      //int area = lpSize->cx * lpSize->cy;
+      //auto role = lpSize->cx || !lpSize->cy || area > 150 ? Engine::ScenarioRole : Engine::NameRole;
+      auto role = textRole();
+      auto sig = Engine::hashThreadSignature(role, split);
+      QByteArray oldData = text,
+                 newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+      if (newData == oldData)
+        return;
+      data_ = newData;
+
+      if (role == Engine::NameRole && newData.size() >= NameCapacity) {
+        data_ = newData.left(NameCapacity - 1);
+        ::strncpy(text, newData.constData(), NameCapacity);
+        text[NameCapacity] = 0;
+      } else {
+        ::strcpy(text, newData.constData());
+        if (oldData.size() > newData.size())
+          ::memset(text + newData.size(), 0, oldData.size() - newData.size());
+      }
+    }
+
+    void dispatchList()
+    {
+      static std::unordered_set<qint64> hashes_;
+      enum { role = Engine::OtherRole };
+      auto sig = Engine::hashThreadSignature(role, split);
+      for (auto p = text; p; p = nextText(p)) {
+        if (hashes_.find(Engine::hashCharArray(p)) != hashes_.end())
+          continue;
+        QByteArray oldData = p,
+                   newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+        if (newData != oldData) {
+          if (newData.size() > oldData.size())
+            newData = newData.left(oldData.size());
+          else
+            while (newData.size() < oldData.size())
+              newData.push_back(' ');
+          ::memcpy(p, newData.constData(), oldData.size());
+          hashes_.insert(Engine::hashByteArray(newData));
+        }
+      }
+    }
+
+  public:
+    bool isValid() const { return Engine::isAddressWritable(text) && *text; }
+    void dispatch() { if (isList()) dispatchList(); else dispatchText(); }
   };
 
   /**
@@ -238,32 +304,9 @@ namespace Private {
    */
   bool hookBefore(winhook::hook_stack *s)
   {
-    enum { NameCapacity = 0x10 }; // including ending '\0'
-
-    static QByteArray data_;
-    static ulong minSplit_ = UINT_MAX;
     auto arg = (HookArgument *)s->esi;
-    auto text = arg->text;
-    if (!Engine::isAddressWritable(text) || !*text
-        || 0 == ::strcmp(text, data_.constData()))
-      return true;
-
-    //LPSIZE lpSize = (LPSIZE)s->stack[4]; // arg4 of GetTextExtentPoint32A
-    //int area = lpSize->cx * lpSize->cy;
-    //auto role = lpSize->cx || !lpSize->cy || area > 150 ? Engine::ScenarioRole : Engine::NameRole;
-    ulong split = arg->offset[0]; // first value used as split
-    minSplit_ = qMin(minSplit_, split);
-    auto role = split == minSplit_ ? Engine::ScenarioRole :
-                split == minSplit_ + 1 ? Engine::NameRole :
-                Engine::OtherRole;
-    auto sig = Engine::hashThreadSignature(role, split);
-    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
-    if (role == Engine::NameRole && data_.size() >= NameCapacity) {
-      ::strncpy(text, data_.constData(), NameCapacity);
-      text[NameCapacity] = 0;
-      data_ = text;
-    } else
-      ::strcpy(text, data_.constData());
+    if (arg->isValid())
+      arg->dispatch();
     return true;
   }
 
@@ -308,7 +351,8 @@ bool ShinaRioEngine::attach()
 
 QString ShinaRioEngine::textFilter(const QString &text, int role)
 {
-  if (role != Engine::ScenarioRole || !text.contains("_t"))
+  Q_UNUSED(role);
+  if (!text.contains("_t")) //role != Engine::ScenarioRole ||
     return text;
   static QRegExp rx("_t.*/");
   if (!rx.isMinimal())

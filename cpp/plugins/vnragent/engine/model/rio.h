@@ -18,7 +18,8 @@ public:
     enableDynamicEncoding = true;
     newLineString = "_r";
     matchFiles << "rio.ini";
-    scenarioLineCapacity = 40; // 60 in 3rd games (30 wide characters)
+    scenarioLineCapacity =
+    otherLineCapacity = 40; // 60 in 3rd games (30 wide characters)
     attachFunction = &Self::attach;
     textFilterFunction = &Self::textFilter;
   }
