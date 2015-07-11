@@ -9,6 +9,7 @@ class ShinaRioEngine : public EngineModel
 {
   SK_EXTEND_CLASS(ShinaRioEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
 
 public:
   ShinaRioEngine()
@@ -19,6 +20,7 @@ public:
     matchFiles << "rio.ini";
     scenarioLineCapacity = 40; // 60 in 3rd games (30 wide characters)
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
   }
 };
 
