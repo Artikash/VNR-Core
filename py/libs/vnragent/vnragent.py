@@ -34,6 +34,7 @@ def match(pid=0, path=''):
   @param* path  unicode  file executable
   @return  Engine or None
   """
+
   from engine import Engine, EngineFinder
   path = _complete_path(path)
   finder = EngineFinder(pid=pid, exepath=path)
@@ -41,5 +42,11 @@ def match(pid=0, path=''):
     if finder.eval(eng['exist']): #or True:
       dprint("engine = %s" % eng['name'])
       return Engine(**eng)
+
+  import engines
+  for eng in engines.ENGINES:
+    if eng.match(finder):
+      dprint("engine = %s" % eng.name)
+      return Engine(name=eng.name)
 
 # EOF

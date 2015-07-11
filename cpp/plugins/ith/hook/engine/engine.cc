@@ -5499,13 +5499,13 @@ namespace { // unnamed
 // jichi 3/1/2015: hook for new ShinaRio games
 void SpecialHookShina2(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD ptr = *(DWORD*)(esp_base-0x20);
-  *split = ptr;
+  DWORD ptr = *(DWORD*)(esp_base-0x20); ; // jichi: esi
+  *split = ptr; // [esi]
   char* str = *(char**)(ptr+0x160);
   strcpy(text_buffer, str);
   int skip = 0;
   for (str = text_buffer; *str; str++)
-    if (str[0] == 0x5f) {
+    if (str[0] == 0x5f) {   // jichi 7/10/2015: Skip _r (new line)
       if (str[1] == 0x72)
         str[0] = str[1]=1;
       else if (str[1] == 0x74) {

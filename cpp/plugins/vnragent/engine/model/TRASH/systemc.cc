@@ -25,11 +25,11 @@ namespace Private {
    */
   bool hookBefore(winhook::hook_stack *s)
   {
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+    enum { role = Engine::ScenarioRole };
     auto text = (LPSTR)s->stack[1]; // arg1
     if (!text || !*text)
       return true;
-    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    QByteArray data = EngineController::instance()->dispatchTextA(text, role);
     //::strcpy(text, data.constData());
     //s->stack[1] = (ulong)data_.constData(); // reset arg1
     return true;

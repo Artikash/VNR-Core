@@ -36,7 +36,7 @@ namespace Private {
                 Engine::OtherRole; // split == 1
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData = text,
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData.isEmpty() || newData == oldData)
       return true;
     data_ = newData;
@@ -818,12 +818,8 @@ namespace Private {
  *  0043448B   CC               INT3
  *  0043448C   CC               INT3
  */
-bool attach() // attach scenario
+bool attach(ulong startAddress, ulong stopAddress) // attach scenario
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
   // 0045165E   8B8497 14080000  MOV EAX,DWORD PTR DS:[EDI+EDX*4+0x814]  ; jichi: text in eax, hook1 hook after here to replace eax
   // 0045169D   8B8C97 14080000  MOV ECX,DWORD PTR DS:[EDI+EDX*4+0x814]  ; jichi: text in ecx, hook2 hook after here to replace ecx
   const uint8_t bytes1[] = { 0x8b,0x84,0x97, 0x14,0x08,0x00,0x00 },
@@ -862,12 +858,8 @@ namespace Patch {
  *  0042A7BC   85C9             TEST ECX,ECX
  *  0042A7BE   74 6A            JE SHORT .0042A82A
  */
-bool removePopups()
+bool removePopups(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-
   // hexstr: 行数が多すぎます
   // Having \0 before and after the text
   const char *msg = "\x8d\x73\x90\x94\x82\xaa\x91\xbd\x82\xb7\x82\xac\x82\xdc\x82\xb7";
@@ -898,9 +890,12 @@ bool removePopups()
 
 bool LeafEngine::attach()
 {
-  if (!ScenarioHook::attach())
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
-  if (Patch::removePopups())
+  if (!ScenarioHook::attach(startAddress, stopAddress))
+    return false;
+  if (Patch::removePopups(startAddress, stopAddress))
     DOUT("remove popups succeed");
   else
     DOUT("remove popups FAILED");

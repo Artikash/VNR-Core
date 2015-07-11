@@ -408,6 +408,7 @@ namespace Private {
       return true;
       //role = Engine::OtherRole;
 
+    enum { sig = 0 };
     auto role = Engine::ScenarioRole;
 
     enum : uint16_t {
@@ -433,7 +434,7 @@ namespace Private {
 
     if (s->stack[4] == s->stack[5]) { // && s->edi == s->stack[4]
       auto t = (TypeArgument *)s->stack[4];
-      if (Engine::isAddressReadable((ulong *)t)) {
+      if (Engine::isAddressReadable(t)) {
         //if (!t->isValid())
         //  return true;
         if (auto r = t->role())
@@ -442,9 +443,8 @@ namespace Private {
     }
 
     //auto split = s->stack[0]; // retaddr is always the same anyway
-    auto sig = Engine::hashThreadSignature(role);
     QByteArray oldData(trimmedText, trimmedSize),
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData == oldData)
       return true;
     int prefixSize = trimmedText - arg->text,

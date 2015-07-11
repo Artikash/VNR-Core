@@ -71,8 +71,8 @@ namespace Private {
                prefix;
     oldData = ltrim(oldData, prefix, codec);
 
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    QByteArray newData = q->dispatchTextA(oldData, sig, role);
+    enum { role = Engine::ScenarioRole };
+    QByteArray newData = q->dispatchTextA(oldData, role);
     if (newData.isEmpty() || newData == oldData)
       return true;
     if (!prefix.isEmpty())
@@ -710,7 +710,7 @@ bool HorkEyeEngine::attach() { return ScenarioHook::attach(); }
     oldData = ltrim(oldData, prefix, codec);
 
     enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    QByteArray newData = q->dispatchTextA(oldData, sig, role);
+    QByteArray newData = q->dispatchTextA(oldData, role, sig);
     if (newData.isEmpty() || newData == oldData)
       return true;
     if (!prefix.isEmpty())

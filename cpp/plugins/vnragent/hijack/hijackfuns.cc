@@ -419,7 +419,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
       enum { role = Engine::OtherRole }; \
       ulong split = (ulong)_ReturnAddress(); \
       auto sig = Engine::hashThreadSignature(role, split); \
-      QString newText = q->dispatchTextW(oldText, sig, role); \
+      QString newText = q->dispatchTextW(oldText, role, sig); \
       if (newText != oldText) { \
         LPCWSTR lpString = (LPCWSTR)newText.utf16(); \
         cchString = newText.size(); \
@@ -437,7 +437,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
       enum { role = Engine::OtherRole }; \
       ulong split = (ulong)_ReturnAddress(); \
       auto sig = Engine::hashThreadSignature(role, split); \
-      text = q->dispatchTextW(text, sig, role); \
+      text = q->dispatchTextW(text, role, sig); \
       LPCWSTR lpString = (LPCWSTR)text.utf16(); \
       cchString = text.size(); \
       return (__VA_ARGS__); \

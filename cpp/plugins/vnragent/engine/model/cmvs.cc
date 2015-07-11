@@ -32,7 +32,7 @@ class TextHook
       return true;
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role_, split);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role_);
+    data_ = EngineController::instance()->dispatchTextA(text, role_, sig);
     s->stack[1] = (ulong)data_.constData(); // reset arg1
     return true;
   }

@@ -489,7 +489,7 @@ bool EngineController::matchFiles(const QStringList &relpaths)
 
 // - Dispatch -
 
-QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role, int maxSize, bool sendAllowed, bool *timeout)
+QByteArray EngineController::dispatchTextA(const QByteArray &data, int role, long signature, int maxSize, bool sendAllowed, bool *timeout)
 {
   if (timeout)
     *timeout = false;
@@ -501,6 +501,8 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
       || WinKey::isKeyShiftPressed())
     return data;
 
+  if (!signature)
+    signature = Engine::hashThreadSignature(role);
   if (!role)
     role = d_->settings.textRoleOf(signature);
 
@@ -658,7 +660,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, long signatur
   return ret;
 }
 
-QString EngineController::dispatchTextW(const QString &text, long signature, int role, int maxSize, bool sendAllowed, bool *timeout)
+QString EngineController::dispatchTextW(const QString &text, int role, long signature, int maxSize, bool sendAllowed, bool *timeout)
 {
   if (timeout)
     *timeout = false;
@@ -671,6 +673,8 @@ QString EngineController::dispatchTextW(const QString &text, long signature, int
       || WinKey::isKeyShiftPressed())
     return text;
 
+  if (!signature)
+    signature = Engine::hashThreadSignature(role);
   if (!role)
     role = d_->settings.textRoleOf(signature);
 
@@ -838,7 +842,7 @@ void EngineControllerPrivate::exchange()
       auto key = exchangeMemory->requestKey();
       auto role = exchangeMemory->requestRole();
       auto sig = exchangeMemory->requestSignature();
-      QByteArray resp = q_->dispatchTextA(req, sig, role);
+      QByteArray resp = q_->dispatchTextA(req, role, sig);
       exchangeMemory->setResponseStatus(EngineSharedMemory::BusyStatus);
       exchangeMemory->setResponseText(resp);
       exchangeMemory->setResponseRole(role);

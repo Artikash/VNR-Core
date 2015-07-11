@@ -41,15 +41,15 @@ namespace Private {
     if (!text || !*text)
       return true;
 
-    enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    enum { role = Engine::ScenarioRole, sig = 0 };
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     *lpText = data_.constData();
     //::strcpy(text, data.constData());
     return true;
   }
 
   // Get the address of the scenario function
-  ulong findFunction(ulong startAddress, ulong stopAddress)
+  ulong findFunctionAddress(ulong startAddress, ulong stopAddress)
   {
     ulong funaddr = NtInspect::getModuleExportFunctionA("kernel32.dll", "lstrcatA");
     if (!funaddr)
@@ -279,7 +279,7 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  ulong addr = Private::findFunction(startAddress, stopAddress);
+  ulong addr = Private::findFunctionAddress(startAddress, stopAddress);
   if (!addr)
     return false;
 
@@ -324,8 +324,8 @@ namespace Private {
     if (!text || !*text)
       return true;
 
-    enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    enum { role = Engine::NameRole, sig = 0 };
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     texts_.insert(data_);
     s->ecx = (ulong)data_.constData();
     return true;
@@ -725,7 +725,7 @@ namespace Private {
     enum { role = Engine::OtherRole };
     auto split = args->retaddr;
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData == oldData)
       return true;
     //if (text != args->begin)
@@ -1292,7 +1292,7 @@ namespace Private {
         enum { role = Engine::OtherRole };
         ulong split = (ulong)_ReturnAddress();
         auto sig = Engine::hashThreadSignature(role, split);
-        QString newText = q->dispatchTextW(oldText, sig, role);
+        QString newText = q->dispatchTextW(oldText, role, sig);
         if (!newText.isEmpty() && newText != oldText) {
           texts_.insert(lpString);
           if (auto p = DynamicCodec::instance()) {
@@ -1353,7 +1353,7 @@ namespace Private {
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData = trimmedText,
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (oldData == newData)
       return true;
     //if (trimmedText != text)
@@ -1965,7 +1965,7 @@ namespace Private {
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData = trimmedText,
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData == oldData)
       return true;
     //::strcpy(text, newData.constData());
@@ -2203,7 +2203,7 @@ namespace Private {
     auto split = args->retaddr;
     auto sig = Engine::hashThreadSignature(role, split);
     QByteArray oldData(args->begin, args->end - args->begin),
-               newData = EngineController::instance()->dispatchTextA(oldData, sig, role);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData == oldData)
       return true;
     data_ = newData;

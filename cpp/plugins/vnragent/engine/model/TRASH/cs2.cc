@@ -53,7 +53,7 @@ namespace Private {
     auto role = text[size + 2] ? Engine::NameRole : Engine::ScenarioRole;
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    QByteArray data = EngineController::instance()->dispatchTextA(text, role, sig);
     ::strcpy(text, data.constData());
     return true;
   }
@@ -122,7 +122,7 @@ namespace Private {
     enum { role = Engine::HistoryRole };
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray data = EngineController::instance()->dispatchTextA(text, sig, role);
+    QByteArray data = EngineController::instance()->dispatchTextA(text, role, sig);
     ::strcpy(text, data.constData());
     return true;
   }
@@ -658,7 +658,7 @@ namespace Private {
     enum { role = Engine::ScenarioRole };
     auto split = s->stack[0]; // retaddr
     auto sig = Engine::hashThreadSignature(role, split);
-    data_ = EngineController::instance()->dispatchTextA(text, sig, role);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[1] = (ulong)data_.constData();
     //::strcpy(text, data.constData());
     return true;

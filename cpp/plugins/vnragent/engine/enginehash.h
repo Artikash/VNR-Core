@@ -38,7 +38,7 @@ inline qint64 hashTextKey(qint64 hash, unsigned role) { return hash + (1 << role
 //  return (returnAddress & 0xffff)  // context
 //       | (split & 0xffff) << 16;   // subcontext
 //}
-inline qint32 hashThreadSignature(ulong role, ulong split = 0)
+inline qint32 hashThreadSignature(ulong role, ulong split = 1)
 {
   return (split & 0xffff) // context
        | (role << 16);    // subcontext

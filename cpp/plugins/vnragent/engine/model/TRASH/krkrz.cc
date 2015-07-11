@@ -49,22 +49,22 @@ namespace Private {
 
     // Scenario
     if (arg->scenarioFlag == 0) {
-      enum { role = Engine::ScenarioRole, sig = Engine::ScenarioThreadSignature };
+      enum { role = Engine::ScenarioRole };
       // Text from scenario could be bad when open backlog while the character is speaking
       auto text = arg->scenarioText;
       if (!Engine::isAddressReadable(text))
         return true;
-      data_ = q->dispatchTextA(text, sig, role);
+      data_ = q->dispatchTextA(text, role);
       scenarioArg_ = arg;
       scenarioText_ = arg->scenarioText;
       arg->scenarioText = (LPCSTR)data_.constData();
     // Name
     // FIXME: The name has to be truncated
     } else if (arg->nameFlag == 0) {
-      enum { role = Engine::NameRole, sig = Engine::NameThreadSignature };
+      enum { role = Engine::NameRole };
       auto text = arg->nameText;
       QByteArray oldData = text,
-                 newData = q->dispatchTextA(oldData, sig, role);
+                 newData = q->dispatchTextA(oldData, role);
       if (!newData.isEmpty()) {
         nameArg_ = arg;
         ::memcpy(nameText_, oldData.constData(), qMin(oldData.size() + 1, MaxNameSize));
