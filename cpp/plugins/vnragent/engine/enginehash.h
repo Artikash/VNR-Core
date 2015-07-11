@@ -21,6 +21,9 @@ inline qint64 hashByteArray(const QByteArray &b)
 inline qint64 hashString(const QString &s)
 { return Sk::djb2_n(reinterpret_cast<const quint8 *>(s.utf16()), s.size() * 2); }
 
+inline qint64 hashCharArray(const void *lp)
+{ return Sk::djb2(reinterpret_cast<const quint8 *>(lp)); }
+
 inline qint64 hashCharArray(const void *lp, size_t len)
 { return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), len); }
 
