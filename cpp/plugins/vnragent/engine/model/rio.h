@@ -10,6 +10,8 @@ class ShinaRioEngine : public EngineModel
   SK_EXTEND_CLASS(ShinaRioEngine, EngineModel)
   static bool attach();
   static QString textFilter(const QString &text, int role);
+  static QString rubyCreate(const QString &rb, const QString &rt);
+  static QString rubyRemove(const QString &text);
 
 public:
   ShinaRioEngine()
@@ -21,7 +23,8 @@ public:
     scenarioLineCapacity =
     otherLineCapacity = 40; // 60 in 3rd games (30 wide characters)
     attachFunction = &Self::attach;
-    textFilterFunction = &Self::textFilter;
+    //rubyCreateFunction = &Self::rubyCreate; // FIXME: does not work
+    rubyRemoveFunction = &Self::rubyRemove;
   }
 };
 
