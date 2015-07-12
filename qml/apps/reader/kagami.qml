@@ -119,6 +119,8 @@ Item { id: root_
 
     grimoire_.widthFactor = settings_.grimoireWidthFactor
 
+    growl_.growlChecked = settings_.growlEnabled
+
     //dock_.windowHookChecked = settings_.windowHookEnabled
     //dock_.windowTextChecked = settings_.windowTextVisible
 
@@ -1139,8 +1141,8 @@ Item { id: root_
       property QtObject target: gameWindowTracker_.fullScreen ? gameWindowTracker_ : parent
       ignoresFocus: root_.ignoresFocus
 
-      enabled: dock_.growlChecked
-      visible: dock_.growlChecked && (!gameWindowTracker_.fullScreen || dock_.visibleChecked)
+      enabled: settings_.growlEnabled
+      visible: enabled && dock_.growlChecked && (!gameWindowTracker_.fullScreen || dock_.visibleChecked)
 
       // Mac OS X menu bar height is around 22px
       // http://stackoverflow.com/questions/2867503/height-of-the-apple-menubar
