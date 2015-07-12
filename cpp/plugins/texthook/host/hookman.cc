@@ -519,7 +519,7 @@ void HookManager::RegisterProcess(DWORD pid, DWORD hookman, DWORD module)
       &oa,&id)))
     record[register_count - 1].process_handle = hProc;
   else {
-    DOUT("Failed to open process");
+    DOUT("failed to open process");
     //::man->AddConsoleOutput(ErrorOpenProcess);
     //LeaveCriticalSection(&hmcs);
     //ConsoleOutput("vnrhost:RegisterProcess: unlock");
@@ -634,21 +634,21 @@ void HookManager::AddLink(WORD from, WORD to)
              *to_thread = thread_table->FindThread(to);
   if (to_thread && from_thread) {
     if (from_thread->GetThreadParameter()->pid != to_thread->GetThreadParameter()->pid)
-      DOUT("Link to different process");
+      DOUT("link to different process");
     else if (from_thread->Link()==to_thread)
-      DOUT("Link already exists");
+      DOUT("link already exists");
     else if (to_thread->CheckCycle(from_thread))
-      DOUT("Cyclic link");
+      DOUT("cyclic link");
     else {
       from_thread->Link()=to_thread;
       from_thread->LinkNumber()=to;
-      DOUT("Thread linked");
+      DOUT("thread linked");
       //WCHAR str[0x40];
       //swprintf(str,FormatLink,from,to);
       //AddConsoleOutput(str);
     }
   } else
-    DOUT("Error link");
+    DOUT("error link");
   //else
   //  AddConsoleOutput(ErrorLink);
   //LeaveCriticalSection(&hmcs);
@@ -663,7 +663,7 @@ void HookManager::UnLink(WORD from)
   if (TextThread *from_thread = thread_table->FindThread(from)) {
     from_thread->Link() = nullptr;
     from_thread->LinkNumber() = 0xffff;
-    DOUT("Link deleted");
+    DOUT("link deleted");
   }
   //else // jichi 12/25/2013: This could happen when the game exist
   //  ConsoleOutput("vnrhost:UnLink: thread does not exist");
@@ -678,7 +678,7 @@ void HookManager::UnLinkAll(WORD from)
   //EnterCriticalSection(&hmcs);
   if (TextThread *from_thread = thread_table->FindThread(from)) {
     from_thread->UnLinkAll();
-    DOUT("Link deleted");
+    DOUT("link deleted");
   }
   //else // jichi 12/25/2013: This could happen after the process exists
   //  ConsoleOutput("vnrhost:UnLinkAll: thread not exist");
@@ -708,14 +708,14 @@ void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD re
       static bool once = true; // output only once
       if (once) {
         once = false;
-        DOUT("So many new threads, skip");
+        DOUT("so many new threads, skip");
       }
       return;
     } else { // New thread
       Insert(&tp, new_thread_number);
       it = new TextThread(pid, hook, retn, spl, new_thread_number);
       RegisterThread(it, new_thread_number);
-      DOUT("Found new thread");
+      DOUT("found new thread");
       char entstr[0x200];
       it->GetEntryString(entstr);
       DOUT(entstr);

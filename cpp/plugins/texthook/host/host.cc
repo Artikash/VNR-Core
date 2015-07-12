@@ -79,6 +79,15 @@ void GetDebugPriv()
   NtClose(hToken);
 }
 
+bool sendCommand(HANDLE hCmd, HostCommandType cmd)
+{
+  IO_STATUS_BLOCK ios;
+  //SendParam sp = {};
+  //sp.type = cmd;
+  DWORD data = cmd;
+  return hCmd && NT_SUCCESS(NtWriteFile(hCmd, 0,0,0, &ios, &data, sizeof(data), 0,0));
+}
+
 // jichi 9/22/2013: Change current directory to the same as main module path
 // Otherwise NtFile* would not work for files with relative paths.
 //BOOL ChangeCurrentDirectory()
@@ -373,7 +382,7 @@ DWORD Host_GetPIDByName(LPCWSTR pwcTarget)
     }
   }
   if (!dwPid)
-    DOUT("vnrhost:Host_GetPIDByName: pid not found");
+    DOUT("pid not found");
   //if (dwPid == 0) ConsoleOutput(ErrorNoProcess);
 _end:
   NtFreeVirtualMemory(NtCurrentProcess(),&pBuffer,&dwSize,MEM_RELEASE);
@@ -387,19 +396,19 @@ bool Host_InjectByPID(DWORD pid)
     return 0;
   if (pid == current_process_id) {
     //ConsoleOutput(SelfAttach);
-    DOUT("vnrhost:Host_InjectByPID: refuse to inject myself");
+    DOUT("refuse to inject myself");
     return false;
   }
   if (man->GetProcessRecord(pid)) {
     //ConsoleOutput(AlreadyAttach);
-    DOUT("vnrhost:Host_InjectByPID: already attached");
+    DOUT("already attached");
     return false;
   }
   swprintf(str, ITH_HOOKMAN_MUTEX_ L"%d", pid);
   DWORD s;
   NtClose(IthCreateMutex(str, 0, &s));
   if (s) {
-    DOUT("vnrhost:Host_InjectByPID: already locked");
+    DOUT("already locked");
     return false;
   }
   CLIENT_ID id;
@@ -416,7 +425,7 @@ bool Host_InjectByPID(DWORD pid)
       PROCESS_VM_WRITE,
       &oa, &id))) {
     //ConsoleOutput(ErrorOpenProcess);
-    DOUT("vnrhost:Host_InjectByPID: failed to open process");
+    DOUT("failed to open process");
     return false;
   }
 
@@ -425,12 +434,12 @@ bool Host_InjectByPID(DWORD pid)
   bool ok = Inject(hProc);
   NtClose(hProc);
   if (!ok) {
-    DOUT("vnrhost:Host_InjectByPID: inject failed");
+    DOUT("inject failed");
     return false;
   }
   //swprintf(str, FormatInject, pid, module);
   //ConsoleOutput(str);
-  DOUT("vnrhost:Host_InjectByPID: inject succeed");
+  DOUT("inject succeed");
   return true;
 }
 
@@ -461,7 +470,6 @@ bool Host_ActiveDetachProcess(DWORD pid)
 {
   ITH_SYNC_HOOK;
 
-  IO_STATUS_BLOCK ios;
   //man->LockHookman();
   ProcessRecord *pr = man->GetProcessRecord(pid);
   HANDLE hCmd = man->GetCmdHandleByPID(pid);
@@ -472,12 +480,14 @@ bool Host_ActiveDetachProcess(DWORD pid)
   NtDuplicateObject(NtCurrentProcess(), pr->process_handle,
       NtCurrentProcess(), &hProc, 0, 0, DUPLICATE_SAME_ACCESS); // Make a copy of the process handle.
   HANDLE hModule = (HANDLE)pr->module_register;
-  if (hModule == 0)
+  if (!hModule) {
+    DOUT("process module not found");
     return false;
+  }
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
-    DOUT("vnrhost::activeDetach: process has terminated");
+    DOUT("process has terminated");
     return false;
   }
 
@@ -485,12 +495,15 @@ bool Host_ActiveDetachProcess(DWORD pid)
   //engine = pr->engine_register;
   //engine &= ~0xff;
 
-  DOUT("vnrhost:Host_ActiveDetachProcess: sending cmd");
-  //SendParam sp = {};
-  //sp.type = HOST_COMMAND_DETACH;
-  DWORD cmd = HOST_COMMAND_DETACH;
-  NtWriteFile(hCmd, 0,0,0, &ios, &cmd, sizeof(cmd), 0,0);
-  DOUT("vnrhost:Host_ActiveDetachProcess: cmd sent");
+  DOUT("send detach command");
+  bool ret = sendCommand(hCmd, HOST_COMMAND_DETACH);
+
+  // jichi 7/15/2014: Process already closed
+  //if (isProcessTerminated(hProc)) {
+  //  DOUT("process has terminated");
+  //  return false;
+  //}
+  //WinDbg::ejectDll(hModule, 0, hProc); // eject in case module has not loaded yet
 
   //cmdq->AddRequest(sp, pid);
 ////#ifdef ITH_WINE // Nt series crash on wine
@@ -506,7 +519,7 @@ bool Host_ActiveDetachProcess(DWORD pid)
 //  NtWaitForSingleObject(hThread, 0, nullptr);
 //  NtClose(hThread);
   NtClose(hProc);
-  return true;
+  return ret;
 }
 
 DWORD Host_GetHookManager(HookManager** hookman)
@@ -519,28 +532,21 @@ DWORD Host_GetHookManager(HookManager** hookman)
     return 1;
 }
 
-DWORD Host_GetSettings(Settings **p)
+bool Host_GetSettings(Settings **p)
 {
   if (::running) {
     *p = settings;
-    return 0;
+    return true;
   }
   else
-    return 1;
+    return false;
 }
 
-DWORD Host_HijackProcess(DWORD pid)
+bool Host_HijackProcess(DWORD pid)
 {
   //ITH_SYNC_HOOK;
-
   HANDLE hCmd = man->GetCmdHandleByPID(pid);
-  if (hCmd == 0)
-    return -1;
-
-  DWORD cmd = HOST_COMMAND_HIJACK_PROCESS;
-  IO_STATUS_BLOCK ios;
-  NtWriteFile(hCmd, 0,0,0, &ios, &cmd, sizeof(cmd), 0, 0);
-  return 0;
+  return hCmd && sendCommand(hCmd, HOST_COMMAND_HIJACK_PROCESS);
 }
 
 DWORD Host_InsertHook(DWORD pid, HookParam *hp, LPCSTR name)
