@@ -500,6 +500,7 @@ class _UiTab(object):
     #layout.addWidget(self.fontGroup)
     if not features.WINE:
       layout.addWidget(self.mouseGroup)
+    layout.addWidget(self.growlGroup)
     layout.addWidget(self.springBoardGroup)
     #layout.addWidget(self.statusGroup)
     layout.addStretch()
@@ -685,6 +686,30 @@ my.tr("But Drag-and-Drop does not work when VNR has admin privilege T_T"),
     ss = settings.global_()
     ret.setChecked(ss.isCursorThemeEnabled())
     ret.toggled.connect(ss.setCursorThemeEnabled)
+    return ret
+
+  ## Growl ##
+
+  @memoizedproperty
+  def growlGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.growlButton)
+    ret = QtWidgets.QGroupBox(tr_("Notification"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def growlButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("Display notification on the Desktop top-right corner"),
+      tr_("default"),
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.isGrowlEnabled())
+    ret.toggled.connect(ss.setGrowlEnabled)
+    ss.growlEnabledChanged.connect(ret.setChecked)
+    ret.toggled.connect(lambda t:
+        t and growl.notify(my.tr("Show notification")))
     return ret
 
 class UiTab(QtWidgets.QDialog):

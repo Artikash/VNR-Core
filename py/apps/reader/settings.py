@@ -252,6 +252,13 @@ class Settings(QSettings):
   def setBlockedLanguageList(self, v): self.setBlockedLanguages(list2string(v)) # [unicode] ->
   def blockedLanguageList(self): return string2list(self.blockedLanguages()) # -> [unicode]
 
+  growlEnabledChanged = Signal(bool)
+  def isGrowlEnabled(self): return to_bool(self.value('Growl', True))
+  def setGrowlEnabled(self, t):
+    if t != self.isGrowlEnabled():
+      self.setValue('Growl', t)
+      self.growlEnabledChanged.emit(t)
+
   ## Romanization for Japanese ##
 
   romajiMacronEnabledChanged = Signal(bool)
@@ -2476,6 +2483,7 @@ class SettingsProxy(QObject):
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
     g.hentaiEnabledChanged.connect(self.hentaiChanged)
+    g.growlEnabledChanged.connect(self.growlEnabledChanged)
 
     self.termEnabledChanged.connect(g.termEnabledChanged)
     #self.termMarkedChanged.connect(g.termMarkedChanged)
@@ -2554,6 +2562,12 @@ class SettingsProxy(QObject):
       lambda _: global_().isHentaiEnabled(),
       lambda _, t: global_().setHentaiEnabled(t),
       notify=hentaiChanged)
+
+  growlEnabledChanged = Signal(bool)
+  growlEnabled = Property(bool,
+      lambda _: global_().isGrowlEnabled(),
+      lambda _, t: global_().setGrowlEnabled(t),
+      notify=growlEnabledChanged)
 
   def setGameTextCapacity(self, value):
     if value != self.gameTextCapacity:

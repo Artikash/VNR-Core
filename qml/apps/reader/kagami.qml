@@ -236,7 +236,8 @@ Item { id: root_
     //onVoiceCharacterEnabledChanged:
     //  if (dock_.voiceChecked !== voiceCharacterEnabled)
     //    dock_.voiceChecked = voiceCharacterEnabled
-    onHentaiChanged: if (dock_.hentaiChecked != hentai) dock_.hentaiChecked = hentai
+    onHentaiChanged: if (dock_.hentaiChecked !== hentai) dock_.hentaiChecked = hentai
+    onGrowlEnabledChanged: if (dock_.growlChecked !== growlEnabled) dock_.growlChecked = growlEnabled
 
     onSpeaksGameTextChanged: {
       var t = speaksGameText && !subtitleVoiceEnabled
@@ -931,6 +932,10 @@ Item { id: root_
         onCommentCheckedChanged: settings_.grimoireCommentVisible = commentChecked
         onDanmakuCheckedChanged: settings_.grimoireDanmakuVisible = danmakuChecked
 
+        onGrowlCheckedChanged:
+          if (settings_.growlEnabled !== growlChecked)
+            settings_.growlEnabled = growlChecked
+
         onGameTextCapacityChanged:
           if (gameTextCapacity > 20)
             if (settings_.gameTextCapacity !== Math.round(gameTextCapacity))
@@ -1134,6 +1139,7 @@ Item { id: root_
       property QtObject target: gameWindowTracker_.fullScreen ? gameWindowTracker_ : parent
       ignoresFocus: root_.ignoresFocus
 
+      enabled: dock_.growlChecked
       visible: dock_.growlChecked && (!gameWindowTracker_.fullScreen || dock_.visibleChecked)
 
       // Mac OS X menu bar height is around 22px
