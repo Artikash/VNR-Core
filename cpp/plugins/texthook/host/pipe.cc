@@ -105,7 +105,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    DOUT("Failed to create recv pipe");
+    DOUT("failed to create recv pipe");
     return;
   }
 
@@ -123,7 +123,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    DOUT("Failed to create cmd pipe");
+    DOUT("failed to create cmd pipe");
     return;
   }
 
@@ -313,7 +313,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   delete[] buff;
 
   if (::running)
-    DOUT("Detached");
+    DOUT("detached");
 
   //if (::running) {
   //  swprintf((LPWSTR)buff, FormatDetach, pid);

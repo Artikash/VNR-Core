@@ -12,10 +12,10 @@
 #include "src/tree/avl.h"
 #include "src/engine/match.h"
 #include "src/hijack/texthook.h"
+//#include "src/util/growl.h"
 #include "src/except.h"
 #include "include/const.h"
 #include "include/defs.h"
-//#include "src/util/growl.h"
 #include "ithsys/ithsys.h"
 #include "ccutil/ccmacro.h"
 #include <cstdio> // for swprintf
@@ -181,6 +181,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       attached_ = true;
 
       LdrDisableThreadCalloutsForDll(hModule);
+
       //IthBreak();
       ::module_base = (DWORD)hModule;
       IthInitSystemService();
@@ -215,8 +216,9 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 
       DWORD s;
       hMutex = IthCreateMutex(dll_mutex, TRUE, &s); // jichi 9/18/2013: own is true
-      if (s)
-        return FALSE;
+      // FIXME: This mutex does not work on Windows 10
+      //if (s)
+      //  return FALSE;
 
       hDllExist = IthCreateMutex(dll_exist, 0);
       hDLL = hModule;
@@ -225,12 +227,13 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       ::tree = new AVLTree<char, FunctionInfo, SCMP, SCPY, SLEN>;
       AddAllModules();
       InitFilterTable();
+
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
-    }
-    break;
+    } break;
   case DLL_PROCESS_DETACH:
     {
+      return true;
       static bool detached_ = false;
       if (detached_) // already detached
         return TRUE;
