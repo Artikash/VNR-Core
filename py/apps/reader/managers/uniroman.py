@@ -179,6 +179,9 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
 
   #if paddingSize and language == 'ko' and not kwargs.get('romajaRubyEnabled'):
   #  paddingSize = 0
+  rubyExists = False
+
+  RUBY_FONT = 'Tahoma'
 
   for paragraph in text.split('\n'):
     for surface, yomi, group in _iterparseruby(paragraph, language, **kwargs):
@@ -208,9 +211,12 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
           'paddingSize': paddingSize,
           'center': center,
           'groupColor': groupColor,
+          'rubyExists': rubyExists,
+          'rubyFont': RUBY_FONT,
         })
         line = []
         lineCount = 0
+        rubyExists = False
       if invertRuby and yomi:
         #if surface:
         #  surface = wide2thin(surface)
@@ -221,6 +227,8 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
         t = surface, yomi, color, group
       line.append(t)
       lineCount += width
+      if yomi:
+        rubyExists = True
 
   if line:
     yield render({
@@ -229,7 +237,10 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
       'paddingSize': paddingSize,
       'center': center,
       'groupColor': groupColor,
+      'rubyExists': rubyExists,
+      'rubyFont': RUBY_FONT,
     })
+    rubyExists = False
 
 def rendertable(*args, **kwargs):
   return ''.join(_iterrendertable(*args, **kwargs))

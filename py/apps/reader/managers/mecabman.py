@@ -250,6 +250,8 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
     rubyExists = False
     color = lastColor = None
 
+    ANNOT_FONT = 'Tahoma'
+
     for surface, yomi, feature, surface_type in q:
       #colorChanged = False
 
@@ -297,6 +299,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
           'annotSize': annotSize,
           'annotExists': annotated and roleExists,
           'rubyExists': rubyExists,
+          'annotFont': ANNOT_FONT,
         })
         line = []
         lineCount = 0
@@ -325,6 +328,7 @@ def _iterrendertable(text, rubyType, rubyKana=False, features=None, charPerLine=
         'annotSize': annotSize,
         'annotExists': annotated and roleExists,
         'rubyExists': rubyExists,
+          'annotFont': ANNOT_FONT,
       })
 
 def rendertable(*args, **kwargs):
