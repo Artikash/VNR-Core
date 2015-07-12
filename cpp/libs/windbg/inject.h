@@ -39,6 +39,18 @@ BOOL injectDllW(_In_ LPCWSTR dllPath,
   _In_ DWORD pid = 0, _In_ HANDLE hProcess = INVALID_HANDLE_VALUE,
   _In_ INT timeout = INJECT_TIMEOUT);
 
+/**
+ *  Either pid or the process handle should be specified
+ *  @param  hDll  dll module handle
+ *  @param  pid  process id
+ *  @param  hProcess  process handle
+ *  @param  timeout  msec
+ *  @return  BOOL
+ */
+BOOL ejectDll(_In_ HANDLE hDll,
+  _In_ DWORD pid = 0, _In_ HANDLE hProcess = INVALID_HANDLE_VALUE,
+  _In_ INT timeout = INJECT_TIMEOUT);
+
 WINDBG_END_NAMESPACE
 
 // EOF

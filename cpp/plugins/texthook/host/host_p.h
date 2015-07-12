@@ -2,7 +2,7 @@
 // host_p.h
 // 8/24/2013 jichi
 // Branch IHF/main.h, rev 111
-#include "config.h"
+#include <windows.h>
 
 #define GLOBAL extern
 #define SHIFT_JIS 0x3A4

@@ -8,7 +8,9 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 // See: http://stackoverflow.com/questions/3410130/dll-unloading-itself
 BOOL unloadCurrentModule()
 {
-  if (HANDLE h = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)::FreeLibrary, &__ImageBase, 0, NULL)) {
+  auto fun = ::FreeLibrary;
+  //auto fun = ::LdrUnloadDll;
+  if (HANDLE h = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)fun, &__ImageBase, 0, NULL)) {
     ::CloseHandle(h);
     return TRUE;
   }

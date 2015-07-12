@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1436708157
+  timestamp: 1436732406
 
 app:
   #debug: true
@@ -50,7 +50,7 @@ env:
 
 qt:
   #metaCallPort: 6103    # IPC QMetaCall listening port (6100 + app.id)
-  threadCount:  1000    # QtCore.QThreadPool.maxThreadCount
+  threadCount:  100     # QtCore.QThreadPool.maxThreadCount
   threadTimeout: 6000   # QThreadPool.waitForDone timeout in msecs
   #quitTimeout: 3000     # time taken for closing the app
   css: # QSS

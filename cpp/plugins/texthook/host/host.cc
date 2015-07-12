@@ -7,25 +7,25 @@
 //# pragma warning(disable:4800) // C4800: forcing value to bool (performance warning)
 //#endif // _MSC_VER
 
-#include "config.h"
 //#include "customfilter.h"
+#include "growl.h"
 #include "host.h"
 #include "host_p.h"
 #include "settings.h"
-#include "ith/common/const.h"
-#include "ith/common/defs.h"
-#include "ith/common/growl.h"
-#include "ith/common/types.h"
-#include "ith/sys/sys.h"
+#include "vnrhook/include/const.h"
+#include "vnrhook/include/defs.h"
+#include "vnrhook/include/types.h"
+#include "ithsys/ithsys.h"
+#include "windbg/inject.h"
 //#include "winmaker/winmaker.h"
 #include "ccutil/ccmacro.h"
 //#include <commctrl.h>
 
 //#define ITH_WINE
 //#define ITH_USE_UX_DLLS  IthIsWine()
-#define ITH_USE_XP_DLLS  (IthIsWindowsXp() && !IthIsWine())
+//#define ITH_USE_XP_DLLS  (IthIsWindowsXp() && !IthIsWine())
 
-#define DEBUG "host.cc"
+#define DEBUG "vnrhost/host.cc"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -96,39 +96,24 @@ void GetDebugPriv()
 //  return FALSE;
 //}
 
-DWORD Inject(HANDLE hProc)
+#if 0
+bool injectUsingWin32Api(LPCWSTR path, HANDLE hProc)
+{ return WinDbg::injectDllW(path, 0, hProc); }
+
+bool ejectUsingWin32Api(HANDLE hModule, HANDLE hProc)
+{ return WinDbg::ejectDll(hModule, hProc); }
+
+// The original inject logic in ITH
+bool injectUsingNTApi(LPCWSTR path, HANDLE hProc)
 {
-  enum : DWORD { error = (DWORD)-1 };
   LPVOID lpvAllocAddr = 0;
   DWORD dwWrite = 0x1000; //, len = 0;
-  HANDLE hTH;
-  //LPWSTR dllname = (IthIsWindowsXp() && !IthIsWine()) ? DllNameXp : DllName;
-  LPCWSTR dllname = ITH_USE_XP_DLLS ? ITH_DLL_XP : ITH_DLL;
-  //if (!IthCheckFile(dllname))
-  //  return error;
-  wchar_t path[MAX_PATH];
-  size_t len = IthGetCurrentModulePath(path, MAX_PATH);
-  if (!len)
-    return error;
-
-  wchar_t *p;
-  for (p = path + len; *p != L'\\'; p--);
-  p++; // ending with L"\\"
-
-  //LPCWSTR mp = GetMainModulePath();
-  //len = wcslen(mp);
-  //memcpy(path, mp, len << 1);
-  //memset(path + len, 0, (MAX_PATH - len) << 1);
-  //LPWSTR p;
-  //for (p = path + len; *p != L'\\'; p--); // Always a \ after drive letter.
-  //p++;
-  wcscpy(p, dllname);
   //if (IthIsWine())
   //  lpvAllocAddr = VirtualAllocEx(hProc, nullptr, dwWrite, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
   //else
   NtAllocateVirtualMemory(hProc, &lpvAllocAddr, 0, &dwWrite, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
   if (!lpvAllocAddr)
-    return error;
+    return false;
 
   CheckThreadStart();
 
@@ -136,12 +121,12 @@ DWORD Inject(HANDLE hProc)
   //if (IthIsWine())
   //  WriteProcessMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
   //else
-  NtWriteVirtualMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
-  hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
+  NtWriteVirtualMemory(hProc, lpvAllocAddr, (LPVOID)path, MAX_PATH << 1, &dwWrite);
+  HANDLE hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
   if (hTH == 0 || hTH == INVALID_HANDLE_VALUE) {
-    DOUT("vnrhost:inject: ERROR: failed to create remote cli thread");
+    DOUT("ERROR: failed to create remote cli thread");
     //ConsoleOutput(ErrorRemoteThread);
-    return -1;
+    return false;
   }
   // jichi 9/28/2013: no wait as it will not blocked
   NtWaitForSingleObject(hTH, 0, nullptr);
@@ -174,9 +159,63 @@ DWORD Inject(HANDLE hProc)
   //  VirtualFreeEx(hProc, lpvAllocAddr, dwWrite, MEM_RELEASE);
   //else
   NtFreeVirtualMemory(hProc, &lpvAllocAddr, &dwWrite, MEM_RELEASE);
-  return info.ExitStatus;
+  return info.ExitStatus != -1;
 }
 
+bool ejectUsingNTApi(HANDLE hModule, HANDLE hProc)
+{
+  //IthCoolDown();
+//#ifdef ITH_WINE // Nt series crash on wine
+//  hThread = IthCreateThread(FreeLibrary, engine, hProc);
+//#else
+  HANDLE hThread = IthCreateThread(LdrUnloadDll, module, hProc);
+//#endif // ITH_WINE
+  if (hThread == 0 || hThread == INVALID_HANDLE_VALUE)
+    return false;
+  // jichi 10/22/2013: Timeout might crash vnrsrv
+  //NtWaitForSingleObject(hThread, 0, (PLARGE_INTEGER)&timeout);
+  NtWaitForSingleObject(hThread, 0, nullptr);
+  //man->UnlockHookman();
+  THREAD_BASIC_INFORMATION info;
+  NtQueryInformationThread(hThread, ThreadBasicInformation, &info, sizeof(info), 0);
+  NtClose(hThread);
+  NtSetEvent(hPipeExist, 0);
+  FreeThreadStart(hProc);
+  return info.ExitStatus;
+}
+#endif // 0
+
+bool Inject(HANDLE hProc)
+{
+  //LPWSTR dllname = (IthIsWindowsXp() && !IthIsWine()) ? DllNameXp : DllName;
+  //LPCWSTR dllname = ITH_USE_XP_DLLS ? ITH_DLL_XP : ITH_DLL;
+  //LPCWSTR dllname = ITH_DLL;
+  //if (!IthCheckFile(dllname))
+  //  return error;
+  wchar_t path[MAX_PATH];
+  size_t len = IthGetCurrentModulePath(path, MAX_PATH);
+  if (!len)
+    return false;
+
+  wchar_t *p;
+  for (p = path + len; *p != L'\\'; p--);
+  p++; // ending with L"\\"
+
+  //LPCWSTR mp = GetMainModulePath();
+  //len = wcslen(mp);
+  //memcpy(path, mp, len << 1);
+  //memset(path + len, 0, (MAX_PATH - len) << 1);
+  //LPWSTR p;
+  //for (p = path + len; *p != L'\\'; p--); // Always a \ after drive letter.
+  //p++;
+  ::wcscpy(p, ITH_DLL);
+
+  return WinDbg::injectDllW(path, 0, hProc);
+  //if (IthIsWindowsXp()) // && !IthIsWine())
+  //  return injectUsingWin32Api(path, hProc);
+  //else
+  //  return injectUsingNTApi(path, hProc);
+}
 
 } // unnamed namespace
 
@@ -257,7 +296,7 @@ BOOL Host_Open()
   if (present)
     //MessageBox(0,L"Already running.",0,0);
     // jichi 8/24/2013
-    ITH_WARN(L"I am sorry that this game is attached by some other VNR ><\nPlease restart the game and try again!");
+    GROWL_WARN(L"I am sorry that this game is attached by some other VNR ><\nPlease restart the game and try again!");
   else if (!::running) {
     ::running = true;
     ::settings = new Settings;
@@ -341,7 +380,7 @@ _end:
   return dwPid;
 }
 
-DWORD Host_InjectByPID(DWORD pid)
+bool Host_InjectByPID(DWORD pid)
 {
   WCHAR str[0x80];
   if (!::running)
@@ -349,18 +388,20 @@ DWORD Host_InjectByPID(DWORD pid)
   if (pid == current_process_id) {
     //ConsoleOutput(SelfAttach);
     DOUT("vnrhost:Host_InjectByPID: refuse to inject myself");
-    return -1;
+    return false;
   }
   if (man->GetProcessRecord(pid)) {
     //ConsoleOutput(AlreadyAttach);
     DOUT("vnrhost:Host_InjectByPID: already attached");
-    return -1;
+    return false;
   }
   swprintf(str, ITH_HOOKMAN_MUTEX_ L"%d", pid);
   DWORD s;
   NtClose(IthCreateMutex(str, 0, &s));
-  if (s)
-    return -1;
+  if (s) {
+    DOUT("vnrhost:Host_InjectByPID: already locked");
+    return false;
+  }
   CLIENT_ID id;
   OBJECT_ATTRIBUTES oa = {};
   HANDLE hProc;
@@ -376,19 +417,21 @@ DWORD Host_InjectByPID(DWORD pid)
       &oa, &id))) {
     //ConsoleOutput(ErrorOpenProcess);
     DOUT("vnrhost:Host_InjectByPID: failed to open process");
-    return -1;
+    return false;
   }
 
   //if (!engine)
   //  engine = ITH_USE_XP_DLLS ? ITH_ENGINE_XP_DLL : ITH_ENGINE_DLL;
-  DWORD module = Inject(hProc);
+  bool ok = Inject(hProc);
   NtClose(hProc);
-  if (module == -1)
-    return -1;
+  if (!ok) {
+    DOUT("vnrhost:Host_InjectByPID: inject failed");
+    return false;
+  }
   //swprintf(str, FormatInject, pid, module);
   //ConsoleOutput(str);
   DOUT("vnrhost:Host_InjectByPID: inject succeed");
-  return module;
+  return true;
 }
 
 // jichi 7/16/2014: Test if process is valid before creating remote threads
@@ -414,40 +457,39 @@ static bool isProcessTerminated(HANDLE hProc)
 //  return ret;
 //}
 
-DWORD Host_ActiveDetachProcess(DWORD pid)
+bool Host_ActiveDetachProcess(DWORD pid)
 {
   ITH_SYNC_HOOK;
 
-  DWORD module;
-  HANDLE hProc, hThread;
   IO_STATUS_BLOCK ios;
   //man->LockHookman();
   ProcessRecord *pr = man->GetProcessRecord(pid);
   HANDLE hCmd = man->GetCmdHandleByPID(pid);
   if (pr == 0 || hCmd == 0)
-    return FALSE;
+    return false;
+  HANDLE hProc;
   //hProc = pr->process_handle; //This handle may be closed(thus invalid) during the detach process.
   NtDuplicateObject(NtCurrentProcess(), pr->process_handle,
       NtCurrentProcess(), &hProc, 0, 0, DUPLICATE_SAME_ACCESS); // Make a copy of the process handle.
-  module = pr->module_register;
-  if (module == 0)
-    return FALSE;
+  HANDLE hModule = (HANDLE)pr->module_register;
+  if (hModule == 0)
+    return false;
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
     DOUT("vnrhost::activeDetach: process has terminated");
-    return FALSE;
+    return false;
   }
 
   // jichi 10/19/2014: Disable the second dll
   //engine = pr->engine_register;
   //engine &= ~0xff;
 
-  SendParam sp = {};
-  sp.type = 4;
-
   DOUT("vnrhost:Host_ActiveDetachProcess: sending cmd");
-  NtWriteFile(hCmd, 0,0,0, &ios, &sp, sizeof(SendParam), 0,0);
+  //SendParam sp = {};
+  //sp.type = HOST_COMMAND_DETACH;
+  DWORD cmd = HOST_COMMAND_DETACH;
+  NtWriteFile(hCmd, 0,0,0, &ios, &cmd, sizeof(cmd), 0,0);
   DOUT("vnrhost:Host_ActiveDetachProcess: cmd sent");
 
   //cmdq->AddRequest(sp, pid);
@@ -463,32 +505,8 @@ DWORD Host_ActiveDetachProcess(DWORD pid)
 //  //NtWaitForSingleObject(hThread, 0, (PLARGE_INTEGER)&timeout);
 //  NtWaitForSingleObject(hThread, 0, nullptr);
 //  NtClose(hThread);
-
-  // jichi 7/15/2014: Process already closed
-  if (isProcessTerminated(hProc)) {
-    DOUT("vnrhost:activeDetach: process has terminated");
-    return FALSE;
-  }
-
-  //IthCoolDown();
-//#ifdef ITH_WINE // Nt series crash on wine
-//  hThread = IthCreateThread(FreeLibrary, engine, hProc);
-//#else
-  hThread = IthCreateThread(LdrUnloadDll, module, hProc);
-//#endif // ITH_WINE
-  if (hThread == 0 || hThread == INVALID_HANDLE_VALUE)
-    return FALSE;
-  // jichi 10/22/2013: Timeout might crash vnrsrv
-  //NtWaitForSingleObject(hThread, 0, (PLARGE_INTEGER)&timeout);
-  NtWaitForSingleObject(hThread, 0, nullptr);
-  //man->UnlockHookman();
-  THREAD_BASIC_INFORMATION info;
-  NtQueryInformationThread(hThread, ThreadBasicInformation, &info, sizeof(info), 0);
-  NtClose(hThread);
-  NtSetEvent(hPipeExist, 0);
-  FreeThreadStart(hProc);
   NtClose(hProc);
-  return info.ExitStatus;
+  return true;
 }
 
 DWORD Host_GetHookManager(HookManager** hookman)

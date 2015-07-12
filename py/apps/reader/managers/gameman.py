@@ -15,7 +15,7 @@ from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
 from texthook import texthook
 from mytr import my
-import config, dataman, defs, displayutil, features, gameagent, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, winutil
+import config, dataman, defs, displayutil, features, gameagent, growl, hashutil, inject, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, winutil
 
 PROGRAMFILES = QtCore.QDir.fromNativeSeparators(skpaths.PROGRAMFILES)
 PROGRAMFILES_RE = re.compile(re.escape(PROGRAMFILES), re.IGNORECASE)
@@ -918,9 +918,8 @@ class GameManager(QtCore.QObject):
       dwarn("vnragent already have an engine?")
       return
 
-    th = texthook.global_()
-    if pid != th.currentPid():
-      ok = th.attachProcess(pid)
+    if pid != texthook.global_().currentPid():
+      ok = inject.inject_vnrhook(pid)
       dprint("inject ITH, ok = %s" % ok)
 
   def clear(self):
@@ -1167,7 +1166,8 @@ class GameManager(QtCore.QObject):
           #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
           #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
           dprint("attach using text hook")
-          attached = texthook.global_().attachProcess(g.pid, hijack=False) # delay hijack
+          #attached = texthook.global_().attachProcess(g.pid, hijack=False) # delay hijack
+          attached = inject.inject_vnrhook(g.pid, hijack=False) # delay hijack
 
           #if attached:
           #  dprint("try game engine")

@@ -7,12 +7,11 @@
 # pragma warning (disable:4100)   // C4100: unreference formal parameter
 #endif // _MSC_VER
 
-#include "config.h"
 #include "settings.h"
 #include "textthread.h"
 #include "wintimer/wintimer.h"
-#include "ith/common/const.h"
-#include "ith/sys/sys.h"
+#include "vnrhook/include/const.h"
+#include "ithsys/ithsys.h"
 
 MK_BASIC_TYPE(BYTE)
 MK_BASIC_TYPE(ThreadParameter)
@@ -94,7 +93,7 @@ TextThread::TextThread(DWORD id, DWORD hook, DWORD retn, DWORD spl, WORD num) :
   tp.retn = retn;
   tp.spl = spl;
   head = new RepeatCountNode;
-  ITH_MEMSET_HEAP(head, 0, sizeof(RepeatCountNode)); // jichi 9/21/2013: zero memory
+  ::memset(head, 0, sizeof(RepeatCountNode)); // jichi 9/21/2013: zero memory
   link_number = -1;
   repeat_detect_limit = 0x80;
   //filter = nullptr;
@@ -158,7 +157,7 @@ void TextThread::RemoveSingleRepeatAuto(const BYTE *con, int &len)
           delete tt;
         }
         head = new RepeatCountNode;
-        ITH_MEMSET_HEAP(head, 0, sizeof(RepeatCountNode)); // jichi 9/21/2013: zero memory
+        ::memset(head, 0, sizeof(RepeatCountNode)); // jichi 9/21/2013: zero memory
       }
     } else {
       repeat_detect_count++;
@@ -473,7 +472,7 @@ void TextThread::AddText(const BYTE *con, int len, bool new_line, bool space)
         if (status & USING_UNICODE) { // Although unlikely, a thread and its link may have different encoding.
           if ((link->Status() & USING_UNICODE) == 0) {
             send = new BYTE[l];
-            //ITH_MEMSET_HEAP(send, 0, l); // jichi 9/26/2013: zero memory
+            //::memset(send, 0, l); // jichi 9/26/2013: zero memory
             l = WC_MB((LPWSTR)con, (char *)send);
           }
           link->AddTextDirect(send, l, space);
@@ -481,7 +480,7 @@ void TextThread::AddText(const BYTE *con, int len, bool new_line, bool space)
           if (link->Status() & USING_UNICODE) {
             size_t sz = len * 2 + 2;
             send = new BYTE[sz];
-            //ITH_MEMSET_HEAP(send, 0, sz); // jichi 9/26/2013: zero memory
+            //::memset(send, 0, sz); // jichi 9/26/2013: zero memory
             l = MB_WC((char *)con, (LPWSTR)send) << 1;
           }
           link->AddTextDirect(send, l, space);
@@ -519,7 +518,7 @@ void TextThread::AddTextDirect(const BYTE* con, int len, bool space) // Add to s
     if (status & USING_UNICODE) {
       if ((link->Status()&USING_UNICODE) == 0) {
         send = new BYTE[l];
-        //ITH_MEMSET_HEAP(send, 0, l); // jichi 9/26/2013: zero memory
+        //::memset(send, 0, l); // jichi 9/26/2013: zero memory
         l = WC_MB((LPWSTR)con,(char*)send);
       }
       link->AddText(send, l, false, space); // new_line is false
@@ -527,7 +526,7 @@ void TextThread::AddTextDirect(const BYTE* con, int len, bool space) // Add to s
       if (link->Status()&USING_UNICODE) {
         size_t sz = len * 2 + 2;
         send = new BYTE[sz];
-        //ITH_MEMSET_HEAP(send, 0, sz); // jichi 9/26/2013: zero memory
+        //::memset(send, 0, sz); // jichi 9/26/2013: zero memory
         l = MB_WC((char *)con, (LPWSTR)send) << 1;
       }
       link->AddText(send, l, false, space); // new_line is false
@@ -561,7 +560,7 @@ DWORD TextThread::GetEntryString(LPSTR str, DWORD max)
 
       len += GetHookName(str + len, tp.pid, tp.hook, max - len);
       thread_string = new char[len + 1];
-      //ITH_MEMSET_HEAP(thread_string, 0, (len+1) * sizeof(wchar_t)); // jichi 9/26/2013: zero memory
+      //::memset(thread_string, 0, (len+1) * sizeof(wchar_t)); // jichi 9/26/2013: zero memory
       thread_string[len] = 0;
       ::memcpy(thread_string, str, len);
     }

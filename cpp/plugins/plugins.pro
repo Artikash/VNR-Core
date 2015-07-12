@@ -30,7 +30,7 @@ win32: SUBDIRS += pytrcodec
 win32: SUBDIRS += pytrscript
 win32: SUBDIRS += pytroscript
 
-win32: SUBDIRS += ith
+win32: SUBDIRS += ithsys vnrhook
 win32: SUBDIRS += texthook pytexthook
 #win32: SUBDIRS += texthookxp pytexthookxp
 
