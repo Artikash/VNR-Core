@@ -7,8 +7,7 @@
 // - Move my old create remote thread for ITH2 here
 
 #include "ithsys/ithsys.h"
-//#include "ith/common/growl.h"
-//#include "ith/common/except.h"
+//#include "vnrhook/src/util/growl.h"
 
 //#define ITH_SYS_SECTION L"ITH_SysSection"
 #define ITH_THREADMAN_SECTION L"VNR_SYS_THREAD"

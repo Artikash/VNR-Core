@@ -214,11 +214,13 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       swprintf(hm_mutex, ITH_HOOKMAN_MUTEX_ L"%d", current_process_id);
       hmMutex = IthCreateMutex(hm_mutex, FALSE);
 
-      DWORD s;
-      hMutex = IthCreateMutex(dll_mutex, TRUE, &s); // jichi 9/18/2013: own is true
-      // FIXME: This mutex does not work on Windows 10
-      //if (s)
-      //  return FALSE;
+      {
+        DWORD exists;
+        hMutex = IthCreateMutex(dll_mutex, TRUE, &exists); // jichi 9/18/2013: own is true, make sure the injected dll is singleton
+        // FIXME: This mutex does not work on Windows 10
+        if (hMutex == INVALID_HANDLE_VALUE || exists)
+          return FALSE;
+      }
 
       hDllExist = IthCreateMutex(dll_exist, 0);
       hDLL = hModule;
