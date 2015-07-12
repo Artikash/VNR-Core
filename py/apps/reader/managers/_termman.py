@@ -378,7 +378,7 @@ class TermWriter:
                   if self.koreanRubyEnabled and fr_ja and to_ko and td.type == 'yomi' and td.pattern:
                     t = td.pattern
                     t = hanjaconv.to_hangul(t)
-                    if not kochars.allhangul(t):
+                    if not kochars.allhangul(t): # allhangul excludes ASCII characters. So, it will automatically text regex expressions as well
                       t = td.pattern
                       t = ja2zht_name(t)
                       t = hanjaconv.to_hangul(t)
