@@ -256,9 +256,12 @@ bool TextHook::hijackProcess(ulong pid)
     return false;
   }
 
-  bool ret = Ihf::hijackProcess(pid);
-  DOUT("leave: ret =" << ret);
-  return ret;
+  // 7/12/2015: Function disabled
+  return true;
+
+  //bool ret = Ihf::hijackProcess(pid);
+  //DOUT("leave: ret =" << ret);
+  //return ret;
 }
 
 //void TextHook::detachAllProcesses()

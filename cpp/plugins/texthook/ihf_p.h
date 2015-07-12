@@ -68,7 +68,7 @@ public:
 
   ///  Add hook code
   static bool addHook(ulong pid, const QString &code, const QString &name = QString(), bool verbose = true);
-  static bool updateHook(ulong pid, const QString &code);
+  static bool updateHook(ulong pid, const QString &code); // not used
   static bool removeHook(ulong pid, const QString &code);
   static bool verifyHookCode(const QString &code);
 

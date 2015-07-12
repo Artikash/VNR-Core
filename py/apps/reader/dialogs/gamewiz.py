@@ -20,7 +20,7 @@ from texthook import texthook
 from mousehook import winpicker
 from gameman import GameProfile
 from mytr import my, mytr_
-import config, defs, features, growl, i18n, main, procutil, rc, textutil, tray
+import config, defs, features, growl, i18n, inject, main, procutil, rc, textutil, tray
 
 SS_RADIOBUTTONS = {
   defs.HOOK_THREAD_TYPE: "QRadioButton{color:red}",
@@ -652,9 +652,8 @@ class SyncGamePage(QtWidgets.QWizardPage):
   def initializePage(self):
     """@reimp @public"""
     pid = self.wizard().profile().pid
-    th = texthook.global_()
-    if pid and pid != th.currentPid():
-      ok = th.attachProcess(pid)
+    if pid and pid != texthook.global_().currentPid():
+      ok = inject.inject_vnrhook(pid)
       dprint("attached = %s" % ok)
 
       #if ok:

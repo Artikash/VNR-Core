@@ -221,6 +221,7 @@ if skos.WIN:
       dprint("enter")
       if not pid:
         return False
+
       d = self.__d
       #d.signature = 0
       if d.pid and d.pid != pid:
@@ -237,6 +238,14 @@ if skos.WIN:
         d.pid = pid
         if hijack:
           self.hijackProcess()
+          #import time
+          #MAX_RETRIES = 3
+          #for i in xrange(MAX_RETRIES):
+          #  time.sleep(1.0/MAX_RETRIES) # retry for totally 1 second
+          #  if self.hijackProcess():
+          #    break
+          #  else:
+          #    dwarn("hijack failed, retry: %s/%s" % (i + 1, MAX_RETRIES))
         self.processAttached.emit(d.pid)
 
         if ENABLE_GAMEENGINE:

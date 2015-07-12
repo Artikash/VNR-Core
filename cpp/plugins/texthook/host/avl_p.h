@@ -3,7 +3,7 @@
 // 8/23/2013 jichi
 // Branch: ITH/AVL.h, rev 133
 
-#include "config.h"
+#include <cstring>
 
 enum { STACK_SIZE = 32 };
 
@@ -18,7 +18,7 @@ class MyStack
 
 public:
   MyStack(): index(0)
-  { ITH_MEMSET_HEAP(s, 0, sizeof(s)); } // jichi 9/21/2013: assume T is atomic type
+  { ::memset(s, 0, sizeof(s)); } // jichi 9/21/2013: assume T is atomic type
 
   T &back() { return s[index-1]; }
   int size() { return index; }
@@ -47,8 +47,8 @@ struct TreeNode
     //, key()
     //, data()
   {
-    ITH_MEMSET_HEAP(&key, 0, sizeof(key)); // jcihi 9/26/2013: zero memory
-    ITH_MEMSET_HEAP(&data, 0, sizeof(data)); // jcihi 9/26/2013: zero memory
+    ::memset(&key, 0, sizeof(key)); // jcihi 9/26/2013: zero memory
+    ::memset(&data, 0, sizeof(data)); // jcihi 9/26/2013: zero memory
   }
 
   TreeNode(const T &k, const D &d) :
@@ -128,7 +128,7 @@ struct TreeNode
 template<class T,class D>
 struct NodePath
 {
-  NodePath() { memset(this, 0, sizeof(NodePath)); } // jichi 11/30/2013: This is the original code in ITH
+  NodePath() { ::memset(this, 0, sizeof(NodePath)); } // jichi 11/30/2013: This is the original code in ITH
   NodePath(TreeNode<T,D> *n, int f): Node(n), fact(f) {}
   TreeNode<T,D> *Node;
   union { char factor; int fact; };
@@ -193,7 +193,7 @@ public:
       }
       size_t sz = fLen(key) + 1;
       T *new_key = new T[sz];
-      ITH_MEMSET_HEAP(new_key, 0, sz * sizeof(T)); // jichi 9/26/2013: Zero memory
+      ::memset(new_key, 0, sz * sizeof(T)); // jichi 9/26/2013: Zero memory
       fCpy(new_key, key);
       TryNode = new TreeNode<T*, D>(new_key, data);
       _FactorLink(DownNode, factor) = TryNode;
@@ -239,7 +239,7 @@ public:
     else { //root null?
       size_t sz = fLen(key) + 1;
       T *new_key = new T[sz];
-      ITH_MEMSET_HEAP(new_key, 0, sz * sizeof(T)); // jichi 9/26/2013: Zero memory
+      ::memset(new_key, 0, sz * sizeof(T)); // jichi 9/26/2013: Zero memory
       fCpy(new_key, key);
       head.Left = new TreeNode<T *, D>(new_key, data);
       head.rank++;

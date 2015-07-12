@@ -4,10 +4,9 @@
 #include "texthook/ihf_p.h"
 #include "texthook/ith_p.h"
 #include "texthook/textthread_p.h"
-#include "ith/common/types.h"
-#include "ith/sys/sys.h"
 #include "host/host.h"
-//#include "ith/host/settings.h"
+#include "vnrhook/include/types.h"
+#include "ithsys/ithsys.h"
 #include "wintimer/wintimer.h"
 #include <QtCore/QDebug>
 
@@ -306,12 +305,11 @@ void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
 bool Ihf::attachProcess(DWORD pid)
 {
   DOUT("enter: pid =" << pid);
-  DWORD module = ::Host_InjectByPID(pid);
+  bool ok = ::Host_InjectByPID(pid);
 
-  enum { AttachDelay = 500 }; // in msec
-  ::Sleep(AttachDelay);
+  //enum { AttachDelay = 500 }; // in msec
+  //::Sleep(AttachDelay);
 
-  bool ok = ~module;
   DOUT("leave: ret =" << ok);
   return ok;
 }
@@ -320,7 +318,7 @@ bool Ihf::attachProcess(DWORD pid)
 bool Ihf::detachProcess(DWORD pid)
 {
   DOUT("enter");
-  BOOL ok = ::Host_ActiveDetachProcess(pid);
+  bool ok = ::Host_ActiveDetachProcess(pid);
   DOUT("leave: ret =" << ok);
   return ok;
 }

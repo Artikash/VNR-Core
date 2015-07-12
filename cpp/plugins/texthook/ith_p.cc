@@ -2,8 +2,8 @@
 // 10/15/2011 jichi
 
 #include "texthook/ith_p.h"
-#include "ith/common/const.h"
-#include "ith/common/types.h"
+#include "vnrhook/include/const.h"
+#include "vnrhook/include/types.h"
 #include <string>
 
 #define DEBUG "ith_p.cc"

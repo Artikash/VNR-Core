@@ -9,14 +9,13 @@
 #endif // _MSC_VER
 
 #include "hookman.h"
-#include "ith/common/const.h"
-#include "ith/common/defs.h"
-#include "ith/common/types.h"
-//#include "ith/common/growl.h"
-#include "ith/sys/sys.h"
+#include "vnrhook/include/const.h"
+#include "vnrhook/include/defs.h"
+#include "vnrhook/include/types.h"
+#include "ithsys/ithsys.h"
 //#include <emmintrin.h>
 
-#define DEBUG "hookman.cc"
+#define DEBUG "vnrhost/hookman.cc"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
@@ -179,7 +178,7 @@ void ThreadTable::SetThread(DWORD num, TextThread *ptr)
     if (size < 0x10000) {
       temp = new TextThread*[size];
       if (size > used)
-        ITH_MEMSET_HEAP(temp, 0, (size - used) * sizeof(TextThread *)); // jichi 9/21/2013: zero memory
+        ::memset(temp, 0, (size - used) * sizeof(TextThread *)); // jichi 9/21/2013: zero memory
       memcpy(temp, storage, used * sizeof(TextThread *));
     }
     delete[] storage;
@@ -277,10 +276,10 @@ HookManager::HookManager() :
   , new_thread_number(0)
 {
   // jichi 9/21/2013: zero memory
-  ITH_MEMSET_HEAP(record, 0, sizeof(record));
-  ITH_MEMSET_HEAP(text_pipes, 0, sizeof(text_pipes));
-  ITH_MEMSET_HEAP(cmd_pipes, 0, sizeof(cmd_pipes));
-  ITH_MEMSET_HEAP(recv_threads, 0, sizeof(recv_threads));
+  ::memset(record, 0, sizeof(record));
+  ::memset(text_pipes, 0, sizeof(text_pipes));
+  ::memset(cmd_pipes, 0, sizeof(cmd_pipes));
+  ::memset(recv_threads, 0, sizeof(recv_threads));
 
   head.key = new ThreadParameter;
   head.key->pid = 0;
@@ -520,7 +519,7 @@ void HookManager::RegisterProcess(DWORD pid, DWORD hookman, DWORD module)
       &oa,&id)))
     record[register_count - 1].process_handle = hProc;
   else {
-    DOUT("failed to open process");
+    DOUT("Failed to open process");
     //::man->AddConsoleOutput(ErrorOpenProcess);
     //LeaveCriticalSection(&hmcs);
     //ConsoleOutput("vnrhost:RegisterProcess: unlock");
@@ -635,21 +634,21 @@ void HookManager::AddLink(WORD from, WORD to)
              *to_thread = thread_table->FindThread(to);
   if (to_thread && from_thread) {
     if (from_thread->GetThreadParameter()->pid != to_thread->GetThreadParameter()->pid)
-      DOUT("vnrhost:AddLink: link to different process");
+      DOUT("Link to different process");
     else if (from_thread->Link()==to_thread)
-      DOUT("vnrhost:AddLink: link already exists");
+      DOUT("Link already exists");
     else if (to_thread->CheckCycle(from_thread))
-      DOUT("vnrhost:AddLink: cyclic link");
+      DOUT("Cyclic link");
     else {
       from_thread->Link()=to_thread;
       from_thread->LinkNumber()=to;
-      DOUT("vnrhost:AddLink: thread linked");
+      DOUT("Thread linked");
       //WCHAR str[0x40];
       //swprintf(str,FormatLink,from,to);
       //AddConsoleOutput(str);
     }
   } else
-    DOUT("vnrhost:AddLink: error link");
+    DOUT("Error link");
   //else
   //  AddConsoleOutput(ErrorLink);
   //LeaveCriticalSection(&hmcs);
@@ -664,7 +663,7 @@ void HookManager::UnLink(WORD from)
   if (TextThread *from_thread = thread_table->FindThread(from)) {
     from_thread->Link() = nullptr;
     from_thread->LinkNumber() = 0xffff;
-    DOUT("vnrhost:UnLink: link deleted");
+    DOUT("Link deleted");
   }
   //else // jichi 12/25/2013: This could happen when the game exist
   //  ConsoleOutput("vnrhost:UnLink: thread does not exist");
@@ -679,7 +678,7 @@ void HookManager::UnLinkAll(WORD from)
   //EnterCriticalSection(&hmcs);
   if (TextThread *from_thread = thread_table->FindThread(from)) {
     from_thread->UnLinkAll();
-    DOUT("vnrhost:UnLinkAll: link deleted");
+    DOUT("Link deleted");
   }
   //else // jichi 12/25/2013: This could happen after the process exists
   //  ConsoleOutput("vnrhost:UnLinkAll: thread not exist");
@@ -709,14 +708,14 @@ void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD re
       static bool once = true; // output only once
       if (once) {
         once = false;
-        DOUT("vnrhost:DispatchText: so many new threads, skip");
+        DOUT("So many new threads, skip");
       }
       return;
     } else { // New thread
       Insert(&tp, new_thread_number);
       it = new TextThread(pid, hook, retn, spl, new_thread_number);
       RegisterThread(it, new_thread_number);
-      DOUT("vnrhost:DispatchText: found new thread");
+      DOUT("Found new thread");
       char entstr[0x200];
       it->GetEntryString(entstr);
       DOUT(entstr);

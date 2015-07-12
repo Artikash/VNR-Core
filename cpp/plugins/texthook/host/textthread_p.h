@@ -3,7 +3,7 @@
 // 8/14/2013 jichi
 // Branch: ITH/main_template.h, rev 66
 
-#include "config.h"
+#include <windows.h>
 
 template <typename T>
 void Release(const T &p) { delete p; }
@@ -29,7 +29,7 @@ public:
     storage = new T[size];
     // jichi 9/21/2013: zero memory
     // This would cause trouble if T is not an atomic type
-    ITH_MEMSET_HEAP(storage, 0, sizeof(T) * size);
+    ::memset(storage, 0, sizeof(T) * size);
   }
 
   virtual ~MyVector()
@@ -65,7 +65,7 @@ public:
       return;
     EnterCriticalSection(&cs_store);
     if (offset+clear_size <= size)
-      memset(storage+offset, 0, clear_size * sizeof(T)); // jichi 11/30/2013: This is the original code of ITH
+      ::memset(storage+offset, 0, clear_size * sizeof(T)); // jichi 11/30/2013: This is the original code of ITH
     LeaveCriticalSection(&cs_store);
     //else __asm int 3
   }
@@ -82,12 +82,12 @@ public:
       if (size * sizeof(T) < 0x1000000) {
         temp = new T[size];
         if (size > used)
-          ITH_MEMSET_HEAP(temp, 0, (size - used) * sizeof(T)); // jichi 9/25/2013: zero memory
+          ::memset(temp, 0, (size - used) * sizeof(T)); // jichi 9/25/2013: zero memory
         memcpy(temp, storage, used * sizeof(T));
       } else {
         size = default_size;
         temp = new T[size];
-        ITH_MEMSET_HEAP(temp, 0, sizeof(T) * size); // jichi 9/25/2013: zero memory
+        ::memset(temp, 0, sizeof(T) * size); // jichi 9/25/2013: zero memory
         used = 0;
         status = 1;
       }

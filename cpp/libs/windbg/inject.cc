@@ -51,14 +51,29 @@ BOOL InjectFunction1(LPCVOID addr, LPCVOID data, SIZE_T dataSize, DWORD pid, HAN
 BOOL injectDllW(LPCWSTR dllPath, DWORD pid, HANDLE hProcess, INT timeout)
 {
   DOUT("enter: pid =" <<  pid);
-  LPCVOID LOADLIBRARYW = details::getModuleFunctionAddressA("LoadLibraryW", "kernel32.dll");
-  if (!LOADLIBRARYW) {
-    DOUT("exit error: cannot find LoadLibraryW from kernel32");
+  LPCVOID fun = details::getModuleFunctionAddressA("LoadLibraryW", "kernel32.dll");
+  if (!fun) {
+    DOUT("exit error: cannot find function");
     return FALSE;
   }
   LPCVOID data = dllPath;
   SIZE_T dataSize = ::wcslen(dllPath) * 2 + 2; // L'\0'
-  BOOL ok = InjectFunction1(LOADLIBRARYW, data, dataSize, pid, hProcess, timeout);
+  BOOL ok = InjectFunction1(fun, data, dataSize, pid, hProcess, timeout);
+  DOUT("exit: ret =" << ok);
+  return ok;
+}
+
+BOOL ejectDll(HANDLE hDll, DWORD pid, HANDLE hProcess, INT timeout)
+{
+  DOUT("enter: pid =" <<  pid);
+  LPCVOID fun = details::getModuleFunctionAddressA("FreeLibrary", "kernel32.dll");
+  if (!fun) {
+    DOUT("exit error: cannot find function");
+    return FALSE;
+  }
+  LPCVOID data = &hDll;
+  SIZE_T dataSize = sizeof(hDll);
+  BOOL ok = InjectFunction1(fun, data, dataSize, pid, hProcess, timeout);
   DOUT("exit: ret =" << ok);
   return ok;
 }

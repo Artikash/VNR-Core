@@ -5,14 +5,13 @@
 
 #include "host_p.h"
 #include "hookman.h"
-#include "ith/common/defs.h"
-#include "ith/common/const.h"
-//#include "ith/common/growl.h"
-#include "ith/sys/sys.h"
+#include "vnrhook/include/defs.h"
+#include "vnrhook/include/const.h"
+#include "ithsys/ithsys.h"
 //#include "CommandQueue.h"
 #include <QtCore/QDebug>
 
-#define DEBUG "pipe.cc"
+#define DEBUG "vnrhost/pipe.cc"
 #include "sakurakit/skdebug.h"
 
 //DWORD WINAPI UpdateWindows(LPVOID lpThreadParameter);
@@ -106,7 +105,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    DOUT("vnrhost:CreateNewPipe: failed to create recv pipe");
+    DOUT("Failed to create recv pipe");
     return;
   }
 
@@ -124,7 +123,7 @@ void CreateNewPipe()
       0x1000,
       &time))) {
     //ConsoleOutput(ErrorCreatePipe);
-    DOUT("vnrhost:CreateNewPipe: failed to create cmd pipe");
+    DOUT("Failed to create cmd pipe");
     return;
   }
 
@@ -206,7 +205,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
 
   enum { PipeBufferSize = 0x1000 };
   buff = new BYTE[PipeBufferSize];
-  ITH_MEMSET_HEAP(buff, 0, PipeBufferSize); // jichi 8/27/2013: zero memory, or it will crash wine on start up
+  ::memset(buff, 0, PipeBufferSize); // jichi 8/27/2013: zero memory, or it will crash wine on start up
 
   // 10/19/2014 jichi: there are totally three words received
   // See: hook/rpc/pipe.cc
@@ -314,7 +313,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   delete[] buff;
 
   if (::running)
-    DOUT("vnrhost:DetachFromProcess: detached");
+    DOUT("Detached");
 
   //if (::running) {
   //  swprintf((LPWSTR)buff, FormatDetach, pid);

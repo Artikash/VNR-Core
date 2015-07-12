@@ -7,12 +7,12 @@ include(../../../config.pri)
 include(host/host.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
+include($$LIBDIR/windbg/windbg.pri)
 #include($$LIBDIR/winmaker/winmaker.pri)
 
-# TODO: Get rid of ITH_SYS.
-# Use my own inject/pipe implementation in Python/Qt instead.
-# Get rid of dependence on NT apis at host side.
-include($$PLUGINDIR/ith/sys/sys.pri)
+# TODO: Get rid of dependence on ITHSYS and NT APIs
+include($$PLUGINDIR/vnrhook/vnrhook.pri)
+include($$PLUGINDIR/ithsys/ithsys.pri)
 LIBS += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
 
 DEFINES += ITH_HAS_CRT # Use native CRT
@@ -34,6 +34,7 @@ TARGET  = texthook
 DEFINES += TEXTHOOK_BUILD_LIB
 
 HEADERS += \
+  growl.h \
   ihf_p.h \
   ith_p.h \
   texthook_config.h \

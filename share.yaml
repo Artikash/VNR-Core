@@ -37,7 +37,6 @@ env:
 
   integritypath:
   - $PWD/bin/vnrhook.dll
-  - $PWD/bin/vnrhookxp.dll  # recognized as virus
   - $PWD/bin/texthook.dll
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm
@@ -877,13 +876,16 @@ cursors:
   IDC_HAND:         $PWD/cursors/blue_B/15.cur
 
 dlls:
+  vnrhook:
+  - $PWD/../Python/msvcr100.dll         # depends on kernel
+  - $PWD/../Python/msvcp100.dll         # depends on msvcr
+  #- $PWD/bin/vnrhook.dll
   vnragent:
   - $PWD/../Python/msvcr100.dll         # depends on kernel
   - $PWD/../Python/msvcp100.dll         # depends on msvcr
   - $PWD/../Qt/PySide/QtCore4.dll       # depends on msvcr, msvcp
   - $PWD/../Qt/PySide/QtNetwork4.dll    # depends on qtcore
   - $PWD/bin/vnragent.dll
-  #- $PWD/../Qt/plugins/codecs/qkrcodecs4.dll # for decoding Korean text
   vnrlocale: # TODO: Get rid of the dependence on msvc10
   - $PWD/../Python/msvcr100.dll         # depends on kernel
   - $PWD/../Python/msvcp100.dll         # depends on msvcr
