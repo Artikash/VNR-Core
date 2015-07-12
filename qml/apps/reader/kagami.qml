@@ -119,7 +119,7 @@ Item { id: root_
 
     grimoire_.widthFactor = settings_.grimoireWidthFactor
 
-    growl_.growlChecked = settings_.growlEnabled
+    dock_.growlChecked = settings_.growlEnabled
 
     //dock_.windowHookChecked = settings_.windowHookEnabled
     //dock_.windowTextChecked = settings_.windowTextVisible
