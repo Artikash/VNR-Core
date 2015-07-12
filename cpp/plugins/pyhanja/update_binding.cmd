@@ -4,7 +4,7 @@
 :: See: http://blog.csdn.net/dbzhang800/article/details/6387577
 @setlocal
 cd /d "%~dp0"
-set TARGET=hangul
+set TARGET=hanja
 set LIBTARGET=hanjaconv
 set PYTARGET=py%TARGET%
 set HEADER=%PYTARGET%_config.h

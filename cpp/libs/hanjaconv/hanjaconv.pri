@@ -8,11 +8,11 @@ DEPENDPATH += $$PWD
 #QT += core
 
 HEADERS += \
-  $$PWD/hanjaconfig.h \
-  $$PWD/hanjaconv.h \
-  $$PWD/hanjaconv_p.h
+  $$PWD/hangul2hanja.h \
+  $$PWD/hangul2hanja_p.h \
+  $$PWD/hangulconfig.h
 SOURCES += \
-  $$PWD/hanjaconv.cc \
-  $$PWD/hanjaconv_p.cc
+  $$PWD/hangul2hanja.cc \
+  $$PWD/hangul2hanja_p.cc
 
 # EOF

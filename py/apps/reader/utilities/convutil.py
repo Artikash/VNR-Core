@@ -13,7 +13,7 @@ from ccman import zht2zhx
 from ccman import zhs2zhx as zhs2zht
 from ccman import ja2zhs_name as _ja2zhs_name
 from ccman import ja2zhx_name as _ja2zht_name
-from hangulconv.hanjaconv import to_hanja as hangul2hanja
+from hanjaconv.hanjaconv import to_hanja as hangul2hanja
 from kanjiconv.jazh import ja2zht_name_fix
 from kanjiconv.jazh import ja2zh_name_test as _ja2zh_name_test
 import config

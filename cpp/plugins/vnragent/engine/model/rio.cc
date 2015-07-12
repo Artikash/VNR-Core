@@ -349,15 +349,21 @@ bool ShinaRioEngine::attach()
  *  もう一つは、この事実を受けて自分はどうするべきなのか――正確には、_t!250,6,6,・・・・・・・/どうしたいのかという決断に直面したからだった。
  */
 
-QString ShinaRioEngine::textFilter(const QString &text, int role)
+QString ShinaRioEngine::rubyRemove(const QString &text)
 {
-  Q_UNUSED(role);
   if (!text.contains("_t")) //role != Engine::ScenarioRole ||
     return text;
   static QRegExp rx("_t.*/");
   if (!rx.isMinimal())
     rx.setMinimal(true);
   return QString(text).remove(rx);
+}
+
+// FIXME: Ruby creation rule does not work
+QString ShinaRioEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt("_t!250,6,6,%2/%1");
+  return fmt.arg(rb, rt);
 }
 
 // EOF

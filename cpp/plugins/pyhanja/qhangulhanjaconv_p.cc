@@ -1,6 +1,6 @@
-// hangulparse.cc
+// qhangulhanjaconv_p.cc
 // 1/6/2015 jichi
-#include "pyhangul/hangulparse.h"
+#include "pyhanja/qhangulhanjaconv_p.h"
 #include <QtCore/QChar>
 
 //namespace {

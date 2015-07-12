@@ -4,7 +4,7 @@
 import re
 from unidecode import unidecode
 from unitraits import jpchars
-from hangulconv import hanjaconv
+from hanjaconv import hanjaconv
 from pinyinconv import pinyinconv
 #from opencc.opencc import ja2zht
 from convutil import zht2zhs
