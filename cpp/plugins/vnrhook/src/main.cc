@@ -12,10 +12,10 @@
 #include "src/tree/avl.h"
 #include "src/engine/match.h"
 #include "src/hijack/texthook.h"
+//#include "src/util/growl.h"
 #include "src/except.h"
 #include "include/const.h"
 #include "include/defs.h"
-//#include "src/util/growl.h"
 #include "ithsys/ithsys.h"
 #include "ccutil/ccmacro.h"
 #include <cstdio> // for swprintf
@@ -227,8 +227,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       InitFilterTable();
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
-    }
-    break;
+    } break;
   case DLL_PROCESS_DETACH:
     {
       static bool detached_ = false;
