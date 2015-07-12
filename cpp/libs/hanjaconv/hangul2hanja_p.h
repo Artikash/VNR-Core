@@ -1,16 +1,16 @@
-#ifndef HANJACONV_P_H
-#define HANJACONV_P_H
+#ifndef HANGUL2HANJA_P_H
+#define HANGUL2HANJA_P_H
 
-// hanjaconv_p.h
+// hangul2hanja_p.h
 // 1/6/2015 jichi
 
-#include "hanjaconv/hanjaconv.h"
+#include "hanjaconv/hangul2hanja.h"
 
 /** Private class */
 
-class HanjaConverterPrivate
+class HangulHanjaConverterPrivate
 {
-  typedef HanjaConverter Q;
+  typedef HangulHanjaConverter Q;
   struct Entry
   {
     std::wstring hangul,  // source
@@ -29,8 +29,8 @@ public:
   entry_type *entries;
   size_t entry_count;
 
-  HanjaConverterPrivate() : entries(nullptr), entry_count(0) {}
-  ~HanjaConverterPrivate() { if (entries) delete[] entries; }
+  HangulHanjaConverterPrivate() : entries(nullptr), entry_count(0) {}
+  ~HangulHanjaConverterPrivate() { if (entries) delete[] entries; }
 
   void clear()
   {
@@ -76,4 +76,4 @@ private:
                        const Q::collect_fun_t &fun) const;
 };
 
-#endif // HANJACONV_P_H
+#endif // HANGUL2HANJA_P_H

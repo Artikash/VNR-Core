@@ -1,8 +1,8 @@
-// hanjaconv_p.cc
+// hangul2hanja_p.cc
 // 1/6/2015 jichi
 
-#include "hanjaconv/hanjaconv_p.h"
-#include "hanjaconv/hanjaconfig.h"
+#include "hanjaconv/hangul2hanja_p.h"
+#include "hanjaconv/hangulconfig.h"
 #include "unistr/unichar.h"
 #include <boost/algorithm/string.hpp>
 
@@ -12,7 +12,7 @@
 
 // Public:
 
-void HanjaConverterPrivate::replace(std::wstring &text) const // beginning of word
+void HangulHanjaConverterPrivate::replace(std::wstring &text) const // beginning of word
 {
   if (text.size() < HANJA_MIN_SIZE)
     return;
@@ -25,7 +25,7 @@ void HanjaConverterPrivate::replace(std::wstring &text) const // beginning of wo
       pos++;
 }
 
-void HanjaConverterPrivate::collect(const std::wstring &text, const Q::collect_fun_t &fun) const
+void HangulHanjaConverterPrivate::collect(const std::wstring &text, const Q::collect_fun_t &fun) const
 {
   if (text.size() < HANJA_MIN_SIZE)
     return;
@@ -45,7 +45,7 @@ void HanjaConverterPrivate::collect(const std::wstring &text, const Q::collect_f
 
 // Private:
 
-size_t HanjaConverterPrivate::replace_first(std::wstring &text, size_t start) const
+size_t HangulHanjaConverterPrivate::replace_first(std::wstring &text, size_t start) const
 {
   if (text.size() < HANJA_MIN_SIZE || start > text.size() - HANJA_MIN_SIZE ||
       !unistr::ishangul(text[start]) || !unistr::ishangul(text[start + 1]))
@@ -64,7 +64,7 @@ size_t HanjaConverterPrivate::replace_first(std::wstring &text, size_t start) co
   return 0;
 }
 
-size_t HanjaConverterPrivate::collect_first(const std::wstring &text, size_t start, size_t last, const Q::collect_fun_t &fun) const
+size_t HangulHanjaConverterPrivate::collect_first(const std::wstring &text, size_t start, size_t last, const Q::collect_fun_t &fun) const
 {
   if (text.size() < HANJA_MIN_SIZE || start > text.size() - HANJA_MIN_SIZE ||
       !unistr::ishangul(text[start]) || !unistr::ishangul(text[start + 1]))

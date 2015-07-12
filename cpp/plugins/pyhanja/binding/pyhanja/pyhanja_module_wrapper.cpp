@@ -3,31 +3,31 @@
 #include <shiboken.h>
 #include <algorithm>
 #include <pyside.h>
-#include "pyhangul_python.h"
+#include "pyhanja_python.h"
 
 
 
 // Extra includes
 
 // Current module's type array.
-PyTypeObject** SbkpyhangulTypes;
+PyTypeObject** SbkpyhanjaTypes;
 // Current module's converter array.
-SbkConverter** SbkpyhangulTypeConverters;
+SbkConverter** SbkpyhanjaTypeConverters;
 void cleanTypesAttributes(void) {
-    for (int i = 0, imax = SBK_pyhangul_IDX_COUNT; i < imax; i++) {
-        PyObject *pyType = reinterpret_cast<PyObject*>(SbkpyhangulTypes[i]);
+    for (int i = 0, imax = SBK_pyhanja_IDX_COUNT; i < imax; i++) {
+        PyObject *pyType = reinterpret_cast<PyObject*>(SbkpyhanjaTypes[i]);
         if (pyType && PyObject_HasAttrString(pyType, "staticMetaObject"))
             PyObject_SetAttrString(pyType, "staticMetaObject", Py_None);
     }
 }
 // Global functions ------------------------------------------------------------
 
-static PyMethodDef pyhangul_methods[] = {
+static PyMethodDef pyhanja_methods[] = {
     {0} // Sentinel
 };
 
 // Classes initialization functions ------------------------------------------------------------
-void init_HangulHanjaConverter(PyObject* module);
+void init_QHangulHanjaConverter(PyObject* module);
 
 // Required modules' type and converter arrays.
 PyTypeObject** SbkPySide_QtCoreTypes;
@@ -68,7 +68,7 @@ static PyObject* _QList_QPair_QString_QString___CppToPython__QList_QPair_QString
         ::QList<QPair<QString, QString > >::const_iterator it = cppInRef.begin();
         for (int idx = 0; it != cppInRef.end(); ++it, ++idx) {
             ::QPair<QString, QString > cppItem(*it);
-            PyList_SET_ITEM(pyOut, idx, Shiboken::Conversions::copyToPython(SbkpyhangulTypeConverters[SBK_PYHANGUL_QPAIR_QSTRING_QSTRING_IDX], &cppItem));
+            PyList_SET_ITEM(pyOut, idx, Shiboken::Conversions::copyToPython(SbkpyhanjaTypeConverters[SBK_PYHANJA_QPAIR_QSTRING_QSTRING_IDX], &cppItem));
         }
         return pyOut;
         // TEMPLATE - cpplist_to_pylist_conversion - END
@@ -81,14 +81,14 @@ static void _QList_QPair_QString_QString___PythonToCpp__QList_QPair_QString_QStr
     for (int i = 0; i < PySequence_Size(pyIn); i++) {
         Shiboken::AutoDecRef pyItem(PySequence_GetItem(pyIn, i));
         ::QPair<QString, QString > cppItem = ::QPair<QString, QString >();
-        Shiboken::Conversions::pythonToCppCopy(SbkpyhangulTypeConverters[SBK_PYHANGUL_QPAIR_QSTRING_QSTRING_IDX], pyItem, &(cppItem));
+        Shiboken::Conversions::pythonToCppCopy(SbkpyhanjaTypeConverters[SBK_PYHANJA_QPAIR_QSTRING_QSTRING_IDX], pyItem, &(cppItem));
         cppOutRef << cppItem;
     }
     // TEMPLATE - pyseq_to_cpplist_conversion - END
 
 }
 static PythonToCppFunc is__QList_QPair_QString_QString___PythonToCpp__QList_QPair_QString_QString___Convertible(PyObject* pyIn) {
-    if (Shiboken::Conversions::convertibleSequenceTypes(SbkpyhangulTypeConverters[SBK_PYHANGUL_QPAIR_QSTRING_QSTRING_IDX], pyIn))
+    if (Shiboken::Conversions::convertibleSequenceTypes(SbkpyhanjaTypeConverters[SBK_PYHANJA_QPAIR_QSTRING_QSTRING_IDX], pyIn))
         return _QList_QPair_QString_QString___PythonToCpp__QList_QPair_QString_QString__;
     return 0;
 }
@@ -102,7 +102,7 @@ static PyObject* _QList_QList_QPair_QString_QString____CppToPython__QList_QList_
         ::QList<QList<QPair<QString, QString > > >::const_iterator it = cppInRef.begin();
         for (int idx = 0; it != cppInRef.end(); ++it, ++idx) {
             ::QList<QPair<QString, QString > > cppItem(*it);
-            PyList_SET_ITEM(pyOut, idx, Shiboken::Conversions::copyToPython(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QPAIR_QSTRING_QSTRING_IDX], &cppItem));
+            PyList_SET_ITEM(pyOut, idx, Shiboken::Conversions::copyToPython(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QPAIR_QSTRING_QSTRING_IDX], &cppItem));
         }
         return pyOut;
         // TEMPLATE - cpplist_to_pylist_conversion - END
@@ -115,14 +115,14 @@ static void _QList_QList_QPair_QString_QString____PythonToCpp__QList_QList_QPair
     for (int i = 0; i < PySequence_Size(pyIn); i++) {
         Shiboken::AutoDecRef pyItem(PySequence_GetItem(pyIn, i));
         ::QList<QPair<QString, QString > > cppItem = ::QList<QPair<QString, QString > >();
-        Shiboken::Conversions::pythonToCppCopy(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QPAIR_QSTRING_QSTRING_IDX], pyItem, &(cppItem));
+        Shiboken::Conversions::pythonToCppCopy(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QPAIR_QSTRING_QSTRING_IDX], pyItem, &(cppItem));
         cppOutRef << cppItem;
     }
     // TEMPLATE - pyseq_to_cpplist_conversion - END
 
 }
 static PythonToCppFunc is__QList_QList_QPair_QString_QString____PythonToCpp__QList_QList_QPair_QString_QString____Convertible(PyObject* pyIn) {
-    if (Shiboken::Conversions::convertibleSequenceTypes(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QPAIR_QSTRING_QSTRING_IDX], pyIn))
+    if (Shiboken::Conversions::convertibleSequenceTypes(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QPAIR_QSTRING_QSTRING_IDX], pyIn))
         return _QList_QList_QPair_QString_QString____PythonToCpp__QList_QList_QPair_QString_QString___;
     return 0;
 }
@@ -250,10 +250,10 @@ static PythonToCppFunc is__QMap_QString_QVariant__PythonToCpp__QMap_QString_QVar
 #ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
     /* m_base     */ PyModuleDef_HEAD_INIT,
-    /* m_name     */ "pyhangul",
+    /* m_name     */ "pyhanja",
     /* m_doc      */ 0,
     /* m_size     */ -1,
-    /* m_methods  */ pyhangul_methods,
+    /* m_methods  */ pyhanja_methods,
     /* m_reload   */ 0,
     /* m_traverse */ 0,
     /* m_clear    */ 0,
@@ -261,7 +261,7 @@ static struct PyModuleDef moduledef = {
 };
 
 #endif
-SBK_MODULE_INIT_FUNCTION_BEGIN(pyhangul)
+SBK_MODULE_INIT_FUNCTION_BEGIN(pyhanja)
     {
         Shiboken::AutoDecRef requiredModule(Shiboken::Module::import("PySide.QtCore"));
         if (requiredModule.isNull())
@@ -271,72 +271,72 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pyhangul)
     }
 
     // Create an array of wrapper types for the current module.
-    static PyTypeObject* cppApi[SBK_pyhangul_IDX_COUNT];
-    SbkpyhangulTypes = cppApi;
+    static PyTypeObject* cppApi[SBK_pyhanja_IDX_COUNT];
+    SbkpyhanjaTypes = cppApi;
 
     // Create an array of primitive type converters for the current module.
-    static SbkConverter* sbkConverters[SBK_pyhangul_CONVERTERS_IDX_COUNT];
-    SbkpyhangulTypeConverters = sbkConverters;
+    static SbkConverter* sbkConverters[SBK_pyhanja_CONVERTERS_IDX_COUNT];
+    SbkpyhanjaTypeConverters = sbkConverters;
 
 #ifdef IS_PY3K
-    PyObject* module = Shiboken::Module::create("pyhangul", &moduledef);
+    PyObject* module = Shiboken::Module::create("pyhanja", &moduledef);
 #else
-    PyObject* module = Shiboken::Module::create("pyhangul", pyhangul_methods);
+    PyObject* module = Shiboken::Module::create("pyhanja", pyhanja_methods);
 #endif
 
     // Initialize classes in the type system
-    init_HangulHanjaConverter(module);
+    init_QHangulHanjaConverter(module);
 
     // Register converter for type 'QPair<QString,QString>'.
-    SbkpyhangulTypeConverters[SBK_PYHANGUL_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QPair_QString_QString__CppToPython__QPair_QString_QString_);
-    Shiboken::Conversions::registerConverterName(SbkpyhangulTypeConverters[SBK_PYHANGUL_QPAIR_QSTRING_QSTRING_IDX], "QPair<QString,QString>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhangulTypeConverters[SBK_PYHANGUL_QPAIR_QSTRING_QSTRING_IDX],
+    SbkpyhanjaTypeConverters[SBK_PYHANJA_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QPair_QString_QString__CppToPython__QPair_QString_QString_);
+    Shiboken::Conversions::registerConverterName(SbkpyhanjaTypeConverters[SBK_PYHANJA_QPAIR_QSTRING_QSTRING_IDX], "QPair<QString,QString>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhanjaTypeConverters[SBK_PYHANJA_QPAIR_QSTRING_QSTRING_IDX],
         _QPair_QString_QString__PythonToCpp__QPair_QString_QString_,
         is__QPair_QString_QString__PythonToCpp__QPair_QString_QString__Convertible);
 
     // Register converter for type 'QList<QPair<QString,QString>>'.
-    SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QPair_QString_QString___CppToPython__QList_QPair_QString_QString__);
-    Shiboken::Conversions::registerConverterName(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QPAIR_QSTRING_QSTRING_IDX], "QList<QPair<QString,QString>>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QPAIR_QSTRING_QSTRING_IDX],
+    SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QPair_QString_QString___CppToPython__QList_QPair_QString_QString__);
+    Shiboken::Conversions::registerConverterName(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QPAIR_QSTRING_QSTRING_IDX], "QList<QPair<QString,QString>>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QPAIR_QSTRING_QSTRING_IDX],
         _QList_QPair_QString_QString___PythonToCpp__QList_QPair_QString_QString__,
         is__QList_QPair_QString_QString___PythonToCpp__QList_QPair_QString_QString___Convertible);
 
     // Register converter for type 'QList<QList<QPair<QString,QString>>>'.
-    SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QLIST_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QList_QPair_QString_QString____CppToPython__QList_QList_QPair_QString_QString___);
-    Shiboken::Conversions::registerConverterName(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QLIST_QPAIR_QSTRING_QSTRING_IDX], "QList<QList<QPair<QString,QString>>>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QLIST_QPAIR_QSTRING_QSTRING_IDX],
+    SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QLIST_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QList_QPair_QString_QString____CppToPython__QList_QList_QPair_QString_QString___);
+    Shiboken::Conversions::registerConverterName(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QLIST_QPAIR_QSTRING_QSTRING_IDX], "QList<QList<QPair<QString,QString>>>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QLIST_QPAIR_QSTRING_QSTRING_IDX],
         _QList_QList_QPair_QString_QString____PythonToCpp__QList_QList_QPair_QString_QString___,
         is__QList_QList_QPair_QString_QString____PythonToCpp__QList_QList_QPair_QString_QString____Convertible);
 
     // Register converter for type 'QList<QVariant>'.
-    SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QVariant__CppToPython__QList_QVariant_);
-    Shiboken::Conversions::registerConverterName(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QVARIANT_IDX], "QList<QVariant>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QVARIANT_IDX],
+    SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QVariant__CppToPython__QList_QVariant_);
+    Shiboken::Conversions::registerConverterName(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QVARIANT_IDX], "QList<QVariant>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QVARIANT_IDX],
         _QList_QVariant__PythonToCpp__QList_QVariant_,
         is__QList_QVariant__PythonToCpp__QList_QVariant__Convertible);
 
     // Register converter for type 'QList<QString>'.
-    SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QString__CppToPython__QList_QString_);
-    Shiboken::Conversions::registerConverterName(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QSTRING_IDX], "QList<QString>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhangulTypeConverters[SBK_PYHANGUL_QLIST_QSTRING_IDX],
+    SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QString__CppToPython__QList_QString_);
+    Shiboken::Conversions::registerConverterName(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QSTRING_IDX], "QList<QString>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhanjaTypeConverters[SBK_PYHANJA_QLIST_QSTRING_IDX],
         _QList_QString__PythonToCpp__QList_QString_,
         is__QList_QString__PythonToCpp__QList_QString__Convertible);
 
     // Register converter for type 'QMap<QString,QVariant>'.
-    SbkpyhangulTypeConverters[SBK_PYHANGUL_QMAP_QSTRING_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyDict_Type, _QMap_QString_QVariant__CppToPython__QMap_QString_QVariant_);
-    Shiboken::Conversions::registerConverterName(SbkpyhangulTypeConverters[SBK_PYHANGUL_QMAP_QSTRING_QVARIANT_IDX], "QMap<QString,QVariant>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhangulTypeConverters[SBK_PYHANGUL_QMAP_QSTRING_QVARIANT_IDX],
+    SbkpyhanjaTypeConverters[SBK_PYHANJA_QMAP_QSTRING_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyDict_Type, _QMap_QString_QVariant__CppToPython__QMap_QString_QVariant_);
+    Shiboken::Conversions::registerConverterName(SbkpyhanjaTypeConverters[SBK_PYHANJA_QMAP_QSTRING_QVARIANT_IDX], "QMap<QString,QVariant>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpyhanjaTypeConverters[SBK_PYHANJA_QMAP_QSTRING_QVARIANT_IDX],
         _QMap_QString_QVariant__PythonToCpp__QMap_QString_QVariant_,
         is__QMap_QString_QVariant__PythonToCpp__QMap_QString_QVariant__Convertible);
 
     // Register primitive types converters.
 
-    Shiboken::Module::registerTypes(module, SbkpyhangulTypes);
-    Shiboken::Module::registerTypeConverters(module, SbkpyhangulTypeConverters);
+    Shiboken::Module::registerTypes(module, SbkpyhanjaTypes);
+    Shiboken::Module::registerTypeConverters(module, SbkpyhanjaTypeConverters);
 
     if (PyErr_Occurred()) {
         PyErr_Print();
-        Py_FatalError("can't initialize module pyhangul");
+        Py_FatalError("can't initialize module pyhanja");
     }
     PySide::registerCleanupFunction(cleanTypesAttributes);
 SBK_MODULE_INIT_FUNCTION_END

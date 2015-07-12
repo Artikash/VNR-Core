@@ -1,41 +1,41 @@
-// hangulconv.cc
+// qhangulhanjaconv.cc
 // 1/6/2015
-#include "pyhangul/hangulconv.h"
-#include "pyhangul/hangulparse.h"
-#include "hanjaconv/hanjaconv.h"
+#include "pyhanja/qhangulhanjaconv.h"
+#include "pyhanja/qhangulhanjaconv_p.h"
+#include "hanjaconv/hangul2hanja.h"
 
-//#define DEBUG "HangulHanjaConverter.cc"
+//#define DEBUG "QHangulHanjaConverter.cc"
 //#include "sakurakit/skdebug.h"
 
 /** Private class */
 
-class HangulHanjaConverter_p
+class QHangulHanjaConverter_p
 {
 public:
-  HanjaConverter conv;
-  HangulHanjaConverter_p() {}
+  HangulHanjaConverter conv;
+  QHangulHanjaConverter_p() {}
 };
 
 /** Public class */
 
 // - Construction -
 
-HangulHanjaConverter::HangulHanjaConverter() : d_(new D) {}
-HangulHanjaConverter::~HangulHanjaConverter() { delete d_; }
+QHangulHanjaConverter::QHangulHanjaConverter() : d_(new D) {}
+QHangulHanjaConverter::~QHangulHanjaConverter() { delete d_; }
 
-int HangulHanjaConverter::size() const { return d_->conv.size(); }
-bool HangulHanjaConverter::isEmpty() const { return d_->conv.isEmpty(); }
+int QHangulHanjaConverter::size() const { return d_->conv.size(); }
+bool QHangulHanjaConverter::isEmpty() const { return d_->conv.isEmpty(); }
 
-void HangulHanjaConverter::clear() { d_->conv.clear(); }
+void QHangulHanjaConverter::clear() { d_->conv.clear(); }
 
-bool HangulHanjaConverter::loadFile(const QString &path)
+bool QHangulHanjaConverter::loadFile(const QString &path)
 { return d_->conv.loadFile(path.toStdWString()); }
 
-QString HangulHanjaConverter::convert(const QString &text) const
+QString QHangulHanjaConverter::convert(const QString &text) const
 { return QString::fromStdWString(d_->conv.convert(text.toStdWString())); }
 
 QList<QList<QPair<QString, QString> > >
-HangulHanjaConverter::parse(const QString &text) const
+QHangulHanjaConverter::parse(const QString &text) const
 {
   typedef QPair<QString, QString> Pair;
   typedef QList<Pair> PairList;

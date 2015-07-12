@@ -1,26 +1,26 @@
-#ifndef HANJACONV_H
-#define HANJACONV_H
+#ifndef HANGUL2HANJA_H
+#define HANGUL2HANJA_H
 
-// hanjaconv.h
+// hangul2hanja.h
 // 1/6/2015 jichi
 
 #include "sakurakit/skglobal.h"
 #include <functional>
 #include <string>
 
-class HanjaConverterPrivate;
-class HanjaConverter
+class HangulHanjaConverterPrivate;
+class HangulHanjaConverter
 {
-  SK_CLASS(HanjaConverter)
-  SK_DISABLE_COPY(HanjaConverter)
-  SK_DECLARE_PRIVATE(HanjaConverterPrivate)
+  SK_CLASS(HangulHanjaConverter)
+  SK_DISABLE_COPY(HangulHanjaConverter)
+  SK_DECLARE_PRIVATE(HangulHanjaConverterPrivate)
 
   // - Construction -
 public:
   typedef std::function<void (size_t start, size_t len, const wchar_t *hanja)> collect_fun_t;
 
-  HanjaConverter();
-  ~HanjaConverter();
+  HangulHanjaConverter();
+  ~HangulHanjaConverter();
 
   // Initialization
 
@@ -45,4 +45,4 @@ public:
   void collect(const std::wstring &text, const collect_fun_t &fun) const;
 };
 
-#endif // HANJACONV_H
+#endif // HANGUL2HANJA_H

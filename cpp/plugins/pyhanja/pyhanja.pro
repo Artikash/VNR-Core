@@ -1,6 +1,6 @@
-# pyhangul.pro
+# pyhanja.pro
 # 4/1/2013 jichi
-# Build pyhangul.pyd
+# Build pyhanja.pyd
 #
 # Though Qt is not indispensible, it's containers could same memory.
 
@@ -19,31 +19,31 @@ INCLUDEPATH += $$PYSIDE_HOME/include/PySide/QtCore
 
 ## Sources
 
-SRCPATH = binding/pyhangul
+SRCPATH = binding/pyhanja
 INCLUDEPATH += $SRCPATH
 DEPENDPATH += $SRCPATH
 
 TEMPLATE = lib
-TARGET = pyhangul
+TARGET = pyhanja
 
 HEADERS += \
-  hangulconv.h \
-  hangulparse.h \
-  pyhangul_config.h \
-  $$SRCPATH/hangulhanjaconverter_wrapper.h \
-  $$SRCPATH/pyhangul_python.h
+  qhangulhanjaconv.h \
+  qhangulhanjaconv_p.h \
+  pyhanja_config.h \
+  $$SRCPATH/qhangulhanjaconverter_wrapper.h \
+  $$SRCPATH/pyhanja_python.h
 
 SOURCES += \
-  hangulconv.cc \
-  hangulparse.cc \
-  $$SRCPATH/hangulhanjaconverter_wrapper.cpp \
-  $$SRCPATH/pyhangul_module_wrapper.cpp
+  qhangulhanjaconv.cc \
+  qhangulhanjaconv_p.cc \
+  $$SRCPATH/qhangulhanjaconverter_wrapper.cpp \
+  $$SRCPATH/pyhanja_module_wrapper.cpp
 
 #!wince*: LIBS += -lshell32
-#RC_FILE += hangul.rc
+#RC_FILE += hanja.rc
 
 OTHER_FILES += \
-  typesystem_hangul.xml \
+  typesystem_hanja.xml \
   update_binding.cmd
 
 # EOF

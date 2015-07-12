@@ -1,7 +1,7 @@
-#ifndef HANGULCONV_H
-#define HANGULCONV_H
+#ifndef QHANGULHANJACONV_H
+#define QHANGULHANJACONV_H
 
-// pyhangul.h
+// qhangulhanjaconv.h
 // 1/6/2015 jichi
 // Qt is used instead of pure C++ to reduce memory copy of the returned containers.
 
@@ -10,18 +10,17 @@
 #include <QtCore/QPair>
 #include <QtCore/QString>
 
-class HangulHanjaConverter_p;
-class HangulHanjaConverter
+class QHangulHanjaConverter_p;
+class QHangulHanjaConverter
 {
-  SK_CLASS(HangulHanjaConverter)
-  SK_DISABLE_COPY(HangulHanjaConverter)
-  SK_DECLARE_PRIVATE(HangulHanjaConverter_p)
+  SK_CLASS(QHangulHanjaConverter)
+  SK_DISABLE_COPY(QHangulHanjaConverter)
+  SK_DECLARE_PRIVATE(QHangulHanjaConverter_p)
 
 public:
   // Construction
-
-  HangulHanjaConverter();
-  ~HangulHanjaConverter();
+  QHangulHanjaConverter();
+  ~QHangulHanjaConverter();
 
   ///  Return the number of loaded rules
   int size() const;
@@ -44,4 +43,4 @@ public:
   QList<QList<QPair<QString, QString> > > parse(const QString &text) const;
 };
 
-#endif // HANGULCONV_H
+#endif // QHANGULHANJACONV_H

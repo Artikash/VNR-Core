@@ -991,7 +991,7 @@ Item { id: root_
               , root_.rubyInverted
               , root_.alignCenter
             ) :
-          model.type === 'tr' && root_.termRubyEnabled ? renderTranslationRuby(model.text)
+          model.type === 'tr' && root_.termRubyEnabled ? renderTranslationRuby(model.text) :
           model.text
         )
         readOnly: true

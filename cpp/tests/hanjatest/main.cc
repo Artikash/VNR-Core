@@ -1,6 +1,6 @@
 // main.cc
 // 1/6/2014 jichi
-#include "hanjaconv/hanjaconv.h"
+#include "hanjaconv/hangul2hanja.h"
 #include <QtCore>
 
 int main()
@@ -25,7 +25,7 @@ int main()
   //wchar_t ch = L'「';
   //qDebug() << ::ispunct(ch) << QChar(ch).isPunct();
 
-  HanjaConverter conv;
+  HangulHanjaConverter conv;
   conv.loadFile(path);
   qDebug() << conv.size();
 

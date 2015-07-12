@@ -20,10 +20,10 @@ def setdicpath(path):
 @memoized
 def converter():
   import os
-  from pyhangul import HangulHanjaConverter
+  from pyhanja import QHangulHanjaConverter
   #path = os.path.join(HANGUL_DIC_DIR, HANGUL_DIC_CONV)
   path = HANGUL_DIC_PATH
-  ret = HangulHanjaConverter()
+  ret = QHangulHanjaConverter()
   if os.path.exists(path):
     ret.loadFile(path)
   else:

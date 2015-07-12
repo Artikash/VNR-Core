@@ -1,9 +1,9 @@
-// hanjaconv.cc
+// hangul2hanja.cc
 // 1/6/2015 jichi
 
-#include "hanjaconv/hanjaconv.h"
-#include "hanjaconv/hanjaconfig.h"
-#include "hanjaconv/hanjaconv_p.h"
+#include "hanjaconv/hangul2hanja.h"
+#include "hanjaconv/hangul2hanja_p.h"
+#include "hanjaconv/hangulconfig.h"
 #include "cpputil/cpplocale.h"
 #include <boost/foreach.hpp>
 #include <fstream>
@@ -29,16 +29,16 @@ const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 // Construction
 
-HanjaConverter::HanjaConverter() : d_(new D) {}
-HanjaConverter::~HanjaConverter() { delete d_; }
+HangulHanjaConverter::HangulHanjaConverter() : d_(new D) {}
+HangulHanjaConverter::~HangulHanjaConverter() { delete d_; }
 
-int HanjaConverter::size() const { return d_->entry_count; }
-bool HanjaConverter::isEmpty() const { return !d_->entry_count; }
+int HangulHanjaConverter::size() const { return d_->entry_count; }
+bool HangulHanjaConverter::isEmpty() const { return !d_->entry_count; }
 
-void HanjaConverter::clear() { d_->clear(); }
+void HangulHanjaConverter::clear() { d_->clear(); }
 
 // Initialization
-bool HanjaConverter::loadFile(const std::wstring &path)
+bool HangulHanjaConverter::loadFile(const std::wstring &path)
 {
 #ifdef _MSC_VER
   std::wifstream fin(path);
@@ -80,7 +80,7 @@ bool HanjaConverter::loadFile(const std::wstring &path)
 
 // Conversion
 
-std::wstring HanjaConverter::convert(const std::wstring &text) const
+std::wstring HangulHanjaConverter::convert(const std::wstring &text) const
 {
   if (text.size() < HANJA_MIN_SIZE || !d_->entries) // at least two elements
     return text;
@@ -90,7 +90,7 @@ std::wstring HanjaConverter::convert(const std::wstring &text) const
   return ret;
 }
 
-void HanjaConverter::collect(const std::wstring &text, const collect_fun_t &fun) const
+void HangulHanjaConverter::collect(const std::wstring &text, const collect_fun_t &fun) const
 {
   if (text.empty() || !d_->entries) // at least two elements
     return;
