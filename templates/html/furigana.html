@@ -6,6 +6,8 @@
  # @param* center  bool  align ment
  # @param* annotExists  bool
  # @param* rubyExists  bool
+ # @param* annotFont  str
+ # @param* rubyFont  str
  #
  # Tuples will be iterated twice.
  # Tuple elements can be None.
@@ -14,14 +16,24 @@
 <html>
 	<head>
 		<style type="text/css">
+%if rubyExists
 .ruby {
+%if rubyFont
+    font-family: {{rubyFont}};
+%else
 	font-weight: bold;
+%endif
 	font-size: {{rubySize}}px;
 }
+%endif
+%if annotExists
 .annot {
-	font-family: Tahoma;
+%if annotFont
+    font-family: {{annotFont}};
+%endif
 	font-size: {{annotSize}}px;
 }
+%endif
 %if paddingSize
 td {
 	padding-left: {{paddingSize}}px;
