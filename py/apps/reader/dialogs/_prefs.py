@@ -9368,10 +9368,10 @@ class _EngineTab(object):
       ss.setEmbeddedNameTranslationEnabled(True)
       ss.setEmbeddedNameTextVisible(False)
     #elif self.nameTranscodeButton.isChecked():
-      ss.setEmbeddedNameVisible(True)
-      ss.setEmbeddedNameTranscodingEnabled(True)
-      ss.setEmbeddedNameTranslationEnabled(False)
-      ss.setEmbeddedNameTextVisible(False)
+      #ss.setEmbeddedNameVisible(True)
+      #ss.setEmbeddedNameTranscodingEnabled(True)
+      #ss.setEmbeddedNameTranslationEnabled(False)
+      #ss.setEmbeddedNameTextVisible(False)
     elif self.nameDisableButton.isChecked():
       ss.setEmbeddedNameVisible(True)
       #ss.setEmbeddedNameTranscodingEnabled(False)

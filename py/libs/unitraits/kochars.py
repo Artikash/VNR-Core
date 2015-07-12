@@ -38,7 +38,7 @@ def allhangul(text):
   if not text:
     return False
   for c in text:
-    if not ishangul(c):
+    if ord(c) >= 128 and not ishangul(c):
       return False
   return True
 
