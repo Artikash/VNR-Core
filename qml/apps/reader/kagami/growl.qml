@@ -19,6 +19,8 @@ Item { id: root_
 
   property real zoomFactor: 1.0
 
+  property bool enabled: true
+
   function show() { showMe() }
 
   // - Private -
@@ -320,7 +322,7 @@ Item { id: root_
 
   // Insert a page break
   function pageBreak() {
-    if (_pageIndex !== listModel_.count) {
+    if (root_.enabled && _pageIndex !== listModel_.count) {
       addText("*", 'pagebreak', 'transparent') // green
       _pageIndex = listModel_.count
     }
