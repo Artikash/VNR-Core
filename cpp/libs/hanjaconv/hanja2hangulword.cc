@@ -143,14 +143,16 @@ void HanjaHangulWordConverter::replace(wchar_t *text) const
 {
   if (!text || d_->dicts.empty())
     return;
+  size_t size = ::wcslen(text);
   for (size_t di = 0; di < d_->dicts.size(); di++) {
     const auto d = d_->dicts[di];
     for (size_t ei = 0; ei < d->entry_count; ei++) {
       const auto &e = d->entries[ei];
-      for (auto p = ::wcsstr(text, e.hanja.c_str());
-           p;
-           p = ::wcsstr(p + e.hanja.size(), e.hanja.c_str()))
-        ::memcpy(p, e.hangul.c_str(), e.hangul.size() * sizeof(wchar_t));
+      if (size >= e.hanja.size())
+        for (auto p = ::wcsstr(text, e.hanja.c_str());
+             p;
+             p = ::wcsstr(p + e.hanja.size(), e.hanja.c_str()))
+          ::memcpy(p, e.hangul.c_str(), e.hangul.size() * sizeof(wchar_t));
     }
   }
 }
