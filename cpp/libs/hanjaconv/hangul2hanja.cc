@@ -3,27 +3,13 @@
 
 #include "hanjaconv/hangul2hanja.h"
 #include "hanjaconv/hangul2hanja_p.h"
-#include "hanjaconv/hangulconfig.h"
-#include "cpputil/cpplocale.h"
+#include "hanjaconv/hanjadef_p.h"
 #include <boost/foreach.hpp>
 #include <fstream>
 #include <list>
 #include <utility> // for pair
 //#include <iostream>
 //#include <QDebug>
-
-/** Helpers for parsing files */
-
-namespace { // unnamed
-
-enum : char {
-  CH_COMMENT = '#'  // beginning of a comment
-  , CH_DELIM = '\t' // deliminator
-};
-
-const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
-
-} // unnamed namespace
 
 /** Public class */
 
@@ -38,12 +24,12 @@ bool HangulHanjaConverter::isEmpty() const { return !d_->entry_count; }
 void HangulHanjaConverter::clear() { d_->clear(); }
 
 // Initialization
-bool HangulHanjaConverter::loadFile(const std::wstring &path)
+bool HangulHanjaConverter::loadFile(const wchar_t *path)
 {
 #ifdef _MSC_VER
   std::wifstream fin(path);
 #else
-  std::string spath(path.begin(), path.end());
+  std::string spath(path, path + ::wcslen(path));
   std::wifstream fin(spath.c_str());
 #endif // _MSC_VER
   if (!fin.is_open())

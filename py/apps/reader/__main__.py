@@ -135,7 +135,7 @@ def main():
   hanviet.setdicpaths(config.HANVIET_DICS)
 
   from hanjaconv import hanjaconv
-  hanjaconv.setdicpath(config.HANGUL_DIC_PATH)
+  hanjaconv.setdicdir(config.HANJA_DIC_PATH)
 
   from pinyinconv import pinyinconv
   pinyinconv.setdicpath(config.PINYIN_DIC_PATH)

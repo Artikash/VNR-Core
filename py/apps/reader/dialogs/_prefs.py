@@ -2321,15 +2321,17 @@ class _TermTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.generalGroup)
+    layout.addWidget(self.rubyGroup)
     #layout.addWidget(self.rbmtGroup)
     layout.addStretch()
     q.setLayout(layout)
+
+  # General option
 
   @memoizedproperty
   def generalGroup(self):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.markButton)
-    layout.addWidget(self.rubyButton)
     layout.addWidget(self.hentaiButton)
     ret = QtWidgets.QGroupBox(my.tr("Machine translation option"))
     ret.setLayout(layout)
@@ -2346,6 +2348,30 @@ class _TermTab(object):
     return ret
 
   @memoizedproperty
+  def hentaiButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Enable hentai translation rules for H-scene"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHentaiEnabled())
+    ret.toggled.connect(ss.setHentaiEnabled)
+    ss.hentaiEnabledChanged.connect(ret.setChecked)
+    return ret
+
+  # Ruby option
+
+  @memoizedproperty
+  def rubyGroup(self):
+    blans = settings.global_().blockedLanguages()
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.rubyButton)
+    if 'ko' not in blans:
+      layout.addWidget(self.koreanRubyButton)
+    if 'zh' not in blans:
+      layout.addWidget(self.chineseRubyButton)
+    ret = QtWidgets.QGroupBox(my.tr("Translation ruby option"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
   def rubyButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Display ruby definition above translation if exists"),
@@ -2356,12 +2382,29 @@ class _TermTab(object):
     return ret
 
   @memoizedproperty
-  def hentaiButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Enable hentai translation rules for H-scene"))
+  def chineseRubyButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s" % (
+        my.tr("Display romaji above yomigana for Japanese-Chinese translation"),
+        my.tr("like this"),
+        u"悠真(ゆうま) => 悠真(Yuuma)"))
     ss = settings.global_()
-    ret.setChecked(ss.isHentaiEnabled())
-    ret.toggled.connect(ss.setHentaiEnabled)
-    ss.hentaiEnabledChanged.connect(ret.setChecked)
+    ret.setChecked(ss.isTermChineseRomajiRubyEnabled())
+    ret.toggled.connect(ss.setTermChineseRomajiRubyEnabled)
+    ret.setEnabled(ss.isTermRubyEnabled())
+    ss.termRubyEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def koreanRubyButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s" % (
+        my.tr("Display hanja pronunciation above yomigana for Japanese-Korean translation"),
+        my.tr("like this"),
+        u"蓮花(れんふぁ) => 렌하(연화)")) # 蓮花
+    ss = settings.global_()
+    ret.setChecked(ss.isTermKoreanHanjaRubyEnabled())
+    ret.toggled.connect(ss.setTermKoreanHanjaRubyEnabled)
+    ret.setEnabled(ss.isTermRubyEnabled())
+    ss.termRubyEnabledChanged.connect(ret.setEnabled)
     return ret
 
   #@memoizedproperty

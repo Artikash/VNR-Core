@@ -29,13 +29,17 @@ TARGET = pyhanja
 HEADERS += \
   qhangulhanjaconv.h \
   qhangulhanjaconv_p.h \
+  qhanjahangulconv.h \
   pyhanja_config.h \
+  $$SRCPATH/qhanjahangulconverter_wrapper.h \
   $$SRCPATH/qhangulhanjaconverter_wrapper.h \
   $$SRCPATH/pyhanja_python.h
 
 SOURCES += \
   qhangulhanjaconv.cc \
   qhangulhanjaconv_p.cc \
+  qhanjahangulconv.cc \
+  $$SRCPATH/qhanjahangulconverter_wrapper.cpp \
   $$SRCPATH/qhangulhanjaconverter_wrapper.cpp \
   $$SRCPATH/pyhanja_module_wrapper.cpp
 

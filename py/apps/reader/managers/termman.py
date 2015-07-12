@@ -52,6 +52,8 @@ class _TermManager:
     self.hentai = False # bool
     self.marked = False # bool
     self.rubyEnabled = False # bool
+    self.chineseRubyEnabled = False # bool
+    self.koreanRubyEnabled = False # bool
     #self.syntax = False # bool
 
     # For saving terms
@@ -135,9 +137,11 @@ class _TermManager:
       termData=l,
       gameIds=gameIds,
       hentai=self.hentai,
-      rubyEnabled=self.rubyEnabled,
       createTime=createTime,
       parent=self,
+      rubyEnabled=self.rubyEnabled,
+      chineseRubyEnabled=self.rubyEnabled and self.chineseRubyEnabled,
+      koreanRubyEnabled=self.rubyEnabled and self.koreanRubyEnabled,
     )
 
     #for scriptKey,ts in times.iteritems():
@@ -374,9 +378,9 @@ class TermManager(QObject):
   def setEnabled(self, value): self.__d.enabled = value
 
   def isHentaiEnabled(self): return self.__d.hentai
-  def setHentaiEnabled(self, value):
-    dprint(value)
-    self.__d.hentai = value
+  def setHentaiEnabled(self, t):
+    dprint(t)
+    self.__d.hentai = t
 
   #def isSyntaxEnabled(self): return self.__d.syntax
   #def setSyntaxEnabled(self, value):
@@ -398,6 +402,12 @@ class TermManager(QObject):
 
   def isRubyEnabled(self): return self.__d.rubyEnabled
   def setRubyEnabled(self, t): self.__d.rubyEnabled = t
+
+  def isChineseRubyEnabled(self, t): return self.__d.chineseRubyEnabled
+  def setChineseRubyEnabled(self, t): self.__d.chineseRubyEnabled = t
+
+  def isKoreanRubyEnabled(self, t): return self.__d.koreanRubyEnabled
+  def setKoreanRubyEnabled(self, t): self.__d.koreanRubyEnabled = t
 
   ## Marks ##
 

@@ -460,7 +460,7 @@ AVATARS_LOCATION = os.path.abspath(parse_path(SHARE_YAML['avatars']['location'])
 AVATARS_COUNT = parse_int(SHARE_YAML['avatars']['count'])
 #AVATARS_FORMAT = SHARE_YAML['avatars']['format']
 
-HANGUL_DIC_PATH = parse_path(SHARE_YAML['hangul']['path']) # unicode abspath
+HANJA_DIC_PATH = parse_path(SHARE_YAML['hanja']['path']) # unicode abspath
 
 PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
 
