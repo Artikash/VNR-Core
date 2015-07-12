@@ -5,7 +5,8 @@ from functools import partial
 import unichars
 
 # http://vietunicode.sourceforge.net/charset/
-VIET_TONE_MARKS = u"ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯư"
+# https://en.wikipedia.org/wiki/Vietnamese_alphabet
+VIET_TONE_CHARS = u"ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯư"
 def isviet(ch):
   """
   @param  ch  str
@@ -13,7 +14,7 @@ def isviet(ch):
   """
   if len(ch) != 1:
     return False
-  if ch in VIET_TONE_MARKS:
+  if ch in VIET_TONE_CHARS:
     return True
   ch = ord(ch[0])
   return 0x1ea0 <= ch and ch <= 0x1ef9
