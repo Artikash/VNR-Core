@@ -54,6 +54,7 @@ class _TermManager:
     self.rubyEnabled = False # bool
     self.chineseRubyEnabled = False # bool
     self.koreanRubyEnabled = False # bool
+    self.vietnameseRubyEnabled = False # bool
     #self.syntax = False # bool
 
     # For saving terms
@@ -142,6 +143,7 @@ class _TermManager:
       rubyEnabled=self.rubyEnabled,
       chineseRubyEnabled=self.rubyEnabled and self.chineseRubyEnabled,
       koreanRubyEnabled=self.rubyEnabled and self.koreanRubyEnabled,
+      vietnameseRubyEnabled=self.rubyEnabled and self.vietnameseRubyEnabled,
     )
 
     #for scriptKey,ts in times.iteritems():
@@ -408,6 +410,9 @@ class TermManager(QObject):
 
   def isKoreanRubyEnabled(self, t): return self.__d.koreanRubyEnabled
   def setKoreanRubyEnabled(self, t): self.__d.koreanRubyEnabled = t
+
+  def isVietnameseRubyEnabled(self, t): return self.__d.vietnameseRubyEnabled
+  def setVietnameseRubyEnabled(self, t): self.__d.vietnameseRubyEnabled = t
 
   ## Marks ##
 
