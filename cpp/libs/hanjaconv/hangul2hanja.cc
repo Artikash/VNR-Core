@@ -26,7 +26,12 @@ void HangulHanjaConverter::clear() { d_->clear(); }
 // Initialization
 bool HangulHanjaConverter::loadFile(const wchar_t *path)
 {
+#ifdef _MSC_VER
   std::wifstream fin(path);
+#else
+  std::string spath(path, path + ::wcslen(path));
+  std::wifstream fin(spath.c_str());
+#endif // _MSC_VER
   if (!fin.is_open())
     return false;
   fin.imbue(UTF8_LOCALE);

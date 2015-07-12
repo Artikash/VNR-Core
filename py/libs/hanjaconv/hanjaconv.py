@@ -23,7 +23,7 @@ def hangul2hanja():
   import os
   from pyhanja import QHangulHanjaConverter
   ret = QHangulHanjaConverter()
-  path = os.path.join(HANGUL_DIC_PATH, 'dic6.txt')
+  path = os.path.join(HANGUL_DIC_DIR, 'dic6.txt')
   if not os.path.exists(path) or not ret.loadFile(path):
     derror("failed to load dic:", path)
   return ret
@@ -34,7 +34,7 @@ def hanja2hangul():
   from pyhanja import QHanjaHangulConverter
   ret = QHanjaHangulConverter()
   #path = os.path.join(HANGUL_DIC_DIR, HANGUL_DIC_CONV)
-  path = os.path.join(HANGUL_DIC_PATH, 'dic4.txt')
+  path = os.path.join(HANGUL_DIC_DIR, 'dic4.txt')
   if not os.path.exists(path) or not ret.addWordDictionary(path):
     derror("failed to load word dic:", path)
 
@@ -42,7 +42,7 @@ def hanja2hangul():
   # dic3: Chinese hanzi converted from unihan
   # dic5: hanzi frequent in Chinese but not in unihan
   for f in 'dic1.txt', 'dic3.txt', 'dic5.txt':
-    path = os.path.join(HANGUL_DIC_PATH, f)
+    path = os.path.join(HANGUL_DIC_DIR, f)
     if not os.path.exists(path) or not ret.addCharacterDictionary(path):
       derror("failed to load char dic:", path)
   return ret

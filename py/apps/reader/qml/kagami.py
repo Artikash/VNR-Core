@@ -263,8 +263,9 @@ class GrimoireBean(QObject):
     @return  unicode  html
     """
     d = self.__d
-    rbFont = d.getFontMetrics(rbFamily, rbSize)
-    rtFont = d.getFontMetrics(rtFamily, rtSize)
+    # Font size is larger than expected to make sure it won't go out-of screen
+    rbFont = d.getFontMetrics(rbFamily, int(rbSize * 1.1))
+    rtFont = d.getFontMetrics(rtFamily, int(rtSize * 1.2))
     wordWrap = language not in ('zhs', 'zht', 'ja')
     h = richutil.renderRubyToHtmlTable(text, width, rbFont, rtFont, wordWrap=wordWrap)
     if h != text:

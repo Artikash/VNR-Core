@@ -1793,6 +1793,13 @@ class Settings(QSettings):
       self.setValue('TermMarked', t)
       self.termMarkedChanged.emit(t)
 
+  hentaiEnabledChanged = Signal(bool)
+  def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
+  def setHentaiEnabled(self, t):
+    if t != self.isHentaiEnabled():
+      self.setValue('Hentai', t)
+      self.hentaiEnabledChanged.emit(t)
+
   termRubyEnabledChanged = Signal(bool)
   def isTermRubyEnabled(self): return to_bool(self.value('TermRuby', True))
   def setTermRubyEnabled(self, t):
@@ -1800,12 +1807,19 @@ class Settings(QSettings):
       self.setValue('TermRuby', t)
       self.termRubyEnabledChanged.emit(t)
 
-  hentaiEnabledChanged = Signal(bool)
-  def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
-  def setHentaiEnabled(self, t):
-    if t != self.isHentaiEnabled():
-      self.setValue('Hentai', t)
-      self.hentaiEnabledChanged.emit(t)
+  termKoreanHanjaRubyEnabledChanged = Signal(bool)
+  def isTermKoreanHanjaRubyEnabled(self): return to_bool(self.value('TermKoreanHanjaRuby', True))
+  def setTermKoreanHanjaRubyEnabled(self, t):
+    if t != self.isTermKoreanHanjaRubyEnabled():
+      self.setValue('TermKoreanHanjaRuby', t)
+      self.termKoreanHanjaRubyEnabledChanged.emit(t)
+
+  termChineseRomajiRubyEnabledChanged = Signal(bool)
+  def isTermChineseRomajiRubyEnabled(self): return to_bool(self.value('TermChineseRomajiRuby', False))
+  def setTermChineseRomajiRubyEnabled(self, t):
+    if t != self.isTermChineseRomajiRubyEnabled():
+      self.setValue('TermChineseRomajiRuby', t)
+      self.termChineseRomajiRubyEnabledChanged.emit(t)
 
   #translationSyntaxEnabledChanged = Signal(bool)
   #def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))

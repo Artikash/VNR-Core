@@ -8,11 +8,13 @@ void test_hanja2hangul()
 {
   qDebug() << "enter";
 
-  const wchar_t *path = L"/Users/jichi/opt/stream/Library/Dictionaries/hanja/dic4.txt";
-  std::wstring s = L"蓮花";
+  const wchar_t *worddic = L"/Users/jichi/opt/stream/Library/Dictionaries/hanja/dic4.txt",
+                *chardic = L"/Users/jichi/opt/stream/Library/Dictionaries/hanja/dic1.txt";
+  std::wstring s = L"蓮花蓮";
 
   HanjaHangulConverter conv;
-  conv.addWordDictionary(path);
+  conv.addWordDictionary(worddic);
+  conv.addCharacterDictionary(chardic);
 
   conv.replace(&*s.begin());
 

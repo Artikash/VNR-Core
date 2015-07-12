@@ -16,6 +16,7 @@ from itertools import imap
 from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
+from hanjaconv import hanjaconv
 from unitraits import jpchars, jpmacros, kochars
 from convutil import toalphabet, kana2name, zhs2zht, zht2zhs, \
                      ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
@@ -263,13 +264,17 @@ class TermWriter:
 
   RE_MACRO = re.compile('{{(.+?)}}')
 
-  def __init__(self, createTime, termData, gameIds, hentai, rubyEnabled, parent):
+  def __init__(self, createTime, termData, gameIds, hentai, parent,
+      rubyEnabled, chineseRubyEnabled, koreanRubyEnabled):
     self.createTime = createTime # float
     self.termData = termData # [_Term]
     self.gameIds = gameIds # set(ing gameId)
     self.hentai = hentai # bool
-    self.rubyEnabled = rubyEnabled # bool
     self.parent = parent # _TermManager.instance
+
+    self.rubyEnabled = rubyEnabled # bool
+    self.chineseRubyEnabled = chineseRubyEnabled # bool
+    self.koreanRubyEnabled = koreanRubyEnabled # bool
 
   def isOutdated(self): # -> bool
     return self.createTime < self.parent.updateTime
@@ -292,7 +297,9 @@ class TermWriter:
     fr2 = fr[:2]
     to2 = to[:2]
 
-    fr_zhs = fr == 'zhs'
+    fr_ja = fr == 'ja'
+    fr_zh = fr2 == 'zh'
+    fr_zht = fr == 'zht'
     fr_zht = fr == 'zht'
 
     to_zh = to2 == 'zh'
@@ -350,15 +357,37 @@ class TermWriter:
             repl = ja2zhs_name(pattern) if to_zhs else ja2zht_name(pattern)
             if not repl: # this should never happen
               continue
+            ruby = td.ruby
+            if not ruby and self.chineseRubyEnabled and fr_ja and to_zh and td.type == 'yomi' and td.text:
+              t = kana2name(td.text, 'en')
+              if t != td.text:
+                ruby = t
+            if ruby and self.rubyEnabled and repl != ruby:
+              repl = richutil.createRuby(repl, ruby)
           else:
             repl = td.text
             if repl:
               repl = _unescape_term_text(td.text)
               if repl and td.type in RUBY_TYPES:
-                if td.ruby:
-                  if self.rubyEnabled and repl != td.ruby:
-                    repl = richutil.createRuby(repl, td.ruby)
-                elif not self.rubyEnabled:
+                ruby = td.ruby
+                if not ruby:
+                  #if self.chineseRubyEnabled and fr_ja and to_zh and td.type == 'yomi' and td.text:
+                  #  t = kana2name(td.text, 'en')
+                  #  if t != td.text:
+                  #    ruby = t
+                  if self.koreanRubyEnabled and fr_ja and to_ko and td.type == 'yomi' and td.pattern:
+                    t = td.pattern
+                    t = hanjaconv.to_hangul(t)
+                    if not kochars.allhangul(t):
+                      t = td.pattern
+                      t = ja2zht_name(t)
+                      t = hanjaconv.to_hangul(t)
+                    if t and kochars.allhangul(t):
+                      ruby = t
+                if ruby:
+                  if self.rubyEnabled and repl != ruby:
+                    repl = richutil.createRuby(repl, ruby)
+                elif not td.ruby and not self.rubyEnabled:
                   repl = richutil.removeRuby(repl)
               repl = self._applyMacros(repl, macros)
               if zs:
@@ -369,6 +398,7 @@ class TermWriter:
                   repl = ja2zht_name_fix(repl)
               if td.type == 'yomi':
                 repl = kana2name(repl, to) or repl
+              #if self.cyrilRubyEnabled:
               elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
                 ruby = repl if self.rubyEnabled and (not td.ruby or td.ruby == repl) else ''
                 repl = toalphabet(repl, to=to, fr=td.language)
