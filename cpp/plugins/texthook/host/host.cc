@@ -324,8 +324,8 @@ DWORD Host_Start()
 {
   //IthBreak();
   CreateNewPipe();
-  hPipeExist = IthCreateEvent(ITH_PIPEEXISTS_EVENT);
-  NtSetEvent(hPipeExist, nullptr);
+  ::hPipeExist = IthCreateEvent(ITH_PIPEEXISTS_EVENT);
+  NtSetEvent(::hPipeExist, nullptr);
   return 0;
 }
 
@@ -337,13 +337,13 @@ DWORD Host_Close()
     ::running = FALSE;
     HANDLE hRecvPipe = IthOpenPipe(recv_pipe, GENERIC_WRITE);
     NtClose(hRecvPipe);
-    NtClearEvent(hPipeExist);
+    NtClearEvent(::hPipeExist);
     //delete cmdq;
     delete man;
     delete settings;
     NtClose(::hHookMutex);
     NtClose(hServerMutex);
-    NtClose(hPipeExist);
+    NtClose(::hPipeExist);
     DeleteCriticalSection(&detach_cs);
     result = TRUE;
   }

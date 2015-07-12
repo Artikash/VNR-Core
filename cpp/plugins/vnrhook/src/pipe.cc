@@ -19,8 +19,6 @@
 
 //#include <ITH\AVL.h>
 //#include <ITH\ntdll.h>
-WCHAR mutex[] = ITH_GRANTPIPE_MUTEX;
-WCHAR exist[] = ITH_PIPEEXISTS_EVENT;
 WCHAR detach_mutex[0x20];
 //WCHAR write_event[0x20];
 //WCHAR engine_event[0x20];
@@ -83,11 +81,9 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     TextHook *man;
     //DWORD engine;
   } u;
-  HANDLE hMutex,
-         hPipeExist;
 
   //swprintf(engine_event,L"ITH_ENGINE_%d",current_process_id);
-  swprintf(detach_mutex, ITH_DETACH_MUTEX_ L"%d", current_process_id);
+  swprintf(::detach_mutex, ITH_DETACH_MUTEX_ L"%d", current_process_id);
   //swprintf(lose_event,L"ITH_LOSEPIPE_%d",current_process_id);
   //hEngine=IthCreateEvent(engine_event);
   //NtWaitForSingleObject(hEngine,0,0);
@@ -101,7 +97,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
   u.pid = current_process_id;
   u.man = hookman;
   //u.engine = engine_base; // jichi 10/19/2014: disable the second dll
-  hPipeExist = IthOpenEvent(::exist);
+  HANDLE hPipeExist = IthOpenEvent(ITH_PIPEEXISTS_EVENT);
   IO_STATUS_BLOCK ios;
   //hLose=IthCreateEvent(lose_event,0,0);
   if (hPipeExist != INVALID_HANDLE_VALUE)
@@ -111,7 +107,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     while (NtWaitForSingleObject(hPipeExist, 0, &wait_time) == WAIT_TIMEOUT)
       if (!::running)
         goto _release;
-    hMutex = IthCreateMutex(::mutex, 0);
+    HANDLE hMutex = IthCreateMutex(ITH_GRANTPIPE_MUTEX, 0);
     NtWaitForSingleObject(hMutex, 0, 0);
     while (::hPipe == INVALID_HANDLE_VALUE||
       hCommand == INVALID_HANDLE_VALUE) {
@@ -140,7 +136,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     // jichi 7/17/2014: Always hijack by default or I have to wait for it is ready
     Engine::hijack();
 
-    ::hDetach = IthCreateMutex(detach_mutex,1);
+    ::hDetach = IthCreateMutex(::detach_mutex,1);
     while (::running && NtWaitForSingleObject(hPipeExist, 0, &sleep_time) == WAIT_OBJECT_0)
       NtDelayExecution(0, &sleep_time);
     ::live = false;
@@ -171,9 +167,10 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
   DWORD command;
   BYTE buff[0x400] = {};
   HANDLE hPipeExist;
-  hPipeExist = IthOpenEvent(exist);
+  hPipeExist = IthOpenEvent(ITH_PIPEEXISTS_EVENT);
   IO_STATUS_BLOCK ios={};
-  if (hPipeExist!=INVALID_HANDLE_VALUE)
+
+  if (hPipeExist != INVALID_HANDLE_VALUE)
     while (::running) {
       while (!::live) {
         if (!::running)
