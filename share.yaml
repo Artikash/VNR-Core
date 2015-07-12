@@ -598,8 +598,8 @@ hanzi:
   decomp:   $PWD/../../Dictionaries/hanzi/cjk-decomp-0.4.0.txt
   radical:  $PWD/../../Dictionaries/hanzi/radicalListWithMeaning.js
 
-hangul:
-  path:     $PWD/../../Dictionaries/hanja/dic6.txt
+hanja:
+  path:     $PWD/../../Dictionaries/hanja
 
 pinyin:
   path:     $PWD/../../Dictionaries/pinyin/Mandarin.dat

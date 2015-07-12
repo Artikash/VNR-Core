@@ -95,6 +95,9 @@ def zhs2ko(text): return zht2ko(zhs2zht(text))
 def ja2zhs(text): return zht2zhs(ja2zht(text))
 def ko2zhs(text): return zht2zhs(ko2zht(text))
 
+ja2ko = zht2ko
+ko2ja = ko2zht
+
 def contains(text, fr, to='t'):
   """
   @param  text  unicode

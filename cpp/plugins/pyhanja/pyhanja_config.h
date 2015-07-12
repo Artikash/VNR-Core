@@ -18,6 +18,7 @@
 //#include <PySide/globalreceiver.h>
 #include <pyside_global.h>  // Essential
 //#include <QtCore>
+#include "qhanjahangulconv.h"
 #include "qhangulhanjaconv.h"
 
 // EOF

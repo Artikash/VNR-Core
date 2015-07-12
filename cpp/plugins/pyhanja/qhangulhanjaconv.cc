@@ -29,7 +29,7 @@ bool QHangulHanjaConverter::isEmpty() const { return d_->conv.isEmpty(); }
 void QHangulHanjaConverter::clear() { d_->conv.clear(); }
 
 bool QHangulHanjaConverter::loadFile(const QString &path)
-{ return d_->conv.loadFile(path.toStdWString()); }
+{ return d_->conv.loadFile((const wchar_t *)path.utf16()); }
 
 QString QHangulHanjaConverter::convert(const QString &text) const
 { return QString::fromStdWString(d_->conv.convert(text.toStdWString())); }

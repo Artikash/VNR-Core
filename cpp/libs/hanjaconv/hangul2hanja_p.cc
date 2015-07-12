@@ -2,7 +2,7 @@
 // 1/6/2015 jichi
 
 #include "hanjaconv/hangul2hanja_p.h"
-#include "hanjaconv/hangulconfig.h"
+#include "hanjaconv/hanjadef_p.h"
 #include "unistr/unichar.h"
 #include <boost/algorithm/string.hpp>
 

@@ -1,9 +1,27 @@
 // main.cc
 // 1/6/2014 jichi
 #include "hanjaconv/hangul2hanja.h"
+#include "hanjaconv/hanja2hangul.h"
 #include <QtCore>
 
-int main()
+void test_hanja2hangul()
+{
+  qDebug() << "enter";
+
+  const wchar_t *path = L"/Users/jichi/opt/stream/Library/Dictionaries/hanja/dic4.txt";
+  std::wstring s = L"蓮花";
+
+  HanjaHangulConverter conv;
+  conv.addWordDictionary(path);
+
+  conv.replace(&*s.begin());
+
+  qDebug() << QString::fromStdWString(s);
+
+  qDebug() << "leave";
+}
+
+void test_hangul2hanja()
 {
   qDebug() << "enter";
 
@@ -46,6 +64,12 @@ int main()
     qDebug() << QString::fromStdWString(p->first) << ":" << QString::fromStdWString(p->second);
 
   qDebug() << "leave";
+}
+
+int main()
+{
+  test_hangul2hanja();
+  test_hanja2hangul();
   return 0;
 }
 

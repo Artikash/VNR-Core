@@ -119,10 +119,9 @@ std::wstring SimpleChineseConverter::convert(const std::wstring &text) const
     return text;
 
   std::wstring ret = text;
-  D::map_type::const_iterator p;
   for (size_t i = 0; i < text.size(); i++)
     if (!isascii(text[i])) { // only convert kanji
-      p = d_->map.find(text[i]);
+      auto p = d_->map.find(text[i]);
       if (p != d_->map.end())
         ret[i] = p->second;
     }

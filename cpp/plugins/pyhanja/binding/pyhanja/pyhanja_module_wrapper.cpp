@@ -27,6 +27,7 @@ static PyMethodDef pyhanja_methods[] = {
 };
 
 // Classes initialization functions ------------------------------------------------------------
+void init_QHanjaHangulConverter(PyObject* module);
 void init_QHangulHanjaConverter(PyObject* module);
 
 // Required modules' type and converter arrays.
@@ -285,6 +286,7 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pyhanja)
 #endif
 
     // Initialize classes in the type system
+    init_QHanjaHangulConverter(module);
     init_QHangulHanjaConverter(module);
 
     // Register converter for type 'QPair<QString,QString>'.

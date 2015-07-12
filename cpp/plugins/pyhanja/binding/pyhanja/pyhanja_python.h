@@ -15,6 +15,7 @@
 #include <pyside_qtcore_python.h>
 
 // Binded library includes
+#include <qhanjahangulconv.h>
 #include <qhangulhanjaconv.h>
 // Conversion Includes - Primitive Types
 #include <QString>
@@ -38,7 +39,8 @@
 
 // Type indices
 #define SBK_QHANGULHANJACONVERTER_IDX                                0
-#define SBK_pyhanja_IDX_COUNT                                        1
+#define SBK_QHANJAHANGULCONVERTER_IDX                                1
+#define SBK_pyhanja_IDX_COUNT                                        2
 
 // This variable stores all Python types exported by this module.
 extern PyTypeObject** SbkpyhanjaTypes;
@@ -62,6 +64,7 @@ namespace Shiboken
 
 // PyType functions, to get the PyObjectType for a type T
 template<> inline PyTypeObject* SbkType< ::QHangulHanjaConverter >() { return reinterpret_cast<PyTypeObject*>(SbkpyhanjaTypes[SBK_QHANGULHANJACONVERTER_IDX]); }
+template<> inline PyTypeObject* SbkType< ::QHanjaHangulConverter >() { return reinterpret_cast<PyTypeObject*>(SbkpyhanjaTypes[SBK_QHANJAHANGULCONVERTER_IDX]); }
 
 } // namespace Shiboken
 

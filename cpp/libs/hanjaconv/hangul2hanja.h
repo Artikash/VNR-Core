@@ -34,7 +34,7 @@ public:
   void clear();
 
   ///  Add script from file, reverse to determine the direction
-  bool loadFile(const std::wstring &path);
+  bool loadFile(const wchar_t *path);
 
   // Replacement
 
