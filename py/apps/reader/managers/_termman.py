@@ -17,7 +17,8 @@ from sakurakit import skfileio, skstr
 from sakurakit.skdebug import dprint, dwarn
 from opencc import opencc
 from hanjaconv import hanjaconv
-from unitraits import jpchars, jpmacros, kochars
+from hanviet import hanviet
+from unitraits import jpchars, jpmacros, kochars, vichars
 from convutil import toalphabet, kana2name, zhs2zht, zht2zhs, \
                      ja2zh_name_test, ja2zhs_name, ja2zht_name, ja2zht_name_fix
 import config, dataman, defs, i18n, richutil
@@ -265,7 +266,7 @@ class TermWriter:
   RE_MACRO = re.compile('{{(.+?)}}')
 
   def __init__(self, createTime, termData, gameIds, hentai, parent,
-      rubyEnabled, chineseRubyEnabled, koreanRubyEnabled):
+      rubyEnabled, chineseRubyEnabled, koreanRubyEnabled, vietnameseRubyEnabled):
     self.createTime = createTime # float
     self.termData = termData # [_Term]
     self.gameIds = gameIds # set(ing gameId)
@@ -275,6 +276,7 @@ class TermWriter:
     self.rubyEnabled = rubyEnabled # bool
     self.chineseRubyEnabled = chineseRubyEnabled # bool
     self.koreanRubyEnabled = koreanRubyEnabled # bool
+    self.vietnameseRubyEnabled = vietnameseRubyEnabled # bool
 
   def isOutdated(self): # -> bool
     return self.createTime < self.parent.updateTime
@@ -306,6 +308,7 @@ class TermWriter:
     to_zhs = to == 'zhs'
     to_zht = to == 'zht'
     to_ko = to == 'ko'
+    to_vi = to == 'vi'
 
     frKanjiLanguage = config.is_kanji_language(fr)
     frSpaceLanguage = config.language_word_has_space(fr)
@@ -367,9 +370,26 @@ class TermWriter:
           else:
             repl = td.text
             if repl:
+              ruby = td.ruby
+
               repl = _unescape_term_text(td.text)
+              repl = self._applyMacros(repl, macros)
+
+              if td.type == 'yomi':
+                repl = kana2name(repl, to) or repl
+              elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
+                if not ruby:
+                  ruby = repl
+                repl = toalphabet(repl, to=to, fr=td.language)
+
+              if zs:
+                repl = zht2zhs(repl)
+              elif zt:
+                repl = zhs2zht(repl)
+                if role == defs.TERM_NAME_ROLE:
+                  repl = ja2zht_name_fix(repl)
+
               if repl and td.type in RUBY_TYPES:
-                ruby = td.ruby
                 if not ruby:
                   #if self.chineseRubyEnabled and fr_ja and to_zh and td.type == 'yomi' and td.text:
                   #  t = kana2name(td.text, 'en')
@@ -381,29 +401,21 @@ class TermWriter:
                     if not kochars.allhangul(t): # allhangul excludes ASCII characters. So, it will automatically text regex expressions as well
                       t = td.pattern
                       t = ja2zht_name(t)
+                      t = ja2zht_name_fix(t)
                       t = hanjaconv.to_hangul(t)
                     if t and kochars.allhangul(t):
+                      ruby = t
+                  if self.vietnameseRubyEnabled and to_vi and td.type == 'yomi' and td.pattern:
+                    t = td.pattern
+                    t = ja2zhs_name(t)
+                    t = hanviet.toreading(t)
+                    if t and vichars.allviet(t):
                       ruby = t
                 if ruby:
                   if self.rubyEnabled and repl != ruby:
                     repl = richutil.createRuby(repl, ruby)
                 elif not td.ruby and not self.rubyEnabled:
                   repl = richutil.removeRuby(repl)
-              repl = self._applyMacros(repl, macros)
-              if zs:
-                repl = zht2zhs(repl)
-              elif zt:
-                repl = zhs2zht(repl)
-                if role == defs.TERM_NAME_ROLE:
-                  repl = ja2zht_name_fix(repl)
-              if td.type == 'yomi':
-                repl = kana2name(repl, to) or repl
-              #if self.cyrilRubyEnabled:
-              elif td.type == 'name' and td.language != to and to != 'el': # temporarily skip Greek
-                ruby = repl if self.rubyEnabled and (not td.ruby or td.ruby == repl) else ''
-                repl = toalphabet(repl, to=to, fr=td.language)
-                if ruby and ruby != repl:
-                  repl = richutil.createRuby(repl, ruby)
 
           if td.phrase:
             left = pattern[0]

@@ -2365,6 +2365,8 @@ class _TermTab(object):
     layout.addWidget(self.rubyButton)
     if 'ko' not in blans:
       layout.addWidget(self.koreanRubyButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.vietnameseRubyButton)
     if 'zh' not in blans:
       layout.addWidget(self.chineseRubyButton)
     ret = QtWidgets.QGroupBox(my.tr("Translation ruby option"))
@@ -2395,11 +2397,24 @@ class _TermTab(object):
     return ret
 
   @memoizedproperty
+  def vietnameseRubyButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s" % (
+        my.tr("Display Phien am Han-Viet above yomigana for Japanese-Vietnamese translation"),
+        my.tr("like this"),
+        u"蓮花(れんふぁ) => Renfa(Liên Hoa)"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTermVietnamesePhienamRubyEnabled())
+    ret.toggled.connect(ss.setTermVietnamesePhienamRubyEnabled)
+    ret.setEnabled(ss.isTermRubyEnabled())
+    ss.termRubyEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def koreanRubyButton(self):
     ret = QtWidgets.QCheckBox("%s, %s: %s" % (
         my.tr("Display hanja pronunciation above yomigana for Japanese-Korean translation"),
         my.tr("like this"),
-        u"蓮花(れんふぁ) => 렌하(연화)")) # 蓮花
+        u"蓮花(れんふぁ) => 렌하(연화)"))
     ss = settings.global_()
     ret.setChecked(ss.isTermKoreanHanjaRubyEnabled())
     ret.toggled.connect(ss.setTermKoreanHanjaRubyEnabled)

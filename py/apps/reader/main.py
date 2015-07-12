@@ -641,6 +641,9 @@ class _MainObject(object):
     ret.setKoreanRubyEnabled(ss.isTermKoreanHanjaRubyEnabled())
     ss.termKoreanHanjaRubyEnabledChanged.connect(ret.setKoreanRubyEnabled)
 
+    ret.setVietnameseRubyEnabled(ss.isTermVietnamesePhienamRubyEnabled())
+    ss.termVietnamesePhienamRubyEnabledChanged.connect(ret.setVietnameseRubyEnabled)
+
     from jaconv import jaconv
     jaconv.setopt(macron=ss.isRomajiMacronEnabled())
     ss.romajiMacronEnabledChanged.connect(lambda t: jaconv.setopt(macron=t))
@@ -651,6 +654,7 @@ class _MainObject(object):
         ss.termRubyEnabledChanged,
         ss.termChineseRomajiRubyEnabledChanged,
         ss.termKoreanHanjaRubyEnabledChanged,
+        ss.termVietnamesePhienamRubyEnabledChanged,
         ss.romajiMacronEnabledChanged,
         #ss.translationSyntaxEnabledChanged,
         self.gameManager.processChanged,

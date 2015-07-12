@@ -1814,6 +1814,13 @@ class Settings(QSettings):
       self.setValue('TermKoreanHanjaRuby', t)
       self.termKoreanHanjaRubyEnabledChanged.emit(t)
 
+  termVietnamesePhienamRubyEnabledChanged = Signal(bool)
+  def isTermVietnamesePhienamRubyEnabled(self): return to_bool(self.value('TermVietnamesePhienamRuby', False))
+  def setTermVietnamesePhienamRubyEnabled(self, t):
+    if t != self.isTermVietnamesePhienamRubyEnabled():
+      self.setValue('TermVietnamesePhienamRuby', t)
+      self.termVietnamesePhienamRubyEnabledChanged.emit(t)
+
   termChineseRomajiRubyEnabledChanged = Signal(bool)
   def isTermChineseRomajiRubyEnabled(self): return to_bool(self.value('TermChineseRomajiRuby', False))
   def setTermChineseRomajiRubyEnabled(self, t):
