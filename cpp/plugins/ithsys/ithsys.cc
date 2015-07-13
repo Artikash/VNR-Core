@@ -775,14 +775,26 @@ BOOL IthInitSystemService()
   //ITH_MSG(obj);
 
   LDR_DATA_TABLE_ENTRY *ldr_entry = (LDR_DATA_TABLE_ENTRY*)peb->Ldr->InLoadOrderModuleList.Flink;
-  wcscpy(file_path + 4, ldr_entry->FullDllName.Buffer);
-  current_dir = wcsrchr(file_path,L'\\') + 1;
-  *current_dir = 0;
-  RtlInitUnicodeString(&us, file_path);
 
   // FIXME jichi 7/12/2015: This will fail when the file path is a remote path such as:
-  //   \.\\\psf\...
-  //GROWL(file_path);
+  // Original remote file path: \\??\\\\\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
+  // Correct UNC path: \\??\\\\UNC\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
+  //RtlInitUnicodeString(&us, L"\\??\\UNC\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
+  //WCHAR file_path[MAX_PATH] = L"\\??\\";
+  LPCWSTR modulePath = ldr_entry->FullDllName.Buffer;
+  if (modulePath[0] == '\\' && modulePath[1] == '\\') { // This is a remote path
+    ::file_path[4] = 'U';
+    ::file_path[5] = 'N';
+    ::file_path[6] = 'C';
+    ::wcscpy(::file_path + 7, modulePath + 1);
+  } else
+    ::wcscpy(::file_path + 4, modulePath);
+
+  current_dir = ::wcsrchr(::file_path, L'\\') + 1;
+  *current_dir = 0;
+
+  //GROWL(::file_path);
+  RtlInitUnicodeString(&us, ::file_path);
 
   if (!NT_SUCCESS(NtOpenFile(&dir_obj,FILE_LIST_DIRECTORY|FILE_TRAVERSE|SYNCHRONIZE,
       &oa,&ios,FILE_SHARE_READ|FILE_SHARE_WRITE,FILE_DIRECTORY_FILE|FILE_SYNCHRONOUS_IO_NONALERT)))
@@ -848,13 +860,13 @@ BOOL IthInitSystemService()
 //    }
 //#endif // ITH_WINE
 
-    ::wcscpy(file_path + 4, t);
-    t = file_path;
+    ::wcscpy(::file_path + 4, t);
+    t = ::file_path;
     while(*++t);
     if (*(t-1)!=L'\\')
       *t++=L'\\';
     ::wcscpy(t,L"C_932.nls");
-    RtlInitUnicodeString(&us, file_path);
+    RtlInitUnicodeString(&us, ::file_path);
     if (!NT_SUCCESS(NtOpenFile(&codepage_file, FILE_READ_DATA, &oa, &ios,FILE_SHARE_READ,0)))
       return FALSE;
     oa.hRootDirectory = ::root_obj;

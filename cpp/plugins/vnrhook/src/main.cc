@@ -183,7 +183,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       ::module_base = (DWORD)hModule;
 
       if (!IthInitSystemService()) {
-        GROWL("failed to init ith sys");
+        GROWL_WARN(L"Initialization failed.\nAre you running game on a network drive?");
         return FALSE;
       }
 
