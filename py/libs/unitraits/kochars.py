@@ -12,7 +12,7 @@ def ishangul(ch):
   if len(ch) != 1:
     return False
   ch = ord(ch[0])
-  return (
+  return ch > 127 and (
     0xac00 <= ch and ch <= 0xd7a3    # Hangul Syllables (AC00-D7A3) which corresponds to (가-힣)
     or 0x1100 <= ch and ch <= 0x11ff # Hangul Jamo (1100–11FF)
     or 0x3130 <= ch and ch <= 0x318f # Hangul Compatibility Jamo (3130-318F)
@@ -38,7 +38,8 @@ def allhangul(text):
   if not text:
     return False
   for c in text:
-    if ord(c) >= 128 and not ishangul(c):
+    #if ord(c) >= 128 and not ishangul(c):
+    if c != ' ' and not ishangul(c):
       return False
   return True
 
