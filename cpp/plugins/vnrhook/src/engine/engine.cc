@@ -11518,7 +11518,7 @@ bool InsertEushullyHook()
  *  - scene fun reladdr: 0x26fd0
  *    - arg1 and arg3 are pointers
  *    - arg2 is the text
- *  - scneairo only reladdr: 0x26670
+ *  - scenairo only reladdr: 0x26670
  *  Issue for implementing embeded engine: two functions are needed to be hijacked
  *
  *  013c614e     cc             int3
