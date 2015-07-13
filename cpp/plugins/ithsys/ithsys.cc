@@ -7,8 +7,7 @@
 // - Move my old create remote thread for ITH2 here
 
 #include "ithsys/ithsys.h"
-//#include "ith/common/growl.h"
-//#include "ith/common/except.h"
+//#include "vnrhook/src/util/growl.h"
 
 //#define ITH_SYS_SECTION L"ITH_SysSection"
 #define ITH_THREADMAN_SECTION L"VNR_SYS_THREAD"
@@ -17,6 +16,8 @@
 // RemoteThread works on both Windows 7 or Wine, while NtThread does not work on wine
 #define ITH_ENABLE_THREADMAN    (!IthIsWindows8OrGreater() && !IthIsWine())
 //#define ITH_ENABLE_THREADMAN    true
+
+//#define ITH_ENABLE_WINAPI // jichi: prefer Win32 API to NTDLL API
 
 // Helpers
 
@@ -774,10 +775,27 @@ BOOL IthInitSystemService()
   //ITH_MSG(obj);
 
   LDR_DATA_TABLE_ENTRY *ldr_entry = (LDR_DATA_TABLE_ENTRY*)peb->Ldr->InLoadOrderModuleList.Flink;
-  wcscpy(file_path + 4, ldr_entry->FullDllName.Buffer);
-  current_dir = wcsrchr(file_path,L'\\') + 1;
+
+  // FIXME jichi 7/12/2015: This will fail when the file path is a remote path such as:
+  // Original remote file path: \\??\\\\\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
+  // Correct UNC path: \\??\\\\UNC\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
+  //RtlInitUnicodeString(&us, L"\\??\\UNC\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
+  //WCHAR file_path[MAX_PATH] = L"\\??\\";
+  LPCWSTR modulePath = ldr_entry->FullDllName.Buffer;
+  if (modulePath[0] == '\\' && modulePath[1] == '\\') { // This is a remote path
+    ::file_path[4] = 'U';
+    ::file_path[5] = 'N';
+    ::file_path[6] = 'C';
+    ::wcscpy(::file_path + 7, modulePath + 1);
+  } else
+    ::wcscpy(::file_path + 4, modulePath);
+
+  current_dir = ::wcsrchr(::file_path, L'\\') + 1;
   *current_dir = 0;
-  RtlInitUnicodeString(&us, file_path);
+
+  //GROWL(::file_path);
+  RtlInitUnicodeString(&us, ::file_path);
+
   if (!NT_SUCCESS(NtOpenFile(&dir_obj,FILE_LIST_DIRECTORY|FILE_TRAVERSE|SYNCHRONIZE,
       &oa,&ios,FILE_SHARE_READ|FILE_SHARE_WRITE,FILE_DIRECTORY_FILE|FILE_SYNCHRONOUS_IO_NONALERT)))
     return FALSE;
@@ -808,7 +826,7 @@ BOOL IthInitSystemService()
     }
   }
 
-  if (!NT_SUCCESS(NtOpenDirectoryObject(&::root_obj, READ_CONTROL|0xF, &oa)))
+  if (!NT_SUCCESS(NtOpenDirectoryObject(&::root_obj, READ_CONTROL|0xf, &oa)))
     return FALSE;
 
   ::page = peb->InitAnsiCodePageData;
@@ -842,13 +860,13 @@ BOOL IthInitSystemService()
 //    }
 //#endif // ITH_WINE
 
-    ::wcscpy(file_path + 4, t);
-    t = file_path;
+    ::wcscpy(::file_path + 4, t);
+    t = ::file_path;
     while(*++t);
     if (*(t-1)!=L'\\')
       *t++=L'\\';
     ::wcscpy(t,L"C_932.nls");
-    RtlInitUnicodeString(&us, file_path);
+    RtlInitUnicodeString(&us, ::file_path);
     if (!NT_SUCCESS(NtOpenFile(&codepage_file, FILE_READ_DATA, &oa, &ios,FILE_SHARE_READ,0)))
       return FALSE;
     oa.hRootDirectory = ::root_obj;
@@ -1157,6 +1175,12 @@ void IthResetEvent(HANDLE hEvent) { NtClearEvent(hEvent); }
 //If 'exist' is not null, it will be written 1 if mutex exist.
 HANDLE IthCreateMutex(LPCWSTR name, BOOL InitialOwner, DWORD *exist)
 {
+#ifdef ITH_ENABLE_WINAPI
+  HANDLE ret = ::CreateMutexW(nullptr, InitialOwner, name);
+  if (exist)
+    *exist = ret == INVALID_HANDLE_VALUE || ::GetLastError() == ERROR_ALREADY_EXISTS;
+  return ret;
+#else
 #define eval    NtCreateMutant(&hMutex, MUTEX_ALL_ACCESS, poa, InitialOwner)
   UNICODE_STRING us;
   HANDLE hMutex;
@@ -1165,10 +1189,12 @@ HANDLE IthCreateMutex(LPCWSTR name, BOOL InitialOwner, DWORD *exist)
   // jichi 9/25/2013: What the fxxx?! poa in the orignal source code of ITH
   // is pointed to freed object on the stack?! This will crash wine!
   if (name) {
+    //GROWL(name);
     RtlInitUnicodeString(&us, name);
     OBJECT_ATTRIBUTES oa = {sizeof(oa), root_obj, &us, OBJ_OPENIF, 0, 0};
     poa = &oa;
     status = eval;
+    //GROWL_DWORD(status);
   } else
     status = eval;
   if (NT_SUCCESS(status)) {
@@ -1178,10 +1204,14 @@ HANDLE IthCreateMutex(LPCWSTR name, BOOL InitialOwner, DWORD *exist)
   } else
     return INVALID_HANDLE_VALUE;
 #undef eval
+#endif // ITH_ENABLE_WINAPI
 }
 
 HANDLE IthOpenMutex(LPCWSTR name)
 {
+#ifdef ITH_ENABLE_WINAPI
+  return ::OpenMutexW(MUTEX_ALL_ACCESS, FALSE, name);
+#else
   UNICODE_STRING us;
   RtlInitUnicodeString(&us, name);
   OBJECT_ATTRIBUTES oa = {sizeof(oa), root_obj, &us, 0, 0, 0};
@@ -1190,6 +1220,7 @@ HANDLE IthOpenMutex(LPCWSTR name)
     return hMutex;
   else
     return INVALID_HANDLE_VALUE;
+#endif // ITH_ENABLE_WINAPI
 }
 
 BOOL IthReleaseMutex(HANDLE hMutex)
