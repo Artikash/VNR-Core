@@ -49,14 +49,12 @@ if skos.WIN:
     @return  bool
     """
     dprint("enter")
-    ret = True
     for dllpath in config.VNRHOOK_DLLS:
       #dllpath = os.path.abspath(dllpath)
       dllpath = skpaths.abspath(dllpath)
       assert os.path.exists(dllpath), "needed dll does not exist: %s" % dllpath
-      ret = skwinsec.injectdll(dllpath, pid=pid) #and ret
-    if ret:
-      ret = texthook.global_().attachProcess(pid, hijack=hijack)
+      skwinsec.injectdll(dllpath, pid=pid) #and ret
+    ret = texthook.global_().attachProcess(pid, hijack=hijack)
     dprint("leave: ret = %s" % ret)
     return ret
 
