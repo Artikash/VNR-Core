@@ -218,7 +218,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
         DWORD exists;
         hMutex = IthCreateMutex(dll_mutex, TRUE, &exists); // jichi 9/18/2013: own is true, make sure the injected dll is singleton
         // FIXME: This mutex does not work on Windows 10
-        if (hMutex == INVALID_HANDLE_VALUE || exists)
+        if (exists)
           return FALSE;
       }
 

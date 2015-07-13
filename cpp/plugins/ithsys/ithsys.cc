@@ -1164,10 +1164,12 @@ HANDLE IthCreateMutex(LPCWSTR name, BOOL InitialOwner, DWORD *exist)
   // jichi 9/25/2013: What the fxxx?! poa in the orignal source code of ITH
   // is pointed to freed object on the stack?! This will crash wine!
   if (name) {
+    //GROWL(name);
     RtlInitUnicodeString(&us, name);
     OBJECT_ATTRIBUTES oa = {sizeof(oa), root_obj, &us, OBJ_OPENIF, 0, 0};
     poa = &oa;
     status = eval;
+    //GROWL_DWORD(status);
   } else
     status = eval;
   if (NT_SUCCESS(status)) {
