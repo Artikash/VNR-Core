@@ -12,7 +12,7 @@
 #include "src/tree/avl.h"
 #include "src/engine/match.h"
 #include "src/hijack/texthook.h"
-//#include "src/util/growl.h"
+#include "src/util/growl.h"
 #include "src/except.h"
 #include "include/const.h"
 #include "include/defs.h"
@@ -57,9 +57,6 @@ DWORD hook_buff_len = HOOK_BUFFER_SIZE;
 namespace { FilterRange _filter[IHF_FILTER_CAPACITY]; }
 FilterRange *filter = _filter;
 
-WCHAR dll_mutex[0x100];
-//WCHAR dll_name[0x100];
-WCHAR hm_mutex[0x100];
 WCHAR hm_section[0x100];
 HINSTANCE hDLL;
 HANDLE hSection;
@@ -184,7 +181,12 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 
       //IthBreak();
       ::module_base = (DWORD)hModule;
-      IthInitSystemService();
+
+      if (!IthInitSystemService()) {
+        GROWL("failed to init ith sys");
+        return FALSE;
+      }
+
       swprintf(hm_section, ITH_SECTION_ L"%d", current_process_id);
 
       // jichi 9/25/2013: Interprocedural communication with vnrsrv.
@@ -205,19 +207,16 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       //  memset(::hookman, 0, MAX_HOOK * sizeof(TextHook));
       //}
 
-      //LPCWSTR p;
-      //for (p = GetMainModulePath(); *p; p++);
-      //for (p = p; *p != L'\\'; p--);
-      //wcscpy(dll_name, p + 1);
-      //swprintf(dll_mutex,L"ITH_%.4d_%s",current_process_id,current_dir);
-      swprintf(dll_mutex, ITH_PROCESS_MUTEX_ L"%d", current_process_id);
-      swprintf(hm_mutex, ITH_HOOKMAN_MUTEX_ L"%d", current_process_id);
-      hmMutex = IthCreateMutex(hm_mutex, FALSE);
-
       {
+        wchar_t hm_mutex[0x100];
+        swprintf(hm_mutex, ITH_HOOKMAN_MUTEX_ L"%d", current_process_id);
+        ::hmMutex = IthCreateMutex(hm_mutex, FALSE);
+      }
+      {
+        wchar_t dll_mutex[0x100];
+        swprintf(dll_mutex, ITH_PROCESS_MUTEX_ L"%d", current_process_id);
         DWORD exists;
-        hMutex = IthCreateMutex(dll_mutex, TRUE, &exists); // jichi 9/18/2013: own is true, make sure the injected dll is singleton
-        // FIXME: This mutex does not work on Windows 10
+        ::hMutex = IthCreateMutex(dll_mutex, TRUE, &exists); // jichi 9/18/2013: own is true, make sure the injected dll is singleton
         if (exists)
           return FALSE;
       }

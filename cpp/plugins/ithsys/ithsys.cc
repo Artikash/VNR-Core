@@ -17,6 +17,8 @@
 #define ITH_ENABLE_THREADMAN    (!IthIsWindows8OrGreater() && !IthIsWine())
 //#define ITH_ENABLE_THREADMAN    true
 
+//#define ITH_ENABLE_WINAPI // jichi: prefer Win32 API to NTDLL API
+
 // Helpers
 
 // jichi 2/3/2015: About GetVersion
@@ -777,6 +779,11 @@ BOOL IthInitSystemService()
   current_dir = wcsrchr(file_path,L'\\') + 1;
   *current_dir = 0;
   RtlInitUnicodeString(&us, file_path);
+
+  // FIXME jichi 7/12/2015: This will fail when the file path is a remote path such as:
+  //   \.\\\psf\...
+  //GROWL(file_path);
+
   if (!NT_SUCCESS(NtOpenFile(&dir_obj,FILE_LIST_DIRECTORY|FILE_TRAVERSE|SYNCHRONIZE,
       &oa,&ios,FILE_SHARE_READ|FILE_SHARE_WRITE,FILE_DIRECTORY_FILE|FILE_SYNCHRONOUS_IO_NONALERT)))
     return FALSE;
@@ -807,7 +814,7 @@ BOOL IthInitSystemService()
     }
   }
 
-  if (!NT_SUCCESS(NtOpenDirectoryObject(&::root_obj, READ_CONTROL|0xF, &oa)))
+  if (!NT_SUCCESS(NtOpenDirectoryObject(&::root_obj, READ_CONTROL|0xf, &oa)))
     return FALSE;
 
   ::page = peb->InitAnsiCodePageData;
@@ -1156,6 +1163,12 @@ void IthResetEvent(HANDLE hEvent) { NtClearEvent(hEvent); }
 //If 'exist' is not null, it will be written 1 if mutex exist.
 HANDLE IthCreateMutex(LPCWSTR name, BOOL InitialOwner, DWORD *exist)
 {
+#ifdef ITH_ENABLE_WINAPI
+  HANDLE ret = ::CreateMutexW(nullptr, InitialOwner, name);
+  if (exist)
+    *exist = ret == INVALID_HANDLE_VALUE || ::GetLastError() == ERROR_ALREADY_EXISTS;
+  return ret;
+#else
 #define eval    NtCreateMutant(&hMutex, MUTEX_ALL_ACCESS, poa, InitialOwner)
   UNICODE_STRING us;
   HANDLE hMutex;
@@ -1179,10 +1192,14 @@ HANDLE IthCreateMutex(LPCWSTR name, BOOL InitialOwner, DWORD *exist)
   } else
     return INVALID_HANDLE_VALUE;
 #undef eval
+#endif // ITH_ENABLE_WINAPI
 }
 
 HANDLE IthOpenMutex(LPCWSTR name)
 {
+#ifdef ITH_ENABLE_WINAPI
+  return ::OpenMutexW(MUTEX_ALL_ACCESS, FALSE, name);
+#else
   UNICODE_STRING us;
   RtlInitUnicodeString(&us, name);
   OBJECT_ATTRIBUTES oa = {sizeof(oa), root_obj, &us, 0, 0, 0};
@@ -1191,6 +1208,7 @@ HANDLE IthOpenMutex(LPCWSTR name)
     return hMutex;
   else
     return INVALID_HANDLE_VALUE;
+#endif // ITH_ENABLE_WINAPI
 }
 
 BOOL IthReleaseMutex(HANDLE hMutex)
