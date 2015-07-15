@@ -283,8 +283,11 @@ Item { id: root_
     var n = datamanPlugin_.queryGameName(id)
     if (!n)
       return ret
+    var t = removeRegex(n)
+    t = Underscore.escape(t)
     n = Underscore.escape(n)
-    n = "<a href=\"javascript://main.showGameView(" + id + ")\">" + n + "</a>"
+    n = "<a href=\"javascript://main.searchDictionary('" + t + "','game')\">" + n + "</a>"
+    //n = "<a href=\"javascript://main.showGameView(" + id + ")\">" + n + "</a>"
     ret = n + " " + ret
 
     //if (itemId) // slow to compute
@@ -315,6 +318,10 @@ Item { id: root_
         "<a href=\"javascript://main.showUser('$1')\">@$1</a>"
       )
     return text
+  }
+
+  function removeRegex(t) { // string -> string
+    return t.replace(/["'^$,.?+*\[\]\(\){}]/g, ' ')
   }
 
   function errorMessage(v) { // int -> string
