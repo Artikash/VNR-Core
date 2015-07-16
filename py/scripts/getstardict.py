@@ -24,14 +24,14 @@ from sakurakit.skprof import SkProfiler
 DIC_URL = "http://ftp-archive.freebsd.org/pub/FreeBSD-Archive/ports/distfiles/stardict/"
 
 DICS = {
-  'hanja': {'file':'hanja.tbz2', 'size':2500031, 'path':'stardict-Hanja_KoreanHanzi_Dic-2.4.2.tar.bz2'},
-  'hangul': {'file':'hangul.tbz2', 'size':8498547, 'path':'stardict-KoreanDic-2.4.2.tar.bz2'},
+  'hanja': {'file':'stardict-Hanja_KoreanHanzi_Dic-2.4.2.tar.bz2', 'size':2500031, 'path':'hanja'},
+  'hangul': {'file':'stardict-KoreanDic-2.4.2.tar.bz2', 'size':8498547, 'path':'hangul'},
 }
 
 DIC_NAMES = frozenset(DICS.iterkeys())
 
 import initdefs
-DIC_DIR = initdefs.CACHE_DIC_RELPATH
+DIC_DIR = initdefs.CACHE_STARDICT_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 
 # Tasks
