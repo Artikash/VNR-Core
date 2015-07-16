@@ -91,7 +91,112 @@ namespace Private {
    *  012B38B0   C2 3400          RETN 0x34
    *  012B38B3   CC               INT3
    *  012B38B4   CC               INT3
-
+   *
+   *  Sample game: サクラノ詩 (type 3)
+   *
+   *  Scenario:
+   *
+   *  0017F29C   0033390A  RETURN to .0033390A from .00333920
+   *  0017F2A0   0CEE35B4
+   *  0017F2A4   0BBB8A58
+   *  0017F2A8   00000001
+   *  0017F2AC   0017F320
+   *  0017F2B0   0017F344
+   *  0017F2B4   0000002A
+   *  0017F2B8   00000001
+   *  0017F2BC   00000000
+   *  0017F2C0   00000001
+   *  0017F2C4   00000000
+   *
+   *  003338FD   8B55 18          MOV EDX,DWORD PTR SS:[EBP+0x18]
+   *  00333900   50               PUSH EAX
+   *  00333901   51               PUSH ECX
+   *  00333902   8B4D 0C          MOV ECX,DWORD PTR SS:[EBP+0xC]
+   *  00333905   E8 16000000      CALL .00333920    ; jichi: called here
+   *  0033390A   83C4 2C          ADD ESP,0x2C
+   *  0033390D   5D               POP EBP
+   *  0033390E   C2 3400          RETN 0x34
+   *  00333911   CC               INT3
+   *  00333912   CC               INT3
+   *  00333913   CC               INT3
+   *  00333914   CC               INT3
+   *  00333915   CC               INT3
+   *
+   *  EAX 0BBB8A58
+   *  ECX 0017F31C
+   *  EDX 0044C4A4 .0044C4A4
+   *  EBX 0CEE3538
+   *  ESP 0017F29C
+   *  EBP 0017F2CC
+   *  ESI 0CEE35B4
+   *  EDI 00000001
+   *  EIP 00333920 .00333920
+   *
+   *  History:
+   *  0017F0D8   0033338E  RETURN to .0033338E from .00333920
+   *  0017F0DC   0017F148
+   *  0017F0E0   0F8A2E78
+   *  0017F0E4   00000001
+   *  0017F0E8   0017F220
+   *  0017F0EC   0017F210
+   *  0017F0F0   00000028
+   *  0017F0F4   00000001
+   *  0017F0F8   00000000
+   *  0017F0FC   00000001
+   *  0017F100   00000000
+   *
+   *  EAX 0017F220
+   *  ECX 0017F344
+   *  EDX 0017F190
+   *  EBX 00000001
+   *  ESP 0017F0D8
+   *  EBP 0017F1B8
+   *  ESI 00000001
+   *  EDI 00000001
+   *  EIP 00333920 .00333920
+   *
+   *  00333385   52               PUSH EDX
+   *  00333386   8D55 D8          LEA EDX,DWORD PTR SS:[EBP-0x28]
+   *  00333389   E8 92050000      CALL .00333920    ; jichi: called here
+   *  0033338E   83C4 2C          ADD ESP,0x2C
+   *  00333391   85DB             TEST EBX,EBX
+   *  00333393   74 19            JE SHORT .003333AE
+   *  00333395   8B4D 40          MOV ECX,DWORD PTR SS:[EBP+0x40]
+   *  00333398   8D45 D8          LEA EAX,DWORD PTR SS:[EBP-0x28]
+   *  0033339B   50               PUSH EAX
+   *  0033339C   51               PUSH ECX
+   *
+   *  Name:
+   *  001AF0F0   0119338E  RETURN to .0119338E from .01193920
+   *  001AF0F4   001AF160
+   *  001AF0F8   0DC69690
+   *  001AF0FC   00000000
+   *  001AF100   001AF238
+   *  001AF104   001AF228
+   *  001AF108   00000018
+   *  001AF10C   00000005
+   *  001AF110   00000000   ; jichi: zero
+   *  001AF114   00000000
+   *  001AF118   00000000   ; jichi: zero
+   *  001AF11C   001AF304
+   *  001AF120   001AF288
+   *  001AF124   0D5E1FF8
+   *
+   *  0119337F   8B4D 14          MOV ECX,DWORD PTR SS:[EBP+0x14]
+   *  01193382   8D55 90          LEA EDX,DWORD PTR SS:[EBP-0x70]
+   *  01193385   52               PUSH EDX
+   *  01193386   8D55 D8          LEA EDX,DWORD PTR SS:[EBP-0x28]
+   *  01193389   E8 92050000      CALL .01193920    ; jichi: called here
+   *  0119338E   83C4 2C          ADD ESP,0x2C
+   *  01193391   85DB             TEST EBX,EBX
+   *  01193393   74 19            JE SHORT .011933AE
+   *  01193395   8B4D 40          MOV ECX,DWORD PTR SS:[EBP+0x40]
+   *  01193398   8D45 D8          LEA EAX,DWORD PTR SS:[EBP-0x28]
+   *  0119339B   50               PUSH EAX
+   *  0119339C   51               PUSH ECX
+   *  0119339D   8B4D 44          MOV ECX,DWORD PTR SS:[EBP+0x44]
+   *  011933A0   8D55 90          LEA EDX,DWORD PTR SS:[EBP-0x70]
+   *  011933A3   52               PUSH EDX
    */
   bool hookBefore(winhook::hook_stack *s)
   {
@@ -114,9 +219,13 @@ namespace Private {
     switch (type_) {
     case Type3:
       switch (s->stack[textIndex_+1]) {
-      case 1: role = Engine::ScenarioRole; break;
+      case 1:
+        if (*(WORD *)(retaddr + 8) == 0xcccc) // two int3
+          role = Engine::ScenarioRole;
+        break;
       case 0:
-        if (s->stack[10] == 0x00ffffff && s->stack[10 - 3] == 1)
+        if (s->stack[10] == 0x00ffffff && s->stack[10 - 3] == 1 ||   // for old BGI2 games
+            s->stack[10] == 0 && s->stack[10 - 1] == 0 && s->stack[10 - 2] == 0) // for new BGI2 games
          role = Engine::NameRole;
         break;
       } break;
@@ -417,7 +526,6 @@ namespace Private {
     return addr;
   }
 
-
   /**
    *  Sample Game: type 3: 蒼の彼方 体験版 (8/6/2014)
    *  01312cce     cc             int3    ; jichi: reladdr = 0x32cd0
@@ -630,5 +738,27 @@ bool BGIEngine::attach()
   HijackManager::instance()->attachFunction((ulong)::TextOutA);
   return true;
 }
+
+/**
+ *  Example: <rここ>空港</r>
+ *  http://sakuradite.com/topic/965
+ */
+QString BGIEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "<r%2>%1</r>";
+  return fmt.arg(rb, rt);
+}
+
+// Remove furigana in scenario thread.
+QString BGIEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains("</r>"))
+    return text;
+  static QRegExp rx("<r.+>(.+)</r>");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
+}
+
 
 // EOF
