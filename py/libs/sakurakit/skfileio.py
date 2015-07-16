@@ -288,6 +288,11 @@ def extracttar(path, location, mode='r'): # unicode, unicode -> bool
     dwarn(e)
   return False
 
+def extracttargz(path, location): return extracttar(path, location, 'r:gz')
+def extracttarbz2(path, location): return extracttar(path, location, 'r:bz2')
+extracttgz = extracttargz
+extracttbz2 = extracttarbz2
+
 # http://stackoverflow.com/questions/9431918/extracting-zip-file-contents-to-specific-directory-in-python-2-7
 def extractzip(path, location): # unicode, unicode -> bool
   """
