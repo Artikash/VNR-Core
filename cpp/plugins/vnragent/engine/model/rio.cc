@@ -302,9 +302,10 @@ namespace Private {
    *  00503908  00 00 00 00 00 00 00 00 00 00 00 00 18 04 00 00  ..............
    *  00503918  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    */
+  int hookStackIndex_;
   bool hookBefore(winhook::hook_stack *s)
   {
-    auto arg = (HookArgument *)s->esi;
+    auto arg = (HookArgument *)s->stack[hookStackIndex_];
     if (arg->isValid())
       arg->dispatch();
     return true;
@@ -321,9 +322,22 @@ namespace Private {
  *
  *  When the text contains new line (_r), the same text will be invoked twice.
  *  Need to avoid immediate duplicate.
+ *
+ *  Sample game: Vestige 体験版 (RIO 2.47)
+ *  FIXME Text accessed character by character
  */
-bool attach()
-{ return winhook::hook_before((ulong)::GetTextExtentPoint32A, Private::hookBefore); }
+bool attach(int ver)
+{
+  if (ver < 247) // currently only >= 2.48 is supported
+    return false;
+
+  if (ver >= 248)
+     Private::hookStackIndex_ = winhook_stack_indexof(esi);
+  else // <= 247
+     Private::hookStackIndex_ = winhook_stack_indexof(ebp);
+
+  return winhook::hook_before((ulong)::GetTextExtentPoint32A, Private::hookBefore);
+}
 
 } // namespace ScenarioHook
 } // unnamed namespace
@@ -332,11 +346,9 @@ bool attach()
 
 bool ShinaRioEngine::attach()
 {
-  int version = ::getRioVersion();
-  DOUT("version =" << version);
-  if (version < 248) // currently only >= 2.48 is supported
-    return false;
-  if (!ScenarioHook::attach())
+  int ver = ::getRioVersion();
+  DOUT("version =" << ver);
+  if (!ScenarioHook::attach(ver))
     return false;
 
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);

@@ -230,13 +230,15 @@ class DictFileReader(object):
 
   encoding = 'utf8'
 
-  def __init__(self, filename, dict_ifo, dict_index, caching=False, compressed=False):
+  def __init__(self, filename, dict_ifo, dict_index, caching=False, compressed=None):
     """
     @param  filename  unicode None
     @param  dict_ifo  IfoFileReader
     @param  dict_index  IdxFileReader
     @param* caching  bool  whether read all data into memory
     """
+    if compressed is None:
+      compressed = filename.endswith('.dz')
     self._dict_ifo = dict_ifo
     self._dict_index = dict_index
     self._compressed = compressed
@@ -456,10 +458,13 @@ if __name__ == '__main__':
 
   def sleep():
     print "sleep: enter"
-    time.sleep(5)
+    #time.sleep(5)
     print "sleep: leave"
 
-  dictdir = '../../../../../../Caches/Dictionaries/OVDP/NhatViet/'
+  #dictdir = '../../../../../../Caches/Dictionaries/OVDP/NhatViet/'
+  dictdir = '../../../../../../Caches/Dictionaries/StarDict'
+  dictdir += '/hanja/'
+  #dictdir += '/hangul/'
 
   if os.name == 'nt':
     dictdir = 'z:' + dictdir
@@ -468,9 +473,14 @@ if __name__ == '__main__':
 
   with SkProfiler("init"):
 
-    ifo_file = dictdir + "star_nhatviet.ifo"
-    idx_file = dictdir + 'star_nhatviet.idx'
-    dict_file = dictdir + 'star_nhatviet.dict'
+    #ifo_file = dictdir + 'star_nhatviet.ifo'
+    #idx_file = dictdir + 'star_nhatviet.idx'
+    #dict_file = dictdir + 'star_nhatviet.dict'
+
+    ifo_file = dictdir + 'Hanja_KoreanHanzi_Dic.ifo'
+    idx_file = dictdir + 'Hanja_KoreanHanzi_Dic.idx'
+    dict_file = dictdir + 'Hanja_KoreanHanzi_Dic.dict.dz'
+
     #sleep()
     ifo_reader = IfoFileReader(ifo_file)
     #sleep()
@@ -489,7 +499,8 @@ if __name__ == '__main__':
   #t = u"かわゆい"
   #t = u"可愛い"
   #t = u"万歳"
-  t = u'冗談'
+  #t = u'冗談'
+  t = u'愛'
   r = dict_reader.get_dict_by_word(t)
   print len(r)
   print type(r[0]['m'])

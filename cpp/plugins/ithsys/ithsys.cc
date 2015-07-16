@@ -776,7 +776,7 @@ BOOL IthInitSystemService()
 
   LDR_DATA_TABLE_ENTRY *ldr_entry = (LDR_DATA_TABLE_ENTRY*)peb->Ldr->InLoadOrderModuleList.Flink;
 
-  // FIXME jichi 7/12/2015: This will fail when the file path is a remote path such as:
+  // jichi 7/12/2015: This will fail when the file path is a remote path such as:
   // Original remote file path: \\??\\\\\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
   // Correct UNC path: \\??\\\\UNC\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");
   //RtlInitUnicodeString(&us, L"\\??\\UNC\\psf\\Host\\Local\\Windows\\Games\\ShinaRio\\Ayakashibito_trial\\");

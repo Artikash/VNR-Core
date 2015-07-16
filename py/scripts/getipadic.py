@@ -65,7 +65,7 @@ def extract():
   import shutil
   from sakurakit import skfileio
   with SkProfiler("extract"):
-    ok = skfileio.extracttar(srcpath, tmppath, mode='r:bz2')
+    ok = skfileio.extracttarbz2(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)

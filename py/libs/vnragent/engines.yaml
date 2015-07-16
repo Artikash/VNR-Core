@@ -6,7 +6,7 @@
   #encoding: sjis
 
 - name: EmbedBGI # 5/11/2014 jichi
-  exist: BGI.*|BGVC.exe
+  exist: BGI.*|BGVC.exe|sysgrp.arc
   #encoding: sjis
   #vnrlocale: true # TODO: need a better name
 

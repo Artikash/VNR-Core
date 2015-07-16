@@ -23,19 +23,12 @@ namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
 
-  enum TextOffset {
-    TextOffsetEcx = 0   // new games text in ecx
-    , TextOffsetEax     // old games text in eax
-  } textOffset_;
+  int hookStackIndex_;
 
   bool hookBefore(winhook::hook_stack *s)
   {
     static QByteArray data_;
-    LPCSTR *lpText;
-    if (textOffset_ == TextOffsetEax) // add esp, $  old Debonosu game
-      lpText = (LPCSTR *)&s->eax;
-    else // new Debonosu game
-      lpText = (LPCSTR *)&s->ecx;
+    LPCSTR *lpText = (LPCSTR *)&s->stack[hookStackIndex_];
 
     auto text = *lpText;
     if (!text || !*text)
@@ -75,14 +68,12 @@ namespace Private {
 
    // 00436B70   57               PUSH EDI
    // 00436B71   8BF8             MOV EDI,EAX ; jichi: use eax instead of ecx as this
-  TextOffset getTextOffset(DWORD addr)
+  int getHookStackIndex(DWORD addr)
   {
-    if (*(BYTE *)addr == s1_push_edi
-        && *(WORD *)(addr + 1) == s2_mov_edi_eax)
-      return TextOffsetEax;
-    return TextOffsetEcx;
+    if (*(BYTE *)addr == s1_push_edi && *(WORD *)(addr + 1) == s2_mov_edi_eax)
+      return winhook_stack_indexof(eax); // old game in eax
+    return winhook_stack_indexof(ecx);  // new game in ecx
   }
-
 
 } // namespace Private
 
@@ -283,13 +274,12 @@ bool attach(ulong startAddress, ulong stopAddress)
   if (!addr)
     return false;
 
-  Private::textOffset_ = Private::getTextOffset(addr);
+  Private::hookStackIndex_ = Private::getHookStackIndex(addr);
 
   //ulong call = MemDbg::findNearCallAddress(addr, startAddress, stopAddress);
   //if (!call)
   //  return false;
 
-  DOUT("text offset =" << Private::textOffset_);
   //0x436b70
   //0x440743
   return winhook::hook_before(addr, Private::hookBefore);

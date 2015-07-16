@@ -19,8 +19,9 @@ class ShinaRioEngine(Engine):
     """@reimp"""
     ini = finder.getAbsPath("RIO.INI")
     if ini and os.path.exists(ini):
-      version = self.getRioVersion(ini)
-      if version >= 248:
+      ver = self.getRioVersion(ini)
+      #if ver >= 247:
+      if ver >= 248:
         return True
     return False
 
