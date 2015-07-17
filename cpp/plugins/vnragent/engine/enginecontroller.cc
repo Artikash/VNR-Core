@@ -339,6 +339,13 @@ public:
     else
       return rubyParser.removeRuby(text);
   }
+
+  QString removeRuby(const QString &text) const
+  {
+    if (text.isEmpty() || !rubyParser.containsRuby(text))
+      return text;
+    return rubyParser.removeRuby(text);
+  }
 };
 
 EngineController *EngineControllerPrivate::globalInstance;
@@ -597,6 +604,8 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, int role, lon
     }
     if (role == Engine::ScenarioRole)
       repl = d_->renderRuby(repl);
+    else
+      repl = d_->removeRuby(repl);
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
@@ -763,6 +772,8 @@ QString EngineController::dispatchTextW(const QString &text, int role, long sign
     }
     if (role == Engine::ScenarioRole)
       repl = d_->renderRuby(repl);
+    else
+      repl = d_->removeRuby(repl);
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
