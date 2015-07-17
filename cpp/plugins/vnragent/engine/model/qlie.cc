@@ -736,6 +736,21 @@ bool QLiEEngine::attach()
 }
 
 /**
+ *  http://sakuradite.com/topic/969
+ *  http://i.imgur.com/JOVbJnZ.png
+ */
+QString QLiEEngine::textFilter(const QString &text, int role)
+{
+  Q_UNUSED(role);
+  if (!text.contains("[f,"))
+    return text;
+  static QRegExp rx("\\[f,.+\\]");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).remove(rx);
+}
+
+/**
  *  Sample game: 催眠演舞
  *  Sample ruby: [rb,神楽,かぐら]
  */
