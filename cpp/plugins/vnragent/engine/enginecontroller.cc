@@ -178,6 +178,23 @@ private:
     return ret;
   }
 
+  QString renderRuby(const QString &text) const
+  {
+    if (text.isEmpty() || !rubyParser.containsRuby(text))
+      return text;
+    else if (model->rubyCreateFunction)
+      return rubyParser.renderRuby(text, model->rubyCreateFunction);
+    else
+      return rubyParser.removeRuby(text);
+  }
+
+  QString removeRuby(const QString &text) const
+  {
+    if (text.isEmpty() || !rubyParser.containsRuby(text))
+      return text;
+    return rubyParser.removeRuby(text);
+  }
+
 public:
   static size_t getLineCapacity(const QString &text)
   { return getLineCapacity(static_cast<const wchar_t *>(text.utf16())); }
@@ -311,23 +328,6 @@ public:
       }
     }
     return ret;
-  }
-
-  QString renderRuby(const QString &text) const
-  {
-    if (text.isEmpty() || !rubyParser.containsRuby(text))
-      return text;
-    else if (model->rubyCreateFunction)
-      return rubyParser.renderRuby(text, model->rubyCreateFunction);
-    else
-      return rubyParser.removeRuby(text);
-  }
-
-  QString removeRuby(const QString &text) const
-  {
-    if (text.isEmpty() || !rubyParser.containsRuby(text))
-      return text;
-    return rubyParser.removeRuby(text);
   }
 
   QString filterTranslation(const QString &text, int role) const
