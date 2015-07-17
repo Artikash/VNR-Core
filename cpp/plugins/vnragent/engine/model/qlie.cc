@@ -736,6 +736,8 @@ bool QLiEEngine::attach()
 }
 
 /**
+ *  Sample tags: [f,5].
+ *
  *  http://sakuradite.com/topic/969
  *  http://i.imgur.com/JOVbJnZ.png
  */
