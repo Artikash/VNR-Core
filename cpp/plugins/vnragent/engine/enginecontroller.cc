@@ -315,7 +315,7 @@ public:
 
   QString filterTranslation(const QString &text, int role) const
   {
-    QString ret = text;
+    QString ret = role == Engine::ScenarioRole ? d_->renderRuby(text) : d_->removeRuby(text);
     if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
       ret.replace("\n", model->newLineString);
     if (!model->textSeperators.isEmpty()) {
@@ -602,10 +602,6 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, int role, lon
         repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap, containsBBCode);
       }
     }
-    if (role == Engine::ScenarioRole)
-      repl = d_->renderRuby(repl);
-    else
-      repl = d_->removeRuby(repl);
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
@@ -770,10 +766,6 @@ QString EngineController::dispatchTextW(const QString &text, int role, long sign
         repl = d_->limitTextWidth(repl, d_->otherLineCapacity, wordWrap, containsBBCode);
       }
     }
-    if (role == Engine::ScenarioRole)
-      repl = d_->renderRuby(repl);
-    else
-      repl = d_->removeRuby(repl);
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
