@@ -313,23 +313,6 @@ public:
     return ret;
   }
 
-  QString filterTranslation(const QString &text, int role) const
-  {
-    QString ret = role == Engine::ScenarioRole ? d_->renderRuby(text) : d_->removeRuby(text);
-    if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
-      ret.replace("\n", model->newLineString);
-    if (!model->textSeperators.isEmpty()) {
-      char s[2] = {};
-      for (int i = 0; i < model->textSeperators.size(); i++) {
-        s[0] = i + 1;
-        ret.replace(s, model->textSeperators[i]);
-      }
-    }
-    if (model->translationFilterFunction)
-      ret = model->translationFilterFunction(ret, role);
-    return ret;
-  }
-
   QString renderRuby(const QString &text) const
   {
     if (text.isEmpty() || !rubyParser.containsRuby(text))
@@ -345,6 +328,23 @@ public:
     if (text.isEmpty() || !rubyParser.containsRuby(text))
       return text;
     return rubyParser.removeRuby(text);
+  }
+
+  QString filterTranslation(const QString &text, int role) const
+  {
+    QString ret = role == Engine::ScenarioRole ? renderRuby(text) : removeRuby(text);
+    if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
+      ret.replace("\n", model->newLineString);
+    if (!model->textSeperators.isEmpty()) {
+      char s[2] = {};
+      for (int i = 0; i < model->textSeperators.size(); i++) {
+        s[0] = i + 1;
+        ret.replace(s, model->textSeperators[i]);
+      }
+    }
+    if (model->translationFilterFunction)
+      ret = model->translationFilterFunction(ret, role);
+    return ret;
   }
 };
 
