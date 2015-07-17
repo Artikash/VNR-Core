@@ -178,22 +178,22 @@ private:
     return ret;
   }
 
-  QString renderRuby(const QString &text) const
-  {
-    if (text.isEmpty() || !rubyParser.containsRuby(text))
-      return text;
-    else if (model->rubyCreateFunction)
-      return rubyParser.renderRuby(text, model->rubyCreateFunction);
-    else
-      return rubyParser.removeRuby(text);
-  }
+  //QString renderRuby(const QString &text) const
+  //{
+  //  if (text.isEmpty() || !rubyParser.containsRuby(text))
+  //    return text;
+  //  else if (model->rubyCreateFunction)
+  //    return rubyParser.renderRuby(text, model->rubyCreateFunction);
+  //  else
+  //    return rubyParser.removeRuby(text);
+  //}
 
-  QString removeRuby(const QString &text) const
-  {
-    if (text.isEmpty() || !rubyParser.containsRuby(text))
-      return text;
-    return rubyParser.removeRuby(text);
-  }
+  //QString removeRuby(const QString &text) const
+  //{
+  //  if (text.isEmpty() || !rubyParser.containsRuby(text))
+  //    return text;
+  //  return rubyParser.removeRuby(text);
+  //}
 
 public:
   static size_t getLineCapacity(const QString &text)
@@ -332,7 +332,16 @@ public:
 
   QString filterTranslation(const QString &text, int role) const
   {
-    QString ret = role == Engine::ScenarioRole ? renderRuby(text) : removeRuby(text);
+    if (text.isEmpty())
+      return text;
+    QString ret = text;
+
+    if (rubyParser.containsRuby(ret)) {
+      if (model->rubyCreateFunction && role == Engine::ScenarioRole)
+        ret = rubyParser.renderRuby(ret, model->rubyCreateFunction);
+      else
+        ret = rubyParser.removeRuby(ret);
+    }
     if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
       ret.replace("\n", model->newLineString);
     if (!model->textSeperators.isEmpty()) {
