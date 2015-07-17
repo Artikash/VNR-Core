@@ -9,6 +9,7 @@ class QLiEEngine : public EngineModel
 {
   SK_EXTEND_CLASS(QLiEEngine, EngineModel)
   static bool attach();
+  static QString textFilter(const QString &text, int role);
   static QString rubyCreate(const QString &rb, const QString &rt);
   static QString rubyRemove(const QString &text);
 
@@ -20,6 +21,7 @@ public:
     newLineString = "[n]";
     matchFiles << "GameData/data*.pack"; // mostly data0.pack, data1.pack, ...
     attachFunction = &Self::attach;
+    textFilterFunction = &Self::textFilter;
     rubyCreateFunction = &Self::rubyCreate;
     rubyRemoveFunction = &Self::rubyRemove;
   }
