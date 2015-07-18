@@ -10,6 +10,7 @@ from sakurakit.sktr import tr_
 from mecabparser import mecabdef, mecabformat
 from mytr import my
 #from kagami import GrimoireBean
+from hanjaconv import hanjaconv
 from unitraits.jpchars import iskanji
 import config, convutil, dicts, ebdict, growl, hanzidict, mecabman, rc, settings
 import _dictman
@@ -37,8 +38,9 @@ class _DictionaryManager:
     """
     ss = settings.global_()
     radicalEnabled = ss.isKanjiRadicalEnabled()
+    hanjaEnabled = ss.isKanjiHanjaEnabled()
     kanjidicEnabled = ss.kanjiDicLanguages()
-    if not radicalEnabled and not kanjidicEnabled:
+    if not any((radicalEnabled, hanjaEnabled, kanjidicEnabled)):
       return
 
     m = hanzidict.manager()
@@ -46,9 +48,11 @@ class _DictionaryManager:
     for ch in text:
       if iskanji(ch):
         rad = m.lookupRadicalString(ch) if radicalEnabled else None
+        hanja = hanjaconv.lookup_hanja_char(ch) if hanjaEnabled else None
         trans = m.translateKanji(ch) if kanjidicEnabled else None
-        if trans:
-          ch = u"%s{%s}" % (ch, trans)
+        info = filter(bool, (hanja, trans))
+        if info:
+          ch = u"%s{%s}" % (ch, ','.join(info))
         text = u"【%s】" % ch
         if rad:
           text = "%s[%s]" % (text, rad[1:-1])

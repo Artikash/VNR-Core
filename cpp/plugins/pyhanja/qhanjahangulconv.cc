@@ -39,4 +39,13 @@ QString QHanjaHangulConverter::convert(const QString &text) const
   return QString::fromStdWString(s);
 }
 
+QString QHanjaHangulConverter::lookup(const QString &text) const
+{
+  std::wstring s = d_->conv.lookup((const wchar_t *)text.utf16());
+  return QString::fromStdWString(s);
+}
+
+int QHanjaHangulConverter::lookupCharacter(int ch) const
+{ return d_->conv.lookupCharacter(ch); }
+
 // EOF

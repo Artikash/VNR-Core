@@ -4847,6 +4847,8 @@ class _DictionaryTranslationTab(object):
     ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese kanji dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.kanjiRadicalButton)
+    if 'ko' not in blans:
+      layout.addWidget(self.hanjaButton)
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
     for lang in config.KANJIDIC_LANGS:
       if lang == 'en' or lang not in blans:
@@ -4869,6 +4871,17 @@ class _DictionaryTranslationTab(object):
     ))
     ret.setChecked(settings.global_().isKanjiRadicalEnabled())
     ret.toggled.connect(settings.global_().setKanjiRadicalEnabled)
+    return ret
+
+  @memoizedproperty
+  def hanjaButton(self):
+    ret = QtWidgets.QCheckBox("%s, %s: %s" % (
+      my.tr("Korean hanja dictionary"),
+      my.tr("like this"),
+      u"香{향}[禾{화},日{일}]",
+    ))
+    ret.setChecked(settings.global_().isKanjiHanjaEnabled())
+    ret.toggled.connect(settings.global_().setKanjiHanjaEnabled)
     return ret
 
   def getKanjiDicButton(self, lang):

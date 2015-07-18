@@ -73,4 +73,14 @@ void HanjaHangulCharacterConverter::replace(wchar_t *text) const
   }
 }
 
+wchar_t HanjaHangulCharacterConverter::lookup(wchar_t ch) const
+{
+  if (!ch || d_->data.empty())
+    return 0;
+  auto p = d_->data.find(ch);
+  if (p != d_->data.end())
+    return p->second;
+  return 0;
+}
+
 // EOF

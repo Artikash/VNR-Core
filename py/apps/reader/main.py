@@ -709,6 +709,8 @@ class _MainObject(object):
     ss = settings.global_()
     ret.setKanjiDicLanguages(ss.kanjiDicLanguages())
     ss.kanjiDicLanguagesChanged.connect(ret.setKanjiDicLanguages)
+    ret.setHanjaEnabled(ss.isKanjiHanjaEnabled())
+    ss.kanjiHanjaEnabledChanged.connect(ret.setHanjaEnabled)
     return ret
 
   @memoizedproperty

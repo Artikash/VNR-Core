@@ -36,6 +36,9 @@ public:
 
   // Replace the characters according to the script, thread-safe
   void replace(wchar_t *text) const;
+
+  wchar_t lookupCharacter(wchar_t ch) const;
+  std::wstring lookup(const wchar_t *text) const;
 };
 
 #endif // HANJA2HANGUL_H

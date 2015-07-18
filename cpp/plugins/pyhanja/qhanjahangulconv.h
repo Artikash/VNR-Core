@@ -34,6 +34,8 @@ public:
 
   // Replace the characters according to the script, thread-safe
   QString convert(const QString &text) const;
+  QString lookup(const QString &text) const;
+  int lookupCharacter(int ch) const;
 };
 
 #endif // QHANJAHANGULCONV_H

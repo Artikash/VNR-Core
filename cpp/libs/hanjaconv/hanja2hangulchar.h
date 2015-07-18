@@ -6,7 +6,6 @@
 
 #include "sakurakit/skglobal.h"
 #include <functional>
-#include <string>
 
 class HanjaHangulCharacterConverterPrivate;
 class HanjaHangulCharacterConverter
@@ -38,6 +37,8 @@ public:
 
   // Replace the characters according to the script, thread-safe
   void replace(wchar_t *text) const;
+
+  wchar_t lookup(wchar_t ch) const;
 };
 
 #endif // HANGUL2HANJACHAR_H
