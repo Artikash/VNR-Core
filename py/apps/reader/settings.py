@@ -1286,6 +1286,13 @@ class Settings(QSettings):
   def isKanjiRadicalEnabled(self): return to_bool(self.value('KanjiRadical'))
   def setKanjiRadicalEnabled(self, t): self.setValue('KanjiRadical', t)
 
+  kanjiHanjaEnabledChanged = Signal(bool)
+  def isKanjiHanjaEnabled(self): return to_bool(self.value('KanjiHanja'))
+  def setKanjiHanjaEnabled(self, value):
+    if value != self.isKanjiHanjaEnabled():
+      self.setValue('KanjiHanja', value)
+      self.kanjiHanjaEnabledChanged.emit(value)
+
   # Locations
 
   grabLocationChanged = Signal(unicode)

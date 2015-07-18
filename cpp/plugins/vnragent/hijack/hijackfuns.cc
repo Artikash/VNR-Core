@@ -251,6 +251,7 @@ HFONT WINAPI Hijack::newCreateFontIndirectW(const LOGFONTW *lplf)
   return oldCreateFontIndirectW(lplf);
 }
 
+#define CREATE_FONT_ARGS    nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace
 HFONT WINAPI Hijack::newCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
   DOUT("pass");
@@ -274,15 +275,15 @@ HFONT WINAPI Hijack::newCreateFontA(int nHeight, int nWidth, int nEscapement, in
         if (Util::allAscii(s->fontFamily)) {
           QByteArray ff = s->fontFamily.toLocal8Bit();
           lpszFace = ff.constData();
-          return oldCreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+          return oldCreateFontA(CREATE_FONT_ARGS);
         } else {
           auto lpszFace = (LPCWSTR)s->fontFamily.utf16();
-          return oldCreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+          return oldCreateFontW(CREATE_FONT_ARGS);
         }
       }
     }
   }
-  return oldCreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+  return oldCreateFontA(CREATE_FONT_ARGS);
 }
 
 HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
@@ -308,8 +309,9 @@ HFONT WINAPI Hijack::newCreateFontW(int nHeight, int nWidth, int nEscapement, in
         lpszFace = (LPCWSTR)s->fontFamily.utf16();
     }
   }
-  return oldCreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+  return oldCreateFontW(CREATE_FONT_ARGS);
 }
+#undef CREATE_FONT_ARGS
 
 /** Encoding */
 

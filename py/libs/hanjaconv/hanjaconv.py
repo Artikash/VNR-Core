@@ -54,6 +54,24 @@ def to_hangul(text):
   """
   return hanja2hangul().convert(text)
 
+def lookup_hanja_char(text):
+  """Hanja to hangul.
+  @param  text  unicode
+  @return  unicode
+  """
+  if text and len(text) == 1:
+    ch = hanja2hangul().lookupCharacter(ord(text[0]))
+    if ch:
+      return unichr(ch)
+  return ''
+
+def lookup_hanja(text):
+  """Hanja to hangul.
+  @param  text  unicode
+  @return  unicode
+  """
+  return hanja2hangul().lookup(text)
+
 def to_hanja(text):
   """Hangul to hanja.
   @param  text  unicode

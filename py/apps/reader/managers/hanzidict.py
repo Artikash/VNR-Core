@@ -5,6 +5,7 @@
 import os
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skclass import memoized, memoizedproperty
+from hanjaconv import hanjaconv
 import config, dicts
 
 @memoized
@@ -20,6 +21,9 @@ class HanziDictionary:
   def setKanjiDicLanguages(self, v):
     dprint(v)
     self.__d.kanjidicLangs = v
+
+  def isHanjaEnabled(self): return self.__d.hanjaEnabled
+  def setHanjaEnabled(self, t): self.__d.hanjaEnabled = t
 
   # Queries
 
@@ -56,19 +60,22 @@ class HanziDictionary:
     @return  list
     """
     ret = ''
+    d = self.__d
     if l:
       for it in l:
         if isinstance(it, basestring):
           t = self.translateRadical(it) or self.translateKanji(it)
-          if t:
-            it += '{' + t + '}'
+          hanja = hanjaconv.lookup_hanja_char(it) if d.hanjaEnabled else None
+          info = filter(bool, (hanja, t))
+          if info:
+            it += '{%s}' % ','.join(info)
         if ret:
           ret += ', '
         if isinstance(it, basestring):
           ret += it
         else:
           ret += self.renderRadicals(it)
-      ret = '(' + ret + ')'
+      ret = '(%s)' % ret
     return ret
 
   def lookupRadicalString(self, ch):
@@ -82,6 +89,7 @@ class HanziDictionary:
 class _HanziDictionary:
   def __init__(self):
     self.kanjidicLangs = ''
+    self.hanjaEnabled = False
 
   @memoizedproperty
   def decomp(self):

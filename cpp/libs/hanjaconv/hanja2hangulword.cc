@@ -138,7 +138,6 @@ bool HanjaHangulWordConverter::addDictionary(const wchar_t *path)
 }
 
 // Conversion
-#include <QDebug>
 void HanjaHangulWordConverter::replace(wchar_t *text) const
 {
   if (!text || d_->dicts.empty())
@@ -155,6 +154,22 @@ void HanjaHangulWordConverter::replace(wchar_t *text) const
           ::memcpy(p, e.hangul.c_str(), e.hangul.size() * sizeof(wchar_t));
     }
   }
+}
+
+std::wstring HanjaHangulWordConverter::lookup(const wchar_t *text) const
+{
+  if (!text || d_->dicts.empty())
+    return std::wstring();
+  size_t size = ::wcslen(text);
+  for (size_t di = 0; di < d_->dicts.size(); di++) {
+    const auto d = d_->dicts[di];
+    for (size_t ei = 0; ei < d->entry_count; ei++) {
+      const auto &e = d->entries[ei];
+      if (size == e.hanja.size() && text == e.hanja)
+        return e.hangul;
+    }
+  }
+  return std::wstring();
 }
 
 // EOF

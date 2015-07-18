@@ -244,12 +244,108 @@ static PyObject* Sbk_QHanjaHangulConverterFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_QHanjaHangulConverterFunc_lookup(PyObject* self, PyObject* pyArg)
+{
+    ::QHanjaHangulConverter* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::QHanjaHangulConverter*)Shiboken::Conversions::cppPointer(SbkpyhanjaTypes[SBK_QHANJAHANGULCONVERTER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: lookup(QString)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // lookup(QString)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_QHanjaHangulConverterFunc_lookup_TypeError;
+
+    // Call function/method
+    {
+        ::QString cppArg0 = ::QString();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // lookup(QString)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            QString cppResult = const_cast<const ::QHanjaHangulConverter*>(cppSelf)->lookup(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_QHanjaHangulConverterFunc_lookup_TypeError:
+        const char* overloads[] = {"unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanja.QHanjaHangulConverter.lookup", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_QHanjaHangulConverterFunc_lookupCharacter(PyObject* self, PyObject* pyArg)
+{
+    ::QHanjaHangulConverter* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::QHanjaHangulConverter*)Shiboken::Conversions::cppPointer(SbkpyhanjaTypes[SBK_QHANJAHANGULCONVERTER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: lookupCharacter(int)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // lookupCharacter(int)const
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_QHanjaHangulConverterFunc_lookupCharacter_TypeError;
+
+    // Call function/method
+    {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // lookupCharacter(int)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            int cppResult = const_cast<const ::QHanjaHangulConverter*>(cppSelf)->lookupCharacter(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_QHanjaHangulConverterFunc_lookupCharacter_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyhanja.QHanjaHangulConverter.lookupCharacter", overloads);
+        return 0;
+}
+
 static PyMethodDef Sbk_QHanjaHangulConverter_methods[] = {
     {"addCharacterDictionary", (PyCFunction)Sbk_QHanjaHangulConverterFunc_addCharacterDictionary, METH_O},
     {"addWordDictionary", (PyCFunction)Sbk_QHanjaHangulConverterFunc_addWordDictionary, METH_O},
     {"clear", (PyCFunction)Sbk_QHanjaHangulConverterFunc_clear, METH_NOARGS},
     {"convert", (PyCFunction)Sbk_QHanjaHangulConverterFunc_convert, METH_O},
     {"isEmpty", (PyCFunction)Sbk_QHanjaHangulConverterFunc_isEmpty, METH_NOARGS},
+    {"lookup", (PyCFunction)Sbk_QHanjaHangulConverterFunc_lookup, METH_O},
+    {"lookupCharacter", (PyCFunction)Sbk_QHanjaHangulConverterFunc_lookupCharacter, METH_O},
 
     {0} // Sentinel
 };

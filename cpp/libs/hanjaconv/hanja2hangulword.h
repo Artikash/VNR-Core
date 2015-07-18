@@ -38,6 +38,8 @@ public:
 
   // Replace the Words according to the script, thread-safe
   void replace(wchar_t *text) const;
+
+  std::wstring lookup(const wchar_t *text) const;
 };
 
 #endif // HANGUL2HANJAWORD_H
