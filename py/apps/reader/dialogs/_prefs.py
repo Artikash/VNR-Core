@@ -34,7 +34,7 @@ def create_toggle_button(*args, **kwargs): # -> QPushButton
   ret.setMaximumHeight(18)  # qss sometimes does not work, bug?
   return ret
 
-def create_label(text="", align=True): # unicode -> QLabel
+def create_label(text="", align=False): # unicode -> QLabel
   ret = QtWidgets.QLabel()
   if text:
     ret.setText(text + ":")
@@ -185,7 +185,7 @@ class _UserTab(object):
     grid.addWidget(QtWidgets.QLabel(), r, 0)
 
     r += 1
-    grid.addWidget(create_label(tr_("Avatar")), r, 0)
+    grid.addWidget(create_label(tr_("Avatar"), align=True), r, 0)
     grid.addWidget(self.userAvatarLabel, r, 1)
 
     r += 1
@@ -8904,7 +8904,7 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(create_label(mytr_("Dialog"), align=False))
+    row.addWidget(create_label(mytr_("Dialog")))
     row.addWidget(self.scenarioTranslatorButton)
     row.addStretch()
     layout.addLayout(row)
@@ -9276,7 +9276,7 @@ class _EngineTab(object):
         #('window', tr_("Window")),
       ):
       row = QtWidgets.QHBoxLayout()
-      row.addWidget(create_label(label, align=False))
+      row.addWidget(create_label(label))
       group = getattr(self, key + 'TextGroup')
       group.setParent(ret)
       l = group.buttons()
@@ -9496,7 +9496,7 @@ class _EngineTab(object):
   def windowTextLayout(self):
     ret = QtWidgets.QHBoxLayout()
 
-    ret.addWidget(create_label(tr_("Window"), align=False))
+    ret.addWidget(create_label(tr_("Window")))
 
     self.windowDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
     ret.addWidget(self.windowDisableButton)

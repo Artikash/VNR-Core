@@ -15,15 +15,27 @@ class Engine:
 
 class ShinaRioEngine(Engine):
   name = 'EmbedRio' # override
+  MIN_VERSION = 240 # minimum supported version
   def match(self, finder):
     """@reimp"""
-    ini = finder.getAbsPath("RIO.INI")
-    if ini and os.path.exists(ini):
+    if not finder.globs("*.WAR"):
+      return False
+    ini = self.getRioIni(finder)
+    if ini:
       ver = self.getRioVersion(ini)
-      #if ver >= 247:
-      if ver >= 248:
+      if ver >= self.MIN_VERSION:
         return True
     return False
+
+  @staticmethod
+  def getRioIni(finder):
+    """
+    @param  finder
+    @return  unicode or None
+    """
+    for ini in finder.getAbsPath("RIO.INI"), (finder.exepath[:-3] + "ini"):
+      if ini and os.path.exists(ini):
+        return ini
 
   @staticmethod
   def getRioVersion(path):

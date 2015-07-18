@@ -19,7 +19,7 @@ public:
     name = "EmbedRio";
     enableDynamicEncoding = true;
     newLineString = "_r";
-    matchFiles << "rio.ini";
+    matchFiles << "*.war";
     scenarioLineCapacity =
     otherLineCapacity = 40; // 60 in 3rd games (30 wide characters)
     attachFunction = &Self::attach;

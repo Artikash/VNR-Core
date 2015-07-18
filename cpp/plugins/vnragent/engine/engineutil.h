@@ -48,6 +48,7 @@ QStringList glob(const QString &nameFilter);
 
 // Thread and process
 
+QString getProcessName();
 QString getNormalizedProcessName();
 
 bool getModuleMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
