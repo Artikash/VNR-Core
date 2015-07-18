@@ -65,7 +65,7 @@ def extract(dic): # str -> bool
   return ok
 
 def get(dic): # str -> bool
-  url = DL_URL + DICS[dic]['file']
+  url = DIC_URL + DICS[dic]['file']
   path = TMP_DIR + '/' + DICS[dic]['file']
 
   dprint("enter: dic = %s, url = %s" % (dic, url))
