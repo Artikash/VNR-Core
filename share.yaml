@@ -720,7 +720,8 @@ lingoes: # language
   #- vi
 
 stardict:
-  ja-vi: $PWD/../../../Caches/Dictionaries/OVDP/NhatViet/star_nhatviet
+  ja-vi: $PWD/../../../Caches/Dictionaries/OVDP/NhatViet #star_nhatviet
+  hanja: $PWD/../../../Caches/Dictionaries/StarDict/hanja
 
 jmdict: # language
   - fr

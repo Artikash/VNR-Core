@@ -197,6 +197,25 @@ def _render_ovdp(text):
     text.replace('\n', '<br/>')
   return text
 
+def _render_hanjadic(text):
+  """Render hanjadic.
+  @param  text  unicode
+  @return  unicode  html
+
+  Example:
+【애】사랑(하다); 그리워하다; 아끼다
+受(줄수)의 줄임 + 心(마음심) + (천천히걸을쇠)
+心부 9획 (총13획)
+[1] [v] love; be fond of; like; be kind to [2] love; affection; kindness; benevolence; likes [3] [v] be apt to
+兼愛(겸애) 친불친(親不親)을 가리지 않고 모든 사람을 한결같이 사랑함
+敬愛(경애) 존경하고 사랑함
+敬天愛人(경천애인) 하늘을 공경하고 인류를 사랑함.
+  """
+  text = text.replace('\n', '<br/>')
+  text = re.sub(ur'(【.*?】)', r'<span class="hl">\1</span> ', text)
+  #text = re.sub(r'(\[.*?\])', r'<span class="hl">\1</span> ', text) # highlight text in []
+  return text
+
 def render_stardict(text, dic=None):
   """Render ovdp ja-vi dictionary.
   @param  text  unicode
@@ -205,6 +224,8 @@ def render_stardict(text, dic=None):
   """
   if dic == 'ovdp':
     return _render_ovdp(text)
+  if dic == 'hanja':
+    return _render_hanjadic(text)
   return text
 
 # JMDict

@@ -11,8 +11,11 @@ def get(lang):
   @return  bool
   """
   import rc
-  #if 'vi' in lang:
-  return rc.runscript('getovdp.py', (lang,))
+  if 'vi' in lang:
+    s = 'getovdp.py'
+  else:
+    s = 'getstardict.py'
+  return rc.runscript(s, (lang,))
 
 if __name__ == "__main__":
   get('ja-vi')

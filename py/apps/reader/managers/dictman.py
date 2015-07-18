@@ -244,6 +244,8 @@ class _DictionaryManager:
     @yield  StarDict, str category
     """
     ss = settings.global_()
+    if ss.isStardictHanjaEnabled():
+      yield dicts.stardict('hanja'), 'hanja'
     if ss.isStardictJaViEnabled():
       yield dicts.stardict('ja-vi'), 'ovdp'
 
@@ -270,7 +272,7 @@ class _DictionaryManager:
           count += 1
           if count >= limit:
             break
-      if count < limit and source:
+      if count < limit and source and cat != 'hanja':
         q = dic.lookup(source)
         if q:
           for html in q:
@@ -433,9 +435,9 @@ class DictionaryManager:
         #'google': google,
         #'locale': d.locale,
       })
-    except Exception, e: # eb.EBError
-      dwarn(e)
-      return  EMPTY_HTML
+    #except Exception, e: # eb.EBError
+    #  dwarn(e)
+    #  return  EMPTY_HTML
     return ret if len(ret) > MIN_HTML_LEN else EMPTY_HTML
 
 # EOF
