@@ -4,6 +4,7 @@
 rename:
   #AB2Try: YaneSDK # TODO
   AliceRunPatch: AliceRunPatch43
+  AMUSE CRAFT: Pal
   AUEngine: Tenco
   ApRicot: ApRicoT
   CIRCUS: Circus
@@ -201,7 +202,7 @@ simple:
   - AliceRunPatch # renamed
   - AliceRunPatch43
   #- AliceRunPatch4x
-  - AMUSE CRAFT
+  - AMUSE CRAFT # renamed
   - AOS
   - ApRicot # renamed
   - ApRicoT
@@ -261,6 +262,7 @@ simple:
   - Nippon1 PSP
   - Nippon2 PSP
   - Otomate PSP
+  - Pal
   - Pencil # renamed
   - Pensil
   - RealLive
@@ -447,7 +449,7 @@ char:
   - AliceRunPatch # renamed
   - AliceRunPatch43
   #- AliceRunPatch4x
-  - AMUSE CRAFT
+  - AMUSE CRAFT # renamed
   - Anex86
   - AOS
   - ARCGameEngine
@@ -506,6 +508,7 @@ char:
   - NitroPlus
   - Otomate PSP
   - Otomate PPSSPP
+  - Pal
   - Pencil # renamed
   - Pensil
   - QLiE

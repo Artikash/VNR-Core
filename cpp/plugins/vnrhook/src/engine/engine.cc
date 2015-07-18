@@ -11586,7 +11586,7 @@ bool InsertAmuseCraftHook()
   hp.split = 0x20; // arg6
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT AMUSE CRAFT");
-  NewHook(hp, "AMUSE CRAFT");
+  NewHook(hp, "Pal");
   return true;
 }
 
