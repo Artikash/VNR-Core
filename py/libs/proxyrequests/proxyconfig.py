@@ -3,9 +3,13 @@
 # 1/2/2015 jichi
 # See: https://twitter.com/bypassproxy
 
+# Alternative proxies:
+# http://spy.pink
+# http://freeproxy.blue
+# http://netherlandsproxy.pw
 JPWEBPROXY_CONFIG = { # faster, but jittered
-  'host': 'http://anonymity.nu',
-  'referer': 'http://anonymity.nu',
+  'host': 'http://netherlandsproxy.pw',
+  'referer': 'http://netherlandsproxy.pw',
   'postkey': 'x',
   'region': 'ja',
 }
