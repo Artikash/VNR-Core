@@ -20,6 +20,7 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <climits>
 #include <fstream>
@@ -32,16 +33,35 @@
 
 namespace { // unnamed
 
+QString getRioIni()
+{
+  QString ret = "RIO.INI";
+  if (QFileInfo(ret).exists())
+    return ret;
+
+  ret = Engine::getProcessName();
+  if (ret.size() > 3 && ret[ret.size() - 4] == '.') {
+    ret[ret.size() - 1] = 'I';
+    ret[ret.size() - 2] = 'N';
+    ret[ret.size() - 3] = 'I';
+    QFileInfo fi(ret);
+    if (fi.exists())
+      return fi.fileName();
+  }
+  return QString();
+}
+
 /**
  * Sample first line in RIO.INI:
  * [椎名里緒 v2.50]
  * return 250 (major 2, minor 50)
  */
-int getRioVersion()
+int getRioVersion(const QString &path)
 {
   std::string line;
   { // get first line
-    std::ifstream f("RIO.INI");
+    const wchar_t *ws = (const wchar_t *)path.utf16();
+    std::ifstream f(ws);
     if (f.is_open()) {
       std::getline(f, line);
       f.close();
@@ -69,9 +89,9 @@ namespace Private {
 
   class HookArgument
   {
-    DWORD split,
-          offset[0x57]; // [esi]+0x160
-    LPSTR text;   // [esi]+0x160
+    DWORD split_,
+          offset_[0x57];    // [esi]+0x160
+    LPSTR text_;            // current text address
 
     template <typename strT>
     static strT nextText(strT t)
@@ -80,18 +100,25 @@ namespace Private {
       return (t[6] && !t[5] && !t[4] && !t[3] && !t[2] && !t[1]) ? t + 6 : nullptr; // 6 continuous zeros
     }
 
-    bool isList() const { return nextText(text); }
-
     Engine::TextRole textRole() const
     {
       static ulong minSplit_ = UINT_MAX;
-      minSplit_ = qMin(minSplit_, split);
-      return split == minSplit_ ? Engine::ScenarioRole :
-             split == minSplit_ + 1 ? Engine::NameRole :
+      minSplit_ = qMin(minSplit_, split_);
+      return split_ == minSplit_ ? Engine::ScenarioRole :
+             split_ == minSplit_ + 1 ? Engine::NameRole :
              Engine::OtherRole;
     }
 
-    void dispatchText()
+  public:
+    static bool isTextList(LPCSTR text) { return nextText(text); }
+
+    LPSTR textAddress() const { return text_; }
+
+    /**
+     *  @param  text
+     *  @param  paddingSpace  prepend space to make the first character having two bytes
+     */
+    void dispatchText(LPSTR text, bool paddingSpace)
     {
       enum { NameCapacity = 0x10 }; // including ending '\0'
       static QByteArray data_;
@@ -103,11 +130,16 @@ namespace Private {
       //int area = lpSize->cx * lpSize->cy;
       //auto role = lpSize->cx || !lpSize->cy || area > 150 ? Engine::ScenarioRole : Engine::NameRole;
       auto role = textRole();
-      auto sig = Engine::hashThreadSignature(role, split);
+      auto sig = Engine::hashThreadSignature(role, split_);
       QByteArray oldData = text,
                  newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
       if (newData == oldData)
         return;
+
+     if (paddingSpace && !newData.isEmpty() && (signed char)newData[0] > 0) // prepend space for thin char
+        newData.prepend(' ')
+               .prepend(' ');
+
       data_ = newData;
 
       if (role == Engine::NameRole && newData.size() >= NameCapacity) {
@@ -121,11 +153,11 @@ namespace Private {
       }
     }
 
-    void dispatchList()
+    void dispatchTextList(LPSTR text)
     {
       static std::unordered_set<qint64> hashes_;
       enum { role = Engine::OtherRole };
-      auto sig = Engine::hashThreadSignature(role, split);
+      auto sig = Engine::hashThreadSignature(role, split_);
       for (auto p = text; p; p = nextText(p)) {
         if (hashes_.find(Engine::hashCharArray(p)) != hashes_.end())
           continue;
@@ -143,9 +175,13 @@ namespace Private {
       }
     }
 
-  public:
-    bool isValid() const { return Engine::isAddressWritable(text) && *text; }
-    void dispatch() { if (isList()) dispatchList(); else dispatchText(); }
+    //void dispatch(LPSTR text)
+    //{
+    //  if (nextText(text))
+    //    dispatchTextList(text);
+    //  else
+    //    dispatchText(text);
+    //}
   };
 
   /**
@@ -302,12 +338,47 @@ namespace Private {
    *  00503908  00 00 00 00 00 00 00 00 00 00 00 00 18 04 00 00  ..............
    *  00503918  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    */
-  int hookStackIndex_;
+  int hookStackIndex_; // hook argument index on the stack
+  bool backtrackText_; // whether backtrack to find text address
   bool hookBefore(winhook::hook_stack *s)
   {
     auto arg = (HookArgument *)s->stack[hookStackIndex_];
-    if (arg->isValid())
-      arg->dispatch();
+    LPSTR textAddress = arg->textAddress(),
+          charAddress = (LPSTR)s->stack[2]; // arg2 of GetTextExtentPoint32A is the current character's address
+         //charAddress = LPSTR(s->ebp + 0x60c);
+    if (Engine::isAddressWritable(textAddress)) {
+      LPSTR text = textAddress;
+      if (backtrackText_) {
+        for (int i = 0; i < Engine::MaxTextSize && *--text; i++);
+        if (*text)
+          return true;
+        text++;
+      }
+      if (!*text)
+        return true;
+
+      if (arg->isTextList(text)) {
+        if (backtrackText_) // old shinario games have re-translate problems
+          return true;
+        arg->dispatchTextList(text);
+      } else
+        arg->dispatchText(text, backtrackText_);
+
+      if (backtrackText_ && Engine::isAddressWritable(charAddress)) {
+        if (textAddress - text == 2) { // for wide character
+          if ((signed char)textAddress[-2] < 0) {
+            charAddress[0] = textAddress[-2];
+            charAddress[1] = textAddress[-1];
+          } else {
+            charAddress[0] = textAddress[-1];
+            charAddress[1] = 0;
+          }
+        } else if (textAddress - text == 1) { // for thin character
+          charAddress[0] = textAddress[-1];
+          charAddress[1] = 0;
+        }
+      }
+    }
     return true;
   }
 
@@ -324,17 +395,193 @@ namespace Private {
  *  Need to avoid immediate duplicate.
  *
  *  Sample game: Vestige 体験版 (RIO 2.47)
- *  FIXME Text accessed character by character
+ *  Text accessed character by character
+ *
+ *  Scenario caller of get GetTextExtentPoint32A
+ *  0043372D   05 00010000      ADD EAX,0x100
+ *  00433732   66:8B1445 045548>MOV DX,WORD PTR DS:[EAX*2+0x485504]
+ *  0043373A   EB 2D            JMP SHORT .00433769
+ *  0043373C   33C9             XOR ECX,ECX
+ *  0043373E   8B8D 60010000    MOV ECX,DWORD PTR SS:[EBP+0x160]
+ *  00433744   8A09             MOV CL,BYTE PTR DS:[ECX]
+ *  00433746   80F9 20          CMP CL,0x20
+ *  00433749   74 2E            JE SHORT .00433779
+ *  0043374B   8B85 C0050000    MOV EAX,DWORD PTR SS:[EBP+0x5C0]
+ *  00433751   81E1 FF000000    AND ECX,0xFF
+ *  00433757   85C0             TEST EAX,EAX
+ *  00433759   74 06            JE SHORT .00433761
+ *  0043375B   81C1 00010000    ADD ECX,0x100
+ *  00433761   66:8B144D 045548>MOV DX,WORD PTR DS:[ECX*2+0x485504]
+ *  00433769   B8 02000000      MOV EAX,0x2
+ *  0043376E   66:8995 0C060000 MOV WORD PTR SS:[EBP+0x60C],DX
+ *  00433775   894424 58        MOV DWORD PTR SS:[ESP+0x58],EAX
+ *  00433779   8B4C24 1C        MOV ECX,DWORD PTR SS:[ESP+0x1C]
+ *  0043377D   898D 60010000    MOV DWORD PTR SS:[EBP+0x160],ECX
+ *  00433783   8B8D 78010000    MOV ECX,DWORD PTR SS:[EBP+0x178]
+ *  00433789   83F9 FF          CMP ECX,-0x1
+ *  0043378C   8BB5 68010000    MOV ESI,DWORD PTR SS:[EBP+0x168]
+ *  00433792   75 3E            JNZ SHORT .004337D2
+ *  00433794   85DB             TEST EBX,EBX
+ *  00433796   74 3A            JE SHORT .004337D2
+ *  00433798   8B85 10160000    MOV EAX,DWORD PTR SS:[EBP+0x1610]
+ *  0043379E   85C0             TEST EAX,EAX
+ *  004337A0   74 12            JE SHORT .004337B4
+ *  004337A2   8B95 14160000    MOV EDX,DWORD PTR SS:[EBP+0x1614]
+ *  004337A8   894424 2C        MOV DWORD PTR SS:[ESP+0x2C],EAX
+ *  004337AC   895424 30        MOV DWORD PTR SS:[ESP+0x30],EDX
+ *  004337B0   03F0             ADD ESI,EAX
+ *  004337B2   EB 36            JMP SHORT .004337EA
+ *  004337B4   8B4C24 58        MOV ECX,DWORD PTR SS:[ESP+0x58]
+ *  004337B8   8D4424 2C        LEA EAX,DWORD PTR SS:[ESP+0x2C]
+ *  004337BC   50               PUSH EAX
+ *  004337BD   51               PUSH ECX
+ *  004337BE   8D85 0C060000    LEA EAX,DWORD PTR SS:[EBP+0x60C]
+ *  004337C4   50               PUSH EAX
+ *  004337C5   53               PUSH EBX
+ *  004337C6   FF15 A0B04700    CALL DWORD PTR DS:[0x47B0A0]             ; gdi32.GetTextExtentPoint32A
+ *  004337CC   037424 2C        ADD ESI,DWORD PTR SS:[ESP+0x2C]
+ *  004337D0   EB 18            JMP SHORT .004337EA
+ *  004337D2   83F8 02          CMP EAX,0x2
+ *  004337D5   75 06            JNZ SHORT .004337DD
+ *  004337D7   8B8D 80010000    MOV ECX,DWORD PTR SS:[EBP+0x180]
+ *  004337DD   8B95 84010000    MOV EDX,DWORD PTR SS:[EBP+0x184]
+ *  004337E3   0FAFD0           IMUL EDX,EAX
+ *  004337E6   03F1             ADD ESI,ECX
+ *  004337E8   03F2             ADD ESI,EDX
+ *  004337EA   3BB5 9C010000    CMP ESI,DWORD PTR SS:[EBP+0x19C]
+ *  004337F0   72 68            JB SHORT .0043385A
+ *  004337F2   8D85 0C060000    LEA EAX,DWORD PTR SS:[EBP+0x60C]
+ *  004337F8   50               PUSH EAX
+ *  004337F9   8D85 B8020000    LEA EAX,DWORD PTR SS:[EBP+0x2B8]
+ *  004337FF   50               PUSH EAX
+ *  00433800   E8 6D230100      CALL .00445B72
+ *  00433805   83C4 08          ADD ESP,0x8
+ *  00433808   85C0             TEST EAX,EAX
+ *  0043380A   74 4E            JE SHORT .0043385A
+ *  0043380C   8B8D 68010000    MOV ECX,DWORD PTR SS:[EBP+0x168]
+ *  00433812   8B95 6C010000    MOV EDX,DWORD PTR SS:[EBP+0x16C]
+ *  00433818   8B85 64010000    MOV EAX,DWORD PTR SS:[EBP+0x164]
+ *  0043381E   8985 68010000    MOV DWORD PTR SS:[EBP+0x168],EAX
+ *  00433824   8995 74010000    MOV DWORD PTR SS:[EBP+0x174],EDX
+ *  0043382A   8B95 6C010000    MOV EDX,DWORD PTR SS:[EBP+0x16C]
+ *  00433830   898D 70010000    MOV DWORD PTR SS:[EBP+0x170],ECX
+ *  00433836   8B8D 7C010000    MOV ECX,DWORD PTR SS:[EBP+0x17C]
+ *  0043383C   03D1             ADD EDX,ECX
+ *  0043383E   8995 6C010000    MOV DWORD PTR SS:[EBP+0x16C],EDX
+ *  00433844   8B95 A8010000    MOV EDX,DWORD PTR SS:[EBP+0x1A8]
+ *  0043384A   0195 68010000    ADD DWORD PTR SS:[EBP+0x168],EDX
+ *  00433850   C785 A4010000 01>MOV DWORD PTR SS:[EBP+0x1A4],0x1
+ *  0043385A   8B85 B4010000    MOV EAX,DWORD PTR SS:[EBP+0x1B4]
+ *  00433860   85C0             TEST EAX,EAX
+ *  00433862   0F85 F6000000    JNZ .0043395E
+ *  00433868   8B85 68010000    MOV EAX,DWORD PTR SS:[EBP+0x168]
+ *  0043386E   3B85 64010000    CMP EAX,DWORD PTR SS:[EBP+0x164]
+ *  00433874   74 0E            JE SHORT .00433884
+ *  00433876   8B85 AC010000    MOV EAX,DWORD PTR SS:[EBP+0x1AC]
+ *  0043387C   85C0             TEST EAX,EAX
+ *  0043387E   0F84 E4000000    JE .00433968
+ *  00433884   8B85 A4010000    MOV EAX,DWORD PTR SS:[EBP+0x1A4]
+ *  0043388A   85C0             TEST EAX,EAX
+ *  0043388C   0F84 D6000000    JE .00433968
+ *  00433892   8BB5 60010000    MOV ESI,DWORD PTR SS:[EBP+0x160]
+ *  00433898   8A06             MOV AL,BYTE PTR DS:[ESI]
+ *  0043389A   3C 81            CMP AL,0x81
+ *  0043389C   72 13            JB SHORT .004338B1
+ *  0043389E   3C 9F            CMP AL,0x9F
+ *  004338A0   76 08            JBE SHORT .004338AA
+ *  004338A2   3C E0            CMP AL,0xE0
+ *  004338A4   72 0B            JB SHORT .004338B1
+ *  004338A6   3C FC            CMP AL,0xFC
+ *  004338A8   77 07            JA SHORT .004338B1
+ *  004338AA   B8 01000000      MOV EAX,0x1
+ *  004338AF   EB 02            JMP SHORT .004338B3
+ *  004338B1   33C0             XOR EAX,EAX
+ *  004338B3   8D48 01          LEA ECX,DWORD PTR DS:[EAX+0x1]
+ *  004338B6   8BD1             MOV EDX,ECX
+ *  004338B8   C1E9 02          SHR ECX,0x2
+ *  004338BB   C74424 18 000000>MOV DWORD PTR SS:[ESP+0x18],0x0
+ *  004338C3   8D7C24 18        LEA EDI,DWORD PTR SS:[ESP+0x18]
+ *  004338C7   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  004338C9   8BCA             MOV ECX,EDX
+ *  004338CB   83E1 03          AND ECX,0x3
+ *  004338CE   8D85 0C060000    LEA EAX,DWORD PTR SS:[EBP+0x60C]
+ *  004338D4   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[>
+ *  004338D6   50               PUSH EAX
+ *  004338D7   8DB5 B8030000    LEA ESI,DWORD PTR SS:[EBP+0x3B8]
+ *  004338DD   56               PUSH ESI
+ *  004338DE   E8 8F220100      CALL .00445B72
+ *  004338E3   83C4 08          ADD ESP,0x8
+ *  004338E6   85C0             TEST EAX,EAX
+ *  004338E8   74 2C            JE SHORT .00433916
+ *  004338EA   8D4424 18        LEA EAX,DWORD PTR SS:[ESP+0x18]
+ *  004338EE   50               PUSH EAX
+ *  004338EF   56               PUSH ESI
+ *  004338F0   E8 7D220100      CALL .00445B72
+ *  004338F5   83C4 08          ADD ESP,0x8
+ *  004338F8   85C0             TEST EAX,EAX
+ *  004338FA   75 34            JNZ SHORT .00433930
+ *  004338FC   8D4C24 18        LEA ECX,DWORD PTR SS:[ESP+0x18]
+ *  00433900   51               PUSH ECX
+ *  00433901   8D95 B8010000    LEA EDX,DWORD PTR SS:[EBP+0x1B8]
+ *  00433907   52               PUSH EDX
+ *  00433908   E8 65220100      CALL .00445B72
+ *  0043390D   83C4 08          ADD ESP,0x8
+ *  00433910   85C0             TEST EAX,EAX
+ *  00433912   75 3E            JNZ SHORT .00433952
+ *  00433914   EB 1A            JMP SHORT .00433930
+ *  00433916   8D85 0C060000    LEA EAX,DWORD PTR SS:[EBP+0x60C]
+ *  0043391C   50               PUSH EAX
+ *  0043391D   8D95 B8010000    LEA EDX,DWORD PTR SS:[EBP+0x1B8]
+ *  00433923   52               PUSH EDX
+ *  00433924   E8 49220100      CALL .00445B72
+ *  00433929   83C4 08          ADD ESP,0x8
+ *  0043392C   85C0             TEST EAX,EAX
+ *  0043392E   74 22            JE SHORT .00433952
+ *  00433930   8B85 70010000    MOV EAX,DWORD PTR SS:[EBP+0x170]
+ *  00433936   8B8D 74010000    MOV ECX,DWORD PTR SS:[EBP+0x174]
+ *  0043393C   8985 68010000    MOV DWORD PTR SS:[EBP+0x168],EAX
+ *  00433942   898D 6C010000    MOV DWORD PTR SS:[EBP+0x16C],ECX
+ *  00433948   C785 B4010000 01>MOV DWORD PTR SS:[EBP+0x1B4],0x1
+ *  00433952   C785 AC010000 00>MOV DWORD PTR SS:[EBP+0x1AC],0x0
+ *  0043395C   EB 0A            JMP SHORT .00433968
+ *  0043395E   C785 B4010000 00>MOV DWORD PTR SS:[EBP+0x1B4],0x0
+ *  00433968   85DB             TEST EBX,EBX
+ *  0043396A   0F84 1A070000    JE .0043408A
+ *  00433970   8B85 10160000    MOV EAX,DWORD PTR SS:[EBP+0x1610]
+ *  00433976   85C0             TEST EAX,EAX
+ *  00433978   74 10            JE SHORT .0043398A
+ *  0043397A   8B95 14160000    MOV EDX,DWORD PTR SS:[EBP+0x1614]
+ *  00433980   894424 2C        MOV DWORD PTR SS:[ESP+0x2C],EAX
+ *  00433984   895424 30        MOV DWORD PTR SS:[ESP+0x30],EDX
+ *  00433988   EB 18            JMP SHORT .004339A2
+ *  0043398A   8B4C24 58        MOV ECX,DWORD PTR SS:[ESP+0x58]
+ *  0043398E   8D4424 2C        LEA EAX,DWORD PTR SS:[ESP+0x2C]
+ *  00433992   50               PUSH EAX
+ *  00433993   51               PUSH ECX
+ *  00433994   8D85 0C060000    LEA EAX,DWORD PTR SS:[EBP+0x60C]    ; jichi: This is the individual character
+ *  0043399A   50               PUSH EAX
+ *  0043399B   53               PUSH EBX
+ *  0043399C   FF15 A0B04700    CALL DWORD PTR DS:[0x47B0A0]             ; gdi32.GetTextExtentPoint32A	; jichi: called here
+ *  004339A2   8B85 68010000    MOV EAX,DWORD PTR SS:[EBP+0x168]
+ *  004339A8   8B5424 2C        MOV EDX,DWORD PTR SS:[ESP+0x2C]
+ *  004339AC   8B8D 6C010000    MOV ECX,DWORD PTR SS:[EBP+0x16C]
+ *  004339B2   8D3410           LEA ESI,DWORD PTR DS:[EAX+EDX]
+ *  004339B5   8B5424 30        MOV EDX,DWORD PTR SS:[ESP+0x30]
+ *  004339B9   8BF9             MOV EDI,ECX
+ *  004339BB   03CA             ADD ECX,EDX
  */
 bool attach(int ver)
 {
-  if (ver < 247) // currently only >= 2.48 is supported
-    return false;
+  //if (ver < 247) // currently only >= 2.48 is supported
+  //  return false;
 
-  if (ver >= 248)
+  if (ver >= 248) {
      Private::hookStackIndex_ = winhook_stack_indexof(esi);
-  else // <= 247
+     Private::backtrackText_ = false;
+  } else { // <= 247
      Private::hookStackIndex_ = winhook_stack_indexof(ebp);
+     Private::backtrackText_ = true;
+  }
 
   return winhook::hook_before((ulong)::GetTextExtentPoint32A, Private::hookBefore);
 }
@@ -346,7 +593,11 @@ bool attach(int ver)
 
 bool ShinaRioEngine::attach()
 {
-  int ver = ::getRioVersion();
+  QString path = getRioIni();
+  DOUT("ini =" << path);
+  if (path.isEmpty())
+    return false;
+  int ver = ::getRioVersion(path);
   DOUT("version =" << ver);
   if (!ScenarioHook::attach(ver))
     return false;

@@ -154,6 +154,17 @@ bool Engine::matchFiles(const QString &pattern)
 
 // - Process and threads -
 
+QString Engine::getProcessName()
+{
+  static QString ret;
+  if (ret.isEmpty()) {
+    wchar_t path[MAX_PATH];
+    ::GetModuleFileNameW(nullptr, path, MAX_PATH);
+    ret = QString::fromWCharArray(path);
+  }
+  return ret;
+}
+
 QString Engine::getNormalizedProcessName()
 {
   static QString ret;

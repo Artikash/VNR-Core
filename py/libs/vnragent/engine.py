@@ -57,18 +57,18 @@ class EngineFinder:
     elif e[0] == '!' and len(e) > 1:
       return not self.eval(e[1:])
     elif '*' in e:
-      return self._globs(e)
+      return self.globs(e)
     else:
-      return self._exists(e)
+      return self.exists(e)
 
-  def _globs(self, relpath):
+  def globs(self, relpath):
     """
     @param  relpath  unicode
     @return  bool
     """
     return bool(self.dirpath and glob(os.path.join(self.dirpath, relpath)))
 
-  def _exists(self, relpath):
+  def exists(self, relpath):
     """
     @param  relpath  unicode
     @return  bool
