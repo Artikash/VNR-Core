@@ -234,7 +234,6 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
     } break;
   case DLL_PROCESS_DETACH:
     {
-      return true;
       static bool detached_ = false;
       if (detached_) // already detached
         return TRUE;
