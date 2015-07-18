@@ -7,8 +7,8 @@ from sakurakit.skdebug import dwarn
 
 class StarDict(object):
   #ifo_compressed = False
-  idx_compressed = False
-  dict_compressed = False
+  #idx_compressed = False
+  #dict_compressed = False
 
   # TODO: Automatically gess here
   def __init__(self, path='', ifo_file='', idx_file='', dict_file=''):
@@ -20,7 +20,7 @@ class StarDict(object):
     """
     self.ifo_file = ifo_file or self.getDictionaryFile(path, 'ifo') # unicode
     self.idx_file = idx_file or self.getDictionaryFile(path, 'idx') # unicode
-    self.dict_file = dict_file or self.getDictionaryFile(path + 'dict') # unicode
+    self.dict_file = dict_file or self.getDictionaryFile(path, 'dict') # unicode
     self.reader = None
 
   def getDictionaryFile(self, path, suffix):
@@ -33,11 +33,11 @@ class StarDict(object):
     if os.path.exists(ret):
       return ret
     if os.path.isdir(path):
-      l = glob(path, '*.%s.dz' % suffix)
+      l = glob(os.path.join(path, '*.%s.dz' % suffix))
       if l and len(l) == 1:
         ret = l[0]
       else:
-        l = glob(path, '*.%s' % suffix)
+        l = glob(os.path.join(path, '*.%s' % suffix))
         if l and len(l) == 1:
           ret = l[0]
     return ret
@@ -51,8 +51,8 @@ class StarDict(object):
     import starlib
     try:
       ifo_reader = starlib.IfoFileReader(self.ifo_file) #, compressed=self.ifo_compressed)
-      idx_reader = starlib.IdxFileReader(self.idx_file, compressed=self.idx_compressed)
-      dict_reader = starlib.DictFileReader(self.dict_file, ifo_reader, idx_reader,compressed=self.dict_compressed)
+      idx_reader = starlib.IdxFileReader(self.idx_file) #, compressed=self.idx_compressed)
+      dict_reader = starlib.DictFileReader(self.dict_file, ifo_reader, idx_reader) #, compressed=self.dict_compressed)
 
       self.reader = dict_reader
       return True

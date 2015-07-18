@@ -59,6 +59,18 @@ ishirachar = ishira
 iskatachar = iskata
 iskanjichar = iskanji
 
+
+def kanjiset(text):
+  """
+  @param  text  unicode
+  @return  [unicode]
+  """
+  ret = []
+  for ch in text:
+    if iskanji(ch) and ch not in ret:
+      ret.append(ch)
+  return ret
+
 #re_not_hira = re.compile(r"[^%s]" % s_hira)
 #re_not_kata = re.compile(r"[^%s]" % s_kata)
 

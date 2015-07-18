@@ -8,6 +8,7 @@ from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.skthreads import SkMutexLocker
 from sakurakit.sktr import tr_
+from unitraits import jpchars
 from mytr import my
 import growl, rc, res
 
@@ -157,7 +158,8 @@ class StarDict(Dict):
     )
 
   def exists(self): # override
-    return os.path.exists(self.path + '.dict')
+    return os.path.exists(self.path)
+    #return os.path.exists(self.path + '.dict')
 
   @memoizedproperty
   def d(self):
@@ -169,9 +171,20 @@ class StarDict(Dict):
   def lookup(self, text): # override
     d = self.d
     if d.valid():
+      if self.language == 'hanja':
+        return self.lookupHanja(text)
       return d.query(text)
     else:
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('StarDict ' + self.language))
+
+  def lookupHanja(self, text):
+    l = jpchars.kanjiset(text)
+    if l:
+      for kanji in l:
+        q = self.d.query(kanji)
+        if q:
+          for it in q:
+            yield "=%s: %s" % (kanji, it)
 
   def get(self): # override
     from scripts import stardict
@@ -193,7 +206,6 @@ class StarDict(Dict):
       return
     parse = self._getTranslationParser()
     if parse:
-      from dictp import ovdpdictp
       q = d.query(t)
       if q:
         for it in q:
@@ -310,7 +322,7 @@ def lingoes(name):
 STARDICT = {} # {str name:LingoesDict}
 def stardict(name):
   """
-  @param  name  str  such as ja-en
+  @param  name  str  such as ja-en or hanja
   @return  StarDict
   """
   ret = STARDICT.get(name)

@@ -104,10 +104,12 @@ LINGOES_DICT_SIZES = {
 
 STARDICT_NAMES = {
   'ja-vi': my.tr("OVDP Japanese-Vietnamese/English dictionary"),
+  'hanja': my.tr("Korean hanja dictionary"),
 }
 
 STARDICT_SIZES = {
   'ja-vi': '40MB', # OVDP
+  'hanja': '4MB', # hanjadic
 }
 
 JMDICT_DICT_NAMES = {
@@ -4914,6 +4916,7 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.lingoesJaZhGbkButton)
     if 'ko' not in blans:
       layout.addWidget(self.lingoesJaKoButton)
+      layout.addWidget(self.stardictHanjaButton)
     if 'vi' not in blans:
       layout.addWidget(self.stardictJaViButton)
     if 'en' not in blans:
@@ -5022,6 +5025,13 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(settings.global_().setStardictJaViEnabled)
     return ret
 
+  @memoizedproperty
+  def stardictHanjaButton(self):
+    ret = QtWidgets.QCheckBox(STARDICT_NAMES['hanja'])
+    ret.setChecked(settings.global_().isStardictHanjaEnabled())
+    ret.toggled.connect(settings.global_().setStardictHanjaEnabled)
+    return ret
+
   def refresh(self):
     ss = settings.global_()
     blans = ss.blockedLanguages()
@@ -5060,6 +5070,10 @@ class _DictionaryTranslationTab(object):
 
       b = self.rubyKoButton
       b.setEnabled(b.isChecked() or dicts.lingoes(name).exists())
+
+      name = 'hanja'
+      b = self.stardictHanjaButton
+      b.setEnabled(ss.isStardictDictionaryEnabled(name) or dicts.stardict(name).exists())
 
     if 'vi' not in blans:
       name = 'ja-vi'
@@ -5730,6 +5744,13 @@ class _DictionaryDownloadsTab(object):
         grid.addWidget(self.getKanjiDicIntroLabel(lang), r, 2)
         r += 1
 
+    if 'ko' not in blans:
+      name = 'hanja'
+      grid.addWidget(self.getStardictButton(name), r, 0)
+      grid.addWidget(self.getStardictStatusLabel(name), r, 1)
+      grid.addWidget(self.getStardictIntroLabel(name), r, 2)
+      r += 1
+
     ret = QtWidgets.QGroupBox(my.tr("Dictionaries for looking up Japanese kanji"))
     ret.setLayout(grid)
     #ret.setLayout(skwidgets.SkWidgetLayout(skwidgets.SkLayoutWidget(grid)))
@@ -5839,6 +5860,13 @@ class _DictionaryDownloadsTab(object):
         grid.addWidget(self.getLingoesStatusLabel(name), r, 1)
         grid.addWidget(self.getLingoesIntroLabel(name), r, 2)
         r += 1
+
+    #if 'ko' not in blans:
+    #  name = 'hanja'
+    #  grid.addWidget(self.getStardictButton(name), r, 0)
+    #  grid.addWidget(self.getStardictStatusLabel(name), r, 1)
+    #  grid.addWidget(self.getStardictIntroLabel(name), r, 2)
+    #  r += 1
 
     for lang in config.STARDICT_LANGS:
       if lang == 'vi':
@@ -6370,6 +6398,9 @@ class _DictionaryDownloadsTab(object):
         continue
       name = 'ja-' + lang
       self.refreshStardict(name)
+
+    if 'ko' not in blans:
+      self.refreshStardict('hanja')
 
   def startRefresh(self, dic, refresh):  # dic, ->
     self._refreshTasks.append((dic, refresh))

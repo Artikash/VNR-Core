@@ -1183,7 +1183,8 @@ class Settings(QSettings):
         self.isLingoesJaZhGbkEnabled() or
         self.isLingoesJaKoEnabled() or
         self.isLingoesJaEnEnabled() or
-        self.isStardictJaViEnabled())
+        self.isStardictJaViEnabled() or
+        self.isStardictHanjaEnabled())
   def _updateDictionaryEnabled(self):
     self.japaneseDictionaryEnabledChanged.emit(self.isJapaneseDictionaryEnabled())
 
@@ -1247,6 +1248,12 @@ class Settings(QSettings):
       self.setValue('StardictJaVi', v)
       self._updateDictionaryEnabled()
 
+  def isStardictHanjaEnabled(self): return to_bool(self.value('StardictHanja'))
+  def setStardictHanjaEnabled(self, v):
+    if v != self.isStardictHanjaEnabled():
+      self.setValue('StardictHanja', v)
+      self._updateDictionaryEnabled()
+
   def isLingoesDictionaryEnabled(self, name):
     if name == 'ja-zh':
       return self.isLingoesJaZhEnabled()
@@ -1275,11 +1282,15 @@ class Settings(QSettings):
   def isStardictDictionaryEnabled(self, name):
     if name == 'ja-vi':
       return self.isStardictJaViEnabled()
+    elif name == 'hanja':
+      return self.isStardictHanjaEnabled()
     return False
 
   def setStardictDictionaryEnabled(self, name, v):
     if name == 'ja-vi':
       self.setStardictJaViEnabled(v)
+    elif name == 'hanja':
+      self.setStardictHanjaEnabled(v)
 
   # Hanzi
 
