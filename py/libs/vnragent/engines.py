@@ -15,6 +15,7 @@ class Engine:
 
 class ShinaRioEngine(Engine):
   name = 'EmbedRio' # override
+  #MIN_VERSION = 230 # minimum supported version
   MIN_VERSION = 240 # minimum supported version
   def match(self, finder):
     """@reimp"""

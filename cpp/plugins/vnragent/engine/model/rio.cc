@@ -89,9 +89,9 @@ namespace Private {
 
   class HookArgument
   {
-    DWORD split_,
-          offset_[0x57];    // [esi]+0x160
-    LPSTR text_;            // current text address
+    DWORD split_;
+    //      offset_[0x57];    // [esi]+0x160
+    //LPSTR text_;            // current text address
 
     template <typename strT>
     static strT nextText(strT t)
@@ -112,7 +112,7 @@ namespace Private {
   public:
     static bool isTextList(LPCSTR text) { return nextText(text); }
 
-    LPSTR textAddress() const { return text_; }
+    //LPSTR textAddress() const { return text_; }
 
     /**
      *  @param  text
@@ -337,13 +337,43 @@ namespace Private {
    *  005038F8  18 00 00 00 00 00 00 00 01 00 00 00 5A F5 11 01  ..........Z・
    *  00503908  00 00 00 00 00 00 00 00 00 00 00 00 18 04 00 00  ..............
    *  00503918  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   *
+   *  Sample game: あやかしびと (2.34)
+   *  Scenario, value of ebp:
+   *  0012FD68  B1 69 3F 77 38 51 42 00 29 42 01 73 38 00 00 00  ｱi?w8QB.)Bs8...
+   *  0012FD78  BF 01 00 00 F4 7E 4F 00 02 00 00 00 29 42 01 73  ｿ..O....)Bs
+   *  0012FD88  40 00 00 00 40 00 00 00 40 00 00 00 2C E1 71 00  @...@...@...,痃.
+   *  0012FD98  00 00 00 00 00 00 00 00 38 E1 71 00 38 00 8A 01  ........8痃.8.・
+   *  0012FDA8  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   *  0012FDB8  01 00 00 00 EE BA 92 05 F4 24 72 00 85 E9 40 00  ...鋓・・r.・@.  ; jichi: text in 0x0592BAEE
+   *  0012FDC8  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   *  0012FDD8  C6 08 42 00 02 00 00 00 01 00 00 00 00 00 00 00  ﾆB...........
+   *  0012FDE8  00 00 00 00 88 FF 12 00 00 F0 FD 7F 01 00 00 00  ....・..・...
+   *  0012FDF8  29 42 01 73 39 F8 B2 90 44 12 0D 64 40 12 0D 64  )Bs9織.d@.d
+   *  0012FE08  00 00 00 00 78 FF 12 00 00 00 00 00 00 00 00 00  ....x.........
+   *  0012FE18  00 00 00 00 FC FD 12 00 0D 6B E5 75 78 FF 12 00  ....・..k蛄x.
+   *  0012FE28  00 00 00 00 E8 3B 29 00 00 00 00 00 01 07 8F 00  ....・).....・
+   *  0012FE38  6C FE 12 00 18 67 13 77 F1 31 B1 90 00 00 00 00  l.gw・ｱ・...
+   *  0012FE48  E8 3B 29 00 00 00 00 00 00 00 00 00 40 FE 12 00  ・).........@.
+   *  0012FE58  68 FE 12 00 F1 2F 13 77 FC 2F 13 77 E8 3B 29 00  h.・w・w・).
+   *  0012FE68  7C FE 12 00 25 47 0B 64 00 00 00 00 00 00 00 00  |.%Gd........
+   *  0012FE78  CC 3C 29 00 8C FE 12 00 B2 3D 0B 64 CC 3C 29 00  ﾌ<).・.ｲ=dﾌ<).
+   *  0012FE88  E8 3B 29 00 AC FE 12 00 20 5B 0B 64 E8 3B 29 00  ・).ｬ. [d・).
+   *  0012FE98  00 00 00 00 00 00 00 00 A0 51 50 00 08 80 49 00  ........QP.I.
+   *  0012FEA8  00 08 02 00 F8 FE 12 00 9B 28 40 00 EC 3B 29 00  ..・.・@.・).
+   *  0012FEB8  61 2B 1D 6F A0 D5 CF 11 BF C7 44 45 53 54 00 00  a+oﾕﾏｿﾇDEST..
+   *  0012FEC8  01 67 40 00 68 07 8F 00 00 00 40 00 00 00 00 00  g@.h・..@.....
+   *  0012FED8  00 00 00 00 00 F0 FD 7F 8B 22 35 72 28 00 00 00  .....・・5r(...
+   *  0012FEE8  EF 7E E7 71 28 00 00 00 33 C4 B1 8D 00 01 00 00  ・輌(...3ﾄｱ・..
    */
   int hookStackIndex_; // hook argument index on the stack
+  int textOffset_;      // distance of the text from the hook argument
   bool backtrackText_; // whether backtrack to find text address
   bool hookBefore(winhook::hook_stack *s)
   {
-    auto arg = (HookArgument *)s->stack[hookStackIndex_];
-    LPSTR textAddress = arg->textAddress(),
+    DWORD argaddr = s->stack[hookStackIndex_];
+    auto arg = (HookArgument *)argaddr;
+    LPSTR textAddress = (LPSTR)*(DWORD *)(argaddr + textOffset_),
           charAddress = (LPSTR)s->stack[2]; // arg2 of GetTextExtentPoint32A is the current character's address
          //charAddress = LPSTR(s->ebp + 0x60c);
     if (Engine::isAddressWritable(textAddress)) {
@@ -583,6 +613,11 @@ bool attach(int ver)
      Private::backtrackText_ = true;
   }
 
+  if (ver >= 240)
+    Private::textOffset_ = 0x160;
+  else
+    Private::textOffset_ = 0x54; // Sample game: あやかしびと (2.34)
+
   return winhook::hook_before((ulong)::GetTextExtentPoint32A, Private::hookBefore);
 }
 
@@ -607,16 +642,16 @@ bool ShinaRioEngine::attach()
 }
 
 /**
- *  Remove dots
- *  Sample sentence:
- *  もう一つは、この事実を受けて自分はどうするべきなのか――正確には、_t!250,6,6,・・・・・・・/どうしたいのかという決断に直面したからだった。
+ *  Sample sentences:
+ *  New ShinaRio 2.49 for 3rdEye games: もう一つは、この事実を受けて自分はどうするべきなのか――正確には、_t!250,6,6,・・・・・・・/どうしたいのかという決断に直面したからだった。
+ *  Old ShinaRio 2.34 for あやかしびと: ――_t!210<5,8,アシュス>ASSHS患者番号２２７脱走事件について報告
  */
 
 QString ShinaRioEngine::rubyRemove(const QString &text)
 {
-  if (!text.contains("_t")) //role != Engine::ScenarioRole ||
+  if (!text.contains("_t!")) //role != Engine::ScenarioRole ||
     return text;
-  static QRegExp rx("_t.*/");
+  static QRegExp rx("_t!.*[/>]"); // '/' is used for new games, and '>' is used for old games
   if (!rx.isMinimal())
     rx.setMinimal(true);
   return QString(text).remove(rx);
@@ -625,7 +660,7 @@ QString ShinaRioEngine::rubyRemove(const QString &text)
 // FIXME: Ruby creation rule does not work
 QString ShinaRioEngine::rubyCreate(const QString &rb, const QString &rt)
 {
-  static QString fmt("_t!250,6,6,%2/%1");
+  static QString fmt("_t!250,5,8,%2/%1");
   return fmt.arg(rb, rt);
 }
 
