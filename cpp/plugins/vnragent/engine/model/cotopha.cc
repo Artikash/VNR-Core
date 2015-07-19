@@ -10,6 +10,8 @@
 #include "winasm/winasmdef.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <cstdint>
+#include <unordered_set>
 
 #define DEBUG "model/cotopha"
 #include "sakurakit/skdebug.h"
@@ -23,7 +25,7 @@ namespace ScenarioHook {
 namespace Private {
 
   /**
-   *  Sample game: お兄ちゃん、右手の使用を禁止します！
+   *  Sample game: お兄ちゃん、右手の使用を禁止します！ (old type)
    *
    *  - Name
    *
@@ -69,7 +71,7 @@ namespace Private {
    *  0012EBBC   0055D210  RETURN to .0055D210
    *  0012EBC0   17F90170
    *  0012EBC4   04A4C250
-   *  0012EBC8   0000001E
+   *  0012EBC8   0000001E   ; jichi: old game arg3 is 1e
    *  0012EBCC   00000015
    *  0012EBD0   00000002
    *  0012EBD4   00000002
@@ -93,7 +95,7 @@ namespace Private {
    *  0055D221   3BC1             CMP EAX,ECX
    *  0055D223   76 06            JBE SHORT .0055D22B
    *
-   *  Sample game: キスと魔王と紅茶
+   *  Sample game: キスと魔王と紅茶 (very old type)
    *
    *  - Name:
    *
@@ -302,32 +304,318 @@ namespace Private {
    *  004B5336   7E 16            JLE SHORT .004B534E
    *  004B5338   33C0             XOR EAX,EAX
    *  004B533A   E9 F7050000      JMP .004B5936
+   *
+   *  Sample game: プライマルハーツ (new type), 0x54bd80
+   *  Name:
+   *  0012EB5C   004DACB0  RETURN to .004DACB0
+   *  0012EB60   05067E40
+   *  0012EB64   0000001E   ; jichi: new game arg2 is 1e
+   *  0012EB68   0012ECA8
+   *  0012EB6C   008D3E48
+   *  0012EB70   004512DB  RETURN to .004512DB from .00450FE0
+   *  0012EB74   0000001E
+   *  0012EB78   00000025
+   *  0012EB7C   0012ECA8
+   *  0012EB80   008D3E48
+   *  0012EB84   0000001E
+   *  0012EB88   004DA1CB  RETURN to .004DA1CB from .00451280
+   *  0012EB8C   004DA1DF  RETURN to .004DA1DF from .004DAC20   ; jichi: 004DAC20 is a better place to hook to
+   *  0012EB90   05067E40
+   *  0012EB94   5D9C7C59
+   *  0012EB98   00000000
+   *  0012EB9C   008D3E48
+   *  0012EBA0   00000000
+   *  0012EBA4   00000000
+   *  0012EBA8   1600C8C8
+   *  0012EBAC   006835B4  .006835B4
+   *  0012EBB0   1621BBF0  UNICODE "\h:\f;MsgFont:\s:\c;E6ADFA:\v:"
+   *  0012EBB4   00000025
+   *
+   *  0012EB5C   004DACB0  RETURN to .004DACB0
+   *  0012EB60   05000420
+   *  0012EB64   0000001E
+   *  0012EB68   0012ECA8
+   *  0012EB6C   008D3E48
+   *  0012EB70   004512DB  RETURN to .004512DB from .00450FE0
+   *  0012EB74   0000001E
+   *  0012EB78   00000022
+   *  0012EB7C   0012ECA8
+   *  0012EB80   008D3E48
+   *  0012EB84   0000001E
+   *  0012EB88   004DA1CB  RETURN to .004DA1CB from .00451280
+   *  0012EB8C   004DA1DF  RETURN to .004DA1DF from .004DAC20
+   *  0012EB90   05000420
+   *  0012EB94   5D9C7C59
+   *  0012EB98   00000000
+   *  0012EB9C   008D3E48
+   *  0012EBA0   00000000
+   *  0012EBA4   00000000
+   *  0012EBA8   05000C90
+   *  0012EBAC   006835B4  .006835B4
+   *  0012EBB0   05000F40  UNICODE "\h:\f;MsgFont:\s:\c;DAD4FF:\v:"
+   *  0012EBB4   00000022
+   *  0012EBB8   00000034
+   *  0012EBBC   00000022
+   *  0012EBC0   FFFFFFFF
+   *  0012EBC4   7C00FFFF
+   *  0012EBC8   78000000
+   *  0012EBCC   F8000001
+   *  0012EBD0   00000000
+   *  0012EBD4   58001384
+   *  0012EBD8   28000000
+   *  0012EBDC   28000000
+   *  0012EBE0   00000048
+   *  0012EBE4   00655A28  .00655A28
+   *  0012EBE8   05000420
+   *  0012EBEC   00000004
+   *  0012EBF0   00000007
+   *  0012EBF4   00210030
+   *  0012EBF8   00000000
+   *  0012EBFC   00DAD4FF
+   *  0012EC00   0012EC98
+   *  0012EC04   00000001
+   *
+   *  EAX 0054BD80 .0054BD80
+   *  ECX 008D4848
+   *  EDX 0069E80C .0069E80C
+   *  EBX 05067E40
+   *  ESP 0012EB5C
+   *  EBP 0012ECA8
+   *  ESI 008D3E48
+   *  EDI 0000001E
+   *  EIP 0054BD80 .0054BD80
+   *
+   *  004DAC98   89AE 300A0000    MOV DWORD PTR DS:[ESI+0xA30],EBP
+   *  004DAC9E   8B96 000A0000    MOV EDX,DWORD PTR DS:[ESI+0xA00]
+   *  004DACA4   8B42 14          MOV EAX,DWORD PTR DS:[EDX+0x14]
+   *  004DACA7   8D8E 000A0000    LEA ECX,DWORD PTR DS:[ESI+0xA00]
+   *  004DACAD   53               PUSH EBX
+   *  004DACAE   FFD0             CALL EAX  ; jichi: called here
+   *  004DACB0   8B8E 100A0000    MOV ECX,DWORD PTR DS:[ESI+0xA10]
+   *  004DACB6   894424 14        MOV DWORD PTR SS:[ESP+0x14],EAX
+   *  004DACBA   8B41 08          MOV EAX,DWORD PTR DS:[ECX+0x8]
+   *  004DACBD   33FF             XOR EDI,EDI
+   *  004DACBF   3BC7             CMP EAX,EDI
+   *  004DACC1   894424 10        MOV DWORD PTR SS:[ESP+0x10],EAX
+   *
+   *  ecx:
+   *  01814848  0C E8 69 00 60 C7 F8 13 00 00 00 00 00 00 00 00  i읠ᏸ....
+   *  01814858  28 3E 81 01 00 00 00 00 00 00 00 00 80 01 00 00  㸨Ɓ....ƀ.  ; jichi: 810 is the width and 26 the height to paint
+   *  01814868  26 00 00 00 FF FF FF 00 00 00 00 00 00 00 00 00  &..ÿ....
+   *  01814878  00 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ..&.....
+   *  01814888  06 00 00 00 03 00 00 00 28 5A 65 00 98 3D 81 01  ..娨e㶘Ɓ
+   *  01814898  2C 00 00 00 43 00 00 00 00 01 01 00 BA C1 1E 77  ,.C.Ā솺眞
+   *  018148A8  35 FC 1C 77 20 FF 1C 77 90 16 38 0B 64 D5 68 00  ﰵ眜＠眜ᚐସ핤h
+   *  018148B8  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ........
+   *  018148C8  7E 31 00 00 4C 03 00 00 00 00 00 00 00 00 00 00  ㅾ.͌.....
+   *  018148D8  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ........
+   *  018148E8  00 00 00 00 00 00 F0 3F 00 00 00 00 00 00 F0 3F  ...㿰...㿰
+   *  018148F8  00 00 00 00 00 00 00 00 94 C3 67 00 00 00 00 00  ....쎔g..
+   *
+   *  01814848  0C E8 69 00 58 EC E4 03 00 00 00 00 00 00 00 00  iϤ....
+   *  01814858  28 3E 81 01 00 00 00 00 00 00 00 00 80 01 00 00  㸨Ɓ....ƀ.
+   *  01814868  26 00 00 00 FF FF FF 00 00 00 00 00 00 00 00 00  &..ÿ....
+   *  01814878  00 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ..&.....
+   *  01814888  06 00 00 00 03 00 00 00 28 5A 65 00 98 3D 81 01  ..娨e㶘Ɓ
+   *  01814898  2C 00 00 00 43 00 00 00 00 01 01 00 BA C1 1E 77  ,.C.Ā솺眞
+   *  018148A8  35 FC 1C 77 20 FF 1C 77 90 16 38 0B 64 D5 68 00  ﰵ眜＠眜ᚐସ핤h
+   *  018148B8  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ........
+   *  018148C8  4B 4F 00 00 4C 03 00 00 00 00 00 00 00 00 00 00  佋.͌.....
+   *  018148D8  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ........
+   *  018148E8  00 00 00 00 00 00 F0 3F 00 00 00 00 00 00 F0 3F  ...㿰...㿰
+   *  018148F8  00 00 00 00 00 00 00 00 94 C3 67 00 00 00 00 00  ....쎔g..
+   *
+   *  Scenario:
+   *  EAX 0054BD80 .0054BD80
+   *  ECX 008D3C50
+   *  EDX 0069E80C .0069E80C
+   *  EBX 1621C280
+   *  ESP 0012EB5C
+   *  EBP 0012ECA8
+   *  ESI 008D3250
+   *  EDI 0000001E
+   *  EIP 0054BD80 .0054BD80
+   *
+   *  0012EB5C   004DACB0  RETURN to .004DACB0
+   *  0012EB60   1621C280
+   *  0012EB64   0000001E
+   *  0012EB68   0012ECA8
+   *  0012EB6C   008D3250
+   *  0012EB70   004512DB  RETURN to .004512DB from .00450FE0
+   *  0012EB74   0000001E
+   *  0012EB78   00000041
+   *  0012EB7C   0012ECA8
+   *  0012EB80   008D3250
+   *  0012EB84   0000001E
+   *  0012EB88   004DA1CB  RETURN to .004DA1CB from .00451280
+   *  0012EB8C   004DA1DF  RETURN to .004DA1DF from .004DAC20
+   *  0012EB90   1621C280
+   *
+   *  0012EB5C   004DACB0  RETURN to .004DACB0
+   *  0012EB60   050003B8
+   *  0012EB64   0000001E
+   *  0012EB68   0012ECA8
+   *  0012EB6C   008D3250
+   *  0012EB70   004512DB  RETURN to .004512DB from .00450FE0
+   *  0012EB74   0000001E
+   *  0012EB78   00000034
+   *  0012EB7C   0012ECA8
+   *  0012EB80   008D3250
+   *  0012EB84   0000001E
+   *  0012EB88   004DA1CB  RETURN to .004DA1CB from .00451280
+   *  0012EB8C   004DA1DF  RETURN to .004DA1DF from .004DAC20
+   *  0012EB90   050003B8
+   *  0012EB94   5D9C7C59
+   *  0012EB98   00000000
+   *  0012EB9C   008D3250
+   *  0012EBA0   00000000
+   *  0012EBA4   00000000
+   *  0012EBA8   05007A68  UNICODE "38"
+   *  0012EBAC   006835B4  .006835B4
+   *  0012EBB0   0500E910  UNICODE "\h:\f;MsgFont:\s:\c;DAD4FF:\v:"
+   *  0012EBB4   00000034
+   *  0012EBB8   0000004F
+   *  0012EBBC   00000034
+   *  0012EBC0   FFFFFFFF
+   *  0012EBC4   7C00FFFF
+   *  0012EBC8   78000000
+   *  0012EBCC   F8000001
+   *  0012EBD0   00000000
+   *  0012EBD4   58001384
+   *  0012EBD8   28000000
+   *  0012EBDC   28000000
+   *  0012EBE0   00000040
+   *  0012EBE4   00655A28  .00655A28
+   *  0012EBE8   050003B8
+   *
+   *  ecx:
+   *  01813C50  0C E8 69 00 80 E9 F8 13 00 00 00 00 00 00 00 00  iᏸ....
+   *  01813C60  30 32 81 01 00 00 00 00 00 00 00 00 84 03 00 00  ㈰Ɓ....΄.  ; jichi: 384 is the width and 76 the height to paint
+   *  01813C70  76 00 00 00 FF FF FF 00 00 00 00 00 00 00 00 00  v..ÿ....
+   *  01813C80  00 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ..&.....
+   *  01813C90  06 00 00 00 03 00 00 00 28 5A 65 00 A0 31 81 01  ..娨eㆠƁ
+   *  01813CA0  2C 00 00 00 43 00 00 00 00 01 01 00 BA C1 1E 77  ,.C.Ā솺眞
+   *  01813CB0  35 FC 1C 77 20 FF 1C 77 20 24 34 0B 64 D5 68 00  ﰵ眜＠眜␠଴핤h
+   *  01813CC0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ........
+   *  01813CD0  7E 31 00 00 50 03 00 00 00 00 00 00 00 00 00 00  ㅾ.͐.....
+   *  01813CE0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ........
+   *  01813CF0  00 00 00 00 00 00 F0 3F 00 00 00 00 00 00 F0 3F  ...㿰...㿰
+   *
+   *  01813C50   0C E8 69 00 10 C4 E4 03 00 00 00 00 00 00 00 00  i쐐Ϥ....
+   *  01813C60   30 32 81 01 00 00 00 00 00 00 00 00 84 03 00 00  ㈰Ɓ....΄.
+   *  01813C70   76 00 00 00 FF FF FF 00 00 00 00 00 00 00 00 00  v..ÿ....
+   *  01813C80   00 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ..&.....
+   *  01813C90   06 00 00 00 03 00 00 00 28 5A 65 00 A0 31 81 01  ..娨eㆠƁ
+   *  01813CA0   2C 00 00 00 43 00 00 00 00 01 01 00 BA C1 1E 77  ,.C.Ā솺眞
+   *  01813CB0   35 FC 1C 77 20 FF 1C 77 20 24 34 0B 64 D5 68 00  ﰵ眜＠眜␠଴핤h
    */
+  bool attachCaller(ulong addr);
+  size_t textSize_;
   bool hookBefore(winhook::hook_stack *s)
   {
     static QString text_; // persistent storage, which makes this function not thread-safe
+    textSize_ = 0;
     auto text = (LPCWSTR)s->stack[1]; // arg1
     if (!text || !*text)
       return true;
+
+    if (::strcmp(text, "----/--/-- --:--") == 0)
+      return true;
+
+    textSize_ = ::wcslen(text);
+    if (s->stack[1] == s->stack[13]) // for new games
+      attachCaller(s->stack[12]);
+    else if (s->stack[1] == s->stack[14]) // for old games
+      attachCaller(s->stack[13]);
+    //else // very old or very new games
+
     auto retaddr = s->stack[0];
 
-    // 0055D207   8BCF             MOV ECX,EDI
-    // 0055D209   897C24 34        MOV DWORD PTR SS:[ESP+0x34],EDI
-    // 0055D20D   FF52 14          CALL DWORD PTR DS:[EDX+0x14]  ; jichi: called here
-    // 0055D210   8BCF             MOV ECX,EDI   ; jichi: retaddr is here
-    // 0055D212   894424 18        MOV DWORD PTR SS:[ESP+0x18],EAX
-    auto role = *(WORD *)retaddr != s2_mov_ecx_edi ? Engine::OtherRole : // 8bcf
-                s->stack[5] == 0 ? Engine::NameRole : Engine::ScenarioRole;
+    //int textStackIndex = -1;
+
+    auto role = Engine::OtherRole;
+    if (s->stack[2] < 0x100) { // new game, this value is mostly 0x1e
+      //if (s->stack[1] == s->stack[13])
+      //  textStackIndex = 13;
+      // 004DACA7   8D8E 000A0000    LEA ECX,DWORD PTR DS:[ESI+0xA00]
+      // 004DACAD   53               PUSH EBX
+      // 004DACAE   FFD0             CALL EAX  ; jichi: called here
+      // 004DACB0   8B8E 100A0000    MOV ECX,DWORD PTR DS:[ESI+0xA10]
+      // 004DACB6   894424 14        MOV DWORD PTR SS:[ESP+0x14],EAX
+      // 004DACBA   8B41 08          MOV EAX,DWORD PTR DS:[ECX+0x8]
+      // 004DACBD   33FF             XOR EDI,EDI
+      //if (*(WORD *)retaddr == 0x8e8b) { // 004DACB0   8B8E 100A0000    MOV ECX,DWORD PTR DS:[ESI+0xA10]
+      role = Engine::ScenarioRole;
+      enum : wchar_t { w_open = 0x3010, w_close = 0x3011 }; /* 【】 */
+      if (text[0] == w_open && text[::wcslen(text) - 1] == w_close)
+        role = Engine::NameRole;
+
+    } else if (s->stack[3] < 0x100 // for old game
+               || *(WORD *)retaddr == s2_mov_ecx_edi && *(WORD *)(retaddr - 5) == 0x52ff) { // for very old game
+      // Sample game: お兄ちゃん、右手の使用を禁止します！ (old type)
+      // 0055D207   8BCF             MOV ECX,EDI
+      // 0055D209   897C24 34        MOV DWORD PTR SS:[ESP+0x34],EDI
+      // 0055D20D   FF52 14          CALL DWORD PTR DS:[EDX+0x14]  ; jichi: called here
+      // 0055D210   8BCF             MOV ECX,EDI   ; jichi: retaddr is here
+      // 0055D212   894424 18        MOV DWORD PTR SS:[ESP+0x18],EAX
+
+      // Sample game: キスと魔王と紅茶 (old type)
+      // name:
+      // 004DBFEC   50               PUSH EAX
+      // 004DBFED   8BCF             MOV ECX,EDI
+      // 004DBFEF   FF52 10          CALL DWORD PTR DS:[EDX+0x10]   ; jichi: called here
+      // 004DBFF2   8B7424 7C        MOV ESI,DWORD PTR SS:[ESP+0x7C]
+      // 004DBFF6   33DB             XOR EBX,EBX
+      // 004DBFF8   3BF3             CMP ESI,EBX
+      // 004DBFFA   74 4B            JE SHORT .004DC047
+      // 004DBFFC   8BCF             MOV ECX,EDI
+      // 004DBFFE   E8 9DA4FFFF      CALL .004D64A0
+      // 004DC003   8BE8             MOV EBP,EAX
+      // 004DC005   891E             MOV DWORD PTR DS:[ESI],EBX
+      // 004DC007   85ED             TEST EBP,EBP
+      //
+      // Scenario:
+      // 004B5207   8BCF             MOV ECX,EDI
+      // 004B5209   897C24 14        MOV DWORD PTR SS:[ESP+0x14],EDI
+      // 004B520D   FF52 10          CALL DWORD PTR DS:[EDX+0x10]   ; jichi: called here
+      // 004B5210   8BCF             MOV ECX,EDI
+      // 004B5212   894424 18        MOV DWORD PTR SS:[ESP+0x18],EAX
+      // 004B5216   E8 85120200      CALL .004D64A0
+      // 004B521B   33ED             XOR EBP,EBP
+      role = s->stack[5] == 0 ? Engine::NameRole : Engine::ScenarioRole;
+    }
+
     auto sig = Engine::hashThreadSignature(role, retaddr);
     text_ = EngineController::instance()->dispatchTextW(QString::fromWCharArray(text), role, sig);
     s->stack[1] = (ulong)text_.utf16(); // reset arg1
+    //if (textStackIndex >= 0)
+    //  s->stack[textStackIndex] = s->stack[1];
     return true;
+  }
+
+  bool hookAfterCaller(winhook::hook_stack *s)
+  {
+    if (textSize_)
+      s->eax = textSize_;
+    return true;
+  }
+  bool attachCaller(ulong addr)
+  {
+    static std::unordered_set<ulong> addresses_;
+    if (addresses_.find(addr) != addresses_.end())
+      return false;
+    addresses_.insert(addr);
+    bool ok = winhook::hook_before(addr, hookAfterCaller);
+    DOUT(ok);
+    return ok;
   }
 
 } // namespace Private
 
 /**
- *  Sample game: キスと魔王と紅茶
+ *  Sample game: キスと魔王と紅茶 (old type)
+ *
+ *  FIXME: Text with ruby cannot be translated
  *
  *  There are two or three GetTextMetricsA.
  *  The caller of the first one is hijacked.
@@ -480,10 +768,10 @@ namespace Private {
  *  004D5440   74 0C            JE SHORT .004D544E
  *  004D5442   83C0 02          ADD EAX,0x2
  *
- *  Sample game: お兄ちゃん、右手の使用を禁止します！
+ *  Sample game: お兄ちゃん、右手の使用を禁止します！ (old type)
  *  005C2E19   5B               POP EBX
  *  005C2E1A   83C4 10          ADD ESP,0x10
- *  005C2E1D   C2 0800          RETN 0x8
+ *  005C2E1D   C2 0800          RETN 0x8    ; jichi: this value is used to distinguish different engine tyep
  *  005C2E20   55               PUSH EBP ; jichi: here
  *  005C2E21   8BEC             MOV EBP,ESP
  *  005C2E23   6A FF            PUSH -0x1
@@ -504,6 +792,21 @@ namespace Private {
  *  005C2E52   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
  *  005C2E55   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
  *  005C2E5C   5F               POP EDI
+ *
+ *  Sample game: プライマルハーツ (new type), 0x54bd80
+ *
+ *  0054BD78   5B               POP EBX
+ *  0054BD79   83C4 10          ADD ESP,0x10
+ *  0054BD7C   C2 0800          RETN 0x8
+ *  0054BD7F   CC               INT3    ; jichi: this value is used to distinguish different engine type
+ *  0054BD80   55               PUSH EBP    ; jichi: hooked here
+ *  0054BD81   8BEC             MOV EBP,ESP
+ *  0054BD83   83E4 F8          AND ESP,0xFFFFFFF8
+ *  0054BD86   6A FF            PUSH -0x1
+ *  0054BD88   68 5EC46000      PUSH .0060C45E
+ *  0054BD8D   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  0054BD93   50               PUSH EAX
+ *  0054BD94   81EC 10010000    SUB ESP,0x110
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
@@ -516,7 +819,18 @@ bool attach(ulong startAddress, ulong stopAddress)
   ulong addr = MemDbg::findCallerAddress((ulong)::GetTextMetricsA, ins, startAddress, stopAddress);
   if (!addr)
     return false;
+  //if (*(uint8_t *)(addr - 1) == s1_int3)
+  //  Private::type_ = Private::NewType;
+  //else // new type is int3 instead of nop
+  //  Private::type_ = Private::OldType;
+  ////DOUT(addr);
+  //DOUT("type =" << Private::type_);
+
+  //addr = 0x004dac20;
   return winhook::hook_before(addr, Private::hookBefore);
+
+  //addr = 0x004da1df - 5;
+  //return winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
 }
 
 } // namespace ScenarioHook

@@ -9,6 +9,10 @@
 #include <windows.h>
 #include <list>
 
+#ifdef _MSC_VER
+# pragma warning(disable:4800) // C4800: forcing value to bool 'true' or 'false'
+#endif // _MSC_VER
+
 namespace { // unnamed
 
 namespace detail = winhook::detail; // import detail namespace
@@ -171,9 +175,21 @@ class HookManager
 {
   std::list<HookRecord *> hooks_; // not thread-safe
 
+  HookRecord *lookupHookRecord(DWORD address) const
+  {
+    for (auto it = hooks_.begin(); it != hooks_.end(); ++it) {
+      HookRecord *p = *it;
+      if (p->address() == address)
+        return p;
+    }
+    return nullptr;
+  }
+
 public:
   HookManager() {}
   ~HookManager() {} // HookRecord on heap are not deleted
+
+  bool isAddressHooked(DWORD address) const { return lookupHookRecord(address); }
 
   bool hook(DWORD address, const winhook::hook_function &before, const winhook::hook_function &after)
   {
@@ -230,6 +246,9 @@ bool hook_both(ulong address, const hook_function &before, const hook_function &
 
 bool unhook(ulong address)
 { return ::hookManager && ::hookManager->unhook(address); }
+
+bool hook_contains(ulong address)
+{ return ::hookManager && ::hookManager->isAddressHooked(address); }
 
 WINHOOK_END_NAMESPACE
 

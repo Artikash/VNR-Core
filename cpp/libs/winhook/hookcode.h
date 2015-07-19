@@ -59,6 +59,12 @@ bool hook_before(ulong address, const hook_function &before);
 bool hook_after(ulong address, const hook_function &after);
 
 /**
+ *  Return if the address has been hooked
+ *  @param  address  hooked address
+ */
+bool hook_contains(ulong address);
+
+/**
  *  Restore hooked instruction
  *  @param  address  address where jump is inserted
  *  @return  if succeed
