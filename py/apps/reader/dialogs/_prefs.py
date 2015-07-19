@@ -2415,7 +2415,7 @@ class _TermTab(object):
     ret = QtWidgets.QCheckBox("%s, %s: %s" % (
         my.tr("Display romaji above yomigana for Japanese-Chinese translation"),
         my.tr("like this"),
-        u"悠真(ゆうま) => 悠真(Yuuma)"))
+        u"蓮花(れんふぁ) => 蓮花(Renfa)"))
     ss = settings.global_()
     ret.setChecked(ss.isTermChineseRomajiRubyEnabled())
     ret.toggled.connect(ss.setTermChineseRomajiRubyEnabled)
