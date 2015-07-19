@@ -137,6 +137,7 @@ HEADERS += \
   engine/model/debonosu.h \
   engine/model/elf.h \
   engine/model/leaf.h \
+  engine/model/pal.h \
   engine/model/qlie.h \
   engine/model/retouch.h \
   engine/model/rgss.h \
@@ -164,6 +165,7 @@ SOURCES += \
   engine/model/debonosu.cc \
   engine/model/elf.cc \
   engine/model/leaf.cc \
+  engine/model/pal.cc \
   engine/model/qlie.cc \
   engine/model/retouch.cc \
   engine/model/rgss.cc \

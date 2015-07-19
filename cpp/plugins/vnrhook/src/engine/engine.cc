@@ -11523,7 +11523,7 @@ bool InsertEushullyHook()
  *
  *  013c614e     cc             int3
  *  013c614f     cc             int3
- *  013c6150  /$ 55             push ebp ; jichi: function starts
+ *  013c6150  /$ 55             push ebp ; jichi: function starts, this function seems to process text encoding
  *  013c6151  |. 8bec           mov ebp,esp
  *  013c6153  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
  *  013c6156  |. 0fb608         movzx ecx,byte ptr ds:[eax]

@@ -41,6 +41,10 @@
   exist: bak.pak
   #encoding: sjis
 
+- name: EmbedPal # 7/18/2015
+  exist: dll/Pal.dll
+  #encoding: sjis
+
 - name: EmbedQLiE # 7/5/2015
   exist: GameData/data*.pack # mostly data0.pack, data1.pack, ...
   #encoding: sjis

@@ -86,19 +86,20 @@ embed:
   - WillPlusA
   - WillPlusW
   - WolfRPG
-  #- AMUSE CRAFT
   #- Majiro
   #- Majiro2
   #- SideB
 
 embed_en:
   - Circus
-  #- HorkEye
   - Leaf
+  - Pal
   - System43+
+  #- HorkEye
 
   - EmbedCircus
   - EmbedLeaf
+  - EmbedPal
   - EmbedSystem43
 
 gui:
@@ -429,6 +430,7 @@ char:
   - EmbedDebonosu
   - EmbedElf
   - EmbedLeaf
+  - EmbedPal
   - EmbedQLiE
   - EmbedRetouch
   - EmbedRio
@@ -681,6 +683,7 @@ focus:
   - EmbedCMVS
   - EmbedDebonosu
   - EmbedLeaf
+  - EmbedPal
   - EmbedQLiE
   - EmbedRetouch
   - EmbedSiglusEngine
@@ -695,6 +698,7 @@ focus:
   - KiriKiriZ
   - Leaf
   - Majiro2
+  - Pal
   - QLiE
   - QLiE2
   - Retouch
