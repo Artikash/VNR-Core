@@ -65,7 +65,6 @@ embed:
   #- CatSystem3
   - CMVS
   - CMVS2
-  - Cotopha
   - Debonosu
   - DebonosuName
   - Elf
@@ -92,12 +91,14 @@ embed:
 
 embed_en:
   - Circus
+  - Cotopha
   - Leaf
   - Pal
   - System43+
   #- HorkEye
 
   - EmbedCircus
+  - EmbedCotopha
   - EmbedLeaf
   - EmbedPal
   - EmbedSystem43
