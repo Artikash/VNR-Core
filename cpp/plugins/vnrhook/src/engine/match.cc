@@ -176,11 +176,16 @@ bool DetermineEngineByFile1()
   if (IthFindFile(L"GameData\\*.pack") && InsertQLIEHook())
     return true;
 
+  if (IthCheckFile(L"dll\\Pal.dll")) {
+    InsertPalHook();
+    return true;
+  }
+
   if (IthFindFile(L"*.pac")) {
     // jichi 6/3/2014: AMUSE CRAFT and SOFTPAL
     // Selectively insert, so that lstrlenA can still get correct text if failed
-    if (IthCheckFile(L"dll\\resource.dll") && IthCheckFile(L"dll\\pal.dll") && InsertAmuseCraftHook())
-      return true;
+    //if (IthCheckFile(L"dll\\resource.dll") && IthCheckFile(L"dll\\pal.dll") && InsertAmuseCraftHook())
+    //  return true;
 
     if (IthCheckFile(L"Thumbnail.pac")) {
       //ConsoleOutput("vnreng: IGNORE NeXAS");

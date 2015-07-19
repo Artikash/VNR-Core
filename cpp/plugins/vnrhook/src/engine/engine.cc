@@ -11555,7 +11555,7 @@ bool InsertEushullyHook()
  *  013c61ae  |> 5d             pop ebp
  *  013c61af  \. c3             retn
  */
-bool InsertAmuseCraftHook()
+static bool InsertOldPalHook() // this is used in case the new pattern does not work
 {
   const BYTE bytes[] = {
     0x55,                 // 013c6150  /$ 55             push ebp ; jichi: function starts
@@ -11589,6 +11589,34 @@ bool InsertAmuseCraftHook()
   NewHook(hp, "Pal");
   return true;
 }
+static bool InsertNewPalHook()
+{
+  const BYTE bytes[] = {
+    0x55,               // 002c6ab0   55               push ebp
+    0x8b,0xec,          // 002c6ab1   8bec             mov ebp,esp
+    0x83,0xec, 0x78,    // 002c6ab3   83ec 78          sub esp,0x78
+    0xa1, XX4,          // 002c6ab6   a1 8c002f00      mov eax,dword ptr ds:[0x2f008c]
+    0x33,0xc5,          // 002c6abb   33c5             xor eax,ebp
+    0x89,0x45, 0xf8     // 002c6abd   8945 f8          mov dword ptr ss:[ebp-0x8],eax
+  };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  if (!addr) {
+    ConsoleOutput("vnreng:Pal: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr;
+  //hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT; // 0x418
+  hp.type = RELATIVE_SPLIT;  // Use relative address to prevent floating issue
+  hp.offset = 4 * 2; // arg2
+  ConsoleOutput("vnreng: INSERT Pal");
+  NewHook(hp, "Pal");
+  return true;
+}
+bool InsertPalHook()
+{ return InsertNewPalHook() || InsertOldPalHook(); }
 
 /** jichi 7/6/2014 NeXAS
  *  Sample game: BALDRSKYZERO EXTREME
