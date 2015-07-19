@@ -79,7 +79,7 @@ bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
 bool InsertAdobeFlash10Hook();  // Adobe Flash Player 10
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
-bool InsertAmuseCraftHook();    // AMUSE CRAFT: *.pac
+//bool InsertAmuseCraftHook();    // AMUSE CRAFT: *.pac
 bool InsertAnex86Hook();        // Anex86: anex86.exe
 bool InsertAOSHook();           // AOS: *.aos
 bool InsertApricoTHook();       // Apricot: arc.a*
@@ -119,6 +119,7 @@ bool InsertNeXASHook();         // NeXAS: Thumbnail.pac
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNexton1Hook();
 bool InsertNitroPlusHook();     // NitroPlus: *.npa
+bool InsertPalHook();           // AMUSE CRAFT: *.pac
 bool InsertPensilHook();        // Pensil: PSetup.exe
 bool InsertQLIEHook();          // QLiE: GameData/*.pack
 //bool InsertRai7Hook();          // Rai7puk: rai7.exe
