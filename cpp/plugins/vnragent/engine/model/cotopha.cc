@@ -519,7 +519,7 @@ namespace Private {
     if (!text || !*text)
       return true;
 
-    if (::strcmp(text, "----/--/-- --:--") == 0)
+    if (::wcscmp(text, L"----/--/-- --:--") == 0)
       return true;
 
     textSize_ = ::wcslen(text);
