@@ -33,6 +33,7 @@
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
 //#include "engine/model/sideb.h"
+//#include "engine/model/yuka.h"
 
 #define DEBUG "enginefactory"
 #include "sakurakit/skdebug.h"
@@ -67,6 +68,7 @@ EngineController *EngineFactory::createEngine()
     //, new HorkEyeEngine
     //, new MajiroEngine
     //, new SideBEngine
+    //, new YukaSystemEngine
   };
   BOOST_FOREACH (EngineModel *m, models) {
     auto p = new EngineController(m);

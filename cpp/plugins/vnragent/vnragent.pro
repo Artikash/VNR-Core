@@ -155,6 +155,7 @@ HEADERS += \
   #engine/model/sideb.h
   ##engine/model/nexas.h
   #engine/model/rejet.h
+  #engine/model/yuka.h
 SOURCES += \
   engine/model/age.cc \
   engine/model/aoi.cc \
@@ -183,6 +184,7 @@ SOURCES += \
   #engine/model/sideb.cc
   #engine/model/nexas.cc
   #engine/model/rejet.cc
+  #engine/model/yuka.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc
