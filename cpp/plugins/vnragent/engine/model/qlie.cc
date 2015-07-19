@@ -398,7 +398,7 @@ namespace Private {
       return true;
     int trimmedSize = arg->size;
     auto trimmedText = trim(arg->text, &trimmedSize);
-    if (trimmedSize < 0 || !trimmedText || !*trimmedText)
+    if (trimmedSize <= 0 || !trimmedText || !*trimmedText)
       return true;
 
     if (::strstr(arg->text, "\x82\xa0\x82\xa0\x82\xa0\x82\xa0\x82\xa0")) /* Skip text containing あああああ */
@@ -688,7 +688,6 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-
   // QLiE1
   // 004FFB1D   80BB FA150000 00 CMP BYTE PTR DS:[EBX+0x15FA],0x0
   // QLiE2
