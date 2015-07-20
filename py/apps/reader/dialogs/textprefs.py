@@ -710,7 +710,15 @@ class _TextTab(object):
     enc = tm.encoding()
     self._setEncoding(enc)
 
+
+    nullThreadFound = False
     for t in tm.threads():
+      if t.name == defs.NULL_THREAD_NAME:
+        nullThreadFound = True
+      self._updateThread(t, encoding=enc)
+
+    if not nullThreadFound:
+      t = textman.TextThread(name=defs.NULL_THREAD_NAME, signature=defs.NULL_THREAD_SIGNATURE)
       self._updateThread(t, encoding=enc)
 
     self._refreshSaveButton()
