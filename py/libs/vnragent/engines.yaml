@@ -95,6 +95,14 @@
   exist: data.wolf|data/*.wolf
   #encoding: sjis
 
+
+# Game-specific engines
+
+- name: EmbedLova # 7/19/2015
+  exist:
+    - awesomium_process.exe
+    - UE3ShaderCompileWorker.exe
+
 # EOF
 
 #- name: EmbedYukaSystem # 7/19/2015

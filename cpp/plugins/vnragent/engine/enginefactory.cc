@@ -25,6 +25,9 @@
 #include "engine/model/system4.h"
 #include "engine/model/will.h"
 #include "engine/model/wolf.h"
+
+#include "engine/model/lova.h"
+
 //#include "engine/model/cs2.h"
 //#include "engine/model/horkeye.h"
 //#include "engine/model/systemc.h"
@@ -43,7 +46,9 @@
 EngineController *EngineFactory::createEngine()
 {
   static EngineModel *models[] = { // sort reversely
-    new WolfRPGEngine
+    new LovaEngine
+
+    , new WolfRPGEngine
     , new WillPlusEngine
     , new System4Engine
     , new SystemAoiWEngine

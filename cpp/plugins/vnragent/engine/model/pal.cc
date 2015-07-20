@@ -558,17 +558,14 @@ namespace Private {
  */
 bool attach() // attach scenario
 {
-  HMODULE hModule = ::GetModuleHandleA("Pal.dll");
-  if (!hModule)
-    return false;
   const char *funs[] = {
     "PalSpriteCreateText",
     "PalSpriteCreateTextEx"
   };
   bool ret = false;
   for (int i = 0; i < sizeof(funs)/sizeof(*funs); i++)
-    if (auto fun = ::GetProcAddress(hModule, funs[i]))
-      ret = winhook::hook_before((ulong)fun, Private::hookBefore) || ret;
+    if (auto addr = Engine::getModuleFunction("Pal.dll", funs[i]))
+      ret = winhook::hook_before(addr, Private::hookBefore) || ret;
   return true;
 }
 } // namespace OtherHook

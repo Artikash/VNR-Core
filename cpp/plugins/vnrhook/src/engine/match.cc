@@ -40,9 +40,25 @@ trigger_fun_t trigger_fun_;
 
 namespace Engine { namespace { // unnamed
 
+bool DetermineGameHooks() // 7/19/2015
+{
+#if 0 // jichi 7/19/2015: Disabled as it will crash the game
+  if (IthFindFile(L"UE3ShaderCompileWorker.exe") && IthFindFile(L"awesomium_process.exe")) {
+    InsertLovaGameHook();
+    return true;
+  }
+#endif // 0
+  return false;
+}
+
 // jichi 7/17/2014: Disable GDI hooks for PPSSPP
 bool DeterminePCEngine()
 {
+  if (DetermineGameHooks()) {
+    ConsoleOutput("vnreng: found game-specific hook");
+    return true;
+  }
+
   if (IthFindFile(L"PPSSPP*.exe")) { // jichi 7/12/2014 PPSSPPWindows.exe, PPSSPPEX.exe PPSSPPSP.exe
     InsertPPSSPPHooks();
     return true;
@@ -448,7 +464,7 @@ bool DetermineEngineByProcessName()
 
   // jichi 8/17/2013: Handle "~"
   if (wcsstr(str, L"shinydays") || !wcsncmp(str, L"shinyd~", 7) || IthCheckFile(L"ShinyDays.exe")) {
-    InsertShinyDaysHook();
+    InsertShinyDaysGameHook();
     return true;
   }
 

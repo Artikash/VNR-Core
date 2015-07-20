@@ -213,7 +213,7 @@ bool Engine::getModuleMemoryRange(const wchar_t *moduleName, unsigned long *star
   return true;
 }
 
-unsigned long Engine::getModuleFunction(const char *moduleName, const char *funcName)
+ulong Engine::getModuleFunction(const char *moduleName, const char *funcName)
 {
   if (HMODULE h = ::GetModuleHandleA(moduleName)) {
     DWORD ret = (DWORD)::GetProcAddress(h, funcName);

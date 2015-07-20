@@ -28,6 +28,8 @@
 #define s1_push_esi     0x56    // push esi
 #define s1_push_edi     0x57    // push edi
 #define s1_pop_esp      0x5c    // pop esp
+#define s1_pop_esi      0x5e    // pop esi
+#define s1_pop_edi      0x5f    // pop edi
 
 #define s1_pushad       0x60    // pushad
 #define s1_popad        0x61    // popad
@@ -41,5 +43,8 @@
 #define s2_mov_ecx_edi  0xcf8b
 
 #define s1_mov_ecx_0d   0xb9, s1_0d // mov ecx, 0x0000
+
+#define s1_test_eax_eax  0x85,0xc0   // text edi,eax
+#define s2_test_eax_eax  0xc085
 
 // EOF
