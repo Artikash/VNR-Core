@@ -69,7 +69,7 @@ PVOID overrideFunctionA(HMODULE stealFrom, LPCSTR oldFunctionModule, LPCSTR func
       // }
 
       MEMORY_BASIC_INFORMATION mbi;
-      if (::VirtualQuery((LPVOID)(addr), &mbi, sizeof(mbi)) == sizeof(mbi)) {
+      if (::VirtualQuery((LPVOID)addr, &mbi, sizeof(mbi)) == sizeof(mbi)) {
         DWORD dwOldProtect;
         if (::VirtualProtect(mbi.BaseAddress, ((ULONG_PTR)addr + 8)-(ULONG_PTR)mbi.BaseAddress, PAGE_EXECUTE_READWRITE, &dwOldProtect)) {
           *addr = (ULONG_PTR)newFunction;

@@ -10,6 +10,7 @@
 //#include "hijack/hijackmanager.h"
 #include "util/textutil.h"
 #include "memdbg/memsearch.h"
+#include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
 #include "winasm/winasmdef.h"
 #include <qt_windows.h>
@@ -110,6 +111,7 @@ namespace Private {
 #if 0
   bool hookBefore(winhook::hook_stack *s)
   {
+    return true;
     static QByteArray data_;
     auto text = (LPCSTR)s->stack[1]; // arg1 text
     int size = s->stack[2]; // arg2 size
@@ -346,10 +348,12 @@ bool attach(ulong startAddress, ulong stopAddress) // attach scenario
   if (!addr)
     return false;
   Private::returnAddress_ = addr + sizeof(bytes) + 4;
-  //addr = MemDbg::findEnclosingAlignedFunction(addr);
-  //if (!addr)
-  //  return false;
-  //  msvcr100
+#if 0
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+#endif //0
   addr = Engine::getModuleFunction("msvcr100.dll", "memcpy");
   //NtInspect::getModuleExportFunctionA("msvcr100.dll", "memcpy");
   if (!addr)
