@@ -14369,7 +14369,8 @@ bool InsertShinyDaysGameHook()
   return true;
 }
 
-/** 6/19/2015: Game engine specific for http://lova.jp
+#if 0 // disabled as lova does not allow module from being modified
+/** 7/19/2015: Game engine specific for http://lova.jp
  *
  *  No idea why hooking to this place will crash the game.
  *
@@ -14435,6 +14436,7 @@ bool InsertLovaGameHook()
   NewHook(hp, "LOVA");
   return true;
 }
+#endif // 0
 
 /**
  *  jichi 4/15/2014: Insert Adobe AIR hook

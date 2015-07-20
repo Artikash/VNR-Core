@@ -76,7 +76,7 @@ public:
       originalSize_ += size;
     }
     originalCode_ = new BYTE[originalSize_];
-    ::memcpy(originalCode_, (LPCVOID)address, originalSize_);
+    winhook::memcpy_(originalCode_, (LPCVOID)address, originalSize_);
     hookCode_ = create_hook_code(address, originalSize_, (DWORD)this, (DWORD)&Self::callBefore, (DWORD)&Self::callAfter);
   }
 
@@ -97,7 +97,7 @@ public:
     jmpCode[0] = s1_jmp_;
     *(DWORD *)(jmpCode + 1) = (DWORD)hookCode_ - (address_ + jmp_ins_size);
     if (originalSize_ > jmp_ins_size)
-      ::memset(jmpCode + jmp_ins_size, s1_nop, originalSize_ - jmp_ins_size); // patch nop
+      winhook::memset_(jmpCode + jmp_ins_size, s1_nop, originalSize_ - jmp_ins_size); // patch nop
 
     bool ret = winhook::csmemcpy((LPVOID)address_, jmpCode, originalSize_);
     delete jmpCode;
@@ -139,26 +139,26 @@ BYTE *HookRecord::create_hook_code(DWORD address, DWORD originalSize, DWORD self
 
   BYTE *code = (BYTE *)::VirtualAlloc(nullptr, codeSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 
-  ::memcpy(code, tpl, tpl_size);
+  winhook::memcpy_(code, tpl, tpl_size);
   *(DWORD *)(code + tpl_ecx_offset + 1) = self;
   detail::set_call_ins(code + tpl_call_offset, before);
 
   {
     BYTE *data = code + tpl_size;
-    ::memcpy(data, (LPCVOID)address, instructionSize);
+    winhook::memcpy_(data, (LPCVOID)address, instructionSize);
     detail::move_code(data, instructionSize, address, (DWORD)data);
   }
 
   {
     BYTE *data = code + tpl_size + instructionSize;
-    ::memcpy(data, tpl, tpl_size);
+    winhook::memcpy_(data, tpl, tpl_size);
     *(DWORD *)(data + tpl_ecx_offset + 1) = self;
     detail::set_call_ins(data + tpl_call_offset, after);
   }
 
   if (instructionSize < originalSize) {
     BYTE *data = code + tpl_size + instructionSize + tpl_size;
-    ::memcpy(data, (LPCVOID)(address + instructionSize), originalSize - instructionSize);
+    winhook::memcpy_(data, (LPCVOID)(address + instructionSize), originalSize - instructionSize);
     detail::move_code(data, originalSize - instructionSize, address, (DWORD)data);
   }
 

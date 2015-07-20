@@ -657,6 +657,7 @@ utf8:
   - Imageepoch2 PSP
   # PC
   - EmbedRGSS
+  - EmbedLova
   - YukaSystem2
 
 # List of game engine that allows focus
@@ -684,6 +685,7 @@ focus:
   - EmbedCMVS
   - EmbedDebonosu
   - EmbedLeaf
+  - EmbedLova
   - EmbedPal
   - EmbedQLiE
   - EmbedRetouch

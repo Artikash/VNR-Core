@@ -133,15 +133,10 @@ namespace Private {
  */
 bool attach() // attach scenario
 {
-  HMODULE hModule = ::GetModuleHandleA("resident.dll");
-  if (!hModule)
-    return false;
   // private: bool __thiscall RetouchPrintManager::printSub(char const *,class UxPrintData &,unsigned long)	0x10050650	0x00050650	2904 (0xb58)	resident.dll	C:\Local\箱庭ロジック\resident.dll	Exported Function
-  const char *sig = "?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z";
-  auto fun = ::GetProcAddress(hModule, sig);
-  if (!fun)
-    return false;
-  return winhook::hook_before((ulong)fun, Private::hookBefore);
+  const char *fun = "?printSub@RetouchPrintManager@@AAE_NPBDAAVUxPrintData@@K@Z";
+  auto addr = Engine::getModuleFunction("resident.dll", fun);
+  return addr && winhook::hook_before(addr, Private::hookBefore);
 }
 } // namespace ScenarioHook
 
@@ -163,15 +158,10 @@ namespace Private {
 
 bool attach() // attach scenario
 {
-  HMODULE hModule = ::GetModuleHandleA("resident.dll");
-  if (!hModule)
-    return false;
   // private: void __thiscall RetouchPrintManager::printSub(char const *,unsigned long,int &,int &)	0x10046560	0x00046560	2902 (0xb56)	resident.dll	C:\Local\箱庭ロジック\resident.dll	Exported Function
-  const char *sig = "?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z";
-  auto fun = ::GetProcAddress(hModule, sig);
-  if (!fun)
-    return false;
-  return winhook::hook_before((ulong)fun, Private::hookBefore);
+  const char *fun = "?printSub@RetouchPrintManager@@AAEXPBDKAAH1@Z";
+  auto addr = Engine::getModuleFunction("resident.dll", fun);
+  return addr && winhook::hook_before(addr, Private::hookBefore);
 }
 } // namespace OtherHook
 

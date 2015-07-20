@@ -33,6 +33,8 @@ include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/winsinglemutex/winsinglemutex.pri)
 
+DEFINES += WINHOOK_NO_LIBC # needed to hijack memcpy in nova.cc
+
 #include($$LIBDIR/vnragent/vnragent.pri)
 
 # Services
@@ -185,6 +187,11 @@ SOURCES += \
   #engine/model/nexas.cc
   #engine/model/rejet.cc
   #engine/model/yuka.cc
+
+HEADERS += \
+  engine/model/lova.h
+SOURCES += \
+  engine/model/lova.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

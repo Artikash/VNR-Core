@@ -4,8 +4,34 @@
 #include "disasm/disasm.h"
 #include "winasm/winasmdef.h"
 #include <windows.h>
+#include <cstdint>
 
 WINHOOK_BEGIN_NAMESPACE
+
+void *memcpy_(void *dst, const void *src, size_t num)
+{
+#ifdef WINHOOK_NO_LIBC
+  auto d = static_cast<uint8_t *>(dst);
+  auto s = static_cast<const uint8_t *>(src);
+  for (size_t i = 0; i < num; i++)
+    d[i] = s[i];
+  return dst;
+#else
+  return ::memcpy(dst, src, num);
+#endif // WINHOOK_NO_LIBC
+}
+
+void *memset_(void *ptr, int value, size_t num)
+{
+#ifdef WINHOOK_NO_LIBC
+  auto p = static_cast<uint8_t *>(ptr);
+  for (size_t i = 0; i < num; i++)
+    p[i] = value;
+  return ptr;
+#else
+  return ::memset(dst, value, num);
+#endif // WINHOOK_NO_LIBC
+}
 
 bool csmemcpy(void *dst, const void *src, size_t size)
 {
@@ -17,7 +43,7 @@ bool csmemcpy(void *dst, const void *src, size_t size)
   //if (!::VirtualProtectEx(hProc, dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
   if (!::VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
     return false;
-  ::memcpy(dst, src, size);
+  memcpy_(dst, src, size);
   DWORD newProtect;
   ::VirtualProtect(dst, size, oldProtect, &newProtect); // the error code is not checked for this function
   return true;
@@ -28,7 +54,7 @@ bool csmemset(void *dst, byte value, size_t size)
   DWORD oldProtect;
   if (!::VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
     return false;
-  ::memset(dst, value, size);
+  memset_(dst, value, size);
   DWORD newProtect;
   ::VirtualProtect(dst, size, oldProtect, &newProtect); // the error code is not checked for this function
   return true;

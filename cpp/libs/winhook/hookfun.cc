@@ -58,7 +58,7 @@ public:
     jmpCode[0] = s1_jmp_;
     *(DWORD *)(jmpCode + 1) = (DWORD)code_ - (address_ + jmp_ins_size);
     if (instructionSize_ > jmp_ins_size)
-      ::memset(jmpCode + jmp_ins_size, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
+      winhook::memset_(jmpCode + jmp_ins_size, s1_nop, instructionSize_ - jmp_ins_size); // patch nop
 
     bool ok = winhook::csmemcpy((LPVOID)address_, jmpCode, instructionSize_);
     delete jmpCode;
@@ -93,7 +93,7 @@ BYTE *HookRecord::create_code(DWORD address, DWORD callback, DWORD instructionSi
 
   BYTE *code = (BYTE *)::VirtualAlloc(nullptr, codeSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 
-  ::memcpy(code + jmp_ins_size, (LPCVOID)address, instructionSize);
+  winhook::memcpy_(code + jmp_ins_size, (LPCVOID)address, instructionSize);
 
   detail::set_jmp_ins(code, callback); // prologue
   detail::set_jmp_ins(code + jmp_ins_size + instructionSize, address + instructionSize); // epilogue

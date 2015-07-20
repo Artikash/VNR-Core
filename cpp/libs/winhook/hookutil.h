@@ -6,6 +6,9 @@
 
 WINHOOK_BEGIN_NAMESPACE
 
+void *memcpy_(void *dst, const void *src, size_t num);
+void *memset_(void *ptr, int value, size_t num);
+
 /**
  *  Overwrite data at the target with the source data in the code section.
  *  @param  dst  target address to modify
