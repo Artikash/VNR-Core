@@ -15,7 +15,7 @@ public:
     name = "EmbedLova";
     encoding = Utf8Encoding;
     matchFiles << "awesomium_process.exe" << "UE3ShaderCompileWorker.exe";
-    newLineString = "<br/>";
+    newLineString = nullptr; // <br/> does not work
     attachFunction = &Self::attach;
   }
 };

@@ -7,6 +7,7 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
+//#include "hijack/hijackmanager.h"
 #include "util/textutil.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookfun.h"
@@ -17,12 +18,43 @@
 #define DEBUG "model/lova"
 #include "sakurakit/skdebug.h"
 
+#ifdef _MSC_VER
+# pragma warning(disable:4018) // C4800: signed/unsigned mismatch
+#endif // _MSC_VER
+
 //#pragma intrinsic(_ReturnAddress)
 //#pragma intrinsic(_AddressOfReturnAddress)
 
 namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
+
+  bool is_other_texts(const char *s)
+  {
+    {
+      static const char *t[] = {
+        "\xe3\x83\x9b\xe3\x83\xbc\xe3\x83\xa0", /* ホーム */
+        "\xe3\x83\xa9\xe3\x82\xa4\xe3\x82\xbb\xe3\x83\xb3\xe3\x82\xb9", /* ライセンス */
+        "\xe3\x82\xb2\xe3\x83\xbc\xe3\x83\xa0\xe3\x82\xb9\xe3\x82\xbf\xe3\x83\xbc\xe3\x83\x88", /* ゲームスタート */
+        "\xe3\x82\xaa\xe3\x83\x97\xe3\x82\xb7\xe3\x83\xa7\xe3\x83\xb3\xe8\xa8\xad\xe5\xae\x9a" /* オプション設定 */
+      };
+      for (int i = 0; i < sizeof(t)/sizeof(*t); i++)
+        if (::strcmp(s, t[i]) == 0)
+          return true;
+    }
+
+    {
+      static const char *t[] = {
+        "VP",
+        "\xe6\x83\x85\xe5\xa0\xb1\xe6\x9b\xb4\xe6\x96\xb0", /* 情報更新 */
+        "\xe3\x83\x87\xe3\x83\xbc\xe3\x82\xbf\xe9\x80\x9a\xe4\xbf\xa1\xe4\xb8\xad" /* データ通信中 */
+      };
+      for (int i = 0; i < sizeof(t)/sizeof(*t); i++)
+        if (::strstr(s, t[i]))
+          return true;
+    }
+    return false;
+  }
 
   typedef void *(* memcpy_fun_t)(void *, const void *, size_t);
   memcpy_fun_t old_memcpy;
@@ -36,7 +68,7 @@ namespace Private {
     ulong retaddr = *stack;
     if (retaddr == returnAddress_) {
       auto text = static_cast<const char *>(src);
-      if (!Util::allAscii(text)) {
+      if (size > 0 && !Util::allAscii(text)) {
         //auto stack = &frame;  // stack is the original esp
         //for (int i = 0; ; i++)    // get the original esp
         //  if (stack[-i] == retaddr) {
@@ -53,13 +85,14 @@ namespace Private {
         //auto stack = (ulong *)_AddressOfReturnAddress(); // pointed to esp just after calling function
         auto callerReturnAddress1 = stack[9], // return address of the caller
              callerReturnAddress2 = stack[14]; // return address of the caller's caller
-        if (Engine::isAddressReadable(callerReturnAddress1) &
+        if (Engine::isAddressReadable(callerReturnAddress1) &&
             Engine::isAddressReadable(callerReturnAddress2) &&
             *(uint8_t *)callerReturnAddress1 == s1_pop_esi &&   // use the instruction before call as split
-            *(DWORD *)callerReturnAddress2 == 0x000c7d80)       // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
+            *(DWORD *)callerReturnAddress2 == 0x000c7d80 &&     // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
+            !is_other_texts(text))
           role = Engine::ScenarioRole;
         auto split = callerReturnAddress2;
-        role = Engine::OtherRole; // FIXME: split scenario role out
+        //role = Engine::OtherRole; // FIXME: split scenario role out
         auto sig = Engine::hashThreadSignature(role, split);
         QString oldText = QString::fromUtf8(text, size),
                 newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
@@ -67,7 +100,7 @@ namespace Private {
           QByteArray data = newText.toUtf8();
           while (data.size() < size)
             data.push_back(' '); // padding zero
-          return old_memcpy(dst, data.constData(), data.size());
+          return old_memcpy(dst, data.constData(), size); // text being truncated to size
         }
       }
     }
@@ -178,7 +211,7 @@ namespace Private {
  *  01D9F24B   C740 04 01000000 MOV DWORD PTR DS:[EAX+0x4],0x1
  *  01D9F252   8918             MOV DWORD PTR DS:[EAX],EBX
  *  01D9F254   8BF0             MOV ESI,EAX
- *  01D9F256   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  01D9F256   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]  ; jichi: source size
  *  01D9F259   53               PUSH EBX
  *  01D9F25A   50               PUSH EAX
  *  01D9F25B   8D4E 08          LEA ECX,DWORD PTR DS:[ESI+0x8]
@@ -337,6 +370,7 @@ bool LovaEngine::attach()
     return false;
   if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
+  //HijackManager::instance()->attachFunction((ulong)::CreateFontIndirectW);
   return true;
 }
 
