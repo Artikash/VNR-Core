@@ -70,6 +70,10 @@ bool InsertNippon2PSPHook();    // PSP Nippon1.jp
 bool InsertYetiPSPHook();       // PSP Yetigame.jp
 bool InsertYeti2PSPHook();      // PSP Yetigame.jp
 
+// Game-speicific engines
+bool InsertShinyDaysGameHook(); // ShinyDays
+bool InsertLovaGameHook();      // lova.jp
+
 // PC engines
 
 bool Insert2RMHook();           // 2RM - Adventure Engine
@@ -128,7 +132,6 @@ bool InsertRUGPHook();          // rUGP: rUGP.exe
 bool InsertRetouchHook();       // Retouch: resident.dll
 bool InsertRREHook();           // RunrunEngine: rrecfg.rcf
 bool InsertShinaHook();         // ShinaRio: Rio.ini
-bool InsertShinyDaysHook();     // ShinyDays
 bool InsertElfHook();           // elf: Silky.exe
 bool InsertScenarioPlayerHook();// sol-fa-soft: *.iar && *.sec5
 bool InsertSiglusHook();        // SiglusEngine: SiglusEngine.exe

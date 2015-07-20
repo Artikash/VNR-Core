@@ -1341,7 +1341,7 @@ bool InsertKiriKiriZHook2()
   };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:KiriKiriZ2: pattern not found");
     return false;
@@ -1809,7 +1809,7 @@ bool InsertBGI2Hook()
 
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(reladdr);
+  //GROWL_DWORD(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:BGI2: pattern not found");
     return false;
@@ -1838,7 +1838,7 @@ bool InsertBGI2Hook()
   hp.split = 4 * 8; // pseudo arg8
   //hp.split = -0x18;
 
-  //ITH_GROWL_DWORD2(hp.address, module_base_);
+  //GROWL_DWORD2(hp.address, module_base_);
 
   ConsoleOutput("vnreng: INSERT BGI2");
   NewHook(hp, "BGI2");
@@ -1926,7 +1926,7 @@ bool InsertBGI3Hook()
   hp.split = -0x8;
   hp.address = addr;
 
-  //ITH_GROWL_DWORD2(hp.address, module_base_);
+  //GROWL_DWORD2(hp.address, module_base_);
 
   ConsoleOutput("vnreng: INSERT BGI3");
   NewHook(hp, "BGI3");
@@ -2020,7 +2020,7 @@ static bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         hp.split = pusha_esp_off - 4; // -0x18
         hp.length_offset = 1;
         hp.type = BIG_ENDIAN|USING_SPLIT;
-        //ITH_GROWL_DWORD(hp.address);
+        //GROWL_DWORD(hp.address);
         NewHook(hp, "RealLive");
         //RegisterEngineType(ENGINE_REALLIVE);
         ConsoleOutput("vnreng:RealLive: disable GDI hooks");
@@ -2481,7 +2481,7 @@ bool InsertSiglus4Hook()
   hp.text_fun = SpecialHookSiglus4;
   hp.filter_fun = Siglus4Filter; // remove NLI from the game
 
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
 
   ConsoleOutput("vnreng: INSERT Siglus4");
   NewHook(hp, "SiglusEngine4");
@@ -4314,7 +4314,7 @@ bool InsertRUGP2Hook()
   };
   enum { addr_offset = 0x1001e51d - 0x1001e515 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), low, high);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:rUGP2: pattern not found");
     return false;
@@ -4560,7 +4560,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCSTR 
   //  }
   //  addr += addr_offset;
   //} while(near_call != *(BYTE *)addr); // function call
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
 
   // i.e. 83c40c5f5eb0015bc20400cccc without leading 0xe8
   const BYTE bytes[] = {
@@ -4575,7 +4575,7 @@ static bool InsertSystem43OldHook(ULONG startAddress, ULONG stopAddress, LPCSTR 
   };
   enum { addr_offset = 0 };
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:System43: pattern not found");
     return false;
@@ -5307,7 +5307,7 @@ static bool InsertSystem43NewHook(ULONG startAddress, ULONG stopAddress, LPCSTR 
   };
   enum { addr_offset = 0 };
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:System43+: pattern not found");
     return false;
@@ -5470,7 +5470,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
         //hp.filter_fun = CharNewLineFilter; // \n\s* is used to remove new line
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
-        //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 0x4201d0 for DC3
+        //GROWL_DWORD(hp.address); // jichi 6/5/2014: 0x4201d0 for DC3
         NewHook(hp, "Circus");
         //RegisterEngineType(ENGINE_CIRCUS);
         return true;
@@ -5922,13 +5922,13 @@ static bool InsertYuris1Hook()
 {
   //IthBreak();
   DWORD entry = Util::FindCallAndEntryBoth((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec83);
-  //ITH_GROWL_DWORD(entry);
+  //GROWL_DWORD(entry);
   if (!entry) {
     ConsoleOutput("vnreng:YU-RIS: function entry does not exist");
     return false;
   }
   entry = Util::FindCallAndEntryRel(entry - 4, module_limit_ - module_base_, module_base_, 0xec83);
-  //ITH_GROWL_DWORD(entry);
+  //GROWL_DWORD(entry);
   if (!entry) {
     ConsoleOutput("vnreng:YU-RIS: function entry does not exist");
     return false;
@@ -5936,7 +5936,7 @@ static bool InsertYuris1Hook()
   entry = Util::FindCallOrJmpRel(entry - 4,module_limit_ - module_base_ - 0x10000, module_base_ + 0x10000, false);
   DWORD i,
         t;
-  //ITH_GROWL_DWORD(entry);
+  //GROWL_DWORD(entry);
   ITH_TRY { // jichi 12/27/2014
     for (i = entry - 4; i > entry - 0x100; i--)
       if (::IsBadReadPtr((LPCVOID)i, 4)) { // jichi 12/27/2014: might raise in new YU-RIS, 4 = sizeof(DWORD)
@@ -5961,14 +5961,14 @@ static bool InsertYuris1Hook()
     ConsoleOutput("vnreng:YU-RIS: pattern not exist");
     return false;
   }
-  //ITH_GROWL_DWORD2(i,t);
+  //GROWL_DWORD2(i,t);
   HookParam hp = {};
   hp.address = i + t;
   hp.offset = -0x24;
   hp.split = -0x8;
   hp.type = USING_STRING|USING_SPLIT;
   ConsoleOutput("vnreng: INSERT YU-RIS");
-  //ITH_GROWL_DWORD(hp.address);
+  //GROWL_DWORD(hp.address);
   NewHook(hp, "YU-RIS");
   //RegisterEngineType(ENGINE_WHIRLPOOL);
   return true;
@@ -6605,7 +6605,7 @@ bool InsertMalie2Hook()
   ConsoleOutput("vnreng: INSERT Malie2");
   NewHook(hp, "Malie2");
 
-  //ITH_GROWL_DWORD2(hp.address, reladdr);
+  //GROWL_DWORD2(hp.address, reladdr);
   //RegisterEngineType(ENGINE_MALIE);
   return true;
 }
@@ -6711,7 +6711,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
   *data = (DWORD)start;
   *len = max(0, stop - start) * 2;
   *split = FIXED_SPLIT_VALUE;
-  //ITH_GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
+  //GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
 }
 
 /**
@@ -6741,7 +6741,7 @@ bool InsertMalie3Hook()
   }
   HookParam hp = {};
   hp.address = addr + addr_offset;
-  //ITH_GROWL(hp.address);
+  //GROWL(hp.address);
   //hp.address = 0x5b51ed;
   //hp.address = 0x5b51f1;
   //hp.address = 0x5b51f2;
@@ -7229,8 +7229,8 @@ bool InsertCandyHook2()
 //  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
 //  ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
 //  reladdr = 0x104a48;
-//  ITH_GROWL_DWORD(module_base_);
-//  //ITH_GROWL_DWORD3(reladdr, module_base_, range);
+//  GROWL_DWORD(module_base_);
+//  //GROWL_DWORD3(reladdr, module_base_, range);
 //  if (!reladdr)
 //    return false;
 //
@@ -7384,7 +7384,7 @@ bool InsertApricoTHook()
           hp.text_fun = SpecialHookApricoT;
           hp.type = USING_STRING|NO_CONTEXT; // |USING_UNICODE string type not needed
           ConsoleOutput("vnreng: INSERT ApricoT");
-          //ITH_GROWL_DWORD3(hp.address, module_base_, module_limit_);
+          //GROWL_DWORD3(hp.address, module_base_, module_limit_);
           NewHook(hp, "ApRicoT");
           //RegisterEngineType(ENGINE_APRICOT);
           // jichi 2/14/2015: disable cached GDI functions
@@ -7748,7 +7748,7 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
       else
         hp.address = *(DWORD *)i; // jichi: long jump, this is what is happening in Aoi5
       //NewHook(hp, "SofthouseChara");
-      //ITH_GROWL_DWORD(hp.address); // BUNNYBLACK: 0x10024730, base 0x01d0000
+      //GROWL_DWORD(hp.address); // BUNNYBLACK: 0x10024730, base 0x01d0000
       if (hp.address) {
         ConsoleOutput("vnreng: INSERT SystemAoi");
         if (addr == ::GetGlyphOutlineW)
@@ -7934,7 +7934,7 @@ bool InsertOldWolfHook()
           hp.split = -0x18;
           hp.type = DATA_INDIRECT|USING_SPLIT;
           hp.length_offset = 1;
-          //ITH_GROWL_DWORD(hp.address); // jichi 6/5/2014: 淫乱勇者セフィのRPG = 0x50a400
+          //GROWL_DWORD(hp.address); // jichi 6/5/2014: 淫乱勇者セフィのRPG = 0x50a400
           ConsoleOutput("vnreng: INSERT WolfRPG");
           NewHook(hp, "WolfRPG");
           return true;
@@ -8600,7 +8600,7 @@ bool InsertTanukiHook()
   for (DWORD i = module_base_; i < module_limit_ - 4; i++)
     if (*(DWORD *)i == 0x8140)
       if (DWORD j = SafeFindEntryAligned(i, 0x400)) { // jichi 9/14/2013: might crash the game without admin priv
-        //ITH_GROWL_DWORD2(i, j);
+        //GROWL_DWORD2(i, j);
         HookParam hp = {};
         hp.address = j;
         hp.offset = 4;
@@ -8924,12 +8924,12 @@ static bool InsertGXP1Hook()
             hp.length_offset = 1;
             hp.offset = 4;
 
-            //ITH_GROWL_DWORD3(hp.address, module_base_, hp.address - module_base_);
+            //GROWL_DWORD3(hp.address, module_base_, hp.address - module_base_);
 
             //DWORD call = Util::FindCallAndEntryAbs(hp.address, module_limit_ - module_base_, module_base_, 0xec81); // zero
             //DWORD call = Util::FindCallAndEntryAbs(hp.address, module_limit_ - module_base_, module_base_, 0xec83); // zero
             //DWORD call = Util::FindCallAndEntryAbs(hp.address, module_limit_ - module_base_, module_base_, 0xec8b55); // zero
-            //ITH_GROWL_DWORD3(call, module_base_, call - module_base_);
+            //GROWL_DWORD3(call, module_base_, call - module_base_);
 
             ConsoleOutput("vnreng: INSERT GXP");
             NewHook(hp, "GXP");
@@ -9085,63 +9085,6 @@ bool InsertAnex86Hook()
   ConsoleOutput("vnreng:Anex86: failed");
   return false;
 }
-//static char* ShinyDaysQueueString[0x10];
-//static int ShinyDaysQueueStringLen[0x10];
-//static int ShinyDaysQueueIndex, ShinyDaysQueueNext;
-static void SpecialHookShinyDays(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
-{
-  static int ShinyDaysQueueStringLen;
-  LPWSTR fun_str;
-  char *text_str;
-  DWORD l = 0;
-  __asm
-  {
-    mov eax,esp_base
-    mov ecx,[eax+0x4C]
-    mov fun_str,ecx
-    mov esi,[eax+0x70]
-    mov edi,[eax+0x74]
-    add esi,0x3C
-    cmp esi,edi
-    jae _no_text
-    mov edx,[esi+0x10]
-    mov ecx,esi
-    cmp edx,8
-    cmovae ecx,[ecx]
-    add edx,edx
-    mov text_str,ecx
-    mov l,edx
-_no_text:
-  }
-  if (::memcmp(fun_str, L"[PlayVoice]",0x18) == 0) {
-    *data = (DWORD)text_buffer;
-    *len = ShinyDaysQueueStringLen;
-  }
-  else if (::memcmp(fun_str, L"[PrintText]",0x18) == 0) {
-    memcpy(text_buffer, text_str, l);
-    ShinyDaysQueueStringLen = l;
-  }
-}
-bool InsertShinyDaysHook()
-{
-  const BYTE bytes[] = {
-    0xff,0x83,0x70,0x03,0x00,0x00,0x33,0xf6,
-    0xc6,0x84,0x24,0x90,0x02,0x00,0x00,0x02
-  };
-  LPVOID addr = (LPVOID)0x42ad94;
-  if (::memcmp(addr, bytes, sizeof(bytes)) != 0) {
-    ConsoleOutput("vnreng:ShinyDays: only work for 1.00");
-    return false;
-  }
-
-  HookParam hp = {};
-  hp.address = 0x42ad9c;
-  hp.text_fun = SpecialHookShinyDays;
-  hp.type = USING_UNICODE|USING_STRING|NO_CONTEXT;
-  ConsoleOutput("vnreng: INSERT ShinyDays");
-  NewHook(hp, "ShinyDays 1.00");
-  return true;
-}
 
 /**
  *  jichi 9/5/2013: NEXTON games with aInfo.db
@@ -9199,7 +9142,7 @@ bool InsertNextonHook()
     //};
   } while(0xe8c38b57 != *(DWORD *)(addr - 8));
 
-  //ITH_GROWL_DWORD3(module_base_, addr, *(DWORD *)(addr-8));
+  //GROWL_DWORD3(module_base_, addr, *(DWORD *)(addr-8));
 
   HookParam hp = {};
   hp.address = addr;
@@ -9223,7 +9166,7 @@ bool InsertNextonHook()
   // Such as: /HA-C*0@4583DE for 「魔王のくせに生イキだっ！２」
   //hp.type = BIG_ENDIAN|DATA_INDIRECT; // 12
   //hp.type = USING_UNICODE;
-  //ITH_GROWL_DWORD3(addr, -hp.offset, hp.type);
+  //GROWL_DWORD3(addr, -hp.offset, hp.type);
 
   ConsoleOutput("vnreng: INSERT NEXTON");
   NewHook(hp, "NEXTON");
@@ -9469,12 +9412,12 @@ bool InsertNexton1Hook()
   };
   enum { addr_offset = 0 }; // distance to the beginning of the function
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  //GROWL_DWORD(addr); // supposed to be 0x4010e0
   if (!addr) {
     ConsoleOutput("vnreng:NEXTON1: pattern not found");
     return false;
   }
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
 
   HookParam hp = {};
   hp.address = addr + addr_offset;
@@ -9521,7 +9464,7 @@ bool InsertUnicornHook()
   hp.address = addr;
 
   //index = SearchPattern(module_base_, size,ins, sizeof(ins));
-  //ITH_GROWL_DWORD2(base, index);
+  //GROWL_DWORD2(base, index);
 
   ConsoleOutput("vnreng: INSERT Unicorn");
   NewHook(hp, "Unicorn");
@@ -9597,7 +9540,7 @@ bool InsertArtemisHook()
   //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD3(reladdr, module_base_, range);
+  //GROWL_DWORD3(reladdr, module_base_, range);
   if (!addr) {
     ConsoleOutput("vnreng:Artemis: pattern not exist");
     return false;
@@ -9611,7 +9554,7 @@ bool InsertArtemisHook()
   hp.type = NO_CONTEXT|DATA_INDIRECT|USING_SPLIT; // 0x418
 
   //hp.address = 0x650a2f;
-  //ITH_GROWL_DWORD(hp.address);
+  //GROWL_DWORD(hp.address);
 
   ConsoleOutput("vnreng: INSERT Artemis");
   NewHook(hp, "Artemis");
@@ -9762,7 +9705,7 @@ bool InsertTaskforce2Hook()
   enum { addr_offset = sizeof(bytes) - 2 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD3(reladdr, module_base_, range);
+  //GROWL_DWORD3(reladdr, module_base_, range);
   if (!addr) {
     ConsoleOutput("vnreng:Taskforce2: pattern not exist");
     //return false;
@@ -9773,7 +9716,7 @@ bool InsertTaskforce2Hook()
   hp.offset = -0xc;
   hp.type = BIG_ENDIAN|USING_STRING; // 0x41
 
-  //ITH_GROWL_DWORD(hp.address);
+  //GROWL_DWORD(hp.address);
   //hp.address = 0x1948e9 + module_base_;
 
   ConsoleOutput("vnreng: INSERT Taskforce2");
@@ -9919,7 +9862,7 @@ bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD ho
   //  0x85,0xd2,      // 01185317   . 85d2           test edx,edx
   //  0x0f,0x8f       // 01185319   . 0f8f 45020000  jg DotKares.01185564
   //};
-  //ITH_GROWL_DWORD(module_base_);
+  //GROWL_DWORD(module_base_);
   ULONG addr = module_base_; //- sizeof(pattern);
   do {
     //addr += sizeof(pattern); // ++ so that each time return diff address
@@ -9932,8 +9875,8 @@ bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD ho
     }
 
     addr += hook_off;
-    //ITH_GROWL_DWORD(addr);
-    //ITH_GROWL_DWORD(*(DWORD *)(addr-3));
+    //GROWL_DWORD(addr);
+    //GROWL_DWORD(*(DWORD *)(addr-3));
     //const BYTE hook_ins[] = {
     //  /*0x8b,*/0x74,0x24, 0x20,  //    mov esi,dword ptr ss:[esp+0x20]
     //  0xe8 //??,??,??,??, 01357af9  e8 7283fbff call DotKares.0130fe70 ; jichi: hook here
@@ -10032,7 +9975,7 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
     }
   } //while(0xe8202474 != *(DWORD *)(addr - 3));
 
-  //ITH_GROWL_DWORD(addr - module_base_); // = 0xb3578 for 剣が君
+  //GROWL_DWORD(addr - module_base_); // = 0xb3578 for 剣が君
 
   ConsoleOutput("vnreng: INSERT Rejet");
   // The same as type2
@@ -10241,13 +10184,13 @@ bool InsertAOSHook()
   enum { addr_offset = 0x00e3c2f0 - 0x00e3c33c }; // distance to the beginning of the function, which is 0x51 (push ecx)
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL(reladdr);
+  //GROWL(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:AOS: pattern not found");
     return false;
   }
   addr += addr_offset;
-  //ITH_GROWL(addr);
+  //GROWL(addr);
   enum { push_ecx = 0x51 }; // beginning of the function
   if (*(BYTE *)addr != push_ecx) {
     ConsoleOutput("vnreng:AOS: beginning of the function not found");
@@ -10570,7 +10513,7 @@ bool InsertMarineHeartHook()
   enum { addr_offset = 0x0040d160 - 0x0040d1c6 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(reladdr);
+  //GROWL_DWORD(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:MarineHeart: pattern not found");
     return false;
@@ -10578,7 +10521,7 @@ bool InsertMarineHeartHook()
 
   addr += addr_offset;
   //addr = 0x40d160;
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
   if (*(BYTE *)addr != push_ebp) {
     ConsoleOutput("vnreng:MarineHeart: pattern found but the function offset is invalid");
@@ -10715,7 +10658,7 @@ bool InsertElfHook()
   //enum { addr_offset = 0xc };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   //addr = 0x42f170; // 愛姉妹4 Trial
   //reladdr = 0x2f9b0; // 愛姉妹4
   //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
@@ -11466,7 +11409,7 @@ bool InsertEushullyHook()
     return false;
   }
   ULONG addr = MemDbg::findLastCallerAddressAfterInt3((DWORD)::GetTextExtentPoint32A, startAddress, stopAddress);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:Eushully: failed");
     return false;
@@ -11567,8 +11510,8 @@ static bool InsertOldPalHook() // this is used in case the new pattern does not 
   enum { addr_offset = sizeof(bytes) - 2 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(reladdr); // supposed to be 0x21650
-  //ITH_GROWL_DWORD(reladdr  + addr_offset);
+  //GROWL_DWORD(reladdr); // supposed to be 0x21650
+  //GROWL_DWORD(reladdr  + addr_offset);
   //reladdr = 0x26159; // 魔女こいにっき trial
   if (!addr) {
     ConsoleOutput("vnreng:AMUSE CRAFT: pattern not found");
@@ -12007,7 +11950,7 @@ bool InsertYukaSystem2Hook()
   //enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  //GROWL_DWORD(addr); // supposed to be 0x4010e0
   if (!addr) {
     ConsoleOutput("vnreng:YukaSystem2: pattern not found");
     return false;
@@ -12172,7 +12115,7 @@ bool Insert2RMHook()
   enum { addr_offset = 0x00454296 - 0x0045428d };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  //GROWL_DWORD(addr); // supposed to be 0x4010e0
   if (!addr) {
     ConsoleOutput("vnreng:2RM: pattern not found");
     return false;
@@ -12304,7 +12247,7 @@ bool InsertSideBHook()
   enum { addr_offset = 0x00f64410 - 0x00f64435 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  //GROWL_DWORD(addr); // supposed to be 0x4010e0
   if (!addr) {
     ConsoleOutput("vnreng:SideB: pattern not found");
     return false;
@@ -12315,7 +12258,7 @@ bool InsertSideBHook()
     ConsoleOutput("vnreng:SideB: pattern found but the function offset is invalid");
     return false;
   }
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
 
   HookParam hp = {};
   hp.address = addr;
@@ -12532,7 +12475,7 @@ bool InsertExpHook()
   enum { addr_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:EXP: pattern not found");
     return false;
@@ -12827,7 +12770,7 @@ bool Insert5pbHook1()
   enum { addr_offset = 0x0016d916 - 0x0016d90e };
 
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL_DWORD3(addr+addr_offset, module_base_,module_limit_);
+  //GROWL_DWORD3(addr+addr_offset, module_base_,module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:5pb1: pattern not found");
     return false;
@@ -12876,7 +12819,7 @@ bool Insert5pbHook2()
     0x74,0x11  // 001e9b19   74 11            je short .001e9b2c
   };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL_DWORD3(addr, module_base_,module_limit_);
+  //GROWL_DWORD3(addr, module_base_,module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:5pb2: pattern not found");
     return false;
@@ -13032,7 +12975,7 @@ bool Insert5pbHook3()
     0xe8             // 0025A140   E8 DB100100      CALL .0026B220
   };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL_DWORD3(addr, module_base_,module_limit_);
+  //GROWL_DWORD3(addr, module_base_,module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:5pb2: pattern not found");
     return false;
@@ -13237,7 +13180,7 @@ bool InsertMinkHook()
   //ULONG addr = 0x45164a;
   //ULONG addr = 0x451648;
   //ULONG addr = 0x4521a8;
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:Mink: pattern not found");
     return false;
@@ -13662,7 +13605,7 @@ bool InsertLeafHook()
   };
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   enum { addr_offset = 0x0045166f - 0x00451658 };
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr) {
     ConsoleOutput("vnreng:Leaf: pattern not found");
     return false;
@@ -13776,7 +13719,7 @@ bool InsertLunaSoftHook()
   };
   enum { addr_offset = 2 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL(addr);
+  //GROWL(addr);
   if (!addr) {
     ConsoleOutput("vnreng:LunaSoft: pattern not found");
     return false;
@@ -13918,7 +13861,7 @@ bool InsertFocasLensHook()
   };
   enum { addr_offset = 0x001fabbc - 0x001fabb9 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL(addr);
+  //GROWL(addr);
   if (!addr) {
     ConsoleOutput("vnreng:FocasLens: pattern not found");
     return false;
@@ -14092,7 +14035,7 @@ bool InsertSyuntadaHook()
   };
   enum { addr_offset = 0x0046944c - 0x0046943d };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL(addr);
+  //GROWL(addr);
   if (!addr) {
     ConsoleOutput("vnreng:Syuntada: pattern not found");
     return false;
@@ -14338,7 +14281,7 @@ bool InsertBootupLstrHook() // for character name
     ConsoleOutput("vnreng:BootupLstr: failed to find GetCharABCWidths");
     return false;
   }
-  //ITH_GROWL_DWORD2(addr, module_base_);
+  //GROWL_DWORD2(addr, module_base_);
   //enum { range = 0x200 }; // 0x012A2CCB  - 0x12A2CB0 = 0x1b
   addr = MemDbg::findCallAddress(widechar ? (ULONG)::lstrlenW : (ULONG)::lstrlenA,
       module_base_, module_limit_,
@@ -14364,6 +14307,133 @@ bool InsertBootupHook()
   bool ret = InsertBootupGDIHook();
   InsertBootupLstrHook();
   return ret;
+}
+
+/** Game-specific engines */
+
+//static char* ShinyDaysQueueString[0x10];
+//static int ShinyDaysQueueStringLen[0x10];
+//static int ShinyDaysQueueIndex, ShinyDaysQueueNext;
+static void SpecialGameHookShinyDays(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+{
+  static int ShinyDaysQueueStringLen;
+  LPWSTR fun_str;
+  char *text_str;
+  DWORD l = 0;
+  __asm
+  {
+    mov eax,esp_base
+    mov ecx,[eax+0x4C]
+    mov fun_str,ecx
+    mov esi,[eax+0x70]
+    mov edi,[eax+0x74]
+    add esi,0x3C
+    cmp esi,edi
+    jae _no_text
+    mov edx,[esi+0x10]
+    mov ecx,esi
+    cmp edx,8
+    cmovae ecx,[ecx]
+    add edx,edx
+    mov text_str,ecx
+    mov l,edx
+_no_text:
+  }
+  if (::memcmp(fun_str, L"[PlayVoice]",0x18) == 0) {
+    *data = (DWORD)text_buffer;
+    *len = ShinyDaysQueueStringLen;
+  }
+  else if (::memcmp(fun_str, L"[PrintText]",0x18) == 0) {
+    memcpy(text_buffer, text_str, l);
+    ShinyDaysQueueStringLen = l;
+  }
+}
+bool InsertShinyDaysGameHook()
+{
+  const BYTE bytes[] = {
+    0xff,0x83,0x70,0x03,0x00,0x00,0x33,0xf6,
+    0xc6,0x84,0x24,0x90,0x02,0x00,0x00,0x02
+  };
+  LPVOID addr = (LPVOID)0x42ad94;
+  if (::memcmp(addr, bytes, sizeof(bytes)) != 0) {
+    ConsoleOutput("vnreng:ShinyDays: only work for 1.00");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = 0x42ad9c;
+  hp.text_fun = SpecialGameHookShinyDays;
+  hp.type = USING_UNICODE|USING_STRING|NO_CONTEXT;
+  ConsoleOutput("vnreng: INSERT ShinyDays");
+  NewHook(hp, "ShinyDays 1.00");
+  return true;
+}
+
+/** 6/19/2015: Game engine specific for http://lova.jp
+ *
+ *  No idea why hooking to this place will crash the game.
+ *
+ *  Debugging method:
+ *  - Find text in UTF8/UTF16
+ *    There is one UTF8 matched, and 2 UTF16
+ *  - Use virtual machine to find where UTF8 is MODIFIED
+ *    It is modified in msvcrt
+ *  - Backtrack the stack to find where text is accessed in main module
+ *
+ *  Base addr = 05f0000
+ *
+ *  012FF246   C64418 08 00     MOV BYTE PTR DS:[EAX+EBX+0x8],0x0
+ *  012FF24B   C740 04 01000000 MOV DWORD PTR DS:[EAX+0x4],0x1
+ *  012FF252   8918             MOV DWORD PTR DS:[EAX],EBX
+ *  012FF254   8BF0             MOV ESI,EAX
+ *  012FF256   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  012FF259   53               PUSH EBX
+ *  012FF25A   50               PUSH EAX
+ *  012FF25B   8D4E 08          LEA ECX,DWORD PTR DS:[ESI+0x8]
+ *  012FF25E   51               PUSH ECX
+ *  012FF25F   E8 CEAE2A00      CALL .015AA132                           ; JMP to msvcr100.memcpy, copied here
+ *  012FF264   8B07             MOV EAX,DWORD PTR DS:[EDI]
+ *  012FF266   83E0 03          AND EAX,0x3
+ *  012FF269   0BF0             OR ESI,EAX
+ *  012FF26B   83C4 0C          ADD ESP,0xC
+ *  012FF26E   8937             MOV DWORD PTR DS:[EDI],ESI
+ *  012FF270   8B75 FC          MOV ESI,DWORD PTR SS:[EBP-0x4]
+ */
+bool InsertLovaGameHook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:LOVA: failed to get memory range");
+    return false;
+  }
+
+  const BYTE bytes[] = {
+    0xC6,0x44,0x18, 0x08, 0x00,           // 012FF246   C64418 08 00     MOV BYTE PTR DS:[EAX+EBX+0x8],0x0
+    0xC7,0x40, 0x04, 0x01,0x00,0x00,0x00, // 012FF24B   C740 04 01000000 MOV DWORD PTR DS:[EAX+0x4],0x1
+    0x89,0x18,                            // 012FF252   8918             MOV DWORD PTR DS:[EAX],EBX
+    0x8B,0xF0,                            // 012FF254   8BF0             MOV ESI,EAX
+    0x8B,0x45, 0x08,                      // 012FF256   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+    0x53,                                 // 012FF259   53               PUSH EBX
+    0x50,                                 // 012FF25A   50               PUSH EAX
+    0x8D,0x4E, 0x08,                      // 012FF25B   8D4E 08          LEA ECX,DWORD PTR DS:[ESI+0x8]
+    0x51,                                 // 012FF25E   51               PUSH ECX
+    0xE8 //CEAE2A00                       // 012FF25F   E8 CEAE2A00      CALL .015AA132                           ; JMP to msvcr100.memcpy, copied here
+  };
+  enum { addr_offset = sizeof(bytes) - 1 };
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:LOVA: could not find instruction pattern");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.address = addr + addr_offset;
+  //hp.text_fun = SpecialGameHookLova;
+  hp.offset = 4 * 2; // source in arg2
+  hp.type = USING_STRING|RELATIVE_SPLIT;
+  ConsoleOutput("vnreng: INSERT LOVA");
+  NewHook(hp, "LOVA");
+  return true;
 }
 
 /**
@@ -14450,7 +14520,7 @@ bool InsertAdobeAirHook()
   enum { addr_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
   enum { range = 0x600000 }; // larger than relative addresses
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), base, base + range);
-  //ITH_GROWL(reladdr);
+  //GROWL(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:Adobe AIR: pattern not found");
     return false;
@@ -15005,7 +15075,7 @@ bool InsertPPSSPPHLEHooks()
   }
 
   // 0x400000 - 0x139f000
-  //ITH_GROWL_DWORD2(startAddress, stopAddress);
+  //GROWL_DWORD2(startAddress, stopAddress);
 
   HookParam hp = {};
   hp.length_offset = 1; // determine string length at runtime
@@ -15258,7 +15328,7 @@ bool InsertAlchemistPSPHook()
   enum { addr_offset = 0x13407711 - 0x134076f4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
   else {
@@ -15357,7 +15427,7 @@ bool InsertAlchemist2PSPHook()
   enum { addr_offset = 0x13400f13 - 0x13400ef4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Alchemist2 PSP: pattern not found");
   else {
@@ -15601,7 +15671,7 @@ bool Insert5pbPSPHook()
   enum : DWORD { start = MemDbg::MappedMemoryStartAddress };
   DWORD stop = PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 8 ? MemDbg::MemoryStopAddress : 0x15000000;
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes), start, stop);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: 5pb PSP: pattern not found");
   else {
@@ -16598,7 +16668,7 @@ bool InsertCyberfrontPSPHook()
   enum { addr_offset = 0x0ed8cf31 - 0x0ed8cf14 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: CYBERFRONT PSP: pattern not found");
   else {
@@ -17452,7 +17522,7 @@ bool InsertBroccoliPSPHook()
     hp.address = addr + addr_offset;
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.text_fun = SpecialPSPHookBroccoli;
-    //ITH_GROWL_DWORD(hp.address);
+    //GROWL_DWORD(hp.address);
     ConsoleOutput("vnreng: Broccoli PSP: INSERT");
     NewHook(hp, "Broccoli PSP");
   }
@@ -17548,7 +17618,7 @@ bool InsertOtomatePSPHook()
   enum { addr_offset = 0x13c01001- 0x13c00fe4 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Otomate PSP: pattern not found");
   else {
@@ -17640,7 +17710,7 @@ bool InsertOtomatePPSSPPHook()
   enum { ds_offset = 0x006db4bf - 0x006db4b0 + 2 };
 
   DWORD addr = SafeMatchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Otomate PPSSPP: pattern not found");
   else {
@@ -18211,7 +18281,7 @@ bool InsertKadokawaNamePSPHook()
     hp.split = pusha_edx_off - 4; // use edx to split repetition
     hp.text_fun = SpecialPSPHook;
 
-    //ITH_GROWL_DWORD2(hp.address, hp.user_value);
+    //GROWL_DWORD2(hp.address, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa Name PSP: INSERT");
     NewHook(hp, "Kadokawa Name PSP");
   }
@@ -18332,7 +18402,7 @@ bool InsertFelistellaPSPHook()
   enum { addr_offset = 0x141be94f - 0x141be930 };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
-  //ITH_GROWL_DWORD(addr);
+  //GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: FELISTELLA PSP: pattern not found");
   else {
@@ -18406,7 +18476,7 @@ bool InsertKadokawaPSPHook()
     hp.length_offset = 1; // byte by byte
     hp.text_fun = SpecialPSPHook;
 
-    //ITH_GROWL_DWORD2(hp.address, hp.user_value);
+    //GROWL_DWORD2(hp.address, hp.user_value);
     ConsoleOutput("vnreng: Kadokawa PSP: INSERT");
     NewHook(hp, "Kadokawa PSP");
   }
@@ -18864,7 +18934,7 @@ bool InsertTypeMoonPS2Hook()
   if (!addr)
     ConsoleOutput("vnreng: TypeMoon PS2: pattern not found");
   else {
-    //ITH_GROWL_DWORD(addr + addr_offset);
+    //GROWL_DWORD(addr + addr_offset);
     HookParam hp = {};
     hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
@@ -18872,7 +18942,7 @@ bool InsertTypeMoonPS2Hook()
     //hp.offset = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.address);
+    //GROWL_DWORD(hp.address);
     NewHook(hp, "TypeMoon PS2");
   }
 
@@ -19112,7 +19182,7 @@ bool InsertMarvelousPS2Hook()
   if (!addr)
     ConsoleOutput("vnreng: Marvelous PS2: pattern not found");
   else {
-    //ITH_GROWL_DWORD(addr + addr_offset);
+    //GROWL_DWORD(addr + addr_offset);
     HookParam hp = {};
     hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
@@ -19120,7 +19190,7 @@ bool InsertMarvelousPS2Hook()
     //hp.offset = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.address);
+    //GROWL_DWORD(hp.address);
     NewHook(hp, "Marvelous PS2");
   }
 
@@ -19298,7 +19368,7 @@ bool InsertMarvelous2PS2Hook()
   if (!addr)
     ConsoleOutput("vnreng: Marvelous2 PS2: pattern not found");
   else {
-    //ITH_GROWL_DWORD(addr + addr_offset);
+    //GROWL_DWORD(addr + addr_offset);
     HookParam hp = {};
     hp.address = addr + addr_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
@@ -19306,7 +19376,7 @@ bool InsertMarvelous2PS2Hook()
     //hp.offset = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous2 PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.address);
+    //GROWL_DWORD(hp.address);
     NewHook(hp, "Marvelous2 PS2");
   }
 
@@ -19338,7 +19408,7 @@ bool InsertNamcoPS2Hook()
     hp.offset = pusha_ecx_off - 4; // ecx
     hp.split = hp.offset; // use ecx address to split
     ConsoleOutput("vnreng: Namco PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.address);
+    //GROWL_DWORD(hp.address);
     NewHook(hp, "Namco PS2");
   }
 
@@ -19572,7 +19642,7 @@ bool InsertShadePSPHook()
   }
 
   //DWORD peek = 0x13400e14;
-  //ITH_GROWL_DWORD(*(BYTE *)peek); // supposed to be 0x77 ja
+  //GROWL_DWORD(*(BYTE *)peek); // supposed to be 0x77 ja
   ConsoleOutput("vnreng: Shade PSP: leave");
   return addr;
 }
@@ -19781,7 +19851,7 @@ bool InsertMonoHook()
   enum { range = 0x50000 }; // larger than relative addresses = 0x3b849
   ULONG reladdr = SearchPattern(base, range, ins, sizeof(ins));
   //reladdr = 0x3b849;
-  ITH_GROWL(reladdr);
+  GROWL(reladdr);
   if (!reladdr) {
     ConsoleOutput("vnreng:Mono: pattern not found");
     return false;
