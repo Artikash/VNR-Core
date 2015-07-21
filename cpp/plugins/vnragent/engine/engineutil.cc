@@ -8,6 +8,7 @@
 #include "winhook/hookfun.h"
 #include "disasm/disasm.h"
 #include "winasm/winasmdef.h"
+#include "winkey/winkey.h"
 //#include "windbg/util.h"
 #include <QtCore/QDir>
 #include <QtCore/QCoreApplication>
@@ -49,6 +50,14 @@ bool Engine::isAddressWritable(const char *p, size_t count)
 
 bool Engine::isAddressWritable(const wchar_t *p, size_t count)
 { return p && count && !::IsBadWritePtr((LPVOID)p, sizeof(*p) * count); }
+
+// - Keyboards -
+
+bool Engine::isPauseKeyPressed()
+{
+  return WinKey::isKeyControlPressed()
+      || WinKey::isKeyShiftPressed() && !WinKey::isKeyReturnPressed();
+}
 
 // - Detours -
 

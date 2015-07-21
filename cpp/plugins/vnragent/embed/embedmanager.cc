@@ -6,12 +6,12 @@
 #include "embed/embedmemory.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
+#include "engine/engineutil.h"
 #include "driver/rpcclient.h"
 //#include "QxtCore/QxtJSON"
 //#include "qtjson/qtjson.h"
 #include "winevent/winevent.h"
 #include "winmutex/winmutex.h"
-#include "winkey/winkey.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
@@ -205,7 +205,7 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role, QString *languag
     int waitCount = qMax(1, d_->waitTime / WaitInterval);
 
     for (int count = 0;
-        count <= waitCount && m->isAttached() && !WinKey::isKeyControlPressed() && !WinKey::isKeyShiftPressed();
+        count <= waitCount && m->isAttached() && !Engine::isPauseKeyPressed();
         count++) { // repeat twice
       for (int i = 0; i < m->cellCount(); i++)
         if (m->dataRole(i) == role && m->dataHash(i) == hash) {

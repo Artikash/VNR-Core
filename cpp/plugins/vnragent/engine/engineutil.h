@@ -46,6 +46,9 @@ bool matchFiles(const QString &pattern);
 
 QStringList glob(const QString &nameFilter);
 
+// Keybord shortcuts
+bool isPauseKeyPressed();
+
 // Thread and process
 
 QString getProcessName();
