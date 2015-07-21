@@ -11558,8 +11558,8 @@ static bool InsertNewPalHook()
   NewHook(hp, "Pal");
   return true;
 }
-bool InsertPalHook()
-{ return InsertNewPalHook() || InsertOldPalHook(); }
+bool InsertPalHook() // use Old Pal first, which does not have ruby
+{ return InsertOldPalHook() || InsertNewPalHook(); }
 
 /** jichi 7/6/2014 NeXAS
  *  Sample game: BALDRSKYZERO EXTREME
