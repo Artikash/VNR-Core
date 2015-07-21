@@ -8,10 +8,11 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 //#include "hijack/hijackmanager.h"
-#include "util/textutil.h"
 #include "memdbg/memsearch.h"
+#include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
 #include "winasm/winasmdef.h"
+//#include "ntdll/ntdll.h"
 #include <qt_windows.h>
 #include <cstdint>
 
@@ -56,78 +57,118 @@ namespace Private {
     return false;
   }
 
-  typedef void *(* memcpy_fun_t)(void *, const void *, size_t);
-  memcpy_fun_t old_memcpy;
-
-  ulong returnAddress_;
-  void *new_memcpy(void *dst, const void *src, size_t size)
-  {
-    // See: http://stackoverflow.com/questions/1847053/how-to-get-address-of-base-stack-pointer
-    //volatile ulong frame = 0; // a portable way to get current stack pointer
-    auto stack = (ulong *)&dst - 1; // use arg1 to get esp
-    ulong retaddr = *stack;
-    if (retaddr == returnAddress_) {
-      auto text = static_cast<const char *>(src);
-      if (size > 0 && !Util::allAscii(text)) {
-        //auto stack = &frame;  // stack is the original esp
-        //for (int i = 0; ; i++)    // get the original esp
-        //  if (stack[-i] == retaddr) {
-        //    stack -= i;
-        //    break;
-        //  }
-
-        // 00B06F2D   8BCE             MOV ECX,ESI
-        // 00B06F2F   52               PUSH EDX
-        // 00B06F30   E8 5BFFFFFF      CALL .00B06E90  ; jichi: caller of the scenario thread
-        // 00B06F35   85C0             TEST EAX,EAX
-        // 00B06F37   75 33            JNZ SHORT .00B06F6C
-        auto role = Engine::OtherRole;
-        //auto stack = (ulong *)_AddressOfReturnAddress(); // pointed to esp just after calling function
-        auto callerReturnAddress1 = stack[9], // return address of the caller
-             callerReturnAddress2 = stack[14]; // return address of the caller's caller
-        if (Engine::isAddressReadable(callerReturnAddress1) &&
-            Engine::isAddressReadable(callerReturnAddress2) &&
-            *(uint8_t *)callerReturnAddress1 == s1_pop_esi &&   // use the instruction before call as split
-            *(DWORD *)callerReturnAddress2 == 0x000c7d80 &&     // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
-            !is_other_texts(text))
-          role = Engine::ScenarioRole;
-        auto split = callerReturnAddress2;
-        //role = Engine::OtherRole; // FIXME: split scenario role out
-        auto sig = Engine::hashThreadSignature(role, split);
-        QString oldText = QString::fromUtf8(text, size),
-                newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
-        if (!newText.isEmpty() && newText != oldText) {
-          QByteArray data = newText.toUtf8();
-          while (data.size() < size)
-            data.push_back(' '); // padding zero
-          return old_memcpy(dst, data.constData(), size); // text being truncated to size
-        }
-      }
-    }
-    return old_memcpy(dst, src, size);
-  }
-
-#if 0
+  /**
+   *  Stack when RtlEnterCriticalSection is invoked:
+   *
+   *  0070C694   01C87097  RETURN to .01C87097 from ntdll.RtlEnterCriticalSection   ; jichi: returnAddress_
+   *  0070C698   16FE00EC
+   *  0070C69C   16FE8960 ; jichi: text address
+   *  0070C6A0   16FF1BA4
+   *  0070C6A4  /0070C6C4
+   *  0070C6A8  |01C8F246  RETURN to .01C8F246  ; jichi: parentReturnAddress_
+   *  0070C6AC  |00000054 ; jichi: size + 12
+   *  0070C6B0  |00000000
+   *  0070C6B4  |16FE8960 ; jichi: text address
+   *  0070C6B8  |16FE8960 ; jichi: text address
+   *  0070C6BC  |16FF1BCC
+   *  0070C6C0  |16FED560
+   *  0070C6C4  ]0070C6D8  RETURN to 0070C6D8
+   *  0070C6C8  |01C8F2C2  RETURN to .01C8F2C2 from .01C8F1E0   ; jichi: RootParentReturnIndex
+   *  0070C6CC  |16FE8960 ; jichi: text address
+   *  0070C6D0  |00000048 ; jichi: size
+   *  0070C6D4  |16FF1B10
+   *  0070C6D8  ]0070CF98
+   *  0070C6DC  |01D3E74D  RETURN to .01D3E74D from .01C8F2A0
+   *  0070C6E0  |16FE8960 ; jichi: text address, not used
+   *  0070C6E4  |16FF1B10
+   *  0070C6E8  |16FF2930
+   *  0070C6EC  |16FF1BCC
+   *  0070C6F0  |85C3FEAD
+   *  0070C6F4  |01292066  RETURN to .01292066 from .0128A6C0
+   *  0070C6F8  |0070C72C
+   *  0070C6FC  |0070CBA8
+   *  0070C700  |00000000
+   *  0070C704  |1DECE100
+   *  0070C708  |00000001
+   *  0070C70C  |1EFDB880
+   *  0070C710  |01291E0E  RETURN to .01291E0E from .01F3A2B0
+   *  0070C714  |85C3FF41
+   *  0070C718  |0070CC3C
+   *  0070C71C  |1EFDB880
+   *  0070C720  |012920CE  RETURN to .012920CE from .01F3A116
+   *  0070C724  |012920CE  RETURN to .012920CE from .01F3A116
+   *  0070C728  |109D57C0
+   *  0070C72C  |02136798  .02136798
+   *  0070C730  |00000001
+   *
+   *  EAX 16FE00A0
+   *  ECX 16FE00A0
+   *  EDX 01C87080 .01C870
+   *  EBX 00000048  ; jichi: size
+   *  ESP 0070C694
+   *  EBP 0070C6A4
+   *  ESI 16FE00EC
+   *  EDI 16FE00A0
+   *  EIP 76FC77A0 ntdll.RtlEnterCriticalSection
+   */
+  ulong returnAddress_,
+        parentReturnAddress_;
   bool hookBefore(winhook::hook_stack *s)
   {
+    enum { ReturnIndex = 0, ParentReturnIndex = 5, RootReturnIndex = 13, RootParentReturnIndex = RootReturnIndex + 5 };
+
     static QByteArray data_;
-    auto text = (LPCSTR)s->stack[1]; // arg1 text
-    int size = s->stack[2]; // arg2 size
-    if (size <= 0 || !text)
+
+    if (s->stack[ReturnIndex] != returnAddress_)
       return true;
-    enum { role = Engine::ScenarioRole };
-    auto retaddr = s->stack[0];
-    auto sig = Engine::hashThreadSignature(role, retaddr);
-    QString oldText = QString::fromUtf8(text, size),
-            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
+    if (s->stack[ParentReturnIndex] != parentReturnAddress_)
+      return true;
+
+    if (*(BYTE *)s->stack[RootReturnIndex] != s1_pop_esi) // only keep the scenario thread
+      return true;
+
+    int size = s->stack[RootReturnIndex + 2];
+    if (size <= 0 || size != s->ebx || size + 12 != s->stack[ParentReturnIndex + 1])
+      return true;
+
+    ulong textAddress = s->stack[RootReturnIndex + 1];
+    if (textAddress != s->stack[ReturnIndex + 2])
+      return true;
+    auto text = (LPCSTR)textAddress;
+    if (!text || *text == '<') // skip leading HTML tags
+      return true;
+
+    QString oldText = QString::fromUtf8(text, size);
+
+    auto split = s->stack[RootParentReturnIndex];
+    auto  role = Engine::OtherRole;
+    if (*(DWORD *)split == 0x000c7d80  // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
+        && (unsigned char)*text > 127
+        && !oldText.contains('>')
+        && !is_other_texts(text))
+      role = Engine::ScenarioRole;
+
+    auto sig = Engine::hashThreadSignature(role, split);
+    QString newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (newText.isEmpty() || newText == oldText)
       return true;
+    //return true;
     data_ = newText.toUtf8();
-    s->stack[1] = (ulong)data_.constData(); // arg1 text
-    s->stack[2] = data_.size(); // arg2 size
+
+    //if (data_.size() > size)
+    //  data_ = data_.left(size); // truncate text
+
+    size = data_.size();
+    text = data_.constData();
+
+    s->stack[ParentReturnIndex + 1] = size + 12;
+    s->ebx = s->stack[RootReturnIndex + 2] = size;
+
+    for (int i = 1; i < RootReturnIndex + 2; i++)
+      if (textAddress == s->stack[i])
+        s->stack[i] = (ulong)text;
     return true;
   }
-#endif // 0
 } // namespace Private
 
 /** 7/19/2015: Game engine specific for http://lova.jp
@@ -327,34 +368,85 @@ namespace Private {
  *  017DE769   8B9E 94000000    MOV EBX,DWORD PTR DS:[ESI+0x94]
  *  017DE76F   8B8E 90000000    MOV ECX,DWORD PTR DS:[ESI+0x90]
  *  017DE775   83E3 FC          AND EBX,0xFFFFFFFC
+ *
+ *  This is the function being called that is responsible to allocate new memory
+ *  00B3707C   CC               INT3
+ *  00B3707D   CC               INT3
+ *  00B3707E   CC               INT3
+ *  00B3707F   CC               INT3
+ *  00B37080   55               PUSH EBP
+ *  00B37081   8BEC             MOV EBP,ESP
+ *  00B37083   57               PUSH EDI
+ *  00B37084   8BF9             MOV EDI,ECX
+ *  00B37086   807F 64 00       CMP BYTE PTR DS:[EDI+0x64],0x0
+ *  00B3708A   74 28            JE SHORT .00B370B4
+ *  00B3708C   56               PUSH ESI
+ *  00B3708D   8D77 4C          LEA ESI,DWORD PTR DS:[EDI+0x4C]
+ *  00B37090   56               PUSH ESI
+ *  00B37091   FF15 7C650C00    CALL DWORD PTR DS:[0xC657C]              ; ntdll.RtlEnterCriticalSection
+ *  00B37097   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  00B3709A   8B4F 68          MOV ECX,DWORD PTR DS:[EDI+0x68]
+ *  00B3709D   50               PUSH EAX
+ *  00B3709E   E8 4DFE0200      CALL .00B66EF0
+ *  00B370A3   56               PUSH ESI
+ *  00B370A4   8BF8             MOV EDI,EAX
+ *  00B370A6   FF15 84650C00    CALL DWORD PTR DS:[0xC6584]              ; ntdll.RtlLeaveCriticalSection
+ *  00B370AC   5E               POP ESI
+ *  00B370AD   8BC7             MOV EAX,EDI
+ *  00B370AF   5F               POP EDI
+ *  00B370B0   5D               POP EBP
+ *  00B370B1   C2 0800          RETN 0x8
+ *  00B370B4   8B4D 08          MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  00B370B7   51               PUSH ECX
+ *  00B370B8   8B4F 68          MOV ECX,DWORD PTR DS:[EDI+0x68]
+ *  00B370BB   E8 30FE0200      CALL .00B66EF0
+ *  00B370C0   5F               POP EDI
+ *  00B370C1   5D               POP EBP
+ *  00B370C2   C2 0800          RETN 0x8
+ *  00B370C5   CC               INT3
+ *  00B370C6   CC               INT3
+ *  00B370C7   CC               INT3
  */
 bool attach(ulong startAddress, ulong stopAddress) // attach scenario
 {
-  const uint8_t bytes[] = {
-    0xC6,0x44,0x18, 0x08, 0x00,           // 012FF246   C64418 08 00     MOV BYTE PTR DS:[EAX+EBX+0x8],0x0
-    0xC7,0x40, 0x04, 0x01,0x00,0x00,0x00, // 012FF24B   C740 04 01000000 MOV DWORD PTR DS:[EAX+0x4],0x1
-    0x89,0x18,                            // 012FF252   8918             MOV DWORD PTR DS:[EAX],EBX
-    0x8B,0xF0,                            // 012FF254   8BF0             MOV ESI,EAX
-    0x8B,0x45, 0x08,                      // 012FF256   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
-    0x53,                                 // 012FF259   53               PUSH EBX
-    0x50,                                 // 012FF25A   50               PUSH EAX
-    0x8D,0x4E, 0x08,                      // 012FF25B   8D4E 08          LEA ECX,DWORD PTR DS:[ESI+0x8]
-    0x51,                                 // 012FF25E   51               PUSH ECX
-    0xE8 //CEAE2A00                       // 012FF25F   E8 CEAE2A00      CALL .015AA132                           ; JMP to msvcr100.memcpy, copied here
-  };
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  if (!addr)
-    return false;
-  Private::returnAddress_ = addr + sizeof(bytes) + 4;
-  //addr = MemDbg::findEnclosingAlignedFunction(addr);
-  //if (!addr)
-  //  return false;
-  //  msvcr100
-  addr = Engine::getModuleFunction("msvcr100.dll", "memcpy");
-  //NtInspect::getModuleExportFunctionA("msvcr100.dll", "memcpy");
-  if (!addr)
-    return false;
-  return Private::old_memcpy = (Private::memcpy_fun_t)winhook::replace_fun(addr, (ulong)Private::new_memcpy);
+  {
+    const uint8_t bytes[] = {
+      0xEB, 0x1F,       // 01D9F235   EB 1F            JMP SHORT .01D9F256
+      0x8B,0x10,        // 01D9F237   8B10             MOV EDX,DWORD PTR DS:[EAX]
+      0x8B,0x52, 0x28,  // 01D9F239   8B52 28          MOV EDX,DWORD PTR DS:[EDX+0x28]
+      0x6A, 0x00,       // 01D9F23C   6A 00            PUSH 0x0
+      0x8D,0x4B, 0x0C,  // 01D9F23E   8D4B 0C          LEA ECX,DWORD PTR DS:[EBX+0xC]
+      0x51,             // 01D9F241   51               PUSH ECX
+      0x8B,0xC8,        // 01D9F242   8BC8             MOV ECX,EAX
+      0xFF,0xD2         // 01D9F244   FFD2             CALL EDX
+    };
+    ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+    if (!addr)
+      return false;
+    Private::parentReturnAddress_ = addr + sizeof(bytes);
+  }
+
+  {
+    const uint8_t bytes[] = {
+      0x55,                  // 00B37080   55               PUSH EBP
+      0x8B,0xEC,             // 00B37081   8BEC             MOV EBP,ESP
+      0x57,                  // 00B37083   57               PUSH EDI
+      0x8B,0xF9,             // 00B37084   8BF9             MOV EDI,ECX
+      0x80,0x7F, 0x64, 0x00, // 00B37086   807F 64 00       CMP BYTE PTR DS:[EDI+0x64],0x0
+      0x74, 0x28,            // 00B3708A   74 28            JE SHORT .00B370B4
+      0x56,                  // 00B3708C   56               PUSH ESI
+      0x8D,0x77, 0x4C,       // 00B3708D   8D77 4C          LEA ESI,DWORD PTR DS:[EDI+0x4C]
+      0x56,                  // 00B37090   56               PUSH ESI
+      0xFF,0x15 //7C650C00   // 00B37091   FF15 7C650C00    CALL DWORD PTR DS:[0xC657C]              ; ntdll.RtlEnterCriticalSection
+    };
+    ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+    if (!addr)
+      return false;
+    Private::returnAddress_ = addr + sizeof(bytes) + 4;
+  }
+  //ulong fun = (ulong)::RtlEnterCriticalSection;
+  ulong fun = Engine::getModuleFunction("ntdll.dll", "RtlEnterCriticalSection"); // resolve function addr at runtime
+  return fun && winhook::hook_before(fun, Private::hookBefore);
 }
 
 } // namespace ScenarioHook
@@ -375,3 +467,115 @@ bool LovaEngine::attach()
 }
 
 // EOF
+
+#if 0
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+#endif //0
+#if 0
+  addr = Engine::getModuleFunction("msvcr100.dll", "memcpy");
+  //NtInspect::getModuleExportFunctionA("msvcr100.dll", "memcpy");
+  if (!addr)
+    return false;
+  return Private::old_memcpy = (Private::memcpy_fun_t)winhook::replace_fun(addr, (ulong)Private::new_memcpy);
+#endif //0
+
+#if 0
+  {
+    const uint8_t bytes[] = {
+      0xC6,0x44,0x18, 0x08, 0x00,           // 012FF246   C64418 08 00     MOV BYTE PTR DS:[EAX+EBX+0x8],0x0
+      0xC7,0x40, 0x04, 0x01,0x00,0x00,0x00, // 012FF24B   C740 04 01000000 MOV DWORD PTR DS:[EAX+0x4],0x1
+      0x89,0x18,                            // 012FF252   8918             MOV DWORD PTR DS:[EAX],EBX
+      0x8B,0xF0,                            // 012FF254   8BF0             MOV ESI,EAX
+      0x8B,0x45, 0x08,                      // 012FF256   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+      0x53,                                 // 012FF259   53               PUSH EBX
+      0x50,                                 // 012FF25A   50               PUSH EAX
+      0x8D,0x4E, 0x08,                      // 012FF25B   8D4E 08          LEA ECX,DWORD PTR DS:[ESI+0x8]
+      0x51,                                 // 012FF25E   51               PUSH ECX
+      0xE8 //CEAE2A00                       // 012FF25F   E8 CEAE2A00      CALL .015AA132                           ; JMP to msvcr100.memcpy, copied here
+    };
+    ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+    if (!addr)
+      return false;
+    Private::returnAddress_ = addr + sizeof(bytes) + 4;
+  }
+#endif 0
+
+#if 0
+  typedef void *(* memcpy_fun_t)(void *, const void *, size_t);
+  memcpy_fun_t old_memcpy;
+
+  ulong returnAddress_;
+  void *new_memcpy(void *dst, const void *src, size_t size)
+  {
+    // See: http://stackoverflow.com/questions/1847053/how-to-get-address-of-base-stack-pointer
+    //volatile ulong frame = 0; // a portable way to get current stack pointer
+    auto stack = (ulong *)&dst - 1; // use arg1 to get esp
+    ulong retaddr = *stack;
+    if (retaddr == returnAddress_) {
+      auto text = static_cast<const char *>(src);
+      if (size > 0 && !Util::allAscii(text)) {
+        //auto stack = &frame;  // stack is the original esp
+        //for (int i = 0; ; i++)    // get the original esp
+        //  if (stack[-i] == retaddr) {
+        //    stack -= i;
+        //    break;
+        //  }
+
+        // 00B06F2D   8BCE             MOV ECX,ESI
+        // 00B06F2F   52               PUSH EDX
+        // 00B06F30   E8 5BFFFFFF      CALL .00B06E90  ; jichi: caller of the scenario thread
+        // 00B06F35   85C0             TEST EAX,EAX
+        // 00B06F37   75 33            JNZ SHORT .00B06F6C
+        auto role = Engine::OtherRole;
+        //auto stack = (ulong *)_AddressOfReturnAddress(); // pointed to esp just after calling function
+        auto callerReturnAddress1 = stack[9], // return address of the caller
+             callerReturnAddress2 = stack[14]; // return address of the caller's caller
+        if (Engine::isAddressReadable(callerReturnAddress1) &&
+            Engine::isAddressReadable(callerReturnAddress2) &&
+            *(uint8_t *)callerReturnAddress1 == s1_pop_esi &&   // use the instruction before call as split
+            *(DWORD *)callerReturnAddress2 == 0x000c7d80 &&     // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
+            !is_other_texts(text))
+          role = Engine::ScenarioRole;
+        auto split = callerReturnAddress2;
+        //role = Engine::OtherRole; // FIXME: split scenario role out
+        auto sig = Engine::hashThreadSignature(role, split);
+        QString oldText = QString::fromUtf8(text, size),
+                newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
+        if (!newText.isEmpty() && newText != oldText) {
+          QByteArray data = newText.toUtf8();
+          while (data.size() < size)
+            data.push_back(' '); // padding zero
+          return old_memcpy(dst, data.constData(), size); // text being truncated to size
+        }
+      }
+    }
+    return old_memcpy(dst, src, size);
+  }
+#endif 0
+
+#if 0
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    return true;
+    static QByteArray data_;
+    auto text = (LPCSTR)s->stack[1]; // arg1 text
+    int size = s->stack[2]; // arg2 size
+    if (size <= 0 || !text)
+      return true;
+    enum { role = Engine::ScenarioRole };
+    auto retaddr = s->stack[0];
+    auto sig = Engine::hashThreadSignature(role, retaddr);
+    QString oldText = QString::fromUtf8(text, size),
+            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
+    if (newText.isEmpty() || newText == oldText)
+      return true;
+    data_ = newText.toUtf8();
+    s->stack[1] = (ulong)data_.constData(); // arg1 text
+    s->stack[2] = data_.size(); // arg2 size
+    return true;
+  }
+#endif // 0
+

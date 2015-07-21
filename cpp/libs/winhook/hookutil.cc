@@ -35,28 +35,41 @@ void *memset_(void *ptr, int value, size_t num)
 
 bool csmemcpy(void *dst, const void *src, size_t size)
 {
+  //return memcpy_(dst, src, size);
+
   DWORD oldProtect;
-  //DWORD pid = ::GetCurrentProcessId();
-  //HANDLE hProc = ::OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, false, pid);
-  //if (!hProc)
-  //  return false;
-  //if (!::VirtualProtectEx(hProc, dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
   if (!::VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
     return false;
+  //HANDLE hProc = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, FALSE, ::GetCurrentProcessId());
+  //VirtualProtectEx(hProc, dst, size, PAGE_EXECUTE_READWRITE, &oldProtect);
+
   memcpy_(dst, src, size);
+
   DWORD newProtect;
   ::VirtualProtect(dst, size, oldProtect, &newProtect); // the error code is not checked for this function
+  //hProc = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, FALSE, ::GetCurrentProcessId());
+  //VirtualProtectEx(hProc, dst, size, oldProtect, &newProtect);
+
   return true;
 }
 
 bool csmemset(void *dst, byte value, size_t size)
 {
+  //return memset_(dst, value, size);
+
   DWORD oldProtect;
   if (!::VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtect))
     return false;
+  //HANDLE hProc = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, FALSE, ::GetCurrentProcessId());
+  //VirtualProtectEx(hProc, dst, size, PAGE_EXECUTE_READWRITE, &oldProtect);
+
   memset_(dst, value, size);
+
   DWORD newProtect;
   ::VirtualProtect(dst, size, oldProtect, &newProtect); // the error code is not checked for this function
+  //hProc = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_READ|PROCESS_VM_WRITE, FALSE, ::GetCurrentProcessId());
+  //VirtualProtectEx(hProc, dst, size, oldProtect, &newProtect);
+
   return true;
 }
 

@@ -33,7 +33,7 @@ include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/winsinglemutex/winsinglemutex.pri)
 
-DEFINES += WINHOOK_NO_LIBC # needed to hijack memcpy in nova.cc
+#DEFINES += WINHOOK_NO_LIBC # needed to hijack memcpy in nova.cc
 
 #include($$LIBDIR/vnragent/vnragent.pri)
 
