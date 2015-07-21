@@ -15,7 +15,11 @@ public:
     name = "EmbedLova";
     encoding = Utf8Encoding;
     matchFiles << "awesomium_process.exe" << "UE3ShaderCompileWorker.exe";
-    newLineString = nullptr; // <br/> does not work
+
+    //newLineString = "<br>"; // <br> is only for scenario
+    newLineString = nullptr; // <br> does not work for other texts
+    textSeperators << "<br>"; // mark <br> as text seperator instead
+
     attachFunction = &Self::attach;
   }
 };

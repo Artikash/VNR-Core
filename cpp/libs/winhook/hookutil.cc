@@ -29,7 +29,7 @@ void *memset_(void *ptr, int value, size_t num)
     p[i] = value;
   return ptr;
 #else
-  return ::memset(dst, value, num);
+  return ::memset(ptr, value, num);
 #endif // WINHOOK_NO_LIBC
 }
 
