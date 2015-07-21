@@ -144,8 +144,8 @@ namespace Private {
     auto  role = Engine::OtherRole;
     if (*(DWORD *)split == 0x000c7d80  // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
         && (unsigned char)*text > 127
-        && !oldText.contains('>')
-        && !is_other_texts(text))
+        && !is_other_texts(text)
+        && !QString(oldText).remove("<br>").contains('>'))
       role = Engine::ScenarioRole;
 
     auto sig = Engine::hashThreadSignature(role, split);
