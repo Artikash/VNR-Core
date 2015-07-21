@@ -609,4 +609,26 @@ QString PalEngine::textFilter(const QString &text, int role)
   return ret;
 }
 
+/**
+ *  Example: <rここ>空港</r>
+ *  Exactly the same as BGI.
+ *  http://sakuradite.com/topic/981
+ */
+QString PalEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "<r%2>%1</r>";
+  return fmt.arg(rb, rt);
+}
+
+// Remove furigana in scenario thread.
+QString PalEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains("</r>"))
+    return text;
+  static QRegExp rx("<r.+>(.+)</r>");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
+}
+
 // EOF

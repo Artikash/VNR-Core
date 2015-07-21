@@ -760,5 +760,4 @@ QString BGIEngine::rubyRemove(const QString &text)
   return QString(text).replace(rx, "\\1");
 }
 
-
 // EOF
