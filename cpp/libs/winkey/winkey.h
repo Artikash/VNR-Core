@@ -18,6 +18,7 @@ WINKEY_BEGIN_NAMESPACE
 inline bool isKeyPressed(int vk) { return ::GetKeyState(vk) & 0xf0; }
 inline bool isKeyToggled(int vk) { return ::GetKeyState(vk) & 0x0f; }
 
+inline bool isKeyReturnPressed() { return isKeyPressed(VK_RETURN); }
 inline bool isKeyControlPressed() { return isKeyPressed(VK_CONTROL); }
 inline bool isKeyShiftPressed() { return isKeyPressed(VK_SHIFT); }
 inline bool isKeyAltPressed() { return isKeyPressed(VK_MENU); }

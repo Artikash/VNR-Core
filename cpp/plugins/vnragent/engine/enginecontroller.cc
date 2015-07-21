@@ -17,7 +17,6 @@
 //#include "windbg/util.h"
 #include "qtrichruby/richrubyparser.h"
 #include "winhook/hookcode.h"
-#include "winkey/winkey.h"
 #include <qt_windows.h>
 //#include "mhook/mhook.h" // must after windows.h
 #include <QtCore/QTimer>
@@ -512,9 +511,7 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, int role, lon
   if (data.isEmpty())
     return data;
 
-  if (!d_->settings.enabled
-      || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed())
+  if (!d_->settings.enabled || Engine::isPauseKeyPressed())
     return data;
 
   if (!signature)
@@ -682,9 +679,7 @@ QString EngineController::dispatchTextW(const QString &text, int role, long sign
     return text;
 
   // Canceled
-  if (!d_->settings.enabled
-      || WinKey::isKeyControlPressed() //d_->settings.detectsControl &&
-      || WinKey::isKeyShiftPressed())
+  if (!d_->settings.enabled || Engine::isPauseKeyPressed())
     return text;
 
   if (!signature)

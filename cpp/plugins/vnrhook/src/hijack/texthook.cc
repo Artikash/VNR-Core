@@ -304,7 +304,7 @@ inline bool HookFilter(DWORD retn)
 DWORD TextHook::Send(DWORD dwDataBase, DWORD dwRetn)
 {
   // jich: 6/17/2015: do not send when ctrl/shift are controlled
-  if (WinKey::isKeyControlPressed() || WinKey::isKeyShiftPressed())
+  if (WinKey::isKeyControlPressed() || WinKey::isKeyShiftPressed() && !WinKey::isKeyReturnPressed())
     return 0;
 
   DWORD ret = 0;
