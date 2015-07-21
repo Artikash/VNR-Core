@@ -26,7 +26,6 @@ include($$LIBDIR/winversion/winversion.pri)
 DEFINES += ITH_HAS_CRT ITH_HAS_SEH
 DEFINES += MEMDBG_NO_STL NTINSPECT_NO_STL # disabled as not used
 
-
 # jichi 11/24/2013: Disable manual heap
 DEFINES -= ITH_HAS_HEAP
 
@@ -35,7 +34,7 @@ DEFINES += _CRT_NON_CONFORMING_SWPRINTFS
 
 ## Libraries
 
-LIBS        += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
+#LIBS        += -L$$WDK7_HOME/lib/wxp/i386 -lntdll
 #LIBS        += $$WDK7_HOME/lib/crt/i386/msvcrt.lib   # Override msvcrt10
 
 LIBS    += -lkernel32 -luser32 -lgdi32 #-lgdiplus
