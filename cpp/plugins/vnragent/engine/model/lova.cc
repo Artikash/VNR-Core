@@ -141,7 +141,7 @@ namespace Private {
     QString oldText = QString::fromUtf8(text, size);
 
     auto split = s->stack[RootParentReturnIndex];
-    auto  role = Engine::OtherRole;
+    auto role = Engine::OtherRole;
     if (*(DWORD *)split == 0x000c7d80  // 017DE74D   807D 0C 00       CMP BYTE PTR SS:[EBP+0xC],0x0
         && (unsigned char)*text > 127
         && !is_other_texts(text)
