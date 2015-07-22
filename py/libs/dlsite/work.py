@@ -147,7 +147,7 @@ class WorkApi(object):
     #if t:
     #  return unescapehtml(t)
 
-  _rx_title = re.compile(r'\[.*')
+  _rx_title = re.compile(r' \[.*')
   def _parsetitle(self, h):
     """
     @param  h  unicode  html
@@ -367,6 +367,7 @@ if __name__ == '__main__':
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ006763.html'
   url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ079473.html' # for testing chara
   url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ143025' # Rondo DUO
+  url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ103041.html'
   q = api.query(url)
   #print q['description']
   #print q['review'].encode('utf8')
