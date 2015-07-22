@@ -14510,6 +14510,12 @@ bool InsertAdobeAirHook()
     return false;
   }
 
+  //ULONG startAddress, stopAddress;
+  //if (!NtInspect::getModuleMemoryRange(L"Adobe AIR.dll", &startAddress, &stopAddress)) {
+  //  ConsoleOutput("vnreng:Adobe AIR: module not found");
+  //  return false;
+  //}
+
   const BYTE bytes[] = {
     0x0f,0xb7,0x0a,  // 0f8f04b2  |> 0fb70a        /movzx ecx,word ptr ds:[edx]
     0x8b,0xd8,       // 0f8f04b5  |. 8bd8          |mov ebx,eax ; jichi: hook here

@@ -182,10 +182,12 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       //IthBreak();
       ::module_base = (DWORD)hModule;
 
-      if (!IthInitSystemService()) {
-        GROWL_WARN(L"Initialization failed.\nAre you running game on a network drive?");
-        return FALSE;
-      }
+      //if (!IthInitSystemService()) {
+      //  GROWL_WARN(L"Initialization failed.\nAre you running game on a network drive?");
+      //  return FALSE;
+      //}
+      // No longer checking if SystemService fails, which could happen on non-Japanese OS
+      IthInitSystemService();
 
       swprintf(hm_section, ITH_SECTION_ L"%d", current_process_id);
 
