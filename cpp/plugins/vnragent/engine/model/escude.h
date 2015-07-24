@@ -16,6 +16,7 @@ public:
   {
     name = "EmbedEscude";
     enableDynamicEncoding = true;
+    enableDynamicFont = true;
     newLineString = "<r>";
     matchFiles << "configure.cfg" << "configure.exe" << "gfx.bin";
     attachFunction = &Self::attach;
