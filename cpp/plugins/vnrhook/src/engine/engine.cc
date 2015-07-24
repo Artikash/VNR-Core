@@ -12486,9 +12486,9 @@ bool InsertExpHook()
   hp.type = NO_CONTEXT|USING_STRING; // NO_CONTEXT to get rid of floating address
   hp.text_fun = SpecialHookExp;
   ConsoleOutput("vnreng: INSERT EXP");
-  NewHook(hp, "EXP");
+  NewHook(hp, "EXP"); // FIXME: text displayed line by line
 
-  ConsoleOutput("vnreng:EXP: disable GDI hooks");
+  ConsoleOutput("vnreng:EXP: disable GDI hooks"); // There are no GDI functions hooked though
   DisableGDIHooks();
   return true;
 }
