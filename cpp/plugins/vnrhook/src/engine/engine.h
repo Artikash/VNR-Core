@@ -100,6 +100,7 @@ bool InsertCotophaHook();       // Cotopha: *.noa
 bool InsertDebonosuHook();      // Debonosu: bmp.bak and dsetup.dll
 bool InsertEaglsHook();         // E.A.G.L.S: EAGLES.dll
 bool InsertEMEHook();           // EmonEngine: emecfg.ecf
+bool InsertEscudeHook();        // Escude
 bool InsertEushullyHook();      // Eushully: AGERC.DLL
 bool InsertExpHook();           // EXP: http://www.exp-inc.jp
 bool InsertFocasLensHook();     // FocasLens: Dat/*.arc, http://www.fo-lens.net

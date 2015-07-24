@@ -231,6 +231,7 @@ simple:
   - DebonosuName
   - EAGLS
   - Elf
+  - Escude
   - Eushully # renamed
   - FELISTELLA PSP
   - GXP
@@ -482,6 +483,7 @@ char:
   - EAGLS
   - Elf
   - EmonEngine
+  - Escude
   - Eushully # renamed
   - EXP
   - FocasLens
@@ -694,6 +696,7 @@ focus:
   - EmbedWillPlus
   - EmbedWillPlusA
   - EmbedWillPlusW
+  - Escude
   - FocasLens
   - HorkEye
   - KAGParser
