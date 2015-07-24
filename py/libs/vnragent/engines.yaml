@@ -37,6 +37,13 @@
     - mes.arc
   #encoding: sjis
 
+- name: EmbedEscude # 7/23/2015
+  exist:
+    - configure.cfg
+    - configure.exe
+    - gfx.bin
+  #encoding: sjis
+
 - name: EmbedLeaf # 6/24/2015
   exist: bak.pak
   #encoding: sjis

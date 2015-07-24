@@ -14549,16 +14549,16 @@ bool InsertBootupHook()
  */
 namespace { // unnamed
 /**
- * Handle new lines and ruby.
+ *  Handle new lines and ruby.
  *
- * その日、彼の言葉に耳を傾ける者はいなかった。
- * ザールラント歴七九〇年　二ノ月二十日<r>グローセン州　ヘルフォルト区郊外
+ *  その日、彼の言葉に耳を傾ける者はいなかった。
+ *  ザールラント歴七九〇年　二ノ月二十日<r>グローセン州　ヘルフォルト区郊外
  *
- * 僅かな震動の後、<r><ruby text='まぶた'>瞼</ruby>の裏を焼く陽光に気付いた。
+ *  僅かな震動の後、<r><ruby text='まぶた'>瞼</ruby>の裏を焼く陽光に気付いた。
  *
- * 気怠く重い<ruby text='まぶた'>瞼</ruby>を開けば、<r>見覚えのある輪郭が瞳に映り込む。
+ *  気怠く重い<ruby text='まぶた'>瞼</ruby>を開けば、<r>見覚えのある輪郭が瞳に映り込む。
  *
- * その日、彼の言葉に耳を傾ける者はいなかった。――尊厳を捨てて媚びる。それが生きることか？――我々はいつ敗北したのだ？誰しも少年の声を聞かず、蔑み、そして冷笑していた。安寧の世がいつまでも続くと信じていたから。それでも、私は――。ザールラント歴七九〇年　二ノ月二十日<r>グローセン州　ヘルフォルト区郊外僅かな震動の後、<r><ruby text='まぶた'>瞼</ruby>の裏を焼く陽光に気付いた。気怠く重い<ruby text='まぶた'>瞼</ruby>を開けば、<r>見覚えのある輪郭が瞳に映り込む
+ *  その日、彼の言葉に耳を傾ける者はいなかった。――尊厳を捨てて媚びる。それが生きることか？――我々はいつ敗北したのだ？誰しも少年の声を聞かず、蔑み、そして冷笑していた。安寧の世がいつまでも続くと信じていたから。それでも、私は――。ザールラント歴七九〇年　二ノ月二十日<r>グローセン州　ヘルフォルト区郊外僅かな震動の後、<r><ruby text='まぶた'>瞼</ruby>の裏を焼く陽光に気付いた。気怠く重い<ruby text='まぶた'>瞼</ruby>を開けば、<r>見覚えのある輪郭が瞳に映り込む
  */
 bool EscudeFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
 {
@@ -14566,7 +14566,7 @@ bool EscudeFilter(LPVOID data, DWORD *size, HookParam *, BYTE)
   auto len = reinterpret_cast<size_t *>(size);
   StringCharReplacer(text, len, "<r>", 3, '\n');
 
-  if (cpp_strnstr(text, "ruby", *len)) {
+  if (cpp_strnstr(text, "<ruby", *len)) {
     StringFilter(text, len, "</ruby>", 7);
     StringFilterBetween(text, len, "<ruby", 5, "'>", 2);
   }

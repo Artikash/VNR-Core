@@ -68,6 +68,7 @@ embed:
   - Debonosu
   - DebonosuName
   - Elf
+  - Escude
   - QLiE
   - QLiE2
   - Retouch
@@ -431,6 +432,7 @@ char:
   - EmbedCMVS
   - EmbedDebonosu
   - EmbedElf
+  - EmbedEscude
   - EmbedLeaf
   - EmbedPal
   - EmbedQLiE
@@ -686,6 +688,7 @@ focus:
   - EmbedCircus
   - EmbedCMVS
   - EmbedDebonosu
+  - EmbedEscude
   - EmbedLeaf
   - EmbedLova
   - EmbedPal
