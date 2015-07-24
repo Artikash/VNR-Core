@@ -28,14 +28,14 @@ namespace Private {
    *  06AD3654  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    *  06AD3664  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    */
-  //LPCSTR ltrim(LPCSTR text)
-  //{
-  //  if (text && *text == '<')
-  //    for (auto p = text; (signed char)*p > 0; p++)
-  //      if (*p == '>')
-  //        return p + 1;
-  //  return text;
-  //}
+  LPCSTR ltrim(LPCSTR text)
+  {
+    if (*text == '<')
+      for (auto p = text; (signed char)*p > 0; p++)
+        if (*p == '>')
+          return p + 1;
+    return text;
+  }
 
   /**
    *  077CF7D5  2F 00 00 00 DD F7 7C 07 3D C1 B8 06 05 F9 7C 07  /...ﾝ=ﾁｸ
@@ -45,19 +45,23 @@ namespace Private {
    *  077CF815  00 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 00  ................
    *  077CF825  00 00 00 00 00 00 00 00 00 00 00 00 16 00 00 00  ...............
    */
+  struct HookArgument
+  {
+    ulong split,
+          unnown[7];
+    LPCSTR text; // arg1 + 0x20
+
+    bool isValid() const { return Engine::isAddressReadable(text) && *text; }
+  };
   bool hookBefore(winhook::hook_stack *s)
   {
-    DWORD arg1 = s->stack[1];
-    if (!Engine::isAddressReadable((LPCVOID)arg1)) // this is indispensable
+    auto arg = (HookArgument *)s->stack[1];
+    if (!Engine::isAddressReadable(arg) || !arg->isValid())
       return true;
-    LPCSTR text = (LPCSTR)*(DWORD *)(arg1 + 0x20);
-    if (!text || !Engine::isAddressReadable(text) || !*text) // this is indispensable
-      return true;
-
+    LPCSTR trimmedText = ltrim(arg->text);
     auto role = Engine::ScenarioRole;
-    auto split = *(DWORD *)arg1;
-    auto sig = Engine::hashThreadSignature(role, split);
-    EngineController::instance()->dispatchTextA(text, role, sig);
+    auto sig = Engine::hashThreadSignature(role, arg->split);
+    EngineController::instance()->dispatchTextA(trimmedText, role, sig);
     return true;
   }
 } // namespace Private
