@@ -496,8 +496,13 @@ bool DetermineEngineByProcessName()
   str[len - 2] = L'i';
   str[len - 1] = L'n';
   str[len] = 0;
-  if (IthCheckFile(str) || IthCheckFile(L"trial.bin")) { // jichi 7/8/2014: add trial.bin
-    InsertCaramelBoxHook();
+  if ((IthCheckFile(str) || IthCheckFile(L"trial.bin")) // jichi 7/8/2014: add trial.bin
+      && InsertCaramelBoxHook())
+    return true;
+
+  // jichi 7/23/2015  It also has gameexe.bin existed
+  if (IthCheckFile(L"configure.exe") && IthCheckFile(L"configure.cfg") && IthCheckFile(L"gfx.bin")) {
+    InsertEscudeHook();
     return true;
   }
 

@@ -138,6 +138,7 @@ HEADERS += \
   engine/model/cotopha.h \
   engine/model/debonosu.h \
   engine/model/elf.h \
+  engine/model/escude.h \
   engine/model/leaf.h \
   engine/model/pal.h \
   engine/model/qlie.h \
@@ -167,6 +168,7 @@ SOURCES += \
   engine/model/cotopha.cc \
   engine/model/debonosu.cc \
   engine/model/elf.cc \
+  engine/model/escude.cc \
   engine/model/leaf.cc \
   engine/model/pal.cc \
   engine/model/qlie.cc \

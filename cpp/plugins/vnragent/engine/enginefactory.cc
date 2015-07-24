@@ -14,6 +14,7 @@
 #include "engine/model/cotopha.h"
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
+#include "engine/model/escude.h"
 #include "engine/model/leaf.h"
 #include "engine/model/pal.h"
 #include "engine/model/qlie.h"
@@ -60,6 +61,7 @@ EngineController *EngineFactory::createEngine()
     , new QLiEEngine
     , new PalEngine
     , new LeafEngine
+    , new EscudeEngine
     , new ElfEngine
     , new DebonosuEngine
     , new CotophaEngine

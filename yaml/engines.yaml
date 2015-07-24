@@ -68,6 +68,7 @@ embed:
   - Debonosu
   - DebonosuName
   - Elf
+  - Escude
   - QLiE
   - QLiE2
   - Retouch
@@ -231,6 +232,7 @@ simple:
   - DebonosuName
   - EAGLS
   - Elf
+  - Escude
   - Eushully # renamed
   - FELISTELLA PSP
   - GXP
@@ -430,6 +432,7 @@ char:
   - EmbedCMVS
   - EmbedDebonosu
   - EmbedElf
+  - EmbedEscude
   - EmbedLeaf
   - EmbedPal
   - EmbedQLiE
@@ -482,6 +485,7 @@ char:
   - EAGLS
   - Elf
   - EmonEngine
+  - Escude
   - Eushully # renamed
   - EXP
   - FocasLens
@@ -684,6 +688,7 @@ focus:
   - EmbedCircus
   - EmbedCMVS
   - EmbedDebonosu
+  - EmbedEscude
   - EmbedLeaf
   - EmbedLova
   - EmbedPal
@@ -694,6 +699,7 @@ focus:
   - EmbedWillPlus
   - EmbedWillPlusA
   - EmbedWillPlusW
+  - Escude
   - FocasLens
   - HorkEye
   - KAGParser
@@ -724,6 +730,7 @@ focus:
   #- Cotopha
   #- Elf
   #- EmbedRGSS
+  #- EXP    # there is no way to display VNR in full screen
   #- LunaSoft
   #- Majiro
   #- Malie2
