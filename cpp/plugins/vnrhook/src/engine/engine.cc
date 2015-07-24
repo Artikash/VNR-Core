@@ -14583,10 +14583,10 @@ LPCSTR _escudeltrim(LPCSTR text)
 void SpecialHookEscude(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD arg1 = argof(1, esp_base);
-  if (::IsBadReadPtr((LPCVOID)arg1, 4)) // this is indispensable
+  if (!arg1 || (LONG)arg1 == -1 || ::IsBadWritePtr((LPVOID)arg1, 4)) // this is indispensable
     return;
   LPCSTR text = (LPCSTR)*(DWORD *)(arg1 + 0x20);
-  if (!text || ::IsBadReadPtr(text, 1) || !*text) // this is indispensable
+  if (!text || ::IsBadWritePtr((LPVOID)text, 1) || !*text) // this is indispensable
     return;
   text = _escudeltrim(text);
   if (!text)
@@ -14599,14 +14599,9 @@ void SpecialHookEscude(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *
 bool InsertEscudeHook()
 {
   const BYTE bytes[] = {
-    0x8b,0x08,          // 0042cb5c   8b08             mov ecx,dword ptr ds:[eax]
-    0x8b,0x49, 0x04,    // 0042cb5e   8b49 04          mov ecx,dword ptr ds:[ecx+0x4]
-    0xeb, 0x02,         // 0042cb61   eb 02            jmp short .0042cb65
-    0x33,0xc9,          // 0042cb63   33c9             xor ecx,ecx
-    0x89,0x0a,          // 0042cb65   890a             mov dword ptr ds:[edx],ecx
-    0x85,0xc0,          // 0042cb67   85c0             test eax,eax
-    0x74, 0x07,         // 0042cb69   74 07            je short .0042cb72
-    0x8b,0x08           // 0042cb6b   8b08             mov ecx,dword ptr ds:[eax]
+    0x76, 0x0a,             // 0042cb9c   76 0a            jbe short .0042cba8
+    0x49,                   // 0042cb9e   49               dec ecx
+    0x0f,0xaf,0x48, 0x0c    // 0042cb9f   0faf48 0c        imul ecx,dword ptr ds:[eax+0xc]
   };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //GROWL(addr);
