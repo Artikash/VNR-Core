@@ -108,8 +108,18 @@ void WindowDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
   updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE);
 }
 
-void WindowDriverPrivate::repaintWindow(HWND hWnd) { ::InvalidateRect(hWnd, nullptr, TRUE); }
-void WindowDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
+
+void WindowDriverPrivate::repaintWindow(HWND hWnd)
+{
+  // 7/26/2015: Avoid repainting outer-most window
+  // http://sakuradite.com/topic/981
+  // http://sakuradite.com/topic/994
+  if (::GetParent(hWnd)) // skip painting
+    ::InvalidateRect(hWnd, nullptr, TRUE);
+}
+
+void WindowDriverPrivate::repaintMenuBar(HWND hWnd)
+{ ::DrawMenuBar(hWnd); }
 
 bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
