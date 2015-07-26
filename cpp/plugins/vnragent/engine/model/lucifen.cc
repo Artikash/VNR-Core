@@ -123,6 +123,13 @@ namespace Private {
    *  014D7E89  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    *  014D7E99  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    */
+  template <typename strT>
+  strT ltrimScenarioText(strT p)
+  {
+    while (p[0] == 0 && p[1] == 0x5b && p[2] > 0)
+      p += p[2] + 2;
+    return p;
+  }
   QByteArray parseScenarioText(const char *p, const char *end)
   {
     int size = ::strlen(p);
@@ -181,10 +188,12 @@ namespace Private {
       //DOUT("warning: scenario end NOT FOUND");
 
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray oldData = parseScenarioText(text, scenarioEnd);
-    if (oldData.isEmpty())
+
+    text = ltrimScenarioText(text);
+    if (!*text)
       return;
-    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    QByteArray oldData = parseScenarioText(text, scenarioEnd),
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData.isEmpty() || newData == oldData)
       return;
 
