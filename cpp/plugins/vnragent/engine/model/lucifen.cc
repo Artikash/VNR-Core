@@ -23,8 +23,6 @@
 namespace { // unnamed
 namespace ScenarioHook {
 
-std::unordered_set<qint64> textHashes_;
-
 namespace Private {
 
   ulong scenarioOffset_,
@@ -196,8 +194,8 @@ namespace Private {
 
       if (role == Engine::ScenarioRole)
         *scenarioEndAddress = text + newData.size(); // FIXME: THis sometimes does not work
-      if (role == Engine::NameRole)
-        textHashes_.insert(Engine::hashByteArray(newData));
+      //if (role == Engine::NameRole)
+      //  textHashes_.insert(Engine::hashByteArray(newData));
     }
     return true;
   }
@@ -765,9 +763,11 @@ namespace Private {
 
   bool hookBefore(winhook::hook_stack *s)
   {
+    static std::unordered_set<qint64> hashes_;
+
     auto text = (LPSTR)s->stack[1]; // arg1 is text
     if (!text || ::strlen(text) <= 2
-        || ScenarioHook::textHashes_.find(Engine::hashCharArray(text)) != ScenarioHook::textHashes_.end())
+        || hashes_.find(Engine::hashCharArray(text)) != hashes_.end())
       return text;
 
     enum { role = Engine::OtherRole };
@@ -786,6 +786,7 @@ namespace Private {
    if (newData.size() < oldData.size())
      ::memset(text + newData.size(), 0, oldData.size() - newData.size());
     ::strcpy(text, newData.constData());
+    hashes_.insert(Engine::hashCharArray(text));
     return true;
   }
 
