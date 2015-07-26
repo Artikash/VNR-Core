@@ -181,9 +181,11 @@ namespace Private {
       //DOUT("warning: scenario end NOT FOUND");
 
     auto sig = Engine::hashThreadSignature(role, split);
-    QByteArray oldData = parseScenarioText(text, scenarioEnd),
-               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
-    if (newData == oldData)
+    QByteArray oldData = parseScenarioText(text, scenarioEnd);
+    if (oldData.isEmpty())
+      return;
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    if (newData.isEmpty() || newData == oldData)
       return;
 
     if (newData.contains('\n'))
