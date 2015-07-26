@@ -11,6 +11,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
+#include <unordered_set>
 //#include <boost/bind.hpp>
 
 enum { TEXT_BUFFER_SIZE = 256 };
@@ -108,14 +109,19 @@ void WindowDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
   updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE);
 }
 
-
 void WindowDriverPrivate::repaintWindow(HWND hWnd)
 {
+  static std::unordered_set<HWND> rootWindows_;
   // 7/26/2015: Avoid repainting outer-most window
   // http://sakuradite.com/topic/981
   // http://sakuradite.com/topic/994
-  if (::GetParent(hWnd)) // skip painting
-    ::InvalidateRect(hWnd, nullptr, TRUE);
+  if (!::GetParent(hWnd)) {
+    if (rootWindows_.find(hWnd) == rootWindows_.end())
+      rootWindows_.insert(hWnd);
+    else
+      return;
+  }
+  ::InvalidateRect(hWnd, nullptr, TRUE);
 }
 
 void WindowDriverPrivate::repaintMenuBar(HWND hWnd)
