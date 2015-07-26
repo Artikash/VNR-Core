@@ -23,6 +23,8 @@
 namespace { // unnamed
 namespace ScenarioHook {
 
+std::unordered_set<qint64> textHashes_;
+
 namespace Private {
 
   ulong scenarioOffset_,
@@ -121,7 +123,7 @@ namespace Private {
    *  014D7E89  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    *  014D7E99  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
    */
-  QByteArray parseText(const char *p, const char *end)
+  QByteArray parseScenarioText(const char *p, const char *end)
   {
     int size = ::strlen(p);
     if (end > p && end - p < size)
@@ -143,60 +145,67 @@ namespace Private {
     return ret;
   }
 
+  void dispatchNameText(char *text, ulong split)
+  {
+    enum { capacity = 0x10 }; // excluding '\0'
+    enum { role = Engine::NameRole };
+
+    if (!*text)
+      return;
+
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray oldData = text,
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    if (newData == oldData)
+      return;
+
+    int size = newData.size();
+    if (size > capacity)
+      size = capacity;
+    else if (size < oldData.size())
+      ::memset(text + size, 0, oldData.size() - size);
+
+    ::memcpy(text, newData.constData(), size);
+    text[size] = 0;
+    textHashes_.insert(Engine::hashCharArray(text));
+  }
+
+  void dispatchScenarioText(char *text, ulong split)
+  {
+    // text[0] could be \0
+    enum { role = Engine::ScenarioRole };
+    auto scenarioEndAddress = (LPSTR *)(text + 0x1000);
+    auto scenarioEnd = *scenarioEndAddress;
+    if (!Engine::isAddressReadable(scenarioEnd))
+      scenarioEnd = nullptr;
+      //DOUT("warning: scenario end NOT FOUND");
+
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray oldData = parseScenarioText(text, scenarioEnd),
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    if (newData == oldData)
+      return;
+
+    if (newData.contains('\n'))
+      newData = replaceNewLines(newData);
+
+    if (scenarioEnd > text && scenarioEnd - text > newData.size())
+      ::memset(text + newData.size(), 0, scenarioEnd - text - newData.size());
+    else if (oldData.size() > newData.size())
+      ::memset(text + newData.size(), 0, oldData.size() - newData.size());
+
+    //::strcpy(text, newData.constData());
+    ::memcpy(text, newData.constData(), newData.size() + 1);
+
+    *scenarioEndAddress = text + newData.size(); // FIXME: THis sometimes does not work
+  }
+
   bool hookBefore(winhook::hook_stack *s)
   {
-    enum { ScenarioCapacity = 0x1000, NameCapacity = 0x10 }; // excluding '\0'
-
     auto self = (LPSTR)s->ecx;
-
-    auto scenarioEndAddress = (LPSTR *)(self + scenarioOffset_ + ScenarioCapacity);
-    auto scenarioEnd = *scenarioEndAddress;
-    if (!Engine::isAddressReadable(scenarioEnd)) {
-      //DOUT("warning: scenario end NOT FOUND");
-      scenarioEnd = nullptr;
-    }
-
-    auto split = s->stack[0];
-    auto q = EngineController::instance();
-
-    int roles[2] = { Engine::ScenarioRole, Engine::NameRole },
-        offsets[2] = { scenarioOffset_, nameOffset_ },
-        capacities[2] = { ScenarioCapacity, NameCapacity };
-
-    for (int i = 0; i < 2; i++) {
-      auto text = self + offsets[i];
-      if (!*text)
-        continue;
-      auto role = roles[i];
-      auto sig = Engine::hashThreadSignature(role, split);
-      QByteArray oldData;
-      if (role == Engine::ScenarioRole)
-        oldData = parseText(text, scenarioEnd);
-      else
-        oldData = text;
-      QByteArray newData = q->dispatchTextA(oldData, role, sig);
-      if (newData == oldData)
-        continue;
-
-      if (role == Engine::ScenarioRole && newData.contains('\n'))
-        newData = replaceNewLines(newData);
-
-      if (newData.size() > capacities[i])
-        newData = newData.left(capacities[i]);
-
-      if (role == Engine::ScenarioRole && scenarioEnd > text && scenarioEnd - text > newData.size())
-        ::memset(text + newData.size(), 0, scenarioEnd - text - newData.size());
-      else if (newData.size() < oldData.size())
-        ::memset(text + newData.size(), 0, oldData.size() - newData.size());
-
-      //::strcpy(text, newData.constData());
-      ::memcpy(text, newData.constData(), newData.size() + 1);
-
-      if (role == Engine::ScenarioRole)
-        *scenarioEndAddress = text + newData.size(); // FIXME: THis sometimes does not work
-      //if (role == Engine::NameRole)
-      //  textHashes_.insert(Engine::hashByteArray(newData));
-    }
+    ulong retaddr = s->stack[0];
+    dispatchNameText(self + nameOffset_, retaddr);
+    dispatchScenarioText(self + scenarioOffset_, retaddr);
     return true;
   }
 
@@ -218,8 +227,6 @@ namespace Private {
  *  name = ecx + 0xadd1
  *  scenario = ecx + 0xae48
  *  scenario end = ecx + 0xbe48
- *
- *  FIXME: very big text cannot be translated
  *
  *  00441E3F   90               NOP
  *  00441E40   83EC 1C          SUB ESP,0x1C
@@ -763,11 +770,9 @@ namespace Private {
 
   bool hookBefore(winhook::hook_stack *s)
   {
-    static std::unordered_set<qint64> hashes_;
-
     auto text = (LPSTR)s->stack[1]; // arg1 is text
     if (!text || ::strlen(text) <= 2
-        || hashes_.find(Engine::hashCharArray(text)) != hashes_.end())
+        || ScenarioHook::textHashes_.find(Engine::hashCharArray(text)) != ScenarioHook::textHashes_.end())
       return text;
 
     enum { role = Engine::OtherRole };
@@ -786,7 +791,7 @@ namespace Private {
    if (newData.size() < oldData.size())
      ::memset(text + newData.size(), 0, oldData.size() - newData.size());
     ::strcpy(text, newData.constData());
-    hashes_.insert(Engine::hashCharArray(text));
+    ScenarioHook::textHashes_.insert(Engine::hashCharArray(text));
     return true;
   }
 
