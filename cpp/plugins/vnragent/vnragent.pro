@@ -140,6 +140,7 @@ HEADERS += \
   engine/model/elf.h \
   engine/model/escude.h \
   engine/model/leaf.h \
+  engine/model/lucifen.h \
   engine/model/pal.h \
   engine/model/qlie.h \
   engine/model/retouch.h \
@@ -170,6 +171,7 @@ SOURCES += \
   engine/model/elf.cc \
   engine/model/escude.cc \
   engine/model/leaf.cc \
+  engine/model/lucifen.cc \
   engine/model/pal.cc \
   engine/model/qlie.cc \
   engine/model/retouch.cc \
