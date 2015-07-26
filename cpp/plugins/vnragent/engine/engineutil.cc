@@ -248,4 +248,11 @@ ulong Engine::findNearCall(ulong start, ulong stop)
   return 0;
 };
 
+size_t Engine::countZero(const char *s, size_t limit)
+{
+  size_t count = 0;
+  for (auto p = s; !*p && count < limit; p++, count++);
+  return count == limit ? 0 : count;
+}
+
 // EOF

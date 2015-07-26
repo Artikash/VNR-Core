@@ -74,6 +74,9 @@ inline bool isAddressReadable(ulong addr) { return isAddressReadable((const void
 inline bool isAddressWritable(const void *addr) { return isAddressWritable((const ulong *)addr); }
 inline bool isAddressWritable(ulong addr) { return isAddressWritable((const void *)addr); }
 
+// Return numbers of continuous zeros. *end must be '\0'
+size_t countZero(const char *end, size_t limit = MaxTextSize);
+
 // find the near call instruction address in between two addresses
 ulong findNearCall(ulong startAddress, ulong stopAddress = 0); // 0 stop address means no limit
 

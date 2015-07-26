@@ -69,6 +69,7 @@ embed:
   - DebonosuName
   - Elf
   - Escude
+  - Lucifen
   - QLiE
   - QLiE2
   - Retouch
@@ -434,6 +435,7 @@ char:
   - EmbedElf
   - EmbedEscude
   - EmbedLeaf
+  - EmbedLucifen
   - EmbedPal
   - EmbedQLiE
   - EmbedRetouch
@@ -691,6 +693,7 @@ focus:
   - EmbedEscude
   - EmbedLeaf
   - EmbedLova
+  - EmbedLucifen
   - EmbedPal
   - EmbedQLiE
   - EmbedRetouch
@@ -706,6 +709,7 @@ focus:
   - KAGParserEx
   - KiriKiriZ
   - Leaf
+  - Lucifen
   - Majiro2
   - Pal
   - QLiE

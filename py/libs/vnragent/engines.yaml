@@ -48,6 +48,10 @@
   exist: bak.pak
   #encoding: sjis
 
+- name: EmbedLucifen # 6/26/2015
+  exist: "*.lpk"
+  #encoding: sjis
+
 - name: EmbedPal # 7/18/2015
   exist: dll/Pal.dll
   #encoding: sjis
