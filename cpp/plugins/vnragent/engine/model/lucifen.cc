@@ -32,7 +32,7 @@ namespace Private {
   {
     QByteArray ret;
     //ret.replace("\n", 1, "\x00\x5b\x0c\x00\x00\x00\x0e\x00\x00\x00\x00\x00\x00\x00", 0xc + 2);
-    for (LPCSTR p = data.constData(); *p;)
+    for (auto p = data.constData(); *p;)
       if (*p == '\n') {
         ret.append("\x00\x5b\x0c\x00\x00\x00\x0e\x00\x00\x00\x00\x00\x00\x00", 0xc + 2);
         p++;
