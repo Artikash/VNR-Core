@@ -23,6 +23,7 @@
 #include "hashutil/hashstr.h"
 #include "cpputil/cppcstring.h"
 #include "ccutil/ccmacro.h"
+#include <boost/lexical_cast.hpp>
 #include <cstdio>
 
 #define hashstr hashutil::djb2
@@ -7766,7 +7767,7 @@ bool InsertDebonosuHook()
  *  [f9S30e0u]　が、それは人間相手の話だ。
  */
 namespace { // unnamed
-void SpecialSystemAoiHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookSystemAoi(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   *split = 0; // 8/3/2014 jichi: split is zero, so return address is used as split
   if (hp->type & USING_UNICODE) {
@@ -7774,8 +7775,11 @@ void SpecialSystemAoiHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWOR
     size_t size = ::wcslen(wcs);
     for (DWORD i = 0; i < size; i++)
       if (wcs[i] == L'>' || wcs[i] == L']') { // skip leading ] for scenario and > for name threads
-        *data = (DWORD)(wcs + i + 1);
-        size -= i + 1;
+        i++;
+        if (wcs[i] == 0x3000) // \u3000
+          i++;
+        *data = (DWORD)(wcs + i);
+        size -= i;
         *len = size * 2; // * 2 for wstring
         return;
       }
@@ -7784,8 +7788,11 @@ void SpecialSystemAoiHook(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWOR
     size_t size = ::strlen(cs);
     for (DWORD i = 0; i < size; i++)
       if (cs[i] == '>' || cs[i] == ']') {
-        *data = (DWORD)(cs + i + 1);
-        size -= i + 1;
+        i++;
+        if ((unsigned char)cs[i] == 0x81 && cs[i+1] == 0x40) // \u3000
+          i += 2;
+        *data = (DWORD)(cs + i);
+        size -= i;
         *len = size;
         return;
       }
@@ -7835,7 +7842,7 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 
       HookParam hp = {};
       hp.offset = 0x4; // target text is on the top of the stack
-      hp.text_fun = SpecialSystemAoiHook; // need to remove garbage
+      hp.text_fun = SpecialHookSystemAoi; // need to remove garbage
       hp.type = utf16 ? USING_UNICODE : USING_STRING;
 
       i = *(DWORD *)(k - 4); // get function call address
@@ -7863,15 +7870,68 @@ bool InsertSystemAoiDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   return true; // jichi 12/25/2013: return true
 }
 
-} // unnamed namespace
-
-bool InsertSystemAoiHook()
+bool InsertSystemAoiDynamic()
 {
   ConsoleOutput("vnreng: DYNAMIC SystemAoi");
   //ConsoleOutput("Probably SoftHouseChara. Wait for text.");
   trigger_fun_ = InsertSystemAoiDynamicHook;
   SwitchTrigger(true);
   return true;
+}
+
+ULONG findAoiProc(HMODULE hModule, LPCSTR functionName, int minParamNum = 0, int maxParamNum = 10)
+{
+  for (int i = minParamNum; i < maxParamNum; i++) {
+    std::string sig; // function signature name, such as _AgsSpriteCreateText@20
+    sig.push_back('_');
+    sig += functionName;
+    sig.push_back('@');
+    sig += boost::lexical_cast<std::string>(4 * i);
+    if (auto proc = ::GetProcAddress(hModule, sig.c_str()))
+      return (ULONG)proc;
+  }
+  return 0;
+}
+
+// jichi 7/26/2015: Backport logic in vnragent to vnrhook
+bool InsertSystemAoiStatic(HMODULE hModule, bool wideChar) // attach scenario
+{
+  ULONG addr = findAoiProc(hModule, "AgsSpriteCreateText", 1);
+  if (!addr) {
+    ConsoleOutput("vnreng:SystemAoiStatic: function found");
+    return false;
+  }
+  HookParam hp = {};
+  hp.address = addr;
+  hp.offset = 4 * 1; // arg1
+  //hp.split = 4 * 2; // arg2
+  hp.text_fun = SpecialHookSystemAoi;
+  hp.type = wideChar ? USING_UNICODE : USING_STRING;
+  //hp.type |= NO_CONTEXT|USING_SPLIT|SPLIT_INDIRECT;
+  ConsoleOutput("vnreng: INSERT static SystemAoi");
+  if (wideChar)
+    NewHook(hp, "SystemAoiW");
+  else
+    NewHook(hp, "SystemAoiA");
+  ConsoleOutput("vnreng:SystemAoiStatic: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
+} // unnamed namespace
+
+bool InsertSystemAoiHook() // this function always returns true
+{
+  HMODULE hModule = ::GetModuleHandleA("Ags.dll");
+  bool wideChar = true;
+  if (hModule) // Aoi <= 3
+    wideChar = false;
+  else { // Aoi >= 4
+    hModule = ::GetModuleHandleA("Ags5.dll");
+    if (!hModule)
+      hModule = ::GetModuleHandleA("Ags4.dll");
+  }
+  return hModule && InsertSystemAoiStatic(hModule, wideChar)
+      || InsertSystemAoiDynamic();
 }
 
 static void SpecialHookCaramelBox(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
