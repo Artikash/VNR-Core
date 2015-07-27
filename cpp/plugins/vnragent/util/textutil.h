@@ -31,6 +31,22 @@ inline bool allAscii(const wchar_t *s)
   return true;
 }
 
+inline bool allAscii(const char *s, size_t size)
+{
+  for (size_t i = 0; s[i] && i < size; i++)
+    if ((signed char)*s++ < 0)
+      return false;
+  return true;
+}
+
+inline bool allAscii(const wchar_t *s, size_t size)
+{
+  for (size_t i = 0; s[i] && i < size; i++)
+    if (*s++ >= 128)
+      return false;
+  return true;
+}
+
 inline bool allAscii(const QString &text)
 { return allAscii(static_cast<const wchar_t *>(text.utf16())); }
 

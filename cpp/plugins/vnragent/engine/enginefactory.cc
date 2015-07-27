@@ -17,6 +17,7 @@
 #include "engine/model/escude.h"
 #include "engine/model/leaf.h"
 #include "engine/model/lucifen.h"
+#include "engine/model/mono.h"
 #include "engine/model/pal.h"
 #include "engine/model/qlie.h"
 #include "engine/model/retouch.h"
@@ -61,6 +62,7 @@ EngineController *EngineFactory::createEngine()
     , new RetouchEngine
     , new QLiEEngine
     , new PalEngine
+    , new MonoEngine
     , new LucifenEngine
     , new LeafEngine
     , new EscudeEngine

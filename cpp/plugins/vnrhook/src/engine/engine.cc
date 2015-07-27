@@ -11,7 +11,6 @@
 #include "src/engine/hookdefs.h"
 #include "src/util/util.h"
 #include "src/main.h"
-#include "src/engine/mono/types.h"
 #include "src/engine/mono/funcinfo.h"
 #include "src/engine/ppsspp/funcinfo.h"
 #include "src/except.h"
@@ -23,6 +22,7 @@
 #include "hashutil/hashstr.h"
 #include "cpputil/cppcstring.h"
 #include "ccutil/ccmacro.h"
+#include "mono/monoobject.h"
 #include <boost/lexical_cast.hpp>
 #include <cstdio>
 

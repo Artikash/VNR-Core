@@ -616,6 +616,7 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Embed
   - EmbedCotopha
+  - EmbedMono
   - EmbedSiglusEngine
   - EmbedSystemAoiW
   - EmbedWillPlus
@@ -701,6 +702,7 @@ focus:
   - EmbedLeaf
   - EmbedLova
   - EmbedLucifen
+  - EmbedMono
   - EmbedPal
   - EmbedQLiE
   - EmbedRetouch

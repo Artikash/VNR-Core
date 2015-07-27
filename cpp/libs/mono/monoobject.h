@@ -1,9 +1,9 @@
-#pragma once
+#ifndef MONOOBJECT_H
+#define MONOOBJECT_H
 
-// mono/types.h
-// 12/26/2014
+// monoobject.h
+// 12/26/2014 jichi
 // https://github.com/mono/mono/blob/master/mono/metadata/object.h
-// http://api.xamarin.com/index.aspx?link=xhtml%3Adeploy%2Fmono-api-string.html
 
 #include <cstdint>
 
@@ -21,6 +21,7 @@ typedef mono_byte MonoBoolean;
 
 struct MonoArray;
 struct MonoDelegate;
+struct MonoDomain;
 struct MonoException;
 struct MonoString;
 struct MonoThreadsSync;
@@ -32,10 +33,10 @@ struct MonoObject {
   MonoThreadsSync *synchronisation;
 };
 
-struct MonoString {
-  MonoObject object;
+struct MonoString : MonoObject {
+  //MonoObject object;
   gint32 length;
-  gunichar2 chars[0];
+  gunichar2 chars[1];
 };
 
-// EOF
+#endif // MONOOBJECT_H

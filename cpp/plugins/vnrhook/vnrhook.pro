@@ -61,7 +61,6 @@ HEADERS += \
   src/engine/match.h \
   src/engine/pchooks.h \
   src/engine/mono/funcinfo.h \
-  src/engine/mono/types.h \
   src/engine/ppsspp/funcinfo.h
 
 SOURCES += \
