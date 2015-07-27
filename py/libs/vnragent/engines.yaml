@@ -83,14 +83,16 @@
   exist: AliceStart.ini
   #encoding: sjis
 
+- name: EmbedSystemAoiA # 6/5/2015, compatible with SystemAoi
+  exist:
+    - AoiLib.dll
+    - Ags.dll
+  #encoding: sjis
 - name: EmbedSystemAoiW # 6/5/2015, compatible with SystemAoi2
   exist:
     - Ags*.dll
     - Aoi*.dll
   #encoding: utf16
-#- name: EmbedSystemAoiA # 6/5/2015, compatible with SystemAoi
-#  exist: AoiLib.dll
-#  #encoding: sjis
 
 - name: EmbedRGSS # 6/7/2015
   exist: System/RGSS3*.dll # such as RGSS301.dll
