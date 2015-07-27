@@ -83,6 +83,7 @@ embed:
   - SystemAoi
   - SystemAoi2
   - SystemAoiA
+  - SystemAoiW
   #- Unicorn
   - WillPlus
   - WillPlusA
@@ -299,6 +300,7 @@ simple:
   - SystemAoi
   - SystemAoi2
   - SystemAoiA
+  - SystemAoiW
   - Syuntada
   - Taskforce2
   - TinkerBell0
@@ -650,6 +652,7 @@ wchar:
   - SofthouseChara # renamed
   - SystemAoi # It could also be SHIFT-JIS for Aoi<4
   - SystemAoi2
+  - SystemAoiW
   - Unity # removed
   - WillPlusW
 
@@ -752,7 +755,6 @@ focus:
   #- ScenarioPlayerW
   #- ShinaRio
   #- SystemAoi
-  #- SystemAoi2
   #- System40
   #- System43
   #- WolfRPG
