@@ -53,7 +53,7 @@ EngineController *EngineFactory::createEngine()
     , new WolfRPGEngine
     , new WillPlusEngine
     , new System4Engine
-    , new SystemAoiWEngine
+    , new SystemAoiEngine
     , new SilkysEngine
     , new SiglusEngine
     , new ShinaRioEngine

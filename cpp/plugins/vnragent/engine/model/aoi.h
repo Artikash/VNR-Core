@@ -5,19 +5,18 @@
 
 #include "engine/enginemodel.h"
 
-class SystemAoiWEngine : public EngineModel
+class SystemAoiEngine : public EngineModel
 {
-  SK_EXTEND_CLASS(SystemAoiWEngine, EngineModel)
-  static bool attach();
+  SK_EXTEND_CLASS(SystemAoiEngine, EngineModel)
+  bool attach();
 public:
-  SystemAoiWEngine()
+  SystemAoiEngine()
   {
-    name = "EmbedSystemAoiW";
-    encoding = Utf16Encoding;
+    name = "EmbedSystemAoi";
     matchFiles << "Ags*.dll" << "Aoi*.dll";
     textSeperators << "[u]";
     //newLineString = "\n";
-    attachFunction = &Self::attach;
+    attachFunction = std::bind(&Self::attach, this);
   }
 };
 

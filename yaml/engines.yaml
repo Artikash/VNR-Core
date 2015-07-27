@@ -82,6 +82,7 @@ embed:
   - SilkysPlus
   - SystemAoi
   - SystemAoi2
+  - SystemAoiA
   #- Unicorn
   - WillPlus
   - WillPlusA
@@ -297,6 +298,7 @@ simple:
   - System43+
   - SystemAoi
   - SystemAoi2
+  - SystemAoiA
   - Syuntada
   - Taskforce2
   - TinkerBell0
@@ -442,6 +444,7 @@ char:
   - EmbedRio
   - EmbedSilkysPlus
   - EmbedSystem43
+  - EmbedSystemAoiA
   - EmbedWillPlusA
   - EmbedWolfRPG
   # Engines
@@ -544,6 +547,7 @@ char:
   - System40
   - System43
   - System43+
+  - SystemAoiA
   - SystemC
   - Syuntada
   - TanukiSoft

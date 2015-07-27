@@ -65,14 +65,14 @@ namespace Private {
    *  - BunnyBlack2: _AgsSpriteCreateText@24
    *
    *  - arg1: text address in heap, which can be directly overwritten
-   *  - arg2:
+   *  - arg2: split
    *  - arg3:
    *  - arg4:
    *
    *  Sample text:
    *  [f9S30e0u]　が、それは人間相手の話だ。
    */
-  bool beforeAgsSpriteCreateText(winhook::hook_stack *s)
+  bool beforeAgsSpriteCreateTextW(winhook::hook_stack *s)
   {
     // All threads including character names are linked together
 
@@ -110,7 +110,7 @@ namespace Private {
     return true;
   }
 
-  bool beforeAgsSpriteCreateTextEx(winhook::hook_stack *s)
+  bool beforeAgsSpriteCreateTextExW(winhook::hook_stack *s)
   {
     auto text = (LPWSTR)s->stack[2]; // arg2
     if (!text || !*text || !Engine::isAddressWritable(text))
@@ -139,26 +139,113 @@ namespace Private {
 bool attach(HMODULE hModule) // attach scenario
 {
   ulong addr = findCppProc(hModule, "AgsSpriteCreateText", 1);
-  if (!addr || !winhook::hook_before(addr, Private::beforeAgsSpriteCreateText))
+  if (!addr || !winhook::hook_before(addr, Private::beforeAgsSpriteCreateTextW))
     return false;
   if (addr = findCppProc(hModule, "AgsSpriteCreateTextEx", 1))
-    winhook::hook_before(addr, Private::beforeAgsSpriteCreateTextEx);
+    winhook::hook_before(addr, Private::beforeAgsSpriteCreateTextExW);
   return true;
 }
 
 } // namespace AgsHookW
+
+namespace AgsHookA {
+namespace Private {
+
+  template<typename wstrT>
+  wstrT ltrimA(wstrT text)
+  {
+    static const char *quotes[] = { "<>", "[]" }; // skip leading quotes
+    BOOST_FOREACH (const char *q, quotes)
+      while (text[0] == q[0]) {
+        if (auto p = ::strchr(text, q[1])) {
+          text = p + 1;
+          if ((uchar)text[0] == 0x81 && (uchar)text[1] == 0x40) // skip \u3000 leading space, assuming sjis encoding
+            text += 2;
+        } else
+          break;
+      }
+    return text;
+  }
+
+  /**
+   *  Sample game: 王賊
+   *  _AgsSpriteCreateText@24 0x100108b0 0x000108b0 97 (0x61) Ags.dll Z:\Local\Windows\Games\SystemAoi\kingT\Ags.dll Exported Function
+   *
+   *  - arg1: text address in heap, which can be directly overwritten
+   *  - arg2: split
+   *  - arg3:
+   *  - arg4:
+   *
+   *  Sample text:
+   *  <s6e0u>八重
+   *  <s6e0u>　ソフトホウスキャラ最新
+   */
+  bool beforeAgsSpriteCreateTextA(winhook::hook_stack *s)
+  {
+    // All threads including character names are linked together
+
+    auto text = (LPSTR)s->stack[1]; // arg1
+    if (!text || !*text || !Engine::isAddressWritable(text)) // skip modifying readonly text in code region
+      return true;
+
+    bool containsTags = ::strstr(text, "[u]");
+
+    text = ltrimA(text);
+    if (!*text)
+      return true;
+
+    int role = Engine::OtherRole;
+    //ulong split = s->stack[0]; // retaddr
+    ulong split = s->stack[2]; // arg2
+    if (!containsTags)
+      switch (split) {
+      case 0x639d:
+        role = Engine::NameRole;
+        break;
+      case 0x639c:
+          role = Engine::ScenarioRole;
+        break;
+      }
+    auto sig = Engine::hashThreadSignature(role, split);
+    QByteArray data = EngineController::instance()->dispatchTextA(text, role, sig);
+    ::strcpy(text, data.constData());
+    return true;
+  }
+
+} // namespace Private
+
+bool attach(HMODULE hModule) // attach scenario
+{
+  ulong addr = findCppProc(hModule, "AgsSpriteCreateText", 1);
+  return addr && winhook::hook_before(addr, Private::beforeAgsSpriteCreateTextA);
+}
+
+} // namespace AgsHookA
 } // unnamed namespace
 
 /** Public class */
 
-bool SystemAoiWEngine::attach()
+bool SystemAoiEngine::attach()
 {
-  HMODULE hModule = ::GetModuleHandleA("Ags5.dll");
-  if (!hModule)
-    hModule = ::GetModuleHandleA("Ags4.dll");
-  if (!hModule)
-    return false;
-  return AgsHookW::attach(hModule);
+  HMODULE hModule = ::GetModuleHandleA("Ags.dll");
+  if (hModule) { // Aoi <= 3
+    if (!AgsHookA::attach(hModule))
+      return false;
+    name = "EmbedSystemAoiA";
+    enableDynamicEncoding = true;
+    HijackManager::instance()->attachFunction((ulong)::DrawTextExA); // Font can already be dynamically changed and hence not needed
+    return true;
+
+  } else { // Aoi >= 4, UTF-16
+    hModule = ::GetModuleHandleA("Ags5.dll");
+    if (!hModule)
+      hModule = ::GetModuleHandleA("Ags4.dll");
+    if (!hModule || !AgsHookW::attach(hModule))
+      return false;
+    name = "EmbedSystemAoiW";
+    encoding = Utf16Encoding;
+    return true;
+  }
 }
 
 // EOF

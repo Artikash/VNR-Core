@@ -43,6 +43,10 @@
   DEF_FUN(ExtTextOutW)
   DEF_FUN(TabbedTextOutA)
   DEF_FUN(TabbedTextOutW)
+  DEF_FUN(DrawTextA)
+  DEF_FUN(DrawTextW)
+  DEF_FUN(DrawTextExA)
+  DEF_FUN(DrawTextExW)
   DEF_FUN(CharNextA)
   //DEF_FUN(CharNextW)
   //DEF_FUN(CharNextExA)
@@ -401,7 +405,11 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
   if(cchString > 1) \
     if (auto p = DynamicCodec::instance()) { \
       bool dynamic; \
-      QByteArray data(lpString, cchString); \
+      QByteArray data; \
+      if (cchString == -1) \
+        data.setRawData(lpString, ::strlen(lpString)); \
+      else \
+        data.setRawData(lpString, cchString); \
       QString text = p->decode(data, &dynamic); \
       if (dynamic && !text.isEmpty()) { \
         DOUT("dynamic"); \
@@ -415,7 +423,11 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
 #define TRANSLATE_TEXT_A(lpString, cchString, ...) \
 { \
   if (auto q = EngineController::instance()) { \
-    QByteArray data(lpString, cchString); \
+    QByteArray data; \
+    if (cchString == -1) \
+      data.setRawData(lpString, ::strlen(lpString)); \
+    else \
+      data.setRawData(lpString, cchString); \
     QString oldText = q->decode(data); \
     if (!oldText.isEmpty()) { \
       enum { role = Engine::OtherRole }; \
@@ -494,6 +506,48 @@ BOOL WINAPI Hijack::newGetTextExtentExPointW(HDC hdc, LPCWSTR lpString, int cchS
   DCFontSwitcher fs(hdc);
   //TRANSLATE_TEXT_W(lpString, cchString, oldGetTextExtentExPointW(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize))
   return oldGetTextExtentExPointW(hdc, lpString, cchString, nMaxExtent, lpnFit, alpDx, lpSize);
+}
+
+int WINAPI Hijack::newDrawTextA(HDC hdc, LPCSTR lpString, int cchString, LPRECT lpRect, UINT uFormat)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::DrawTextA))
+    TRANSLATE_TEXT_A(lpString, cchString, oldDrawTextW(hdc, lpString, cchString, lpRect, uFormat))
+  else
+    DECODE_TEXT(lpString, cchString, oldDrawTextW(hdc, lpString, cchString, lpRect, uFormat))
+  return oldDrawTextA(hdc, lpString, cchString, lpRect, uFormat);
+}
+
+int WINAPI Hijack::newDrawTextW(HDC hdc, LPCWSTR lpString, int cchString, LPRECT lpRect, UINT uFormat)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (HijackManager::instance()->isFunctionTranslated((ulong)::DrawTextW))
+    TRANSLATE_TEXT_W(lpString, cchString, oldDrawTextW(hdc, lpString, cchString, lpRect, uFormat))
+  return oldDrawTextW(hdc, lpString, cchString, lpRect, uFormat);
+}
+
+int WINAPI Hijack::newDrawTextExA(HDC hdc, LPSTR lpString, int cchString, LPRECT lpRect, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (!(dwDTFormat & DT_MODIFYSTRING)) {
+    if (HijackManager::instance()->isFunctionTranslated((ulong)::DrawTextExA))
+      TRANSLATE_TEXT_A(lpString, cchString, oldDrawTextExW(hdc, const_cast<LPWSTR>(lpString), cchString, lpRect, dwDTFormat, lpDTParams))
+    else
+      DECODE_TEXT(lpString, cchString, oldDrawTextExW(hdc, const_cast<LPWSTR>(lpString), cchString, lpRect, dwDTFormat, lpDTParams))
+  }
+  return oldDrawTextExA(hdc, lpString, cchString, lpRect, dwDTFormat, lpDTParams);
+}
+
+int WINAPI Hijack::newDrawTextExW(HDC hdc, LPWSTR lpString, int cchString, LPRECT lpRect, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams)
+{
+  DOUT("pass");
+  DCFontSwitcher fs(hdc);
+  if (!(dwDTFormat & DT_MODIFYSTRING) && HijackManager::instance()->isFunctionTranslated((ulong)::DrawTextExW))
+    TRANSLATE_TEXT_W(lpString, cchString, oldDrawTextExW(hdc, const_cast<LPWSTR>(lpString), cchString, lpRect, dwDTFormat, lpDTParams))
+  return oldDrawTextExW(hdc, lpString, cchString, lpRect, dwDTFormat, lpDTParams);
 }
 
 BOOL WINAPI Hijack::newTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
