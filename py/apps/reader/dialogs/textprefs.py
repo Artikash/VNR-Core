@@ -566,7 +566,7 @@ class _TextTab(object):
       if sig != tm.scenarioSignature() or enc != tm.encoding():
         dprint("scenario thread changed")
         changed = True
-        name = threads[sig].name
+        name = threads[sig].name if sig in threads else defs.NULL_THREAD_NAME
         skevents.runlater(partial(
             q.scenarioThreadChanged.emit,
             sig, name, enc))
@@ -574,7 +574,7 @@ class _TextTab(object):
     if namesig != tm.nameSignature():
       dprint("name thread changed")
       changed = True
-      if not namesig:
+      if not namesig or namesig not in threads:
         skevents.runlater(q.nameThreadDisabled.emit)
       else:
         name = threads[namesig].name
