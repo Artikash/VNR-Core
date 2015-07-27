@@ -174,8 +174,9 @@ class MonoEngine(Engine):
   NAME = "Mono" # str, override
   ENCODING = UTF16_ENCODING # str, override
 
+  # Disable for CM3D, see: http://sakuradite.com/topic/996
   def match(self, pid): # override
-    return bool(self.globAppDirectory('*/Mono/mono.dll', pid))
+    return bool(self.globAppDirectory('*/Mono/mono.dll', pid) and not self.globAppDirectory('CM3D*.exe', pid))
 
   def inject(self, pid): # override
     from gamedebugger import GameDebugger
