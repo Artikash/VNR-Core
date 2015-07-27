@@ -743,14 +743,12 @@ bool WillPlusEngine::attach()
 
     DOUT("wide char not supported");
     name = "EmbedWillPlusA";
-    enableDynamicEncoding = true;
 
-    if (enableDynamicEncoding) {
-      if (PatchA::patchEncoding(startAddress, stopAddress))
-        DOUT("patch encoding succeeded");
-      else
-        DOUT("patch encoding FAILED");
-    }
+    if (PatchA::patchEncoding(startAddress, stopAddress)) {
+      enableDynamicEncoding = true;
+      DOUT("patch encoding succeeded");
+    } else
+      DOUT("patch encoding FAILED");
 
     if (OtherHookA::attach(startAddress, stopAddress))
       DOUT("other text found");

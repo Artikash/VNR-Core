@@ -175,8 +175,14 @@ class MonoEngine(Engine):
   ENCODING = UTF16_ENCODING # str, override
 
   # Disable for CM3D, see: http://sakuradite.com/topic/996
+  BLOCKED_FILES = 'CM3D*.exe',
   def match(self, pid): # override
-    return bool(self.globAppDirectory('*/Mono/mono.dll', pid) and not self.globAppDirectory('CM3D*.exe', pid))
+    if not self.globAppDirectory('*/Mono/mono.dll', pid):
+      return False
+    for it in self.BLOCKED_FILES:
+      if self.globAppDirectory(it, pid):
+        return False
+    return True
 
   def inject(self, pid): # override
     from gamedebugger import GameDebugger
