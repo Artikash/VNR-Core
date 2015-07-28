@@ -1884,8 +1884,10 @@ class NetworkManager(QObject):
           d.queryGame, id, md5),
           timeout=timeout)
       if ret:
-        d.cachedGamesById[ret.id] = ret
-        d.cachedGamesById[ret.md5] = ret
+        if ret.id:
+          d.cachedGamesById[ret.id] = ret
+        if ret.md5:
+          d.cachedGamesById[ret.md5] = ret
       return ret
 
   def updateGame(self, game, userName, password, deleteHook=False, timeout=config.APP_GAME_UPDATE_TIMEOUT):
