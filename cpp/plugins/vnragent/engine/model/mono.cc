@@ -60,7 +60,7 @@ namespace Private {
       QString oldText = QString::fromUtf16(s->chars, s->length),
               newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
       if (!newText.isEmpty() && newText != oldText) {
-        MonoDomain *domain = mono_object_get_domain(s);
+        MonoDomain *domain = mono_object_get_domain(&s->object);
         MonoString *t = mono_string_new_utf16(domain, newText.utf16(), newText.size());
         return old_mono_string_to_utf8(t);
       }
