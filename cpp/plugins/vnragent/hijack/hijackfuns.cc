@@ -402,7 +402,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
 
 #define DECODE_TEXT(lpString, cchString, ...) \
 { \
-  if(cchString > 1) \
+  if(cchString == -1 || cchString > 1) \
     if (auto p = DynamicCodec::instance()) { \
       bool dynamic; \
       QByteArray data; \
@@ -410,12 +410,14 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
         data.setRawData(lpString, ::strlen(lpString)); \
       else \
         data.setRawData(lpString, cchString); \
-      QString text = p->decode(data, &dynamic); \
-      if (dynamic && !text.isEmpty()) { \
-        DOUT("dynamic"); \
-        LPCWSTR lpString = (LPCWSTR)text.utf16(); \
-        cchString = text.size(); \
-        return (__VA_ARGS__); \
+      if (data.size() > 1) { \
+        QString text = p->decode(data, &dynamic); \
+        if (dynamic && !text.isEmpty()) { \
+          DOUT("dynamic"); \
+          LPCWSTR lpString = (LPCWSTR)text.utf16(); \
+          cchString = text.size(); \
+          return (__VA_ARGS__); \
+        } \
       } \
     } \
 }
