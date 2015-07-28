@@ -193,7 +193,7 @@ class MonoEngine(Engine):
       # See (ok123): http://9baka.com/read.php?tid=411756
       #pattern = 0x90, 0xff, 0x50, 0x3c, 0x83, 0xc4, 0x20, 0x8b, 0x45, 0xec
       #addr = dbg.searchbytes(pattern)
-      pattern = 0x33DB66390175
+      pattern = 0x33db66390175
       #length = 0x50000 # larger than 0x3b849
 
       addr = dbg.search_module_memory(pattern, "mono.dll")
