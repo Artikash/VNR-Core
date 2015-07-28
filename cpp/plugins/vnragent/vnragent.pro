@@ -140,6 +140,7 @@ HEADERS += \
   engine/model/debonosu.h \
   engine/model/elf.h \
   engine/model/escude.h \
+  engine/model/fvp.h \
   engine/model/leaf.h \
   engine/model/lucifen.h \
   engine/model/mono.h \
@@ -172,6 +173,7 @@ SOURCES += \
   engine/model/debonosu.cc \
   engine/model/elf.cc \
   engine/model/escude.cc \
+  engine/model/fvp.cc \
   engine/model/leaf.cc \
   engine/model/lucifen.cc \
   engine/model/mono.cc \

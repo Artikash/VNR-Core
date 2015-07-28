@@ -15,6 +15,7 @@
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
 #include "engine/model/escude.h"
+#include "engine/model/fvp.h"
 #include "engine/model/leaf.h"
 #include "engine/model/lucifen.h"
 #include "engine/model/mono.h"
@@ -65,6 +66,7 @@ EngineController *EngineFactory::createEngine()
     , new MonoEngine
     , new LucifenEngine
     , new LeafEngine
+    , new FVPEngine
     , new EscudeEngine
     , new ElfEngine
     , new DebonosuEngine
