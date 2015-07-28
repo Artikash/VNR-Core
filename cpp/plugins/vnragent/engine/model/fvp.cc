@@ -22,6 +22,8 @@ namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
   /**
+   *  FIXME: Scenario/name/history text cannot be distinguished
+   *
    *  Sample game: 紅い瞳に映るセカイ
    *
    *  Scenario:
