@@ -33,6 +33,8 @@ namespace { // unnamed
 namespace MonoHook {
 namespace Private {
 
+  int scenarioSplit_;
+
   //void *allocate(size_t size) { return new uint8_t[size]; }
   //void deallocate(void *p) { delete[] (uint8_t *)p; }
 
@@ -65,14 +67,12 @@ namespace Private {
 
     auto role = Engine::OtherRole;
 
-    // Sample game: Custom Maid 3D 2
-    // TODO: Deal with split logic for different game
     auto split = s->ecx;
-    if (Engine::isAddressReadable(split)) {
+    if (Engine::isAddressReadable(split))
       split = *(DWORD *)split;
-      if (split == 3 && p->length > 2) // do not treat two kanji as scenario
-        role = Engine::ScenarioRole;
-    }
+
+    if (p->length > 2 && split == scenarioSplit_) // do not treat two kanji as scenario
+      role = Engine::ScenarioRole;
 
     auto sig = Engine::hashThreadSignature(role, split);
     QString oldText = QString::fromUtf16(p->chars, p->length),
@@ -89,6 +89,15 @@ namespace Private {
       hashes_.insert(Engine::hashWCharArray(p->chars, p->length));
     }
     return true;
+  }
+
+  int guessScenarioSplit()
+  {
+    if (Engine::exists("PlayClub.exe"))
+      return 0;
+    if (Engine::globs("CM3D*.exe"))
+      return 3;
+    return -1;
   }
 
   //mono_string_to_utf8_fun_t old_mono_string_to_utf8;
@@ -118,7 +127,10 @@ namespace Private {
 bool attach()
 {
   ulong fun = Engine::getModuleFunction("mono.dll", "mono_string_to_utf8");
-  return fun && winhook::hook_before(fun, Private::before_mono_string);
+  if (!fun)
+    return false;
+  Private::scenarioSplit_ = Private::guessScenarioSplit();
+  return winhook::hook_before(fun, Private::before_mono_string);
   //return fun && (Private::old_mono_string_to_utf8 = (mono_string_to_utf8_fun_t)winhook::replace_fun(fun, (ulong)Private::new_mono_string_to_utf8));
 }
 

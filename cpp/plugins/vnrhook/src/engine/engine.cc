@@ -15191,7 +15191,10 @@ static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data
     *data = (DWORD)s->chars;
     *len = s->length * 2; // for widechar
     // Adding split is very dangerous which might create millions of threads
-    *split = regof(ecx, esp_base);
+    DWORD self = regof(ecx, esp_base);
+    if (!::IsBadReadPtr((LPCVOID)self, 4))
+      self = *(DWORD *)self;
+    *split = self;
     //*split = retof(esp_base);
     //*split = argof(2, esp_base);
   }
