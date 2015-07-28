@@ -375,8 +375,12 @@ nofloat:
   - Vanillaware GC # could have repetitions
   # Mono
   - mono_string_from_utf16
+  - mono_string_new_utf16
+  #- mono_string_new
+  #- mono_string_new_wrapper
   - mono_string_to_utf16
   - mono_string_to_utf8
+  - mono_string_to_utf8_checked
   - mono_unicode_from_external
   - mono_unicode_to_external
   - mono_utf8_from_external
@@ -396,6 +400,7 @@ slow:
 fast:
   - AB2Try
   - MarineHeart
+  - EmbedMono
 
 # The game engines that require the game to be hooked after loaded
 delay:
@@ -598,8 +603,10 @@ wchar:
   - GdipMeasureString
   # Mono
   - mono_string_from_utf16
+  - mono_string_new_utf16
   - mono_string_to_utf16
   - mono_string_to_utf8
+  - mono_string_to_utf8_checked
   - mono_unicode_from_external
   - mono_unicode_to_external
   # PSP
@@ -661,6 +668,8 @@ wchar:
 utf8:
   # Mono
   - mono_utf8_from_external
+  #- mono_string_new
+  #- mono_string_new_wrapper
   # PSP
   - sceCccStrlenUTF8
   - sceCccUTF8toSJIS
