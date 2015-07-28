@@ -70,6 +70,7 @@ namespace Private {
     auto split = s->ecx;
     if (Engine::isAddressReadable(split))
       split = *(DWORD *)split;
+      //if (auto s = *(DWORD *)split) // skip zero value that sometimes all threads could collapse to zero
 
     if (p->length > 2 && split == scenarioSplit_) // do not treat two kanji as scenario
       role = Engine::ScenarioRole;
@@ -93,11 +94,11 @@ namespace Private {
 
   int guessScenarioSplit()
   {
-    if (Engine::exists("PlayClub.exe"))
-      return 0;
     if (Engine::globs("CM3D*.exe"))
       return 3;
-    return -1;
+    if (Engine::exists("PlayClub.exe"))
+      return 0;
+    return 0;
   }
 
   //mono_string_to_utf8_fun_t old_mono_string_to_utf8;
