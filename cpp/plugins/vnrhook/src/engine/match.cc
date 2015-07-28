@@ -656,6 +656,12 @@ bool DetermineNoEngine()
     return true;
   }
 
+  // 7/28/2015 jichi: Favorite games
+  if (IthFindFile(L"*.hcb")) {
+    ConsoleOutput("vnreng: IGNORE FVP");
+    return true;
+  }
+
   // jichi 2/14/2015: Guilty+ ＲＩＮ×ＳＥＮ (PK)
   if (IthCheckFile(L"rio.ini") || IthFindFile(L"*.war")) {
     ConsoleOutput("vnreng: IGNORE unknown ShinaRio");

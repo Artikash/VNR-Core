@@ -830,7 +830,7 @@ bool attach(ulong startAddress, ulong stopAddress)
     DOUT("pattern not found");
     return false;
   }
-  //addr = MemDbg::findEnclosingAlignedFunction(addr); // This might not work
+  //addr = MemDbg::findEnclosingAlignedFunction(addr); // This might not work as the address is not always aligned
   addr = MemDbg::findEnclosingFunctionAfterInt3(addr);
   if (!addr) {
     DOUT("function not found");

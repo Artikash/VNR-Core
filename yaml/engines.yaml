@@ -443,6 +443,7 @@ char:
   - EmbedDebonosu
   - EmbedElf
   - EmbedEscude
+  - EmbedFVP
   - EmbedLeaf
   - EmbedLucifen
   - EmbedPal
@@ -751,6 +752,7 @@ focus:
   #- AOS
   #- Cotopha
   #- Elf
+  #- EmbedFVP
   #- EmbedRGSS
   #- EXP    # there is no way to display VNR in full screen
   #- LunaSoft

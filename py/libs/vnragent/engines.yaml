@@ -44,6 +44,10 @@
     - gfx.bin
   #encoding: sjis
 
+- name: EmbedFVP # 7/28/2015
+  exist: "*.hcb"
+  #encoding: sjis
+
 - name: EmbedLeaf # 6/24/2015
   exist: bak.pak
   #encoding: sjis
