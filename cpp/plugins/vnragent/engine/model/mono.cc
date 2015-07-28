@@ -13,6 +13,7 @@
 #include "mono/monoobject.h"
 //#include "mono/monotype.h"
 #include "winhook/hookcode.h"
+#include "unistr/unichar.h"
 //#include "winhook/hookfun.h"
 //#include "ntdll/ntdll.h"
 #include <qt_windows.h>
@@ -47,7 +48,12 @@ namespace Private {
   //}
 
   bool skipsText(const wchar_t *s, size_t size)
-  { return size <= 1 || s[0] <= 127 || s[size - 1] <= 127 || ::cpp_wcsnchr(s, size, '/'); }
+  {
+    return size <= 1
+      || s[0] <= 127 || s[size - 1] <= 127
+      || unistr::ishangul(s[0]) || unistr::ishangul(s[1]) // avoid re-translating Korean
+      || ::cpp_wcsnchr(s, size, '/');
+  }
 
   bool before_mono_string(winhook::hook_stack *s)
   {
