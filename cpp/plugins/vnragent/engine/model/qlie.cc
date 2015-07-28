@@ -752,6 +752,27 @@ QString QLiEEngine::textFilter(const QString &text, int role)
 }
 
 /**
+ * Remove [] that are not before/after letters with ()
+ * See: http://sakuradite.com/topic/1001
+ */
+QString QLiEEngine::translationFilter(const QString &text, int role)
+{
+  Q_UNUSED(role);
+  if (text.isEmpty() || !text.contains('[') && !text.contains(']'))
+    return text;
+  QString ret = text;
+  for (int i = 0; i < ret.size(); i++)
+    if (ret[i].unicode() == '[' &&
+        (i == ret.size() - 1 || ret[i+1].unicode() < 'a' || ret[i+1].unicode() > 'z'))
+      ret[i] = '(';
+  for (int i = 0; i < ret.size(); i++)
+    if (ret[i].unicode() == ']' &&
+        (i == 0 || ret[i-1].unicode() < 'a' || ret[i-1].unicode() > 'z'))
+      ret[i] = ')';
+  return ret;
+}
+
+/**
  *  Sample game: 催眠演舞
  *  Sample ruby: [rb,神楽,かぐら]
  */
