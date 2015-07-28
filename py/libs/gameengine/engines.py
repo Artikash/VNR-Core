@@ -175,9 +175,10 @@ class MonoEngine(Engine):
   ENCODING = UTF16_ENCODING # str, override
 
   # Disable for CM3D, see: http://sakuradite.com/topic/996
-  BLOCKED_FILES = 'CM3D*.exe',
+  # Disable for PlayClub
+  BLOCKED_FILES = "CM3D*.exe", "PlayClub.exe"
   def match(self, pid): # override
-    if not self.globAppDirectory('*/Mono/mono.dll', pid):
+    if not self.globAppDirectory("*/Mono/mono.dll", pid):
       return False
     for it in self.BLOCKED_FILES:
       if self.globAppDirectory(it, pid):

@@ -23,6 +23,7 @@ include($$LIBDIR/qtsocketsvc/qtlocalcli.pri)
 #include($$LIBDIR/qtsocketsvc/qttcpcli.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/vnrsharedmemory/vnrsharedmemory.pri)
+include($$LIBDIR/mono/mono.pri)
 include($$LIBDIR/windbg/windbg.pri)
 #include($$LIBDIR/winevent/winevent.pri)
 include($$LIBDIR/winkey/winkey.pri)
@@ -141,6 +142,7 @@ HEADERS += \
   engine/model/escude.h \
   engine/model/leaf.h \
   engine/model/lucifen.h \
+  engine/model/mono.h \
   engine/model/pal.h \
   engine/model/qlie.h \
   engine/model/retouch.h \
@@ -172,6 +174,7 @@ SOURCES += \
   engine/model/escude.cc \
   engine/model/leaf.cc \
   engine/model/lucifen.cc \
+  engine/model/mono.cc \
   engine/model/pal.cc \
   engine/model/qlie.cc \
   engine/model/retouch.cc \

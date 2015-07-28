@@ -1,7 +1,5 @@
 // lova.cc
 // 7/19/2015 jichi
-// See: http://bbs.sumisora.org/read.php?tid=11044256
-// See also ATCode: http://capita.tistory.com/m/post/255
 #include "engine/model/lova.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"

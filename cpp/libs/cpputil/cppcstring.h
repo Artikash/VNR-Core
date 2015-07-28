@@ -35,7 +35,7 @@ inline size_t cpp_wstrnlen(const wchar_t *s, size_t n) { return cpp_basic_strnle
 
 // strnchr
 
-#define cpp_basic_strnchr_(s, c, n) \
+#define cpp_basic_strnchr_(s, n, c) \
   { \
     while (*s && n) { \
       if (*s == c) \
@@ -44,20 +44,16 @@ inline size_t cpp_wstrnlen(const wchar_t *s, size_t n) { return cpp_basic_strnle
     } \
     return nullptr; \
   }
-template <typename charT>
-inline charT *cpp_basic_strnchr(charT *s, int c, size_t n)
-cpp_basic_strnchr_(s, c, n)
-
-template <typename charT>
-inline const charT *cpp_basic_strnchr(const charT *s, int c, size_t n)
-cpp_basic_strnchr_(s, c, n)
+template <typename strT>
+inline strT cpp_basic_strnchr(strT s, size_t n, int c)
+cpp_basic_strnchr_(s, n, c)
 
 // The same as memchr
-inline char *cpp_strnchr(char *s, int c, size_t n) { return cpp_basic_strnchr(s, c, n); }
-inline const char *cpp_strnchr(const char *s, int c, size_t n) { return cpp_basic_strnchr(s, c, n); }
+inline char *cpp_strnchr(char *s, size_t n, int c) { return cpp_basic_strnchr(s, n, c); }
+inline const char *cpp_strnchr(const char *s, size_t n, int c) { return cpp_basic_strnchr(s, n, c); }
 
-inline wchar_t *cpp_wcsnchr(wchar_t *s, int c, size_t n) { return cpp_basic_strnchr(s, c, n); }
-inline const wchar_t *cpp_wcsnchr(const wchar_t *s, int c, size_t n) { return cpp_basic_strnchr(s, c, n); }
+inline wchar_t *cpp_wcsnchr(wchar_t *s, size_t n, int c) { return cpp_basic_strnchr(s, n, c); }
+inline const wchar_t *cpp_wcsnchr(const wchar_t *s, size_t n, int c) { return cpp_basic_strnchr(s, n, c); }
 
 // strnstr
 
