@@ -59,7 +59,7 @@ namespace Private {
 
   bool before_mono_string(winhook::hook_stack *s)
   {
-    std::unordered_set<qint64> hashes_;
+    static std::unordered_set<qint64> hashes_;
     auto p = (MonoString *)s->stack[1]; // string in arg1
 
     if (skipsText(p->chars, p->length) || hashes_.find(Engine::hashWCharArray(p->chars, p->length)) != hashes_.end())
