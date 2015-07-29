@@ -15187,16 +15187,25 @@ bool InsertAdobeFlash10Hook()
  */
 static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
-  if (auto s = (MonoString *)argof(1, esp_base)) {
-    *data = (DWORD)s->chars;
-    *len = s->length * 2; // for widechar
+  if (auto p = (MonoString *)argof(1, esp_base)) {
+    *data = (DWORD)p->chars;
+    *len = p->length * 2; // for widechar
     // Adding split is very dangerous which might create millions of threads
     //DWORD p = regof(ecx, esp_base);
     //if (!::IsBadReadPtr((LPCVOID)p, 4)) {
     //  if (DWORD pp = *(DWORD *)p)
     //    p = pp;
     //}
-    *split = regof(ecx, esp_base);
+    auto s = regof(ecx, esp_base);
+    for (int i = 0; i < 10; i++) { // traverse pointers until a non-readable address is met
+      if (!::IsBadReadPtr((LPCVOID)s, 4))
+        if (DWORD ss = *(DWORD *)s) {
+          s = ss;
+          continue;
+        }
+      break;
+    }
+    *split = s;
     //*split = retof(esp_base);
     //*split = argof(2, esp_base);
   }

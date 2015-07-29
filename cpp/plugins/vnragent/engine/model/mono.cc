@@ -68,14 +68,17 @@ namespace Private {
     auto role = Engine::OtherRole;
 
     auto split = s->ecx;
-    if (Engine::isAddressReadable(split))
-      split = *(DWORD *)split;
-      //if (auto s = *(DWORD *)split) // skip zero value that sometimes all threads could collapse to zero
+    for (int i = 0; i < 10; i++) // traverse pointers until a non-readable address is met
+      if (Engine::isAddressReadable(split))
+        split = *(DWORD *)split;
+      else
+        break;
 
     if (p->length > 2 && split == scenarioSplit_) // do not treat two kanji as scenario
       role = Engine::ScenarioRole;
 
     auto sig = Engine::hashThreadSignature(role, split);
+    sig = split;
     QString oldText = QString::fromUtf16(p->chars, p->length),
             newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (!newText.isEmpty() && newText != oldText) {
@@ -96,8 +99,8 @@ namespace Private {
   {
     if (Engine::globs("CM3D*.exe"))
       return 3;
-    if (Engine::exists("PlayClub.exe"))
-      return 0;
+    //if (Engine::exists("PlayClub.exe"))
+    //  return 0;
     return 0;
   }
 
