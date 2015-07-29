@@ -15198,7 +15198,7 @@ static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data
     //}
     auto s = regof(ecx, esp_base);
     for (int i = 0; i < 10; i++) { // traverse pointers until a non-readable address is met
-      if (!::IsBadReadPtr((LPCVOID)s, 4))
+      if (s && !::IsBadWritePtr((LPVOID)s, sizeof(DWORD)))
         if (DWORD ss = *(DWORD *)s) {
           s = ss;
           continue;
