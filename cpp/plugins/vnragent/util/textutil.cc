@@ -6,7 +6,13 @@
 
 // Currently, only for Japanese text.
 // Return if the text contains non-ascii characters.
-bool Util::needsTranslation(const QString &text) { return !allAscii(text); }
+bool Util::needsTranslation(const QString &text)
+{
+  return !text.isEmpty()
+      && !allAscii(text)
+      && !unistr::ishangul(text[0].unicode())
+      && !(text.size() >= 2 && unistr::ishangul(text[1].unicode()));
+}
 
 bool Util::allHangul(const wchar_t *s)
 {
