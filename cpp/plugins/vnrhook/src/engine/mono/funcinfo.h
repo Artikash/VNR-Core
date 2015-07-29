@@ -46,7 +46,7 @@ struct MonoFunction {
   , { "mono_string_to_utf16", 0, 0, USING_UNICODE, SpecialHookMonoString } \
   , { "mono_utf8_from_external", 1, 0, USING_STRING|USING_UTF8, nullptr } \
   , { "mono_string_from_utf16", 1, 0, USING_UNICODE, nullptr } \
-  , { "mono_string_new_utf16", 1, 2, USING_UNICODE, nullptr } \
+  , { "mono_string_new_utf16", 2, 3, USING_UNICODE, nullptr } \
   , { "mono_unicode_from_external", 1, 0, USING_UNICODE, nullptr } \
   , { "mono_unicode_to_external", 1, 0, USING_UNICODE, nullptr }
   //, { "mono_string_new", 2, 0, USING_STRING|USING_UTF8, nullptr }

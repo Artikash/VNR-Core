@@ -1,7 +1,7 @@
 # coding: utf8
 # skfileio.py
 # 11/10/2012 jichi
-import os
+import os, re
 import skstr
 from skdebug import dprint, dwarn
 
@@ -35,6 +35,15 @@ def relpaths(paths): # [unicode] -> [unicode]
 
 def realpath(path, prefix): # unicode, unicode -> unicode
   return os.path.relpath(os.path.abspath(path), os.path.abspath(prefix))
+
+# Escape brackets in glob
+# http://edgylogic.com/blog/escaping-square-brackets-pythons-glob/
+def escapeglob(path): # unicode -> unicode
+  if '[' not in path:
+    return path
+  path = re.sub(r'\[', '[[]', path)
+  path = re.sub(r'(?<!\[)\]', '[]]', path)
+  return path
 
 ## Read and write ##
 

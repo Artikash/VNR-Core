@@ -15191,12 +15191,12 @@ static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data
     *data = (DWORD)s->chars;
     *len = s->length * 2; // for widechar
     // Adding split is very dangerous which might create millions of threads
-    DWORD p = regof(ecx, esp_base);
-    if (!::IsBadReadPtr((LPCVOID)p, 4)) {
-      if (DWORD pp = *(DWORD *)p)
-        p = pp;
-    }
-    *split = p;
+    //DWORD p = regof(ecx, esp_base);
+    //if (!::IsBadReadPtr((LPCVOID)p, 4)) {
+    //  if (DWORD pp = *(DWORD *)p)
+    //    p = pp;
+    //}
+    *split = regof(ecx, esp_base);
     //*split = retof(esp_base);
     //*split = argof(2, esp_base);
   }
