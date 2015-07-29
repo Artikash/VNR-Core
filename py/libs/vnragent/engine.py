@@ -10,6 +10,7 @@ if __name__ == '__main__': # DEBUG
 import os
 from glob import glob
 from sakurakit.skdebug import dprint
+from sakurakit.skfileio import escapeglob
 
 class Engine:
   def __init__(self, name='', regionLocked=False, vnrlocale=False, **kwargs):
@@ -66,7 +67,7 @@ class EngineFinder:
     @param  relpath  unicode
     @return  bool
     """
-    return bool(self.dirpath and glob(os.path.join(self.dirpath, relpath)))
+    return bool(self.dirpath and glob(os.path.join(escapeglob(self.dirpath), relpath)))
 
   def exists(self, relpath):
     """

@@ -10,6 +10,7 @@ if __name__ == '__main__': # DEBUG
 import os, re
 from glob import glob
 from sakurakit.skdebug import dprint
+from sakurakit.skfileio import escapeglob
 #from sakurakit.skclass import memoized
 
 SJIS_ENCODING = 'shift-jis'
@@ -102,7 +103,7 @@ class Engine(object): # placeholder
     """
     path = self.getAppDirectory(pid)
     if path:
-      return glob(os.path.join(path, pattern))
+      return glob(os.path.join(escapeglob(path), pattern))
 
   def globAppDirectories(self, patterns, pid):
     """Return all paths or None if failed
@@ -114,7 +115,7 @@ class Engine(object): # placeholder
     if path:
       ret = []
       for pat in patterns:
-        r = glob(os.path.join(path, pat))
+        r = glob(os.path.join(escapeglob(path), pat))
         if not r:
           return None
         ret.append(r)
