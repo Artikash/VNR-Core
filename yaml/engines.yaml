@@ -712,7 +712,6 @@ focus:
   - EmbedLeaf
   - EmbedLova
   - EmbedLucifen
-  - EmbedMono
   - EmbedPal
   - EmbedQLiE
   - EmbedRetouch
@@ -753,6 +752,7 @@ focus:
   #- Cotopha
   #- Elf
   #- EmbedFVP
+  #- EmbedMono
   #- EmbedRGSS
   #- EXP    # there is no way to display VNR in full screen
   #- LunaSoft
