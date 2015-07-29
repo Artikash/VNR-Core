@@ -521,7 +521,7 @@ WARNING:
 This might result in redundant spaces for Japanese games."""),
       Yes|No, No)
 
-def confmrmDownloadGameVideo():
+def confirmDownloadGameVideo():
   """
   @return  bool
   """
