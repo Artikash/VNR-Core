@@ -79,12 +79,16 @@ namespace Private {
     if (!skippedSplits_.empty() && skippedSplits_.find(split) != skippedSplits_.end())
       return true;
 
+    // hexstr 雇用 utf16: c7962875
+    //if (p->chars[0] == 0x96c7)
+    //  DOUT(split);
+
     if (p->length > 2 && split == scenarioSplit_) // do not treat two kanji as scenario
       role = Engine::ScenarioRole;
 
-    auto sig = Engine::hashThreadSignature(role, split);
+    //auto sig = Engine::hashThreadSignature(role, split); // there is no need to hash role into sig
     QString oldText = QString::fromUtf16(p->chars, p->length),
-            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
+            newText = EngineController::instance()->dispatchTextW(oldText, role, split);
     if (!newText.isEmpty() && newText != oldText) {
       if (newText.size() > oldText.size())
         newText = newText.left(oldText.size());
@@ -105,6 +109,7 @@ namespace Private {
       scenarioSplit_ = 0x3;
       skippedSplits_.insert(0x0); // could crash the game
       skippedSplits_.insert(0x1); // could crash the game
+      skippedSplits_.insert(0x74747542);
       return;
     }
     //if (Engine::exists("PlayClub.exe")) // PlayClub
