@@ -15190,15 +15190,13 @@ static void SpecialHookMonoString(DWORD esp_base, HookParam *hp, BYTE, DWORD *da
   if (auto p = (MonoString *)argof(1, esp_base)) {
     *data = (DWORD)p->chars;
     *len = p->length * 2; // for widechar
+
     auto s = regof(ecx, esp_base);
-    for (int i = 0; i < 10; i++) { // traverse pointers until a non-readable address is met
+    for (int i = 0; i < 10; i++) // traverse pointers until a non-readable address is met
       if (s && !::IsBadReadPtr((LPCVOID)s, sizeof(DWORD)))
-        if (DWORD ss = *(DWORD *)s) {
-          s = ss;
-          continue;
-        }
-      break;
-    }
+        s = *(DWORD *)s;
+      else
+        break;
     if (!s)
       s = hp->address;
     *split = s;
