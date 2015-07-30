@@ -15185,23 +15185,23 @@ bool InsertAdobeFlash10Hook()
 /** jichi 12/26/2014 Mono
  *  Sample game: [141226] ハーレムめいと
  */
-static void SpecialHookMonoString(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookMonoString(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *split, DWORD *len)
 {
   if (auto p = (MonoString *)argof(1, esp_base)) {
     *data = (DWORD)p->chars;
     *len = p->length * 2; // for widechar
     auto s = regof(ecx, esp_base);
-    //for (int i = 0; i < 10; i++) { // traverse pointers until a non-readable address is met
-    //  if (s && !::IsBadWritePtr((LPVOID)s, sizeof(DWORD)))
-    //    if (DWORD ss = *(DWORD *)s) {
-    //      s = ss;
-    //      continue;
-    //    }
-    //  break;
-    //}
+    for (int i = 0; i < 10; i++) { // traverse pointers until a non-readable address is met
+      if (s && !::IsBadReadPtr((LPCVOID)s, sizeof(DWORD)))
+        if (DWORD ss = *(DWORD *)s) {
+          s = ss;
+          continue;
+        }
+      break;
+    }
+    if (!s)
+      s = hp->address;
     *split = s;
-    //*split = retof(esp_base);
-    //*split = argof(2, esp_base);
   }
 }
 

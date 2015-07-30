@@ -41,9 +41,9 @@ struct MonoFunction {
 };
 
 #define MONO_FUNCTIONS_INITIALIZER \
-    { "mono_string_to_utf8", 0, 0, USING_UNICODE, SpecialHookMonoString } \
-  , { "mono_string_to_utf8_checked", 0, 0, USING_UNICODE, SpecialHookMonoString } \
-  , { "mono_string_to_utf16", 0, 0, USING_UNICODE, SpecialHookMonoString } \
+    { "mono_string_to_utf8", 0, 0, USING_UNICODE|NO_CONTEXT, SpecialHookMonoString } \
+  , { "mono_string_to_utf8_checked", 0, 0, USING_UNICODE|NO_CONTEXT, SpecialHookMonoString } \
+  , { "mono_string_to_utf16", 0, 0, USING_UNICODE|NO_CONTEXT, SpecialHookMonoString } \
   , { "mono_utf8_from_external", 1, 0, USING_STRING|USING_UTF8, nullptr } \
   , { "mono_string_from_utf16", 1, 0, USING_UNICODE, nullptr } \
   , { "mono_string_new_utf16", 2, 3, USING_UNICODE, nullptr } \
