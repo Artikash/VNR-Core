@@ -405,11 +405,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
   if(cchString == -1 || cchString > 1) \
     if (auto p = DynamicCodec::instance()) { \
       bool dynamic; \
-      QByteArray data; \
-      if (cchString == -1) \
-        data.setRawData(lpString, ::strlen(lpString)); \
-      else \
-        data.setRawData(lpString, cchString); \
+      QByteArray data = QByteArray::fromRawData(lpString, cchString == -1 ? ::strlen(lpString) : cchString); \
       if (data.size() > 1) { \
         QString text = p->decode(data, &dynamic); \
         if (dynamic && !text.isEmpty()) { \
@@ -425,11 +421,7 @@ int WINAPI Hijack::newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR 
 #define TRANSLATE_TEXT_A(lpString, cchString, ...) \
 { \
   if (auto q = EngineController::instance()) { \
-    QByteArray data; \
-    if (cchString == -1) \
-      data.setRawData(lpString, ::strlen(lpString)); \
-    else \
-      data.setRawData(lpString, cchString); \
+    QByteArray data = QByteArray::fromRawData(lpString, cchString == -1 ? ::strlen(lpString) : cchString); \
     QString oldText = q->decode(data); \
     if (!oldText.isEmpty()) { \
       enum { role = Engine::OtherRole }; \
