@@ -354,10 +354,10 @@ norepeat:
   - BALDR # removed
   - EXP # there could be different type of threads, but it is OK to merge them
   - KiriKiri2  # might float, http://sakuradite.com/game/4633
-  - QLiE
-  - QLiE2
   - NEXTON
   - NEXTON1 # I am not sure if it could be floating like NEXTON
+  - QLiE
+  - QLiE2
   - TanukiSoft # But this thread is floating
   - Unicorn
   - Unity # removed
