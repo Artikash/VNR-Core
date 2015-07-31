@@ -56,8 +56,12 @@
   exist: "*.lpk"
   #encoding: sjis
 
-- name: EmbedMono # 7/27/2015 jichi
+- name: EmbedMono # 7/27/2015
   exist: '*/Mono/mono.dll'
+  #encoding: sjis
+
+- name: EmbedNexton  # 7/30/2015
+  exist: aInfo.db
   #encoding: sjis
 
 - name: EmbedPal # 7/18/2015

@@ -9273,6 +9273,7 @@ bool InsertAnex86Hook()
 
 bool InsertNextonHook()
 {
+#if 0
   // 0x8944241885c00f84
   const BYTE bytes[] = {
     //0xe8 //??,??,??,??,      00804147   e8 24d90100      call imoutoba.00821a70
@@ -9297,11 +9298,41 @@ bool InsertNextonHook()
     //  0xe8 //??,??,??,??,      00804147   e8 24d90100      call imoutoba.00821a70
     //};
   } while(0xe8c38b57 != *(DWORD *)(addr - 8));
+#endif // 0
+  const BYTE bytes[] = {
+    0x57,                   // 0044d696   57               push edi
+    0x8b,0xc3,              // 0044d697   8bc3             mov eax,ebx
+    0xe8, XX4,              // 0044d699   e8 6249fdff      call .00422000
+    0x89,0x44,0x24, 0x18,   // 0044d69e   894424 18        mov dword ptr ss:[esp+0x18],eax ; jichi: this is the ith hook point
+    0x85,0xc0,              // 0044d6a2   85c0             test eax,eax
+    0x0f,0x84 //c2feffff    // 0044d6a4  ^0f84 c2feffff    je .0044d56c
+  };
+  //enum { addr_offset = 0x0044d69e - 0x0044d696 }; // = 8
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) {
+    ConsoleOutput("vnreng:NEXTON: failed to get memory range");
+    return false;
+  }
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:NEXTON: pattern not exist");
+    return false;
+  }
+
+  //addr = MemDbg::findEnclosingAlignedFunction(addr); // range is around 50, use 80
+  //if (!addr) {
+  //  ConsoleOutput("vnreng:NEXTON: enclosing function not found");
+  //  return false;
+  //}
 
   //GROWL_DWORD3(module_base_, addr, *(DWORD *)(addr-8));
+  //HookParam hp = {};
+  //hp.address = addr;
+  //hp.offset = 4; // text in arg1
+  //hp.split = 4;
 
   HookParam hp = {};
-  hp.address = addr;
+  hp.address = addr + addr_offset;
   hp.length_offset = 1;
   //hp.offset = -0x10;
   //hp.type = BIG_ENDIAN; // 4
@@ -9327,7 +9358,8 @@ bool InsertNextonHook()
   ConsoleOutput("vnreng: INSERT NEXTON");
   NewHook(hp, "NEXTON");
 
-  //ConsoleOutput("NEXTON");
+  //ConsoleOutput("vnreng:NEXTON: disable GDI hooks"); // There are no GDI functions hooked though
+  //DisableGDIHooks(); // disable GetGlyphOutlineA
   return true;
 }
 
