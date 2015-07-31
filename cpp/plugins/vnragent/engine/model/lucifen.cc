@@ -135,7 +135,9 @@ namespace Private {
     int size = ::strlen(p);
     if (end > p && end - p < size)
       size = end - p;
-    QByteArray ret(p, size);
+    QByteArray ret;
+    if (size)
+      ret.setRawData(p, size);
     //if ((uint8_t)p[ret.size() - 1] == 0x93 && (uint8_t)p[ret.size() - 1] == 0x83)// trim encindg \x83\x93
     //  return ret.left(ret.size() - 2);
     for (p += ret.size(); (!end || p < end) && p[1] == 0x5b && p[2] > 0; p += ret.size()) {

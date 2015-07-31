@@ -107,8 +107,7 @@ namespace Private {
     else if (ins == 0x5f) // 0047D5A4   5F               POP EDI
       role = Engine::NameRole;
     auto sig = Engine::hashThreadSignature(role, retaddr);
-    data_.setRawData(text, ::strlen(text));
-    data_ = EngineController::instance()->dispatchTextA(data_, role, sig);
+    data_ = EngineController::instance()->dispatchTextA(text, role, sig);
     s->stack[1] = (ulong)data_.constData(); // arg1
     return true;
   }
