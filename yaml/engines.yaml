@@ -70,6 +70,8 @@ embed:
   - Elf
   - Escude
   - Lucifen
+  - NEXTON
+  #- NEXTON1
   - QLiE
   - QLiE2
   - Retouch
@@ -446,6 +448,7 @@ char:
   - EmbedFVP
   - EmbedLeaf
   - EmbedLucifen
+  - EmbedNexton
   - EmbedPal
   - EmbedQLiE
   - EmbedRetouch
@@ -761,6 +764,7 @@ focus:
   #- Malie3
   #- Mink
   #- Mono
+  #- NEXTON
   #- GXP
   #- GXP2
   #- KiriKiri1

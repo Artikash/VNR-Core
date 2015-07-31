@@ -144,6 +144,7 @@ HEADERS += \
   engine/model/leaf.h \
   engine/model/lucifen.h \
   engine/model/mono.h \
+  engine/model/nexton.h \
   engine/model/pal.h \
   engine/model/qlie.h \
   engine/model/retouch.h \
@@ -177,6 +178,7 @@ SOURCES += \
   engine/model/leaf.cc \
   engine/model/lucifen.cc \
   engine/model/mono.cc \
+  engine/model/nexton.cc \
   engine/model/pal.cc \
   engine/model/qlie.cc \
   engine/model/retouch.cc \
