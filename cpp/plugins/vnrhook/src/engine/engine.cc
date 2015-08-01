@@ -9307,7 +9307,7 @@ bool InsertNextonHook()
     0x85,0xc0,              // 0044d6a2   85c0             test eax,eax
     0x0f,0x84 //c2feffff    // 0044d6a4  ^0f84 c2feffff    je .0044d56c
   };
-  //enum { addr_offset = 0x0044d69e - 0x0044d696 }; // = 8
+  enum { addr_offset = 0x0044d69e - 0x0044d696 }; // = 8
   ULONG startAddress, stopAddress;
   if (!NtInspect::getProcessMemoryRange(&startAddress, &stopAddress)) {
     ConsoleOutput("vnreng:NEXTON: failed to get memory range");
@@ -15224,7 +15224,7 @@ static void SpecialHookMonoString(DWORD esp_base, HookParam *hp, BYTE, DWORD *da
     *len = p->length * 2; // for widechar
 
     auto s = regof(ecx, esp_base);
-    for (int i = 0; i < 10; i++) // traverse pointers until a non-readable address is met
+    for (int i = 0; i < 0x10; i++) // traverse pointers until a non-readable address is met
       if (s && !::IsBadReadPtr((LPCVOID)s, sizeof(DWORD)))
         s = *(DWORD *)s;
       else
