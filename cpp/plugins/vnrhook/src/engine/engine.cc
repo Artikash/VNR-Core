@@ -8685,7 +8685,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
       if (size > 0x2000) {
         addr = base & ~0xfff;
         status = NtQueryVirtualMemory(NtCurrentProcess(),(PVOID)addr,
-          MemorySectionName,text_buffer_prev,0x1000,&retl);
+            MemorySectionName,text_buffer_prev,0x1000,&retl);
         if (!NT_SUCCESS(status)) {
           k = addr + size - 4;
           for (j = addr; j < k; j++) {
