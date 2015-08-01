@@ -4231,7 +4231,7 @@ void SpecialHookRUGP1(DWORD esp_base, HookParam *hp, BYTE, DWORD *data, DWORD *s
 {
   CC_UNUSED(split);
   DWORD *stack = (DWORD *)esp_base;
-  DWORD i,val;
+  DWORD i, val;
   for (i = 0; i < 4; i++) {
     val = *stack++;
     if ((val >> 16) == 0)
@@ -4493,7 +4493,7 @@ static void InsertAliceHook1(DWORD addr, DWORD module, DWORD limit)
       DWORD j = i + 5 + *(DWORD *)(i + 1);
       if (j > module && j < limit) {
         while (true) { // Find the first register push onto stack.
-          DWORD c = disasm((BYTE*)s);
+          DWORD c = ::disasm((BYTE *)s);
           if (c == 1)
             break;
           s += c;
@@ -5462,12 +5462,12 @@ bool InsertAtelierHook()
 {
   //SafeFillRange(process_name_, &base, &size);
   //size=size-base;
-  DWORD sig = 0x40c683; // add esi,0x40
+  //DWORD sig = 0x40c683; // add esi,0x40
   //i=module_base_+SearchPattern(module_base_,module_limit_-module_base_,&sig,3);
   DWORD i;
   for (i = module_base_; i < module_limit_ - 4; i++) {
-    sig = *(DWORD *)i & 0xffffff;
-    if (0x40c683 == sig)
+    DWORD sig = *(DWORD *)i & 0xffffff;
+    if (0x40c683 == sig) // add esi,0x40
       break;
   }
   if (i < module_limit_ - 4)
@@ -6969,7 +6969,7 @@ bool InsertMEDHook()
     if (*(DWORD *)i == 0x8175) //cmp *, 8175
       for (DWORD j = i, k = i + 0x100; j < k; j++)
         if (*(BYTE *)j == 0xe8) {
-          DWORD t = j + 5 + *(DWORD*)(j+1);
+          DWORD t = j + 5 + *(DWORD *)(j + 1);
           if (t > module_base_ && t < module_limit_) {
             HookParam hp = {};
             hp.address = t;
@@ -7204,17 +7204,17 @@ bool InsertQLIE2Hook()
 bool InsertQLIE1Hook()
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ - 4; i++)
-    if (*(DWORD *)i == 0x7ffe8347) { //inc edi, cmp esi,7f
+    if (*(DWORD *)i == 0x7ffe8347) { // inc edi, cmp esi,7f
       DWORD t = 0;
       for (DWORD j = i; j < i + 0x10; j++) {
-        if (*(DWORD *)j == 0xa0) { //cmp esi,a0
+        if (*(DWORD *)j == 0xa0) { // cmp esi,a0
           t = 1;
           break;
         }
       }
       if (t)
         for (DWORD j = i; j > i - 0x100; j--)
-          if (*(DWORD *)j == 0x83ec8b55) { //push ebp, mov ebp,esp, sub esp,*
+          if (*(DWORD *)j == 0x83ec8b55) { // push ebp, mov ebp,esp, sub esp,*
             HookParam hp = {};
             hp.address = j;
             hp.offset = 0x18;
@@ -7344,7 +7344,8 @@ bool InsertCandyHook2()
 // jichi 10/2/2013: Add new candy hook
 bool InsertCandyHook()
 {
-  if (0 == _wcsicmp(process_name_, L"systemc.exe"))
+  //if (0 == _wcsicmp(process_name_, L"systemc.exe"))
+  if (IthCheckFile(L"SystemC.exe"))
     return InsertCandyHook1();
   else
     return InsertCandyHook2();
