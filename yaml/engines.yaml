@@ -3,6 +3,7 @@
 
 rename:
   #AB2Try: YaneSDK # TODO
+  AbelSoftware: Abel
   AliceRunPatch: AliceRunPatch43
   AMUSE CRAFT: Pal
   AUEngine: Tenco
@@ -203,6 +204,7 @@ simple:
   - 5pb2
   - 5pb3
   - AB2Try
+  - Abel
   - Adobe AIR
   - Adobe Flash 10
   - Alchemist PSP
@@ -465,7 +467,8 @@ char:
   - 5pb2
   - 5pb3
   - AB2Try
-  - AbelSoftware
+  - Abel
+  - AbelSoftware # renamed
   - Alchemist PSP
   - Alchemist2 PSP
   - AliceRunPatch # renamed
@@ -692,6 +695,7 @@ focus:
   - 5pb1
   - 5pb2
   - 5pb3
+  - Abel
   - Adobe Flash 10
   - ARCGameEngine
   - BootupA # not for 仏蘭西少女 though
