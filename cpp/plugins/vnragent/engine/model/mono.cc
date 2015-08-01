@@ -72,7 +72,7 @@ namespace Private {
     auto role = Engine::OtherRole;
 
     ulong split = s->ecx;
-    for (int i = 0; i < 10; i++) // traverse pointers until a non-readable address is met
+    for (int i = 0; i < 0x10; i++) // traverse pointers until a non-readable address is met
       if (Engine::isAddressReadable(split))
         split = *(DWORD *)split;
       else
