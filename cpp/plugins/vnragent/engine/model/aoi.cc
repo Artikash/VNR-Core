@@ -9,7 +9,6 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
-#include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
 #define DEBUG "model/aoi"
@@ -33,7 +32,7 @@ ulong findCppProc(HMODULE hModule, LPCSTR functionName, int minParamNum = 0, int
     sig.push_back('_');
     sig += functionName;
     sig.push_back('@');
-    sig += boost::lexical_cast<std::string>(4 * i);
+    sig += std::to_string(4 * i);
     if (auto proc = ::GetProcAddress(hModule, sig.c_str()))
       return (ulong)proc;
   }

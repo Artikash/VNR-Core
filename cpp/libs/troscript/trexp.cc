@@ -5,7 +5,6 @@
 #include "cpputil/cppregex.h"
 #include <vector>
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 //#include <QDebug>
 
 #define SK_NO_QT
@@ -32,7 +31,7 @@ std::wstring trexp::compile_format(const std::wstring &target, const std::wstrin
       symbols.push_back(it);
     });
     for (size_t i = 0; i < symbols.size(); i++) {
-      std::string repl = "$" + boost::lexical_cast<std::string>(i+1);
+      std::string repl = "$" + std::to_string(i+1);
       boost::replace_all(ret, symbols[i], repl);
     }
 
@@ -41,7 +40,7 @@ std::wstring trexp::compile_format(const std::wstring &target, const std::wstrin
         size_t pos = symbols[i].find('#');
         if (pos != std::wstring::npos) {
           std::string pat = "[[" + symbols[i].substr(pos),
-                      repl = "$" + boost::lexical_cast<std::string>(i+1);
+                      repl = "$" + std::to_string(i+1);
           boost::replace_all(ret, pat, repl);
         }
       }
