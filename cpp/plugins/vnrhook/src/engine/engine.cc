@@ -15638,8 +15638,8 @@ bool InsertMonoHooks()
 
   // mono_unichar2* mono_string_to_utf16       (MonoString *s);
   // char*          mono_string_to_utf8        (MonoString *s);
-  const MonoFunction funcs[] = { MONO_FUNCTIONS_INITIALIZER };
   HookParam hp = {};
+  const MonoFunction funcs[] = { MONO_FUNCTIONS_INITIALIZER };
   BOOST_FOREACH (const MonoFunction &it, funcs)
     if (FARPROC addr = ::GetProcAddress(h, it.functionName)) {
       hp.address = (DWORD)addr;
