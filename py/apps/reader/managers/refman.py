@@ -213,6 +213,7 @@ class ScapeApi(object):
     """
     self.online = online
     self.proxyEnabled = False
+    self.session = None
 
     import settings
     ss = settings.global_()
@@ -236,6 +237,7 @@ class ScapeApi(object):
         self.cachingApi.online = v
 
   def setSession(self, v): # requests.Session
+    self.session = v
     if hasmemoizedproperty(self, 'cachingApi'):
       self.cachingApi.session = v
     if hasmemoizedproperty(self, 'api'):
@@ -244,15 +246,19 @@ class ScapeApi(object):
   @memoizedproperty
   def cachingApi(self):
     from erogamescape.caching import CachingGameTableApi
-    return CachingGameTableApi(
+    ret = CachingGameTableApi(
         cachedir=rc.DIR_CACHE_SCAPE,
         expiretime=config.REF_EXPIRE_TIME,
         online=self.online)
+    ret.session = self.session
+    return ret
 
   @memoizedproperty
   def api(self):
     from erogamescape.api import GameTableApi
-    return GameTableApi()
+    ret = GameTableApi()
+    ret.session = self.session
+    return ret
 
   @staticmethod
   def _parsekey(url):
