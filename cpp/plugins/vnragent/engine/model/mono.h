@@ -16,6 +16,7 @@ public:
     name = "EmbedMono";
     encoding = Utf16Encoding;
     //newLineString = "\n";
+    scenarioLineCapacity = 40; // sample game: CM3D 2
     matchFunction = &Self::match;
     attachFunction = &Self::attach;
   }

@@ -35,6 +35,8 @@ namespace MonoHook {
 namespace Private {
 
   ulong scenarioSplit_;
+  ulong minimumSplit_,
+        maximumSplit_;
   std::unordered_set<ulong> skippedSplits_;
 
   //void *allocate(size_t size) { return new uint8_t[size]; }
@@ -76,12 +78,12 @@ namespace Private {
       else
         break;
 
-    if (!skippedSplits_.empty() && skippedSplits_.find(split) != skippedSplits_.end())
+    if (minimumSplit_ && minimumSplit_ > split ||
+        maximumSplit_ && maximumSplit_ < split)
       return true;
 
-    // hexstr 雇用 utf16: c7962875
-    //if (p->chars[0] == 0x96c7)
-    //  DOUT(split);
+    if (!skippedSplits_.empty() && skippedSplits_.find(split) != skippedSplits_.end())
+      return true;
 
     if (p->length > 2 && split == scenarioSplit_) // do not treat two kanji as scenario
       role = Engine::ScenarioRole;
@@ -107,9 +109,14 @@ namespace Private {
   {
     if (Engine::globs("CM3D*.exe")) { // Custom Maid 3D 2
       scenarioSplit_ = 0x3;
-      skippedSplits_.insert(0x0); // could crash the game
-      skippedSplits_.insert(0x1); // could crash the game
-      skippedSplits_.insert(0x74747542);
+
+      minimumSplit_ = 2;
+      maximumSplit_ = 0xff;
+      //maximumSplit_ = 0x20;
+      //skippedSplits_.insert(0x0); // could crash the game
+      //skippedSplits_.insert(0x1); // could crash the game
+      //skippedSplits_.insert(0x74747542);  // could crash the game
+      skippedSplits_.insert(0x10); // could cause H-scene to be blackout
       return;
     }
     //if (Engine::exists("PlayClub.exe")) // PlayClub
