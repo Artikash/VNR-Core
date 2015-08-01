@@ -8685,7 +8685,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
       if (size > 0x2000) {
         addr = base & ~0xfff;
         status = NtQueryVirtualMemory(NtCurrentProcess(),(PVOID)addr,
-          MemorySectionName,text_buffer_prev,0x1000,&retl);
+            MemorySectionName,text_buffer_prev,0x1000,&retl);
         if (!NT_SUCCESS(status)) {
           k = addr + size - 4;
           for (j = addr; j < k; j++) {
@@ -15638,8 +15638,8 @@ bool InsertMonoHooks()
 
   // mono_unichar2* mono_string_to_utf16       (MonoString *s);
   // char*          mono_string_to_utf8        (MonoString *s);
-  const MonoFunction funcs[] = { MONO_FUNCTIONS_INITIALIZER };
   HookParam hp = {};
+  const MonoFunction funcs[] = { MONO_FUNCTIONS_INITIALIZER };
   BOOST_FOREACH (const MonoFunction &it, funcs)
     if (FARPROC addr = ::GetProcAddress(h, it.functionName)) {
       hp.address = (DWORD)addr;
