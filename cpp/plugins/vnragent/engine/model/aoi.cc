@@ -10,6 +10,7 @@
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
 #include <boost/foreach.hpp>
+#include <cstdint>
 
 #define DEBUG "model/aoi"
 #include "sakurakit/skdebug.h"
@@ -32,7 +33,7 @@ ulong findCppProc(HMODULE hModule, LPCSTR functionName, int minParamNum = 0, int
     sig.push_back('_');
     sig += functionName;
     sig.push_back('@');
-    sig += std::to_string(4 * i);
+    sig += std::to_string(int64_t(4 * i));
     if (auto proc = ::GetProcAddress(hModule, sig.c_str()))
       return (ulong)proc;
   }
