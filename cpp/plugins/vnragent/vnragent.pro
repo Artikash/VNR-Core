@@ -146,6 +146,7 @@ HEADERS += \
   engine/model/mono.h \
   engine/model/nexton.h \
   engine/model/pal.h \
+  engine/model/pensil.h \
   engine/model/qlie.h \
   engine/model/retouch.h \
   engine/model/rgss.h \
@@ -180,6 +181,7 @@ SOURCES += \
   engine/model/mono.cc \
   engine/model/nexton.cc \
   engine/model/pal.cc \
+  engine/model/pensil.cc \
   engine/model/qlie.cc \
   engine/model/retouch.cc \
   engine/model/rgss.cc \

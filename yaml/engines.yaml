@@ -73,6 +73,7 @@ embed:
   - Lucifen
   - NEXTON
   #- NEXTON1
+  - Pensil
   - QLiE
   - QLiE2
   - Retouch
@@ -452,6 +453,7 @@ char:
   - EmbedLucifen
   - EmbedNexton
   - EmbedPal
+  - EmbedPensil
   - EmbedQLiE
   - EmbedRetouch
   - EmbedRio
@@ -762,6 +764,10 @@ focus:
   #- EmbedMono
   #- EmbedRGSS
   #- EXP    # there is no way to display VNR in full screen
+  #- GXP
+  #- GXP2
+  #- KiriKiri1
+  #- KiriKiri2
   #- LunaSoft
   #- Majiro
   #- Malie2
@@ -769,10 +775,7 @@ focus:
   #- Mink
   #- Mono
   #- NEXTON
-  #- GXP
-  #- GXP2
-  #- KiriKiri1
-  #- KiriKiri2
+  #- Pensil
   #- ScenarioPlayerW
   #- ShinaRio
   #- SystemAoi
