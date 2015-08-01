@@ -56,7 +56,7 @@ namespace Private {
   bool skipsText(const wchar_t *s, size_t size)
   {
     return size <= 1
-      || s[0] <= 127 || s[size - 1] <= 127
+      || s[0] <= 127 //|| s[size - 1] <= 127
       || unistr::ishangul(s[0]) || unistr::ishangul(s[1]) // avoid re-translating Korean
       || ::cpp_wcsnchr(s, size, '/');
   }
