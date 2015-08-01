@@ -695,7 +695,6 @@ focus:
   - 5pb1
   - 5pb2
   - 5pb3
-  - Abel
   - Adobe Flash 10
   - ARCGameEngine
   - BootupA # not for 仏蘭西少女 though
@@ -754,6 +753,7 @@ focus:
   - YU-RIS2
   - YukaSystem2
 # No focus:
+  #- Abel
   #- AliceRunPatch43
   #- AOS
   #- Cotopha
