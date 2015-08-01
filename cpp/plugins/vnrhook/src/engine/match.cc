@@ -570,6 +570,7 @@ bool DetermineEngineOther()
         }
       }
     }
+
   return false;
 }
 
@@ -577,6 +578,10 @@ bool DetermineEngineOther()
 // Put the patterns that might break other games at last
 bool DetermineEngineAtLast()
 {
+  if (IthFindFile(L"system") && IthFindFile(L"system.dat")) { // jichi 7/31/2015
+    InsertAbelHook();
+    return true;
+  }
   if (IthFindFile(L"data\\*.cpk")) { // jichi 12/2/2014
     Insert5pbHook();
     return true;
