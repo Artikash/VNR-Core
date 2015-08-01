@@ -21,6 +21,7 @@
 #include "engine/model/mono.h"
 #include "engine/model/nexton.h"
 #include "engine/model/pal.h"
+#include "engine/model/pensil.h"
 #include "engine/model/qlie.h"
 #include "engine/model/retouch.h"
 #include "engine/model/rgss.h"
@@ -63,6 +64,7 @@ EngineController *EngineFactory::createEngine()
     , new RGSSEngine
     , new RetouchEngine
     , new QLiEEngine
+    , new PensilEngine
     , new PalEngine
     , new NextonEngine
     , new MonoEngine

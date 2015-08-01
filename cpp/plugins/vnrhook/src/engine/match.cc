@@ -406,7 +406,7 @@ bool DetermineEngineByFile4()
   // - PSetup.exe no longer exists
   // - MovieTexture.dll information shows MovieTex dynamic library, copyright Pensil 2013
   // - ta_trial.exe information shows 2XT - Primula Adventure Engine
-  if (IthFindFile(L"PSetup.exe") || IthFindFile(L"MovieTexture.dll") || Util::SearchResourceString(L"2XT -")) {
+  if (IthCheckFile(L"PSetup.exe") || IthCheckFile(L"MovieTexture.dll") || IthFindFile(L"PENCIL.*") || Util::SearchResourceString(L"2XT -")) {
     InsertPensilHook();
     return true;
   }
