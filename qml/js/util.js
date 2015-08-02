@@ -175,9 +175,9 @@ var YOMI_LANGUAGES = [
 var ALPHABET_LANGUAGES = [
   //'en'
   'ru'
-  , 'bg'
+  //, 'bg'
   , 'uk'
-  , 'he'
+  //, 'he'
   //, 'el'
 ]
 
