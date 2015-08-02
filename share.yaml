@@ -396,6 +396,7 @@ languages:
   - zhs
   - ko # Korean
   - vi # Vietnamese
+  - tl # Filipino (Tagalog)
   - id # Indonesian
   - ms # Malaysian
   - th # Thai
@@ -405,10 +406,13 @@ languages:
   - de # German
   - el # Greek
   - es # Spanish
+  - et # Estonian
   - fi # Finnish
   - fr # French
   - hu # Hungarian
   - it # Italian
+  - lt # Lithuanian
+  - lv # Latvian
   - nl # Dutch
   - 'no' # Norwegian
   - pl # Polish
@@ -417,6 +421,7 @@ languages:
   - sk # Slovak
   - sv # Swedish
   - tr # Turkish
+  - be # Belarusian
   - ru # Russian
   - uk # Ukrainian
   latin:
@@ -425,10 +430,13 @@ languages:
   - da
   - de
   - es
+  - et
   - fi
   - fr
   - hu
   - it
+  - lt
+  - lv
   - nl
   - 'no'
   - pl
@@ -439,6 +447,7 @@ languages:
   - tr
   # Asian, though
   - vi
+  - tl
   - id
   - ms
   # Different alphabet, though
@@ -447,6 +456,7 @@ languages:
   - uk
   cyril:
   - ru
+  - be
   - uk
   asian: # on contrast of latin
   - ja
@@ -495,12 +505,14 @@ languages:
     - en
     - ru
     - uk
+    #- be
     - el
     - ar
     - th
     - ko
 
   # Languages supported by transliterate
+  # https://github.com/barseghyanartur/transliterate
   alphabet:
     - el
     - ru
@@ -520,6 +532,7 @@ languages:
     ja: 日本語
     ko: 한국어
     vi: Tiếng Việt
+    tl: Tagalog
     id: Indonesia
     ms: Bahasa Melayu
     th: ภาษาไทย
@@ -529,9 +542,12 @@ languages:
     de: Deutsch
     el: Ελληνικά
     es: Españo
+    et: Eesti
     fr: Française
-    it: Italiano
     hu: Magyar
+    it: Italiano
+    lt: Lietuvių
+    lv: Latviešu
     'no': Norsk bokmål
     nl: Nederlands
     pl: Polski
@@ -541,6 +557,7 @@ languages:
     fi: Suomi
     sv: Svenska
     tr: Türkçe
+    be: Беларуская
     ru: Русский
     uk: Українська
 
@@ -555,6 +572,7 @@ locales:
   ms: ms_MY
   sv: sv_SE
   uk: uk_UA
+  et: et_EE
   vi: vi_VN
   ar: ar_SA # Arabic - Saudi Arabia, there are lots of ar, and the one with smallest locale is lcode
   #nb: nb_NO # Norwegian - Bokml

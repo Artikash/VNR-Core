@@ -1934,6 +1934,46 @@ class Settings(QSettings):
       self.setValue('IndonesianFont', value)
       self.indonesianFontChanged.emit(value)
 
+  tagalogFontChanged = Signal(unicode)
+  def tagalogFont(self):
+    return self.value('TagalogFont', config.text_font('tl'))
+  def setTagalogFont(self, value):
+    if value != self.tagalogFont():
+      self.setValue('TagalogFont', value)
+      self.tagalogFontChanged.emit(value)
+
+  belarusianFontChanged = Signal(unicode)
+  def belarusianFont(self):
+    return self.value('BelarusianFont', config.text_font('be'))
+  def setBelarusianFont(self, value):
+    if value != self.belarusianFont():
+      self.setValue('BelarusianFont', value)
+      self.belarusianFontChanged.emit(value)
+
+  estonianFontChanged = Signal(unicode)
+  def estonianFont(self):
+    return self.value('EstonianFont', config.text_font('be'))
+  def setEstonianFont(self, value):
+    if value != self.estonianFont():
+      self.setValue('EstonianFont', value)
+      self.estonianFontChanged.emit(value)
+
+  latvianFontChanged = Signal(unicode)
+  def latvianFont(self):
+    return self.value('LatvianFont', config.text_font('be'))
+  def setLatvianFont(self, value):
+    if value != self.latvianFont():
+      self.setValue('LatvianFont', value)
+      self.latvianFontChanged.emit(value)
+
+  lithuanianFontChanged = Signal(unicode)
+  def lithuanianFont(self):
+    return self.value('LithuanianFont', config.text_font('be'))
+  def setLithuanianFont(self, value):
+    if value != self.lithuanianFont():
+      self.setValue('LithuanianFont', value)
+      self.lithuanianFontChanged.emit(value)
+
   czechFontChanged = Signal(unicode)
   def czechFont(self):
     return self.value('CzechFont', config.text_font('cs'))
@@ -2528,6 +2568,11 @@ class SettingsProxy(QObject):
     g.vietnameseFontChanged.connect(self.vietnameseFontChanged)
     g.malaysianFontChanged.connect(self.malaysianFontChanged)
     g.indonesianFontChanged.connect(self.indonesianFontChanged)
+    g.tagalogFontChanged.connect(self.tagalogFontChanged)
+    g.belarusianFontChanged.connect(self.belarusianFontChanged)
+    g.estonianFontChanged.connect(self.estonianFontChanged)
+    g.latvianFontChanged.connect(self.latvianFontChanged)
+    g.lithuanianFontChanged.connect(self.lithuanianFontChanged)
     g.arabicFontChanged.connect(self.arabicFontChanged)
     g.germanFontChanged.connect(self.germanFontChanged)
     g.frenchFontChanged.connect(self.frenchFontChanged)
@@ -2675,6 +2720,16 @@ class SettingsProxy(QObject):
   malaysianFont = unicode_property('MalaysianFont', config.text_font('ms'), notify=malaysianFontChanged)
   indonesianFontChanged = Signal(unicode)
   indonesianFont = unicode_property('IndonesianFont', config.text_font('id'), notify=indonesianFontChanged)
+  tagalogFontChanged = Signal(unicode)
+  tagalogFont = unicode_property('TagalogFont', config.text_font('tl'), notify=tagalogFontChanged)
+  belarusianFontChanged = Signal(unicode)
+  belarusianFont = unicode_property('BelarusianFont', config.text_font('be'), notify=belarusianFontChanged)
+  estonianFontChanged = Signal(unicode)
+  estonianFont = unicode_property('EstonianFont', config.text_font('et'), notify=estonianFontChanged)
+  latvianFontChanged = Signal(unicode)
+  latvianFont = unicode_property('LatvianFont', config.text_font('lv'), notify=latvianFontChanged)
+  lithuanianFontChanged = Signal(unicode)
+  lithuanianFont = unicode_property('LithuanianFont', config.text_font('lt'), notify=lithuanianFontChanged)
   arabicFontChanged = Signal(unicode)
   arabicFont = unicode_property('ArabicFont', config.text_font('ar'), notify=arabicFontChanged)
   germanFontChanged = Signal(unicode)

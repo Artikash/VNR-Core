@@ -31,9 +31,14 @@ LCID_SV_SV = 0x041D # 1053
 LCID_TR_TR = 0x041F # 1055
 LCID_ID_ID = 0x0421 # 1057
 LCID_UK_UA = 0x0422 # 1058
+LCID_BE_BE = 0x0423 # 1059
+LCID_ET_EE = 0x0425 # 1061
+LCID_LV_LV = 0x0426 # 1062
+LCID_LT_LT = 0x0427 # 1063
 LCID_VI_VN = 0x042a # 1066
 LCID_TH_TH = 0x041e # 1054
 LCID_MS_MY = 0x044c # 1100
+LCID_TL_TL = 0x0464 # 1124, Filipino
 LCID_ZH_CN = 0x0804 # 2052
 LCID_PT_PT = 0x0816 # 2070
 LCID_ES_ES = 0x0C0A # 3082
@@ -46,6 +51,7 @@ LCID_LOCALE = {
   LCID_KO_KR: 'ko_KR',
   LCID_TH_TH: 'th_TH',
   LCID_VI_VN: 'vi_VN',
+  LCID_TL_TL: 'tl_TL',
   LCID_ID_ID: 'id_ID',
   LCID_MS_MY: 'ms_MY',
   LCID_DE_DE: 'de_DE',
@@ -54,6 +60,7 @@ LCID_LOCALE = {
   LCID_PL_PL: 'pl_PL',
   LCID_RO_RO: 'ro_RO',
   LCID_RU_RU: 'ru_RU',
+  LCID_BE_BE: 'be_BE',
   LCID_FR_FR: 'fr_FR',
   LCID_PT_PT: 'pt_PT',
   LCID_ES_ES: 'es_ES',
@@ -66,6 +73,9 @@ LCID_LOCALE = {
   LCID_SK_SK: 'sk_SK',
   LCID_SV_SV: 'sv_SV',
   LCID_EL_EL: 'el_EL',
+  LCID_ET_EE: 'et_EE',
+  LCID_LV_LV: 'lv_LV',
+  LCID_LT_LT: 'lt_LT',
   LCID_TR_TR: 'tr_TR',
   LCID_UK_UA: 'uk_UA',
 }
@@ -174,12 +184,16 @@ LOCALE_CODEPAGE = {
 
   'ar_SA': CODEPAGE_AR,
   'ru_RU': CODEPAGE_CYRILLIC,
+  'be_BE': CODEPAGE_CYRILLIC,
   'uk_UA': CODEPAGE_CYRILLIC,
 
   'fi_FI': CODEPAGE_BALTIC,
   'no_NO': CODEPAGE_BALTIC,
   'sv_SV': CODEPAGE_BALTIC,
   'da_DA': CODEPAGE_BALTIC,
+  'et_EE': CODEPAGE_BALTIC,
+  'lt_LT': CODEPAGE_BALTIC,
+  'lv_LV': CODEPAGE_BALTIC,
 
   # http://en.wikipedia.org/wiki/Windows-1250
   'pl_PL': CODEPAGE_CE,
@@ -197,6 +211,8 @@ LOCALE_CODEPAGE = {
   'pt_PT': CODEPAGE_LATIN1,
   'ms_MY': CODEPAGE_LATIN1,
   'nl_NL': CODEPAGE_LATIN1,
+
+  'tl_TL': CODEPAGE_LATIN1,
 }
 
 def locale2codepage(k): return LOCALE_CODEPAGE.get(k) or 0  # str ->long

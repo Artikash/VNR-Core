@@ -529,6 +529,11 @@ Item { id: root_
         vietnameseFont: settings_.vietnameseFont
         malaysianFont: settings_.malaysianFont
         indonesianFont: settings_.indonesianFont
+        tagalogFont: settings_.tagalogFont
+        belarusianFont: settings_.belarusianFont
+        estonianFont: settings_.estonianFont
+        latvianFont: settings_.latvianFont
+        lithuanianFont: settings_.lithuanianFont
         arabicFont: settings_.arabicFont
         germanFont: settings_.germanFont
         frenchFont: settings_.frenchFont
