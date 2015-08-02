@@ -108,6 +108,8 @@ class sakurakit(QObject):
       self.tr("Scroll to Top"), self.tr("Scroll to top"),
       self.tr("Scroll to Bottom"), self.tr("Scroll to bottom"),
 
+      self.tr("Restore default settings"),
+
       self.tr("Click"), self.tr("click"),
       self.tr("Double Click"), self.tr("Double click"), self.tr("double click"),
       self.tr("Double-click"), self.tr("double-click"),
