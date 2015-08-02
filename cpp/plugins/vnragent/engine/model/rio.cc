@@ -100,14 +100,14 @@ namespace Private {
       return (t[6] && !t[5] && !t[4] && !t[3] && !t[2] && !t[1]) ? t + 6 : nullptr; // 6 continuous zeros
     }
 
-    Engine::TextRole textRole() const
-    {
-      static ulong minSplit_ = UINT_MAX;
-      minSplit_ = qMin(minSplit_, split_);
-      return split_ == minSplit_ ? Engine::ScenarioRole :
-             split_ == minSplit_ + 1 ? Engine::NameRole :
-             Engine::OtherRole;
-    }
+    //Engine::TextRole textRole() const
+    //{
+    //  static ulong minSplit_ = UINT_MAX;
+    //  minSplit_ = qMin(minSplit_, split_);
+    //  return split_ == minSplit_ ? Engine::ScenarioRole :
+    //         split_ == minSplit_ + 1 ? Engine::NameRole :
+    //         Engine::OtherRole;
+    //}
 
   public:
     static bool isTextList(LPCSTR text) { return nextText(text); }
@@ -120,7 +120,7 @@ namespace Private {
      */
     void dispatchText(LPSTR text, bool paddingSpace)
     {
-      enum { NameCapacity = 0x10 }; // including ending '\0'
+      enum { NameCapacity = 0x20 }; // including ending '\0'
       static QByteArray data_;
 
       if (0 == ::strcmp(text, data_.constData()))
@@ -129,7 +129,11 @@ namespace Private {
       //LPSIZE lpSize = (LPSIZE)s->stack[4]; // arg4 of GetTextExtentPoint32A
       //int area = lpSize->cx * lpSize->cy;
       //auto role = lpSize->cx || !lpSize->cy || area > 150 ? Engine::ScenarioRole : Engine::NameRole;
-      auto role = textRole();
+      //auto role = textRole();
+      auto role = Engine::ScenarioRole;
+      if (::strlen(text) < NameCapacity
+          && text[NameCapacity - 1] == 0 && text[NameCapacity])
+        role = Engine::NameRole;
       auto sig = Engine::hashThreadSignature(role, split_);
       QByteArray oldData = text,
                  newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
@@ -365,6 +369,16 @@ namespace Private {
    *  0012FEC8  01 67 40 00 68 07 8F 00 00 00 40 00 00 00 00 00  g@.h・..@.....
    *  0012FED8  00 00 00 00 00 F0 FD 7F 8B 22 35 72 28 00 00 00  .....・・5r(...
    *  0012FEE8  EF 7E E7 71 28 00 00 00 33 C4 B1 8D 00 01 00 00  ・輌(...3ﾄｱ・..
+   *
+   *  Name:
+   *  0635C4D0  96 B3 90 FC 00 00 00 00 00 00 00 00 00 00 00 00  無線............
+   *  0635C4E0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   *  0635C4F0  96 B3 90 FC 00 00 00 00 00 00 00 00 00 00 00 00  無線............
+   *  0635C500  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   *  0635C510  CF 03 07 00 12 70 76 00 12 70 6E 00 12 6E 00 12  ﾏ.pv.pn.n.
+   *  0635C520  70 6D 00 12 6D 6E 00 12 66 70 00 12 63 00 80 02  pm.mn.fp.c.
+   *  0635C530  06 00 12 70 76 00 12 70 6E 00 12 6E 00 12 70 6D  .pv.pn.n.pm
+   *  0635C540  00 12 6D 6E 00 12 66 70 00 16 03 04 0A 00 00 00  .mn.fp.....
    */
   int hookStackIndex_; // hook argument index on the stack
   int textOffset_;      // distance of the text from the hook argument
