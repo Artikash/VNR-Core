@@ -116,15 +116,20 @@ namespace Private {
 
       //minimumSplit_ = 2;
       minimumSplit_ = 3;
-      //maximumSplit_ = 0x8; // failed
-      //maximumSplit_ = 0xf; // failed
+
+      //minimumSplit_ = 5; // failed
+      //minimumSplit_ = 0x8; // work
+
       maximumSplit_ = 0x20;
       //maximumSplit_ = 0xff;
       //maximumSplit_ = 0xffff;
       //maximumSplit_ = 0xffffff;
       //skippedSplits_.insert(0x0); // could crash the game
       //skippedSplits_.insert(0x1); // could crash the game
-      skippedSplits_.insert(0x4);
+      skippedSplits_.insert(0x4); // or position won't work
+      skippedSplits_.insert(0x5); // or position won't work
+      skippedSplits_.insert(0x6); // or position won't work
+
       skippedSplits_.insert(0x10); // could cause H-scene to be blackout
       skippedSplits_.insert(0x16); // optional, avoid retranslation
       skippedSplits_.insert(0x19); // optional, avoid retranslation
