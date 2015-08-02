@@ -64,9 +64,12 @@ namespace Private {
   bool before_mono_string(winhook::hook_stack *s)
   {
     static std::unordered_set<qint64> hashes_;
+    //static std::unordered_set<const MonoString *> addresses_;
     auto p = (MonoString *)s->stack[1]; // string in arg1
 
-    if (skipsText(p->chars, p->length) || hashes_.find(Engine::hashWCharArray(p->chars, p->length)) != hashes_.end())
+    if (skipsText(p->chars, p->length)
+        //|| addresses_.find(p) != addresses_.end()
+        || hashes_.find(Engine::hashWCharArray(p->chars, p->length)) != hashes_.end())
       return true;
 
     auto role = Engine::OtherRole;
@@ -100,6 +103,7 @@ namespace Private {
           newText.push_back(' ');
       }
       newText.toWCharArray(p->chars);
+      //addresses_.insert(p);
       hashes_.insert(Engine::hashWCharArray(p->chars, p->length));
     }
     return true;
@@ -110,13 +114,21 @@ namespace Private {
     if (Engine::globs("CM3D*.exe")) { // Custom Maid 3D 2
       scenarioSplit_ = 0x3;
 
-      minimumSplit_ = 2;
-      maximumSplit_ = 0xff;
-      //maximumSplit_ = 0x20;
+      //minimumSplit_ = 2;
+      minimumSplit_ = 3;
+      //maximumSplit_ = 0x8; // failed
+      //maximumSplit_ = 0xf; // failed
+      maximumSplit_ = 0x20;
+      //maximumSplit_ = 0xff;
+      //maximumSplit_ = 0xffff;
+      //maximumSplit_ = 0xffffff;
       //skippedSplits_.insert(0x0); // could crash the game
       //skippedSplits_.insert(0x1); // could crash the game
-      //skippedSplits_.insert(0x74747542);  // could crash the game
+      skippedSplits_.insert(0x4);
       skippedSplits_.insert(0x10); // could cause H-scene to be blackout
+      skippedSplits_.insert(0x16); // optional, avoid retranslation
+      skippedSplits_.insert(0x19); // optional, avoid retranslation
+      //skippedSplits_.insert(0x74747542);  // could crash the game
       return;
     }
     //if (Engine::exists("PlayClub.exe")) // PlayClub
