@@ -282,7 +282,7 @@ if __name__ == "__main__":
 
   def test():
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
-    t = translate(s, to='zh', fr='ja')
+    t = translate(s, to='zht', fr='ja')
     print t
 
   def test_align():

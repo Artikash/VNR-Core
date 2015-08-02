@@ -314,7 +314,7 @@ BD_LANGUAGES = {
   'es': 'spa',
 
   'zhs': 'zh',
-  'zht': 'cnt',
+  'zht': 'cht',
   #'zh': 'zh',
 
   # The same
