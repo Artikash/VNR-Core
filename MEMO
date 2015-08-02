@@ -1,8 +1,8 @@
 # 2/14/2014
 
 # Languages related files
-wiki:
-- sidebar
+#wiki:
+#- sidebar
 
 api:
 - defs.py
@@ -24,9 +24,11 @@ client:
 - sakurakit/tr/Makefile: id_ID.ts id_ID.qm
 - settings.py: indonesianFont
 - i18n.py: 'id'
-- _prefs.py: 'id', Indonesian
+
+- mtinfo.py: ..
+  - baidufanyi.py: 'id'
 - _trman.py: 'id'
-- baidufanyi.py: 'id'
+- _prefs.py: 'id', Indonesian
 
 Info
 - Read Me.txt

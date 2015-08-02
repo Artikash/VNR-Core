@@ -20,9 +20,9 @@ var LANGUAGES = [
   , 'en'
   , 'zht', 'zhs'
   , 'ko'
-  , 'vi', 'th', 'id', 'ms', 'ar'
-  , 'cs', 'da', 'de', 'el', 'es', 'fr', 'hu', 'it', 'nl', 'no', 'pl', 'pt', 'ro', 'sk', 'sv', 'tr'
-  , 'ru', 'uk'
+  , 'vi', 'tl', 'th', 'id', 'ms', 'he', 'ar'
+  , 'cs', 'da', 'de', 'el', 'es', 'et', 'fr', 'hu', 'it', 'lt', 'lv', 'nl', 'no', 'pl', 'pt', 'ro', 'sl', 'sk', 'sv', 'tr'
+  , 'be', 'bg', 'ru', 'uk'
 ];
 
 /**
@@ -48,19 +48,27 @@ var LANGUAGE_NAME = {
  , zh: "Chinese", zht: "Chinese", zhs: "Simplified Chinese"
  , ko: "Korean"
  , vi: "Vietnamese"
+ //, tl: "Filipino"
+ , tl: "Tagalog"
  , th: "Thai"
  , id: "Indonesian"
  , ms: "Melayu"
+ , he: "Hebrew"
  , ar: "Arabic"
+ , be: "Belarusian"
+ , bg: "Bulgarian"
  , cs: "Czech"
  , da: "Danish"
  , de: "German"
  , el: "Greek"
  , es: "Spanish"
+ , et: "Estonian"
  , fi: "Finnish"
  , fr: "French"
  , hu: "Hungarian"
  , it: "Italian"
+ , lt: "Lithuanian"
+ , lv: "Latvian"
  , nl: "Dutch"
  , nb: "Norwegian", no: "Norwegian"
  , pl: "Polish"
@@ -68,6 +76,7 @@ var LANGUAGE_NAME = {
  , ro: "Romanian"
  , ru: "Russian"
  , sk: "Slovak"
+ , sl: "Slovenian"
  , sv: "Swedish"
  , tr: "Turkish"
  , uk: "Ukrainian"
@@ -77,9 +86,9 @@ function languageName(lang) { return LANGUAGE_NAME[lang]; }
 var LATIN_LANGUAGES = [
   'en'
   , 'el'
-  , 'ru', 'uk',
-  , 'cs', 'da', 'de', 'es', 'fi', 'fr', 'hu', 'it', 'no', 'nl', 'pl', 'pt', 'ro','sk', 'sv', 'tr'
-  , 'vi', 'th', 'ms', 'id', 'ar'
+  , 'ru', 'bg', 'uk',
+  , 'cs', 'da', 'de', 'es', 'et', 'fi', 'fr', 'hu', 'it', 'lt', 'lv', 'no', 'nl', 'pl', 'pt', 'ro','sk', 'sl', 'sv', 'tr'
+  , 'vi', 'tl', 'th', 'ms', 'id', 'he', 'ar'
 ];
 
 /**
@@ -92,7 +101,7 @@ function isLatinLanguage(lang) { return -1 !== LATIN_LANGUAGES.indexOf(lang); }
  *  @param  lang  string
  *  @return  bool  whether the language is based on cyrillic characters
  */
-var CYRILLIC_LANGUAGES = ['ru', 'uk']
+var CYRILLIC_LANGUAGES = ['ru', 'be', 'bg', 'uk']
 function isCyrillic(lang) { return -1 !== CYRILLIC_LANGUAGES.indexOf(lang); }
 
 var CJK_LANGUAGES = [
@@ -152,8 +161,11 @@ function spellSupportsLanguage(lang) {
 var YOMI_LANGUAGES = [
   'en'
   , 'ru'
+  //, 'be'
+  //, 'bg'
   , 'uk'
   , 'el'
+  //, 'he'
   , 'ar'
   , 'th'
   , 'ko'
@@ -163,7 +175,10 @@ var YOMI_LANGUAGES = [
 var ALPHABET_LANGUAGES = [
   //'en'
   'ru'
+  , 'bg'
   , 'uk'
+  , 'he'
+  //, 'el'
 ]
 
 /**

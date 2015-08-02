@@ -381,6 +381,7 @@ encodings:
  - windows-1258 # cp1258, vi
  - tis-620      # cp874, th
  - windows-1256 # cp1256, ar
+ - windows-1255 # cp1255, he
  - windows-1254 # cp1254, tr
  - windows-1253 # cp1253, el
  - windows-1257 # cp1257, baltic, north europe
@@ -396,27 +397,35 @@ languages:
   - zhs
   - ko # Korean
   - vi # Vietnamese
+  - tl # Filipino (Tagalog)
   - id # Indonesian
   - ms # Malaysian
   - th # Thai
+  - he # Hebrew
   - ar # Arabic
   - cs # Czech
   - da # Danish
   - de # German
   - el # Greek
   - es # Spanish
+  - et # Estonian
   - fi # Finnish
   - fr # French
   - hu # Hungarian
   - it # Italian
+  - lt # Lithuanian
+  - lv # Latvian
   - nl # Dutch
   - 'no' # Norwegian
   - pl # Polish
   - pt # Portuguese
   - ro # Romanian
+  - sl # Slovenian
   - sk # Slovak
   - sv # Swedish
   - tr # Turkish
+  - bg # Bulgarian
+  - be # Belarusian
   - ru # Russian
   - uk # Ukrainian
   latin:
@@ -425,20 +434,25 @@ languages:
   - da
   - de
   - es
+  - et
   - fi
   - fr
   - hu
   - it
+  - lt
+  - lv
   - nl
   - 'no'
   - pl
   - pt
   - ro
+  - sl
   - sk
   - sv
   - tr
   # Asian, though
   - vi
+  - tl
   - id
   - ms
   # Different alphabet, though
@@ -447,27 +461,33 @@ languages:
   - uk
   cyril:
   - ru
+  - be
+  - bg
   - uk
-  asian: # on contrast of latin
+  asian: # on contrast of latin+cyril
   - ja
   - zht
   - zhs
   - ko
   - th
+  - he
   - ar
   kanji:
   - ja
   - zht
   - zhs
   - ko
-  wordspace: # non-latin languages that have spaces between words
+  wordspace: # non-latin/cyril languages that have spaces between words
   - ar
+  - he
   space: # non-latin languages that might have spaces
   - ar
+  - he
   - ko
   - th
   reversed: # right-to-left
   - ar
+  - he
   ocr: # The order is consistent with modiocr's definition
   - ja  # 1041: Japanese - Japan
   - zhs # 2052: Chinese (Simplified) - People's Republic of China
@@ -495,19 +515,23 @@ languages:
     - en
     - ru
     - uk
+    #- be
+    #- bg
     - el
-    - ar
     - th
+    - ar
+    #- he
     - ko
 
   # Languages supported by transliterate
+  # https://github.com/barseghyanartur/transliterate
   alphabet:
     - el
+    - he
     - ru
+    - bg
     - uk
     # Not supported languages
-    #- bg
-    #- he
     #- hi
     #- hy
     #- ka
@@ -520,27 +544,35 @@ languages:
     ja: 日本語
     ko: 한국어
     vi: Tiếng Việt
+    tl: Tagalog
     id: Indonesia
     ms: Bahasa Melayu
     th: ภาษาไทย
+    he: עברית
     ar: العربية
     cs: Čeština
     da: Dansk
     de: Deutsch
     el: Ελληνικά
     es: Españo
+    et: Eesti
     fr: Française
-    it: Italiano
     hu: Magyar
+    it: Italiano
+    lt: Lietuvių
+    lv: Latviešu
     'no': Norsk bokmål
     nl: Nederlands
     pl: Polski
     pt: Português
     ro: Română
+    sl: Slovenščina
     sk: Slovenčina
     fi: Suomi
     sv: Svenska
     tr: Türkçe
+    be: Беларуская
+    bg: Български
     ru: Русский
     uk: Українська
 
@@ -555,8 +587,10 @@ locales:
   ms: ms_MY
   sv: sv_SE
   uk: uk_UA
+  et: et_EE
   vi: vi_VN
   ar: ar_SA # Arabic - Saudi Arabia, there are lots of ar, and the one with smallest locale is lcode
+  he: he_IL # Hebrew - Israel
   #nb: nb_NO # Norwegian - Bokml
 
 spells:

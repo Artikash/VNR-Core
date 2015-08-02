@@ -45,6 +45,18 @@ def ru2uk(text):
     text = text.replace(k.upper(), v.upper())
   return text
 
+def ru2lang(text, lang):
+  """
+  @param  text  unicode
+  @param  lang  str
+  @return  unicode
+  """
+  #if lang == 'bg':
+  #  return ru2bg(text)
+  if lang == 'uk':
+    return ru2uk(text)
+  return text
+
 def uk2ru(text):
   """
   @param  text  unicode
