@@ -184,6 +184,9 @@ Item { id: root_
   property string vietnameseFont: settings_.vietnameseFont
   property string malaysianFont: settings_.malaysianFont
   property string indonesianFont: settings_.indonesianFont
+  property string hebrewFont: settings_.hebrewFont
+  property string bulgarianFont: settings_.bulgarianFont
+  property string slovenianFont: settings_.slovenianFont
   property string tagalogFont: settings_.tagalogFont
   property string belarusianFont: settings_.belarusianFont
   property string estonianFont: settings_.estonianFont
@@ -291,6 +294,9 @@ Item { id: root_
     case 'th': return thaiFont
     case 'vi': return vietnameseFont
     case 'id': return indonesianFont
+    case 'he': return hebrewFont
+    case 'bg': return bulgarianFont
+    case 'sl': return slovenianFont
     case 'tl': return tagalogFont
     case 'be': return belarusianFont
     case 'et': return estonianFont

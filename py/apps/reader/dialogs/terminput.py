@@ -647,12 +647,13 @@ class _TermInput(object):
           w.setEnabled(True)
           t = ', '.join((
             "%s (%s)" % (convutil.toalphabet(text, lang), tr_(lang))
-            for lang in config.ALPHABET_LANGUAGES if lang != 'el' and lang not in blans
+            for lang in config.ALPHABET_LANGUAGES if lang not in ('el', 'he') and lang not in blans
           ))
           if t:
             w.setText(t)
             return
         elif lang == 'ru':
+          #for to in 'be', 'bg', 'uk':
           to = 'uk'
           if to not in blans:
             skqss.class_(w, 'text-primary')

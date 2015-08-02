@@ -2334,13 +2334,13 @@ class BaiduTranslator(OnlineMachineTranslator):
       if repl:
         if not fr.startswith('zh') and not to.startswith('zh'): # not translate chinese
           repl = fix_lower_proxy(repl)
-        if to == 'zht':
-          #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
-          repl = zhs2zht(repl)
-          if align:
-            for i,(k,v) in enumerate(align[alignCount:]):
-              if v:
-                align[alignCount + i] = (k, zhs2zht(v))
+        #if to == 'zht':
+        #  #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
+        #  repl = zhs2zht(repl)
+        #  if align:
+        #    for i,(k,v) in enumerate(align[alignCount:]):
+        #      if v:
+        #        align[alignCount + i] = (k, zhs2zht(v))
         repl = self.__baidu_repl_after(repl)
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, context=context, proxies=proxies)
         self.cache.update(text, repl)

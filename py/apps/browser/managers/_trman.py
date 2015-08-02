@@ -929,8 +929,8 @@ class BaiduTranslator(OnlineMachineTranslator):
       repl = self._translate(repl, self.engine.translate,
           to=to, fr=fr, async=async)
       if repl:
-        if to == 'zht':
-          repl = zhs2zht(repl)
+        #if to == 'zht':
+        #  repl = zhs2zht(repl)
         #repl = self.__baidu_repl_after(repl)
         repl = self._unescapeTranslation(repl, to=to)
         self.cache.update(text, repl)

@@ -90,6 +90,9 @@ Item { id: root_
   property string vietnameseFont
   property string malaysianFont
   property string indonesianFont
+  property string hebrewFont
+  property string bulgarianFont
+  property string slovenianFont
   property string tagalogFont
   property string belarusianFont
   property string estonianFont
@@ -437,6 +440,9 @@ Item { id: root_
     case 'th': return thaiFont
     case 'vi': return vietnameseFont
     case 'id': return indonesianFont
+    case 'he': return hebrewFont
+    case 'bg': return bulgarianFont
+    case 'sl': return slovenianFont
     case 'tl': return tagalogFont
     case 'be': return belarusianFont
     case 'et': return estonianFont

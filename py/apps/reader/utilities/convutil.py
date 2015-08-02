@@ -89,8 +89,7 @@ def toalphabet(text, to='en', fr='en'):
         if u'σ' in text:
           text = _alphabet_el_re.sub(u'ς', text) # replace σ with ς at last
   elif fr == 'ru':
-    if to == 'uk':
-      return cyrilchars.ru2uk(text)
+    return cyrilchars.ru2lang(text, to)
   # Disabled
   #elif fr == 'uk':
   #  if to == 'ru':

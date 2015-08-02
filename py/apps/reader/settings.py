@@ -1934,6 +1934,30 @@ class Settings(QSettings):
       self.setValue('IndonesianFont', value)
       self.indonesianFontChanged.emit(value)
 
+  hebrewFontChanged = Signal(unicode)
+  def hebrewFont(self):
+    return self.value('HebrewFont', config.text_font('id'))
+  def setHebrewFont(self, value):
+    if value != self.hebrewFont():
+      self.setValue('HebrewFont', value)
+      self.hebrewFontChanged.emit(value)
+
+  bulgarianFontChanged = Signal(unicode)
+  def bulgarianFont(self):
+    return self.value('BulgarianFont', config.text_font('bg'))
+  def setBulgarianFont(self, value):
+    if value != self.bulgarianFont():
+      self.setValue('BulgarianFont', value)
+      self.bulgarianFontChanged.emit(value)
+
+  slovenianFontChanged = Signal(unicode)
+  def slovenianFont(self):
+    return self.value('SlovenianFont', config.text_font('sl'))
+  def setSlovenianFont(self, value):
+    if value != self.slovenianFont():
+      self.setValue('SlovenianFont', value)
+      self.slovenianFontChanged.emit(value)
+
   tagalogFontChanged = Signal(unicode)
   def tagalogFont(self):
     return self.value('TagalogFont', config.text_font('tl'))
@@ -2568,6 +2592,9 @@ class SettingsProxy(QObject):
     g.vietnameseFontChanged.connect(self.vietnameseFontChanged)
     g.malaysianFontChanged.connect(self.malaysianFontChanged)
     g.indonesianFontChanged.connect(self.indonesianFontChanged)
+    g.hebrewFontChanged.connect(self.hebrewFontChanged)
+    g.bulgarianFontChanged.connect(self.bulgarianFontChanged)
+    g.slovenianFontChanged.connect(self.slovenianFontChanged)
     g.tagalogFontChanged.connect(self.tagalogFontChanged)
     g.belarusianFontChanged.connect(self.belarusianFontChanged)
     g.estonianFontChanged.connect(self.estonianFontChanged)
@@ -2720,6 +2747,12 @@ class SettingsProxy(QObject):
   malaysianFont = unicode_property('MalaysianFont', config.text_font('ms'), notify=malaysianFontChanged)
   indonesianFontChanged = Signal(unicode)
   indonesianFont = unicode_property('IndonesianFont', config.text_font('id'), notify=indonesianFontChanged)
+  hebrewFontChanged = Signal(unicode)
+  hebrewFont = unicode_property('HebrewFont', config.text_font('he'), notify=hebrewFontChanged)
+  bulgarianFontChanged = Signal(unicode)
+  bulgarianFont = unicode_property('BulgarianFont', config.text_font('bg'), notify=bulgarianFontChanged)
+  slovenianFontChanged = Signal(unicode)
+  slovenianFont = unicode_property('SlovenianFont', config.text_font('sl'), notify=slovenianFontChanged)
   tagalogFontChanged = Signal(unicode)
   tagalogFont = unicode_property('TagalogFont', config.text_font('tl'), notify=tagalogFontChanged)
   belarusianFontChanged = Signal(unicode)

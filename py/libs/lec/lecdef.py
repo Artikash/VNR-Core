@@ -21,9 +21,6 @@ LEC_LANGUAGES = frozenset((
   'ru',
   'tr', # Turkish
   'uk', # Ukrainian
-  #'ms',
-  #'th',
-  #'vi',
   'he', # Hebrew
   'fa', # Persian
   'tl', # Tagalog in Philippine

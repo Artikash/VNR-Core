@@ -381,6 +381,7 @@ encodings:
  - windows-1258 # cp1258, vi
  - tis-620      # cp874, th
  - windows-1256 # cp1256, ar
+ - windows-1255 # cp1255, he
  - windows-1254 # cp1254, tr
  - windows-1253 # cp1253, el
  - windows-1257 # cp1257, baltic, north europe
@@ -400,6 +401,7 @@ languages:
   - id # Indonesian
   - ms # Malaysian
   - th # Thai
+  - he # Hebrew
   - ar # Arabic
   - cs # Czech
   - da # Danish
@@ -418,9 +420,11 @@ languages:
   - pl # Polish
   - pt # Portuguese
   - ro # Romanian
+  - sl # Slovenian
   - sk # Slovak
   - sv # Swedish
   - tr # Turkish
+  - bg # Bulgarian
   - be # Belarusian
   - ru # Russian
   - uk # Ukrainian
@@ -442,6 +446,7 @@ languages:
   - pl
   - pt
   - ro
+  - sl
   - sk
   - sv
   - tr
@@ -457,27 +462,32 @@ languages:
   cyril:
   - ru
   - be
+  - bg
   - uk
-  asian: # on contrast of latin
+  asian: # on contrast of latin+cyril
   - ja
   - zht
   - zhs
   - ko
   - th
+  - he
   - ar
   kanji:
   - ja
   - zht
   - zhs
   - ko
-  wordspace: # non-latin languages that have spaces between words
+  wordspace: # non-latin/cyril languages that have spaces between words
   - ar
+  - he
   space: # non-latin languages that might have spaces
   - ar
+  - he
   - ko
   - th
   reversed: # right-to-left
   - ar
+  - he
   ocr: # The order is consistent with modiocr's definition
   - ja  # 1041: Japanese - Japan
   - zhs # 2052: Chinese (Simplified) - People's Republic of China
@@ -506,20 +516,22 @@ languages:
     - ru
     - uk
     #- be
+    #- bg
     - el
-    - ar
     - th
+    - ar
+    #- he
     - ko
 
   # Languages supported by transliterate
   # https://github.com/barseghyanartur/transliterate
   alphabet:
     - el
+    - he
     - ru
+    - bg
     - uk
     # Not supported languages
-    #- bg
-    #- he
     #- hi
     #- hy
     #- ka
@@ -536,6 +548,7 @@ languages:
     id: Indonesia
     ms: Bahasa Melayu
     th: ภาษาไทย
+    he: עברית
     ar: العربية
     cs: Čeština
     da: Dansk
@@ -553,11 +566,13 @@ languages:
     pl: Polski
     pt: Português
     ro: Română
+    sl: Slovenščina
     sk: Slovenčina
     fi: Suomi
     sv: Svenska
     tr: Türkçe
     be: Беларуская
+    bg: Български
     ru: Русский
     uk: Українська
 
@@ -575,6 +590,7 @@ locales:
   et: et_EE
   vi: vi_VN
   ar: ar_SA # Arabic - Saudi Arabia, there are lots of ar, and the one with smallest locale is lcode
+  he: he_IL # Hebrew - Israel
   #nb: nb_NO # Norwegian - Bokml
 
 spells:

@@ -25,12 +25,10 @@ client:
 - settings.py: indonesianFont
 - i18n.py: 'id'
 
-CHECKPOINT
-- _prefs.py: 'id', Indonesian
-- _trman.py: 'id'
-- baidufanyi.py: 'id'
 - mtinfo.py: ..
-CHECKPOINT
+  - baidufanyi.py: 'id'
+- _trman.py: 'id'
+- _prefs.py: 'id', Indonesian
 
 Info
 - Read Me.txt

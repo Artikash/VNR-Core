@@ -314,7 +314,7 @@ BD_LANGUAGES = {
   'es': 'spa',
 
   'zhs': 'zh',
-  'zht': 'zh',
+  'zht': 'cnt',
   #'zh': 'zh',
 
   # The same
@@ -325,8 +325,19 @@ BD_LANGUAGES = {
   'el': 'el', # Greek
   'it': 'it',
   'nl': 'nl',
+  'pl': 'pl',
   'pt': 'pt',
   'ru': 'ru',
+
+  'bg': 'bg', # Bulgarian
+  'cs': 'cs',
+  'da': 'da',
+  'et': 'et', # Estonian
+  'fi': 'fi',
+  'hu': 'hu',
+  'ro': 'ro',
+  'sl': 'sl', # Slovenian
+  'sv': 'sv', # Swedish
 
   # Chinese variants
   'yue': 'yue', # 粤语
@@ -334,12 +345,6 @@ BD_LANGUAGES = {
 
   # Japanese variants
   'kana': 'jpka', # 仮名
-
-  # Not supported by baidu
-  #'ms': 'ms',
-  #'vi': 'vi',
-  #'id': 'id',
-  #'pl': 'pl',
 }
 def bdlang(lang): return BD_LANGUAGES.get(lang) or lang
 

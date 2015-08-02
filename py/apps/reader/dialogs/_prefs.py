@@ -3486,9 +3486,33 @@ class _MachineTranslationTab(object):
   def babylonButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
       my.tr("Babylon.com multilingual translation service"),
-      my.tr("excluding {0}").format(', '.join((
-        tr_("fi"),
-        tr_("sk"),
+      my.tr("including {0}").format(', '.join((
+        tr_("ja"),
+        tr_("en"),
+        tr_("zh"),
+        tr_("ko"),
+        tr_("id"),
+        tr_("tl"),
+        tr_("th"),
+        tr_("he"),
+        tr_("ar"),
+        tr_("cs"),
+        tr_("da"),
+        tr_("de"),
+        tr_("es"),
+        tr_("el"),
+        tr_("fr"),
+        tr_("hu"),
+        tr_("it"),
+        tr_("nb"), # no
+        tr_("nl"),
+        tr_("pl"),
+        tr_("pt"),
+        tr_("ro"),
+        tr_("ru"),
+        tr_("sv"),
+        tr_("tr"),
+        tr_("uk"),
     )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
     ret.setChecked(settings.global_().isBabylonEnabled())
@@ -3555,6 +3579,8 @@ class _MachineTranslationTab(object):
         tr_("zh"),
         tr_("ko"),
         tr_("id"),
+        tr_("tl"),
+        tr_("he"),
         tr_("ar"),
         tr_("de"),
         tr_("es"),
@@ -3595,13 +3621,23 @@ class _MachineTranslationTab(object):
         tr_("ko"),
         tr_("th"),
         tr_("ar"),
+        tr_("bg"),
+        tr_("cs"),
+        tr_("da"),
         tr_("de"),
         tr_("el"),
         tr_("es"),
+        tr_("et"),
+        tr_("fi"),
         tr_("fr"),
+        tr_("hu"),
         tr_("it"),
         tr_("nl"),
+        tr_("pl"),
         tr_("pt"),
+        tr_("sl"),
+        tr_("sv"),
+        tr_("ro"),
         tr_("ru"),
     )))))
     ret.setStyleSheet("QCheckBox{color:blue}")
@@ -4517,6 +4553,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.trButton)
     if 'ru' not in blans:
       layout.addWidget(self.ruButton)
+    #if 'bg' not in blans:
+    #  layout.addWidget(self.bgButton)
     if 'uk' not in blans:
       layout.addWidget(self.ukButton)
     if 'el' not in blans:
