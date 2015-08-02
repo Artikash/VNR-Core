@@ -58,6 +58,8 @@ class reader(QObject):
       self.tr("Note"),
       self.tr("Replay"),
 
+      self.tr("Reset Settings"),
+
       # Messages
 
       self.tr("Unknown game"),

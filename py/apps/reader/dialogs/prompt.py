@@ -162,6 +162,15 @@ def confirmRestart():
       )),
       Yes|No, No)
 
+def confirmResetSettings():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      tr_("Restore default settings"),
+      my.tr("Do you want to restore default settings?"),
+      Yes|No, No)
+
 def confirmDeleteGame(game):
   """
   @param  game  dataman.GameObject

@@ -8812,7 +8812,7 @@ class _EngineTab(object):
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    l = [self.translationGroup, self.textGroup, self.fontGroup]
+    l = [self.resetButton, self.translationGroup, self.textGroup, self.fontGroup]
     if 'zh' not in blans:
       l.append(self.chineseGroup)
     for w in l:
@@ -8848,6 +8848,12 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentEnableButton)
     layout.addWidget(self.agentInfoLabel)
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.resetButton)
+    row.addStretch()
+    layout.addLayout(row)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred game text extraction method"))
     ret.setLayout(layout)
     return ret
@@ -8882,6 +8888,52 @@ class _EngineTab(object):
     #ret.setOpenExternalLinks(True)
 
     #import main
+
+  @memoizedproperty
+  def resetButton(self):
+    ret = QtWidgets.QPushButton(tr_("Restore default settings"))
+    skqss.class_(ret, 'btn btn-default')
+    ret.clicked.connect(lambda:
+        prompt.confirmResetSettings() and self._resetSettings())
+    return ret
+
+  def _resetSettings(self):
+    blans = settings.global_().blockedLanguages()
+    if 'zh' not in blans:
+      if self.chineseEnableButton.isChecked():
+        self.chineseEnableButton.click()
+
+    # Text group
+    self.scenarioTranslateButton.click()
+    self.otherTranslateButton.click()
+    self.nameVisibleButton.click()
+    self.windowVisibleButton.click()
+
+    # Translation group
+    self.scenarioTranslatorButton.setCurrentIndex(0)
+    self.translationWaitTimeButton.setValue(2.0)
+
+    # Font group
+    if self.fontButton.isChecked():
+      self.fontButton.click()
+    if self.charSetButton.isChecked():
+      self.charSetButton.click()
+    self.charSetEdit.setCurrentIndex(0)
+    if self.fontScaleButton.isChecked():
+      self.fontScaleButton.click()
+    self.fontScaleEdit.setValue(1.0)
+    if self.fontWeightButton.isChecked():
+      self.fontWeightButton.click()
+    self.fontWeightEdit.setCurrentIndex(0)
+
+    self.disableInsertsSpaceButton.click()
+    self.spaceEncodingEdit.setCurrentIndex(0)
+
+    if self.scenarioWidthButton.isChecked():
+      self.scenarioWidthButton.click()
+    self.scenarioWidthEdit.setValue(0)
+
+    dprint("pass")
 
   ## Chinese ##
 
