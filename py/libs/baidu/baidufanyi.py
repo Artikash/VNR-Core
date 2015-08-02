@@ -28,6 +28,10 @@ session = requests # global session
 #TOKEN_RE = re.compile(r'mis\.CONST\.TOKEN="(\w+)";', re.I)
 FANYI_API = "http://fanyi.baidu.com/transapi"
 
+# If the original API does not work, use v2transapi instead.
+# See: https://gist.github.com/gongstar/7983300
+#FANYI_API = "http://fanyi.baidu.com/v2transapi"
+
 #HEADERS = {
 #  'User-Agent':"Mozilla/5.0 (Windows NT 6.1; rv:23.0) Gecko/20100101 Firefox/23.0",
 #  'Referer':"http://fanyi.baidu.com/",
@@ -282,7 +286,7 @@ if __name__ == "__main__":
 
   def test():
     s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
-    t = translate(s, to='zht', fr='ja')
+    t = translate(s, to='sv', fr='ja')
     print t
 
   def test_align():

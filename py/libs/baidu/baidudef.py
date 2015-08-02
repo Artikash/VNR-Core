@@ -329,15 +329,15 @@ BD_LANGUAGES = {
   'pt': 'pt',
   'ru': 'ru',
 
-  'bg': 'bg', # Bulgarian
+  'bg': 'bul', # Bulgarian
   'cs': 'cs',
-  'da': 'da',
-  'et': 'et', # Estonian
-  'fi': 'fi',
+  'da': 'dan',
+  'et': 'est', # Estonian
+  'fi': 'fin',
   'hu': 'hu',
-  'ro': 'ro',
-  'sl': 'sl', # Slovenian
-  'sv': 'sv', # Swedish
+  'ro': 'rom',
+  'sl': 'slo', # Slovenian
+  'sv': 'swe', # Swedish
 
   # Chinese variants
   'yue': 'yue', # 粤语
