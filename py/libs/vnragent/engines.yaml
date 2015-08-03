@@ -56,6 +56,10 @@
   exist: "*.lpk"
   #encoding: sjis
 
+#- name: EmbedLunaSoft # 8/2/2015
+#  exist: Pac/*.pac
+#  #encoding: sjis
+
 - name: EmbedMono # 7/27/2015
   exist: '*/Mono/mono.dll'
   #encoding: sjis

@@ -18,6 +18,7 @@
 #include "engine/model/fvp.h"
 #include "engine/model/leaf.h"
 #include "engine/model/lucifen.h"
+#include "engine/model/luna.h"
 #include "engine/model/mono.h"
 #include "engine/model/nexton.h"
 #include "engine/model/pal.h"
@@ -68,6 +69,7 @@ EngineController *EngineFactory::createEngine()
     , new PalEngine
     , new NextonEngine
     , new MonoEngine
+    , new LunaSoftEngine
     , new LucifenEngine
     , new LeafEngine
     , new FVPEngine

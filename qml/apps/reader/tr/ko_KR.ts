@@ -1279,7 +1279,7 @@
         <location filename="../subview/searchtoolbar.qml" line="67"/>
         <location filename="../termview/searchtoolbar.qml" line="73"/>
         <source>dup</source>
-        <translation>반복</translation>
+        <translation>중복</translation>
     </message>
     <message>
         <location filename="../subview/searchtoolbar.qml" line="68"/>

@@ -921,12 +921,12 @@
     <message>
         <location filename="mytr.py" line="44"/>
         <source>Embeddable</source>
-        <translation type="unfinished"></translation>
+        <translation>내장번역 사용가능</translation>
     </message>
     <message>
         <location filename="mytr.py" line="45"/>
         <source>embeddable</source>
-        <translation type="unfinished"></translation>
+        <translation>내장번역 사용가능</translation>
     </message>
     <message>
         <location filename="mytr.py" line="131"/>

@@ -6822,7 +6822,7 @@ bool InsertMalie3Hook()
   // i.e. 8b44240456578b50088b0833f6668b345142
   const BYTE bytes[] = {
     // 0x90 nop
-    0x8b,0x44,0x24, 0x04,   // 5b51e0  mov eax,dword ptr ss:[esp+0x4]
+    0x8b,0x44,0x24, 0x04,   // 5b51e0  mov eax,dword ptr ss:[esp+0x4]   ; jichi: function starts
     0x56,                   // 5b51e4  push esi
     0x57,                   // 5b51e5  push edi
     0x8b,0x50, 0x08,        // 5b51e6  mov edx,dword ptr ds:[eax+0x8]
