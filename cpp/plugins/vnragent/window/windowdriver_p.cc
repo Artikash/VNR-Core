@@ -14,6 +14,9 @@
 #include <unordered_map>
 //#include <boost/bind.hpp>
 
+//#define DEBUG "windowdriver_p"
+//#include "sakurakit/skdebug.h"
+
 enum { TEXT_BUFFER_SIZE = 256 };
 
 // - Construction -
@@ -94,6 +97,16 @@ void WindowDriverPrivate::updateAbstractWindow(HWND hWnd)
       updateListView(hWnd, buf, TEXT_BUFFER_SIZE);
       return;
     }
+    //DOUT(QString::fromWCharArray(buf));
+
+    // Only translate selected controls
+    //if (::wcscmp(buf, L"ComboBox") &&
+    //    ::wcscmp(buf, L"ComboBoxEx32") &&
+    //    ::wcscmp(buf, L"Edit") &&
+    //    ::wcscmp(buf, L"ListBox") &&
+    //    ::wcscmp(buf, L"SysLink") &&
+    //    ::wcscmp(buf, L"SysTreeView32"))
+    //  return;
   }
 
   if (updateStandardWindow(hWnd, buf, TEXT_BUFFER_SIZE))
