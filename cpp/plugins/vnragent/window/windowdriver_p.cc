@@ -85,11 +85,11 @@ void WindowDriverPrivate::updateAbstractWindow(HWND hWnd)
   wchar_t buf[TEXT_BUFFER_SIZE];
 
   if (::RealGetWindowClassW(hWnd, buf, TEXT_BUFFER_SIZE)) {
-    if (!::wcscmp(buf, L"SysTabControl32")) {
+    if (0 == ::wcscmp(buf, L"SysTabControl32")) {
       updateTabControl(hWnd, buf, TEXT_BUFFER_SIZE);
       return;
     }
-    if (!::wcscmp(buf, L"SysListView32")) {
+    if (0 == ::wcscmp(buf, L"SysListView32")) {
       updateListView(hWnd, buf, TEXT_BUFFER_SIZE);
       return;
     }
