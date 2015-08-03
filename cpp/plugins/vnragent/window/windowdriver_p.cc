@@ -84,12 +84,13 @@ void WindowDriverPrivate::updateAbstractWindow(HWND hWnd)
 {
   wchar_t buf[TEXT_BUFFER_SIZE];
 
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ee671196%28v=vs.85%29.aspx
   if (::RealGetWindowClassW(hWnd, buf, TEXT_BUFFER_SIZE)) {
-    if (0 == ::wcscmp(buf, L"SysTabControl32")) {
+    if (!::wcscmp(buf, L"SysTabControl32")) { // Tab, TabItem
       updateTabControl(hWnd, buf, TEXT_BUFFER_SIZE);
       return;
     }
-    if (0 == ::wcscmp(buf, L"SysListView32")) {
+    if (!::wcscmp(buf, L"SysListView32")) { // DataGrid, List
       updateListView(hWnd, buf, TEXT_BUFFER_SIZE);
       return;
     }
@@ -109,6 +110,8 @@ void WindowDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
   updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE);
 }
 
+void WindowDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
+
 void WindowDriverPrivate::repaintWindow(HWND hWnd)
 {
   static std::unordered_set<HWND> rootWindows_;
@@ -123,9 +126,6 @@ void WindowDriverPrivate::repaintWindow(HWND hWnd)
   }
   ::InvalidateRect(hWnd, nullptr, TRUE);
 }
-
-void WindowDriverPrivate::repaintMenuBar(HWND hWnd)
-{ ::DrawMenuBar(hWnd); }
 
 bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
