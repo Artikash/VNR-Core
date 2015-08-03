@@ -241,7 +241,7 @@
     <message>
         <location filename="mytr.py" line="235"/>
         <source>Update Shared Subtitles</source>
-        <translation>공유자막 업데이트</translation>
+        <translation type="obsolete">공유자막 업데이트</translation>
     </message>
     <message>
         <location filename="mytr.py" line="264"/>
@@ -916,17 +916,17 @@
     <message>
         <location filename="mytr.py" line="125"/>
         <source>Hanazono font</source>
-        <translation>하나조노(花園明朝)글꼴</translation>
+        <translation>花園明朝글꼴</translation>
     </message>
     <message>
         <location filename="mytr.py" line="44"/>
         <source>Embeddable</source>
-        <translation>내장번역 가능</translation>
+        <translation>내장번역 사용가능</translation>
     </message>
     <message>
         <location filename="mytr.py" line="45"/>
         <source>embeddable</source>
-        <translation>내장번역 가능</translation>
+        <translation>내장번역 사용가능</translation>
     </message>
     <message>
         <location filename="mytr.py" line="131"/>
