@@ -11,7 +11,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
-#include <unordered_set>
+#include <unordered_map>
 //#include <boost/bind.hpp>
 
 enum { TEXT_BUFFER_SIZE = 256 };
@@ -114,16 +114,23 @@ void WindowDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
 
 void WindowDriverPrivate::repaintWindow(HWND hWnd)
 {
-  static std::unordered_set<HWND> rootWindows_;
+  enum { MaximumRepaintCount = 5 };
+  static std::unordered_map<HWND, int> windows_;
+
   // 7/26/2015: Avoid repainting outer-most window
   // http://sakuradite.com/topic/981
   // http://sakuradite.com/topic/994
-  if (!::GetParent(hWnd)) {
-    if (rootWindows_.find(hWnd) == rootWindows_.end())
-      rootWindows_.insert(hWnd);
-    else
+  auto p = windows_.find(hWnd);
+  if (p == windows_.end())
+    windows_[hWnd] = 1;
+  else {
+    if (!::GetParent(hWnd)) // paint only once for root window
       return;
+    if (p->second > MaximumRepaintCount)
+      return;
+    p->second++;
   }
+
   ::InvalidateRect(hWnd, nullptr, TRUE);
 }
 
