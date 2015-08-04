@@ -30,6 +30,7 @@
 #include "engine/model/siglus.h"
 #include "engine/model/silkys.h"
 #include "engine/model/system4.h"
+#include "engine/model/taskforce.h"
 #include "engine/model/will.h"
 #include "engine/model/wolf.h"
 
@@ -57,6 +58,7 @@ EngineController *EngineFactory::createEngine()
 
     , new WolfRPGEngine
     , new WillPlusEngine
+    , new TaskforceEngine
     , new System4Engine
     , new SystemAoiEngine
     , new SilkysEngine
