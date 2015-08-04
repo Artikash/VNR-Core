@@ -155,6 +155,7 @@ HEADERS += \
   engine/model/siglus.h \
   engine/model/silkys.h \
   engine/model/system4.h \
+  engine/model/taskforce.h \
   engine/model/will.h \
   engine/model/wolf.h
   #engine/model/cs2.h
@@ -191,6 +192,7 @@ SOURCES += \
   engine/model/siglus.cc \
   engine/model/silkys.cc \
   engine/model/system4.cc \
+  engine/model/taskforce.cc \
   engine/model/will.cc \
   engine/model/wolf.cc
   #engine/model/cs2.cc

@@ -10294,7 +10294,7 @@ bool InsertTaskforce2Hook()
 
   HookParam hp = {};
   hp.address = addr + addr_offset;
-  hp.offset = -0xc;
+  hp.offset = -0xc; // text in ecx
   hp.type = BIG_ENDIAN|USING_STRING; // 0x41
 
   //GROWL_DWORD(hp.address);
