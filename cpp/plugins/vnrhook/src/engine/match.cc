@@ -436,7 +436,7 @@ bool DetermineEngineByProcessName()
     return true;
   }
 
-  if (wcsstr(str, L"taskforce2") || !wcsncmp(str, L"taskfo~", 7) || IthCheckFile(L"Faskforce2.exe")) {
+  if (wcsstr(str, L"taskforce2") || !wcsncmp(str, L"taskfo~", 7) || IthCheckFile(L"Taskforce2.exe")) {
     InsertTaskforce2Hook();
     return true;
   }
