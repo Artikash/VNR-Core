@@ -102,7 +102,7 @@ embed_en:
   - Circus
   - Cotopha
   - Leaf
-  #- LunaSoft
+  - LunaSoft
   - Pal
   - System43+
   #- HorkEye
@@ -110,7 +110,7 @@ embed_en:
   - EmbedCircus
   - EmbedCotopha
   - EmbedLeaf
-  #- EmbedLunaSoft
+  - EmbedLunaSoft
   - EmbedPal
   - EmbedSystem43
 
