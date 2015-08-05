@@ -1,17 +1,16 @@
-// profile_bgi.cc
+// profile/locale.cc
 // 6/15/2014
-// Currently, only BGI is implemented
 
 #include "profile.h"
 #include "windbg/hijack.h"
 #include <windows.h>
 
-namespace { namespace BGI {
+namespace { // unnamed
 
 enum { LCID = 0x411 };
 
 // Return 0x411 on the first call
-LANGID WINAPI myGetSystemDefaultLangID()
+LANGID WINAPI newGetSystemDefaultLangID()
 {
   //return LCID;
   static bool once = false;
@@ -22,14 +21,19 @@ LANGID WINAPI myGetSystemDefaultLangID()
     return ::GetSystemDefaultLangID();
 }
 
-}} // unnamed namespace BGI
+} // unnamed namespace
 
-void Profile::useBGI()
+namespace LocaleProfile {
+
+bool load()
 {
-  if (::GetSystemDefaultLangID() != BGI::LCID) {
+  if (::GetSystemDefaultLangID() != LCID) {
     HMODULE hModule = ::GetModuleHandleA(nullptr);
-    WinDbg::overrideFunctionA(hModule, "kernel32.dll", "GetSystemDefaultLangID", BGI::myGetSystemDefaultLangID);
+    return WinDbg::overrideFunctionA(hModule, "kernel32.dll", "GetSystemDefaultLangID", newGetSystemDefaultLangID);
   }
+  return false;
 }
+
+} // namespace LocaleProfile
 
 // EOF

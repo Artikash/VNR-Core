@@ -8,7 +8,7 @@
 - name: EmbedBGI # 5/11/2014 jichi
   exist: BGI.*|BGVC.exe|sysgrp.arc
   #encoding: sjis
-  #vnrlocale: true # TODO: need a better name
+  #vnrlocale: true # not implemented
 
 - name: EmbedCircus  # 6/5/2014  CIRCUS2
   exist: AdvData/GRP/NAMES.DAT
@@ -58,6 +58,7 @@
 
 - name: EmbedLunaSoft # 8/2/2015
   exist: Pac/*.pac
+  #vnrboot: true
   #encoding: sjis
 
 - name: EmbedMono # 7/27/2015

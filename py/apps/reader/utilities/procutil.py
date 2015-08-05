@@ -179,14 +179,14 @@ def may_be_game_window(wid):
 # Always run new applications without admin privileges
 # http://superuser.com/questions/171917/force-a-program-to-run-without-administrator-privileges-or-uac
 ENVIRON_RUNAS = {'__COMPAT_LAYER':'RUNASINVOKER'}
-def open_executable(path, type=None, language='', lcid=0, codepage=0, params=None, vnrlocale=False):
+def open_executable(path, type=None, language='', lcid=0, codepage=0, params=None, vnrboot=False):
   """
   @param  path  str  path to executable
   @param* language  str
   @param* lcid  int  Microsoft lcid
   @paramk codepage  int  Microsoft codepage
   @param* params  [unicode param] or None
-  @param* vnrlocale  bool  whether inject vnrlocale on the startup
+  @param* vnrboot  bool  whether inject vnrboot on the startup
   @return  long  pid  exe's pid or launcher's pid
   """
   if language:
@@ -197,7 +197,7 @@ def open_executable(path, type=None, language='', lcid=0, codepage=0, params=Non
 
   env = ENVIRON_RUNAS if not features.ADMIN and not features.WINXP and type != 'lsc' else None # locale switch still need admin priv
   if not type or type == 'apploc':
-    return open_executable_with_apploc(path, params=params, environ=env, lcid=lcid, vnrlocale=vnrlocale)
+    return open_executable_with_apploc(path, params=params, environ=env, lcid=lcid, vnrboot=vnrboot)
   if type == 'le':
     return open_executable_with_leproc(path, params=params, environ=env)
   if type == 'ntlea':
@@ -208,17 +208,17 @@ def open_executable(path, type=None, language='', lcid=0, codepage=0, params=Non
     return open_executable_with_lsc(path, params=params, environ=env, locale=lcid, codepage=codepage)
   return 0
 
-def open_executable_with_apploc(path, lcid=0, params=None, environ=None, vnrlocale=False):
+def open_executable_with_apploc(path, lcid=0, params=None, environ=None, vnrboot=False):
   """
   @param  path  str  path to executable
   @param* lcid  int  Microsoft lcid
   @param* codepage  int  Microsoft lcid
   @param* params  [unicode param] or None
   @param* environ  dict or None
-  @param* vnrlocale  bool  whether inject vnrlocale on the startup
+  @param* vnrboot  bool  whether inject vnrboot on the startup
   @return  long  pid
   """
-  dprint("lcid = 0x%.4x, vnrlocale = %s, path = %s" % (lcid, vnrlocale, path))
+  dprint("lcid = 0x%.4x, vnrboot = %s, path = %s" % (lcid, vnrboot, path))
 
   if lcid and applocale.exists():
     m = applocale.create_environ(lcid)
@@ -232,14 +232,14 @@ def open_executable_with_apploc(path, lcid=0, params=None, environ=None, vnrloca
           # Join '__COMPAT_LAYER' using spaces
           v += ' ' + environ[k]
         environ[k] = v
-  if not vnrlocale:
+  if not vnrboot:
     return skwin.create_process(path, params=params, environ=environ)
     #return QDesktopServices.openUrl(QUrl.fromLocalFile(path))
   else:
     from sakurakit import skwinsec
     with skwinsec.SkProcessCreator(path, params=params, environ=environ) as proc:
       import inject
-      inject.inject_vnrlocale(handle=proc.processHandle)
+      inject.inject_vnrboot(handle=proc.processHandle)
       return proc.processId
 
 def open_executable_with_ntlea(path, params=None, environ=None, **kwargs):

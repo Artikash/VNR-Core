@@ -13,17 +13,17 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
   CC_UNUSED(lpvReserved);
   switch (fdwReason) {
   case DLL_PROCESS_ATTACH:
-    if (!WinSingleMutex::acquire("vnrlocale"))
-      //growl::error("already injected");
-      return FALSE;
-
     ::DisableThreadLibraryCalls(hInstance); // Disable DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications
 
-    Profile::useBGI();
+    if (!WinSingleMutex::acquire("vnrboot"))
+      //dmsg("already injected");
+      return FALSE;
+
+    Profile::load();
     break;
 
   case DLL_PROCESS_DETACH:
-    //Loader::destroy();
+    Profile::destroy();
     break;
   }
   //SK_ASSERT(0);

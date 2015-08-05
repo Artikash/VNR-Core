@@ -5,7 +5,8 @@
 
 namespace Profile {
 
-void useBGI();
+void load();
+void destroy();
 
 } // namespace Profile
 

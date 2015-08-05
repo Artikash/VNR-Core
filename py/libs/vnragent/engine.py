@@ -13,10 +13,10 @@ from sakurakit.skdebug import dprint
 from sakurakit.skfileio import escapeglob
 
 class Engine:
-  def __init__(self, name='', regionLocked=False, vnrlocale=False, **kwargs):
+  def __init__(self, name='', regionLocked=False, vnrboot=False, **kwargs):
     self.name = name # str
     self.regionLocked = regionLocked # bool
-    self.vnrlocale = vnrlocale # bool
+    self.vnrboot = vnrboot # bool
 
   # Not used
   #def encoding(self): return 'utf-16' if self.wideChar else 'shift-jis'
