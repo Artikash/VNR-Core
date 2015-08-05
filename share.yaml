@@ -36,9 +36,13 @@ env:
   #  - $PWD/bin/xp
 
   integritypath:
+  - $PWD/bin/vnragent.dll
   - $PWD/bin/vnrhook.dll
+  #- $PWD/bin/vnrboot.dll
   - $PWD/bin/texthook.dll
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
+  - $PWD/../Qt/PySide/QtCore4.dll
+  - $PWD/../Qt/PySide/QtGui4.dll
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
   - $PWD/../Boost/bin/boost_regex.dll
@@ -911,20 +915,20 @@ cursors:
   IDC_HAND:         $PWD/cursors/blue_B/15.cur
 
 dlls:
-  vnrhook:
-  - $PWD/../Python/msvcr100.dll         # depends on kernel
-  - $PWD/../Python/msvcp100.dll         # depends on msvcr
-  #- $PWD/bin/vnrhook.dll
   vnragent:
   - $PWD/../Python/msvcr100.dll         # depends on kernel
   - $PWD/../Python/msvcp100.dll         # depends on msvcr
   - $PWD/../Qt/PySide/QtCore4.dll       # depends on msvcr, msvcp
   - $PWD/../Qt/PySide/QtNetwork4.dll    # depends on qtcore
   - $PWD/bin/vnragent.dll
-  vnrlocale: # TODO: Get rid of the dependence on msvc10
+  vnrboot:
   - $PWD/../Python/msvcr100.dll         # depends on kernel
   - $PWD/../Python/msvcp100.dll         # depends on msvcr
-  - $PWD/bin/vnrloc.dll
+  - $PWD/bin/vnrboot.dll
+  vnrhook:
+  - $PWD/../Python/msvcr100.dll         # depends on kernel
+  - $PWD/../Python/msvcp100.dll         # depends on msvcr
+  #- $PWD/bin/vnrhook.dll
 
 # EOF
 

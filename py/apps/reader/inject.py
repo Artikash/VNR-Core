@@ -26,7 +26,7 @@ if skos.WIN:
     dprint("leave: ret = %s" % ret)
     return ret
 
-  def inject_vnrlocale(**kwargs):
+  def inject_vnrboot(**kwargs):
     """
     @param* pid  ulong
     @param* handle  HANDLE
@@ -34,7 +34,7 @@ if skos.WIN:
     """
     dprint("enter")
     ret = True
-    for dllpath in config.VNRLOCALE_DLLS:
+    for dllpath in config.VNRBOOT_DLLS:
       #dllpath = os.path.abspath(dllpath)
       dllpath = skpaths.abspath(dllpath)
       assert os.path.exists(dllpath), "needed dll does not exist: %s" % dllpath
@@ -61,6 +61,6 @@ if skos.WIN:
 else:
   def inject_vnragent(pid): return False
   def inject_vnrhook(pid, hijack=False): return False
-  def inject_vnrlocale(handle): return False
+  def inject_vnrboot(handle): return False
 
 # EOF

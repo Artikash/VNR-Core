@@ -51,7 +51,8 @@ QT      -= gui
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
 #LIBS    += -lkernel32
-#LIBS    += -luser32 -lpsapi
+#LIBS    += -luser32
+#LIBS    += -lpsapi
 #LIBS    += -ladvapi32   # needed by RegQueryValueEx
 LIBS    += -lgdi32      # needed by game engines
 LIBS    += -lshell32    # needed by get system path

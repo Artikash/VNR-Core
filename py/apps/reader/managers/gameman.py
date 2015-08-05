@@ -320,8 +320,8 @@ class GameProfile(QtCore.QObject):
     # Game agent
     self.launchLanguage = launchLanguage # str
 
-    # Whether enable vnrlccale
-    self.vnrlocale = False # bool
+    # Whether enable vnrboot
+    self.vnrboot = False # bool
 
   def applyHook(self):
     """
@@ -689,13 +689,13 @@ class GameProfile(QtCore.QObject):
               if features.WINE or not self.usingApploc():
                 launchLanguage = ''
               if not self.launchPath or not os.path.exists(self.launchPath):
-                if self.vnrlocale:
-                  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
+                if self.vnrboot:
+                  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNR dlls")))
                 elif launchLanguage:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("AppLocale")))
                 elif not features.WINE:
                   growl.notify(my.tr("Launch the game in original Japanese locale"))
-                self.pid = procutil.open_executable(self.path, language=launchLanguage, vnrlocale=self.vnrlocale)
+                self.pid = procutil.open_executable(self.path, language=launchLanguage, vnrboot=self.vnrboot)
                 #vnragent.inject_process(self.pid)
                 #rpcman.manager().enableClient()
                 if not self.pid:
@@ -706,11 +706,11 @@ class GameProfile(QtCore.QObject):
                 if get_process_by_path(self.launchPath):
                   if updateLater(): return
 
-                #if self.vnrlocale:
-                #  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
+                #if self.vnrboot:
+                #  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNR")))
 
                 params = [QtCore.QDir.toNativeSeparators(self.path)]
-                pid = procutil.open_executable(self.launchPath, params=params, language=launchLanguage) #, vnrlocale=self.vnrlocale)
+                pid = procutil.open_executable(self.launchPath, params=params, language=launchLanguage, vnrboot=self.vnrboot)
                 proc = get_process_by_path(self.path)
                 if pid or proc:
                   if updateLater(): return
@@ -1106,18 +1106,7 @@ class GameManager(QtCore.QObject):
       agentEngine = gameagent.global_().guessEngine(pid=pid, path=path) if ss.isGameAgentEnabled() else None
       dprint("agent engine = %s" % (agentEngine.name if agentEngine else "None"))
 
-      #dprint("agent engine: %s" % agentEngine)
-      #  if agentEngine and ss.isGameAgentLauncherEnabled() and ss.isGameAgentLauncherNeeded():
-      #    # TODO: Restore get game encoding in the future
-      #    # First, allow modify game encoding in game edit
-      #    #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
-      #    if not agentEngine.regionLocked and not agentEngine.wideChar and (not g.encoding or g.encoding != 'utf-16'):
-      #      import trman
-      #      launchLanguage = trman.manager().guessTranslationLanguage()
-      #      if launchLanguage in config.SJIS_LANGUAGE_SET:
-      #        launchLanguage = ''
-      #      g.launchLanguage = launchLanguage
-      #      g.vnrlocale = agentEngine.vnrlocale
+      g.vnrboot = bool(agentEngine and agentEngine.vnrboot)
 
       if not g.hasProcess():
         dprint("update process")

@@ -38,7 +38,7 @@ win32: SUBDIRS += pykbsignal
 win32: SUBDIRS += pymousesel
 
 win32: SUBDIRS += vnragent
-win32: SUBDIRS += vnrlocale
+win32: SUBDIRS += vnrboot
 
 #win32: SUBDIRS += pyeffects
 win32: SUBDIRS += pymodi

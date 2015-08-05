@@ -72,8 +72,8 @@ win32 {
 ## External Libraries
 
 win32 {
-  D3D_HOME      = "$$PROGRAMFILES/Microsoft DirectX SDK"
-  DETOURS_HOME  = "$$PROGRAMFILES/Microsoft Research/Detours Express 3.0"
+  D3D_HOME      = "C:/Program Files/Microsoft DirectX SDK"
+  DETOURS_HOME  = "C:/Program Files/Microsoft Research/Detours Express 3.0"
   #DEV_HOME      = c:/dev
   DEV_HOME      = z:/local/windows/developer
   BOOST_HOME    = $$DEV_HOME/boost/build

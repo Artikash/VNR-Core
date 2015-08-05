@@ -1,5 +1,5 @@
 /*
- * vnrlocale.rc
+ * vnrboot.rc
  * 5/15/2014 jichi
  */
 #if defined(UNDER_CE)
@@ -29,8 +29,8 @@ VS_VERSION_INFO VERSIONINFO
             VALUE "FileDescription", "VNR Locale\0"
             VALUE "FileVersion", "1.0.0.0\0"
             VALUE "LegalCopyright", "Copyright (C) 2014.\0"
-            VALUE "OriginalFilename", "vnrloc.dll\0"
-            VALUE "ProductName", "vnrlocale\0"
+            VALUE "OriginalFilename", "vnrboot.dll\0"
+            VALUE "ProductName", "vnrboot\0"
          END
       END
    END

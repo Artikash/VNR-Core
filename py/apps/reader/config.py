@@ -479,7 +479,7 @@ LSC_LOCATION = parse_path(SHARE_YAML['lsc']['location']) # unicode abspath
 
 VNRAGENT_DLLS = map(parse_path, SHARE_YAML['dlls']['vnragent']) # [unicode abspath]
 VNRHOOK_DLLS = map(parse_path, SHARE_YAML['dlls']['vnrhook']) # [unicode abspath]
-VNRLOCALE_DLLS = map(parse_path, SHARE_YAML['dlls']['vnrlocale']) # [unicode abspath]
+VNRBOOT_DLLS = map(parse_path, SHARE_YAML['dlls']['vnrboot']) # [unicode abspath]
 
 TEMPLATE_LOCATION = parse_path(SHARE_YAML['templates']['location']) # unicode abspath
 TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpath}

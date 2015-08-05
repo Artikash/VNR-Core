@@ -425,6 +425,7 @@ bool LunaSoftEngine::attach()
     return false;
   if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
+  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;
 }
 

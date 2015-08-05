@@ -13,7 +13,7 @@ public:
   LunaSoftEngine()
   {
     name = "EmbedLunaSoft";
-    enableDynamicEncoding = true;
+    //enableDynamicEncoding = true;
     enableDynamicFont = true;
     matchFiles << "Pac/*.pac";
     //newLineString = "\n";
