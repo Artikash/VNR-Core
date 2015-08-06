@@ -731,7 +731,7 @@ bool DetermineNoEngine()
     return true;
   }
 
-  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7) || IthCheckFile(L"lcsebody")) { // jichi 3/19/2014: LC-ScriptEngine, GetGlyphOutlineA
+  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7) || IthFindFile(L"lcsebody*")) { // jichi 3/19/2014: LC-ScriptEngine, GetGlyphOutlineA
     ConsoleOutput("vnreng: IGNORE lcsebody");
     return true;
   }

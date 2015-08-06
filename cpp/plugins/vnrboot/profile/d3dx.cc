@@ -15,7 +15,6 @@
 #include "debug.h"
 namespace { // unnamed
 
-  /*
 // INT DrawText(
 //   [in] LPD3DXSPRITE pSprite,
 //   [in] LPCTSTR      pString,
@@ -34,6 +33,9 @@ void hookFont(ID3DXFont *self)
 {
   unsigned long *p = (unsigned long *)self;
   p = (unsigned long *)*p;
+  std::string t = std::to_string((long long)p);
+  dmsg(t.c_str());
+  return;
   //winhook::hook_before(p[14], beforeDrawTextA);
   bool ok = true;
   for (int i = 2; i < 18; i++) {
@@ -70,12 +72,12 @@ HRESULT WINAPI newD3DXCreateFontIndirectA(LPDIRECT3DDEVICE9 pDevice, const D3DXF
   }
   return ret;
 }
-*/
 
 // IDirect3D9* Direct3DCreate9(
 //    UINT SDKVersion
 // );
 
+/*
 typedef IDirect3D9 *(WINAPI *Direct3DCreate9_fun_t)(UINT SDKVersion);
 Direct3DCreate9_fun_t oldDirect3DCreate9;
 IDirect3D9 *WINAPI newDirect3DCreate9(UINT SDKVersion)
@@ -87,13 +89,13 @@ IDirect3D9 *WINAPI newDirect3DCreate9(UINT SDKVersion)
   }
   return ret;
 }
+*/
 } // unnamed namespace
 
 namespace D3DXProfile {
 
 bool load()
 {
-  /*
   HMODULE h =::GetModuleHandleA("d3dx9_33.dll");
   if (!h)
     return false;
@@ -101,8 +103,7 @@ bool load()
   if (!addr)
     return false;
   return oldD3DXCreateFontIndirectA = (D3DXCreateFontIndirectA_fun_t)winhook::replace_fun((ULONG)addr, (ULONG)newD3DXCreateFontIndirectA);
-  */
-
+  /*
   HMODULE h =::GetModuleHandleA("d3d9.dll");
   if (!h)
     return false;
@@ -110,6 +111,7 @@ bool load()
   if (!addr)
     return false;
   return oldDirect3DCreate9 = (Direct3DCreate9_fun_t)winhook::replace_fun((ULONG)addr, (ULONG)newDirect3DCreate9);
+  */
 }
 
 } // namespace D3DXProfile
