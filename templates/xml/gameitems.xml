@@ -73,6 +73,9 @@
 %	if it.subtitleCount
 			<subtitleCount>{{it.subtitleCount}}</subtitleCount>
 %	endif
+%	if it.playUserCount
+			<playUserCount>{{it.playUserCount}}</playUserCount>
+%	endif
 %	if it.scapeMedian
 			<scapeMedian>{{it.scapeMedian}}</scapeMedian>
 %	endif

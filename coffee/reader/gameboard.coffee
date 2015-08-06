@@ -32,15 +32,15 @@ GAME_HAML = Haml '''\
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
-        .badge(title="字幕数/弾幕数/再生数") = g.countString
+        .badge(title="弾幕数(字幕数)/再生数(使用者)") = g.countString
       :if visitColor === 'o'
-        .badge.badge-warning(title="字幕数/弾幕数/再生数") = g.countString
+        .badge.badge-warning(title="弾幕数(字幕数)/再生数(使用者)") = g.countString
       :if visitColor === 'r'
-        .badge.badge-important(title="字幕数/弾幕数/再生数") = g.countString
+        .badge.badge-important(title="弾幕数(字幕数)/再生数(使用者)") = g.countString
       :if visitColor === 'g'
-        .badge.badge-success(title="字幕数/弾幕数/再生数") = g.countString
+        .badge.badge-success(title="弾幕数(字幕数)/再生数(使用者)") = g.countString
       :if visitColor === 'b'
-        .badge.badge-inverse(title="字幕数/弾幕数/再生数") = g.countString
+        .badge.badge-inverse(title="弾幕数(字幕数)/再生数(使用者)") = g.countString
     :if g.overallScoreCount
       .badge.badge-important(title="総合得点×点数")
         &#9734;#{sprintf('%.1f', g.overallScore)}
@@ -200,8 +200,11 @@ class GameManager
         g.fileSize = Math.floor(g.fileSize / (1024 * 1024)) if g.fileSize > 0 # fileSize is in MB
 
         s = g.visitCount or 1
-        s = g.commentCount + '/' + s if g.commentCount
-        s = g.subtitleCount + '/' + s if g.subtitleCount
+        s += "(#{g.playUserCount})" if g.playUserCount > 1
+        t = ''
+        t = g.commentCount if g.commentCount
+        t += "(#{g.subtitleCount})" if g.subtitleCount
+        s = t + '/' + s if t
         g.countString = s
     l
 
