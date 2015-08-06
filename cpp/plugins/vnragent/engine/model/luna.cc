@@ -46,7 +46,7 @@ namespace Private {
       }
     }
   };
-  DataCache cache_;
+  DataCache cache_; // this is used to make sure that same translation will have the same address
 
   /**
    *  Sample game: 悪堕ラビリンス, scenario return address: 0x42f6dc
