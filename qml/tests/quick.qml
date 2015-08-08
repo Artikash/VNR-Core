@@ -16,7 +16,7 @@ Item {
     width: 200
     height: 30
 
-    //seperatorText: "|"
+    //separatorText: "|"
 
     //property list<MenuItem> l: [
     Desktop.MenuItem { id: act1_

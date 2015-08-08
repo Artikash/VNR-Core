@@ -321,11 +321,11 @@ public:
        ret = model->rubyRemoveFunction(ret);
     if (model->textFilterFunction)
       ret = model->textFilterFunction(ret, role);
-    if (!model->textSeperators.isEmpty()) {
+    if (!model->textSeparators.isEmpty()) {
       char s[2] = {};
-      for (int i = 0; i < model->textSeperators.size(); i++) {
+      for (int i = 0; i < model->textSeparators.size(); i++) {
         s[0] = i + 1;
-        ret.replace(model->textSeperators[i], s);
+        ret.replace(model->textSeparators[i], s);
       }
     }
     return ret;
@@ -343,15 +343,16 @@ public:
       else
         ret = rubyParser.removeRuby(ret);
     }
-    if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
-      ret.replace("\n", model->newLineString);
-    if (!model->textSeperators.isEmpty()) {
+    if (!model->textSeparators.isEmpty()) {
       char s[2] = {};
-      for (int i = 0; i < model->textSeperators.size(); i++) {
+      for (int i = 0; i < model->textSeparators.size(); i++) {
         s[0] = i + 1;
-        ret.replace(s, model->textSeperators[i]);
+        ret.replace(s, model->textSeparators[i]);
       }
     }
+    // LCScriptEngine requires newLineString must be after textSeparators
+    if (model->newLineString && ::strcmp(model->newLineString, "\n") && ret.contains('\n'))
+      ret.replace("\n", model->newLineString);
     if (model->translationFilterFunction)
       ret = model->translationFilterFunction(ret, role);
     return ret;

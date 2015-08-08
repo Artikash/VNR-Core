@@ -54,7 +54,7 @@ public:
 
   QStringList matchFiles; // files existing in the game directory
 
-  QStringList textSeperators; // strings that will split sentences
+  QStringList textSeparators; // strings that will split sentences
 
   // Global match functions
   //typedef bool (* match_function)();

@@ -38,7 +38,7 @@ DesktopEx.MultiComboBox { id: root_
   property string valueSep: ','
 
   placeholderText: "*"
-  seperator: "+"
+  separator: "+"
 
   tooltip: My.tr("Translator")
 

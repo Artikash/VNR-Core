@@ -18,7 +18,7 @@ public:
 
     //newLineString = "<br>"; // <br> is only for scenario
     newLineString = nullptr; // <br> does not work for other texts
-    textSeperators << "<br>"; // mark <br> as text seperator instead
+    textSeparators << "<br>"; // mark <br> as text separator instead
 
     attachFunction = &Self::attach;
   }

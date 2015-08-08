@@ -18,18 +18,18 @@ class SkNetworkCookieJar(QNetworkCookieJar):
     super(SkNetworkCookieJar, self).__init__(parent)
     # Control characters (\x00 to \x1F plus \x7F) aren't allowed,
     # http://stackoverflow.com/questions/1969232/allowed-characters-in-cookies
-    self.marshalSeperator = '\0' # illegal in cookie
+    self.marshalSeparator = '\0' # illegal in cookie
 
   def marshal(self): # -> str
     l = self.allCookies()
     dprint("cookie count = %i" % len(l))
-    return self.marshalSeperator.join((
+    return self.marshalSeparator.join((
       cookie.toRawForm().data() for cookie in l
     ))
 
   def unmarshal(self, data):  # str ->
     l = ([] if not data else [cookie
-      for it in data.split(self.marshalSeperator)
+      for it in data.split(self.marshalSeparator)
       for cookie in QNetworkCookie.parseCookies(it)
     ])
     dprint("cookie count = %i" % len(l))

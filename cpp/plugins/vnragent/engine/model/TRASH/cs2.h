@@ -16,7 +16,7 @@ public:
     enableDynamicEncoding = true;
     matchFiles << "*.int";
     //enableDynamicFont = true; // ???
-    textSeperators << "\\pc";
+    textSeparators << "\\pc";
     newLineString = "\\n";
     attachFunction = &Self::attach;
   }
