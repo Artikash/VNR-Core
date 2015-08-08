@@ -22,15 +22,16 @@ DynamicCodec *DynamicCodec::instance() { return ::instance_; }
 
 DynamicCodec::DynamicCodec()
   : d_(new D)
-{
-  ::instance_= this;
-}
+{ ::instance_= this; }
 
 DynamicCodec::~DynamicCodec()
 {
   ::instance_ = nullptr;
   delete d_;
 }
+
+void DynamicCodec::setMinimumByte(int v)
+{ return d_->codec->setMinimumSecondByte(v); }
 
 QByteArray DynamicCodec::encode(const QString &text, bool *dynamic) const
 { return d_->codec->encode(text, dynamic); }

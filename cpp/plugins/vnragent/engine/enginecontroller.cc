@@ -119,8 +119,10 @@ private:
     //systemEncoding = ENC_KSC;
     encoder = Util::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
 
-    if (model->enableDynamicEncoding && dynamicEncodingEnabled)
+    if (model->enableDynamicEncoding && dynamicEncodingEnabled) {
       dynamicCodec = new DynamicCodec;
+      dynamicCodec->setMinimumByte(model->dynamicEncodingMinimumByte);
+    }
 
     DOUT("encoding =" << engineEncoding  << ", system =" << systemEncoding);
   }

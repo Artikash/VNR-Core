@@ -21,7 +21,11 @@ public:
   explicit DynamicShiftJISCodec(QTextCodec *sjis = nullptr);
   ~DynamicShiftJISCodec();
 
-  static int capacity(); // maximum allowed number of characters
+  int capacity() const; // maximum allowed number of characters
+
+  // Minimum value for the second byte, must be larger than 0 and smaller than 0x40
+  int minimumSecondByte() const;
+  void setMinimumSecondByte(int v);
 
   ///  Return the number of current characters
   int size() const;

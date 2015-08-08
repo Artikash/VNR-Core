@@ -17,6 +17,8 @@ public:
   DynamicCodec();
   ~DynamicCodec();
 
+  void setMinimumByte(int v);
+
   QByteArray encode(const QString &text, bool *dynamic = nullptr) const;
   QString decode(const QByteArray &data, bool *dynamic = nullptr) const;
   uint decodeChar(uint ch, bool *dynamic = nullptr) const;

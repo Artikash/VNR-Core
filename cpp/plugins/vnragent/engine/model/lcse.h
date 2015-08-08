@@ -8,21 +8,18 @@
 class LCScriptEngine : public EngineModel
 {
   SK_EXTEND_CLASS(LCScriptEngine, EngineModel)
-  static bool attach();
-  //static QString rubyCreate(const QString &rb, const QString &rt);
-  //static QString rubyRemove(const QString &text);
+  bool attach();
 public:
   LCScriptEngine()
   {
     name = "EmbedLCScriptEngine";
-    enableDynamicEncoding = true;
+    //enableDynamicEncoding = true; // dynamically update this value
+    dynamicEncodingMinimumByte = 0x6; // skip 0x1,0x2,0x3 in case dynamic encoding could crash the game
     //enableDynamicFont = true;
-    newLineString = " "; // new line does not work
+    newLineString = "\x01";
     matchFiles << "lcsebody*";
-    attachFunction = &Self::attach;
+    attachFunction = std::bind(&Self::attach, this);
     //textSeperators << "\x01" << "\x02\x03";
-    //rubyCreateFunction = &Self::rubyCreate;
-    //rubyRemoveFunction = &Self::rubyRemove;
   }
 };
 

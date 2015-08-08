@@ -11,7 +11,7 @@ if __name__ == '__main__':
 import re
 from sakurakit import skhash
 from janovp import janovutil
-import defs
+import defs, textutil
 
 MD5SUM = {} # {unicode path : str hex}
 def md5sum(path):
@@ -77,8 +77,9 @@ def _normalizetext(t):
   @param  t  unicode
   @return   unicode
   """
-  # Remove unicode spaces
-  return _normalizetext_space.sub('', t)
+  t = _normalizetext_space.sub('', t) # Remove unicode spaces
+  t = textutil.remove_illegal_text(t)
+  return t
 
 def hashtext(t, h=None):
   """Hash unicode text (hash2)

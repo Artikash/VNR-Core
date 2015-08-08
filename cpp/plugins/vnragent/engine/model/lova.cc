@@ -18,7 +18,7 @@
 #include "sakurakit/skdebug.h"
 
 #ifdef _MSC_VER
-# pragma warning(disable:4018) // C4800: signed/unsigned mismatch
+# pragma warning(disable:4018) // C4018: signed/unsigned mismatch
 #endif // _MSC_VER
 
 //#pragma intrinsic(_ReturnAddress)

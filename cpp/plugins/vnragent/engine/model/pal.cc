@@ -27,7 +27,7 @@ namespace Private {
   strT trim(strT text, int *size)
   {
     //int length = ::strlen(text);
-    int length = *size;
+    auto length = *size;
     if (text[0] == '<' && text[1] == 'c') {
       auto p = ::strchr(text + 2, '>');
       if (!p)

@@ -16,6 +16,7 @@ public:
   WillPlusEngine()
   {
     name = "EmbedWillPlus";
+    //enableDynamicEncoding = true; // dynamically update this value
     newLineString = "\\n";
     matchFiles << "Rio.arc" << "Chip*.arc";
     attachFunction = std::bind(&Self::attach, this);

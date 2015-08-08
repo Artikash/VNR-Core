@@ -25,8 +25,8 @@ public:
   {
     int pos = text.indexOf(openMark);
     return pos != -1
-        && (pos = text.indexOf(splitMark, pos)) != -1
-        && (pos = text.indexOf(closeMark, pos)) != -1;
+        && (pos = text.indexOf(splitMark, pos + 1)) != -1
+        && (pos = text.indexOf(closeMark, pos + 1)) != -1;
   }
 
   QString createRuby(const QString &rb, const QString &rt) const
@@ -83,10 +83,10 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
   QString plainText;
   int pos = 0;
   for (int openPos = text.indexOf(openMark); openPos != -1; openPos = text.indexOf(openMark, pos)) {
-    int splitPos = text.indexOf(splitMark, openPos);
+    int splitPos = text.indexOf(splitMark, openPos + 1);
     if (splitPos == -1)
       break;
-    int closePos = text.indexOf(closeMark, splitPos);
+    int closePos = text.indexOf(closeMark, splitPos + 1);
     if (closePos == -1)
       break;
     if (pos != openPos)
@@ -129,10 +129,10 @@ void RichRubyParserPrivate::iterRuby(const QString &text,  const ruby_fun_t &fun
 void RichRubyParserPrivate::removeRuby(QString &ret) const
 {
   for (int pos = ret.indexOf(openMark); pos != -1; pos = ret.indexOf(openMark, pos)) {
-    int splitPos = ret.indexOf(splitMark, pos);
+    int splitPos = ret.indexOf(splitMark, pos + 1);
     if (splitPos == -1)
       return;
-    int closePos = ret.indexOf(closeMark, splitPos);
+    int closePos = ret.indexOf(closeMark, splitPos + 1);
     if (closePos == -1)
       return;
     ret.remove(closePos, closeMark.size());
@@ -144,10 +144,10 @@ void RichRubyParserPrivate::removeRuby(QString &ret) const
 void RichRubyParserPrivate::renderRuby(QString &ret, const Q::ruby_fun_t &fun) const
 {
   for (int pos = ret.indexOf(openMark); pos != -1; pos = ret.indexOf(openMark, pos)) {
-    int splitPos = ret.indexOf(splitMark, pos);
+    int splitPos = ret.indexOf(splitMark, pos + 1);
     if (splitPos == -1)
       return;
-    int closePos = ret.indexOf(closeMark, splitPos);
+    int closePos = ret.indexOf(closeMark, splitPos + 1);
     if (closePos == -1)
       return;
     QString rt = ret.mid(pos + openMark.size(), splitPos - pos - openMark.size()),

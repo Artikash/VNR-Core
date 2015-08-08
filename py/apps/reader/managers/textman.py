@@ -458,6 +458,7 @@ class _TextManager(object):
     @param  role  int
     @param* needsTranslation  bool
     """
+    text = textutil.remove_illegal_text(text)
     if role == SCENARIO_THREAD_TYPE:
       #if self.agentNameBuffer:
       #  self._flushAgentName()

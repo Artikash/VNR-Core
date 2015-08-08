@@ -7,7 +7,9 @@
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
 #include "util/textutil.h"
+#include "dyncodec/dynsjis.h"
 #include "winhook/hookcode.h"
+#include "winhook/hookfun.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <cstdint>
@@ -20,11 +22,19 @@ namespace ScenarioHook {
 namespace Private {
 
   // Skip trailing 0203
-  int rtrim(LPCSTR text, int size)
+  LPCSTR trim(LPCSTR text, int *size)
   {
-    if (size >= 2 && text[size - 1] == 0x3 && text[size - 2] == 0x2)
-      size -= 2;
-    return size;
+    auto length = *size;
+    enum { MinimumByte = 0x6 }; // the same as dynamicEncodingMinimumByte
+    while (text[0] && (uchar)text[0] < MinimumByte) { // remove all leading illegal characters
+      text++;
+      length--;
+    }
+    // remove all trailing illegal double-characters
+    while (length >= 2 && (uchar)text[length - 1] < MinimumByte && (uchar)text[length - 2] < MinimumByte)
+      length -= 2;
+    *size = length;
+    return text;
   }
 
   /**
@@ -85,22 +95,32 @@ namespace Private {
     }
 
     auto text = (LPCSTR)esi;
-    if (!*text || ::strlen(text) != size || Util::allAscii(text))
+    if (!*text
+        || ::strlen(text) != size
+        || ::isalpha(text[0]) && ::isalpha(text[1]) // Sample system text in 恋姫無双: bcg_剣道場a
+        || Util::allAscii(text))
       return true;
 
-    int trimmedSize = rtrim(text, size);
+    auto trimmedSize = size;
+    auto trimmedText = trim(text, &trimmedSize);
     if (trimmedSize <= 0)
       return true;
 
     //auto size = s->ecx * 4;
     //auto dst = (LPSTR)s->edi;
     enum { role = Engine::ScenarioRole, sig = 0 };
-    QByteArray oldData(text, trimmedSize),
+    QByteArray oldData(trimmedText, trimmedSize),
                newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData.isEmpty() || newData == oldData)
       return true;
-    if (trimmedSize != size)
-      newData.append(text + trimmedSize, size - trimmedSize);
+
+    int prefixSize = trimmedText - text,
+        suffixSize = size - prefixSize - trimmedSize;
+    if (prefixSize)
+      newData.prepend(text, prefixSize);
+    if (suffixSize)
+      newData.append(trimmedText + trimmedSize, suffixSize);
+
     data_ = newData;
     s->eax = data_.size() + 1;
     return true;
@@ -444,6 +464,295 @@ bool attach(ulong startAddress, ulong stopAddress)
       && winhook::hook_after(addr2, Private::hook2);
 }
 } // namespace ScenarioHook
+
+namespace Patch {
+
+namespace Private {
+  bool isLeadByteChar(const char *s)
+  {
+    return dynsjis::isleadstr(s);
+    //return ::IsDBCSLeadByte(HIBYTE(testChar));
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: 春恋＊乙女～乙女の園でごきげんよう。～
+ *
+ *  0040A37E   CC                                     INT3
+ *  0040A37F   CC                                     INT3
+ *  0040A380   8B4C24 04                              MOV ECX,DWORD PTR SS:[ESP+0x4]
+ *  0040A384   8A01                                   MOV AL,BYTE PTR DS:[ECX]  ; jichi: first byte
+ *  0040A386   8A49 01                                MOV CL,BYTE PTR DS:[ECX+0x1]  ; jichi: second byte
+ *  0040A389   3C 81                                  CMP AL,0x81
+ *  0040A38B   72 04                                  JB SHORT lcsebody.0040A391
+ *  0040A38D   3C 9F                                  CMP AL,0x9F
+ *  0040A38F   76 08                                  JBE SHORT lcsebody.0040A399
+ *  0040A391   3C E0                                  CMP AL,0xE0
+ *  0040A393   72 1B                                  JB SHORT lcsebody.0040A3B0
+ *  0040A395   3C FC                                  CMP AL,0xFC
+ *  0040A397   77 17                                  JA SHORT lcsebody.0040A3B0
+ *  0040A399   80F9 40                                CMP CL,0x40
+ *  0040A39C   72 05                                  JB SHORT lcsebody.0040A3A3
+ *  0040A39E   80F9 7E                                CMP CL,0x7E
+ *  0040A3A1   76 0A                                  JBE SHORT lcsebody.0040A3AD
+ *  0040A3A3   80F9 80                                CMP CL,0x80
+ *  0040A3A6   72 08                                  JB SHORT lcsebody.0040A3B0
+ *  0040A3A8   80F9 FC                                CMP CL,0xFC
+ *  0040A3AB   77 03                                  JA SHORT lcsebody.0040A3B0
+ *  0040A3AD   B0 01                                  MOV AL,0x1
+ *  0040A3AF   C3                                     RETN
+ *  0040A3B0   32C0                                   XOR AL,AL
+ *  0040A3B2   C3                                     RETN
+ *  0040A3B3   90                                     NOP
+ *  0040A3B4   90                                     NOP
+ *  0040A3B5   90                                     NOP
+ *  0040A3B6   90                                     NOP
+ *
+ *  This function is found by tracing the caller of GetGlyphOutlineA, as follows:
+ *
+ *  00416B6B   CC                INT3
+ *  00416B6C   CC                INT3
+ *  00416B6D   CC                INT3
+ *  00416B6E   CC                INT3
+ *  00416B6F   CC                INT3
+ *  00416B70   83EC 08           SUB ESP,0x8
+ *  00416B73   53                PUSH EBX
+ *  00416B74   56                PUSH ESI
+ *  00416B75   8BF1              MOV ESI,ECX
+ *  00416B77   33DB              XOR EBX,EBX	; jichi: zero ebx
+ *  00416B79   57                PUSH EDI
+ *  00416B7A   8B86 EC000000     MOV EAX,DWORD PTR DS:[ESI+0xEC]
+ *  00416B80   8A9430 08010000   MOV DL,BYTE PTR DS:[EAX+ESI+0x108]	; jichi: byte accessed here
+ *  00416B87   8D8C30 08010000   LEA ECX,DWORD PTR DS:[EAX+ESI+0x108]	; jichi: byte accessed here
+ *  00416B8E   3AD3              CMP DL,BL	; jichi: bl is zero, dl is the current byte
+ *  00416B90   75 0C             JNZ SHORT lcsebody.00416B9E
+ *  00416B92   B8 FF000000       MOV EAX,0xFF
+ *  00416B97   5F                POP EDI
+ *  00416B98   5E                POP ESI
+ *  00416B99   5B                POP EBX
+ *  00416B9A   83C4 08           ADD ESP,0x8
+ *  00416B9D   C3                RETN
+ *  00416B9E   8B96 F0000000     MOV EDX,DWORD PTR DS:[ESI+0xF0]
+ *  00416BA4   4A                DEC EDX
+ *  00416BA5   3BC2              CMP EAX,EDX
+ *  00416BA7   0F8D 31010000     JGE lcsebody.00416CDE
+ *  00416BAD   51                PUSH ECX
+ *  00416BAE   E8 31B1FEFF       CALL lcsebody.00401CE4	; jichi: ecx point to the current character, return 0 or 1
+ *  00416BB3   83C4 04           ADD ESP,0x4
+ *  00416BB6   84C0              TEST AL,AL
+ *  00416BB8   0F84 20010000     JE lcsebody.00416CDE	; jichi: wrong here
+ *  00416BBE   8B86 EC000000     MOV EAX,DWORD PTR DS:[ESI+0xEC]
+ *  00416BC4   33C9              XOR ECX,ECX
+ *  00416BC6   03C6              ADD EAX,ESI
+ *  00416BC8   889E 20050000     MOV BYTE PTR DS:[ESI+0x520],BL
+ *  00416BCE   8AA8 08010000     MOV CH,BYTE PTR DS:[EAX+0x108]	; jichi: high bits
+ *  00416BD4   8A88 09010000     MOV CL,BYTE PTR DS:[EAX+0x109]
+ *  00416BDA   8BF9              MOV EDI,ECX	; jichi: low bits, edi is now the full character
+ *  00416BDC   8BCE              MOV ECX,ESI	; jichi: recover ecx to esi
+ *  00416BDE   E8 13AEFEFF       CALL lcsebody.004019F6	; jichi: eax is zero when edi is legal
+ *  00416BE3   3BC3              CMP EAX,EBX	; jichi: ebx is always zero as well
+ *  00416BE5   74 4A             JE SHORT lcsebody.00416C31
+ *  00416BE7   389E 2C050000     CMP BYTE PTR DS:[ESI+0x52C],BL
+ *  00416BED   0F84 9A020000     JE lcsebody.00416E8D
+ *  00416BF3   389E 20050000     CMP BYTE PTR DS:[ESI+0x520],BL
+ *  00416BF9   74 1B             JE SHORT lcsebody.00416C16
+ *  00416BFB   B9 34F14800       MOV ECX,lcsebody.0048F134
+ *  00416C00   3B39              CMP EDI,DWORD PTR DS:[ECX]
+ *  00416C02   74 2D             JE SHORT lcsebody.00416C31
+ *  00416C04   83C1 04           ADD ECX,0x4
+ *  00416C07   81F9 50F14800     CMP ECX,lcsebody.0048F150
+ *  00416C0D  ^7C F1             JL SHORT lcsebody.00416C00
+ *  00416C0F   5F                POP EDI
+ *  00416C10   5E                POP ESI
+ *  00416C11   5B                POP EBX
+ *  00416C12   83C4 08           ADD ESP,0x8
+ *  00416C15   C3                RETN
+ *  00416C16   B9 00F14800       MOV ECX,lcsebody.0048F100
+ *  00416C1B   3B39              CMP EDI,DWORD PTR DS:[ECX]
+ *  00416C1D   74 12             JE SHORT lcsebody.00416C31
+ *  00416C1F   83C1 04           ADD ECX,0x4
+ *  00416C22   81F9 34F14800     CMP ECX,lcsebody.0048F134
+ *  00416C28  ^7C F1             JL SHORT lcsebody.00416C1B
+ *  00416C2A   5F                POP EDI
+ *  00416C2B   5E                POP ESI
+ *  00416C2C   5B                POP EBX
+ *  00416C2D   83C4 08           ADD ESP,0x8
+ *  00416C30   C3                RETN
+ *  00416C31   8A8E 20050000     MOV CL,BYTE PTR DS:[ESI+0x520]
+ *  00416C37   3ACB              CMP CL,BL
+ *  00416C39   74 15             JE SHORT lcsebody.00416C50
+ *  00416C3B   B8 70F14800       MOV EAX,lcsebody.0048F170
+ *  00416C40   3B38              CMP EDI,DWORD PTR DS:[EAX]
+ *  00416C42   74 21             JE SHORT lcsebody.00416C65
+ *  00416C44   83C0 04           ADD EAX,0x4
+ *  00416C47   3D 7CF14800       CMP EAX,lcsebody.0048F17C
+ *  00416C4C  ^7C F2             JL SHORT lcsebody.00416C40
+ *  00416C4E   EB 1B             JMP SHORT lcsebody.00416C6B
+ *  00416C50   B8 50F14800       MOV EAX,lcsebody.0048F150
+ *  00416C55   3B38              CMP EDI,DWORD PTR DS:[EAX]	; jichi: compare current wide charcter with a threshold (0x8169 = "（")
+ *  00416C57   74 0C             JE SHORT lcsebody.00416C65
+ *  00416C59   83C0 04           ADD EAX,0x4
+ *  00416C5C   3D 70F14800       CMP EAX,lcsebody.0048F170
+ *  00416C61  ^7C F2             JL SHORT lcsebody.00416C55
+ *  00416C63   EB 06             JMP SHORT lcsebody.00416C6B
+ *  00416C65   FF86 24050000     INC DWORD PTR DS:[ESI+0x524]
+ *  00416C6B   3ACB              CMP CL,BL
+ *  00416C6D   74 15             JE SHORT lcsebody.00416C84
+ *  00416C6F   B8 9CF14800       MOV EAX,lcsebody.0048F19C
+ *  00416C74   3B38              CMP EDI,DWORD PTR DS:[EAX]
+ *  00416C76   74 21             JE SHORT lcsebody.00416C99
+ *  00416C78   83C0 04           ADD EAX,0x4
+ *  00416C7B   3D A8F14800       CMP EAX,lcsebody.0048F1A8
+ *  00416C80  ^7C F2             JL SHORT lcsebody.00416C74
+ *  00416C82   EB 2A             JMP SHORT lcsebody.00416CAE
+ *  00416C84   B8 7CF14800       MOV EAX,lcsebody.0048F17C
+ *  00416C89   3B38              CMP EDI,DWORD PTR DS:[EAX]
+ *  00416C8B   74 0C             JE SHORT lcsebody.00416C99
+ *  00416C8D   83C0 04           ADD EAX,0x4
+ *  00416C90   3D 9CF14800       CMP EAX,lcsebody.0048F19C
+ *  00416C95  ^7C F2             JL SHORT lcsebody.00416C89
+ *  00416C97   EB 15             JMP SHORT lcsebody.00416CAE
+ *  00416C99   8B86 24050000     MOV EAX,DWORD PTR DS:[ESI+0x524]
+ *  00416C9F   48                DEC EAX
+ *  00416CA0   8986 24050000     MOV DWORD PTR DS:[ESI+0x524],EAX
+ *  00416CA6   79 06             JNS SHORT lcsebody.00416CAE
+ *  00416CA8   899E 24050000     MOV DWORD PTR DS:[ESI+0x524],EBX
+ *  00416CAE   57                PUSH EDI
+ *  00416CAF   8BCE              MOV ECX,ESI
+ *  00416CB1   E8 20A5FEFF       CALL lcsebody.004011D6
+ *  00416CB6   8B86 EC000000     MOV EAX,DWORD PTR DS:[ESI+0xEC]
+ *  00416CBC   8A9430 08010000   MOV DL,BYTE PTR DS:[EAX+ESI+0x108]
+ *  00416CC3   83C0 02           ADD EAX,0x2
+ *  00416CC6   885424 0C         MOV BYTE PTR SS:[ESP+0xC],DL
+ *  00416CCA   8A8C30 07010000   MOV CL,BYTE PTR DS:[EAX+ESI+0x107]
+ *  00416CD1   884C24 0D         MOV BYTE PTR SS:[ESP+0xD],CL
+ *  00416CD5   885C24 0E         MOV BYTE PTR SS:[ESP+0xE],BL
+ *  00416CD9   E9 77010000       JMP lcsebody.00416E55
+ *  00416CDE   8B96 EC000000     MOV EDX,DWORD PTR DS:[ESI+0xEC]
+ *  00416CE4   C686 20050000 01  MOV BYTE PTR DS:[ESI+0x520],0x1
+ *  00416CEB   8A8C16 08010000   MOV CL,BYTE PTR DS:[ESI+EDX+0x108]
+ *  00416CF2   8D8416 08010000   LEA EAX,DWORD PTR DS:[ESI+EDX+0x108]
+ *  00416CF9   80F9 1F           CMP CL,0x1F
+ *  00416CFC   77 54             JA SHORT lcsebody.00416D52
+ *  00416CFE   80F9 03           CMP CL,0x3
+ *  00416D01   75 06             JNZ SHORT lcsebody.00416D09
+ *  00416D03   899E 28050000     MOV DWORD PTR DS:[ESI+0x528],EBX
+ *  00416D09   8A00              MOV AL,BYTE PTR DS:[EAX]
+ *  00416D0B   83EC 0C           SUB ESP,0xC
+ *  00416D0E   8D5424 18         LEA EDX,DWORD PTR SS:[ESP+0x18]
+ *  00416D12   8BCC              MOV ECX,ESP
+ *  00416D14   896424 1C         MOV DWORD PTR SS:[ESP+0x1C],ESP
+ *  00416D18   8DBE FC000000     LEA EDI,DWORD PTR DS:[ESI+0xFC]
+ *  00416D1E   52                PUSH EDX
+ *  00416D1F   51                PUSH ECX
+ *  00416D20   8BCF              MOV ECX,EDI
+ *  00416D22   884424 20         MOV BYTE PTR SS:[ESP+0x20],AL
+ *  00416D26   885C24 21         MOV BYTE PTR SS:[ESP+0x21],BL
+ *  00416D2A   E8 D0A8FEFF       CALL lcsebody.004015FF
+ *  00416D2F   8BCF              MOV ECX,EDI
+ *  00416D31   E8 A1A8FEFF       CALL lcsebody.004015D7
+ *  00416D36   8B8E EC000000     MOV ECX,DWORD PTR DS:[ESI+0xEC]
+ *  00416D3C   0FBE8431 0801000> MOVSX EAX,BYTE PTR DS:[ECX+ESI+0x108]
+ *  00416D44   41                INC ECX
+ *  00416D45   898E EC000000     MOV DWORD PTR DS:[ESI+0xEC],ECX
+ *  00416D4B   5F                POP EDI
+ *  00416D4C   5E                POP ESI
+ *  00416D4D   5B                POP EBX
+ *  00416D4E   83C4 08           ADD ESP,0x8
+ *  00416D51   C3                RETN
+ *  00416D52   8BCE              MOV ECX,ESI
+ *  00416D54   E8 9DACFEFF       CALL lcsebody.004019F6
+ *  00416D59   3BC3              CMP EAX,EBX
+ *  00416D5B   74 4A             JE SHORT lcsebody.00416DA7
+ *  00416D5D   389E 2C050000     CMP BYTE PTR DS:[ESI+0x52C],BL
+ *  00416D63   0F84 24010000     JE lcsebody.00416E8D
+ *  00416D69   389E 20050000     CMP BYTE PTR DS:[ESI+0x520],BL
+ *  00416D6F   74 1B             JE SHORT lcsebody.00416D8C
+ *  00416D71   B9 34F14800       MOV ECX,lcsebody.0048F134
+ *  00416D76   3919              CMP DWORD PTR DS:[ECX],EBX
+ *  00416D78   74 2D             JE SHORT lcsebody.00416DA7
+ *  00416D7A   83C1 04           ADD ECX,0x4
+ *  00416D7D   81F9 50F14800     CMP ECX,lcsebody.0048F150
+ *  00416D83  ^7C F1             JL SHORT lcsebody.00416D76
+ *  00416D85   5F                POP EDI
+ *  00416D86   5E                POP ESI
+ *  00416D87   5B                POP EBX
+ *  00416D88   83C4 08           ADD ESP,0x8
+ *  00416D8B   C3                RETN
+ *  00416D8C   B9 00F14800       MOV ECX,lcsebody.0048F100
+ *  00416D91   3919              CMP DWORD PTR DS:[ECX],EBX
+ *  00416D93   74 12             JE SHORT lcsebody.00416DA7
+ *  00416D95   83C1 04           ADD ECX,0x4
+ *  00416D98   81F9 34F14800     CMP ECX,lcsebody.0048F134
+ *  00416D9E  ^7C F1             JL SHORT lcsebody.00416D91
+ *  00416DA0   5F                POP EDI
+ *  00416DA1   5E                POP ESI
+ *  00416DA2   5B                POP EBX
+ *  00416DA3   83C4 08           ADD ESP,0x8
+ *  00416DA6   C3                RETN
+ *  00416DA7   8B86 EC000000     MOV EAX,DWORD PTR DS:[ESI+0xEC]
+ *  00416DAD   8A96 20050000     MOV DL,BYTE PTR DS:[ESI+0x520]
+ *  00416DB3   0FBEBC06 08010000 MOVSX EDI,BYTE PTR DS:[ESI+EAX+0x108]	; jichi: edi get assigned to the illegal character
+ *  00416DBB   8BCF              MOV ECX,EDI
+ *  00416DBD   C1E1 08           SHL ECX,0x8
+ *  00416DC0   3AD3              CMP DL,BL
+ *  00416DC2   74 15             JE SHORT lcsebody.00416DD9
+ *  00416DC4   B8 70F14800       MOV EAX,lcsebody.0048F170
+ *  00416DC9   3B08              CMP ECX,DWORD PTR DS:[EAX]
+ *  00416DCB   74 21             JE SHORT lcsebody.00416DEE
+ *  00416DCD   83C0 04           ADD EAX,0x4
+ *  00416DD0   3D 7CF14800       CMP EAX,lcsebody.0048F17C
+ *  00416DD5  ^7C F2             JL SHORT lcsebody.00416DC9
+ *  00416DD7   EB 1B             JMP SHORT lcsebody.00416DF4
+ *  00416DD9   B8 50F14800       MOV EAX,lcsebody.0048F150
+ *  00416DDE   3B08              CMP ECX,DWORD PTR DS:[EAX]
+ *  00416DE0   74 0C             JE SHORT lcsebody.00416DEE
+ *  00416DE2   83C0 04           ADD EAX,0x4
+ *  00416DE5   3D 70F14800       CMP EAX,lcsebody.0048F170
+ *  00416DEA  ^7C F2             JL SHORT lcsebody.00416DDE
+ *  00416DEC   EB 06             JMP SHORT lcsebody.00416DF4
+ *  00416DEE   FF86 24050000     INC DWORD PTR DS:[ESI+0x524]
+ *  00416DF4   3AD3              CMP DL,BL
+ *  00416DF6   74 15             JE SHORT lcsebody.00416E0D
+ *  00416DF8   B8 9CF14800       MOV EAX,lcsebody.0048F19C
+ *  00416DFD   3B08              CMP ECX,DWORD PTR DS:[EAX]
+ *  00416DFF   74 21             JE SHORT lcsebody.00416E22
+ *  00416E01   83C0 04           ADD EAX,0x4
+ *  00416E04   3D A8F14800       CMP EAX,lcsebody.0048F1A8
+ *  00416E09  ^7C F2             JL SHORT lcsebody.00416DFD
+ *  00416E0B   EB 2A             JMP SHORT lcsebody.00416E37
+ *  00416E0D   B8 7CF14800       MOV EAX,lcsebody.0048F17C
+ *  00416E12   3B08              CMP ECX,DWORD PTR DS:[EAX]
+ *  00416E14   74 0C             JE SHORT lcsebody.00416E22
+ *  00416E16   83C0 04           ADD EAX,0x4
+ *  00416E19   3D 9CF14800       CMP EAX,lcsebody.0048F19C
+ *  00416E1E  ^7C F2             JL SHORT lcsebody.00416E12
+ *  00416E20   EB 15             JMP SHORT lcsebody.00416E37
+ *  00416E22   8B86 24050000     MOV EAX,DWORD PTR DS:[ESI+0x524]
+ *  00416E28   48                DEC EAX
+ *  00416E29   8986 24050000     MOV DWORD PTR DS:[ESI+0x524],EAX
+ *  00416E2F   79 06             JNS SHORT lcsebody.00416E37
+ *  00416E31   899E 24050000     MOV DWORD PTR DS:[ESI+0x524],EBX
+ *  00416E37   57                PUSH EDI	; jichi: invalid character
+ *  00416E38   8BCE              MOV ECX,ESI
+ *  00416E3A   E8 97A3FEFF       CALL lcsebody.004011D6	; jichi: char in arg1
+ *  00416E3F   8B86 EC000000     MOV EAX,DWORD PTR DS:[ESI+0xEC]
+ */
+
+bool patchEncoding(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x8b,0x4c,0x24, 0x04,   // 0040a380   8b4c24 04                              mov ecx,dword ptr ss:[esp+0x4]
+    0x8a,0x01,              // 0040a384   8a01                                   mov al,byte ptr ds:[ecx]
+    0x8a,0x49, 0x01,        // 0040a386   8a49 01                                mov cl,byte ptr ds:[ecx+0x1]
+    0x3c, 0x81              // 0040a389   3c 81                                  cmp al,0x81
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  return addr && winhook::replace_fun(addr, (ulong)Private::isLeadByteChar);
+}
+
+} // namespace PatchA
 } // unnamed namespace
 
 bool LCScriptEngine::attach()
@@ -453,6 +762,11 @@ bool LCScriptEngine::attach()
     return false;
   if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
+  if (Patch::patchEncoding(startAddress, stopAddress)) {
+    enableDynamicEncoding = true;
+    DOUT("patch encoding succeeded");
+  } else
+    DOUT("patch encoding FAILED");
   HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
   return true;
 }
