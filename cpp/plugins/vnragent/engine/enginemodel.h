@@ -19,19 +19,20 @@ public:
 
   EngineModel()
     : name(nullptr)
-    , encoding(AsciiEncoding)   // scenario thread encoding
+    , encoding(AsciiEncoding)       // scenario thread encoding
 
-    , enableDynamicEncoding(false) // whether use dynamic codec to fix ascii text
-    , enableLocaleEmulation(false) // fix inconsistent game locale
+    , enableLocaleEmulation(false)  // fix inconsistent game locale
     , enableDynamicFont(false)      // change GDI device context font
+    , enableDynamicEncoding(false)  // whether use dynamic codec to fix ascii text
+    , dynamicEncodingMinimumByte(0) // minimum value for the dynamic sjis
 
-    , scenarioLineCapacity(0)   // estimated maximum number of thin characters for scenario text per line, 0 to disable it
-    , otherLineCapacity(0)      // estimated maximum number of thin characters for other text per line, 0 to disable it
-    , newLineString("\n")       // new line deliminator, nullptr if does not work
+    , scenarioLineCapacity(0)       // estimated maximum number of thin characters for scenario text per line, 0 to disable it
+    , otherLineCapacity(0)          // estimated maximum number of thin characters for other text per line, 0 to disable it
+    , newLineString("\n")           // new line deliminator, nullptr if does not work
 
-    //, matchFunction(nullptr)    // determine whether apply engine
-    //, attachFunction(nullptr)   // apply the engine
-    //, detachFunction(nullptr)   // remove the applied engine
+    //, matchFunction(nullptr)      // determine whether apply engine
+    //, attachFunction(nullptr)     // apply the engine
+    //, detachFunction(nullptr)     // remove the applied engine
     , textFilterFunction(nullptr)   // fix scenario text before sending out
     , translationFilterFunction(nullptr)    // fix translation text before sending out
     , rubyCreateFunction(nullptr)
@@ -40,9 +41,11 @@ public:
 
   const char *name;
   Encoding encoding;
-  bool enableDynamicEncoding;
   bool enableLocaleEmulation;
   bool enableDynamicFont;
+  bool enableDynamicEncoding;
+
+  int dynamicEncodingMinimumByte;
 
   int scenarioLineCapacity,
       otherLineCapacity;

@@ -16,6 +16,7 @@
 #include "engine/model/elf.h"
 #include "engine/model/escude.h"
 #include "engine/model/fvp.h"
+#include "engine/model/lcse.h"
 #include "engine/model/leaf.h"
 #include "engine/model/lucifen.h"
 #include "engine/model/luna.h"
@@ -74,6 +75,7 @@ EngineController *EngineFactory::createEngine()
     , new LunaSoftEngine
     , new LucifenEngine
     , new LeafEngine
+    , new LCScriptEngine
     , new FVPEngine
     , new EscudeEngine
     , new ElfEngine

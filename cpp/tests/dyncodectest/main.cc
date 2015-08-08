@@ -16,8 +16,8 @@ bool encodable(const QChar &c, QTextEncoder *encoder)
 int main()
 {
   DynamicShiftJISCodec codec;
-  for (int i = 0x85; i < 0x100; i++)
-    for (int j = 1; j < 0x3f; j++) {
+  for (int i = 0x85; i < 0x86; i++)
+    for (int j = 1; j < 0x2; j++) {
       char data[] = "\x85\x10\x00\x00";
       data[0] = i;
       data[1] = j;

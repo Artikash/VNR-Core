@@ -13,6 +13,7 @@ public:
   SystemAoiEngine()
   {
     name = "EmbedSystemAoi";
+    //enableDynamicEncoding = true; // dynamically update this value
     matchFiles << "Ags*.dll" << "Aoi*.dll";
     textSeperators << "[u]";
     //newLineString = "\n";

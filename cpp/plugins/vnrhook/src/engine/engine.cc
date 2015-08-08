@@ -24,7 +24,6 @@
 #include "ccutil/ccmacro.h"
 #include "mono/monoobject.h"
 #include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 #include <cstdio>
 
 #define hashstr hashutil::djb2
@@ -8279,7 +8278,7 @@ ULONG findAoiProc(HMODULE hModule, LPCSTR functionName, int minParamNum = 0, int
     sig.push_back('_');
     sig += functionName;
     sig.push_back('@');
-    sig += boost::lexical_cast<std::string>(4 * i);
+    sig += std::to_string(4ll * i);
     if (auto proc = ::GetProcAddress(hModule, sig.c_str()))
       return (ULONG)proc;
   }

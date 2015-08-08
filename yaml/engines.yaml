@@ -452,6 +452,7 @@ char:
   - EmbedElf
   - EmbedEscude
   - EmbedFVP
+  - EmbedLCScriptEngine
   - EmbedLeaf
   - EmbedLucifen
   - EmbedLunaSoft
@@ -722,6 +723,7 @@ focus:
   - EmbedCMVS
   - EmbedDebonosu
   - EmbedEscude
+  - EmbedLCScriptEngine
   - EmbedLeaf
   - EmbedLova
   - EmbedLucifen

@@ -48,6 +48,10 @@
   exist: "*.hcb"
   #encoding: sjis
 
+- name: EmbedLCScriptEngine # 8/6/2015
+  exist: lcsebody*
+  #encoding: sjis
+
 - name: EmbedLeaf # 6/24/2015
   exist: bak.pak
   #encoding: sjis

@@ -31,7 +31,7 @@ std::wstring trexp::compile_format(const std::wstring &target, const std::wstrin
       symbols.push_back(it);
     });
     for (size_t i = 0; i < symbols.size(); i++) {
-      std::string repl = "$" + std::to_string((long long)(i + 1));
+      std::string repl = "$" + std::to_string(i + 1ll);
       boost::replace_all(ret, symbols[i], repl);
     }
 
@@ -40,7 +40,7 @@ std::wstring trexp::compile_format(const std::wstring &target, const std::wstrin
         size_t pos = symbols[i].find('#');
         if (pos != std::wstring::npos) {
           std::string pat = "[[" + symbols[i].substr(pos),
-                      repl = "$" + std::to_string((long long)(i + 1));
+                      repl = "$" + std::to_string(i + 1ll);
           boost::replace_all(ret, pat, repl);
         }
       }
