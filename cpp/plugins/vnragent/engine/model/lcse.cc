@@ -270,6 +270,9 @@ namespace Private {
       containsZeros = true;;
       oldData.replace(zero_bytes, zero_str);
       role = Engine::OtherRole;
+      // FIXME: There could be individual ascii letters before zeros (such as "k" and "n")
+      // They should be escaped here.
+      // Escaping not implemented since I am lazy.
     }
     auto sig = Engine::hashThreadSignature(role, retaddr);
     QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
