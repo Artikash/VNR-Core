@@ -231,6 +231,8 @@ namespace Private {
     auto arg3 = s->stack[8 + 3];
     if (arg3 == 0x400)
       role = Engine::ScenarioRole;
+    // 8/7/2015: Here, I could also split choice and scenario from the retaddr.
+    // But I didn't so that choice can also be display the same way asn scenario.
     auto sig = Engine::hashThreadSignature(role, retaddr);
     //sig = retaddr;
     QByteArray oldData(trimmedText, trimmedSize),
