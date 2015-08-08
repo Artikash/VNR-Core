@@ -647,6 +647,9 @@ namespace Private {
 /**
  *  Sample game: 春恋＊乙女～乙女の園でごきげんよう。～
  *
+ *  Debugging method: Find text in memory, and then insert hardware breakpoint.
+ *  It will be accessed only ONCE in the following function.
+ *
  *  0040A37E   CC                                     INT3
  *  0040A37F   CC                                     INT3
  *  0040A380   8B4C24 04                              MOV ECX,DWORD PTR SS:[ESP+0x4]
