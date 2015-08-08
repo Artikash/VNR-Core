@@ -5,6 +5,7 @@
 
 #include "engine/enginemodel.h"
 
+#define LCSE_SEP_0  "[0]" // pseudo separator
 class LCScriptEngine : public EngineModel
 {
   SK_EXTEND_CLASS(LCScriptEngine, EngineModel)
@@ -19,7 +20,8 @@ public:
     newLineString = "\x01";
     matchFiles << "lcsebody*";
     attachFunction = std::bind(&Self::attach, this);
-    //textSeperators << "\x01" << "\x02\x03";
+    //textSeparators << "\x01" << "\x02\x03";
+    textSeparators << LCSE_SEP_0; // requires EngineController to have newLineString recovered after textSeparators
   }
 };
 

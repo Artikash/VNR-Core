@@ -25,12 +25,14 @@ namespace Private {
   LPCSTR trim(LPCSTR text, int *size)
   {
     auto length = *size;
-    enum { MinimumByte = 0x6 }; // the same as dynamicEncodingMinimumByte
-    while (text[0] && (uchar)text[0] < MinimumByte) { // remove all leading illegal characters
+    while (length && (uchar)text[0] <= 127) { // remove all leading ASCII characters including zeros
       text++;
       length--;
     }
+    while (length && (uchar)text[length - 1] == 0) // remove all trailing zeros
+      length--;
     // remove all trailing illegal double-characters
+    enum { MinimumByte = 0x6 }; // the same as dynamicEncodingMinimumByte
     while (length >= 2 && (uchar)text[length - 1] < MinimumByte && (uchar)text[length - 2] < MinimumByte)
       length -= 2;
     *size = length;
@@ -182,6 +184,28 @@ namespace Private {
    *  0012FDB8   00000001
    *  0012FDBC   001907D0
    *  0012FDC0   00000202
+   *
+   *  Sample game: 恋姫†無双
+   *  ecx = 0x22
+   *  Sample game text containing zeros
+   *  01D6B13B  8E A9 8C 52 81 41 05 04 00 00 00 01 81 40 81 40  自軍、...　　
+   *  01D6B14B  81 40 91 CE 01 93 47 8C 52 81 41 05 05 00 00 00  　対敵軍、...
+   *  01D6B15B  02 00 14 00 00 00 5F 62 74 6C 5F 53 65 74 57 61  ...._btl_SetWa
+   *  01D6B16B  7A 61 42 74 6E 53 72 63 59 00 0D 00 00 00 5F 62  zaBtnSrcY....._b
+   *  01D6B17B  74 6C 5F 63 6D 64 63 68 69 70 00 0F 00 00 00 5F  tl_cmdchip...._
+   *  01D6B18B  62 74 6C 5F 63 6D 64 63 68 69 70 5F 6D 00 0D 00  btl_cmdchip_m...
+   *  01D6B19B  00 00 5F 62 74 6C 5F 6F 6E 6D 6F 75 73 65 00 0E  .._btl_onmouse.
+   *  01D6B1AB  00 00 00 5F 62 74 6C 5F 73 65 6C 65 63 74 65 64  ..._btl_selected
+   *  01D6B1BB  00 0B 00 00 00 5F 62 74 6C 5F 52 65 74 72 79 00  ...._btl_Retry.
+   *  01D6B1CB  13 00 00 00 5F 62 74 6C 5F 43 6C 65 61 6E 75 70  ..._btl_Cleanup
+   *
+   *  ecx = 0x19
+   *  01D6B317  81 40 04 6B 00 00 00 82 CC 91 B9 8A 51 82 F0 97  　k...の損害を・
+   *  01D6B327  5E 82 A6 82 BD 81 42 02 00 10 00 00 00 5F 62 74  ^えた。...._bt
+   *  01D6B337  6C 5F 57 61 7A 61 5F 43 68 6F 75 6E 00 17 00 00  l_Waza_Choun...
+   *  01D6B347  00 5F 62 74 6C 5F 57 61 7A 61 45 6E 65 6D 79 5F  ._btl_WazaEnemy_
+   *  01D6B357  42 75 66 66 41 54 4B 00 10 00 00 00 5F 62 74 6C  BuffATK...._btl
+   *  01D6B367  5F 57 61 7A 61 5F 4B 6F 63 68 75 00 1C 00 00 00  _Waza_Kochu....
    */
   bool hook1(winhook::hook_stack *s)
   {
@@ -212,7 +236,8 @@ namespace Private {
 
     auto text = (LPCSTR)esi;
     if (!*text
-        || ::strlen(text) != size
+        //|| ::strlen(text) != size
+        || text[size] // text length not verified since there could be trailing zeros
         || ::isalpha(text[0]) && ::isalpha(text[1]) // Sample system text in 恋姫無双: bcg_剣道場a
         || Util::allAscii(text))
       return true;
@@ -231,12 +256,28 @@ namespace Private {
     auto arg3 = s->stack[8 + 3];
     if (arg3 == 0x400)
       role = Engine::ScenarioRole;
-    auto sig = Engine::hashThreadSignature(role, retaddr);
+    // 8/7/2015: Here, I could also split choice and scenario from the retaddr.
+    // But I didn't so that choice can also be display the same way asn scenario.
     //sig = retaddr;
-    QByteArray oldData(trimmedText, trimmedSize),
-               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+
+    QByteArray oldData(trimmedText, trimmedSize);
+
+    static const QByteArray zero_bytes("\0", 1);
+    const char *zero_str = LCSE_SEP_0;
+
+    bool containsZeros = false;
+    if (oldData.contains('\0')) {
+      containsZeros = true;;
+      oldData.replace(zero_bytes, zero_str);
+      role = Engine::OtherRole;
+    }
+    auto sig = Engine::hashThreadSignature(role, retaddr);
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData.isEmpty() || newData == oldData)
       return true;
+
+    if (containsZeros)
+      newData.replace(zero_str, zero_bytes);
 
     int prefixSize = trimmedText - text,
         suffixSize = size - prefixSize - trimmedSize;

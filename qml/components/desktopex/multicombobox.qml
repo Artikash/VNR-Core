@@ -10,7 +10,7 @@ DesktopCustom.BasicButton { id: root_
   property alias menuItems: popup_.items
 
   property alias selectedText: popup_.selectedText
-  property alias seperator: popup_.seperator
+  property alias separator: popup_.separator
 
   property string placeholderText: "-"
   property string prefix

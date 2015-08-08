@@ -15,7 +15,7 @@ public:
     name = "EmbedSystemAoi";
     //enableDynamicEncoding = true; // dynamically update this value
     matchFiles << "Ags*.dll" << "Aoi*.dll";
-    textSeperators << "[u]";
+    textSeparators << "[u]";
     //newLineString = "\n";
     attachFunction = std::bind(&Self::attach, this);
   }

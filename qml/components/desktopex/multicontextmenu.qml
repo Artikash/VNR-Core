@@ -14,7 +14,7 @@ Desktop.Menu { id: root_
   signal selectionChanged()
 
   property string selectedText
-  property string seperator: ','
+  property string separator: ','
 
   //property variant selectedItems // not used
 
@@ -68,6 +68,6 @@ Desktop.Menu { id: root_
       if (item.checked)
         l.push(item.text)
     }
-    selectedText = l.join(seperator)
+    selectedText = l.join(separator)
   }
 }
