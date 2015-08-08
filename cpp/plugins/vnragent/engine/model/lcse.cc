@@ -67,6 +67,122 @@ namespace Private {
 
   QByteArray data_;
 
+  /**
+   *  Sample game: 姦獄学園
+   *  Sample stack when hook1 is invoked:
+   *  0012FE10   00000003
+   *  0012FE14   00000008
+   *  0012FE18   7FFDF000
+   *  0012FE1C   00000000
+   *  0012FE20   00000000
+   *  0012FE24   0012FEB0  Pointer to next SEH record
+   *  0012FE28   00480918  SE handler
+   *  0012FE2C   00000000
+   *  0012FE30   00419B16  RETURN to .00419B16 from .0040169F
+   *  0012FE34   0012FE4C
+   *  0012FE38   0012FE70
+   *  0012FE3C   00000040
+   *  0012FE40   77032EB2  user32.PeekMessageA
+   *  0012FE44   00000000
+   *  0012FE48   00000039
+   *  0012FE4C   00000002
+   *  0012FE50   00000039
+   *  0012FE54   00000000
+   *  0012FE58   00000000
+   *
+   *  Scenario thread caller:
+   *
+   *  0041C27C   E8 D65AFEFF      CALL .00401D57
+   *  0041C281   8D5424 38        LEA EDX,DWORD PTR SS:[ESP+0x38]
+   *  0041C285   68 00040000      PUSH 0x400
+   *  0041C28A   8D4424 34        LEA EAX,DWORD PTR SS:[ESP+0x34]
+   *  0041C28E   52               PUSH EDX
+   *  0041C28F   50               PUSH EAX
+   *  0041C290   E8 2354FEFF      CALL .004016B8  ; jichi: scenario caller here
+   *  0041C295   83C4 0C          ADD ESP,0xC
+   *  0041C298   8D4C24 38        LEA ECX,DWORD PTR SS:[ESP+0x38]
+   *  0041C29C   8B15 B44E4A00    MOV EDX,DWORD PTR DS:[0x4A4EB4]
+   *  0041C2A2   51               PUSH ECX
+   *  0041C2A3   8B0D 5C0A4A00    MOV ECX,DWORD PTR DS:[0x4A0A5C]
+   *  0041C2A9   8BC1             MOV EAX,ECX
+   *
+   *  Other thread callers:
+   *
+   *  00421298   8D8424 B0000000  LEA EAX,DWORD PTR SS:[ESP+0xB0]
+   *  0042129F   50               PUSH EAX
+   *  004212A0   51               PUSH ECX
+   *  004212A1   895424 2C        MOV DWORD PTR SS:[ESP+0x2C],EDX
+   *  004212A5   E8 0E04FEFF      CALL .004016B8  ; jichi: other caller
+   *  004212AA   8D5424 38        LEA EDX,DWORD PTR SS:[ESP+0x38]
+   *  004212AE   68 80000000      PUSH 0x80
+   *  004212B3   8D4424 24        LEA EAX,DWORD PTR SS:[ESP+0x24]
+   *  004212B7   52               PUSH EDX
+   *  004212B8   50               PUSH EAX
+   *  004212B9   E8 FA03FEFF      CALL .004016B8  ; jichi: other here
+   *  004212BE   83C4 18          ADD ESP,0x18
+   *  004212C1   83FF 01          CMP EDI,0x1
+   *  004212C4   75 68            JNZ SHORT .0042132E
+   *
+   *
+   *  Sample game: 春恋＊乙女～乙女の園でごきげんよう。～
+   *  Sample scenario caller:
+   *  0041C0C4   8D4424 38        LEA EAX,DWORD PTR SS:[ESP+0x38]
+   *  0041C0C8   68 00040000      PUSH 0x400
+   *  0041C0CD   8D4C24 34        LEA ECX,DWORD PTR SS:[ESP+0x34]
+   *  0041C0D1   50               PUSH EAX
+   *  0041C0D2   51               PUSH ECX
+   *  0041C0D3   E8 C755FEFF      CALL .0040169F  ; jichi: called here
+   *  0041C0D8   8B0D 4CE94900    MOV ECX,DWORD PTR DS:[0x49E94C]
+   *  0041C0DE   8B35 00244A00    MOV ESI,DWORD PTR DS:[0x4A2400]
+   *  0041C0E4   8BC1             MOV EAX,ECX
+   *  0041C0E6   83C4 0C          ADD ESP,0xC
+   *
+   *  0012FA54   00000001
+   *  0012FA58   00000006
+   *  0012FA5C   7707EA71  user32.MessageBoxA
+   *  0012FA60   00000000
+   *  0012FA64   00000000
+   *  0012FA68   0012FF78  Pointer to next SEH record
+   *  0012FA6C   00480918  SE handler
+   *  0012FA70   00000000
+   *  0012FA74   0041C0D8  RETURN to .0041C0D8 from .0040169F
+   *  0012FA78   0012FAB4
+   *  0012FA7C   0012FABC
+   *  0012FA80   00000400   ; jichi: used as split to identify scenario thread
+   *  0012FA84   00000003
+   *  0012FA88   77032EB2  user32.PeekMessageA
+   *  0012FA8C   77033569  user32.DispatchMessageA
+   *  0012FA90   7FFDF000
+   *  0012FA94   00000000
+   *  0012FA98   00000000
+   *
+   *  Other thread caller:
+   *  0012FD60   00000001
+   *  0012FD64   00000001
+   *  0012FD68   7FFDF000
+   *  0012FD6C   00000000
+   *  0012FD70   00000000
+   *  0012FD74   0012FF78  Pointer to next SEH record
+   *  0012FD78   00480918  SE handler
+   *  0012FD7C   00000000
+   *  0012FD80   0042113A  RETURN to .0042113A from .0040169F
+   *  0012FD84   0012FDAC
+   *  0012FD88   0012FE3C
+   *  0012FD8C   00000080   ; jichi: arg3
+   *  0012FD90   00000003
+   *  0012FD94   77032EB2  user32.PeekMessageA
+   *  0012FD98   77033569  user32.DispatchMessageA
+   *  0012FD9C   00000002
+   *  0012FDA0   00000034
+   *  0012FDA4   00000002
+   *  0012FDA8   0000006D
+   *  0012FDAC   00000002
+   *  0012FDB0   00000034
+   *  0012FDB4   00000000
+   *  0012FDB8   00000001
+   *  0012FDBC   001907D0
+   *  0012FDC0   00000202
+   */
   bool hook1(winhook::hook_stack *s)
   {
     data_.clear();
@@ -108,7 +224,15 @@ namespace Private {
 
     //auto size = s->ecx * 4;
     //auto dst = (LPSTR)s->edi;
-    enum { role = Engine::ScenarioRole, sig = 0 };
+    auto role = Engine::OtherRole;
+    auto retaddr = s->stack[8];
+    //if ((*(DWORD *)retaddr & 0xffffff) == 0x0cc483) // 0041C295   83C4 0C          ADD ESP,0xC
+    //  role = Engine::ScenarioRole;
+    auto arg3 = s->stack[8 + 3];
+    if (arg3 == 0x400)
+      role = Engine::ScenarioRole;
+    auto sig = Engine::hashThreadSignature(role, retaddr);
+    //sig = retaddr;
     QByteArray oldData(trimmedText, trimmedSize),
                newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
     if (newData.isEmpty() || newData == oldData)
