@@ -146,6 +146,7 @@ HEADERS += \
   engine/model/leaf.h \
   engine/model/lucifen.h \
   engine/model/luna.h \
+  engine/model/malie.h \
   engine/model/mono.h \
   engine/model/nexton.h \
   engine/model/pal.h \
@@ -184,6 +185,7 @@ SOURCES += \
   engine/model/leaf.cc \
   engine/model/lucifen.cc \
   engine/model/luna.cc \
+  engine/model/malie.cc \
   engine/model/mono.cc \
   engine/model/nexton.cc \
   engine/model/pal.cc \

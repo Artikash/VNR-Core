@@ -923,7 +923,7 @@ bool patchEncoding(ulong startAddress, ulong stopAddress)
   return addr && winhook::replace_fun(addr, (ulong)Private::isLeadByteChar);
 }
 
-} // namespace PatchA
+} // namespace Patch
 } // unnamed namespace
 
 bool LCScriptEngine::attach()

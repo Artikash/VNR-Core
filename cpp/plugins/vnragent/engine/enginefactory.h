@@ -10,5 +10,4 @@ public:
   static EngineController *createEngine();
 };
 
-
 // EOF
