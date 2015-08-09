@@ -25,6 +25,7 @@
 #include "mono/monoobject.h"
 #include <boost/foreach.hpp>
 #include <cstdio>
+#include <string>
 
 #define hashstr hashutil::djb2
 
@@ -6815,6 +6816,94 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *, BYTE, DWORD *data, DWORD *sp
  *  jichi 8/20/2013: Add hook for 相州戦神館學園 八命陣
  *  See: http://sakuradite.com/topic/157
  *  Credits: @ok123
+ *
+ *  Debugging method: insert hardware breakpoint into text
+ *  There are four matches of text in the memory
+ *
+ *  Sample game: シルヴァリオ ヴェンデッタ
+ *  0065478B   90               NOP
+ *  0065478C   90               NOP
+ *  0065478D   90               NOP
+ *  0065478E   90               NOP
+ *  0065478F   90               NOP
+ *  00654790   8B4424 04        MOV EAX,DWORD PTR SS:[ESP+0x4]
+ *  00654794   56               PUSH ESI
+ *  00654795   57               PUSH EDI
+ *  00654796   8B50 08          MOV EDX,DWORD PTR DS:[EAX+0x8]
+ *  00654799   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  0065479B   33F6             XOR ESI,ESI
+ *  0065479D   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]  ; jichi: text accessed here
+ *  006547A1   42               INC EDX
+ *  006547A2   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  006547A5   8950 08          MOV DWORD PTR DS:[EAX+0x8],EDX
+ *  006547A8   8B50 04          MOV EDX,DWORD PTR DS:[EAX+0x4]
+ *  006547AB   83FA 01          CMP EDX,0x1
+ *  006547AE   75 2C            JNZ SHORT malie.006547DC
+ *  006547B0   8B50 08          MOV EDX,DWORD PTR DS:[EAX+0x8]
+ *  006547B3   33F6             XOR ESI,ESI
+ *  006547B5   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]
+ *  006547B9   42               INC EDX
+ *  006547BA   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  006547BD   33F6             XOR ESI,ESI
+ *  006547BF   8950 08          MOV DWORD PTR DS:[EAX+0x8],EDX
+ *  006547C2   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]
+ *  006547C6   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  006547C9   42               INC EDX
+ *  006547CA   33F6             XOR ESI,ESI
+ *  006547CC   8950 08          MOV DWORD PTR DS:[EAX+0x8],EDX
+ *  006547CF   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]
+ *  006547D3   42               INC EDX
+ *  006547D4   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  006547D7   8950 08          MOV DWORD PTR DS:[EAX+0x8],EDX
+ *  006547DA  ^EB BF            JMP SHORT malie.0065479B
+ *  006547DC   83FA 02          CMP EDX,0x2
+ *  006547DF   0F84 59010000    JE malie.0065493E
+ *  006547E5   83FA 03          CMP EDX,0x3
+ *  006547E8   75 12            JNZ SHORT malie.006547FC
+ *  006547EA   8B50 08          MOV EDX,DWORD PTR DS:[EAX+0x8]
+ *  006547ED   33F6             XOR ESI,ESI
+ *  006547EF   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]
+ *  006547F3   42               INC EDX
+ *  006547F4   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  006547F7   8950 08          MOV DWORD PTR DS:[EAX+0x8],EDX
+ *  006547FA  ^EB 9F            JMP SHORT malie.0065479B
+ *  006547FC   83FA 04          CMP EDX,0x4
+ *  006547FF   0F84 39010000    JE malie.0065493E
+ *  00654805   83FA 07          CMP EDX,0x7
+ *  00654808   0F85 27010000    JNZ malie.00654935
+ *  0065480E   8B50 08          MOV EDX,DWORD PTR DS:[EAX+0x8]
+ *  00654811   33F6             XOR ESI,ESI
+ *  00654813   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]
+ *  00654817   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  0065481A   8D72 01          LEA ESI,DWORD PTR DS:[EDX+0x1]
+ *  0065481D   8B50 04          MOV EDX,DWORD PTR DS:[EAX+0x4]
+ *  00654820   8970 08          MOV DWORD PTR DS:[EAX+0x8],ESI
+ *  00654823   8D7A FF          LEA EDI,DWORD PTR DS:[EDX-0x1]
+ *  00654826   83FF 3B          CMP EDI,0x3B
+ *  00654829  ^0F87 79FFFFFF    JA malie.006547A8
+ *  0065482F   33D2             XOR EDX,EDX
+ *  00654831   8A97 9C496500    MOV DL,BYTE PTR DS:[EDI+0x65499C]
+ *  00654837   FF2495 80496500  JMP DWORD PTR DS:[EDX*4+0x654980]
+ *  0065483E   8B50 0C          MOV EDX,DWORD PTR DS:[EAX+0xC]
+ *  00654841   85D2             TEST EDX,EDX
+ *  00654843   0F8F 2B010000    JG malie.00654974
+ *  00654849   33D2             XOR EDX,EDX
+ *  0065484B   66:8B1471        MOV DX,WORD PTR DS:[ECX+ESI*2]
+ *  0065484F   46               INC ESI
+ *  00654850   85D2             TEST EDX,EDX
+ *  00654852   8950 04          MOV DWORD PTR DS:[EAX+0x4],EDX
+ *  00654855   8970 08          MOV DWORD PTR DS:[EAX+0x8],ESI
+ *  00654858   0F84 E0000000    JE malie.0065493E
+ *  0065485E   8B50 08          MOV EDX,DWORD PTR DS:[EAX+0x8]
+ *  00654861   33F6             XOR ESI,ESI
+ *  00654863   66:8B3451        MOV SI,WORD PTR DS:[ECX+EDX*2]
+ *  00654867   42               INC EDX
+ *  00654868   8950 08          MOV DWORD PTR DS:[EAX+0x8],EDX
+ *  0065486B   8BD6             MOV EDX,ESI
+ *  0065486D   85D2             TEST EDX,EDX
+ *  0065486F   8970 04          MOV DWORD PTR DS:[EAX+0x4],ESI
+ *  00654872  ^75 EA            JNZ SHORT malie.0065485E
+ *  00654874   8B50 08          MOV EDX,DWORD PTR DS:[EAX+0x8]
  */
 bool InsertMalie3Hook()
 {

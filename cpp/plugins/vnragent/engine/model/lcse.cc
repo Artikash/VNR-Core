@@ -262,8 +262,8 @@ namespace Private {
 
     QByteArray oldData(trimmedText, trimmedSize);
 
-    static const QByteArray zero_bytes("\0", 1);
-    const char *zero_str = LCSE_SEP_0;
+    static const QByteArray zero_bytes(1, '\0');
+    const char *zero_str = LCSE_0;
 
     bool containsZeros = false;
     if (oldData.contains('\0')) {

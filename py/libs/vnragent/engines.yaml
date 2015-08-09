@@ -65,9 +65,9 @@
   #vnrboot: true
   #encoding: sjis
 
-#- name: EmbedMalie # 8/8/2015
-#  exist: Malie* # Malie.ini or Malie.exe or MalieCfg.exe
-#  #encoding: utf16
+- name: EmbedMalie # 8/8/2015
+  exist: Malie* # Malie.ini or Malie.exe or MalieCfg.exe
+  #encoding: utf16
 
 - name: EmbedMono # 7/27/2015
   exist: '*/Mono/mono.dll'
