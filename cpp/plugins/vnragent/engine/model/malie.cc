@@ -26,7 +26,8 @@ namespace Private {
   /**
    *  Sample game: シルヴァリオ ヴェンデッタ
    *
-   *  0706: pause, text separator
+   *  0706: long pause, text separator
+   *  0704: short pause
    *  0708: voice start.
    *  0701: ruby start, 0a as separator
    *
@@ -566,6 +567,13 @@ namespace Private {
     return ret;
   }
 
+  void filterTextData(QByteArray &text)
+  {
+    // remove short pause
+    static QByteArray shortPause((LPCSTR)L"\x07\x04", 2 * sizeof(wchar_t));
+    text.replace(shortPause, ""); // there is no remove method in QByteArray
+  }
+
   // I need a cache retainer here to make sure same text result in same result
   bool hookBefore(winhook::hook_stack *s)
   {
@@ -573,9 +581,14 @@ namespace Private {
     static std::unordered_set<uint64_t> hashes_;
     auto text = (LPCWSTR)s->stack[1];
     if (!text || !*text
-        //|| text[0] != 0x7 || text[1] != 0x8
+        || !(text[0] == 0x7 && text[1] == 0x8) && Util::allAscii(text) // all ascii when not voiced
         || hashes_.find(hashTextList(text)) !=  hashes_.end())
       return true;
+
+    //if (::wcsstr(text, L"\x30DC\x30BF\x30F3")) // ボタン
+    //  return true;
+    //if (::wcsstr(text, L"\x30A4\x30E1\x30FC")) // イメージ
+    //  return true;
 
     // Scenario caller:
     // 004637BA   E8 21031F00      CALL malie.00653AE0   ; jichi: scenario caller
@@ -621,6 +634,7 @@ namespace Private {
 
       size = parseTextSize(text);
       QByteArray oldData = parseTextData(text);
+      filterTextData(oldData);
       if (oldData.isEmpty()) // this should never happen
         return true;
 
@@ -649,8 +663,9 @@ namespace Private {
         data.replace(zero_repr, zero_bytes);
       }
 
-      // make sure there are 4 zeros at the end
+      // make sure there are 5 zeros at the end
       data.append('\0')
+          .append('\0')
           .append('\0')
           .append('\0');
       data_ = data;
@@ -810,6 +825,37 @@ namespace Private {
  *  0063B4C9   90               NOP
  *  0063B4CA   90               NOP
  *  0063B4CB   90               NOP
+ *
+ *  Sample game: 神咒神威神楽WEB体験版
+ *  FIXME: Texts get disappeared
+ *  00517A8D   90               NOP
+ *  00517A8E   90               NOP
+ *  00517A8F   90               NOP
+ *  00517A90   56               PUSH ESI
+ *  00517A91   8B7424 08        MOV ESI,DWORD PTR SS:[ESP+0x8]
+ *  00517A95   57               PUSH EDI
+ *  00517A96   56               PUSH ESI
+ *  00517A97   E8 64E5FFFF      CALL .00516000
+ *  00517A9C   8D78 02          LEA EDI,DWORD PTR DS:[EAX+0x2]
+ *  00517A9F   57               PUSH EDI
+ *  00517AA0   FF15 40745500    CALL DWORD PTR DS:[0x557440]             ; msvcrt.malloc
+ *  00517AA6   83C4 08          ADD ESP,0x8
+ *  00517AA9   85C0             TEST EAX,EAX
+ *  00517AAB   74 12            JE SHORT .00517ABF
+ *  00517AAD   8BCF             MOV ECX,EDI
+ *  00517AAF   8BF8             MOV EDI,EAX
+ *  00517AB1   8BD1             MOV EDX,ECX
+ *  00517AB3   C1E9 02          SHR ECX,0x2
+ *  00517AB6   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  00517AB8   8BCA             MOV ECX,EDX
+ *  00517ABA   83E1 03          AND ECX,0x3
+ *  00517ABD   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[>
+ *  00517ABF   5F               POP EDI
+ *  00517AC0   5E               POP ESI
+ *  00517AC1   C3               RETN
+ *  00517AC2   90               NOP
+ *  00517AC3   90               NOP
+ *  00517AC4   90               NOP
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
@@ -981,6 +1027,8 @@ bool attachFont(ulong startAddress, ulong stopAddress)
 
 bool MalieEngine::attach()
 {
+  // FIXME: attaching to 神咒神威神楽 will cause game text to disappear
+
   ulong startAddress, stopAddress;
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;

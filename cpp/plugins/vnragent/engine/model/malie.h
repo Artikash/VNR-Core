@@ -11,7 +11,7 @@ class MalieEngine : public EngineModel
   SK_EXTEND_CLASS(MalieEngine, EngineModel)
   static bool attach();
   static QString rubyCreate(const QString &rb, const QString &rt);
-  //static QString rubyRemove(const QString &text);
+  //static QString rubyRemove(const QString &text); // already removed
 public:
   MalieEngine()
   {
