@@ -15,7 +15,7 @@ class MalieEngine : public EngineModel
 public:
   MalieEngine()
   {
-    name = "EmbedMalieEngine";
+    name = "EmbedMalie";
     encoding = Utf16Encoding;
     //enableDynamicFont = true;
     //newLineString = "\n";

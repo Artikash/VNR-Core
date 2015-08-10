@@ -6,8 +6,11 @@
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
 //#include "hijack/hijackmanager.h"
+#include "hijack/hijackhelper.h"
+#include "hijack/hijacksettings.h"
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
+//#include "winhook/hookutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <cstdint>
@@ -546,6 +549,140 @@ bool attach(ulong startAddress, ulong stopAddress)
   return winhook::hook_before(addr, Private::hookBefore);
 }
 } // namespace ScenarioHook
+
+namespace Patch {
+namespace Private {
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QString fontFace_;
+    if (auto h = HijackHelper::instance())
+      if (auto hs = h->settings())
+        if (!hs->fontFamily.isEmpty()) {
+          if (fontFace_ != hs->fontFamily)
+            fontFace_ = hs->fontFamily;
+          s->stack[1] = (ulong)fontFace_.utf16();
+          //::memcpy((LPVOID)s->stack[2], fontFace_.utf16(), fontFace_.size() * sizeof(wchar_t));
+        }
+    return true;
+  }
+} // namespace Private
+
+/**
+ *  Sample game: シルヴァリオ ヴェンデッタ
+ *  Force changing font face, otherwise CreateFontIndirectW won't be invoked.
+ *
+ *  Default font is TelopMinPro.
+ *
+ *  There are two fonts that are needed to be changed for Malie engine.
+ *  - Text font: can be changed in registry as "FontFace"
+ *  - UI font: canb be changed in malie.ini using SystemFont
+ *    Example:
+ *
+ *    ;フォント種類指定
+ *    ;SystemFont=SimSun
+ *    ;FONT01=SimSun
+ *    SystemFont=TelopMinPro
+ *    FONT01=TelopMinPro
+ *
+ *  This function is found by debugging CreateFontIndirectW.
+ *  Font face in both arg1 and arg2.
+ *
+ *  0043A82C   90               NOP
+ *  0043A82D   90               NOP
+ *  0043A82E   90               NOP
+ *  0043A82F   90               NOP
+ *  0043A830   53               PUSH EBX
+ *  0043A831   55               PUSH EBP
+ *  0043A832   56               PUSH ESI
+ *  0043A833   57               PUSH EDI
+ *  0043A834   E8 C7FFFFFF      CALL malie.0043A800
+ *  0043A839   8BF8             MOV EDI,EAX
+ *  0043A83B   33F6             XOR ESI,ESI
+ *  0043A83D   85FF             TEST EDI,EDI
+ *  0043A83F   7E 20            JLE SHORT malie.0043A861
+ *  0043A841   8B5C24 14        MOV EBX,DWORD PTR SS:[ESP+0x14]
+ *  0043A845   8B2D 14256900    MOV EBP,DWORD PTR DS:[<&MSVCRT._wcsicmp>>; msvcrt._wcsicmp
+ *  0043A84B   56               /PUSH ESI
+ *  0043A84C   E8 6FFFFFFF      |CALL malie.0043A7C0
+ *  0043A851   50               |PUSH EAX
+ *  0043A852   53               |PUSH EBX
+ *  0043A853   FFD5             |CALL EBP
+ *  0043A855   83C4 0C          |ADD ESP,0xC
+ *  0043A858   85C0             |TEST EAX,EAX
+ *  0043A85A   74 0D            |JE SHORT malie.0043A869
+ *  0043A85C   46               |INC ESI
+ *  0043A85D   3BF7             |CMP ESI,EDI
+ *  0043A85F  ^7C EA            \JL SHORT malie.0043A84B
+ *  0043A861   5F               POP EDI
+ *  0043A862   5E               POP ESI
+ *  0043A863   5D               POP EBP
+ *  0043A864   83C8 FF          OR EAX,0xFFFFFFFF
+ *  0043A867   5B               POP EBX
+ *  0043A868   C3               RETN
+ *  0043A869   5F               POP EDI
+ *  0043A86A   8BC6             MOV EAX,ESI
+ *  0043A86C   5E               POP ESI
+ *  0043A86D   5D               POP EBP
+ *  0043A86E   5B               POP EBX
+ *  0043A86F   C3               RETN
+ *  0043A870   8B4424 04        MOV EAX,DWORD PTR SS:[ESP+0x4]
+ *  0043A874   83F8 FF          CMP EAX,-0x1
+ *  0043A877   75 05            JNZ SHORT malie.0043A87E
+ *  0043A879   E8 92FFFFFF      CALL malie.0043A810
+ *  0043A87E   50               PUSH EAX
+ *  0043A87F   E8 3CFFFFFF      CALL malie.0043A7C0
+ *  0043A884   33C9             XOR ECX,ECX
+ *  0043A886   83C4 04          ADD ESP,0x4
+ *  0043A889   66:8338 40       CMP WORD PTR DS:[EAX],0x40
+ *  0043A88D   0F94C1           SETE CL
+ *  0043A890   8BC1             MOV EAX,ECX
+ *  0043A892   C3               RETN
+ *  0043A893   90               NOP
+ *  0043A894   90               NOP
+ *  0043A895   90               NOP
+ *  0043A896   90               NOP
+ *  0043A897   90               NOP
+ *  0043A898   90               NOP
+ *
+ *  0278F138   0043AB90  RETURN to malie.0043AB90 from malie.0043A830
+ *  0278F13C   0278F154  UNICODE "telopminpro"
+ *  0278F140   0278F154  UNICODE "telopminpro"
+ *  0278F144   006D2AE8  UNICODE "%s"
+ *  0278F148   0192C990  UNICODE "telopminpro"
+ *  0278F14C   00000000
+ *  0278F150   0A33AAE0
+ *  0278F154   00650074  malie.00650074
+ *  0278F158   006F006C  malie.006F006C
+ *  0278F15C   006D0070  ASCII "Context"
+ *  0278F160   006E0069  malie.006E0069
+ *  0278F164   00720070  malie.00720070
+ *  0278F168   0000006F
+ *  0278F16C   3F088850
+ *  0278F170   00000000
+ *  0278F174   00000000
+ *
+ */
+bool attachFont(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x50,            // 0043A851   50               |PUSH EAX
+    0x53,            // 0043A852   53               |PUSH EBX
+    0xFF,0xD5,       // 0043A853   FFD5             |CALL EBP
+    0x83,0xC4, 0x0C, // 0043A855   83C4 0C          |ADD ESP,0xC
+    0x85,0xC0,       // 0043A858   85C0             |TEST EAX,EAX
+    0x74, 0x0D,      // 0043A85A   74 0D            |JE SHORT malie.0043A869
+    0x46,            // 0043A85C   46               |INC ESI
+    0x3B,0xF7        // 0043A85D   3BF7             |CMP ESI,EDI
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+}
+} // namespace Patch
 } // unnamed namespace
 
 bool MalieEngine::attach()
@@ -555,9 +692,10 @@ bool MalieEngine::attach()
     return false;
   if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
-  // FIXME: Font cannot be changed at runtime anyway
-  // I might have to hook to GDI+ font functions instead of GDI to make it work.
-  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
+  if (Patch::attachFont(startAddress, stopAddress))
+    DOUT("patch font succeeded");
+  else
+    DOUT("patch font FAILED");
   //HijackManager::instance()->attachFunction((ulong)::CreateFontIndirectW);
   return true;
 }
