@@ -71,6 +71,8 @@ embed:
   - Elf
   - Escude
   - Lucifen
+  - Malie2
+  - Malie3
   - NEXTON
   #- NEXTON1
   - Pensil
@@ -638,6 +640,7 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Embed
   - EmbedCotopha
+  - EmbedMalie
   - EmbedMono
   - EmbedSiglusEngine
   - EmbedSystemAoiW

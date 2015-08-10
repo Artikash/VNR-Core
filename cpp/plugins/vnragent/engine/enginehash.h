@@ -15,23 +15,27 @@ namespace Engine {
 
 // Cast quint64 to qint64
 
-inline qint64 hashByteArray(const QByteArray &b)
-{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(b.constData()), b.size()); }
+inline qint64 hashByteArray(const QByteArray &b, qint64 h = Sk::djb2_hash0)
+{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(b.constData()), b.size(), h); }
 
-inline qint64 hashString(const QString &s)
-{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(s.utf16()), s.size() * 2); }
+inline qint64 hashString(const QString &s, qint64 h = Sk::djb2_hash0)
+{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(s.utf16()), s.size() * 2, h); }
 
 inline qint64 hashCharArray(const void *lp)
 { return Sk::djb2(reinterpret_cast<const quint8 *>(lp)); }
 
-inline qint64 hashCharArray(const void *lp, size_t len)
-{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), len); }
+inline qint64 hashCharArray(const void *lp, size_t len, qint64 h = Sk::djb2_hash0)
+{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), len, h); }
 
-inline qint64 hashWCharArray(const wchar_t *lp, size_t len)
-{ return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), 2 * len); }
+inline qint64 hashWCharArray(const wchar_t *lp, size_t len = -1, qint64 h = Sk::djb2_hash0)
+{
+  if (len == -1)
+    len = ::wcslen(lp);
+  return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), 2 * len, h);
+}
 
-inline qint64 hashWString(const QString &s)
-{ return hashWCharArray(s.utf16(), s.size()); }
+inline qint64 hashWString(const QString &s, qint64 h = Sk::djb2_hash0)
+{ return hashWCharArray(s.utf16(), s.size(), h); }
 
 inline qint64 hashTextKey(qint64 hash, unsigned role) { return hash + (1 << role); }
 

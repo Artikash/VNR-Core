@@ -262,14 +262,17 @@ namespace Private {
 
     QByteArray oldData(trimmedText, trimmedSize);
 
-    static const QByteArray zero_bytes("\0", 1);
-    const char *zero_str = LCSE_SEP_0;
+    static const QByteArray zero_bytes(1, '\0');
+    const char *zero_str = LCSE_0;
 
     bool containsZeros = false;
     if (oldData.contains('\0')) {
       containsZeros = true;;
       oldData.replace(zero_bytes, zero_str);
       role = Engine::OtherRole;
+      // FIXME: There could be individual ascii letters before zeros (such as "k" and "n")
+      // They should be escaped here.
+      // Escaping not implemented since I am lazy.
     }
     auto sig = Engine::hashThreadSignature(role, retaddr);
     QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
@@ -644,6 +647,9 @@ namespace Private {
 /**
  *  Sample game: 春恋＊乙女～乙女の園でごきげんよう。～
  *
+ *  Debugging method: Find text in memory, and then insert hardware breakpoint.
+ *  It will be accessed only ONCE in the following function.
+ *
  *  0040A37E   CC                                     INT3
  *  0040A37F   CC                                     INT3
  *  0040A380   8B4C24 04                              MOV ECX,DWORD PTR SS:[ESP+0x4]
@@ -917,7 +923,7 @@ bool patchEncoding(ulong startAddress, ulong stopAddress)
   return addr && winhook::replace_fun(addr, (ulong)Private::isLeadByteChar);
 }
 
-} // namespace PatchA
+} // namespace Patch
 } // unnamed namespace
 
 bool LCScriptEngine::attach()

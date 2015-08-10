@@ -10,11 +10,11 @@
 
 HASHUTIL_BEGIN_NAMESPACE
 
-enum : uint64_t { djb2_init = 5381 };
+enum : uint64_t { djb2_hash0 = 5381 };
 
 ///  djb2: h = h*33 + c
 template <typename charT>
-inline uint64_t djb2(const charT *str, uint64_t hash = djb2_init)
+inline uint64_t djb2(const charT *str, uint64_t hash = djb2_hash0)
 {
   charT c;
   while ((c = *str++))
@@ -24,7 +24,7 @@ inline uint64_t djb2(const charT *str, uint64_t hash = djb2_init)
 
 ///  n: length
 template <typename charT>
-inline uint64_t djb2_n(const charT *str, size_t len, uint64_t hash = djb2_init)
+inline uint64_t djb2_n(const charT *str, size_t len, uint64_t hash = djb2_hash0)
 {
   while (len--)
     hash = ((hash << 5) + hash) + (*str++); // hash * 33 + c
