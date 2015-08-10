@@ -368,6 +368,137 @@ namespace Private {
    *  0046317C   90               NOP
    *  0046317D   90               NOP
    *  0046317E   90               NOP
+   *
+   *  Sample game: BRAVA!!
+   *  Scenario retaddr: 42011f
+   *
+   *  004200FD   90               NOP
+   *  004200FE   90               NOP
+   *  004200FF   90               NOP
+   *  00420100   56               PUSH ESI
+   *  00420101   8B7424 08        MOV ESI,DWORD PTR SS:[ESP+0x8]
+   *  00420105   8B46 20          MOV EAX,DWORD PTR DS:[ESI+0x20]
+   *  00420108   8B88 F0000000    MOV ECX,DWORD PTR DS:[EAX+0xF0]
+   *  0042010E   57               PUSH EDI
+   *  0042010F   51               PUSH ECX
+   *  00420110   E8 BB240200      CALL .004425D0
+   *  00420115   8B7C24 14        MOV EDI,DWORD PTR SS:[ESP+0x14]
+   *  00420119   57               PUSH EDI
+   *  0042011A   E8 01031300      CALL .00550420
+   *  0042011F   8B56 20          MOV EDX,DWORD PTR DS:[ESI+0x20]   ; jichi: scenario caller
+   *  00420122   57               PUSH EDI
+   *  00420123   8982 F0000000    MOV DWORD PTR DS:[EDX+0xF0],EAX
+   *  00420129   E8 B2E61200      CALL .0054E7E0
+   *  0042012E   8B56 20          MOV EDX,DWORD PTR DS:[ESI+0x20]
+   *  00420131   83C4 0C          ADD ESP,0xC
+   *  00420134   33C9             XOR ECX,ECX
+   *  00420136   85C0             TEST EAX,EAX
+   *  00420138   0F9FC1           SETG CL
+   *  0042013B   5F               POP EDI
+   *  0042013C   5E               POP ESI
+   *  0042013D   898A FC000000    MOV DWORD PTR DS:[EDX+0xFC],ECX
+   *  00420143   C3               RETN
+   *  00420144   90               NOP
+   *
+   *  Name retaddr: 415a2c
+   *
+   *  004159DD   90               NOP
+   *  004159DE   90               NOP
+   *  004159DF   90               NOP
+   *  004159E0   81EC 00080000    SUB ESP,0x800
+   *  004159E6   53               PUSH EBX
+   *  004159E7   56               PUSH ESI
+   *  004159E8   57               PUSH EDI
+   *  004159E9   6A 6C            PUSH 0x6C
+   *  004159EB   FF15 40D45800    CALL DWORD PTR DS:[0x58D440]             ; msvcrt.malloc
+   *  004159F1   8BD8             MOV EBX,EAX
+   *  004159F3   83C4 04          ADD ESP,0x4
+   *  004159F6   85DB             TEST EBX,EBX
+   *  004159F8   0F84 D1000000    JE .00415ACF
+   *  004159FE   8BB424 10080000  MOV ESI,DWORD PTR SS:[ESP+0x810]
+   *  00415A05   33C0             XOR EAX,EAX
+   *  00415A07   B9 1B000000      MOV ECX,0x1B
+   *  00415A0C   8BFB             MOV EDI,EBX
+   *  00415A0E   F3:AB            REP STOS DWORD PTR ES:[EDI]
+   *  00415A10   8B06             MOV EAX,DWORD PTR DS:[ESI]
+   *  00415A12   68 003B4100      PUSH .00413B00
+   *  00415A17   50               PUSH EAX
+   *  00415A18   8D4C24 14        LEA ECX,DWORD PTR SS:[ESP+0x14]
+   *  00415A1C   51               PUSH ECX
+   *  00415A1D   E8 5EAB1300      CALL .00550580
+   *  00415A22   8D5424 18        LEA EDX,DWORD PTR SS:[ESP+0x18]
+   *  00415A26   52               PUSH EDX
+   *  00415A27   E8 F4A91300      CALL .00550420
+   *  00415A2C   8903             MOV DWORD PTR DS:[EBX],EAX  ; jichi: name caller
+   *  00415A2E   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+   *  00415A31   68 003B4100      PUSH .00413B00
+   *  00415A36   50               PUSH EAX
+   *  00415A37   8D4C24 24        LEA ECX,DWORD PTR SS:[ESP+0x24]
+   *  00415A3B   51               PUSH ECX
+   *  00415A3C   E8 3FAB1300      CALL .00550580
+   *  00415A41   8D5424 28        LEA EDX,DWORD PTR SS:[ESP+0x28]
+   *  00415A45   52               PUSH EDX
+   *  00415A46   E8 D5A91300      CALL .00550420
+   *  00415A4B   8943 04          MOV DWORD PTR DS:[EBX+0x4],EAX
+   *  00415A4E   8B46 08          MOV EAX,DWORD PTR DS:[ESI+0x8]
+   *  00415A51   83C4 20          ADD ESP,0x20
+   *  00415A54   85C0             TEST EAX,EAX
+   *  00415A56   75 05            JNZ SHORT .00415A5D
+   *  00415A58   B8 6C285E00      MOV EAX,.005E286C
+   *  00415A5D   50               PUSH EAX
+   *  00415A5E   E8 DD691300      CALL .0054C440
+   *  00415A63   8943 08          MOV DWORD PTR DS:[EBX+0x8],EAX
+   *  00415A66   8B46 0C          MOV EAX,DWORD PTR DS:[ESI+0xC]
+   *  00415A69   83C4 04          ADD ESP,0x4
+   *  00415A6C   85C0             TEST EAX,EAX
+   *  00415A6E   75 05            JNZ SHORT .00415A75
+   *  00415A70   B8 6C285E00      MOV EAX,.005E286C
+   *  00415A75   50               PUSH EAX
+   *  00415A76   E8 C5691300      CALL .0054C440
+   *  00415A7B   8943 0C          MOV DWORD PTR DS:[EBX+0xC],EAX
+   *  00415A7E   8B46 60          MOV EAX,DWORD PTR DS:[ESI+0x60]
+   *  00415A81   8943 60          MOV DWORD PTR DS:[EBX+0x60],EAX
+   *  00415A84   8B4E 64          MOV ECX,DWORD PTR DS:[ESI+0x64]
+   *  00415A87   894B 64          MOV DWORD PTR DS:[EBX+0x64],ECX
+   *  00415A8A   8B56 68          MOV EDX,DWORD PTR DS:[ESI+0x68]
+   *  00415A8D   8D7E 10          LEA EDI,DWORD PTR DS:[ESI+0x10]
+   *  00415A90   83C4 04          ADD ESP,0x4
+   *  00415A93   85FF             TEST EDI,EDI
+   *  00415A95   8953 68          MOV DWORD PTR DS:[EBX+0x68],EDX
+   *  00415A98   74 35            JE SHORT .00415ACF
+   *  00415A9A   55               PUSH EBP
+   *  00415A9B   8BEB             MOV EBP,EBX
+   *  00415A9D   2BEE             SUB EBP,ESI
+   *  00415A9F   BE 14000000      MOV ESI,0x14
+   *  00415AA4   8B07             MOV EAX,DWORD PTR DS:[EDI]
+   *  00415AA6   66:8338 00       CMP WORD PTR DS:[EAX],0x0
+   *  00415AAA   75 04            JNZ SHORT .00415AB0
+   *  00415AAC   33C0             XOR EAX,EAX
+   *  00415AAE   EB 09            JMP SHORT .00415AB9
+   *  00415AB0   50               PUSH EAX
+   *  00415AB1   E8 8A691300      CALL .0054C440
+   *  00415AB6   83C4 04          ADD ESP,0x4
+   *  00415AB9   89042F           MOV DWORD PTR DS:[EDI+EBP],EAX
+   *  00415ABC   83C7 04          ADD EDI,0x4
+   *  00415ABF   4E               DEC ESI
+   *  00415AC0  ^75 E2            JNZ SHORT .00415AA4
+   *  00415AC2   5D               POP EBP
+   *  00415AC3   5F               POP EDI
+   *  00415AC4   5E               POP ESI
+   *  00415AC5   8BC3             MOV EAX,EBX
+   *  00415AC7   5B               POP EBX
+   *  00415AC8   81C4 00080000    ADD ESP,0x800
+   *  00415ACE   C3               RETN
+   *  00415ACF   5F               POP EDI
+   *  00415AD0   5E               POP ESI
+   *  00415AD1   8BC3             MOV EAX,EBX
+   *  00415AD3   5B               POP EBX
+   *  00415AD4   81C4 00080000    ADD ESP,0x800
+   *  00415ADA   C3               RETN
+   *  00415ADB   90               NOP
+   *  00415ADC   90               NOP
+   *  00415ADD   90               NOP
+   *  00415ADE   90               NOP
    */
 
   uint64_t hashTextList(LPCWSTR text)
@@ -455,15 +586,25 @@ namespace Private {
     // 0046314F   8B4E 20          MOV ECX,DWORD PTR DS:[ESI+0x20] ; jichi: scenario retaddr
     // 00463152   57               PUSH EDI
     //
+    // (balloon-like)
+    // 0042011F   8B56 20          MOV EDX,DWORD PTR DS:[ESI+0x20]   ; jichi: scenario caller
+    // 00420122   57               PUSH EDI
+    //
     // Name caller:
     // 00463829   E8 B2021F00      CALL malie.00653AE0 ; jichi: name
     // 0046382E   8B56 1C          MOV EDX,DWORD PTR DS:[ESI+0x1C]
     // 00463831   83C4 14          ADD ESP,0x14
+    //
+    // (balloon-like)
+    // 00415A2C   8903             MOV DWORD PTR DS:[EBX],EAX  ; jichi: name caller
+    // 00415A2E   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+    // 00415A31   68 003B4100      PUSH .00413B00
     auto role = Engine::OtherRole;
     auto retaddr = s->stack[0];
-    switch (*(DWORD *)retaddr & 0xff00ffff) {
-    case 0x57004e8b: role = Engine::ScenarioRole; break;
-    case 0x8300568b: role = Engine::NameRole; break;
+    switch (*(DWORD *)retaddr & 0xff0000ff) {
+    case 0x5700008b: role = Engine::ScenarioRole; break;
+    case 0x8300008b:
+    case 0x46000089: role = Engine::NameRole; break;
     }
     //auto sig = Engine::hashThreadSignature(role, retaddr); // this is not needed as the retaddr is used as split
     auto sig = retaddr;
@@ -845,6 +986,8 @@ bool MalieEngine::attach()
     return false;
   if (!ScenarioHook::attach(startAddress, stopAddress))
     return false;
+
+  // Old games like Vermilion does not need font patch, which will fail anyway.
   if (Patch::attachFont(startAddress, stopAddress))
     DOUT("patch font succeeded");
   else
