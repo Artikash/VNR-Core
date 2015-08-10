@@ -24,6 +24,8 @@ namespace ScenarioHook {
 namespace Private {
 
   /**
+   *  Sample game: シルヴァリオ ヴェンデッタ
+   *
    *  0706: pause, text separator
    *  0708: voice start.
    *  0701: ruby start, 0a as separator
@@ -321,6 +323,51 @@ namespace Private {
    *  00475AFB   90               NOP
    *  00475AFC   90               NOP
    *  00475AFD   90               NOP
+   *
+   *  Sample game: 相州戦神館學園 八命陣 (older game0
+   *  Scenario caller: 46314f
+   *
+   *  0046310B   90               NOP
+   *  0046310C   90               NOP
+   *  0046310D   90               NOP
+   *  0046310E   90               NOP
+   *  0046310F   90               NOP
+   *  00463110   81EC 00080000    SUB ESP,0x800
+   *  00463116   56               PUSH ESI
+   *  00463117   8BB424 08080000  MOV ESI,DWORD PTR SS:[ESP+0x808]
+   *  0046311E   8B46 20          MOV EAX,DWORD PTR DS:[ESI+0x20]
+   *  00463121   8B88 68020000    MOV ECX,DWORD PTR DS:[EAX+0x268]
+   *  00463127   57               PUSH EDI
+   *  00463128   51               PUSH ECX
+   *  00463129   E8 62240200      CALL .00485590
+   *  0046312E   8BBC24 14080000  MOV EDI,DWORD PTR SS:[ESP+0x814]
+   *  00463135   68 10634100      PUSH .00416310
+   *  0046313A   8D5424 10        LEA EDX,DWORD PTR SS:[ESP+0x10]
+   *  0046313E   57               PUSH EDI
+   *  0046313F   52               PUSH EDX
+   *  00463140   E8 AB841D00      CALL .0063B5F0
+   *  00463145   8D4424 18        LEA EAX,DWORD PTR SS:[ESP+0x18]
+   *  00463149   50               PUSH EAX
+   *  0046314A   E8 41831D00      CALL .0063B490
+   *  0046314F   8B4E 20          MOV ECX,DWORD PTR DS:[ESI+0x20] ; jichi: scenario retaddr
+   *  00463152   57               PUSH EDI
+   *  00463153   8981 68020000    MOV DWORD PTR DS:[ECX+0x268],EAX
+   *  00463159   E8 82661D00      CALL .006397E0
+   *  0046315E   83C4 18          ADD ESP,0x18
+   *  00463161   33D2             XOR EDX,EDX
+   *  00463163   85C0             TEST EAX,EAX
+   *  00463165   8B46 20          MOV EAX,DWORD PTR DS:[ESI+0x20]
+   *  00463168   0F9FC2           SETG DL
+   *  0046316B   5F               POP EDI
+   *  0046316C   5E               POP ESI
+   *  0046316D   8990 7C020000    MOV DWORD PTR DS:[EAX+0x27C],EDX
+   *  00463173   81C4 00080000    ADD ESP,0x800
+   *  00463179   C3               RETN
+   *  0046317A   90               NOP
+   *  0046317B   90               NOP
+   *  0046317C   90               NOP
+   *  0046317D   90               NOP
+   *  0046317E   90               NOP
    */
 
   uint64_t hashTextList(LPCWSTR text)
@@ -404,15 +451,19 @@ namespace Private {
     // 004637BF   8B4E 1C          MOV ECX,DWORD PTR DS:[ESI+0x1C]
     // 004637C2   57               PUSH EDI
     //
+    // 0046314A   E8 41831D00      CALL .0063B490
+    // 0046314F   8B4E 20          MOV ECX,DWORD PTR DS:[ESI+0x20] ; jichi: scenario retaddr
+    // 00463152   57               PUSH EDI
+    //
     // Name caller:
     // 00463829   E8 B2021F00      CALL malie.00653AE0 ; jichi: name
     // 0046382E   8B56 1C          MOV EDX,DWORD PTR DS:[ESI+0x1C]
     // 00463831   83C4 14          ADD ESP,0x14
     auto role = Engine::OtherRole;
     auto retaddr = s->stack[0];
-    switch (*(DWORD *)retaddr) {
-    case 0x571c4e8b: role = Engine::ScenarioRole; break;
-    case 0x831c568b: role = Engine::NameRole; break;
+    switch (*(DWORD *)retaddr & 0xff00ffff) {
+    case 0x57004e8b: role = Engine::ScenarioRole; break;
+    case 0x8300568b: role = Engine::NameRole; break;
     }
     //auto sig = Engine::hashThreadSignature(role, retaddr); // this is not needed as the retaddr is used as split
     auto sig = retaddr;
@@ -506,10 +557,10 @@ namespace Private {
  *  00653B13   8BFB             MOV EDI,EBX
  *  00653B15   8BC1             MOV EAX,ECX
  *  00653B17   C1E9 02          SHR ECX,0x2
- *  00653B1A   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  00653B1A   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
  *  00653B1C   8BC8             MOV ECX,EAX
  *  00653B1E   83E1 03          AND ECX,0x3
- *  00653B21   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[>
+ *  00653B21   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[ESI]
  *  00653B23   68 00C47F00      PUSH malie.007FC400
  *  00653B28   FF15 44226900    CALL DWORD PTR DS:[<&KERNEL32.LeaveCriti>; ntdll.RtlLeaveCriticalSection
  *  00653B2E   8BC3             MOV EAX,EBX
@@ -522,20 +573,122 @@ namespace Private {
  *  00653B36   90               NOP
  *  00653B37   90               NOP
  *  00653B38   90               NOP
+ *
+ *  Malie2's pattern: 4089560833d2894604
+ *
+ *    const BYTE bytes1[] = {
+ *      0x40,            // inc eax
+ *      0x89,0x56, 0x08, // mov dword ptr ds:[esi+0x8],edx
+ *      0x33,0xd2,       // xor edx,edx
+ *      0x89,0x46, 0x04  // mov dword ptr ds:[esi+0x4],eax
+ *    };
+ *
+ *  Malie2 not used as it produces too many garbage
+ *
+ *  Malie2's call stack:
+ *
+ *  026DF0D8   026DF0E0
+ *  026DF0DC   026DF184	; jichi: source text
+ *  026DF0E0   026DF184
+ *  026DF0E4   00000000
+ *  026DF0E8   000000B8
+ *  026DF0EC   0627DFE8
+ *  026DF0F0   016F0000
+ *  026DF0F4   0627DFE0
+ *  026DF0F8   0180B5E0
+ *  026DF0FC   00000001
+ *  026DF100   0180B8F0  ASCII ""=VH"
+ *  026DF104  /026DF11C
+ *  026DF108  |77492CE8  RETURN to ntdll.77492CE8 from ntdll.77492D0B
+ *  026DF10C  |0180B8F8
+ *  026DF110  |FFFFFFFF
+ *  026DF114  |04A9103C
+ *  026DF118  |0180B8F0  ASCII ""=VH"
+ *  026DF11C  \026DF168
+ *  026DF120   771B98CD  RETURN to msvcrt.771B98CD from ntdll.RtlFreeHeap
+ *  026DF124   018B0000
+ *  026DF128   00000000
+ *  026DF12C   00000006
+ *  026DF130   FFFFFFFF
+ *  026DF134   FFFFFFFF
+ *  026DF138   00000000
+ *  026DF13C   026DF184	; jichi: text
+ *  026DF140   0000000C
+ *  026DF144   062671D8
+ *  026DF148   00000000
+ *  026DF14C  /026DFA08
+ *  026DF150  |00653AFE  RETURN to malie.00653AFE from malie.00651FC0
+ *  026DF154  |026DF184	; jichi: text
+ *  026DF158  |007272A8  malie.007272A8
+ *  026DF15C  |04A9103C
+ *  026DF160  |0183DFE8
+ *  026DF164  |004637BF  RETURN to malie.004637BF from malie.00653AE0
+ *  026DF168  |026DF184	; jichi: text, two continous scenario text
+ *  026DF16C  |026DF184	; jichi: text
+ *  026DF170  |007272A8  malie.007272A8
+ *  026DF174  |00416CC0  malie.00416CC0
+ *  026DF178  |0180B8F8
+ *  026DF17C  |FFFFFFFF
+ *  026DF180  |0183DFE8
+ *  026DF184  |00080007
+ *  026DF188  |005F0076  malie.005F0076
+ *  026DF18C  |0065007A  malie.0065007A
+ *  026DF190  |00300070
+ *  026DF194  |00300030
+ *
+ *  Sample game: 相州戦神館學園 八命陣 (older game without critical sections)
+ *  0063B48D   90               NOP
+ *  0063B48E   90               NOP
+ *  0063B48F   90               NOP
+ *  0063B490   56               PUSH ESI
+ *  0063B491   8B7424 08        MOV ESI,DWORD PTR SS:[ESP+0x8]
+ *  0063B495   33C0             XOR EAX,EAX
+ *  0063B497   57               PUSH EDI
+ *  0063B498   85F6             TEST ESI,ESI
+ *  0063B49A   74 29            JE SHORT .0063B4C5
+ *  0063B49C   56               PUSH ESI
+ *  0063B49D   E8 FEE4FFFF      CALL .006399A0
+ *  0063B4A2   8D78 02          LEA EDI,DWORD PTR DS:[EAX+0x2]
+ *  0063B4A5   57               PUSH EDI
+ *  0063B4A6   FF15 94946700    CALL DWORD PTR DS:[0x679494]             ; msvcrt.malloc
+ *  0063B4AC   83C4 08          ADD ESP,0x8
+ *  0063B4AF   85C0             TEST EAX,EAX
+ *  0063B4B1   74 12            JE SHORT .0063B4C5
+ *  0063B4B3   8BCF             MOV ECX,EDI
+ *  0063B4B5   8BF8             MOV EDI,EAX
+ *  0063B4B7   8BD1             MOV EDX,ECX
+ *  0063B4B9   C1E9 02          SHR ECX,0x2
+ *  0063B4BC   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
+ *  0063B4BE   8BCA             MOV ECX,EDX
+ *  0063B4C0   83E1 03          AND ECX,0x3
+ *  0063B4C3   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[ESI]
+ *  0063B4C5   5F               POP EDI
+ *  0063B4C6   5E               POP ESI
+ *  0063B4C7   C3               RETN
+ *  0063B4C8   90               NOP
+ *  0063B4C9   90               NOP
+ *  0063B4CA   90               NOP
+ *  0063B4CB   90               NOP
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
   const uint8_t bytes[] = {
-    0x8b,0xd8,          // 00653b08   8bd8             mov ebx,eax
-    0x83,0xc4, 0x08,    // 00653b0a   83c4 08          add esp,0x8
-    0x85,0xdb,          // 00653b0d   85db             test ebx,ebx
-    0x74, 0x12,         // 00653b0f   74 12            je short malie.00653b23
-    0x8b,0xcf,          // 00653b11   8bcf             mov ecx,edi
-    0x8b,0xfb,          // 00653b13   8bfb             mov edi,ebx
-    0x8b,0xc1,          // 00653b15   8bc1             mov eax,ecx
-    0xc1,0xe9, 0x02     // 00653b17   c1e9 02          shr ecx,0x2
+    //FF15 20256900  // 00653B02   FF15 20256900    CALL DWORD PTR DS:[<&MSVCRT.malloc>]     ; msvcrt.malloc
+    //8BD8           // 00653B08   8BD8             MOV EBX,EAX
+    0x83,0xC4, 0x08, // 00653B0A   83C4 08          ADD ESP,0x8
+    0x85,XX,         // 00653B0D   85DB             TEST EBX,EBX
+    0x74, 0x12,      // 00653B0F   74 12            JE SHORT malie.00653B23
+    0x8B,XX,         // 00653B11   8BCF             MOV ECX,EDI
+    0x8B,XX,         // 00653B13   8BFB             MOV EDI,EBX
+    0x8B,XX,         // 00653B15   8BC1             MOV EAX,ECX
+    0xC1,0xE9, 0x02, // 00653B17   C1E9 02          SHR ECX,0x2
+    0xF3,0xA5,       // 00653B1A   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
+    0x8B,XX,         // 00653B1C   8BC8             MOV ECX,EAX
+    0x83,0xE1, 0x03, // 00653B1E   83E1 03          AND ECX,0x3
+    0xF3,0xA4        // 00653B21   F3:A4            REP MOVS BYTE PTR ES:[EDI],BYTE PTR DS:[ESI]
   };
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  ulong addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  //DOUT(addr);
   if (!addr)
     return false;
   addr = MemDbg::findEnclosingAlignedFunction(addr);
