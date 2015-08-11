@@ -15,7 +15,7 @@ from sakurakit.skdebug import dprint
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from mytr import my, mytr_
-import config, dataman, features, growl, i18n, libman, osutil, rc
+import config, dataman, features, growl, i18n, libman, osutil, rc, settings
 
 @Q_Q
 class _GameEditor(object):
@@ -29,6 +29,7 @@ class _GameEditor(object):
     layout.addWidget(self.locationGroup)
     layout.addWidget(self.textGroup)
     layout.addWidget(self.hookGroup)
+    layout.addWidget(self.embedGroup)
     if not features.WINE:
       layout.addWidget(self.loaderGroup)
     layout.addWidget(self.timeZoneGroup)
@@ -39,6 +40,7 @@ class _GameEditor(object):
     self._loadName()
     self._loadHook()
     self._loadText()
+    self._loadEmbedSettings()
     self._loadLocation()
     self._loadLoader()
     self._loadTimeZone()
@@ -145,6 +147,40 @@ class _GameEditor(object):
     self.hookEdit.setEnabled(hookEnabled or not hook)
     self.hookButton.setEnabled(bool(hook))
     self.hookButton.setChecked(hookEnabled)
+
+  ## Game agent ##
+
+  @memoizedproperty
+  def embedGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.embedEnableButton)
+    layout.addLayout(row)
+
+    ret = QtWidgets.QGroupBox(mytr_("Embed translation"))
+    ret.setLayout(layout)
+
+    ss = settings.global_()
+    ret.setEnabled(ss.isGameAgentEnabled())
+    ss.gameAgentEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def embedEnableButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Allow embedding translation when possible"),
+        tr_("default")))
+    ret.clicked.connect(self._saveEmbedSettings)
+    return ret
+
+  def _loadEmbedSettings(self):
+    self.embedEnableButton.setChecked(not self.game.gameAgentDisabled)
+
+  def _saveEmbedSettings(self):
+    t = not self.embedEnableButton.isChecked()
+    if t != self.game.gameAgentDisabled:
+      dataman.manager().setGameAgentDisabled(t, md5=self.game.md5)
 
   ## Text ##
 
@@ -352,10 +388,9 @@ By default it is the same as the executable of the game process."""))
 
   @memoizedproperty
   def defaultLoaderButton(self):
-    ret = QtWidgets.QRadioButton(
-        "%s (%s)" %
-         (my.tr("Launch the game with DEFAULT loader in Preferences"),
-         tr_("default")))
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+        my.tr("Launch the game with DEFAULT loader in Preferences"),
+        tr_("default")))
     ret.toggled.connect(self._saveLoader)
     return ret
 

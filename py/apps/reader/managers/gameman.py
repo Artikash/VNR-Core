@@ -1043,6 +1043,7 @@ class GameManager(QtCore.QObject):
       keepsSpace = None
       threadKept = None
       timeZoneEnabled = None
+      gameAgentDisabled = False
 
       #commentCount = 0
 
@@ -1061,6 +1062,7 @@ class GameManager(QtCore.QObject):
         hookEnabled = not game.hookDisabled
         language = language or game.language
         timeZoneEnabled = game.timeZoneEnabled
+        gameAgentDisabled = game.gameAgentDisabled
         #commentCount = game.commentCount
 
       removesRepeat = bool(removesRepeat)
@@ -1091,6 +1093,7 @@ class GameManager(QtCore.QObject):
           g.timeZoneEnabled = oldGame.timeZoneEnabled
         if not game:
           hookEnabled = not oldGame.hookDisabled
+          gameAgentDisabled = oldGame.gameAgentDisabled
           #threadKept = oldGame.threadKept
           if oldGame.deletedHook:
             g.deletedHook = oldGame.deletedHook
@@ -1103,8 +1106,13 @@ class GameManager(QtCore.QObject):
       #if not g.launchLanguage:
       #  g.launchLanguage = 'ja'
 
-      agentEngine = gameagent.global_().guessEngine(pid=pid, path=path) if ss.isGameAgentEnabled() else None
-      dprint("agent engine = %s" % (agentEngine.name if agentEngine else "None"))
+      agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
+      if agentEngine:
+        dprint("agent engine = %s" % agentEngine.name)
+        if gameAgentDisabled or not ss.isGameAgentEnabled():
+          agentEngine = None
+          growl.notify(my.tr("Disable embedding translation for this game as you wish"))
+          dprint("disable game agent")
 
       g.vnrboot = bool(agentEngine and agentEngine.vnrboot)
 
@@ -1260,6 +1268,7 @@ class GameManager(QtCore.QObject):
           loader=g.loader, hookDisabled=not hookEnabled, deletedHook=g.deletedHook,
           language=g.language, launchLanguage=g.launchLanguage,
           timeZoneEnabled=g.timeZoneEnabled,
+          gameAgentDisabled=gameAgentDisabled,
           commentCount=commentCount,
           visitTime=skdatetime.current_unixtime())
 
