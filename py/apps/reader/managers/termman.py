@@ -241,20 +241,22 @@ class _TermManager:
         return ''
       return text
 
-    if not man or man.isEmpty():
+    if not man: #or man.isEmpty():
       return text
 
     if not man.mutex.tryLock(TERM_TRYLOCK_INTERVAL):
       dwarn("try lock timeout")
       return text
 
-    category = _termman.make_category(context=context, host=host)
-    if type == 'encode':
-      ret = man.encode(text, category)
-    elif type == 'decode':
-      ret = man.decode(text, category, mark)
-    else:
-      ret = man.transform(text, category, mark)
+    ret = text
+    if not man.isEmpty():
+      category = _termman.make_category(context=context, host=host)
+      if type == 'encode':
+        ret = man.encode(text, category)
+      elif type == 'decode':
+        ret = man.decode(text, category, mark)
+      else:
+        ret = man.transform(text, category, mark)
     man.mutex.unlock()
     return ret
 
