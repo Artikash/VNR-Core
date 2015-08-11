@@ -123,6 +123,8 @@ gui:
   - DrawTextExA
   - DrawTextExW
   # GDI+
+  - GdipAddPathString
+  - GdipAddPathStringl
   - GdipDrawString
   - GdipMeasureString
   # GDI32
@@ -618,6 +620,8 @@ wchar:
   - WideCharToMultiByte
   - CharNextW
   # GDI+
+  - GdipAddPathString
+  - GdipAddPathStringl
   - GdipDrawString
   - GdipMeasureString
   # Mono
