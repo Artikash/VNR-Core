@@ -26,16 +26,27 @@ import _termman
 @memoized
 def manager(): return TermManager()
 
+TERM_TRYLOCK_INTERVAL = 100 # 0.1 second
+
+# One QMutex is attached to all returned object
+# Apply terms will cause tryLock
+# Save/clear terms will cause lock
+#
+# Mutex is used instead of read/write lock, since the term object has internal cache
+# This might cause thread contention when multiple translators are used
 def _make_script_interpreter(type): # str -> Object
   if type == 'trans':
     from pytrcodec import TranslationCoder
-    return TranslationCoder()
+    ret = TranslationCoder()
   elif type == 'output_syntax':
     from pytroscript import TranslationOutputScriptPerformer
-    return TranslationOutputScriptPerformer()
+    ret = TranslationOutputScriptPerformer()
   else:
     from pytrscript import TranslationScriptPerformer
-    return TranslationScriptPerformer()
+    ret = TranslationScriptPerformer()
+  #ret.rwlock = QReadWriteLock()
+  ret.mutex = QMutex()
+  return ret
 
 DELEGATE_DISABLED_LANGUAGES = 'el', # languages where user-defined delegation is disabled
 
@@ -169,16 +180,24 @@ class _TermManager:
         man = self.scripts.get(scriptKey)
         if not man:
           man = self.scripts[scriptKey] = _make_script_interpreter(type)
-        elif not man.isEmpty():
-          man.clear()
+        #elif not man.isEmpty():
+        #  man.clear()
+        else:
+          man.mutex.lock()
+          if not man.isEmpty():
+            man.clear()
+          man.mutex.unlock()
         try:
           if type == 'trans':
             proxies = self.proxies.get((to, fr))
             if proxies:
               del proxies[:]
 
-          if w.saveTerms(path, type, to, fr, macros) and man.loadScript(path):
-            if type == 'trans':
+          if w.saveTerms(path, type, to, fr, macros):
+            man.mutex.lock()
+            ok = man.loadScript(path)
+            man.mutex.unlock()
+            if ok and type == 'trans':
               self.proxies[(to, fr)] = w.queryProxies(to, fr)
             dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
         except:
@@ -225,13 +244,19 @@ class _TermManager:
     if not man or man.isEmpty():
       return text
 
+    if not man.mutex.tryLock(TERM_TRYLOCK_INTERVAL):
+      dwarn("try lock timeout")
+      return text
+
     category = _termman.make_category(context=context, host=host)
     if type == 'encode':
-      return man.encode(text, category)
+      ret = man.encode(text, category)
     elif type == 'decode':
-      return man.decode(text, category, mark)
+      ret = man.decode(text, category, mark)
     else:
-      return man.transform(text, category, mark)
+      ret = man.transform(text, category, mark)
+    man.mutex.unlock()
+    return ret
 
   def warmupTerms(self, type, to, fr):
     """
