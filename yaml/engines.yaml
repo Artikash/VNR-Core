@@ -217,7 +217,7 @@ simple:
   - Alchemist2 PSP
   - AliceRunPatch # renamed
   - AliceRunPatch43
-  #- AliceRunPatch4x
+  - AliceRunPatch44
   - AMUSE CRAFT # renamed
   - AOS
   - ApRicot # renamed
@@ -307,6 +307,7 @@ simple:
   - System4 # renamed
   - System43
   - System43+
+  - System44
   - SystemAoi
   - SystemAoi2
   - SystemAoiA
@@ -483,7 +484,7 @@ char:
   - Alchemist2 PSP
   - AliceRunPatch # renamed
   - AliceRunPatch43
-  #- AliceRunPatch4x
+  - AliceRunPatch44
   - AMUSE CRAFT # renamed
   - Anex86
   - AOS
@@ -571,6 +572,7 @@ char:
   - System40
   - System43
   - System43+
+  - System44
   - SystemAoiA
   - SystemC
   - Syuntada
@@ -758,6 +760,7 @@ focus:
   - SiglusEngine4
   - SilkysPlus
   - SystemC
+  - System44
   - Syuntada
   - Taskforce2
   - Unicorn
