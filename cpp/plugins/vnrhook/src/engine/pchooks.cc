@@ -133,20 +133,24 @@ void PcHooks::hookGDIPlusFunctions()
     s_retaddr = 0
     , s_arg1 = 4 * 1 // 0x4
     , s_arg2 = 4 * 2 // 0x8
-    //, s_arg3 = 4 * 3 // 0xc
-    //, s_arg4 = 4 * 4 // 0x10
-    //, s_arg5 = 4 * 5 // 0x14
-    //, s_arg6 = 4 * 6 // 0x18
+    , s_arg3 = 4 * 3 // 0xc
+    , s_arg4 = 4 * 4 // 0x10
+    , s_arg5 = 4 * 5 // 0x14
+    , s_arg6 = 4 * 6 // 0x18
   };
 
   // gdiplus.dll
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms534053%28v=vs.85%29.aspx
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms534052%28v=vs.85%29.aspx
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms534039%28v=vs.85%29.aspx
   // Use arg1 pionter to GpGraphics as split
   //using namespace Gdiplus::DllExports;
+  // Use arg5 style as split
+  NEW_MODULE_HOOK(hModule, GdipAddPathString,           s_arg2, 0,s_arg5,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipAddPathString(GpPath *path, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFontFamily *family, INT style, REAL emSize, GDIPCONST RectF *layoutRect, GDIPCONST GpStringFormat *format)
+  NEW_MODULE_HOOK(hModule, GdipAddPathStringl,          s_arg2, 0,s_arg5,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipAddPathStringI(GpPath *path, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFontFamily *family, INT style, REAL emSize, GDIPCONST Rect *layoutRect, GDIPCONST GpStringFormat *format)
+  //NEW_MODULE_HOOK(hModule, GdipMeasureCharacterRanges,  s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipMeasureCharacterRanges(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF &layoutRect, GDIPCONST GpStringFormat *stringFormat, INT regionCount, GpRegion **regions)
   NEW_MODULE_HOOK(hModule, GdipDrawString,              s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipDrawString(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF *layoutRect, GDIPCONST GpStringFormat *stringFormat, GDIPCONST GpBrush *brush);
   NEW_MODULE_HOOK(hModule, GdipMeasureString,           s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipMeasureString(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF *layoutRect, GDIPCONST GpStringFormat *stringFormat, RectF *boundingBox, INT *codepointsFitted, INT *linesFilled )
-  //NEW_MODULE_HOOK(hModule, GdipMeasureCharacterRanges,  s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3) // GpStatus WINGDIPAPI GdipMeasureCharacterRanges(GpGraphics *graphics, GDIPCONST WCHAR *string, INT length, GDIPCONST GpFont *font, GDIPCONST RectF &layoutRect, GDIPCONST GpStringFormat *stringFormat, INT regionCount, GpRegion **regions)
 
   DPRINT("leave");
 }
