@@ -34,6 +34,9 @@
 %	if it.timeZoneEnabled != None
 			<timeZoneEnabled>{{'true' if it.timeZoneEnabled else 'false'}}</timeZoneEnabled>
 %	endif
+%	if it.gameAgentDisabled
+			<gameAgentDisabled>true</gameAgentDisabled>
+%	endif
 %	if it.keepsSpace
 			<keepsSpace>true</keepsSpace>
 %	endif

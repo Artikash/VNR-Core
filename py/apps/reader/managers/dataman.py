@@ -1601,6 +1601,7 @@ class Game(object):
     'removesRepeat',
     'ignoresRepeat',
     'timeZoneEnabled',
+    'gameAgentDisabled',
     'nameThreadName',
     'nameThreadSignature',
     'nameThreadDisabled',
@@ -1633,7 +1634,7 @@ class Game(object):
       nameThreadName="", nameThreadSignature=0, nameThreadDisabled=None,
       windowNames=[], fileNames=[], linkNames=[], folderNames=[], brandNames=[],
       path="", launchPath="", otherThreads=None,
-      loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None,
+      loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None, gameAgentDisabled=False,
       language='', launchLanguage='',
       userDefinedName="", visitTime=0, visitCount=0, commentCount=0,
       **ignored):
@@ -1654,6 +1655,7 @@ class Game(object):
     self.removesRepeat = removesRepeat  # bool or None
     self.ignoresRepeat = ignoresRepeat  # bool or None
     self.timeZoneEnabled = timeZoneEnabled # bool or None
+    self.gameAgentDisabled = gameAgentDisabled # bool
 
     self.nameThreadName = nameThreadName    # str
     self.nameThreadSignature = nameThreadSignature  # long
@@ -7130,7 +7132,7 @@ class _DataManager(object):
         if v:
           setattr(g, pty, v)
 
-      for pty in 'nameThreadDisabled', 'hookDisabled', 'threadKept', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'timeZoneEnabled':
+      for pty in 'nameThreadDisabled', 'hookDisabled', 'threadKept', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'timeZoneEnabled', 'gameAgentDisabled':
         v = getattr(game, pty)
         if v is not None:
           setattr(g, pty, v)
@@ -7489,7 +7491,7 @@ class _DataManager(object):
           #elif tag in ('itemId', 'commentsUpdateTime', 'refsUpdateTime', 'visitTime', 'visitCount', 'commentCount'):
           elif tag.endswith('Id') or tag.endswith('Count') or tag.endswith('Time'):
             setattr(g, tag, int(e.text))
-          elif tag in ('timeZoneEnabled', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'threadKept', 'voiceDefaultEnabled'):
+          elif tag in ('timeZoneEnabled', 'gameAgentDisabled', 'removesRepeat', 'ignoresRepeat', 'keepsSpace', 'threadKept', 'voiceDefaultEnabled'):
             setattr(g, tag, e.text == 'true')
           elif tag == 'hook':
             g.hook = e.text
@@ -10110,6 +10112,7 @@ class DataManager(QObject):
     @param  loader  unicode
     @param  md5  str
     """
+    #dprint(loader)
     g = self.__d.games.get(md5)
     if not g:
       growl.warn('<br/>'.join((
@@ -10128,6 +10131,7 @@ class DataManager(QObject):
     @param  value  bool or None
     @param  md5  str
     """
+    #dprint(value)
     g = self.__d.games.get(md5)
     if not g:
       growl.warn('<br/>'.join((
@@ -10141,11 +10145,31 @@ class DataManager(QObject):
     self.__d.touchGames()
     #self.__d.backupGamesXmlLater()
 
+  def setGameAgentDisabled(self, t, md5):
+    """Either id or md5 should be given
+    @param  t  bool
+    @param  md5  str
+    """
+    dprint(t)
+    g = self.__d.games.get(md5)
+    if not g:
+      growl.warn('<br/>'.join((
+        my.tr("The game does not exist. Did you delete it?"),
+        loader,
+      )))
+      return
+    if g.gameAgentDisabled == t:
+      return
+    g.gameAgentDisabled = t
+    self.__d.touchGames()
+    #self.__d.backupGamesXmlLater()
+
   def setGameHookEnabled(self, enabled, md5):
     """Either id or md5 should be given
     @param  enabled  bool or None
     @param  md5  str
     """
+    dprint(enabled)
     g = self.__d.games.get(md5)
     if not g:
       growl.warn(my.tr("The game does not exist. Did you delete it?"))
@@ -10177,6 +10201,7 @@ class DataManager(QObject):
     @param  enabled  bool
     @param  md5  str
     """
+    dprint(enabled)
     g = self.__d.games.get(md5)
     if not g:
       growl.warn(my.tr("The game does not exist. Did you delete it?"))

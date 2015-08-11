@@ -100,9 +100,11 @@ class reader(QObject):
       #self.tr("Original text"), self.tr("original text"),
       self.tr("Voice"),
       self.tr("Speech"),
-      self.tr("Embedded"),
       self.tr("Speak"),
       self.tr("Text-to-speech"), self.tr("Text-To-Speech"),
+
+      self.tr("Embedded"),
+      self.tr("Embed translation"),
 
       self.tr("User-defined"),
 
