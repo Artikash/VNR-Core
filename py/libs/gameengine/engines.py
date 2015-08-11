@@ -385,7 +385,7 @@ class System4Engine(Engine):
           if self.globAppDirectory(dll, pid):
             addr = dbg.search_module_memory(pattern, dll)
             if addr > 0:
-              ret = self._hook(addr, name)
+              self._hook(addr, name)
     dprint(ret)
     return ret
 
