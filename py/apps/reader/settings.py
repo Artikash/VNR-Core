@@ -1833,7 +1833,7 @@ class Settings(QSettings):
       self.termRubyEnabledChanged.emit(t)
 
   termKoreanHanjaRubyEnabledChanged = Signal(bool)
-  def isTermKoreanHanjaRubyEnabled(self): return to_bool(self.value('TermKoreanHanjaRuby', True))
+  def isTermKoreanHanjaRubyEnabled(self): return to_bool(self.value('TermKoreanHanjaRuby', False))
   def setTermKoreanHanjaRubyEnabled(self, t):
     if t != self.isTermKoreanHanjaRubyEnabled():
       self.setValue('TermKoreanHanjaRuby', t)

@@ -280,7 +280,7 @@
     <message>
         <location filename="sktr.py" line="298"/>
         <source>Account</source>
-        <translation type="obsolete">ユーザー</translation>
+        <translation>계정</translation>
     </message>
     <message>
         <location filename="sktr.py" line="344"/>
@@ -1950,7 +1950,7 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>Engine</source>
-        <translation type="obsolete">エンジン</translation>
+        <translation>엔진</translation>
     </message>
     <message>
         <location filename="sktr.py" line="326"/>
@@ -2585,8 +2585,7 @@
     <message>
         <location filename="sktr.py" line="69"/>
         <source>Swedish</source>
-        <translation>
-スウェーデン語</translation>
+        <translation>스웨덴어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="61"/>
@@ -2716,7 +2715,7 @@
     <message>
         <location filename="sktr.py" line="53"/>
         <source>Filipino</source>
-        <translation>필리핀</translation>
+        <translation>필리핀어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="56"/>
@@ -2726,17 +2725,17 @@
     <message>
         <location filename="sktr.py" line="59"/>
         <source>Estonian</source>
-        <translation>에스토니아의</translation>
+        <translation>에스토니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="64"/>
         <source>Latvian</source>
-        <translation>라트비아의</translation>
+        <translation>라트비아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="65"/>
         <source>Lithuanian</source>
-        <translation>리투아니아의</translation>
+        <translation>리투아니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="88"/>
@@ -2766,13 +2765,12 @@
     <message>
         <location filename="sktr.py" line="57"/>
         <source>Bulgarian</source>
-        <translation>불가리아 사람</translation>
+        <translation>불가리아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="68"/>
         <source>Slovenian</source>
-        <translation>
-スロベニア語</translation>
+        <translation>슬로베니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="97"/>
