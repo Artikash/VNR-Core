@@ -18,6 +18,7 @@ public:
     encoding = Utf16Encoding;
     //enableDynamicFont = true;
     newLineString = "%r";
+    textSeparators << "||"; // for other text in verethragna
     attachFunction = &Self::attach;
   }
 };
