@@ -26,7 +26,7 @@ import _termman
 @memoized
 def manager(): return TermManager()
 
-TERM_TRYLOCK_INTERVAL = 100 # 0.1 second
+#TERM_TRYLOCK_INTERVAL = 100 # 0.1 second
 
 # One QMutex is attached to all returned object
 # Apply terms will cause tryLock
@@ -244,7 +244,8 @@ class _TermManager:
     if not man: #or man.isEmpty():
       return text
 
-    if not man.mutex.tryLock(TERM_TRYLOCK_INTERVAL):
+    #if not man.mutex.tryLock(TERM_TRYLOCK_INTERVAL):
+    if not man.mutex.tryLock():
       dwarn("try lock timeout")
       return text
 

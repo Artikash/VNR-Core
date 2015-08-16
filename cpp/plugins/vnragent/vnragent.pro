@@ -142,6 +142,7 @@ HEADERS += \
   engine/model/elf.h \
   engine/model/escude.h \
   engine/model/fvp.h \
+  engine/model/gxp.h \
   engine/model/lcse.h \
   engine/model/leaf.h \
   engine/model/lucifen.h \
@@ -181,6 +182,7 @@ SOURCES += \
   engine/model/elf.cc \
   engine/model/escude.cc \
   engine/model/fvp.cc \
+  engine/model/gxp.cc \
   engine/model/lcse.cc \
   engine/model/leaf.cc \
   engine/model/lucifen.cc \

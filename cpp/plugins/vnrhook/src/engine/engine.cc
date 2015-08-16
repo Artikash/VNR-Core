@@ -9311,6 +9311,10 @@ void InsertRyokuchaHook()
 /**
  *  jichi 5/11/2014: Hook to the beginning of a function
  *
+ *  Executable description shows "AVGEngineV2"
+ *
+ *  Cached wrong text can also be found in GetGlyphOutlineW.
+ *
  *  4/27/2015 old logic:
  *  1. find the following location
  *     00A78144   66:833C70 00     CMP WORD PTR DS:[EAX+ESI*2],0x0
