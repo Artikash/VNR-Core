@@ -56,8 +56,7 @@ namespace Private {
    */
   struct HookArgument
   {
-    //enum { ShortTextCapacity = 8 };
-    enum { ShortTextCapacity = 0 }; // short text capacity disabled or it could crash the game
+    enum { ShortTextCapacity = 8 };
 
     LPCWSTR text; // 0x0
     DWORD unknown[3];
@@ -85,7 +84,7 @@ namespace Private {
         text = _text;
         size = _size;
       }
-      capacity = size + 1;
+      capacity = size;
     }
   };
   HookArgument *arg_,
@@ -104,8 +103,6 @@ namespace Private {
     if (*(WORD *)retaddr == 0x458a)
       role = Engine::ScenarioRole;
     // 00953926   A1 882CCB00      MOV EAX,DWORD PTR DS:[0xCB2C88]   ; jichi: retaddr
-    //if (reladdr == 0x53926) // skip retranslate functions
-    //  return true;
     else if (*(BYTE *)retaddr == 0xa1)
       return true;
     QString oldText = QString::fromWCharArray(arg->getText()),
