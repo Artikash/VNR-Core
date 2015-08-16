@@ -48,6 +48,10 @@
   exist: "*.hcb"
   #encoding: sjis
 
+- name: EmbedGXP # 8/15/2015
+  exist: "*.gxp"
+  #encoding: utf16
+
 - name: EmbedLCScriptEngine # 8/6/2015
   exist: lcsebody*
   #encoding: sjis

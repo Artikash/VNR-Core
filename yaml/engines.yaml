@@ -70,6 +70,8 @@ embed:
   - DebonosuName
   - Elf
   - Escude
+  #- GXP # FIXME: does not work
+  - GXP2
   - Lucifen
   - Malie2
   - Malie3
@@ -646,6 +648,7 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Embed
   - EmbedCotopha
+  - EmbedGXP
   - EmbedMalie
   - EmbedMono
   - EmbedSiglusEngine

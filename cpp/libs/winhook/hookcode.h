@@ -8,7 +8,7 @@
 #include <functional>
 
 #define winhook_stack_indexof(_reg) \
-  (((int)offsetof(winhook::hook_stack, _reg) - (int)offsetof(winhook::hook_stack, stack)) / (int)sizeof(ulong))
+  (((int)offsetof(winhook::hook_stack, _reg) - (int)offsetof(winhook::hook_stack, stack)) / (int)sizeof(winhook::ulong))
 
 WINHOOK_BEGIN_NAMESPACE
 
@@ -27,6 +27,7 @@ struct hook_stack
         eax;        // 0x28
   ulong stack[1];   // beginning of the runtime stack
 };
+//enum { hook_stack_minus_index = -(int)offsetof(winhook::hook_stack, stack) / (int)sizeof(ulong) };
 
 struct fun_stack
 {

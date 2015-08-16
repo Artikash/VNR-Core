@@ -9311,6 +9311,8 @@ void InsertRyokuchaHook()
 /**
  *  jichi 5/11/2014: Hook to the beginning of a function
  *
+ *  Executable description shows "AVGEngineV2"
+ *
  *  Cached wrong text can also be found in GetGlyphOutlineW.
  *
  *  4/27/2015 old logic:
