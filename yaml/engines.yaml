@@ -70,7 +70,7 @@ embed:
   - DebonosuName
   - Elf
   - Escude
-  #- GXP # FIXME: does not work
+  - GXP
   - GXP2
   - Lucifen
   - Malie2
