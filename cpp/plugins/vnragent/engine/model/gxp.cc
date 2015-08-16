@@ -304,156 +304,327 @@ namespace Private {
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
     if (newText.isEmpty() ||  oldText == newText)
       return true;
+    newText.replace("%r", "\n");
     text_ = newText;
     s->stack[3] = (ulong)text_.utf16();
     return true;
   }
 } // Private
 /**
- *  Sample game: 塔の下のエクセルキトゥス体験版
+ *  Sample game: ウルスラグナ征戦のデュエリス
  *  Executable description shows "AVGEngineV2"
  *
- *  This is the actual draw function. Text is looped.
- *  Function found by debugging the popup message (the second message is accessed):
+ *  Function found by back-tracking GetGlyphOutlineW
  *
- *  % hexstr ゲームを終了しますか utf16
- *  b230fc30e0309230427d864e57307e3059304b30
+ *  014D449A   CC               INT3
+ *  014D449B   CC               INT3
+ *  014D449C   CC               INT3
+ *  014D449D   CC               INT3
+ *  014D449E   CC               INT3
+ *  014D449F   CC               INT3
+ *  014D44A0   55               PUSH EBP
+ *  014D44A1   8BEC             MOV EBP,ESP
+ *  014D44A3   6A FF            PUSH -0x1
+ *  014D44A5   68 80DA5801      PUSH verethra.0158DA80
+ *  014D44AA   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  014D44B0   50               PUSH EAX
+ *  014D44B1   83EC 2C          SUB ESP,0x2C
+ *  014D44B4   53               PUSH EBX
+ *  014D44B5   56               PUSH ESI
+ *  014D44B6   57               PUSH EDI
+ *  014D44B7   A1 20B06801      MOV EAX,DWORD PTR DS:[0x168B020]
+ *  014D44BC   33C5             XOR EAX,EBP
+ *  014D44BE   50               PUSH EAX
+ *  014D44BF   8D45 F4          LEA EAX,DWORD PTR SS:[EBP-0xC]
+ *  014D44C2   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  014D44C8   8B45 14          MOV EAX,DWORD PTR SS:[EBP+0x14]
+ *  014D44CB   C745 C8 00000000 MOV DWORD PTR SS:[EBP-0x38],0x0
+ *  014D44D2   C745 CC 00000000 MOV DWORD PTR SS:[EBP-0x34],0x0
+ *  014D44D9   C745 D0 00000000 MOV DWORD PTR SS:[EBP-0x30],0x0
+ *  014D44E0   8B10             MOV EDX,DWORD PTR DS:[EAX]
+ *  014D44E2   8B48 04          MOV ECX,DWORD PTR DS:[EAX+0x4]
+ *  014D44E5   8B40 08          MOV EAX,DWORD PTR DS:[EAX+0x8]
+ *  014D44E8   2BC2             SUB EAX,EDX
+ *  014D44EA   8955 EC          MOV DWORD PTR SS:[EBP-0x14],EDX
+ *  014D44ED   894D E8          MOV DWORD PTR SS:[EBP-0x18],ECX
+ *  014D44F0   8945 E0          MOV DWORD PTR SS:[EBP-0x20],EAX
+ *  014D44F3   6A 04            PUSH 0x4
+ *  014D44F5   8D4D C8          LEA ECX,DWORD PTR SS:[EBP-0x38]
+ *  014D44F8   C745 FC 00000000 MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  014D44FF   E8 8C89EBFF      CALL verethra.0138CE90
+ *  014D4504   C745 D4 00000000 MOV DWORD PTR SS:[EBP-0x2C],0x0
+ *  014D450B   C745 D8 00000000 MOV DWORD PTR SS:[EBP-0x28],0x0
+ *  014D4512   C745 DC 00000000 MOV DWORD PTR SS:[EBP-0x24],0x0
+ *  014D4519   6A 04            PUSH 0x4
+ *  014D451B   8D4D D4          LEA ECX,DWORD PTR SS:[EBP-0x2C]
+ *  014D451E   C645 FC 01       MOV BYTE PTR SS:[EBP-0x4],0x1
+ *  014D4522   E8 697BE8FF      CALL verethra.0135C090
+ *  014D4527   8B7D 10          MOV EDI,DWORD PTR SS:[EBP+0x10]
+ *  014D452A   33C0             XOR EAX,EAX
+ *  014D452C   33DB             XOR EBX,EBX
+ *  014D452E   8945 F0          MOV DWORD PTR SS:[EBP-0x10],EAX
+ *  014D4531   66:3907          CMP WORD PTR DS:[EDI],AX
+ *  014D4534   0F84 C3000000    JE verethra.014D45FD
+ *  014D453A   BE 01000000      MOV ESI,0x1
+ *  014D453F   8945 14          MOV DWORD PTR SS:[EBP+0x14],EAX
+ *  014D4542   8975 10          MOV DWORD PTR SS:[EBP+0x10],ESI
+ *  014D4545   8B4D D8          MOV ECX,DWORD PTR SS:[EBP-0x28]
+ *  014D4548   B8 ABAAAA2A      MOV EAX,0x2AAAAAAB
+ *  014D454D   2B4D D4          SUB ECX,DWORD PTR SS:[EBP-0x2C]
+ *  014D4550   F7E9             IMUL ECX
+ *  014D4552   C1FA 02          SAR EDX,0x2
+ *  014D4555   8BC2             MOV EAX,EDX
+ *  014D4557   C1E8 1F          SHR EAX,0x1F
+ *  014D455A   03C2             ADD EAX,EDX
+ *  014D455C   3BC3             CMP EAX,EBX
+ *  014D455E   77 09            JA SHORT verethra.014D4569
+ *  014D4560   56               PUSH ESI
+ *  014D4561   8D4D D4          LEA ECX,DWORD PTR SS:[EBP-0x2C]
+ *  014D4564   E8 C712F4FF      CALL verethra.01415830
+ *  014D4569   8B45 CC          MOV EAX,DWORD PTR SS:[EBP-0x34]
+ *  014D456C   2B45 C8          SUB EAX,DWORD PTR SS:[EBP-0x38]
+ *  014D456F   C1F8 02          SAR EAX,0x2
+ *  014D4572   3BC3             CMP EAX,EBX
+ *  014D4574   77 14            JA SHORT verethra.014D458A
+ *  014D4576   8D45 E4          LEA EAX,DWORD PTR SS:[EBP-0x1C]
+ *  014D4579   C745 E4 00000000 MOV DWORD PTR SS:[EBP-0x1C],0x0
+ *  014D4580   50               PUSH EAX
+ *  014D4581   56               PUSH ESI
+ *  014D4582   8D4D C8          LEA ECX,DWORD PTR SS:[EBP-0x38]
+ *  014D4585   E8 06D2EDFF      CALL verethra.013B1790
+ *  014D458A   0FB707           MOVZX EAX,WORD PTR DS:[EDI]
+ *  014D458D   66:3B45 28       CMP AX,WORD PTR SS:[EBP+0x28]
+ *  014D4591   74 4F            JE SHORT verethra.014D45E2
+ *  014D4593   8B75 0C          MOV ESI,DWORD PTR SS:[EBP+0xC]
+ *  014D4596   50               PUSH EAX
+ *  014D4597   8B76 18          MOV ESI,DWORD PTR DS:[ESI+0x18]
+ *  014D459A   E8 41100000      CALL verethra.014D55E0
+ *  014D459F   8B4D 14          MOV ECX,DWORD PTR SS:[EBP+0x14]
+ *  014D45A2   83C4 04          ADD ESP,0x4
+ *  014D45A5   034D D4          ADD ECX,DWORD PTR SS:[EBP-0x2C]
+ *  014D45A8   0FAFC6           IMUL EAX,ESI
+ *  014D45AB   8B75 F0          MOV ESI,DWORD PTR SS:[EBP-0x10]
  *
- *  002AFC58  |011D140E  RETURN to play.011D140E from play.01340FF0
- *  002AFC5C  |002AFD14
- *  002AFC60  |01537308  play.01537308
- *  002AFC64  |0A426B58	; jichi: text
- *  002AFC68  |002AFCC4
- *  002AFC6C  |FFFFFFFF
- *  002AFC70  |00000000
- *  002AFC74  |80000000
- *  002AFC78  |00000002
- *  002AFC7C  |0000007C
- *  002AFC80  |00000007
- *  002AFC84  |0A6A6640
- *  002AFC88  |01532D90  play.01532D90
- *  002AFC8C  |00000000
+ *  014D45AE   99               CDQ
+ *  014D45AF   2BC2             SUB EAX,EDX
+ *  014D45B1   D1F8             SAR EAX,1
+ *  014D45B3   03F0             ADD ESI,EAX
+ *  014D45B5   0FB707           MOVZX EAX,WORD PTR DS:[EDI]
  *
- *  01340FEA     CC                INT3
- *  01340FEB     CC                INT3
- *  01340FEC     CC                INT3
- *  01340FED     CC                INT3
- *  01340FEE     CC                INT3
- *  01340FEF     CC                INT3
- *  01340FF0   $ 55                PUSH EBP
- *  01340FF1   . 8BEC              MOV EBP,ESP
- *  01340FF3   . 6A FF             PUSH -0x1
- *  01340FF5   . 68 00054001       PUSH play.01400500
- *  01340FFA   . 64:A1 00000000    MOV EAX,DWORD PTR FS:[0]
- *  01341000   . 50                PUSH EAX
- *  01341001   . 83EC 30           SUB ESP,0x30
- *  01341004   . 53                PUSH EBX
- *  01341005   . 56                PUSH ESI
- *  01341006   . 57                PUSH EDI
- *  01341007   . A1 10605001       MOV EAX,DWORD PTR DS:[0x1506010]
- *  0134100C   . 33C5              XOR EAX,EBP
- *  0134100E   . 50                PUSH EAX
- *  0134100F   . 8D45 F4           LEA EAX,DWORD PTR SS:[EBP-0xC]
- *  01341012   . 64:A3 00000000    MOV DWORD PTR FS:[0],EAX
- *  01341018   . 8B45 14           MOV EAX,DWORD PTR SS:[EBP+0x14]
- *  0134101B   . C745 C4 00000000  MOV DWORD PTR SS:[EBP-0x3C],0x0
- *  01341022   . C745 C8 00000000  MOV DWORD PTR SS:[EBP-0x38],0x0
- *  01341029   . C745 CC 00000000  MOV DWORD PTR SS:[EBP-0x34],0x0
- *  01341030   . 8B08              MOV ECX,DWORD PTR DS:[EAX]
- *  01341032   . 8B50 04           MOV EDX,DWORD PTR DS:[EAX+0x4]
- *  01341035   . 8B40 08           MOV EAX,DWORD PTR DS:[EAX+0x8]
- *  01341038   . 2BC1              SUB EAX,ECX
- *  0134103A   . 894D E8           MOV DWORD PTR SS:[EBP-0x18],ECX
- *  0134103D   . 8955 E4           MOV DWORD PTR SS:[EBP-0x1C],EDX
- *  01341040   . 8945 EC           MOV DWORD PTR SS:[EBP-0x14],EAX
- *  01341043   . 6A 04             PUSH 0x4
- *  01341045   . 8D4D C4           LEA ECX,DWORD PTR SS:[EBP-0x3C]
- *  01341048   . C745 FC 00000000  MOV DWORD PTR SS:[EBP-0x4],0x0
- *  0134104F   . E8 9CC7E7FF       CALL play.011BD7F0
- *  01341054   . C745 D0 00000000  MOV DWORD PTR SS:[EBP-0x30],0x0
- *  0134105B   . C745 D4 00000000  MOV DWORD PTR SS:[EBP-0x2C],0x0
- *  01341062   . C745 D8 00000000  MOV DWORD PTR SS:[EBP-0x28],0x0
- *  01341069   . 6A 04             PUSH 0x4                                 ; /Arg1 = 00000004
- *  0134106B   . 8D4D D0           LEA ECX,DWORD PTR SS:[EBP-0x30]          ; |
- *  0134106E   . C645 FC 01        MOV BYTE PTR SS:[EBP-0x4],0x1            ; |
- *  01341072   . E8 59B1E4FF       CALL play.0118C1D0                       ; \play.001DC1D0
- *  01341077   . 8B7D 10           MOV EDI,DWORD PTR SS:[EBP+0x10]
- *  0134107A   . 33C0              XOR EAX,EAX
- *  0134107C   . 33DB              XOR EBX,EBX
- *  0134107E   . 8945 F0           MOV DWORD PTR SS:[EBP-0x10],EAX
- *  01341081   . 66:3907           CMP WORD PTR DS:[EDI],AX	; jichi: here
- *  01341084   . 0F84 C3000000     JE play.0134114D
- *  0134108A   . BE 01000000       MOV ESI,0x1
- *  0134108F   . 8945 14           MOV DWORD PTR SS:[EBP+0x14],EAX
- *  01341092   . 8975 10           MOV DWORD PTR SS:[EBP+0x10],ESI
- *  01341095   > 8B4D D4           MOV ECX,DWORD PTR SS:[EBP-0x2C]
- *  01341098   . B8 ABAAAA2A       MOV EAX,0x2AAAAAAB
- *  0134109D   . 2B4D D0           SUB ECX,DWORD PTR SS:[EBP-0x30]
- *  013410A0   . F7E9              IMUL ECX
- *  013410A2   . C1FA 02           SAR EDX,0x2
- *  013410A5   . 8BC2              MOV EAX,EDX
- *  013410A7   . C1E8 1F           SHR EAX,0x1F
- *  013410AA   . 03C2              ADD EAX,EDX
- *  013410AC   . 3BC3              CMP EAX,EBX
- *  013410AE   . 77 09             JA SHORT play.013410B9
- *  013410B0   . 56                PUSH ESI                                 ; /Arg1
- *  013410B1   . 8D4D D0           LEA ECX,DWORD PTR SS:[EBP-0x30]          ; |
- *  013410B4   . E8 D703F1FF       CALL play.01251490                       ; \play.002A1490
- *  013410B9   > 8B45 C8           MOV EAX,DWORD PTR SS:[EBP-0x38]
- *  013410BC   . 2B45 C4           SUB EAX,DWORD PTR SS:[EBP-0x3C]
- *  013410BF   . C1F8 02           SAR EAX,0x2
- *  013410C2   . 3BC3              CMP EAX,EBX
- *  013410C4   . 77 14             JA SHORT play.013410DA
- *  013410C6   . 8D45 E0           LEA EAX,DWORD PTR SS:[EBP-0x20]
- *  013410C9   . C745 E0 00000000  MOV DWORD PTR SS:[EBP-0x20],0x0
- *  013410D0   . 50                PUSH EAX                                 ; /Arg2
- *  013410D1   . 56                PUSH ESI                                 ; |Arg1
- *  013410D2   . 8D4D C4           LEA ECX,DWORD PTR SS:[EBP-0x3C]          ; |
- *  013410D5   . E8 0610EAFF       CALL play.011E20E0                       ; \play.002320E0
- *  013410DA   > 0FB707            MOVZX EAX,WORD PTR DS:[EDI]
- *  013410DD   . 66:3B45 28        CMP AX,WORD PTR SS:[EBP+0x28]	; jichi: here
- *  013410D1   . 56                PUSH ESI                                 ; |Arg1
- *  013410D2   . 8D4D C4           LEA ECX,DWORD PTR SS:[EBP-0x3C]          ; |
- *  013410D5   . E8 0610EAFF       CALL play.011E20E0                       ; \play.002320E0
- *  013410DA   > 0FB707            MOVZX EAX,WORD PTR DS:[EDI]
- *  013410DD   . 66:3B45 28        CMP AX,WORD PTR SS:[EBP+0x28]
- *  013410E1   . 74 4F             JE SHORT play.01341132
- *  013410E3   . 8B75 0C           MOV ESI,DWORD PTR SS:[EBP+0xC]
- *  013410E6   . 50                PUSH EAX                                 ; /Arg1
- *  013410E7   . 8B76 18           MOV ESI,DWORD PTR DS:[ESI+0x18]          ; |
- *  013410EA   . E8 D1160000       CALL play.013427C0                       ; \play.003927C0
- *  013410EF   . 8B4D 14           MOV ECX,DWORD PTR SS:[EBP+0x14]
- *  013410F2   . 83C4 04           ADD ESP,0x4
- *  013410F5   . 034D D0           ADD ECX,DWORD PTR SS:[EBP-0x30]
- *  013410F8   . 0FAFC6            IMUL EAX,ESI
- *  013410FB   . 8B75 F0           MOV ESI,DWORD PTR SS:[EBP-0x10]
- *  013410FE   . 99                CDQ
- *  013410FF   . 2BC2              SUB EAX,EDX
- *  01341101   . D1F8              SAR EAX,1
- *  01341103   . 03F0              ADD ESI,EAX
- *  01341105   . 0FB707            MOVZX EAX,WORD PTR DS:[EDI]	; jichi
- *  01341108   . 50                PUSH EAX
- *  01341109   . 6A 01             PUSH 0x1
- *  0134110B   . 8975 F0           MOV DWORD PTR SS:[EBP-0x10],ESI
- *  0134110E   . E8 6D7EE8FF       CALL play.011C8F80
- *  01341113   . 8B55 C4           MOV EDX,DWORD PTR SS:[EBP-0x3C]
- *  01341116   . 8BCE              MOV ECX,ESI
- *  01341118   . 8B45 0C           MOV EAX,DWORD PTR SS:[EBP+0xC]
- *  ...
+ *  014D45B8   50               PUSH EAX
+ *  014D45B9   6A 01            PUSH 0x1
+ *  014D45BB   8975 F0          MOV DWORD PTR SS:[EBP-0x10],ESI
+ *  014D45BE   E8 5D40ECFF      CALL verethra.01398620
+ *  014D45C3   8B55 C8          MOV EDX,DWORD PTR SS:[EBP-0x38]
+ *  014D45C6   8BCE             MOV ECX,ESI
+ *  014D45C8   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  014D45CB   39349A           CMP DWORD PTR DS:[EDX+EBX*4],ESI
+ *  014D45CE   0F4F0C9A         CMOVG ECX,DWORD PTR DS:[EDX+EBX*4]
+ *  014D45D2   890C9A           MOV DWORD PTR DS:[EDX+EBX*4],ECX
+ *  014D45D5   8B40 18          MOV EAX,DWORD PTR DS:[EAX+0x18]
+ *  014D45D8   03C6             ADD EAX,ESI
+ *  014D45DA   8B75 10          MOV ESI,DWORD PTR SS:[EBP+0x10]
+ *  014D45DD   3B45 E0          CMP EAX,DWORD PTR SS:[EBP-0x20]
+ *  014D45E0   7C 0E            JL SHORT verethra.014D45F0
+ *  014D45E2   33C0             XOR EAX,EAX
+ *  014D45E4   46               INC ESI
+ *  014D45E5   43               INC EBX
+ *  014D45E6   8975 10          MOV DWORD PTR SS:[EBP+0x10],ESI
+ *  014D45E9   8345 14 18       ADD DWORD PTR SS:[EBP+0x14],0x18
+ *  014D45ED   8945 F0          MOV DWORD PTR SS:[EBP-0x10],EAX
+ *  014D45F0   83C7 02          ADD EDI,0x2
+ *  014D45F3   66:833F 00       CMP WORD PTR DS:[EDI],0x0
+ *  014D45F7  ^0F85 48FFFFFF    JNZ verethra.014D4545
+ *  014D45FD   8B75 D8          MOV ESI,DWORD PTR SS:[EBP-0x28]
+ *  014D4600   B8 ABAAAA2A      MOV EAX,0x2AAAAAAB
+ *  014D4605   8B5D D4          MOV EBX,DWORD PTR SS:[EBP-0x2C]
+ *  014D4608   8BCE             MOV ECX,ESI
+ *  014D460A   2BCB             SUB ECX,EBX
+ *  014D460C   F7E9             IMUL ECX
+ *  014D460E   C1FA 02          SAR EDX,0x2
+ *  014D4611   8BCA             MOV ECX,EDX
+ *  014D4613   C1E9 1F          SHR ECX,0x1F
+ *  014D4616   03CA             ADD ECX,EDX
+ *  014D4618   894D E0          MOV DWORD PTR SS:[EBP-0x20],ECX
+ *  014D461B   75 53            JNZ SHORT verethra.014D4670
+ *  014D461D   8B7D 08          MOV EDI,DWORD PTR SS:[EBP+0x8]
+ *  014D4620   8B4D EC          MOV ECX,DWORD PTR SS:[EBP-0x14]
+ *  014D4623   8B45 E8          MOV EAX,DWORD PTR SS:[EBP-0x18]
+ *  014D4626   890F             MOV DWORD PTR DS:[EDI],ECX
+ *  014D4628   8947 04          MOV DWORD PTR DS:[EDI+0x4],EAX
+ *  014D462B   894F 08          MOV DWORD PTR DS:[EDI+0x8],ECX
+ *  014D462E   8947 0C          MOV DWORD PTR DS:[EDI+0xC],EAX
+ *  014D4631   85DB             TEST EBX,EBX
+ *  014D4633   74 17            JE SHORT verethra.014D464C
+ *  014D4635   FF75 14          PUSH DWORD PTR SS:[EBP+0x14]
+ *  014D4638   8D45 17          LEA EAX,DWORD PTR SS:[EBP+0x17]
+ *  014D463B   50               PUSH EAX
+ *  014D463C   56               PUSH ESI
+ *  014D463D   53               PUSH EBX
+ *  014D463E   E8 3D22E8FF      CALL verethra.01356880
+ *  014D4643   53               PUSH EBX
+ *  014D4644   E8 8CAE0600      CALL verethra.0153F4D5
+ *  014D4649   83C4 14          ADD ESP,0x14
+ *  014D464C   8B45 C8          MOV EAX,DWORD PTR SS:[EBP-0x38]
+ *  014D464F   85C0             TEST EAX,EAX
+ *  014D4651   74 09            JE SHORT verethra.014D465C
+ *  014D4653   50               PUSH EAX
+ *  014D4654   E8 7CAE0600      CALL verethra.0153F4D5
+ *  014D4659   83C4 04          ADD ESP,0x4
+ *  014D465C   8BC7             MOV EAX,EDI
+ *  014D465E   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
+ *  014D4661   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  014D4668   59               POP ECX
+ *  014D4669   5F               POP EDI
+ *  014D466A   5E               POP ESI
+ *  014D466B   5B               POP EBX
+ *  014D466C   8BE5             MOV ESP,EBP
+ *  014D466E   5D               POP EBP
+ *  014D466F   C3               RETN
+ *  014D4670   33C0             XOR EAX,EAX
+ *  014D4672   C745 E4 00000000 MOV DWORD PTR SS:[EBP-0x1C],0x0
+ *  014D4679   33F6             XOR ESI,ESI
+ *  014D467B   8945 10          MOV DWORD PTR SS:[EBP+0x10],EAX
+ *  014D467E   85C9             TEST ECX,ECX
+ *  014D4680   0F84 C0000000    JE verethra.014D4746
+ *  014D4686   8B4D EC          MOV ECX,DWORD PTR SS:[EBP-0x14]
+ *  014D4689   8BFB             MOV EDI,EBX
+ *  014D468B   8B5D 0C          MOV EBX,DWORD PTR SS:[EBP+0xC]
+ *  014D468E   894D E4          MOV DWORD PTR SS:[EBP-0x1C],ECX
+ *  014D4691   66:0F6EC9        MOVD MM1,ECX
+ *  014D4695   0F5B             ???                                      ; Unknown command
+ *  014D4697   C9               LEAVE
+ *  014D4698   F3:0F114D F0     MOVSS DWORD PTR SS:[EBP-0x10],XMM1
+ *  014D469D   8D49 00          LEA ECX,DWORD PTR DS:[ECX]
+ *  014D46A0   8B73 18          MOV ESI,DWORD PTR DS:[EBX+0x18]
+ *  014D46A3   0FAFF0           IMUL ESI,EAX
+ *  014D46A6   0375 E8          ADD ESI,DWORD PTR SS:[EBP-0x18]
+ *  014D46A9   837F 14 08       CMP DWORD PTR DS:[EDI+0x14],0x8
+ *  014D46AD   72 07            JB SHORT verethra.014D46B6
+ *  014D46AF   8B07             MOV EAX,DWORD PTR DS:[EDI]
+ *  014D46B1   8945 14          MOV DWORD PTR SS:[EBP+0x14],EAX
+ *  014D46B4   EB 05            JMP SHORT verethra.014D46BB
+ *  014D46B6   8BC7             MOV EAX,EDI
+ *  014D46B8   897D 14          MOV DWORD PTR SS:[EBP+0x14],EDI
+ *  014D46BB   FF75 28          PUSH DWORD PTR SS:[EBP+0x28]
+ *  014D46BE   66:0F6EC6        MOVD MM0,ESI
+ *  014D46C2   FF75 24          PUSH DWORD PTR SS:[EBP+0x24]
+ *  014D46C5   0F5B             ???                                      ; Unknown command
+ *  014D46C7   C06A 00 FF       SHR BYTE PTR DS:[EDX],0xFF               ; Shift constant out of range 1..31
+ *  014D46CB   75 20            JNZ SHORT verethra.014D46ED
+ *  014D46CD   68 A0956901      PUSH verethra.016995A0
+ *  014D46D2   83EC 0C          SUB ESP,0xC
+ *  014D46D5   C74424 08 000080>MOV DWORD PTR SS:[ESP+0x8],0x3F800000
+ *  014D46DD   F3:0F114424 04   MOVSS DWORD PTR SS:[ESP+0x4],XMM0
+ *  014D46E3   F3:0F110C24      MOVSS DWORD PTR SS:[ESP],XMM1
+ *  014D46E8   50               PUSH EAX
+ *  014D46E9   53               PUSH EBX
+ *  014D46EA   E8 7156F4FF      CALL verethra.01419D60
+ *  014D46EF   83C4 28          ADD ESP,0x28
+ *  014D46F2   66:0F6EC6        MOVD MM0,ESI
+ *  014D46F6   0F5B             ???                                      ; Unknown command
+ *  014D46F8   C0FF 75          SAR BH,0x75                              ; Shift constant out of range 1..31
+ *  014D46FB   28FF             SUB BH,BH
+ *  014D46FD   75 24            JNZ SHORT verethra.014D4723
+ *  014D46FF   FF75 1C          PUSH DWORD PTR SS:[EBP+0x1C]
+ *  014D4702   FF75 18          PUSH DWORD PTR SS:[EBP+0x18]
+ *  014D4705   68 A0956901      PUSH verethra.016995A0
+ *  014D470A   83EC 08          SUB ESP,0x8
+ *  014D470D   F3:0F114424 04   MOVSS DWORD PTR SS:[ESP+0x4],XMM0
+ *  014D4713   F3:0F1045 F0     MOVSS XMM0,DWORD PTR SS:[EBP-0x10]
+ *  014D4718   F3:0F110424      MOVSS DWORD PTR SS:[ESP],XMM0
+ *  014D471D   FF75 14          PUSH DWORD PTR SS:[EBP+0x14]
+ *  014D4720   53               PUSH EBX
+ *  014D4721   E8 2AF5FFFF      CALL verethra.014D3C50
+ *  014D4726   8B45 10          MOV EAX,DWORD PTR SS:[EBP+0x10]
+ *  014D4729   83C4 24          ADD ESP,0x24
+ *  014D472C   8B4D E0          MOV ECX,DWORD PTR SS:[EBP-0x20]
+ *  014D472F   40               INC EAX
+ *  014D4730   F3:0F104D F0     MOVSS XMM1,DWORD PTR SS:[EBP-0x10]
+ *  014D4735   83C7 18          ADD EDI,0x18
+ *  014D4738   8945 10          MOV DWORD PTR SS:[EBP+0x10],EAX
+ *  014D473B   3BC1             CMP EAX,ECX
+ *  014D473D  ^0F82 5DFFFFFF    JB verethra.014D46A0
+ *  014D4743   8B5D D4          MOV EBX,DWORD PTR SS:[EBP-0x2C]
+ *  014D4746   8B55 08          MOV EDX,DWORD PTR SS:[EBP+0x8]
+ *  014D4749   8B45 EC          MOV EAX,DWORD PTR SS:[EBP-0x14]
+ *  014D474C   8B7D C8          MOV EDI,DWORD PTR SS:[EBP-0x38]
+ *  014D474F   8902             MOV DWORD PTR DS:[EDX],EAX
+ *  014D4751   8B45 E8          MOV EAX,DWORD PTR SS:[EBP-0x18]
+ *  014D4754   8942 04          MOV DWORD PTR DS:[EDX+0x4],EAX
+ *  014D4757   8B448F FC        MOV EAX,DWORD PTR DS:[EDI+ECX*4-0x4]
+ *  014D475B   0345 E4          ADD EAX,DWORD PTR SS:[EBP-0x1C]
+ *  014D475E   8942 08          MOV DWORD PTR DS:[EDX+0x8],EAX
+ *  014D4761   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  014D4764   8B40 18          MOV EAX,DWORD PTR DS:[EAX+0x18]
+ *  014D4767   03C6             ADD EAX,ESI
+ *  014D4769   8942 0C          MOV DWORD PTR DS:[EDX+0xC],EAX
+ *  014D476C   85DB             TEST EBX,EBX
+ *  014D476E   74 46            JE SHORT verethra.014D47B6
+ *  014D4770   8B45 D8          MOV EAX,DWORD PTR SS:[EBP-0x28]
+ *  014D4773   8BF3             MOV ESI,EBX
+ *  014D4775   3BD8             CMP EBX,EAX
+ *  014D4777   74 34            JE SHORT verethra.014D47AD
+ *  014D4779   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  014D4780   837E 14 08       CMP DWORD PTR DS:[ESI+0x14],0x8
+ *  014D4784   72 0D            JB SHORT verethra.014D4793
+ *  014D4786   FF36             PUSH DWORD PTR DS:[ESI]
+ *  014D4788   E8 48AD0600      CALL verethra.0153F4D5
+ *  014D478D   8B45 D8          MOV EAX,DWORD PTR SS:[EBP-0x28]
+ *  014D4790   83C4 04          ADD ESP,0x4
+ *  014D4793   33C9             XOR ECX,ECX
+ *  014D4795   C746 14 07000000 MOV DWORD PTR DS:[ESI+0x14],0x7
+ *  014D479C   C746 10 00000000 MOV DWORD PTR DS:[ESI+0x10],0x0
+ *  014D47A3   66:890E          MOV WORD PTR DS:[ESI],CX
+ *  014D47A6   83C6 18          ADD ESI,0x18
+ *  014D47A9   3BF0             CMP ESI,EAX
+ *  014D47AB  ^75 D3            JNZ SHORT verethra.014D4780
+ *  014D47AD   53               PUSH EBX
+ *  014D47AE   E8 22AD0600      CALL verethra.0153F4D5
+ *  014D47B3   83C4 04          ADD ESP,0x4
+ *  014D47B6   85FF             TEST EDI,EDI
+ *  014D47B8   74 09            JE SHORT verethra.014D47C3
+ *  014D47BA   57               PUSH EDI
+ *  014D47BB   E8 15AD0600      CALL verethra.0153F4D5
+ *  014D47C0   83C4 04          ADD ESP,0x4
+ *  014D47C3   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  014D47C6   8B4D F4          MOV ECX,DWORD PTR SS:[EBP-0xC]
+ *  014D47C9   64:890D 00000000 MOV DWORD PTR FS:[0],ECX
+ *  014D47D0   59               POP ECX
+ *  014D47D1   5F               POP EDI
+ *  014D47D2   5E               POP ESI
+ *  014D47D3   5B               POP EBX
+ *  014D47D4   8BE5             MOV ESP,EBP
+ *  014D47D6   5D               POP EBP
+ *  014D47D7   C3               RETN
+ *  014D47D8   CC               INT3
+ *  014D47D9   CC               INT3
+ *  014D47DA   CC               INT3
+ *  014D47DB   CC               INT3
+ *  014D47DC   CC               INT3
+ *  014D47DD   CC               INT3
+ *  014D47DE   CC               INT3
+ *  014D47DF   CC               INT3
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
   const uint8_t bytes[] = {
-    0x8b,0x45, 0x14,                        // 01341018   . 8b45 14           mov eax,dword ptr ss:[ebp+0x14]
-    0xc7,0x45, 0xc4, 0x00,0x00,0x00,0x00    // 0134101b   . c745 c4 00000000  mov dword ptr ss:[ebp-0x3c],0x0
+    0x99,           // 014d45ae   99               cdq
+    0x2b,0xc2,      // 014d45af   2bc2             sub eax,edx
+    0xd1,0xf8,      // 014d45b1   d1f8             sar eax,1
+    0x03,0xf0,      // 014d45b3   03f0             add esi,eax
+    0x0f,0xb7,0x07  // 014d45b5   0fb707           movzx eax,word ptr ds:[edi]
   };
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  if (!addr)
-    return false;
-  addr = MemDbg::findEnclosingAlignedFunction(addr);
-  if (!addr)
-    return false;
-  return winhook::hook_before(addr, Private::hookBefore);
+  int count = 0;
+  auto fun = [&count](ulong addr) -> bool {
+    count +=
+        (addr = MemDbg::findEnclosingAlignedFunction(addr))
+        && winhook::hook_before(addr, Private::hookBefore);
+    return true;
+  };
+  MemDbg::iterFindBytes(fun, bytes, sizeof(bytes), startAddress, stopAddress);
+  DOUT("call number =" << count);
+  return count;
 }
 } // namespace OtherHook
 
@@ -595,7 +766,6 @@ bool GXPEngine::attach()
     return false;
 
   moduleBaseAddress_ = startAddress; // used to calculate reladdr for debug purposes
-
   //if (ScenarioHook1::attach(startAddress, stopAddress))
   //  DOUT("found GXP1");
   if (ScenarioHook2::attach(startAddress, stopAddress)) {
@@ -1205,5 +1375,174 @@ bool attach(ulong startAddress, ulong stopAddress)
   return winhook::hook_before(addr, Private::hookBefore);
 }
 } // namespace ScenarioHook1
+
+namespace ChoiceHook {
+namespace Private {
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    static QString text_;
+    auto text = (LPCWSTR)s->stack[3]; // arg3
+    if (!text || !*text)
+      return true;
+    auto retaddr = s->stack[0];
+    auto reladdr = retaddr - moduleBaseAddress_;
+    enum { role = Engine::ChoiceRole };
+    QString oldText = QString::fromWCharArray(text),
+            newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
+    if (newText.isEmpty() ||  oldText == newText)
+      return true;
+    text_ = newText;
+    s->stack[3] = (ulong)text_.utf16();
+    return true;
+  }
+} // Private
+/**
+ *  Sample game: 塔の下のエクセルキトゥス体験版
+ *  Executable description shows "AVGEngineV2"
+ *
+ *  This is the actual draw function. Text is looped.
+ *  Function found by debugging the popup message (the second message is accessed):
+ *
+ *  % hexstr ゲームを終了しますか utf16
+ *  b230fc30e0309230427d864e57307e3059304b30
+ *
+ *  002AFC58  |011D140E  RETURN to play.011D140E from play.01340FF0
+ *  002AFC5C  |002AFD14
+ *  002AFC60  |01537308  play.01537308
+ *  002AFC64  |0A426B58	; jichi: text
+ *  002AFC68  |002AFCC4
+ *  002AFC6C  |FFFFFFFF
+ *  002AFC70  |00000000
+ *  002AFC74  |80000000
+ *  002AFC78  |00000002
+ *  002AFC7C  |0000007C
+ *  002AFC80  |00000007
+ *  002AFC84  |0A6A6640
+ *  002AFC88  |01532D90  play.01532D90
+ *  002AFC8C  |00000000
+ *
+ *  01340FEA     CC                INT3
+ *  01340FEB     CC                INT3
+ *  01340FEC     CC                INT3
+ *  01340FED     CC                INT3
+ *  01340FEE     CC                INT3
+ *  01340FEF     CC                INT3
+ *  01340FF0   $ 55                PUSH EBP
+ *  01340FF1   . 8BEC              MOV EBP,ESP
+ *  01340FF3   . 6A FF             PUSH -0x1
+ *  01340FF5   . 68 00054001       PUSH play.01400500
+ *  01340FFA   . 64:A1 00000000    MOV EAX,DWORD PTR FS:[0]
+ *  01341000   . 50                PUSH EAX
+ *  01341001   . 83EC 30           SUB ESP,0x30
+ *  01341004   . 53                PUSH EBX
+ *  01341005   . 56                PUSH ESI
+ *  01341006   . 57                PUSH EDI
+ *  01341007   . A1 10605001       MOV EAX,DWORD PTR DS:[0x1506010]
+ *  0134100C   . 33C5              XOR EAX,EBP
+ *  0134100E   . 50                PUSH EAX
+ *  0134100F   . 8D45 F4           LEA EAX,DWORD PTR SS:[EBP-0xC]
+ *  01341012   . 64:A3 00000000    MOV DWORD PTR FS:[0],EAX
+ *  01341018   . 8B45 14           MOV EAX,DWORD PTR SS:[EBP+0x14]
+ *  0134101B   . C745 C4 00000000  MOV DWORD PTR SS:[EBP-0x3C],0x0
+ *  01341022   . C745 C8 00000000  MOV DWORD PTR SS:[EBP-0x38],0x0
+ *  01341029   . C745 CC 00000000  MOV DWORD PTR SS:[EBP-0x34],0x0
+ *  01341030   . 8B08              MOV ECX,DWORD PTR DS:[EAX]
+ *  01341032   . 8B50 04           MOV EDX,DWORD PTR DS:[EAX+0x4]
+ *  01341035   . 8B40 08           MOV EAX,DWORD PTR DS:[EAX+0x8]
+ *  01341038   . 2BC1              SUB EAX,ECX
+ *  0134103A   . 894D E8           MOV DWORD PTR SS:[EBP-0x18],ECX
+ *  0134103D   . 8955 E4           MOV DWORD PTR SS:[EBP-0x1C],EDX
+ *  01341040   . 8945 EC           MOV DWORD PTR SS:[EBP-0x14],EAX
+ *  01341043   . 6A 04             PUSH 0x4
+ *  01341045   . 8D4D C4           LEA ECX,DWORD PTR SS:[EBP-0x3C]
+ *  01341048   . C745 FC 00000000  MOV DWORD PTR SS:[EBP-0x4],0x0
+ *  0134104F   . E8 9CC7E7FF       CALL play.011BD7F0
+ *  01341054   . C745 D0 00000000  MOV DWORD PTR SS:[EBP-0x30],0x0
+ *  0134105B   . C745 D4 00000000  MOV DWORD PTR SS:[EBP-0x2C],0x0
+ *  01341062   . C745 D8 00000000  MOV DWORD PTR SS:[EBP-0x28],0x0
+ *  01341069   . 6A 04             PUSH 0x4                                 ; /Arg1 = 00000004
+ *  0134106B   . 8D4D D0           LEA ECX,DWORD PTR SS:[EBP-0x30]          ; |
+ *  0134106E   . C645 FC 01        MOV BYTE PTR SS:[EBP-0x4],0x1            ; |
+ *  01341072   . E8 59B1E4FF       CALL play.0118C1D0                       ; \play.001DC1D0
+ *  01341077   . 8B7D 10           MOV EDI,DWORD PTR SS:[EBP+0x10]
+ *  0134107A   . 33C0              XOR EAX,EAX
+ *  0134107C   . 33DB              XOR EBX,EBX
+ *  0134107E   . 8945 F0           MOV DWORD PTR SS:[EBP-0x10],EAX
+ *  01341081   . 66:3907           CMP WORD PTR DS:[EDI],AX	; jichi: here
+ *  01341084   . 0F84 C3000000     JE play.0134114D
+ *  0134108A   . BE 01000000       MOV ESI,0x1
+ *  0134108F   . 8945 14           MOV DWORD PTR SS:[EBP+0x14],EAX
+ *  01341092   . 8975 10           MOV DWORD PTR SS:[EBP+0x10],ESI
+ *  01341095   > 8B4D D4           MOV ECX,DWORD PTR SS:[EBP-0x2C]
+ *  01341098   . B8 ABAAAA2A       MOV EAX,0x2AAAAAAB
+ *  0134109D   . 2B4D D0           SUB ECX,DWORD PTR SS:[EBP-0x30]
+ *  013410A0   . F7E9              IMUL ECX
+ *  013410A2   . C1FA 02           SAR EDX,0x2
+ *  013410A5   . 8BC2              MOV EAX,EDX
+ *  013410A7   . C1E8 1F           SHR EAX,0x1F
+ *  013410AA   . 03C2              ADD EAX,EDX
+ *  013410AC   . 3BC3              CMP EAX,EBX
+ *  013410AE   . 77 09             JA SHORT play.013410B9
+ *  013410B0   . 56                PUSH ESI                                 ; /Arg1
+ *  013410B1   . 8D4D D0           LEA ECX,DWORD PTR SS:[EBP-0x30]          ; |
+ *  013410B4   . E8 D703F1FF       CALL play.01251490                       ; \play.002A1490
+ *  013410B9   > 8B45 C8           MOV EAX,DWORD PTR SS:[EBP-0x38]
+ *  013410BC   . 2B45 C4           SUB EAX,DWORD PTR SS:[EBP-0x3C]
+ *  013410BF   . C1F8 02           SAR EAX,0x2
+ *  013410C2   . 3BC3              CMP EAX,EBX
+ *  013410C4   . 77 14             JA SHORT play.013410DA
+ *  013410C6   . 8D45 E0           LEA EAX,DWORD PTR SS:[EBP-0x20]
+ *  013410C9   . C745 E0 00000000  MOV DWORD PTR SS:[EBP-0x20],0x0
+ *  013410D0   . 50                PUSH EAX                                 ; /Arg2
+ *  013410D1   . 56                PUSH ESI                                 ; |Arg1
+ *  013410D2   . 8D4D C4           LEA ECX,DWORD PTR SS:[EBP-0x3C]          ; |
+ *  013410D5   . E8 0610EAFF       CALL play.011E20E0                       ; \play.002320E0
+ *  013410DA   > 0FB707            MOVZX EAX,WORD PTR DS:[EDI]
+ *  013410DD   . 66:3B45 28        CMP AX,WORD PTR SS:[EBP+0x28]	; jichi: here
+ *  013410D1   . 56                PUSH ESI                                 ; |Arg1
+ *  013410D2   . 8D4D C4           LEA ECX,DWORD PTR SS:[EBP-0x3C]          ; |
+ *  013410D5   . E8 0610EAFF       CALL play.011E20E0                       ; \play.002320E0
+ *  013410DA   > 0FB707            MOVZX EAX,WORD PTR DS:[EDI]
+ *  013410DD   . 66:3B45 28        CMP AX,WORD PTR SS:[EBP+0x28]
+ *  013410E1   . 74 4F             JE SHORT play.01341132
+ *  013410E3   . 8B75 0C           MOV ESI,DWORD PTR SS:[EBP+0xC]
+ *  013410E6   . 50                PUSH EAX                                 ; /Arg1
+ *  013410E7   . 8B76 18           MOV ESI,DWORD PTR DS:[ESI+0x18]          ; |
+ *  013410EA   . E8 D1160000       CALL play.013427C0                       ; \play.003927C0
+ *  013410EF   . 8B4D 14           MOV ECX,DWORD PTR SS:[EBP+0x14]
+ *  013410F2   . 83C4 04           ADD ESP,0x4
+ *  013410F5   . 034D D0           ADD ECX,DWORD PTR SS:[EBP-0x30]
+ *  013410F8   . 0FAFC6            IMUL EAX,ESI
+ *  013410FB   . 8B75 F0           MOV ESI,DWORD PTR SS:[EBP-0x10]
+ *  013410FE   . 99                CDQ
+ *  013410FF   . 2BC2              SUB EAX,EDX
+ *  01341101   . D1F8              SAR EAX,1
+ *  01341103   . 03F0              ADD ESI,EAX
+ *  01341105   . 0FB707            MOVZX EAX,WORD PTR DS:[EDI]	; jichi
+ *  01341108   . 50                PUSH EAX
+ *  01341109   . 6A 01             PUSH 0x1
+ *  0134110B   . 8975 F0           MOV DWORD PTR SS:[EBP-0x10],ESI
+ *  0134110E   . E8 6D7EE8FF       CALL play.011C8F80
+ *  01341113   . 8B55 C4           MOV EDX,DWORD PTR SS:[EBP-0x3C]
+ *  01341116   . 8BCE              MOV ECX,ESI
+ *  01341118   . 8B45 0C           MOV EAX,DWORD PTR SS:[EBP+0xC]
+ *  ...
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x8b,0x45, 0x14,                        // 01341018   . 8b45 14           mov eax,dword ptr ss:[ebp+0x14]
+    0xc7,0x45, 0xc4, 0x00,0x00,0x00,0x00    // 0134101b   . c745 c4 00000000  mov dword ptr ss:[ebp-0x3c],0x0
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::hook_before(addr, Private::hookBefore);
+}
+} // namespace ChoiceHook
+
 
 #endif // 0
