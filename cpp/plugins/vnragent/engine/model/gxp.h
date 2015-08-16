@@ -17,6 +17,7 @@ public:
     matchFiles << "*.gxp";
     encoding = Utf16Encoding;
     //enableDynamicFont = true;
+    scenarioLineCapacity = 40;
     newLineString = "%r";
     textSeparators << "||"; // for other text in verethragna
     attachFunction = &Self::attach;
