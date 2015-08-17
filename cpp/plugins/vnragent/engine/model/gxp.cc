@@ -9,7 +9,6 @@
 #include "util/textutil.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
-#include "winhook/hookfun.h"
 #include <qt_windows.h>
 #include <cstdint>
 
@@ -64,10 +63,6 @@ namespace Private {
   bool hookBefore(ulong retaddr, winhook::hook_stack *s)
   {
     static QString text_; // persistent storage, which makes this function not thread-safe
-    auto arg = (TextArgument *)(s->stack[0] + 4); // arg1 + 0x4
-    if (!arg->isValid())
-      return true;
-
     auto reladdr = retaddr - moduleBaseAddress_;
     auto role = Engine::OtherRole;
     // reladdr: 0xa28f1
@@ -95,6 +90,11 @@ namespace Private {
     else if (*(BYTE *)retaddr == 0x4f ||
         (*(DWORD *)retaddr & 0x00ff00ff) == 0x0024008b) // skip truncated texts
       return true;
+
+    auto arg = (TextArgument *)(s->stack[0] + 4); // arg1 + 0x4
+    if (!arg->isValid())
+      return true;
+
     QString oldText = QString::fromWCharArray(arg->getText()),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
     if (newText == oldText)

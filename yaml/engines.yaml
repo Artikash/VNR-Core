@@ -109,6 +109,7 @@ embed_en:
   - LunaSoft
   - Pal
   - System43+
+  - System44
   #- HorkEye
 
   - EmbedCircus
@@ -116,7 +117,9 @@ embed_en:
   - EmbedLeaf
   - EmbedLunaSoft
   - EmbedPal
+  - EmbedSystem4
   - EmbedSystem43
+  - EmbedSystem44
 
 gui:
   # User32
@@ -470,7 +473,9 @@ char:
   - EmbedRetouch
   - EmbedRio
   - EmbedSilkysPlus
+  - EmbedSystem4
   - EmbedSystem43
+  - EmbedSystem44
   - EmbedSystemAoiA
   - EmbedTaskforce2
   - EmbedWillPlusA
