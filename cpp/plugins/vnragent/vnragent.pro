@@ -199,6 +199,8 @@ SOURCES += \
   engine/model/siglus.cc \
   engine/model/silkys.cc \
   engine/model/system4.cc \
+  engine/model/system43.cc \
+  engine/model/system44.cc \
   engine/model/taskforce.cc \
   engine/model/will.cc \
   engine/model/wolf.cc

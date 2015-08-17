@@ -112,7 +112,7 @@
     - Script.arc
   #encoding: sjis
 
-- name: EmbedSystem43 # 5/25/2015, compatible with System43+
+- name: EmbedSystem4 # 5/25/2015, compatible with System4
   exist: AliceStart.ini
   #encoding: sjis
 
