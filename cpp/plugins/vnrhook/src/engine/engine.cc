@@ -5847,6 +5847,10 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 //
 //  }
 
+/** jichi 8/18/2015
+ *  Sample game: 完全時間停止 体験版
+ *  GDI text: TextOutA and GetTextExtentPoint32A
+ */
 void InsertWaffleHook()
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ - 4; i++)

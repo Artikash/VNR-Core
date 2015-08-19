@@ -1476,7 +1476,7 @@ bool attach(ulong startAddress, ulong stopAddress)
     0x99,           // 014d45ae   99               cdq
     0x2b,0xc2,      // 014d45af   2bc2             sub eax,edx
     0xd1,0xf8,      // 014d45b1   d1f8             sar eax,1
-    0x03 //,0xf0,      // 014d45b3   03f0             add esi,eax
+    0x03 //,0xf0,   // 014d45b3   03f0             add esi,eax
   };
   int count = 0;
   auto fun = [&count](ulong addr) -> bool {
@@ -1490,6 +1490,35 @@ bool attach(ulong startAddress, ulong stopAddress)
   return count;
 }
 } // namespace OtherHook
+} // unnamed namespace
+
+/** Public class */
+
+bool GXPEngine::attach()
+{
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  moduleBaseAddress_ = startAddress; // used to calculate reladdr for debug purposes
+  if (ScenarioHook2::attach(startAddress, stopAddress)) {
+    DOUT("found GXP2");
+  } else if (ScenarioHook1::attach(startAddress, stopAddress)) {
+    DOUT("found GXP1");
+    if (PopupHook1::attach(startAddress, stopAddress))
+      DOUT("popup text found");
+    else
+      DOUT("popup text NOT FOUND");
+  } else
+    return false;
+  if (OtherHook::attach(startAddress, stopAddress))
+    DOUT("other text found");
+  else
+    DOUT("other text NOT FOUND");
+  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
+  return true;
+}
+
+// EOF
 
 #if 0
 namespace DebugHook {
@@ -1616,39 +1645,6 @@ bool attach(ulong startAddress, ulong stopAddress)
   return winhook::hook_before(addr, Private::hookBefore);
 }
 } // namespace DebugHook
-#endif // 0
-
-} // unnamed namespace
-
-/** Public class */
-
-bool GXPEngine::attach()
-{
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-  moduleBaseAddress_ = startAddress; // used to calculate reladdr for debug purposes
-  if (ScenarioHook2::attach(startAddress, stopAddress)) {
-    DOUT("found GXP2");
-  } else if (ScenarioHook1::attach(startAddress, stopAddress)) {
-    DOUT("found GXP1");
-    if (PopupHook1::attach(startAddress, stopAddress))
-      DOUT("popup text found");
-    else
-      DOUT("popup text NOT FOUND");
-  } else
-    return false;
-  if (OtherHook::attach(startAddress, stopAddress))
-    DOUT("other text found");
-  else
-    DOUT("other text NOT FOUND");
-  //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
-  return true;
-}
-
-// EOF
-
-#if 0
 
 namespace ChoiceHook { // FIXME: I am not able to distinguish Choice text out
 namespace Private {
