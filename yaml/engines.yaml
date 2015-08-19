@@ -94,6 +94,7 @@ embed:
   - SystemAoiW
   - Taskforce2
   #- Unicorn
+  - Waffle
   - WillPlus
   - WillPlusA
   - WillPlusW
@@ -478,6 +479,7 @@ char:
   - EmbedSystem44
   - EmbedSystemAoiA
   - EmbedTaskforce2
+  - EmbedWaffle
   - EmbedWillPlusA
   - EmbedWolfRPG
   # Engines
@@ -750,6 +752,7 @@ focus:
   - EmbedSiglusEngine
   - EmbedSilkysPlus
   - EmbedTaskforce2
+  - EmbedWaffle
   - EmbedWillPlus
   - EmbedWillPlusA
   - EmbedWillPlusW

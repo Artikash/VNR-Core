@@ -160,6 +160,7 @@ HEADERS += \
   engine/model/silkys.h \
   engine/model/system4.h \
   engine/model/taskforce.h \
+  engine/model/waffle.h \
   engine/model/will.h \
   engine/model/wolf.h
   #engine/model/cs2.h
@@ -202,6 +203,7 @@ SOURCES += \
   engine/model/system43.cc \
   engine/model/system44.cc \
   engine/model/taskforce.cc \
+  engine/model/waffle.cc \
   engine/model/will.cc \
   engine/model/wolf.cc
   #engine/model/cs2.cc
