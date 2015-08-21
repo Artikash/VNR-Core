@@ -215,6 +215,7 @@ class sakurakit(QObject):
       self.tr("Recent Changes"), self.tr("Recent changes"),
       self.tr("Register"),
       self.tr("Remove"),
+      self.tr("Replicate"),
       self.tr("Reset"), self.tr("reset"),
       self.tr("Resize"),
       self.tr("Restart"),

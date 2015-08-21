@@ -195,7 +195,7 @@
     </message>
     <message>
         <source>Original</source>
-        <translation>원문</translation>
+        <translation type="obsolete">원문</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="409"/>
@@ -569,7 +569,7 @@
     </message>
     <message>
         <source>VNR will read translations instead of game texts if TTS&apos;s language is different from game&apos;s</source>
-        <translation>게임 언어와 TTS언어가 다르면, VNR에서 게임원문 대신에 번역문을 읽습니다</translation>
+        <translation type="obsolete">게임 언어와 TTS언어가 다르면, VNR에서 게임원문 대신에 번역문을 읽습니다</translation>
     </message>
 </context>
 <context>
@@ -657,82 +657,82 @@
 <context>
     <name>grimoire</name>
     <message>
-        <location filename="../kagami/grimoire.qml" line="569"/>
+        <location filename="../kagami/grimoire.qml" line="585"/>
         <source>You can drag me to move the text box.</source>
         <translation>여기를 끌어서 글상자를 움직이세요.</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1855"/>
+        <location filename="../kagami/grimoire.qml" line="1871"/>
         <source>Hide text box</source>
         <translation>글상자 숨기기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="941"/>
+        <location filename="../kagami/grimoire.qml" line="957"/>
         <source>Lock text box position</source>
         <translation>글상자 위치 잠그기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="883"/>
+        <location filename="../kagami/grimoire.qml" line="899"/>
         <source>Save text box position</source>
         <translation>글상자 위치 저장</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="617"/>
+        <location filename="../kagami/grimoire.qml" line="633"/>
         <source>Read current Japanese game text using TTS</source>
         <translation>TTS를 사용하여 현재 게임 원문 읽기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="902"/>
+        <location filename="../kagami/grimoire.qml" line="918"/>
         <source>Move text box to the saved position</source>
         <translation>굴상자를 저장된 위치로 이동하기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="961"/>
+        <location filename="../kagami/grimoire.qml" line="977"/>
         <source>Unlock text box position</source>
         <translation>글상자 위치 잠금해제</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="853"/>
+        <location filename="../kagami/grimoire.qml" line="869"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>검은 막대를 움직여서 글상자를 움직일 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="974"/>
+        <location filename="../kagami/grimoire.qml" line="990"/>
         <source>you can drag me!</source>
         <translation>끌어보세요!</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1669"/>
+        <location filename="../kagami/grimoire.qml" line="1685"/>
         <source>Add to the Shared Dictionary</source>
         <translation>공유사전에 추가</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1803"/>
+        <location filename="../kagami/grimoire.qml" line="1819"/>
         <source>Read Current</source>
         <translation>현재 읽기</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1809"/>
+        <location filename="../kagami/grimoire.qml" line="1825"/>
         <source>Scroll to the Beginning</source>
         <translation>처음으로 스크롤</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1814"/>
+        <location filename="../kagami/grimoire.qml" line="1830"/>
         <source>Scroll to the End</source>
         <translation>끝으로 스크롤</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1827"/>
+        <location filename="../kagami/grimoire.qml" line="1843"/>
         <source>Lock Position</source>
         <translation>위치 잠금</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1833"/>
+        <location filename="../kagami/grimoire.qml" line="1849"/>
         <source>Save Position</source>
         <translation>위치 저장</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1838"/>
+        <location filename="../kagami/grimoire.qml" line="1854"/>
         <source>Load Position</source>
         <translation>위치 불러오기</translation>
     </message>
@@ -774,7 +774,7 @@
     </message>
     <message>
         <source>Click to copy the game information to the clipboard</source>
-        <translation>클릭해서 클립보드에 게임 정보 복사</translation>
+        <translation type="obsolete">클릭해서 클립보드에 게임 정보 복사</translation>
     </message>
     <message>
         <location filename="../springboard/inspector.qml" line="162"/>
@@ -807,97 +807,105 @@
         <translation>Dashboard에서 이 게임 제거</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="328"/>
+        <location filename="../termview/inspector.qml" line="335"/>
         <source>Pattern is too short</source>
         <translation>원문이 너무 짧음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="327"/>
+        <location filename="../termview/inspector.qml" line="334"/>
         <source>Pattern or translation is very long</source>
         <translation>원문이나 번역문이 너무 길음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="329"/>
+        <location filename="../termview/inspector.qml" line="336"/>
         <source>Translation is empty</source>
         <translation>번역문이 비어있음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="330"/>
+        <location filename="../termview/inspector.qml" line="337"/>
         <source>Translation should not contain Japanese</source>
         <translation>번역문에 일본어가 있으면 안됩니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="331"/>
+        <location filename="../termview/inspector.qml" line="338"/>
         <source>Game type should not be used for translation</source>
         <translation>게임 형식은 번역문에 사용되지 않아야 합니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="332"/>
+        <location filename="../termview/inspector.qml" line="339"/>
         <source>Type should not translation instead of input</source>
         <translation>입력 대신에 번역하지 말아야 형식</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="325"/>
+        <location filename="../termview/inspector.qml" line="332"/>
         <source>Language should be Chinese not Simplified Chinese</source>
         <translation>쓸 언어가 중국어 간체가 아니라 중국어 번체여야 합니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="324"/>
+        <location filename="../termview/inspector.qml" line="331"/>
         <source>Language should be Simplified Chinese not Chinese</source>
         <translation>쓸 언어가 중국어 번체가 아니라 중국어 간체여야 합니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="333"/>
+        <location filename="../termview/inspector.qml" line="340"/>
         <source>Parentheses or bracks mismatch in regular expression</source>
         <translation>정규 표현식의 괄호가 일치하지 않음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="334"/>
+        <location filename="../termview/inspector.qml" line="341"/>
         <source>This rule is useless that has no effect</source>
         <translation>이 규칙은 효과가 없기에 쓸모 없습니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="335"/>
+        <location filename="../termview/inspector.qml" line="342"/>
         <source>Pattern does not need enabling regex</source>
         <translation>원문을 쓰는데 정규표현식을 활성화 할 필요 없음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="336"/>
+        <location filename="../termview/inspector.qml" line="343"/>
         <source>Entry type does not allow being translator-specific</source>
         <translation>번역기 지정에 이 형식이 허용되지 않음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="337"/>
+        <location filename="../termview/inspector.qml" line="344"/>
         <source>Please use only ASCII characters for translation role</source>
         <translation>부탁합니다 번역역할에는 ASCII문자만 사용해 주세요</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="338"/>
+        <location filename="../termview/inspector.qml" line="345"/>
+        <source>Rule type does not support ruby</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/inspector.qml" line="346"/>
+        <source>Rule type does not support context</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Type does not support ruby</source>
-        <translation>루비입력을 지원하지 않는 종류</translation>
+        <translation type="obsolete">루비입력을 지원하지 않는 종류</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="339"/>
         <source>Type does not support context</source>
-        <translation>위치를 고려하지 않는 종류</translation>
+        <translation type="obsolete">위치를 고려하지 않는 종류</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="340"/>
+        <location filename="../termview/inspector.qml" line="347"/>
         <source>New line characters are not allowed in text</source>
         <translation>텍스트에 \n 같은 줄 나누기를 쓸 수 없음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="341"/>
+        <location filename="../termview/inspector.qml" line="348"/>
         <source>Tab characters are not allowed in text</source>
         <translation>탭 문자는 텍스트에 사용할 수 없습니다</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="342"/>
+        <location filename="../termview/inspector.qml" line="349"/>
         <source>Missing translation</source>
         <translation>번역문을 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="../termview/inspector.qml" line="343"/>
+        <location filename="../termview/inspector.qml" line="350"/>
         <source>Missing pattern</source>
         <translation>원문을 찾을 수 없음</translation>
     </message>
@@ -910,49 +918,49 @@
         <translation>かがみ(마개)</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="385"/>
+        <location filename="../kagami.qml" line="388"/>
         <source>VNR&apos;s top padding</source>
         <translation>VNR 위쪽 채우기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="401"/>
+        <location filename="../kagami.qml" line="404"/>
         <source>VNR&apos;s bottom padding</source>
         <translation>VNR 아래쪽 채우기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="417"/>
+        <location filename="../kagami.qml" line="420"/>
         <source>VNR&apos;s left padding</source>
         <translation>VNR 왼쪽 채우기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="433"/>
+        <location filename="../kagami.qml" line="436"/>
         <source>VNR&apos;s right padding</source>
         <translation>VNR 오른쪽 채우기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="588"/>
+        <location filename="../kagami.qml" line="599"/>
         <source>Save the text box position</source>
         <translation>글상자 위치 저장</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="590"/>
-        <location filename="../kagami.qml" line="602"/>
-        <location filename="../kagami.qml" line="616"/>
+        <location filename="../kagami.qml" line="601"/>
+        <location filename="../kagami.qml" line="613"/>
+        <location filename="../kagami.qml" line="627"/>
         <source>Cannot find the game window. Is it closed?</source>
         <translation>게임 창을 찾을 수 없습니다. 종료하셨나요?</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="600"/>
+        <location filename="../kagami.qml" line="611"/>
         <source>Load the text box position</source>
         <translation>글상자 위치 불러오기</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="614"/>
+        <location filename="../kagami.qml" line="625"/>
         <source>Reset the text box position</source>
         <translation>글상자 위치 재설정</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="1116"/>
+        <location filename="../kagami.qml" line="1131"/>
         <source>Not login or offline</source>
         <translation>로그인하지 않았거나 오프라인입니다</translation>
     </message>
@@ -1036,14 +1044,17 @@
 <context>
     <name>mirage</name>
     <message>
+        <location filename="../textreader/mirage.qml" line="392"/>
         <source>You can drag me to move the text box.</source>
         <translation>여기를 끌어 글상자를 움직일 수 있습니다.</translation>
     </message>
     <message>
+        <location filename="../textreader/mirage.qml" line="673"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>검은 막대를 끌어서 글상자를 움직여보세요.</translation>
     </message>
     <message>
+        <location filename="../textreader/mirage.qml" line="729"/>
         <source>you can drag me!</source>
         <translation>끌어보세요!</translation>
     </message>
@@ -1294,7 +1305,7 @@
     </message>
     <message>
         <source>lang</source>
-        <translation>언어</translation>
+        <translation type="obsolete">언어</translation>
     </message>
 </context>
 <context>
@@ -1398,43 +1409,43 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="178"/>
+        <location filename="../termview/table.qml" line="182"/>
         <source>Short</source>
         <translation>짧음</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="177"/>
+        <location filename="../termview/table.qml" line="181"/>
         <source>Long</source>
         <translation>길음</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="179"/>
+        <location filename="../termview/table.qml" line="183"/>
         <source>Missing</source>
         <translation>누락</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="183"/>
+        <location filename="../termview/table.qml" line="187"/>
         <source>Brackets</source>
         <translation>괄호</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="184"/>
+        <location filename="../termview/table.qml" line="188"/>
         <source>Useless</source>
         <translation>쓸모없음</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="185"/>
-        <location filename="../termview/table.qml" line="582"/>
+        <location filename="../termview/table.qml" line="189"/>
+        <location filename="../termview/table.qml" line="652"/>
         <source>Regex</source>
         <translation>정규식</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="618"/>
+        <location filename="../termview/table.qml" line="688"/>
         <source>Case-insensitive</source>
         <translation>대소문자 구분</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="672"/>
+        <location filename="../termview/table.qml" line="742"/>
         <source>Series</source>
         <translation>시리즈</translation>
     </message>

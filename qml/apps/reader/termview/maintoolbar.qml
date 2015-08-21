@@ -56,7 +56,7 @@ Item { id: root_
         onClicked: root_.deleteCurrentItem()
       }
       Desktop.ToolButton {
-        text: Sk.tr("Duplicate")
+        text: Sk.tr("Replicate")
         tooltip: qsTr("Clone the selected entry")
         visible: root_.canSubmit
         onClicked: root_.cloneCurrentItem()
@@ -212,7 +212,7 @@ Item { id: root_
   }
   function cloneCurrentItem() {
     if (currentItem)
-      datamanPlugin_.duplicateTerm(currentItem)
+      datamanPlugin_.replicateTerm(currentItem)
   }
   function improveCurrentItem() {
     if (currentItem)
