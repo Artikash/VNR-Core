@@ -11149,7 +11149,7 @@ class DataManagerProxy(QObject):
       manager().updateTerms(**sel)
 
   @Slot(QObject)
-  def duplicateTerm(self, term):
+  def replicateTerm(self, term):
     userId = manager().user().id
     if not userId:
       return

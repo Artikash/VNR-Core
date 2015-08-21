@@ -25,8 +25,10 @@ struct TextArgument
 {
   enum { ShortTextCapacity = 8 };
 
-  LPCWSTR text; // 0x0
-  DWORD unknown[3];
+  union {
+    LPCWSTR text; // 0x0
+    wchar_t chars[ShortTextCapacity];
+  };
   int size, // 0x10
       capacity;
 
@@ -41,18 +43,15 @@ struct TextArgument
   }
 
   LPCWSTR getText() const
-  { return size < ShortTextCapacity ? (LPCWSTR)this : text; }
+  { return size < ShortTextCapacity ? chars : text; }
 
   void setText(LPCWSTR _text, int _size)
   {
-    if (_size < ShortTextCapacity) {
-      size = _size;
-      ::memcpy((void *)this, _text, (_size + 1) * sizeof(wchar_t));
-    } else {
+    if (_size < ShortTextCapacity)
+      ::memcpy(chars, _text, (_size + 1) * sizeof(wchar_t));
+    else
       text = _text;
-      size = _size;
-    }
-    capacity = size;
+    capacity = size = _size;
   }
 };
 

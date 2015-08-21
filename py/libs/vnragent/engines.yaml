@@ -135,6 +135,10 @@
   exist: Taskforce2.exe
   #encoding: sjis
 
+- name: EmbedWaffle # 8/18/2015
+  exist: cfg.pak
+  #encoding: sjis
+
 - name: EmbedWillPlus # 7/3/2015
   exist:
     - Rio.arc
