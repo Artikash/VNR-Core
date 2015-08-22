@@ -25,9 +25,9 @@ def url(text, language, encoding=None): # encoding is not needed
       text = topercentencoding(text, encoding)
     if text:
       if encoding:
-        return API + "?ie=%s&tl=%s&q=%s" % (encoding, language, text)
+        return API + "?client=t&ie=%s&tl=%s&q=%s" % (encoding, language, text)
       else:
-        return API + "?tl=%s&q=%s" % (language, text)
+        return API + "?client=t&tl=%s&q=%s" % (language, text)
   return ''
 
 #if __name__ == '__main__':
