@@ -34,6 +34,7 @@
 #include "engine/model/silkys.h"
 #include "engine/model/system4.h"
 #include "engine/model/taskforce.h"
+#include "engine/model/unicorn.h"
 #include "engine/model/waffle.h"
 #include "engine/model/will.h"
 #include "engine/model/wolf.h"
@@ -43,7 +44,6 @@
 //#include "engine/model/cs2.h"
 //#include "engine/model/horkeye.h"
 //#include "engine/model/systemc.h"
-//#include "engine/model/unicorn.h"
 //#include "engine/model/eushully.h"
 //#include "engine/model/majiro.h"
 //#include "engine/model/nexas.h"
@@ -63,6 +63,7 @@ EngineController *EngineFactory::createEngine()
     , new WolfRPGEngine
     , new WillPlusEngine
     , new WaffleEngine
+    , new UnicornEngine
     , new TaskforceEngine
     , new System4Engine
     , new SystemAoiEngine
@@ -92,7 +93,6 @@ EngineController *EngineFactory::createEngine()
     , new BGIEngine
     , new ARCGameEngine
     //, new CatSystem2Engine
-    //, new UnicornEngine
     //, new SystemCEngine
     //, new HorkEyeEngine
     //, new MajiroEngine
