@@ -93,6 +93,9 @@ public:
 
   // Encoding
 
+  bool isDecodable(const char *t) const
+  { return decoder && Util::textDecodable(t, decoder); }
+
   QByteArray encode(const QString &text) const
   { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
 
@@ -424,6 +427,8 @@ void EngineController::setSpacePolicyEncoding(const QString &v)
 
 QString EngineController::decode(const QByteArray &v) const { return d_->decode(v); }
 QByteArray EngineController::encode(const QString &v) const { return d_->encode(v); }
+
+bool EngineController::isTextDecodable(const char *t) const { return d_->isDecodable(t); }
 
 QTextCodec *EngineController::encoder() const { return d_->encoder; }
 QTextCodec *EngineController::decoder() const { return d_->decoder; }

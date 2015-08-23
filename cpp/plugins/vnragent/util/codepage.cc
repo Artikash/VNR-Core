@@ -37,6 +37,14 @@ bool Util::charEncodable(const QChar &ch, const QTextCodec *codec)
   return data.size() != 1 || (data[0] && data[0] != '?');
 }
 
+bool Util::textDecodable(const char *text, const QTextCodec *codec)
+{
+  if (!codec)
+    return false;
+  QString qs = codec->toUnicode(text);
+  return !qs.contains(L'\ufffd');
+}
+
 //bool Util::charDecodable(const QByteArray &c) const
 //{
 //  if (!decoder || c.isEmpty())
