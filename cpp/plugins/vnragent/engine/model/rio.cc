@@ -87,6 +87,11 @@ int getRioVersion(const QString &path)
 namespace ScenarioHook {
 namespace Private {
 
+  bool isSkippedText(LPCSTR text)
+  {
+    return 0 == ::strcmp(text, "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e"); // "ＭＳ ゴシック"
+  }
+
   class HookArgument
   {
     DWORD split_;
@@ -124,6 +129,8 @@ namespace Private {
       static QByteArray data_;
 
       if (0 == ::strcmp(text, data_.constData()))
+        return;
+      if (isSkippedText(text))
         return;
 
       //LPSIZE lpSize = (LPSIZE)s->stack[4]; // arg4 of GetTextExtentPoint32A
@@ -659,6 +666,20 @@ bool ShinaRioEngine::attach()
  *  Sample sentences:
  *  New ShinaRio 2.49 for 3rdEye games: もう一つは、この事実を受けて自分はどうするべきなのか――正確には、_t!250,6,6,・・・・・・・/どうしたいのかという決断に直面したからだった。
  *  Old ShinaRio 2.34 for あやかしびと: ――_t!210<5,8,アシュス>ASSHS患者番号２２７脱走事件について報告
+ *
+ *  Sample game ソーサリージョーカーズ (ShinaRio 2.50):
+ *  05EDB4D0  8F AA 88 C5 82 AA 8E 78 94 7A 82 B7 82 E9 8E 9E  宵闇が支配する時
+ *  05EDB4E0  8D 8F 81 41 5F 74 21 32 35 30 2C 30 34 2C 30 33  刻、_t!250,04,03
+ *  05EDB4F0  2C 82 BD 82 BB 82 AA 82 EA 2F 92 4E 82 BB 94 DE  ,たそがれ/誰そ彼
+ *  05EDB500  8E 9E 81 5C 81 5C 8A BD 8C 7D 82 B3 82 EA 82 E9  時――歓迎される
+ *  05EDB510  82 E6 82 A4 82 C9 90 6C 5F 72 8A D4 82 AA 88 EA  ように人_r間が一
+ *  05EDB520  90 6C 82 AA 8C 69 90 46 82 C9 97 6E 82 AF 8D 9E  人が景色に溶け込
+ *  05EDB530  82 F1 82 C5 82 A2 82 BD 81 42 00 00 00 00 00 00  んでいた。......
+ *  05EDB540  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  05EDB550  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *
+ *  たそがれ is above 誰そ彼.
+ *  04 is たそがれ's length, and 03 is 誰そ彼's length?
  */
 
 QString ShinaRioEngine::rubyRemove(const QString &text)
@@ -671,11 +692,13 @@ QString ShinaRioEngine::rubyRemove(const QString &text)
   return QString(text).remove(rx);
 }
 
-// FIXME: Ruby creation rule does not work
+// FIXME: Ruby creation rule does not work. No ruby displayed.
 QString ShinaRioEngine::rubyCreate(const QString &rb, const QString &rt)
 {
-  static QString fmt("_t!250,5,8,%2/%1");
-  return fmt.arg(rb, rt);
+  static QString fmt("_t!250,%4,%3,%2/%1");
+  return fmt.arg(rb, rt,
+      QString::number(rb.size()),
+      QString::number(rt.size()));
 }
 
 // EOF
