@@ -169,6 +169,7 @@ HEADERS += \
   #engine/model/horkeye.h
   #engine/model/majiro.h
   #engine/model/sideb.h
+  #engine/model/tamamo.h
   ##engine/model/nexas.h
   #engine/model/rejet.h
   #engine/model/yuka.h
@@ -212,6 +213,7 @@ SOURCES += \
   #engine/model/horkeye.cc
   #engine/model/majiro.cc
   #engine/model/sideb.cc
+  #engine/model/tamamo.cc
   #engine/model/nexas.cc
   #engine/model/rejet.cc
   #engine/model/yuka.cc

@@ -101,6 +101,10 @@
   exist: resident.dll
   #encoding: sjis
 
+- name: EmbedRGSS # 6/7/2015
+  exist: System/RGSS3*.dll # such as RGSS301.dll
+  #encoding: utf16
+
 - name: EmbedSiglusEngine # 5/25/2014, for SiglusEngine2
   exist: Siglus*.exe
   #encoding: utf16
@@ -125,10 +129,6 @@
   exist:
     - Ags*.dll
     - Aoi*.dll
-  #encoding: utf16
-
-- name: EmbedRGSS # 6/7/2015
-  exist: System/RGSS3*.dll # such as RGSS301.dll
   #encoding: utf16
 
 - name: EmbedTaskforce2 # 8/4/2015
@@ -161,6 +161,12 @@
     - UE3ShaderCompileWorker.exe
 
 # EOF
+
+#- name: EmbedTamamo # 8/23/2015
+#  exist:
+#    - sprite.pck
+#    - image.pck
+#  #encoding: sjis
 
 #- name: EmbedYukaSystem # 7/19/2015
 #  exist: "*.ykc"
