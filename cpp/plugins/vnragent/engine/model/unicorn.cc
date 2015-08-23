@@ -242,6 +242,7 @@ namespace Private {
  */
 // 三極姫4: 00 00 00 00 ff ff ff ff ff ff ff ff 0a
 // 戦極姫6: 00 00 00 00 be be be ff ff ff ff ff 0a
+//enum { TextSeparatorSize = 12 };
 static inline bool isTextSeparator(LPCSTR text)
 {
   //return 0 == ::memcmp(p, "\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\x0a", 13);
@@ -269,7 +270,7 @@ void Private::TextStorage::save()
     return;
   LPSTR p = text_ + ::strlen(text_);
   while (isTextSeparator(p)) {
-    p += 13;
+    p += 12 + 1; // +1 for the extra 0xa
     if (size_t size = ::strlen(p)) {
       ::memset(p, ' ', size);
       p += size;
