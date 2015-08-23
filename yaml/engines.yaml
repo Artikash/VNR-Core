@@ -322,6 +322,7 @@ simple:
   - SystemAoiW
   - Syuntada
   - Taskforce2
+  - Tamamo
   - TinkerBell0
   - TinkerBell1
   - TinkerBell2
@@ -590,6 +591,7 @@ char:
   - Syuntada
   - TanukiSoft
   - Taskforce2
+  - Tamamo
   - Tenco
   - TinkerBell0
   - TinkerBell1
@@ -816,6 +818,7 @@ focus:
   #- System40
   #- System43
   #- System44
+  #- Tamamo
   #- WolfRPG
 
 # EOF

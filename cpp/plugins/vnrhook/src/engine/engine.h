@@ -141,6 +141,7 @@ bool InsertSilkysHook();        // SilkysPlus
 bool InsertSyuntadaHook();      // Syuntada: dSoh.dat
 bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
 bool InsertSystemAoiHook();     // SystemAoi: *.vfs
+bool InsertTamamoHook();        // Tamamo
 bool InsertTanukiHook();        // Tanuki: *.tak
 bool InsertTaskforce2Hook();    // Taskforce2.exe
 bool InsertTencoHook();         // Tenco: Check.mdx

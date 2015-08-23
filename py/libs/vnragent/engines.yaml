@@ -153,7 +153,6 @@
   exist: data.wolf|data/*.wolf
   #encoding: sjis
 
-
 # Game-specific engines
 
 - name: EmbedLova # 7/19/2015
