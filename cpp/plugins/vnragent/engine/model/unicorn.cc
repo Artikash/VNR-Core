@@ -3,6 +3,7 @@
 #include "engine/model/unicorn.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
+#include "engine/enginehash.h"
 #include "engine/engineutil.h"
 #include "hijack/hijackmanager.h"
 #include "util/textutil.h"
@@ -10,7 +11,9 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QHash>
+#include <algorithm>
 #include <cstdint>
+#include <list>
 
 #define DEBUG "unicorn"
 #include "sakurakit/skdebug.h"
@@ -19,6 +22,26 @@
 
 namespace { // unnamed
 namespace ScenarioHook {
+
+class TextCache
+{
+  int capacity_;
+  std::list<uint64_t> hashes_;
+public:
+  TextCache() : capacity_(30) {}
+
+  bool contains(uint64_t h) const
+  { return std::find(hashes_.begin(), hashes_.end(), h) != hashes_.end(); }
+
+  void add(uint64_t h)
+  {
+    if (hashes_.size() == capacity_)
+      hashes_.pop_back();
+    hashes_.push_front(h);
+  }
+
+} textCache_;
+
 namespace Private {
 
   class TextStorage
@@ -143,6 +166,7 @@ namespace Private {
 
     sourceData_ = newData;
     targetText_ = (LPSTR)s->stack[1]; // arg1
+    textCache_.add(Engine::hashByteArray(newData));
     return true;
   }
   bool hookAfter(winhook::hook_stack *)
@@ -409,172 +433,14 @@ bool attach(ulong startAddress, ulong stopAddress)
 namespace OtherHook {
 namespace Private {
 
-  bool isSkippedText(LPCSTR text)
-  {
-    return 0 == ::strcmp(text, "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e"); // "ＭＳ ゴシック"
-  }
+  //bool isSkippedText(LPCSTR text)
+  //{
+  //  return 0 == ::strcmp(text, "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e"); // "ＭＳ ゴシック"
+  //}
 
   /**
    *  Sample game:  戦極姫6
    *
-   *  Scenario caller:
-   *
-   *  0052FDC0   72 11            JB SHORT .0052FDD3
-   *  0052FDC2   56               PUSH ESI
-   *  0052FDC3   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
-   *  0052FDC6   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
-   *  0052FDC9   E8 12F5FFFF      CALL .0052F2E0    ; jichi: scenario called
-   *  0052FDCE   83C4 0C          ADD ESP,0xC
-   *  0052FDD1  ^EB C1            JMP SHORT .0052FD94
-   *  0052FDD3   FF75 0C          PUSH DWORD PTR SS:[EBP+0xC]
-   *  0052FDD6   57               PUSH EDI
-   *
-   *  08C4E39C   08962521
-   *  08C4E3A0   0895C921  ; jichi: source text
-   *  08C4E3A4   00000D29
-   *  08C4E3A8   00000D29
-   *  08C4E3AC   005A24A0  .005A24A0
-   *  08C4E3B0  /08C4E3E4
-   *  08C4E3B4  |00532435  RETURN to .00532435 from .0052FD84
-   *  08C4E3B8  |08962521
-   *  08C4E3BC  |FFFFFFFE
-   *  08C4E3C0  |0895C921  ; jichi: source text
-   *  08C4E3C4  |00000D29
-   *  08C4E3C8  |000004B2
-   *  08C4E3CC  |00000000   ; jichi: this value is always 0
-   *  08C4E3D0  |0896A920  ASCII "SFP"
-   *  08C4E3D4  |00000D2A
-   *  08C4E3D8  |00001000
-   *
-   *  0052FD7C   59               POP ECX
-   *  0052FD7D   8BC6             MOV EAX,ESI
-   *  0052FD7F   5E               POP ESI
-   *  0052FD80   5D               POP EBP
-   *  0052FD81   C2 0400          RETN 0x4
-   *
-   *  0052FD84   8BFF             MOV EDI,EDI   ; jichi: caller of the encodable text
-   *  0052FD86   55               PUSH EBP
-   *  0052FD87   8BEC             MOV EBP,ESP
-   *  0052FD89   56               PUSH ESI
-   *  0052FD8A   8B75 14          MOV ESI,DWORD PTR SS:[EBP+0x14]
-   *  0052FD8D   57               PUSH EDI
-   *  0052FD8E   33FF             XOR EDI,EDI
-   *  0052FD90   3BF7             CMP ESI,EDI
-   *  0052FD92   75 04            JNZ SHORT .0052FD98
-   *  0052FD94   33C0             XOR EAX,EAX
-   *  0052FD96   EB 65            JMP SHORT .0052FDFD
-   *  0052FD98   397D 08          CMP DWORD PTR SS:[EBP+0x8],EDI
-   *  0052FD9B   75 1B            JNZ SHORT .0052FDB8
-   *  0052FD9D   E8 46370000      CALL .005334E8
-   *  0052FDA2   6A 16            PUSH 0x16
-   *  0052FDA4   5E               POP ESI
-   *  0052FDA5   8930             MOV DWORD PTR DS:[EAX],ESI
-   *  0052FDA7   57               PUSH EDI
-   *  0052FDA8   57               PUSH EDI
-   *  0052FDA9   57               PUSH EDI
-   *  0052FDAA   57               PUSH EDI
-   *  0052FDAB   57               PUSH EDI
-   *  0052FDAC   E8 E4010000      CALL .0052FF95
-   *  0052FDB1   83C4 14          ADD ESP,0x14
-   *  0052FDB4   8BC6             MOV EAX,ESI
-   *  0052FDB6   EB 45            JMP SHORT .0052FDFD
-   *  0052FDB8   397D 10          CMP DWORD PTR SS:[EBP+0x10],EDI
-   *  0052FDBB   74 16            JE SHORT .0052FDD3
-   *  0052FDBD   3975 0C          CMP DWORD PTR SS:[EBP+0xC],ESI
-   *  0052FDC0   72 11            JB SHORT .0052FDD3
-   *  0052FDC2   56               PUSH ESI
-   *  0052FDC3   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
-   *  0052FDC6   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
-   *  0052FDC9   E8 12F5FFFF      CALL .0052F2E0
-   *  0052FDCE   83C4 0C          ADD ESP,0xC
-   *  0052FDD1  ^EB C1            JMP SHORT .0052FD94
-   *  0052FDD3   FF75 0C          PUSH DWORD PTR SS:[EBP+0xC]
-   *  0052FDD6   57               PUSH EDI
-   *  0052FDD7   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
-   *  0052FDDA   E8 81070000      CALL .00530560
-   *  0052FDDF   83C4 0C          ADD ESP,0xC
-   *  0052FDE2   397D 10          CMP DWORD PTR SS:[EBP+0x10],EDI
-   *  0052FDE5  ^74 B6            JE SHORT .0052FD9D
-   *  0052FDE7   3975 0C          CMP DWORD PTR SS:[EBP+0xC],ESI
-   *  0052FDEA   73 0E            JNB SHORT .0052FDFA
-   *  0052FDEC   E8 F7360000      CALL .005334E8
-   *  0052FDF1   6A 22            PUSH 0x22
-   *  0052FDF3   59               POP ECX
-   *  0052FDF4   8908             MOV DWORD PTR DS:[EAX],ECX
-   *  0052FDF6   8BF1             MOV ESI,ECX
-   *  0052FDF8  ^EB AD            JMP SHORT .0052FDA7
-   *  0052FDFA   6A 16            PUSH 0x16
-   *  0052FDFC   58               POP EAX
-   *  0052FDFD   5F               POP EDI
-   *  0052FDFE   5E               POP ESI
-   *  0052FDFF   5D               POP EBP
-   *  0052FE00   C3               RETN
-   *  0052FE01   8BFF             MOV EDI,EDI
-   *  0052FE03   55               PUSH EBP
-   *  0052FE04   8BEC             MOV EBP,ESP
-   *  0052FE06   8B45 14          MOV EAX,DWORD PTR SS:[EBP+0x14]
-   *  0052FE09   56               PUSH ESI
-   *  0052FE0A   57               PUSH EDI
-   *  0052FE0B   33FF             XOR EDI,EDI
-   *  0052FE0D   3BC7             CMP EAX,EDI
-   *  0052FE0F   74 47            JE SHORT .0052FE58
-   *  0052FE11   397D 08          CMP DWORD PTR SS:[EBP+0x8],EDI
-   *  0052FE14   75 1B            JNZ SHORT .0052FE31
-   *  0052FE16   E8 CD360000      CALL .005334E8
-   *  0052FE1B   6A 16            PUSH 0x16
-   *  0052FE1D   5E               POP ESI
-   *  0052FE1E   8930             MOV DWORD PTR DS:[EAX],ESI
-   *  0052FE20   57               PUSH EDI
-   *  0052FE21   57               PUSH EDI
-   *  0052FE22   57               PUSH EDI
-   *  0052FE23   57               PUSH EDI
-   *  0052FE24   57               PUSH EDI
-   *  0052FE25   E8 6B010000      CALL .0052FF95
-   *  0052FE2A   83C4 14          ADD ESP,0x14
-   *  0052FE2D   8BC6             MOV EAX,ESI
-   *  0052FE2F   EB 29            JMP SHORT .0052FE5A
-   *  0052FE31   397D 10          CMP DWORD PTR SS:[EBP+0x10],EDI
-   *  0052FE34  ^74 E0            JE SHORT .0052FE16
-   *  0052FE36   3945 0C          CMP DWORD PTR SS:[EBP+0xC],EAX
-   *  0052FE39   73 0E            JNB SHORT .0052FE49
-   *  0052FE3B   E8 A8360000      CALL .005334E8
-   *  0052FE40   6A 22            PUSH 0x22
-   *  0052FE42   59               POP ECX
-   *  0052FE43   8908             MOV DWORD PTR DS:[EAX],ECX
-   *  0052FE45   8BF1             MOV ESI,ECX
-   *  0052FE47  ^EB D7            JMP SHORT .0052FE20
-   *  0052FE49   50               PUSH EAX
-   *  0052FE4A   FF75 10          PUSH DWORD PTR SS:[EBP+0x10]
-   *  0052FE4D   FF75 08          PUSH DWORD PTR SS:[EBP+0x8]
-   *  0052FE50   E8 3B310000      CALL .00532F90
-   *  0052FE55   83C4 0C          ADD ESP,0xC
-   *  0052FE58   33C0             XOR EAX,EAX
-   *  0052FE5A   5F               POP EDI
-   *  0052FE5B   5E               POP ESI
-   *  0052FE5C   5D               POP EBP
-   *  0052FE5D   C3               RETN
-   *  0052FE5E   8BFF             MOV EDI,EDI
-   *  0052FE60   55               PUSH EBP
-   *  0052FE61   8BEC             MOV EBP,ESP
-   *  0052FE63   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
-   *  0052FE66   A3 5466D800      MOV DWORD PTR DS:[0xD86654],EAX
-   *  0052FE6B   5D               POP EBP
-   *  0052FE6C   C3               RETN
-   *  0052FE6D   8BFF             MOV EDI,EDI
-   *  0052FE6F   55               PUSH EBP
-   *  0052FE70   8BEC             MOV EBP,ESP
-   *  0052FE72   81EC 28030000    SUB ESP,0x328
-   *  0052FE78   A1 E0225A00      MOV EAX,DWORD PTR DS:[0x5A22E0]
-   *  0052FE7D   33C5             XOR EAX,EBP
-   *  0052FE7F   8945 FC          MOV DWORD PTR SS:[EBP-0x4],EAX
-   *  0052FE82   83A5 D8FCFFFF 00 AND DWORD PTR SS:[EBP-0x328],0x0
-   *  0052FE89   53               PUSH EBX
-   *  0052FE8A   6A 4C            PUSH 0x4C
-   *  0052FE8C   8D85 DCFCFFFF    LEA EAX,DWORD PTR SS:[EBP-0x324]
-   *  0052FE92   6A 00            PUSH 0x0
-   *  0052FE94   50               PUSH EAX
-   *  0052FE95   E8 C6060000      CALL .00530560
-   *  0052FE9A   8D85 D8FCFFFF    LEA EAX,DWORD PTR SS:[EBP-0x328]
    */
   bool hookBefore(winhook::hook_stack *s)
   {
@@ -585,26 +451,56 @@ namespace Private {
     //if (*(DWORD *)retaddr != 0xeb0cc483)
     //  return true;
     //retaddr = s->stack[7]; // parent caller
-    auto q = EngineController::instance();
-    auto text = (LPCSTR)s->stack[3]; // arg2
-    if (!text || !*text
-        || Engine::getTextLength(text) > 0x100
-        || ::strlen(text) <= 2
+
+    // Scenario/name/other threads to skip:
+    // - 0x404062 // there are so many other texts in this thread
+    //
+    // Other thread to keep:
+    // - 0x4769f8: message
+    // - 0x4135ba: in-game text that split into lines
+    //
+    // 004769E9   2BC7             SUB EAX,EDI
+    // 004769EB   50               PUSH EAX
+    // 004769EC   51               PUSH ECX
+    // 004769ED   8D8E C4080000    LEA ECX,DWORD PTR DS:[ESI+0x8C4]
+    // 004769F3   E8 B8D1F8FF      CALL .00403BB0   ; jichi; message
+    // 004769F8   D9EE             FLDZ
+    // 004769FA   8B6C24 18        MOV EBP,DWORD PTR SS:[ESP+0x18]
+    // 004769FE   D996 04090000    FST DWORD PTR DS:[ESI+0x904]
+    //
+    // 004135B1   52               PUSH EDX
+    // 004135B2   8D4E 3C          LEA ECX,DWORD PTR DS:[ESI+0x3C]
+    // 004135B5   E8 F605FFFF      CALL .00403BB0   ; jichi: in-game caller
+    // 004135BA   EB 08            JMP SHORT .004135C4
+    // 004135BC   8D4E 3C          LEA ECX,DWORD PTR DS:[ESI+0x3C]
+    //if (retaddr != 0x4769f8 && retaddr != 0x4135ba)
+    //  return true;
+    switch (*(WORD *)retaddr) {
+    case 0xeed9: // 004769F8   D9EE             FLDZ
+    case 0x08eb: // 004135BA   EB 08            JMP SHORT .004135C4
+      break;
+    default: return true;
+    }
+    auto text = (LPCSTR)s->stack[1]; // arg1
+    int size = s->stack[2]; // arg2
+    if (!text
+        || size <= 2 // avoid painting individual character
+        || ::strlen(text) != size
         || Util::allAscii(text)
-        || isascii(text[::strlen(text) - 2])
-        || !q->isTextDecodable(text)
-        || isSkippedText(text))
+        || ScenarioHook::textCache_.contains(Engine::hashCharArray(text)))
+        //|| !q->isTextDecodable(text)) // avoid re-translation
+        //|| isascii(text[::strlen(text) - 2])
+        //|| isSkippedText(text))
       return true;
     enum { role = Engine::OtherRole };
     QByteArray oldData = text;
-    oldData.replace("\\n", ""); // Remove new line. FIXME: automatically adjust line width
-    QByteArray newData = q->dispatchTextA(oldData, role, retaddr);
+    oldData.replace("\\n", "\n"); // Remove new line. FIXME: automatically adjust line width
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, retaddr);
     if (newData == oldData)
       return true;
-    //newData.replace("\\n", "\n");
-    //texts_.insert(text);
     data_ = newData;
-    s->stack[3] = (ulong)data_.constData();
+    s->stack[1] = (ulong)data_.constData();
+    s->stack[2] = data_.size();
     return true;
   }
 } // namespace Private
@@ -620,9 +516,9 @@ namespace Private {
  *  0052F2E1   8BEC             MOV EBP,ESP
  *  0052F2E3   57               PUSH EDI
  *  0052F2E4   56               PUSH ESI
- *  0052F2E5   8B75 0C          MOV ESI,DWORD PTR SS:[EBP+0xC]
- *  0052F2E8   8B4D 10          MOV ECX,DWORD PTR SS:[EBP+0x10]
- *  0052F2EB   8B7D 08          MOV EDI,DWORD PTR SS:[EBP+0x8]
+ *  0052F2E5   8B75 0C          MOV ESI,DWORD PTR SS:[EBP+0xC]  ; jichi: arg2, source text
+ *  0052F2E8   8B4D 10          MOV ECX,DWORD PTR SS:[EBP+0x10] ; jichi: arg3, count?
+ *  0052F2EB   8B7D 08          MOV EDI,DWORD PTR SS:[EBP+0x8]  ; jichi: arg1, target location
  *  0052F2EE   8BC1             MOV EAX,ECX
  *  0052F2F0   8BD1             MOV EDX,ECX
  *  0052F2F2   03C6             ADD EAX,ESI
@@ -630,7 +526,7 @@ namespace Private {
  *  0052F2F6   76 08            JBE SHORT .0052F300
  *  0052F2F8   3BF8             CMP EDI,EAX
  *  0052F2FA   0F82 A4010000    JB .0052F4A4
- *  0052F300   81F9 00010000    CMP ECX,0x100
+ *  0052F300   81F9 00010000    CMP ECX,0x100   ; jichi: 0x100 is the threshold
  *  0052F306   72 1F            JB SHORT .0052F327
  *  0052F308   833D 6472D800 00 CMP DWORD PTR DS:[0xD87264],0x0
  *  0052F30F   74 16            JE SHORT .0052F327
@@ -655,18 +551,151 @@ namespace Private {
  *  0052F33A   F3:A5            REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
  *  0052F33C   FF2495 54F45200  JMP DWORD PTR DS:[EDX*4+0x52F454]
  *  0052F343   90               NOP
+ *
+ *  Here's its parent parent caller:
+ *  - arg1: jichi: source text
+ *  - arg2: jichi: source size
+ *
+ *  00403BAB   CC               INT3
+ *  00403BAC   CC               INT3
+ *  00403BAD   CC               INT3
+ *  00403BAE   CC               INT3
+ *  00403BAF   CC               INT3
+ *  00403BB0   55               PUSH EBP
+ *  00403BB1   8B6C24 08        MOV EBP,DWORD PTR SS:[ESP+0x8]
+ *  00403BB5   56               PUSH ESI
+ *  00403BB6   57               PUSH EDI
+ *  00403BB7   8BF1             MOV ESI,ECX
+ *  00403BB9   85ED             TEST EBP,EBP
+ *  00403BBB   74 46            JE SHORT .00403C03
+ *  00403BBD   8B56 18          MOV EDX,DWORD PTR DS:[ESI+0x18]
+ *  00403BC0   8D46 04          LEA EAX,DWORD PTR DS:[ESI+0x4]
+ *  00403BC3   83FA 10          CMP EDX,0x10
+ *  00403BC6   72 04            JB SHORT .00403BCC
+ *  00403BC8   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  00403BCA   EB 02            JMP SHORT .00403BCE
+ *  00403BCC   8BC8             MOV ECX,EAX
+ *  00403BCE   3BE9             CMP EBP,ECX
+ *  00403BD0   72 31            JB SHORT .00403C03
+ *  00403BD2   83FA 10          CMP EDX,0x10
+ *  00403BD5   72 04            JB SHORT .00403BDB
+ *  00403BD7   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  00403BD9   EB 02            JMP SHORT .00403BDD
+ *  00403BDB   8BC8             MOV ECX,EAX
+ *  00403BDD   8B7E 14          MOV EDI,DWORD PTR DS:[ESI+0x14]
+ *  00403BE0   03F9             ADD EDI,ECX
+ *  00403BE2   3BFD             CMP EDI,EBP
+ *  00403BE4   76 1D            JBE SHORT .00403C03
+ *  00403BE6   83FA 10          CMP EDX,0x10
+ *  00403BE9   72 02            JB SHORT .00403BED
+ *  00403BEB   8B00             MOV EAX,DWORD PTR DS:[EAX]
+ *  00403BED   8B4C24 14        MOV ECX,DWORD PTR SS:[ESP+0x14]
+ *  00403BF1   51               PUSH ECX
+ *  00403BF2   2BE8             SUB EBP,EAX
+ *  00403BF4   55               PUSH EBP
+ *  00403BF5   56               PUSH ESI
+ *  00403BF6   8BCE             MOV ECX,ESI
+ *  00403BF8   E8 D3FEFFFF      CALL .00403AD0
+ *  00403BFD   5F               POP EDI
+ *  00403BFE   5E               POP ESI
+ *  00403BFF   5D               POP EBP
+ *  00403C00   C2 0800          RETN 0x8
+ *  00403C03   8B7C24 14        MOV EDI,DWORD PTR SS:[ESP+0x14]
+ *  00403C07   83FF FE          CMP EDI,-0x2
+ *  00403C0A   76 05            JBE SHORT .00403C11
+ *  00403C0C   E8 B94F1500      CALL .00558BCA
+ *  00403C11   8B46 18          MOV EAX,DWORD PTR DS:[ESI+0x18]
+ *  00403C14   3BC7             CMP EAX,EDI
+ *  00403C16   73 20            JNB SHORT .00403C38
+ *  00403C18   8B56 14          MOV EDX,DWORD PTR DS:[ESI+0x14]
+ *  00403C1B   52               PUSH EDX
+ *  00403C1C   57               PUSH EDI
+ *  00403C1D   8BCE             MOV ECX,ESI
+ *  00403C1F   E8 5CFDFFFF      CALL .00403980
+ *  00403C24   85FF             TEST EDI,EDI
+ *  00403C26   76 56            JBE SHORT .00403C7E
+ *  00403C28   8B4E 18          MOV ECX,DWORD PTR DS:[ESI+0x18]
+ *  00403C2B   53               PUSH EBX
+ *  00403C2C   8D5E 04          LEA EBX,DWORD PTR DS:[ESI+0x4]
+ *  00403C2F   83F9 10          CMP ECX,0x10
+ *  00403C32   72 2C            JB SHORT .00403C60
+ *  00403C34   8B03             MOV EAX,DWORD PTR DS:[EBX]
+ *  00403C36   EB 2A            JMP SHORT .00403C62
+ *  00403C38   85FF             TEST EDI,EDI
+ *  00403C3A  ^75 EA            JNZ SHORT .00403C26
+ *  00403C3C   897E 14          MOV DWORD PTR DS:[ESI+0x14],EDI
+ *  00403C3F   83F8 10          CMP EAX,0x10
+ *  00403C42   72 0E            JB SHORT .00403C52
+ *  00403C44   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+ *  00403C47   5F               POP EDI
+ *  00403C48   C600 00          MOV BYTE PTR DS:[EAX],0x0
+ *  00403C4B   8BC6             MOV EAX,ESI
+ *  00403C4D   5E               POP ESI
+ *  00403C4E   5D               POP EBP
+ *  00403C4F   C2 0800          RETN 0x8
+ *  00403C52   8D46 04          LEA EAX,DWORD PTR DS:[ESI+0x4]
+ *  00403C55   5F               POP EDI
+ *  00403C56   C600 00          MOV BYTE PTR DS:[EAX],0x0
+ *  00403C59   8BC6             MOV EAX,ESI
+ *  00403C5B   5E               POP ESI
+ *  00403C5C   5D               POP EBP
+ *  00403C5D   C2 0800          RETN 0x8
+ *  00403C60   8BC3             MOV EAX,EBX
+ *  00403C62   57               PUSH EDI
+ *  00403C63   55               PUSH EBP
+ *  00403C64   51               PUSH ECX
+ *  00403C65   50               PUSH EAX
+ *  00403C66   E8 19C11200      CALL .0052FD84  ; jichi: actual paint function
+ *  00403C6B   83C4 10          ADD ESP,0x10
+ *  00403C6E   837E 18 10       CMP DWORD PTR DS:[ESI+0x18],0x10
+ *  00403C72   897E 14          MOV DWORD PTR DS:[ESI+0x14],EDI
+ *  00403C75   72 02            JB SHORT .00403C79
+ *  00403C77   8B1B             MOV EBX,DWORD PTR DS:[EBX]
+ *  00403C79   C6043B 00        MOV BYTE PTR DS:[EBX+EDI],0x0
+ *  00403C7D   5B               POP EBX
+ *  00403C7E   5F               POP EDI
+ *  00403C7F   8BC6             MOV EAX,ESI
+ *  00403C81   5E               POP ESI
+ *  00403C82   5D               POP EBP
+ *  00403C83   C2 0800          RETN 0x8
+ *  00403C86   CC               INT3
+ *  00403C87   CC               INT3
+ *  00403C88   CC               INT3
+ *  00403C89   CC               INT3
+ *  00403C8A   CC               INT3
+ *  00403C8B   CC               INT3
+ *
+ *  08BCF938   00403C6B  RETURN to .00403C6B from .0052FD84
+ *  08BCF93C   088DC7F0   ; jichi: target location
+ *  08BCF940   0000001F   ; jichi: target capacity
+ *  08BCF944   08BCFC68   ; jichi: source size
+ *  08BCF948   00000010   ; jichi: source size
+ *  08BCF94C   00000001
+ *  08BCF950   08BCFC69
+ *  08BCF954   08BCFC68
+ *  08BCF958   0000000F
+ *  08BCF95C   00404870  RETURN to .00404870 from .00403BB0
+ *  08BCF960   08BCFC68   ; jichi: source text
+ *  08BCF964   00000010   ; jichi: source size
+ *  08BCF968   0000000F   ; jichi: extra capacity
+ *  08BCF96C   008B68F8  .008B68F8
+ *  08BCF970   004AC441  RETURN to .004AC441 from .00404850
+ *  08BCF974   08BCFC68
+ *  08BCF978   2AE30C3B
+ *  08BCF97C   004A5710  .004A5710
+ *  08BCF980   088D5448
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
   const uint8_t bytes[] = {
-    0x74, 0x16,         // 0052f30f   74 16            je short .0052f327
-    0x57,               // 0052f311   57               push edi
-    0x56,               // 0052f312   56               push esi
-    0x83,0xe7, 0x0f,    // 0052f313   83e7 0f          and edi,0xf
-    0x83,0xe6, 0x0f,    // 0052f316   83e6 0f          and esi,0xf
-    0x3b,0xfe,          // 0052f319   3bfe             cmp edi,esi
-    0x5e,               // 0052f31b   5e               pop esi
-    0x5f                // 0052f31c   5f               pop edi
+    0x72, 0x0E,         // 00403C42   72 0E            JB SHORT .00403C52
+    0x8B,0x46, 0x04,    // 00403C44   8B46 04          MOV EAX,DWORD PTR DS:[ESI+0x4]
+    0x5F,               // 00403C47   5F               POP EDI
+    0xC6,0x00, 0x00,    // 00403C48   C600 00          MOV BYTE PTR DS:[EAX],0x0
+    0x8B,0xC6,          // 00403C4B   8BC6             MOV EAX,ESI
+    0x5E,               // 00403C4D   5E               POP ESI
+    0x5D,               // 00403C4E   5D               POP EBP
+    0xC2, 0x08,0x00     // 00403C4F   C2 0800          RETN 0x8
   };
   ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   if (!addr)
@@ -674,8 +703,7 @@ bool attach(ulong startAddress, ulong stopAddress)
   addr = MemDbg::findEnclosingAlignedFunction(addr);
   if (!addr)
     return false;
-  //ulong addr = 0x0052F2E0;
-  addr = 0x0052FD84;
+  //addr = 0x00403BB0;
   return winhook::hook_before(addr, Private::hookBefore);
 }
 

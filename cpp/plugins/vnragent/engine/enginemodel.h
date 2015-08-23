@@ -24,6 +24,7 @@ public:
     , enableLocaleEmulation(false)  // fix inconsistent game locale
     , enableDynamicFont(false)      // change GDI device context font
     , enableDynamicEncoding(false)  // whether use dynamic codec to fix ascii text
+    , enableNonDecodableCharacters(false) // allow having non-encodable characters
     , dynamicEncodingMinimumByte(0) // minimum value for the dynamic sjis
 
     , scenarioLineCapacity(0)       // estimated maximum number of thin characters for scenario text per line, 0 to disable it
@@ -41,9 +42,10 @@ public:
 
   const char *name;
   Encoding encoding;
-  bool enableLocaleEmulation;
-  bool enableDynamicFont;
-  bool enableDynamicEncoding;
+  bool enableLocaleEmulation,
+       enableDynamicFont,
+       enableDynamicEncoding,
+       enableNonDecodableCharacters;
 
   int dynamicEncodingMinimumByte;
 

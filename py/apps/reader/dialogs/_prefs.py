@@ -8938,7 +8938,7 @@ class _EngineTab(object):
   def _resetSettings(self):
     blans = settings.global_().blockedLanguages()
     if 'zh' not in blans:
-      if self.chineseEnableButton.isChecked():
+      if not self.chineseEnableButton.isChecked():
         self.chineseEnableButton.click()
 
     # Text group
@@ -8993,8 +8993,9 @@ class _EngineTab(object):
   @memoizedproperty
   def chineseEnableButton(self):
     ss = settings.global_()
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Use Traditional Chinese or Japanese kanji"
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("Use Traditional Chinese or Japanese kanji"),
+      tr_("default"),
     ))
     ret.setChecked(ss.gameAgentConvertsKanji())
     ret.toggled.connect(ss.setGameAgentConvertsKanji)

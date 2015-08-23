@@ -15,6 +15,7 @@ public:
   {
     name = "EmbedARCGameEngine";
     enableDynamicEncoding = true;
+    enableNonDecodableCharacters = true; // there could be illegal characters even in scenario
     matchFiles << "AGERC.DLL"; // the process name is AGE.EXE.
     newLineString = nullptr;
     attachFunction = &Self::attach;

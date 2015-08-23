@@ -18,6 +18,7 @@ public:
     //enableDynamicFont = true;
     //newLineString = "\n";
     scenarioLineCapacity = 40; // around 26 kanji in 三極姫4
+    otherLineCapacity = 20; // around 10 kanji in 戦極姫6
     matchFiles << "*.szs|data/*.szs";
     attachFunction = &Self::attach;
   }

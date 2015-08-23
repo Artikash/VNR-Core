@@ -534,6 +534,8 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, int role, lon
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
+  if (!d_->model->enableNonDecodableCharacters && text.contains(L'\xfffd'))
+    return data;
 
   QString prefix,
           suffix,
