@@ -6,6 +6,8 @@
 
 // Currently, only for Japanese text.
 // Return if the text contains non-ascii characters.
+//
+// TODO: Skip "ＭＳ ゴシック"
 bool Util::needsTranslation(const QString &text)
 {
   return !text.isEmpty()
