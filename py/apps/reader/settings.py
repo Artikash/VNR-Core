@@ -2169,7 +2169,7 @@ class Settings(QSettings):
   # Convert Chinese kanji to Japanese
   gameAgentConvertsKanjiChanged = Signal(bool)
   def gameAgentConvertsKanji(self):
-    return to_bool(self.value('GameAgentConvertsKanji'))
+    return to_bool(self.value('GameAgentConvertsKanji', True)) # enable traditional kanji by default
   def setGameAgentConvertsKanji(self, value):
     if value != self.gameAgentConvertsKanji():
       self.setValue('GameAgentConvertsKanji', value)

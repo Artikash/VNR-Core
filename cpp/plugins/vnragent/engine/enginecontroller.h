@@ -37,6 +37,9 @@ public:
   QByteArray encode(const QString &text) const;
   QString decode(const QByteArray &text) const;
 
+  //bool encodable(const QString &text) const;
+  bool isTextDecodable(const char *text) const;
+
   QTextCodec *encoder() const;
   QTextCodec *decoder() const;
 

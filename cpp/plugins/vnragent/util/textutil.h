@@ -50,6 +50,28 @@ inline bool allAscii(const wchar_t *s, size_t size)
 inline bool allAscii(const QString &text)
 { return allAscii(static_cast<const wchar_t *>(text.utf16())); }
 
+inline bool allSpace(const char *s)
+{
+  while (*s)
+    if (!::isspace(*s++))
+      return false;
+  return true;
+}
+//inline bool allSpace(const wchar_t *s)
+//{
+//  while (*s)
+//    if (!::iswspace(*s++))
+//      return false;
+//  return true;
+//}
+inline bool allSpace(const QString &text)
+{
+  foreach (const QChar &ch, text)
+    if (!ch.isSpace())
+      return false;
+  return true;
+}
+
 //  Return the number of thin characters
 inline size_t measureTextSize(const wchar_t *s)
 {
