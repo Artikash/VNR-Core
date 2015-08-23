@@ -80,11 +80,6 @@ namespace Private {
   LPSTR targetText_;
   bool hookBefore(winhook::hook_stack *s)
   {
-    if (!textStorage_.isEmpty()) {
-      textStorage_.restore();
-      textStorage_.clear();
-    }
-
     // Sample game:  三極姫4 ～天華繚乱 天命の恋絵巻～
     // 004B76BB   51               PUSH ECX
     // 004B76BC   8BCB             MOV ECX,EBX
@@ -127,7 +122,7 @@ namespace Private {
     // 0049A85D   0F8E E3000000    JLE .0049A946
 
     auto retaddr = s->stack[0];
-    auto role = Engine::OtherRole;
+    int role = 0;
     //if (retaddr == 0x4b7728)
     if ((*(DWORD *)(retaddr - 5 - 8) & 0x00ffffff) == 0x2484c6) // 004B771B   C68424 AC060000 01 MOV BYTE PTR SS:[ESP+0x6AC],0x1
       role = Engine::ScenarioRole;
@@ -135,12 +130,23 @@ namespace Private {
     else if ((*(DWORD *)(retaddr - 5 - 8) & 0x00ffffff) == 0x0024848d   // 0049A844   8D8424 EC010000  LEA EAX,DWORD PTR SS:[ESP+0x1EC]
           || (*(DWORD *)(retaddr - 5 - 4) & 0x00ffffff) == 0x00244489)  // 004B76BE   894424 14        MOV DWORD PTR SS:[ESP+0x14],EAX
       role = Engine::NameRole;
-    else
+    //else
+    //  return true;
+    if (role != Engine::ScenarioRole && !textStorage_.isEmpty()) {
+      textStorage_.restore();
+      textStorage_.clear();
+    }
+    if (!role)
       return true;
 
     auto text = (LPSTR)*(DWORD *)(s->ecx + textOffset_); // [ecx+0x114]
     if (!*text || Util::allAscii(text)) // allspaces is only needed when textstorage is enabled though
       return true;
+
+    if (!textStorage_.isEmpty()) {
+      textStorage_.restore();
+      textStorage_.clear();
+    }
 
     bool textStorageEnabled = role == Engine::ScenarioRole && Engine::isAddressWritable(text);
     QByteArray oldData;

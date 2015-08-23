@@ -620,6 +620,14 @@ bool DetermineEngineAtLast()
     InsertFocasLensHook(); // Touhou
     return true;
   }
+
+  // jichi 8/23/2015: Tamamo
+  if (IthCheckFile(L"sprite.pck") && IthCheckFile(L"image.pck")) {
+    //if (IthCheckFile(L"QtGui.dll"))
+    InsertTamamoHook();
+    return true;
+  }
+
   return false;
 }
 
