@@ -111,6 +111,7 @@ embed_en:
   - Pal
   - System43+
   - System44
+  #- Tamamo
   #- HorkEye
 
   - EmbedCircus
@@ -121,6 +122,7 @@ embed_en:
   - EmbedSystem4
   - EmbedSystem43
   - EmbedSystem44
+  #- EmbedTamamo
 
 gui:
   # User32
@@ -321,8 +323,8 @@ simple:
   - SystemAoiA
   - SystemAoiW
   - Syuntada
-  - Taskforce2
   - Tamamo
+  - Taskforce2
   - TinkerBell0
   - TinkerBell1
   - TinkerBell2
@@ -589,9 +591,9 @@ char:
   - SystemAoiA
   - SystemC
   - Syuntada
+  - Tamamo
   - TanukiSoft
   - Taskforce2
-  - Tamamo
   - Tenco
   - TinkerBell0
   - TinkerBell1

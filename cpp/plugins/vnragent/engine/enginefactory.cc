@@ -41,15 +41,6 @@
 
 #include "engine/model/lova.h"
 
-//#include "engine/model/cs2.h"
-//#include "engine/model/horkeye.h"
-//#include "engine/model/systemc.h"
-//#include "engine/model/eushully.h"
-//#include "engine/model/majiro.h"
-//#include "engine/model/nexas.h"
-//#include "engine/model/sideb.h"
-//#include "engine/model/yuka.h"
-
 #define DEBUG "enginefactory"
 #include "sakurakit/skdebug.h"
 
@@ -92,12 +83,6 @@ EngineController *EngineFactory::createEngine()
     , new CircusEngine
     , new BGIEngine
     , new ARCGameEngine
-    //, new CatSystem2Engine
-    //, new SystemCEngine
-    //, new HorkEyeEngine
-    //, new MajiroEngine
-    //, new SideBEngine
-    //, new YukaSystemEngine
   };
   BOOST_FOREACH (EngineModel *m, models) {
     auto p = new EngineController(m);
