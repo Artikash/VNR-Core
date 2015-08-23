@@ -622,7 +622,7 @@ bool DetermineEngineAtLast()
   }
 
   // jichi 8/23/2015: Tamamo
-  if (IthCheckFile(L"sprite.pck") && IthCheckFile(L"image.pck")) {
+  if (IthCheckFile(L"data.pck") && IthCheckFile(L"image.pck") && IthCheckFile(L"script.pck")) {
     //if (IthCheckFile(L"QtGui.dll"))
     InsertTamamoHook();
     return true;
