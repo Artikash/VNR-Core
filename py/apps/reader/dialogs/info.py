@@ -330,8 +330,8 @@ Please click the "Edit Hook Code" button, and delete the criminal hook code.""")
 def renderHookCodeHelp():
   #HCODE_HELP_URL = "https://www.google.com/#hl=en&safe=off&q=ITH%20hook%20code"
   HCODE_SEARCH_URL_1 = "http://agth.wikia.com/wiki/H-codes"
-  HCODE_SEARCH_URL_2 = "http://agthdb.bakastyle.com"
-  HCODE_SEARCH_URL_3 = "http://blgames.proboards.com/post/1984"
+  HCODE_SEARCH_URL_2 = "http://blgames.proboards.com/post/1984"
+  #HCODE_SEARCH_URL_3 = "http://agthdb.bakastyle.com"
   #CHEATENGINE_URL = "http://www.cheatengine.org"
   #CHEATENGINE_HELP_URL = "http://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial"
   #CHEATENGINE_HELP_URL_ZH = "http://user.qzone.qq.com/49755509"
@@ -351,7 +351,6 @@ Here's an example hook code for 「恋と選挙とチョコレート」:
 You can find most game-specific hook code from these places:
 <center><a href="{0}">{0}</a></center>
 <center><a href="{1}">{1}</a></center>
-<center><a href="{2}">{2}</a></center>
 <br/>
 
 Only /H code is supported, and other AGTH parameters are not supported (such as /P).
@@ -365,7 +364,6 @@ Check this wiki for what to do if there is no correct text.
 .format(
   HCODE_SEARCH_URL_1,
   HCODE_SEARCH_URL_2,
-  HCODE_SEARCH_URL_3,
 ))
 
 def renderEmbeddedTextSettingsHelp():

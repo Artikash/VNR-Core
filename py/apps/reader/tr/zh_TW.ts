@@ -3414,7 +3414,6 @@ Here&apos;s an example hook code for 「恋と選挙とチョコレート」:
 You can find most game-specific hook code from these places:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;
 &lt;center&gt;&lt;a href=&quot;{1}&quot;&gt;{1}&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;&lt;a href=&quot;{2}&quot;&gt;{2}&lt;/a&gt;&lt;/center&gt;
 &lt;br/&gt;
 
 Only /H code is supported, and other AGTH parameters are not supported (such as /P).
@@ -3440,7 +3439,6 @@ Check this wiki for what to do if there is no correct text.
 很多以前遊戲的特殊碼都可以在這裡找到：
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;
 &lt;center&gt;&lt;a href=&quot;{1}&quot;&gt;{1}&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;&lt;a href=&quot;{2}&quot;&gt;{2}&lt;/a&gt;&lt;/center&gt;
 &lt;br/&gt;
 
 注：VNR只支援ITH的/H特殊碼，不支援AGTH的/P之類的參數。
