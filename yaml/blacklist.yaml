@@ -45,6 +45,7 @@ processes:
   - 360zip.exe          # 360
   - 7zG.exe             # 7-zip
   - 7zFM.exe            # 7-zip
+  - ADSafe.exe          # ADSafe: http://sakuradite.com/topic/1067
   - agth.exe            # AGTH
   - AlphaROM Cracker Build20121001.exe  # AlphaROM
   - AlphaROMdiE.exe     # AlphaROM
