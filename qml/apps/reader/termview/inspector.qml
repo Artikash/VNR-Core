@@ -141,6 +141,16 @@ Item { id: root_
       ret += "<br/>"
     ret += Sk.tr("Pattern") + ": " + pattern
 
+    ret += "<br/>" + Sk.tr("Priority") + ": "
+    if (currentItem.priority) {
+      if (currentItem.priority > 0)
+        ret += "+"
+      ret += currentItem.priority
+      var sign = currentItem.priority > pattern.length ? "&gt;" : currentItem.priority < pattern.length ? "&lt;" : "="
+      ret += " (" + sign + pattern.length + ")"
+    } else
+      ret += pattern.length
+
     ret += "<br/>" + Sk.tr("Translation") + ": "
     if (!text)
       ret += "(" + Sk.tr("Delete") + ")"

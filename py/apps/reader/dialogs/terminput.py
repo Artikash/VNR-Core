@@ -113,6 +113,13 @@ class _TermInput(object):
     grid.addWidget(self.kanjiEdit, r, 1) # span for two rows
     r += 1
 
+    grid.addWidget(create_label(tr_("Priority")), r, 0)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.priorityEdit)
+    row.addWidget(self.priorityLabel)
+    grid.addLayout(row, r, 1)
+    r += 1
+
     grid.addWidget(create_label(tr_("Translation")), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.textEdit)
@@ -341,6 +348,22 @@ class _TermInput(object):
     return ret
 
   @memoizedproperty
+  def priorityEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setPlaceholderText(my.tr("Estimated pattern size"))
+    ret.setToolTip(my.tr("Estimated number of characters in pattern"))
+    ret.textChanged.connect(self._refreshPriority)
+    ret.textChanged.connect(self._refreshStatus)
+    return ret
+
+  @memoizedproperty
+  def priorityLabel(self):
+    ret = QtWidgets.QLabel()
+    ret.setToolTip(my.tr("Default number of characters in pattern"))
+    skqss.class_(ret, 'text-primary')
+    return ret
+
+  @memoizedproperty
   def kanjiEdit(self):
     ret = QtWidgets.QLineEdit()
     #skqss(ret, 'text-primary')
@@ -426,7 +449,7 @@ class _TermInput(object):
     return ret
 
   def _canSave(self): # -> bool
-    return bool(self.patternEdit.text().strip()) and not self._isUseless() and not self._isIncompleted() and not self._isInvalid() and self._isAllowed()
+    return bool(self.patternEdit.text().strip()) and not self._isUseless() and not self._isIncompleted() and not self._isInvalid() and self._isAllowed() and self._checkPriority()
 
   def _isInvalid(self):
     return not textutil.validate_term_role(self.roleEdit.text().strip())
@@ -484,6 +507,25 @@ class _TermInput(object):
     i = self.contextEdit.currentIndex()
     return dataman.Term.CONTEXTS[i - 1] if i else ''
 
+  def _getPriority(self): # -> float
+    t = self.priorityEdit.text().strip()
+    if t:
+      try: return float(t)
+      except: pass
+    return 0.0
+
+  def _checkPriority(self): # -> bool
+    pass
+    t = self.priorityEdit.text().strip()
+    if t:
+      try:
+        t = float(t)
+        return True
+      except Exception, e:
+        dwarn(e)
+        return False
+    return True
+
   def setType(self, v): # str ->
     try: index = dataman.Term.TYPES.index(v)
     except ValueError:
@@ -511,6 +553,7 @@ class _TermInput(object):
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
+      priority = self._getPriority()
       #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'suffix')
       regex = type != 'proxy' and self.regexButton.isChecked() #and type != 'suffix')
       icase = type not in ('macro', 'proxy') and self.icaseButton.isChecked()
@@ -523,7 +566,7 @@ class _TermInput(object):
           language=lang, sourceLanguage=sourceLang, type=type, host=host, context=context, private=private,
           special=special, regex=regex, phrase=phrase, icase=icase, #syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
-          pattern=pattern, text=text, ruby=ruby, role=role, comment=comment)
+          priority=priority, pattern=pattern, text=text, ruby=ruby, role=role, comment=comment)
 
       self.clear()
       self.q.hide()
@@ -558,6 +601,7 @@ class _TermInput(object):
     self.contextEdit.setEnabled(type in dataman.Term.CONTEXT_TYPES)
 
     self._refreshTypeLabel()
+    self._refreshPriority()
     self._refreshKanji()
     self._refreshYomi()
     self._refreshStatus()
@@ -572,6 +616,9 @@ class _TermInput(object):
     elif self._isIncompleted():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Error"), my.tr("Missing translation or role.")))
+    elif not self._checkPriority():
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s" % (tr_("Error"), my.tr("Specified priority is not a valid number.")))
     elif self._isInvalid():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s ([_a-yA-Y0-9])" % (tr_("Error"), my.tr("Invalid translation role.")))
@@ -610,6 +657,15 @@ class _TermInput(object):
     else:
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
+
+  def _refreshPriority(self):
+    ok = self._checkPriority()
+    skqss.class_(self.priorityEdit, 'text-success' if ok else 'text-error')
+
+    pattern = self.patternEdit.text().strip()
+    v = len(pattern)
+    t = "(%s: %s)" % (tr_("default"), v)
+    self.priorityLabel.setText(t)
 
   def _refreshYomi(self):
     w = self.yomiEdit

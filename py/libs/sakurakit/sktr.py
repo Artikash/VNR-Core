@@ -397,6 +397,7 @@ class sakurakit(QObject):
       self.tr("Preferences"),
       self.tr("Price"),
       self.tr("Primary"), self.tr("primary"),
+      self.tr("Priority"),
       self.tr("Privilege"),
       self.tr("Property"),
       self.tr("Properties"),

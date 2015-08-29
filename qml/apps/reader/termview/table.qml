@@ -886,6 +886,52 @@ Item { id: root_
       }
     }
 
+    // Column: Priority
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Priority")
+      width: 30
+      delegate: Item {
+        height: table_.cellHeight
+        property bool editable: canEdit(itemValue)
+        Text {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          textFormat: Text.PlainText
+          clip: true
+          verticalAlignment: Text.AlignVCenter
+          visible: !itemSelected //|| !editable
+          text: String(itemValue.priority > 0 ? '+' + itemValue.priority : itemValue.priority < 0 ? itemValue.priority : itemValue.pattern.length)
+          color: itemSelected ? 'white' : itemValue.priority ? 'black' : 'darkGray'
+          font.strikeout: !itemSelected && itemValue.disabled
+          font.bold: itemValue.regex //|| itemValue.syntax
+        }
+        TextInput {
+          anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
+          color: 'white'
+          selectByMouse: true
+          selectionColor: 'white'
+          selectedTextColor: 'black'
+          visible: itemSelected //&& editable
+          readOnly: !editable
+          //maximumLength: _MAX_TEXT_LENGTH
+
+          Component.onCompleted: text = String(itemValue.priority)
+
+          onTextChanged: save()
+          onAccepted: save()
+          function save() {
+            if (editable) {
+              var v = +Util.trim(text) || 0
+              if (v != itemValue.priority) {
+                itemValue.priority = v
+                itemValue.updateUserId = root_.userId
+                itemValue.updateTimestamp = Util.currentUnixTime()
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Column: Pattern
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Pattern")
@@ -986,7 +1032,6 @@ Item { id: root_
     }
 
     // Column: Ruby
-
     Desktop.TableColumn {
       role: 'object'; title: My.tr("Ruby")
       width: 50

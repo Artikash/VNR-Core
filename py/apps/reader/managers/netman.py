@@ -1563,6 +1563,9 @@ class _NetworkManager(object):
     elif td.gameMd5:
       params['md5'] = td.gameMd5
 
+    if td.priority:
+      params['priority'] = td.priority
+
     if td.role:
       params['role'] = (td.role
           if len(td.role) <= defs.MAX_TEXT_LENGTH
@@ -1667,6 +1670,14 @@ class _NetworkManager(object):
     for k in 'gameId', 'type', 'host', 'context', 'special', 'private', 'hentai', 'icase', 'regex', 'phrase':
       if k in pty:
         params[k.lower()] = getattr(term, k)
+
+    k = 'priority'
+    if k in pty:
+      v = getattr(td, k)
+      if v:
+        params[k] = v
+      else:
+        params['del' + k.lower()] = True
 
     # Note: actually, there is no 'delpattern'
     for k in 'pattern', 'text', 'ruby', 'role', 'comment', 'updateComment':
