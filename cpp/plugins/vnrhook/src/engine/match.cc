@@ -110,7 +110,7 @@ bool DetermineEngineByFile1()
     InsertKiriKiriHook();
     return true;
   }
-  // 8/2/2014 jichi: Game name shown as 2RM - Adventure Engine
+  // 8/2/2014 jichi: Game name shown as 2RM - Adventure Engine, text also in GetGlyphOutlineA
   if (Util::SearchResourceString(L"2RM") && Util::SearchResourceString(L"Adventure Engine")) {
     Insert2RMHook();
     return true;
@@ -406,10 +406,12 @@ bool DetermineEngineByFile4()
   // - PSetup.exe no longer exists
   // - MovieTexture.dll information shows MovieTex dynamic library, copyright Pensil 2013
   // - ta_trial.exe information shows 2XT - Primula Adventure Engine
-  if (IthCheckFile(L"PSetup.exe") || IthCheckFile(L"MovieTexture.dll") || IthFindFile(L"PENCIL.*") || Util::SearchResourceString(L"2XT -")) {
+  if (IthCheckFile(L"PSetup.exe") || IthFindFile(L"PENCIL.*") || Util::SearchResourceString(L"2XT -")) {
     InsertPensilHook();
     return true;
   }
+  if (IthCheckFile(L"MovieTexture.dll") && InsertPensilHook()) // MovieTexture.dll also exists in 2RM games such as 母子愛2体験版, which is checked first
+    return true;
   return false;
 }
 
@@ -742,6 +744,11 @@ bool DetermineNoEngine()
   // GetGlyphOutlineA already works.
   if (Util::SearchResourceString(L"Chartreux")) {
     ConsoleOutput("vnreng: IGNORE Chartreux");
+    return true;
+  }
+
+  if (IthCheckFile(L"MovieTexture.dll")) {
+    ConsoleOutput("vnreng: IGNORE MovieTexture");
     return true;
   }
 

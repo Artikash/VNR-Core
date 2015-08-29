@@ -725,11 +725,13 @@ utf8:
 
 # List of game engine that allows focus
 focus:
+  - 2RM
   - 5pb1
   - 5pb2
   - 5pb3
   - Adobe Flash 10
   - ARCGameEngine
+  - Artemis
   - BootupA # not for 仏蘭西少女 though
   - BootupW
   - BootupLstrA
