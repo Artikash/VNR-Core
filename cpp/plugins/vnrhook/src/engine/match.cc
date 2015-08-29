@@ -669,6 +669,12 @@ bool DetermineNoEngine()
     return true;
   }
 
+  // 8/29/2015 jichi: minori, text in GetGlyphOutlineA
+  if (IthFindFile(L"*.paz")) {
+    ConsoleOutput("vnreng: IGNORE minori");
+    return true;
+  }
+
   // 7/28/2015 jichi: Favorite games
   if (IthFindFile(L"*.hcb")) {
     ConsoleOutput("vnreng: IGNORE FVP");
