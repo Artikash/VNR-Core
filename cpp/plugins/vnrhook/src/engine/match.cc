@@ -410,8 +410,6 @@ bool DetermineEngineByFile4()
     InsertPensilHook();
     return true;
   }
-  if (IthCheckFile(L"MovieTexture.dll") && InsertPensilHook()) // MovieTexture.dll also exists in 2RM games such as 母子愛2体験版, which is checked first
-    return true;
   return false;
 }
 
@@ -580,6 +578,8 @@ bool DetermineEngineOther()
 // Put the patterns that might break other games at last
 bool DetermineEngineAtLast()
 {
+  if (IthCheckFile(L"MovieTexture.dll") && (InsertPensilHook() || Insert2RMHook())) // MovieTexture.dll also exists in 2RM games such as 母子愛2体験版, which is checked first
+    return true;
   if (IthFindFile(L"system") && IthFindFile(L"system.dat")) { // jichi 7/31/2015
     InsertAbelHook();
     return true;
