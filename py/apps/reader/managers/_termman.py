@@ -195,7 +195,7 @@ def _td_sort_key(td):
   has_symbol = _contains_syntax_symbol(td.pattern) or td.type in ('prefix', 'suffix')
   role_priority = _role_priority(role, td.type, has_symbol)
   lang_priority = _lang_sort_key(td.language, td.sourceLanguage)
-  return (not has_symbol, role_priority, len(td.pattern), td.private, td.special, not td.icase, lang_priority, td.id) #, it.regex)
+  return (not has_symbol, role_priority, td.priority or len(td.pattern), td.private, td.special, not td.icase, lang_priority, td.id) #, it.regex)
 
 def sort_terms(termdata):
   """

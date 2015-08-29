@@ -2497,6 +2497,7 @@ class _Term(object):
     'text',
     'pattern',
     'ruby',
+    'priority',
     'role',
     'comment',
     'updateComment',
@@ -2526,8 +2527,7 @@ class _Term(object):
   #def to(self): return self.language
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, host, context, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, ruby, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
-    #self.priority = 0 # int  assigned after sorting
+      id, gameId, gameMd5, userId, userHash, type, host, context, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, ruby, priority, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase):
     self.init = False           # bool
     self.id = id                # long
     self.gameId = gameId        # long
@@ -2545,6 +2545,7 @@ class _Term(object):
     self.text = text            # unicode
     self.pattern = pattern      # unicode
     self.ruby = ruby            # unicode
+    self.priority = priority    # float
     self.role = role            # unicode
     self.comment = comment      # unicode
     self.updateComment = updateComment  # unicode
@@ -2875,13 +2876,13 @@ class Term(QObject):
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
       type="", host="", context="", language="", sourceLanguage="", timestamp=0, text="",
-      pattern="", ruby="", role="", comment="", updateComment="",
+      pattern="", ruby="", priority=0.0, role="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False, phrase=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, icase=False, #syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, host, context, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, ruby, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase)
+      id, gameId, gameMd5, userId, userHash, type, host, context, language, sourceLanguage, timestamp, updateTimestamp, updateUserId, text, pattern, ruby, priority, role, comment, updateComment, regex, phrase, disabled, deleted, special, private, hentai, icase)
     if init:
       self.init(parent)
 
@@ -2920,7 +2921,7 @@ class Term(QObject):
       phrase=d.phrase,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
-      type=d.type, host=d.host, context=d.context, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern, ruby=d.ruby, role=d.role)
+      type=d.type, host=d.host, context=d.context, language=d.language, sourceLanguage=d.sourceLanguage, text=d.text, pattern=d.pattern, ruby=d.ruby, priority=d.priority, role=d.role)
 
   ## Dirty ##
 
@@ -2958,6 +2959,7 @@ class Term(QObject):
   pattern, patternChanged = __D.synthesize('pattern', unicode, sync=True)
   text, textChanged = __D.synthesize('text', unicode, sync=True)
   ruby, rubyChanged = __D.synthesize('ruby', unicode, sync=True)
+  priority, priorityChanged = __D.synthesize('priority', float, sync=True)
   comment, commentChanged = __D.synthesize('comment', unicode, sync=True)
   updateComment, updateCommentChanged = __D.synthesize('updateComment', unicode, sync=True)
   disabled, disabledChanged = __D.synthesize('disabled', bool, sync=True)
@@ -4991,6 +4993,7 @@ class _TermModel(object):
     'special',
     'gameId',
     'role',
+    'priority',
     'pattern',
     'text',
     'ruby',
@@ -8853,7 +8856,9 @@ class _DataManager(object):
           if path == 3: # grimoire/terms/term
             tag = elem.tag
             text = elem.text
-            if tag in ('language', 'sourceLanguage', 'host', 'context', 'pattern', 'text', 'ruby', 'role', 'comment', 'updateComment'):
+            if tag == 'priority':
+              kw[tag] = float(text)
+            elif tag in ('language', 'sourceLanguage', 'host', 'context', 'pattern', 'text', 'ruby', 'role', 'comment', 'updateComment'):
               kw[tag] = text or ''
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):
