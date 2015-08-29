@@ -16,6 +16,7 @@ public:
     name = "EmbedWaffle";
     matchFiles << "cfg.pak";
     enableDynamicEncoding = true;
+    scenarioLineCapacity = 40;
     //enableDynamicFont = true;
     //newLineString = "\n";
     attachFunction = &Self::attach;
