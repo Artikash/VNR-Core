@@ -352,8 +352,9 @@ class _TermInput(object):
     ret = QtWidgets.QLineEdit()
     ret.setPlaceholderText(my.tr("Estimated pattern size"))
     ret.setToolTip(my.tr("Estimated number of characters in pattern"))
-    ret.textChanged.connect(self._refreshPriority)
-    ret.textChanged.connect(self._refreshStatus)
+    #ret.textChanged.connect(self._refreshPriority)
+    #ret.textChanged.connect(self._refreshStatus)
+    ret.textChanged.connect(self.refresh)
     return ret
 
   @memoizedproperty
