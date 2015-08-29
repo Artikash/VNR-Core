@@ -444,6 +444,24 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1440815402: # This is not really needed though
+      for it in ( # delete all existing references
+          rc.DIR_CACHE_AWS,
+          rc.DIR_CACHE_DMM,
+          rc.DIR_CACHE_GETCHU,
+          rc.DIR_CACHE_GYUTTO,
+          rc.DIR_CACHE_DIGIKET,
+          rc.DIR_CACHE_DLSITE,
+          rc.DIR_CACHE_HOLYSEAL,
+          rc.DIR_CACHE_TRAILERS,
+          rc.DIR_CACHE_SCAPE,
+        ):
+        if os.path.exists(it):
+          skfileio.removetree(it)
+          skfileio.makedirs(it)
+    else:
+      return
+
     if ss_version <= 1436681107: # reset embed name option
       ss.remove('EmbeddedNameText')
       ss.remove('EmbeddedNameVisible')
@@ -520,24 +538,6 @@ def migrate(ss_version): # long ->
 
     if ss_version <= 1422396934:
       ss.setValue('RubyText', True)
-    else:
-      return
-
-    if ss_version <= 1421736204: # This is not really needed though
-      for it in ( # delete all existing references
-          rc.DIR_CACHE_AWS,
-          rc.DIR_CACHE_DMM,
-          rc.DIR_CACHE_GETCHU,
-          rc.DIR_CACHE_GYUTTO,
-          rc.DIR_CACHE_DIGIKET,
-          rc.DIR_CACHE_DLSITE,
-          rc.DIR_CACHE_HOLYSEAL,
-          rc.DIR_CACHE_TRAILERS,
-          rc.DIR_CACHE_SCAPE,
-        ):
-        if os.path.exists(it):
-          skfileio.removetree(it)
-          skfileio.makedirs(it)
     else:
       return
 
