@@ -352,8 +352,9 @@ class _TermInput(object):
     ret = QtWidgets.QLineEdit()
     ret.setPlaceholderText(my.tr("Estimated pattern size"))
     ret.setToolTip(my.tr("Estimated number of characters in pattern"))
-    ret.textChanged.connect(self._refreshPriority)
-    ret.textChanged.connect(self._refreshStatus)
+    #ret.textChanged.connect(self._refreshPriority)
+    #ret.textChanged.connect(self._refreshStatus)
+    ret.textChanged.connect(self.refresh)
     return ret
 
   @memoizedproperty
@@ -554,6 +555,8 @@ class _TermInput(object):
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
       priority = self._getPriority()
+      if priority == len(pattern):
+        priority = 0.0
       #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'suffix')
       regex = type != 'proxy' and self.regexButton.isChecked() #and type != 'suffix')
       icase = type not in ('macro', 'proxy') and self.icaseButton.isChecked()
