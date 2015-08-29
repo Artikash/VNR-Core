@@ -60,6 +60,7 @@ gc:
   - Vanillaware GC
 
 embed:
+  - 2RM
   - ARCGameEngine
   - BGI
   - BGI2
