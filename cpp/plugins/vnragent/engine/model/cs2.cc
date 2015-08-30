@@ -252,6 +252,10 @@ namespace Private {
  *  0525EC38   0053ECDE  RETURN to Hatsumir.0053ECDE from Hatsumir.004970C0
  *  0525EC3C   0525EC80
  *  0525EC40   023D9FB8
+ *
+ *  Alternative ruby hook:
+ *  It will hook to the beginning of the Ruby processing function, which is not better than the current approach.
+ *  http://lab.aralgood.com/index.php?mid=board_lecture&search_target=title_content&search_keyword=CS&document_srl=1993027
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
