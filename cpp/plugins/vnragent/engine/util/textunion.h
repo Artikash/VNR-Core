@@ -6,9 +6,7 @@
 
 #include "engine/engineutil.h"
 
-struct TextUnion {};
-
-struct TextUnionA : TextUnion
+struct TextUnionA
 {
   enum { ShortTextCapacity = 0x10 }; // including \0
 
@@ -52,7 +50,7 @@ struct TextUnionA : TextUnion
   { setLongText(text.constData(), text.size()); }
 };
 
-struct TextUnionW : TextUnion
+struct TextUnionW
 {
   enum { ShortTextCapacity = 8 };
 

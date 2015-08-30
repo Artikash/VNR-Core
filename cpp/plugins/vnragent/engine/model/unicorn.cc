@@ -5,6 +5,7 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
+#include "engine/util/textcache.h"
 #include "hijack/hijackmanager.h"
 #include "util/textutil.h"
 #include "winhook/hookcode.h"
@@ -23,24 +24,7 @@
 namespace { // unnamed
 namespace ScenarioHook {
 
-class TextCache
-{
-  int capacity_;
-  std::list<uint64_t> hashes_;
-public:
-  TextCache() : capacity_(30) {}
-
-  bool contains(uint64_t h) const
-  { return std::find(hashes_.begin(), hashes_.end(), h) != hashes_.end(); }
-
-  void add(uint64_t h)
-  {
-    if (hashes_.size() == capacity_)
-      hashes_.pop_back();
-    hashes_.push_front(h);
-  }
-
-} textCache_;
+TextHashCache textCache_(30); // capacity = 30
 
 namespace Private {
 

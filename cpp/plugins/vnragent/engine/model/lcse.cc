@@ -650,6 +650,11 @@ namespace Private {
  *  Debugging method: Find text in memory, and then insert hardware breakpoint.
  *  It will be accessed only ONCE in the following function.
  *
+ *  This function can also be found by searching the following instruction:
+ *  0040A389   3C 81                                  CMP AL,0x81
+ *
+ *  This function is very similar to that in CatSystem2.
+ *
  *  0040A37E   CC                                     INT3
  *  0040A37F   CC                                     INT3
  *  0040A380   8B4C24 04                              MOV ECX,DWORD PTR SS:[ESP+0x4]

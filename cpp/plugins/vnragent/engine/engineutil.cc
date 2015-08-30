@@ -255,4 +255,55 @@ size_t Engine::countZero(const char *s, size_t limit)
   return count == limit ? 0 : count;
 }
 
+// - Text -
+
+static bool containsNamePunct_(const char *text)
+{
+  static const char *puncts[] = {
+    "\x81\x41" /* 、 */
+    , "\x81\x43" /* ， */
+    , "\x81\x42" /* 。 */
+    //, "\x81\x48" /* ？ */
+    , "\x81\x49" /* ！ */
+    , "\x81\x63" /* … */
+    , "\x81\x64" /* ‥ */
+
+    //, "\x81\x79" /* 【 */
+    //, "\x81\x7a" /* 】 */
+    , "\x81\x75" /* 「 */
+    , "\x81\x76" /* 」 */
+    , "\x81\x77" /* 『 */
+    , "\x81\x78" /* 』 */
+    //, "\x81\x69" /* （ */
+    //, "\x81\x6a" /* ） */
+    //, "\x81\x6f" /* ｛ */
+    //, "\x81\x70" /* ｝ */
+    //, "\x81\x71" /* 〈 */
+    //, "\x81\x72" /* 〉 */
+    , "\x81\x6d" /* ［ */
+    , "\x81\x6e" /* ］ */
+    //, "\x81\x83", /* ＜ */
+    //, "\x81\x84", /* ＞ */
+    , "\x81\x65" /* ‘ */
+    , "\x81\x66" /* ’ */
+    , "\x81\x67" /* “ */
+    , "\x81\x68" /* ” */
+  };
+  for (size_t i = 0; i < sizeof(puncts)/sizeof(*puncts); i++)
+    if (::strstr(text, puncts[i]))
+      return true;
+
+  if (::strstr(text, "\x81\x48") /* ？ */
+      && !::strstr(text, "\x81\x48\x81\x48\x81\x48")) /* ？？？ */
+    return true;
+  return false;
+}
+bool Engine::guessIsNameText(const char *text, size_t size)
+{
+  enum { MaximumNameSize = 0x10 };
+  if (!size)
+    size = ::strlen(text);
+  return size < MaximumNameSize && !containsNamePunct_(text);
+}
+
 // EOF

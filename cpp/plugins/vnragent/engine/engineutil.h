@@ -38,6 +38,9 @@ template <typename charT>
 inline size_t getTextLength(const charT *s, size_t capacity = MaxTextSize)
 { return cpp_basic_strnlen(s, capacity); }
 
+// Return if the text might be a name
+bool guessIsNameText(const char *text, size_t size = 0);
+
 // File system
 bool globs(const QString &relpath);
 bool exists(const QString &relPath);
