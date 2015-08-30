@@ -25,3 +25,41 @@ bool Util::allHangul(const wchar_t *s)
 }
 
 // EOF
+
+#if 0
+
+bool Util::containsWidePunct(const char *text)
+{
+  static const char *puncts[] = {
+    "\x81\x41" /* 、 */
+    , "\x81\x43" /* ， */
+    , "\x81\x42" /* 。 */
+    , "\x81\x48" /* ？ */
+    , "\x81\x49" /* ！ */
+    , "\x81\x63" /* … */
+    , "\x81\x64" /* ‥ */
+
+    , "\x81\x79" /* 【 */
+    , "\x81\x7a" /* 】 */
+    , "\x81\x75" /* 「 */
+    , "\x81\x76" /* 」 */
+    , "\x81\x77" /* 『 */
+    , "\x81\x78" /* 』 */
+    , "\x81\x69" /* （ */
+    , "\x81\x6a" /* ） */
+    , "\x81\x6f" /* ｛ */
+    , "\x81\x70" /* ｝ */
+    , "\x81\x71" /* 〈 */
+    , "\x81\x72" /* 〉 */
+    , "\x81\x6d" /* ［ */
+    , "\x81\x6e" /* ］ */
+    , "\x81\x83" /* ＜ */
+    , "\x81\x84" /* ＞ */
+  };
+  for (size_t i = 0; i < sizeof(puncts)/sizeof(*puncts); i++)
+    if (::strstr(text, puncts[i]))
+      return true;
+  return false;
+}
+
+#endif // 0

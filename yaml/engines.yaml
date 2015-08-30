@@ -64,8 +64,8 @@ embed:
   - ARCGameEngine
   - BGI
   - BGI2
-  #- CatSystem2
-  #- CatSystem3
+  - CatSystem2
+  - CatSystem3
   - CMVS
   - CMVS2
   - Debonosu
@@ -462,6 +462,7 @@ char:
   # Embed
   - EmbedARCGameEngine
   - EmbedBGI
+  - EmbedCatSystem2
   - EmbedCircus
   - EmbedCMVS
   - EmbedDebonosu
@@ -748,6 +749,7 @@ focus:
   - DebonosuName
   - EAGLS
   - EmbedARCGameEngine
+  - EmbedCatSystem2
   - EmbedCircus
   - EmbedCMVS
   - EmbedDebonosu

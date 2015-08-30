@@ -581,4 +581,5 @@ QString MinoriEngine::rubyRemove(const QString &text)
     rx.setMinimal(true);
   return QString(text).remove(rx);
 }
+
 // EOF

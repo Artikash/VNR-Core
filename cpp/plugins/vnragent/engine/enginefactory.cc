@@ -12,6 +12,7 @@
 #include "engine/model/circus.h"
 #include "engine/model/cmvs.h"
 #include "engine/model/cotopha.h"
+#include "engine/model/cs2.h"
 #include "engine/model/debonosu.h"
 #include "engine/model/elf.h"
 #include "engine/model/escude.h"
@@ -83,6 +84,7 @@ EngineController *EngineFactory::createEngine()
     , new CotophaEngine
     , new CMVSEngine
     , new CircusEngine
+    , new CatSystemEngine
     , new BGIEngine
     , new ARCGameEngine
   };

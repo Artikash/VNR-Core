@@ -5,41 +5,428 @@
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "engine/engineutil.h"
+#include "engine/util/textcache.h"
 #include "hijack/hijackmanager.h"
 #include "util/textutil.h"
+#include "dyncodec/dynsjis.h"
 #include "winhook/hookcode.h"
+#include "winhook/hookfun.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
+#include <cstdint>
+#include <vector>
 
 #define DEBUG "model/cs2"
 #include "sakurakit/skdebug.h"
 
 namespace { // unnamed
-
 /**
+ *  Sample game: ゆきこいめると
+ *
  *  Example prefix to skip:
  *  03751294  81 40 5C 70 63 81 75 83 7B 83 4E 82 CC 8E AF 82  　\pc「ボクの識・
+ *
+ *  033CF370  5C 6E 81 40 5C 70 63 8C 4A 82 E8 95 D4 82 BB 82  \n　\pc繰り返そ・
+ *  033CF380  A4 81 41 96 7B 93 96 82 C9 81 41 82 B1 82 CC 8B  ､、本当に、この・
+ *  033CF390  47 90 DF 82 CD 81 41 83 8D 83 4E 82 C8 82 B1 82  G節は、ロクなこ・
+ *  033CF3A0  C6 82 AA 82 C8 82 A2 81 42 00 AA 82 C8 82 A2 81  ﾆがない。.ｪない・
+ *  033CF3B0  42 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  B...............
+ *  033CF3C0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  033CF3D0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  033CF3E0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  033CF3F0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  033CF400  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *
+ *  Sample choice texts:
+ *
+ *  str 155 選択肢
+ *
+ *  0 op01 最初から始める
+ *
+ *  1 select_go_tar たるひ初キスシーンを見る
  */
 template <typename strT>
 strT ltrim(strT text)
 {
-  if (text && *text) {
-    strT lastText = nullptr;
-    while (lastText != text) {
-      lastText = text;
-      if (text[0] == 0x20)
+  strT lastText = nullptr;
+  while (*text && text != lastText) {
+    lastText = text;
+    if (text[0] == 0x20)
+      text++;
+    if ((uchar)text[0] == 0x81 && (uchar)text[1] == 0x40) // skip space \u3000 (0x8140 in sjis)
+      text += 2;
+    if (text[0] == '\\') {
+      text++;
+      while (::islower(text[0]) || text[0] == '@')
         text++;
-      if (text[0] == 0x81 && text[1] == 0x40) // skip space \u3000 (0x8140 in sjis)
-        text += 2;
-      if (text[0] == '\\') {
-        text++;
-        while (::islower(text[0]))
-          text++;
-      }
     }
   }
+  while ((signed char)text[0] > 0 && text[0] != '[') // skip all leading ascii characters except "[" needed for ruby
+    text++;
   return text;
 }
+
+// Remove trailing '\@'
+size_t rtrim(LPCSTR text)
+{
+  size_t size = ::strlen(text);
+  while (size >= 2 && text[size - 2] == '\\' && (uchar)text[size - 1] <= 127)
+    size -= 2;
+  return size;
+}
+
+namespace ScenarioHook {
+namespace Private {
+
+  bool isOtherText(LPCSTR text)
+  {
+    /* Sample game: ゆきこいめると */
+    return ::strcmp(text, "\x91\x49\x91\xf0\x8e\x88") == 0; /* 選択肢 */
+  }
+
+  /**
+   *  Sample game: 果つることなき未来ヨリ
+   *
+   *  Sample ecx:
+   *
+   *  03283A88    24 00 CD 02 76 16 02 00 24 00 CD 02 58 00 CD 02  $.ﾍv.$.ﾍX.ﾍ
+   *  03283A98    BD 2D 01 00 1C 1C 49 03 14 65 06 00 14 65 06 00  ｽ-.Ie.e.
+   *                                      this is ID,  this is the same ID: 0x066514
+   *  03283AA8    80 64 06 00 20 8C 06 00 24 00 6C 0D 00 00 10 00  d. ・.$.l....
+   *              this is ID: 0x066480
+   *  03283AB8    C8 F1 C2 00 21 00 00 00 48 A9 75 00 E8 A9 96 00  ﾈ.!...Hｩu.隧・
+   *  03283AC8    00 00 00 00 48 80 4F 03 00 00 00 00 CC CC CC CC  ....HO....ﾌﾌﾌﾌ
+   *  03283AD8    CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC  ﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌﾌ
+   */
+  //struct ClassArgument // for ecx
+  //{
+  //  DWORD unknown[7],
+  //        split1,   // 0x20 - 9
+  //        split2;   // 0x20
+  //  // split1 - split2 is always 0x94
+  //  DWORD split() const { return split1 - split2; } //
+  //};
+  bool hookBefore(winhook::hook_stack *s)
+  {
+    //static std::unordered_set<uint64_t> hashes_;
+    auto text = (LPSTR)s->eax; // arg1
+    if (!text || !*text || Util::allAscii(text))
+      return true;
+    // Alternatively, if do not skip ascii chars, edx is always 0x4ef74 for Japanese texts
+    //if (s->edx != 0x4ef74)
+    //  return true;
+    auto trimmedText = ltrim(text);
+    if (!trimmedText || !*trimmedText)
+      return true;
+    size_t trimmedSize = rtrim(trimmedText);
+    auto role = Engine::OtherRole;
+    //DOUT(QString::fromLocal8Bit((LPCSTR)s->esi));
+    //auto splitText = (LPCSTR)s->esi;
+    //if (::strcmp(splitText, "MES_SETNAME")) // This is for scenario text with voice
+    //if (::strcmp(splitText, "MES_SETFACE"))
+    //if (::strcmp(splitText, "pcm")) // first scenario or history without text
+    //  return true;
+    //auto retaddr = s->stack[1]; // caller
+    //auto retaddr = s->stack[13]; // parent caller
+    //auto split = *(DWORD *)s->esi;
+    //auto split = s->esi - s->eax;
+    //DOUT(split);
+    //auto self = (ClassArgument *)s->ecx;
+    //auto split = self->split();
+    //enum { sig = 0 };
+    auto groupId = *(DWORD *)(s->ecx + 0x20); // CHECKPOINT: use this split as session ID
+    {
+      static ulong minimumGroupId_ = -1; // I assume scenario thread to have minimum groupId
+      static TextHashCache cache_(3); // capacity = 3
+      //if (session_.addText(groupId, Engine::hashCharArray(text))) {
+      if (groupId <= minimumGroupId_) {
+        minimumGroupId_ = groupId;
+        uint64_t h = Engine::hashCharArray(text);
+        if (!cache_.contains(h)) {
+          cache_.add(h);
+          role = Engine::ScenarioRole;
+          if (isOtherText(text))
+            role = Engine::OtherRole;
+          else if (::isdigit(text[0]))
+            role = Engine::ChoiceRole;
+          else if (trimmedText == text && !trimmedText[trimmedSize] // no prefix and suffix
+                   && Engine::guessIsNameText(trimmedText, trimmedSize))
+            role = Engine::NameRole;
+        }
+      }
+    }
+    auto sig = Engine::hashThreadSignature(role, groupId);
+    QByteArray oldData(trimmedText, trimmedSize),
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    if (newData == oldData)
+      return true;
+    if (trimmedText[trimmedSize])
+      newData.append(trimmedText + trimmedSize);
+    ::strcpy(trimmedText, newData.constData());
+    return true;
+  }
+} // namespace Private
+
+/**
+ *  Sample game: 果つることなき未来ヨリ
+ *
+ *  Debugging message:
+ *  - Hook to GetGlyphOutlineA
+ *  - Find "MES_SHOW" address on the stack
+ *  - Use hardware breakpoint to find out when "MES_SHOW" is overridden
+ *
+ *  00503ADE   CC               INT3
+ *  00503ADF   CC               INT3
+ *  00503AE0   8B4424 0C        MOV EAX,DWORD PTR SS:[ESP+0xC]
+ *  00503AE4   8B4C24 04        MOV ECX,DWORD PTR SS:[ESP+0x4]
+ *  00503AE8   56               PUSH ESI
+ *  00503AE9   FF30             PUSH DWORD PTR DS:[EAX]
+ *  00503AEB   E8 102F1600      CALL Hatsumir.00666A00	; jichi: text in eax after this call
+ *  00503AF0   BE 18058900      MOV ESI,Hatsumir.00890518                ; ASCII "fes.int/flow.fes"
+ *  00503AF5   8BC8             MOV ECX,EAX ; jichi: esi is the target location
+ *  00503AF7   2BF0             SUB ESI,EAX
+ *  00503AF9   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  00503B00   8A11             MOV DL,BYTE PTR DS:[ECX]
+ *  00503B02   8D49 01          LEA ECX,DWORD PTR DS:[ECX+0x1]
+ *  00503B05   88540E FF        MOV BYTE PTR DS:[ESI+ECX-0x1],DL    ; jichi: target location modified here
+ *  00503B09   84D2             TEST DL,DL
+ *  00503B0B  ^75 F3            JNZ SHORT Hatsumir.00503B00
+ *  00503B0D   8B4C24 0C        MOV ECX,DWORD PTR SS:[ESP+0xC]
+ *  00503B11   50               PUSH EAX
+ *  00503B12   68 18058900      PUSH Hatsumir.00890518                   ; ASCII "fes.int/flow.fes"
+ *  00503B17   8B89 B4000000    MOV ECX,DWORD PTR DS:[ECX+0xB4]
+ *  00503B1D   E8 EE030B00      CALL Hatsumir.005B3F10
+ *  00503B22   B8 02000000      MOV EAX,0x2
+ *  00503B27   5E               POP ESI
+ *  00503B28   C2 1000          RETN 0x10
+ *  00503B2B   CC               INT3
+ *  00503B2C   CC               INT3
+ *  00503B2D   CC               INT3
+ *  00503B2E   CC               INT3
+ *
+ *  EAX 0353B1A0    ; jichi: text here
+ *  ECX 00D86D08
+ *  EDX 0004EF74
+ *  EBX 00012DB2
+ *  ESP 0525EBAC
+ *  EBP 0525ED6C
+ *  ESI 00D86D08
+ *  EDI 00000000
+ *  EIP 00503AF0 Hatsumir.00503AF0
+ *
+ *  0525EBAC   00D86D08
+ *  0525EBB0   0066998E  RETURN to Hatsumir.0066998E
+ *  0525EBB4   00D86D08
+ *  0525EBB8   00B16188
+ *  0525EBBC   035527D8
+ *  0525EBC0   0525EBE4
+ *  0525EBC4   00B16188
+ *  0525EBC8   00D86D08
+ *  0525EBCC   0525F62B  ASCII "ript.kcs"
+ *  0525EBD0   00000004
+ *  0525EBD4   00000116
+ *  0525EBD8   00000003
+ *  0525EBDC   00000003
+ *  0525EBE0   00665C08  RETURN to Hatsumir.00665C08
+ *  0525EBE4   CCCCCCCC
+ *  0525EBE8   0525F620  ASCII "kcs.int/sscript.kcs"
+ *  0525EBEC   00694D94  Hatsumir.00694D94
+ *  0525EBF0   004B278F  RETURN to Hatsumir.004B278F from Hatsumir.00666CA0
+ *  0525EBF4   B3307379
+ *  0525EBF8   0525ED04
+ *  0525EBFC   00B16188
+ *  0525EC00   0525ED04
+ *  0525EC04   00B16188
+ *  0525EC08   00CC5440
+ *  0525EC0C   02368938
+ *  0525EC10   0069448C  ASCII "%s/%s"
+ *  0525EC14   00B45B18  ASCII "kcs.int"
+ *  0525EC18   00000001
+ *  0525EC1C   023741E0
+ *  0525EC20   0000000A
+ *  0525EC24   0049DBB3  RETURN to Hatsumir.0049DBB3 from Hatsumir.00605A84
+ *  0525EC28   72637373
+ *  0525EC2C   2E747069
+ *  0525EC30   0073636B  Hatsumir.0073636B
+ *  0525EC34   0525ED04
+ *  0525EC38   0053ECDE  RETURN to Hatsumir.0053ECDE from Hatsumir.004970C0
+ *  0525EC3C   0525EC80
+ *  0525EC40   023D9FB8
+ */
+bool attach(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x8b,0x44,0x24, 0x0c,   // 00503ae0   8b4424 0c        mov eax,dword ptr ss:[esp+0xc]
+    0x8b,0x4c,0x24, 0x04,   // 00503ae4   8b4c24 04        mov ecx,dword ptr ss:[esp+0x4]
+    0x56,                   // 00503ae8   56               push esi
+    0xff,0x30,              // 00503ae9   ff30             push dword ptr ds:[eax]
+    0xe8 //, XX4,           // 00503aeb   e8 102f1600      call hatsumir.00666a00	; jichi: text in eax after this call
+    //0xbe  //18058900      // 00503af0   be 18058900      mov esi,hatsumir.00890518
+  };
+  enum { addr_offset = sizeof(bytes) - 1 };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  return addr && winhook::hook_after(addr + addr_offset, Private::hookBefore);
+}
+
+} // namespace ScenarioHook
+
+namespace Patch {
+
+namespace Private {
+  bool isLeadByteChar(const char *s)
+  {
+    return dynsjis::isleadstr(s);
+    //return ::IsDBCSLeadByte(HIBYTE(testChar));
+  }
+
+} // namespace Private
+
+/**
+ *  Sample game: ゆきこいめると
+ *
+ *  This function is found by searching the following instruction:
+ *  00511C8E   3C 81            CMP AL,0x81
+ *
+ *  This function is very similar to that in LC-ScriptEngine.
+ *
+ *  Return 1 if the first byte in arg1 is leading byte else 0.
+ *
+ *  00511C7C   CC               INT3
+ *  00511C7D   CC               INT3
+ *  00511C7E   CC               INT3
+ *  00511C7F   CC               INT3
+ *  00511C80   8B4C24 04        MOV ECX,DWORD PTR SS:[ESP+0x4]
+ *  00511C84   85C9             TEST ECX,ECX
+ *  00511C86   74 2F            JE SHORT .00511CB7
+ *  00511C88   8A01             MOV AL,BYTE PTR DS:[ECX]
+ *  00511C8A   84C0             TEST AL,AL
+ *  00511C8C   74 29            JE SHORT .00511CB7
+ *  00511C8E   3C 81            CMP AL,0x81
+ *  00511C90   72 04            JB SHORT .00511C96
+ *  00511C92   3C 9F            CMP AL,0x9F
+ *  00511C94   76 08            JBE SHORT .00511C9E
+ *  00511C96   3C E0            CMP AL,0xE0
+ *  00511C98   72 1D            JB SHORT .00511CB7
+ *  00511C9A   3C EF            CMP AL,0xEF
+ *  00511C9C   77 19            JA SHORT .00511CB7
+ *  00511C9E   8A41 01          MOV AL,BYTE PTR DS:[ECX+0x1]
+ *  00511CA1   3C 40            CMP AL,0x40
+ *  00511CA3   72 04            JB SHORT .00511CA9
+ *  00511CA5   3C 7E            CMP AL,0x7E
+ *  00511CA7   76 08            JBE SHORT .00511CB1
+ *  00511CA9   3C 80            CMP AL,0x80
+ *  00511CAB   72 0A            JB SHORT .00511CB7
+ *  00511CAD   3C FC            CMP AL,0xFC
+ *  00511CAF   77 06            JA SHORT .00511CB7
+ *  00511CB1   B8 01000000      MOV EAX,0x1
+ *  00511CB6   C3               RETN
+ *  00511CB7   33C0             XOR EAX,EAX
+ *  00511CB9   C3               RETN
+ *  00511CBA   CC               INT3
+ *  00511CBB   CC               INT3
+ *  00511CBC   CC               INT3
+ *  00511CBD   CC               INT3
+ */
+
+bool patchEncoding(ulong startAddress, ulong stopAddress)
+{
+  const uint8_t bytes[] = {
+    0x74, 0x29,     // 00511c8c   74 29            je short .00511cb7
+    0x3c, 0x81      // 00511c8e   3c 81            cmp al,0x81
+  };
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
+    return false;
+  addr = MemDbg::findEnclosingAlignedFunction(addr);
+  if (!addr)
+    return false;
+  return winhook::replace_fun(addr, (ulong)Private::isLeadByteChar);
+}
+
+} // namespace Patch
+} // unnamed namespace
+
+bool CatSystemEngine::attach()
+{
+  ulong startAddress, stopAddress;
+  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
+    return false;
+  if (!ScenarioHook::attach(startAddress, stopAddress))
+    return false;
+  if (Patch::patchEncoding(startAddress, stopAddress)) {
+    enableDynamicEncoding = true;
+    DOUT("patch encoding succeeded");
+  } else
+    DOUT("patch encoding FAILED");
+  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
+  return true;
+}
+
+/**
+ *  Sample text:
+ *
+ *  0606DA2C  5B 8F E3 83 96 90 A3 2F 82 A9 82 DD 82 AA 82 B9  [上ヶ瀬/かみがせ
+ *  0606DA3C  5D 8E 73 8A 58 82 A9 82 E7 83 6F 83 58 82 C5 97  ]市街からバスで・
+ *  0606DA4C  68 82 E7 82 EA 82 E9 82 B1 82 C6 82 52 82 4F 95  hられること３０・
+ *  0606DA5C  AA 81 42 91 E5 82 AB 82 C8 8B B4 82 F0 89 7A 82  ｪ。大きな橋を越・
+ *  0606DA6C  A6 82 C4 81 41 8B DF 91 E3 93 49 82 C8 83 72 83  ｦて、近代的なビ・
+ *  0606DA7C  8B 82 AA 8C 9A 82 BF 95 C0 82 D4 8D C5 90 56 89  汲ｪ建ち並ぶ最新・
+ *  0606DA8C  73 82 CC 8A 58 81 41 82 BB 82 B5 82 C4 82 BB 82  sの街、そしてそ・
+ *  0606DA9C  CC 92 86 90 53 82 C6 82 C8 82 E9 8A 77 89 80 81  ﾌ中心となる学園・
+ *  0606DAAC  63 81 63 81 42 00 06 06 94 65 ED 76 38 01 31 00  c…。.覇咩81.
+ *  0606DABC  70 65 ED 76 A5 2B A2 70 00 00 00 00 00 00 31 00  pe咩･+｢p......1.
+ *  0606DACC  48 89 2D 10 10 8D 28 10 00 00 00 00 07 00 00 07  H・・......
+ */
+QString CatSystemEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = "[%1/%2]";
+  return fmt.arg(rb, rt);
+}
+
+// Remove furigana in scenario thread.
+QString CatSystemEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains(']'))
+    return text;
+  static QRegExp rx("\\[(.+)/.+\\]");
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
+}
+
+// EOF
+
+#if 0
+
+  class TextSession
+  {
+    ulong sessionId_;
+    bool sessionActive_;
+    std::vector<uint64_t> hashes_;
+  public:
+    TextSession() : sessionId_(0), sessionActive_(false) {}
+    bool addText(ulong sessionId, uint64_t hash); // Return if it is new text
+  };
+
+  bool TextSession::addText(ulong sessionId, uint64_t hash) // Return if it is new text
+  {
+    bool hashExists = std::find(hashes_.begin(), hashes_.end(), hash) != hashes_.end();
+    if (sessionActive_ && sessionId == sessionId_) {
+      if (!hashExists)
+        hashes_.push_back(hash);
+      return true;
+    } else if (hashExists) {
+      sessionActive_ = false;
+      return false;
+    } else {
+      hashes_.clear();
+      sessionId_ = sessionId;
+      sessionActive_ = true;
+      hashes_.push_back(hash);
+      return true;
+    }
+  }
+
 
 namespace ScenarioHook {
 namespace Private {
@@ -95,7 +482,7 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0x56,                 // 00402650   56               push esi
     0x8b,0x74,0x24, 0x08, // 00402651   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
     0x8b,0xc6,            // 00402655   8bc6             mov eax,esi
@@ -611,7 +998,7 @@ namespace Private {
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0x74, 0x0c,                 // 00508770   74 0c            je short .0050877e  ; jichi: pattern found here
     0xb8, 0x6e,0x5c,0x00,0x00   // 00508772   b8 6e5c0000      mov eax,0x5c6e
   };
@@ -627,25 +1014,6 @@ bool attach(ulong startAddress, ulong stopAddress)
 } // namespace HistoryHook
 } // unnamed namespace
 
-bool CatSystem2Engine::attach()
-{
-  ulong startAddress, stopAddress;
-  if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
-    return false;
-  if (!ScenarioHook::attach(startAddress, stopAddress))
-    return false;
-  if (HistoryHook::attach(startAddress, stopAddress))
-    DOUT("history text found");
-  else
-    DOUT("history text NOT FOUND");
-  HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineA);
-  HijackManager::instance()->attachFunction((ulong)::MultiByteToWideChar);
-  return true;
-}
-
-// EOF
-
-#if 0
 
 namespace HistoryHook {
 namespace Private {
@@ -788,7 +1156,7 @@ bool attach()
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  const quint8 bytes[] = {
+  const uint8_t bytes[] = {
     0xff,0x46, 0x14,        // 005b521d   ff46 14          inc dword ptr ds:[esi+0x14]
     0x83,0x46, 0x08, 0x02,  // 005b5220   8346 08 02       add dword ptr ds:[esi+0x8],0x2
     0x8b,0x54,0x24, 0x14,   // 005b5224   8b5424 14        mov edx,dword ptr ss:[esp+0x14]

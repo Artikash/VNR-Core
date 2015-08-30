@@ -10,6 +10,10 @@
   #encoding: sjis
   #vnrlocale: true # not implemented
 
+- name: EmbedCatSystem2 # 6/21/2015 jichi
+  exist: "*.int"
+  #encoding: sjis
+
 - name: EmbedCircus  # 6/5/2014  CIRCUS2
   exist: AdvData/GRP/NAMES.DAT
   #exist: AdvData/DAT/NAMES.DAT
@@ -175,10 +179,6 @@
 #- name: EmbedYukaSystem # 7/19/2015
 #  exist: "*.ykc"
 #  #encoding: utf8
-
-#- name: EmbedCatSystem2 # 6/21/2015 jichi
-#  exist: "*.int"
-#  #encoding: sjis
 
 #- name: EmbedSystemC  # 6/5/2014  CIRCUS2
 #  exist: "*.fpk|data/*.fpk" #"!SystemC.exe"

@@ -78,6 +78,7 @@ HEADERS += \
   engine/enginemodel.h \
   engine/enginesettings.h \
   engine/engineutil.h \
+  engine/util/textcache.h \
   engine/util/textunion.h \
   hijack/hijackdriver.h \
   hijack/hijackfuns.h \
@@ -139,6 +140,7 @@ HEADERS += \
   engine/model/circus.h \
   engine/model/cmvs.h \
   engine/model/cotopha.h \
+  engine/model/cs2.h \
   engine/model/debonosu.h \
   engine/model/elf.h \
   engine/model/escude.h \
@@ -166,7 +168,6 @@ HEADERS += \
   engine/model/waffle.h \
   engine/model/will.h \
   engine/model/wolf.h
-  #engine/model/cs2.h
   #engine/model/systemc.h
   #engine/model/horkeye.h
   #engine/model/majiro.h
@@ -182,6 +183,7 @@ SOURCES += \
   engine/model/circus.cc \
   engine/model/cmvs.cc \
   engine/model/cotopha.cc \
+  engine/model/cs2.cc \
   engine/model/debonosu.cc \
   engine/model/elf.cc \
   engine/model/escude.cc \
@@ -211,7 +213,6 @@ SOURCES += \
   engine/model/waffle.cc \
   engine/model/will.cc \
   engine/model/wolf.cc
-  #engine/model/cs2.cc
   #engine/model/systemc.cc
   #engine/model/horkeye.cc
   #engine/model/majiro.cc
