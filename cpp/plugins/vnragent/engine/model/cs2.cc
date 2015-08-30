@@ -173,7 +173,9 @@ namespace Private {
  *  Debugging message:
  *  - Hook to GetGlyphOutlineA
  *  - Find "MES_SHOW" address on the stack
+ *    Alternatively, find the address of "fes.int/flow.fes" immediately after the game is launched
  *  - Use hardware breakpoint to find out when "MES_SHOW" is overridden
+ *    Only stop when text is written by valid scenario text.
  *
  *  00503ADE   CC               INT3
  *  00503ADF   CC               INT3
@@ -256,20 +258,54 @@ namespace Private {
  *  Alternative ruby hook:
  *  It will hook to the beginning of the Ruby processing function, which is not better than the current approach.
  *  http://lab.aralgood.com/index.php?mid=board_lecture&search_target=title_content&search_keyword=CS&document_srl=1993027
+ *
+ *  Sample game: Grisaia3 グリザイアの楽園
+ *
+ *  004B00CB   CC               INT3
+ *  004B00CC   CC               INT3
+ *  004B00CD   CC               INT3
+ *  004B00CE   CC               INT3
+ *  004B00CF   CC               INT3
+ *  004B00D0   8B4424 0C        MOV EAX,DWORD PTR SS:[ESP+0xC]
+ *  004B00D4   8B08             MOV ECX,DWORD PTR DS:[EAX]
+ *  004B00D6   56               PUSH ESI
+ *  004B00D7   51               PUSH ECX
+ *  004B00D8   8B4C24 0C        MOV ECX,DWORD PTR SS:[ESP+0xC]
+ *  004B00DC   E8 7F191300      CALL .005E1A60
+ *  004B00E1   BE D0E87B00      MOV ESI,.007BE8D0
+ *  004B00E6   8BC8             MOV ECX,EAX
+ *  004B00E8   2BF0             SUB ESI,EAX
+ *  004B00EA   8D9B 00000000    LEA EBX,DWORD PTR DS:[EBX]
+ *  004B00F0   8A11             MOV DL,BYTE PTR DS:[ECX]
+ *  004B00F2   88140E           MOV BYTE PTR DS:[ESI+ECX],DL
+ *  004B00F5   41               INC ECX
+ *  004B00F6   84D2             TEST DL,DL
+ *  004B00F8  ^75 F6            JNZ SHORT .004B00F0
+ *  004B00FA   8B5424 0C        MOV EDX,DWORD PTR SS:[ESP+0xC]
+ *  004B00FE   8B8A B4000000    MOV ECX,DWORD PTR DS:[EDX+0xB4]
+ *  004B0104   50               PUSH EAX
+ *  004B0105   68 D0E87B00      PUSH .007BE8D0
+ *  004B010A   E8 818D0600      CALL .00518E90
+ *  004B010F   B8 02000000      MOV EAX,0x2
+ *  004B0114   5E               POP ESI
+ *  004B0115   C2 1000          RETN 0x10
+ *  004B0118   CC               INT3
+ *  004B0119   CC               INT3
+ *  004B011A   CC               INT3
+ *  004B011B   CC               INT3
+ *  004B011C   CC               INT3
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
   const uint8_t bytes[] = {
-    0x8b,0x44,0x24, 0x0c,   // 00503ae0   8b4424 0c        mov eax,dword ptr ss:[esp+0xc]
-    0x8b,0x4c,0x24, 0x04,   // 00503ae4   8b4c24 04        mov ecx,dword ptr ss:[esp+0x4]
-    0x56,                   // 00503ae8   56               push esi
-    0xff,0x30,              // 00503ae9   ff30             push dword ptr ds:[eax]
-    0xe8 //, XX4,           // 00503aeb   e8 102f1600      call hatsumir.00666a00	; jichi: text in eax after this call
-    //0xbe  //18058900      // 00503af0   be 18058900      mov esi,hatsumir.00890518
+    0xe8, XX4,              // 004b00dc   e8 7f191300      call .005e1a60 ; jichi: hook after here
+    0xbe, XX4,              // 004b00e1   be d0e87b00      mov esi,.007be8d0
+    0x8b,0xc8,              // 004b00e6   8bc8             mov ecx,eax
+    0x2b,0xf0               // 004b00e8   2bf0             sub esi,eax
+    //XX2, XX, 0x00,0x00,0x00 // 004b00ea   8d9b 00000000    lea ebx,dword ptr ds:[ebx]
   };
-  enum { addr_offset = sizeof(bytes) - 1 };
-  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
-  return addr && winhook::hook_after(addr + addr_offset, Private::hookBefore);
+  ulong addr = MemDbg::matchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  return addr && winhook::hook_after(addr, Private::hookBefore);
 }
 
 } // namespace ScenarioHook
@@ -279,7 +315,8 @@ namespace Patch {
 namespace Private {
   bool isLeadByteChar(const char *s)
   {
-    return dynsjis::isleadstr(s);
+    return s && dynsjis::isleadchar(*s);
+    //return dynsjis::isleadstr(s); // no idea why this will cause Grisaia3 to hang
     //return ::IsDBCSLeadByte(HIBYTE(testChar));
   }
 
@@ -330,6 +367,40 @@ namespace Private {
  *  00511CBB   CC               INT3
  *  00511CBC   CC               INT3
  *  00511CBD   CC               INT3
+ *
+ *  Sample game: Grisaia3 グリザイアの楽園
+ *  0050747F   CC               INT3
+ *  00507480   8B4C24 04        MOV ECX,DWORD PTR SS:[ESP+0x4]
+ *  00507484   85C9             TEST ECX,ECX
+ *  00507486   74 2F            JE SHORT .005074B7
+ *  00507488   8A01             MOV AL,BYTE PTR DS:[ECX]
+ *  0050748A   84C0             TEST AL,AL
+ *  0050748C   74 29            JE SHORT .005074B7
+ *  0050748E   3C 81            CMP AL,0x81
+ *  00507490   72 04            JB SHORT .00507496
+ *  00507492   3C 9F            CMP AL,0x9F
+ *  00507494   76 08            JBE SHORT .0050749E
+ *  00507496   3C E0            CMP AL,0xE0
+ *  00507498   72 1D            JB SHORT .005074B7
+ *  0050749A   3C EF            CMP AL,0xEF
+ *  0050749C   77 19            JA SHORT .005074B7
+ *  0050749E   8A41 01          MOV AL,BYTE PTR DS:[ECX+0x1]
+ *  005074A1   3C 40            CMP AL,0x40
+ *  005074A3   72 04            JB SHORT .005074A9
+ *  005074A5   3C 7E            CMP AL,0x7E
+ *  005074A7   76 08            JBE SHORT .005074B1
+ *  005074A9   3C 80            CMP AL,0x80
+ *  005074AB   72 0A            JB SHORT .005074B7
+ *  005074AD   3C FC            CMP AL,0xFC
+ *  005074AF   77 06            JA SHORT .005074B7
+ *  005074B1   B8 01000000      MOV EAX,0x1
+ *  005074B6   C3               RETN
+ *  005074B7   33C0             XOR EAX,EAX
+ *  005074B9   C3               RETN
+ *  005074BA   CC               INT3
+ *  005074BB   CC               INT3
+ *  005074BC   CC               INT3
+ *  005074BD   CC               INT3
  */
 
 bool patchEncoding(ulong startAddress, ulong stopAddress)
