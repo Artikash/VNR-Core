@@ -7,11 +7,10 @@
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
-#include "engine/engineutil.h"
+#include "engine/util/textunion.h"
 #include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
-#include "winasm/winasmdef.h"
 #include <qt_windows.h>
 #include <cstdint>
 
@@ -23,26 +22,23 @@ namespace { // unnamed
 namespace ScenarioHook {
 namespace Private {
 
-  enum { ShortTextCapacity = 0x10 }; // 16
+  /**
+   *  Sample arg1:
+   *  002BF540  00 00 00 00 18 09 75 00 E8 2C 67 77 68 99 73 00  .....u.・gwh冱.
+   *  002BF550  01 00 00 00 34 00 00 00 3F 00 00 00 14 01 00 00  ...4...?.....
+   *  002BF560  36 00 00 00 0E 00 00 00 20 00 00 00 FF FF FF 00  6...... ....
+   *
+   *  The first cell shoulda always be zero.
+   */
 
-  struct TextArgument
-  {
-    DWORD unknown; // should always be zero at runtime
-    union {
-      LPCSTR longText;
-      char shortText[ShortTextCapacity];
-    };
-    int size; // text size
-  };
+  TextUnionA *arg_,
+             argValue_;
 
-  TextArgument *arg_,
-               argValue_;
-
-  bool hookBefore(winhook::hook_stack *s)
+  bool hookBefore(ulong retaddr, winhook::hook_stack *s)
   {
     static QByteArray data_;
-    auto arg = (TextArgument *)s->stack[0]; // arg1
-    if (arg->size <= 0 || arg->size > Engine::MaxTextSize)
+    auto arg = (TextUnionA *)(s->stack[0] + sizeof(DWORD)); // arg1
+    if (!arg || !arg->isValid())
       return true;
 
     // FIXME: I am not able to distinguish choice out
@@ -51,22 +47,16 @@ namespace Private {
       //s->ebx > 0x0fffffff ? Engine::ChoiceRole : // edx is a pointer for choice
       Engine::ScenarioRole;
 
-    auto q = EngineController::instance();
-    enum { sig = 0 };
+    auto sig = Engine::hashThreadSignature(role, retaddr);
+    QByteArray oldData(arg->getText(), arg->size),
+               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    if (newData == oldData)
+      return true;
 
     arg_ = arg;
     argValue_ = *arg;
-    if (arg->size >= ShortTextCapacity && Engine::isAddressReadable(arg->longText, arg->size)) {
-      data_ = q->dispatchTextA(arg->longText, role, sig);
-      arg->longText = (LPCSTR)data_.constData();
-      arg->size = data_.size(); // not needed and could crash on the other hand
-    } else {
-      auto text = arg->shortText;
-      QByteArray data(text, arg->size);
-      data = q->dispatchTextA(data, role, sig);
-      arg->size = qMin<size_t>(data.size(), ShortTextCapacity - 1); // truncate
-      ::memcpy(text, data.constData(), arg->size + 1);
-    }
+    data_ = newData;
+    arg->setText(data_);
     return true;
   }
 
@@ -281,7 +271,8 @@ bool attach(ulong startAddress, ulong stopAddress)
 
   int count = 0;
   auto fun = [&count](ulong addr) -> bool {
-    count += winhook::hook_both(addr, Private::hookBefore, Private::hookAfter);
+    auto before = std::bind(Private::hookBefore, addr + 5, std::placeholders::_1);
+    count += winhook::hook_both(addr, before, Private::hookAfter);
     return true; // replace all functions
   };
   MemDbg::iterNearCallAddress(fun, addr, startAddress, stopAddress);
