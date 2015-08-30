@@ -53,7 +53,7 @@ namespace Private {
   //  return ret;
   //}
 
-  bool skipsText(const wchar_t *s, size_t size)
+  bool isBadText(const wchar_t *s, size_t size)
   {
     return size <= 1
       || s[0] <= 127 //|| s[size - 1] <= 127
@@ -67,7 +67,7 @@ namespace Private {
     //static std::unordered_set<const MonoString *> addresses_;
     auto p = (MonoString *)s->stack[1]; // string in arg1
 
-    if (skipsText(p->chars, p->length)
+    if (isBadText(p->chars, p->length)
         //|| addresses_.find(p) != addresses_.end()
         || hashes_.find(Engine::hashWCharArray(p->chars, p->length)) != hashes_.end())
       return true;
@@ -143,7 +143,7 @@ namespace Private {
   //mono_string_to_utf8_fun_t old_mono_string_to_utf8;
   //char *new_mono_string_to_utf8(MonoString *s)
   //{
-  //  if (s && !skipsText(s->chars, s->length)) {
+  //  if (s && !isBadText(s->chars, s->length)) {
   //    enum { role = Engine::OtherRole, sig = Engine::OtherThreadSignature };
   //    //auto split = (ulong)_ReturnAddress();
   //    //auto sig = Engine::hashThreadSignature(role, split);

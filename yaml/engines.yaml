@@ -472,6 +472,7 @@ char:
   - EmbedLeaf
   - EmbedLucifen
   - EmbedLunaSoft
+  - EmbedMinori
   - EmbedNexton
   - EmbedPal
   - EmbedPensil
@@ -802,6 +803,7 @@ focus:
   #- Cotopha
   #- Elf
   #- EmbedFVP
+  #- EmbedMinori
   #- EmbedMono
   #- EmbedRGSS
   #- EXP    # there is no way to display VNR in full screen

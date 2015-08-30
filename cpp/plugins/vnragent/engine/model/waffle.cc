@@ -3,8 +3,7 @@
 #include "engine/model/waffle.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
-#include "engine/enginehash.h"
-#include "engine/engineutil.h"
+#include "engine/util/textunion.h"
 #include "hijack/hijackmanager.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
@@ -35,41 +34,9 @@ namespace Private {
    *  023E1108  00 EE ED 98 A8 59 11 33 C2 C3 42 83 DF 9C FC C6  .・乖Y3ﾂﾃB・戛ﾆ
    *  023E1118  00 00 00 00 0F 00 00 00 79 7B BA 93 00 DA 8B 46  .......y{ｺ・ﾚ祈
    */
-  struct HookArgument
-  {
-    enum { ShortTextCapacity = 0x10 }; // including \0
-
-    union {
-      LPCSTR text;
-      char chars[ShortTextCapacity];
-    };
-    int size;
-    int capacity; // excluding \0
-
-    bool isValid() const
-    {
-      if (size <= 0 || size > capacity)
-        return false;
-      LPCSTR t = getText();
-      return Engine::isAddressWritable(t) && ::strlen(t) == size;
-          //&& t[0] > 127 && t[size - 1] > 127 // skip ascii text
-    }
-
-    LPCSTR getText() const
-    { return size < ShortTextCapacity ? chars : text; }
-
-    void setText(LPCSTR _text, int _size)
-    {
-      if (_size < ShortTextCapacity)
-        ::memcpy(chars, _text, _size + 1);
-      else
-        text = _text;
-      capacity = size = _size;
-    }
-  };
-  HookArgument *arg_,
-               argValue_;
-  bool hookBefore(int role, winhook::hook_stack *s)
+  TextUnionA *arg_,
+             argValue_;
+  bool hookBefore(ulong reladdr, int role, winhook::hook_stack *s)
   {
     static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
@@ -107,7 +74,7 @@ namespace Private {
 
     //DOUT(retaddr);
 
-    auto arg = (HookArgument *)(s->stack[0] + sizeof(DWORD)); // arg1
+    auto arg = (TextUnionA *)(s->stack[0] + sizeof(DWORD)); // arg1
     if (!arg || !arg->isValid())
       return true;
 
@@ -124,9 +91,8 @@ namespace Private {
     //DOUT(retaddr);
 
     //auto sig = Engine::hashThreadSignature(role, reladdr);
-    enum { sig = 0 };
     QByteArray oldData = arg->getText(),
-               newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+               newData = EngineController::instance()->dispatchTextA(oldData, role, reladdr);
     if (newData == oldData)
       return true;
     arg_ = arg;
@@ -407,14 +373,15 @@ bool attach(ulong startAddress, ulong stopAddress)
     // 003974B7  -E9 448BB510      JMP 10EF0000    ; jichi: scenario
     // 003974BC   6A FF            PUSH -0x1
     // 003974BE   57               PUSH EDI
-    int role = Engine::OtherRole;
+    auto role = Engine::OtherRole;
     if (*(DWORD *)(addr - 8) == 0x248c8d50)
       role = Engine::ScenarioRole;
     else if ((*(DWORD *)(addr - 11) & 0x00ffffff) == 0x002484c7)
       role = Engine::NameRole;
     else
       return true;
-    auto before = std::bind(Private::hookBefore, role, std::placeholders::_1);
+    auto reladdr = addr + 5 - startAddress;
+    auto before = std::bind(Private::hookBefore, reladdr, role, std::placeholders::_1);
     count += winhook::hook_both(addr, before, Private::hookAfter);
     return true;
   };

@@ -22,6 +22,7 @@
 #include "engine/model/lucifen.h"
 #include "engine/model/luna.h"
 #include "engine/model/malie.h"
+#include "engine/model/minori.h"
 #include "engine/model/mono.h"
 #include "engine/model/nexton.h"
 #include "engine/model/pal.h"
@@ -68,6 +69,7 @@ EngineController *EngineFactory::createEngine()
     , new PalEngine
     , new NextonEngine
     , new MonoEngine
+    , new MinoriEngine
     , new MalieEngine
     , new LunaSoftEngine
     , new LucifenEngine
