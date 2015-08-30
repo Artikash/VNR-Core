@@ -78,6 +78,7 @@ HEADERS += \
   engine/enginemodel.h \
   engine/enginesettings.h \
   engine/engineutil.h \
+  engine/util/textunion.h \
   hijack/hijackdriver.h \
   hijack/hijackfuns.h \
   hijack/hijackmanager.h \
@@ -148,6 +149,7 @@ HEADERS += \
   engine/model/lucifen.h \
   engine/model/luna.h \
   engine/model/malie.h \
+  engine/model/minori.h \
   engine/model/mono.h \
   engine/model/nexton.h \
   engine/model/pal.h \
@@ -190,6 +192,7 @@ SOURCES += \
   engine/model/lucifen.cc \
   engine/model/luna.cc \
   engine/model/malie.cc \
+  engine/model/minori.cc \
   engine/model/mono.cc \
   engine/model/nexton.cc \
   engine/model/pal.cc \

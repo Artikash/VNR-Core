@@ -157,9 +157,7 @@ namespace Private {
 
     if (role == Engine::NameRole)
       oldData.replace("\x81\x40", ""); // remove spaces in the middle of names
-
-    auto sig = retaddr;
-    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, sig);
+    QByteArray newData = EngineController::instance()->dispatchTextA(oldData, role, retaddr);
     if (oldData == newData) {
       if (textStorageEnabled)
         textStorage_.clear();

@@ -3,9 +3,8 @@
 #include "engine/model/gxp.h"
 #include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
-#include "engine/engineutil.h"
+#include "engine/util/textunion.h"
 //#include "hijack/hijackmanager.h"
-#include "util/textutil.h"
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
@@ -20,44 +19,16 @@ namespace { // unnamed
 
 ulong moduleBaseAddress_;
 
-struct TextArgument
+bool isBadText(LPCWSTR text)
 {
-  enum { ShortTextCapacity = 8 };
-
-  union {
-    LPCWSTR text; // 0x0
-    wchar_t chars[ShortTextCapacity];
-  };
-  int size, // 0x10
-      capacity;
-
-  bool isValid() const
-  {
-    if (size <= 0 || size > capacity)
-      return false;
-    LPCWSTR t = getText();
-    return Engine::isAddressWritable(t) && ::wcslen(t) == size
-        && t[0] > 127 && t[size - 1] > 127 // skip ascii text
-        && !::wcschr(t, 0xff3f); // Skip system text: ＿
-  }
-
-  LPCWSTR getText() const
-  { return size < ShortTextCapacity ? chars : text; }
-
-  void setText(LPCWSTR _text, int _size)
-  {
-    if (_size < ShortTextCapacity)
-      ::memcpy(chars, _text, (_size + 1) * sizeof(wchar_t));
-    else
-      text = _text;
-    capacity = size = _size;
-  }
-};
+  return text[0] <= 127 || text[::wcslen(text) - 1] <= 127 // skip ascii text
+      || ::wcschr(text, 0xff3f); // Skip system text contaning: ＿
+}
 
 namespace ScenarioHook1 { // for old GXP1
 namespace Private {
-  TextArgument *arg_,
-               argValue_;
+  TextUnionW *arg_,
+             argValue_;
   bool hookBefore(ulong retaddr, winhook::hook_stack *s)
   {
     static QString text_; // persistent storage, which makes this function not thread-safe
@@ -89,11 +60,14 @@ namespace Private {
         (*(DWORD *)retaddr & 0x00ff00ff) == 0x0024008b) // skip truncated texts
       return true;
 
-    auto arg = (TextArgument *)(s->stack[0] + 4); // arg1 + 0x4
+    auto arg = (TextUnionW *)(s->stack[0] + 4); // arg1 + 0x4
     if (!arg->isValid())
       return true;
 
-    QString oldText = QString::fromWCharArray(arg->getText()),
+    auto text = arg->getText();
+    if (isBadText(text))
+      return true;
+    QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
     if (newText == oldText)
       return true;
@@ -102,7 +76,7 @@ namespace Private {
     arg_ = arg;
     argValue_ = *arg;
 
-    arg->setText(text_.utf16(), text_.size());
+    arg->setText(text_);
 
     //if (arg->size)
     //  hashes_.insert(Engine::hashWCharArray(arg->text, arg->size));
@@ -189,12 +163,12 @@ namespace Private {
    *  0095392B   A8 01            TEST AL,0x1
    *  0095392D   75 28            JNZ SHORT 塔の下の.00953957
    */
-  TextArgument *arg_,
-               argValue_;
+  TextUnionW *arg_,
+             argValue_;
   bool hookBefore(ulong retaddr, winhook::hook_stack *s)
   {
     static QString text_; // persistent storage, which makes this function not thread-safe
-    auto arg = (TextArgument *)s->stack[0]; // arg1
+    auto arg = (TextUnionW *)s->stack[0]; // arg1
     if (!arg->isValid())
       return true;
 
@@ -207,7 +181,10 @@ namespace Private {
     // 00953926   A1 882CCB00      MOV EAX,DWORD PTR DS:[0xCB2C88]   ; jichi: retaddr
     else if (*(BYTE *)retaddr == 0xa1)
       return true;
-    QString oldText = QString::fromWCharArray(arg->getText()),
+    auto text = arg->getText();
+    if (isBadText(text))
+      return true;
+    QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
     if (newText == oldText)
       return true;
@@ -216,7 +193,7 @@ namespace Private {
     arg_ = arg;
     argValue_ = *arg;
 
-    arg->setText(text_.utf16(), text_.size());
+    arg->setText(text_);
 
     //if (arg->size)
     //  hashes_.insert(Engine::hashWCharArray(arg->text, arg->size));
@@ -393,18 +370,21 @@ namespace Private {
   bool hookBefore(winhook::hook_stack *s)
   {
     static QString text_; // persistent storage, which makes this function not thread-safe
-    auto arg = (TextArgument *)(s->ecx + 0x1ec); // [ecx + 0x1ec]
+    auto arg = (TextUnionW *)(s->ecx + 0x1ec); // [ecx + 0x1ec]
     if (!arg->isValid())
+      return true;
+    auto text = arg->getText();
+    if (isBadText(text))
       return true;
     auto retaddr = s->stack[0];
     auto reladdr = retaddr - moduleBaseAddress_;
     enum { role = Engine::OtherRole };
-    QString oldText = QString::fromWCharArray(arg->getText()),
+    QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
     if (newText == oldText)
       return true;
     text_ = newText;
-    arg->setText(text_.utf16(), text_.size());
+    arg->setText(text_);
     return true;
   }
 } // Private

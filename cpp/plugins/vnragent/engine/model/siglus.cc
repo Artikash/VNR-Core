@@ -8,8 +8,8 @@
 #include "engine/enginehash.h"
 #include "engine/enginesettings.h"
 #include "engine/engineutil.h"
+#include "engine/util/textunion.h"
 #include "hijack/hijackmanager.h"
-#include "util/textutil.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
 #include <qt_windows.h>
@@ -23,44 +23,6 @@
 //#pragma intrinsic(_ReturnAddress)
 
 namespace { // unnamed
-
-struct TextArgument
-{
-  enum { DataCapacity = 8 };
-
-  union {
-    LPCWSTR texts[4]; // 0x0
-    WCHAR data[8];    // 0x0
-  };
-  DWORD size,         // 0x10
-        capacity;     // 0x14
-
-  // 01140f8d   56               push esi
-  // 01140f8e   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
-  // 01140f94   e8 67acfcff      call .0110bc00
-  // 01140f99   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
-  // 01140f9d   72 04            jb short .01140fa3
-  // 01140f9f   8b37             mov esi,dword ptr ds:[edi]
-  // 01140fa1   eb 02            jmp short .01140fa5
-  //
-  // According to the assembly code, this[0x14] should be larger than 8
-  // 004DACFA   mov     edx, [edi+14h] ; sub_4DAC70+130 ...
-  // 004DACFD   cmp     edx, 8
-  //            jb      short loc_4DAD06
-  LPCWSTR text() const
-  { return capacity < DataCapacity ? data : texts[0]; }
-
-  void setText(LPCWSTR text, DWORD length)
-  {
-    texts[0] = text;
-    size = length;
-    capacity = qMax<size_t>(DataCapacity, length);
-  }
-
-  void setText(const QString &text)
-  { setText((LPCWSTR)text.utf16(), text.size()); }
-};
-
 namespace ScenarioHook {
 namespace Private {
 
@@ -114,7 +76,7 @@ namespace Private {
    *
    *  0025ee60  01 00 00 00 01 00 00 00  ......
    */
-  typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD); // the first pointer is this
+  typedef int (__thiscall *hook_fun_t)(DWORD, DWORD, DWORD); // the first pointer is this
   // Use __fastcall to completely forward ecx and edx
   //typedef int (__fastcall *hook_fun_t)(void *, void *, DWORD, DWORD);
   hook_fun_t oldHookFun;
@@ -124,35 +86,31 @@ namespace Private {
    *  - thiscall: this is in ecx and the first argument
    *  - fastcall: the first two parameters map to ecx and edx
    */
-  int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
+  int __fastcall newHookFun(DWORD ecx, DWORD edx, DWORD arg1, DWORD arg2)
   {
     Q_UNUSED(edx);
-    TextArgument *arg = reinterpret_cast<TextArgument *>(
-        type_ == Type1 ? (DWORD)ecx : arg1);
-    if (!arg)
+    auto arg = (TextUnionW *)(type_ == Type1 ? ecx : arg1);
+    if (!arg || !arg->isValid())
       return oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
     enum { role = Engine::ScenarioRole, sig = 0 };
     //return oldHookFun(arg, arg1, arg2);
 
-    QString oldText = QString::fromWCharArray(arg->text(), arg->size),
+    QString oldText = QString::fromWCharArray(arg->getText(), arg->size),
             newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (newText == oldText)
       return oldHookFun(ecx, arg1, arg2); // ret = size * 2
     if (newText.isEmpty())
       return arg->size * 2; // estimated painted bytes
 
-    auto oldText0 = arg->texts[0];
-    auto oldSize = arg->size;
-    auto oldCapacity = arg->capacity;
+    auto argValue = *arg;
 
-    arg->setText(newText);
+    arg->setLongText(newText);
+
     int ret = oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
     // Restoring is indispensible, and as a result, the default hook does not work
-    arg->texts[0] = oldText0;
-    arg->size = oldSize;
-    arg->capacity = oldCapacity;
+    *arg = argValue;
     return ret;
   }
 
@@ -234,20 +192,18 @@ bool attach(ulong startAddress, ulong stopAddress) // attach scenario
 namespace OtherHook {
 namespace Private {
 
-  QString text_;
-  TextArgument *arg_;
-  LPCWSTR oldText0_;
-  DWORD oldSize_;
-  DWORD oldCapacity_;
-
+  TextUnionW *arg_,
+             argValue_;
   bool hookBefore(winhook::hook_stack *s)
   {
-    auto arg = reinterpret_cast<TextArgument *>(s->stack[0]);
+    static QString text_;
+    auto arg = (TextUnionW *)s->stack[0];
+    if (!arg || !arg->isValid())
+      return true;
 
-    LPCWSTR text = arg->text();
-    auto g = EngineController::instance();
-    // Skip all ascii and hangul characters
-    if (!text || !*text || *text <= 127 || ::wcslen(text) > g->settings()->otherCapacity || Util::allHangul(text)) // there could be garbage
+    LPCWSTR text = arg->getText();
+    // Skip all ascii
+    if (!text || !*text || *text <= 127 || arg->size > Engine::MaxTextSize) // there could be garbage
       return true;
 
     int role = Engine::OtherRole;
@@ -266,26 +222,22 @@ namespace Private {
     auto sig = Engine::hashThreadSignature(role, split);
 
     QString oldText = QString::fromWCharArray(text, arg->size),
-            newText = g->dispatchTextW(oldText, role, sig);
+            newText = EngineController::instance()->dispatchTextW(oldText, role, sig);
     if (oldText == newText)
       return true;
 
     arg_ = arg;
-    oldText0_ = arg->texts[0];
-    oldSize_ = arg->size;
-    oldCapacity_ = arg->capacity;
+    argValue_ = *arg;
 
     text_ = newText;
-    arg->setText(text_);
+    arg->setLongText(text_);
     return true;
   }
 
   bool hookAfter(winhook::hook_stack *) // this hookAfter is not needed for this other hook
   {
     if (arg_) {
-      arg_->texts[0] = oldText0_;
-      arg_->size = oldSize_;
-      arg_->capacity= oldCapacity_ ;
+      *arg_ = argValue_;
       arg_ = nullptr;
     }
     return true;
