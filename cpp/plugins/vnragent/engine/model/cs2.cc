@@ -8,6 +8,7 @@
 #include "engine/util/textcache.h"
 #include "hijack/hijackmanager.h"
 #include "util/textutil.h"
+#include "disasm/disasm.h"
 #include "dyncodec/dynsjis.h"
 #include "winhook/hookcode.h"
 #include "winhook/hookfun.h"
@@ -134,7 +135,12 @@ namespace Private {
     //auto self = (ClassArgument *)s->ecx;
     //auto split = self->split();
     //enum { sig = 0 };
-    auto groupId = *(DWORD *)(s->ecx + 0x20); // CHECKPOINT: use this split as session ID
+    auto self = s->ecx;
+    if (!Engine::isAddressWritable(self)) // old cs2 game such as Grisaia
+      self = s->stack[2]; // arg1
+    ulong groupId = self;
+    if (Engine::isAddressWritable(self))
+      groupId = *(DWORD *)(self + 0x20);
     {
       static ulong minimumGroupId_ = -1; // I assume scenario thread to have minimum groupId
       static TextHashCache cache_(3); // capacity = 3
@@ -294,6 +300,43 @@ namespace Private {
  *  004B011A   CC               INT3
  *  004B011B   CC               INT3
  *  004B011C   CC               INT3
+ *
+ *  Sample game: Grisaia1 グリザイアの果実
+ *  00498579   CC               INT3
+ *  0049857A   CC               INT3
+ *  0049857B   CC               INT3
+ *  0049857C   CC               INT3
+ *  0049857D   CC               INT3
+ *  0049857E   CC               INT3
+ *  0049857F   CC               INT3
+ *  00498580   8B4424 0C        MOV EAX,DWORD PTR SS:[ESP+0xC]
+ *  00498584   8B08             MOV ECX,DWORD PTR DS:[EAX]  ; jichi: ecx is no longer a pointer
+ *  00498586   8B4424 04        MOV EAX,DWORD PTR SS:[ESP+0x4]
+ *  0049858A   56               PUSH ESI
+ *  0049858B   E8 10920500      CALL Grisaia.004F17A0
+ *  00498590   BE D89C7600      MOV ESI,Grisaia.00769CD8                 ; ASCII "bgm01"
+ *  00498595   8BC8             MOV ECX,EAX
+ *  00498597   2BF0             SUB ESI,EAX
+ *  00498599   8DA424 00000000  LEA ESP,DWORD PTR SS:[ESP]
+ *  004985A0   8A11             MOV DL,BYTE PTR DS:[ECX]
+ *  004985A2   88140E           MOV BYTE PTR DS:[ESI+ECX],DL
+ *  004985A5   41               INC ECX
+ *  004985A6   84D2             TEST DL,DL
+ *  004985A8  ^75 F6            JNZ SHORT Grisaia.004985A0
+ *  004985AA   8B4C24 0C        MOV ECX,DWORD PTR SS:[ESP+0xC]
+ *  004985AE   8B91 B4000000    MOV EDX,DWORD PTR DS:[ECX+0xB4]
+ *  004985B4   50               PUSH EAX
+ *  004985B5   68 D89C7600      PUSH Grisaia.00769CD8                    ; ASCII "bgm01"
+ *  004985BA   52               PUSH EDX
+ *  004985BB   E8 701C0600      CALL Grisaia.004FA230
+ *  004985C0   B8 02000000      MOV EAX,0x2
+ *  004985C5   5E               POP ESI
+ *  004985C6   C2 1000          RETN 0x10
+ *  004985C9   CC               INT3
+ *  004985CA   CC               INT3
+ *  004985CB   CC               INT3
+ *  004985CC   CC               INT3
+ *  004985CD   CC               INT3
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
@@ -313,8 +356,10 @@ bool attach(ulong startAddress, ulong stopAddress)
 namespace Patch {
 
 namespace Private {
-  bool isLeadByteChar(const char *s)
+  // String in ecx
+  bool __fastcall isLeadByteChar(const char *s, DWORD edx)
   {
+    Q_UNUSED(edx);
     return s && dynsjis::isleadchar(*s);
     //return dynsjis::isleadstr(s); // no idea why this will cause Grisaia3 to hang
     //return ::IsDBCSLeadByte(HIBYTE(testChar));
@@ -370,7 +415,7 @@ namespace Private {
  *
  *  Sample game: Grisaia3 グリザイアの楽園
  *  0050747F   CC               INT3
- *  00507480   8B4C24 04        MOV ECX,DWORD PTR SS:[ESP+0x4]
+ *  00507480   8B4C24 04        MOV ECX,DWORD PTR SS:[ESP+0x4]  ; jichi: text in arg1
  *  00507484   85C9             TEST ECX,ECX
  *  00507486   74 2F            JE SHORT .005074B7
  *  00507488   8A01             MOV AL,BYTE PTR DS:[ECX]
@@ -401,8 +446,44 @@ namespace Private {
  *  005074BB   CC               INT3
  *  005074BC   CC               INT3
  *  005074BD   CC               INT3
+ *
+ *  Sample game: Grisaia1 グリザイアの果実
+ *  0041488A   CC               INT3
+ *  0041488B   CC               INT3
+ *  0041488C   CC               INT3
+ *  0041488D   CC               INT3
+ *  0041488E   CC               INT3
+ *  0041488F   CC               INT3
+ *  00414890   85C9             TEST ECX,ECX    ; jichi: text in ecx
+ *  00414892   74 2F            JE SHORT Grisaia.004148C3
+ *  00414894   8A01             MOV AL,BYTE PTR DS:[ECX]
+ *  00414896   84C0             TEST AL,AL
+ *  00414898   74 29            JE SHORT Grisaia.004148C3
+ *  0041489A   3C 81            CMP AL,0x81
+ *  0041489C   72 04            JB SHORT Grisaia.004148A2
+ *  0041489E   3C 9F            CMP AL,0x9F
+ *  004148A0   76 08            JBE SHORT Grisaia.004148AA
+ *  004148A2   3C E0            CMP AL,0xE0
+ *  004148A4   72 1D            JB SHORT Grisaia.004148C3
+ *  004148A6   3C EF            CMP AL,0xEF
+ *  004148A8   77 19            JA SHORT Grisaia.004148C3
+ *  004148AA   8A41 01          MOV AL,BYTE PTR DS:[ECX+0x1]
+ *  004148AD   3C 40            CMP AL,0x40
+ *  004148AF   72 04            JB SHORT Grisaia.004148B5
+ *  004148B1   3C 7E            CMP AL,0x7E
+ *  004148B3   76 08            JBE SHORT Grisaia.004148BD
+ *  004148B5   3C 80            CMP AL,0x80
+ *  004148B7   72 0A            JB SHORT Grisaia.004148C3
+ *  004148B9   3C FC            CMP AL,0xFC
+ *  004148BB   77 06            JA SHORT Grisaia.004148C3
+ *  004148BD   B8 01000000      MOV EAX,0x1
+ *  004148C2   C3               RETN
+ *  004148C3   33C0             XOR EAX,EAX
+ *  004148C5   C3               RETN
+ *  004148C6   CC               INT3
+ *  004148C7   CC               INT3
+ *  004148C8   CC               INT3
  */
-
 bool patchEncoding(ulong startAddress, ulong stopAddress)
 {
   const uint8_t bytes[] = {
@@ -415,7 +496,10 @@ bool patchEncoding(ulong startAddress, ulong stopAddress)
   addr = MemDbg::findEnclosingAlignedFunction(addr);
   if (!addr)
     return false;
-  return winhook::replace_fun(addr, (ulong)Private::isLeadByteChar);
+  for (auto p = addr; p - addr < 20; p += ::disasm((LPCVOID)p))
+    if (*(WORD *)p == 0xc985)// 00414890   85C9             TEST ECX,ECX    ; jichi: text in ecx
+      return winhook::replace_fun(p, (ulong)Private::isLeadByteChar);
+  return false;
 }
 
 } // namespace Patch
