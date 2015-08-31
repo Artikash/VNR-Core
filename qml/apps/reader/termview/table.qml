@@ -899,7 +899,7 @@ Item { id: root_
           clip: true
           verticalAlignment: Text.AlignVCenter
           visible: !itemSelected //|| !editable
-          text: String(itemValue.priority > 0 ? '+' + itemValue.priority : itemValue.priority < 0 ? itemValue.priority : itemValue.pattern.length)
+          text: itemValue.priority > 0 ? ('+' + itemValue.priority) : itemValue.priority < 0 ? String(itemValue.priority) : String(itemValue.pattern.length)
           color: itemSelected ? 'white' : itemValue.priority ? 'black' : 'darkGray'
           font.strikeout: !itemSelected && itemValue.disabled
           font.bold: itemValue.regex //|| itemValue.syntax
