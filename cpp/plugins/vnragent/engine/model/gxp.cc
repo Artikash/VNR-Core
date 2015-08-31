@@ -1500,6 +1500,7 @@ bool GXPEngine::attach()
 /**
  *  FIXME: Figure out ruby syntax
  *  Guessed ruby syntax: ≪rb／rt≫
+ *  The above syntax might also work for YU-RIS engine.
  */
 QString GXPEngine::rubyCreate(const QString &rb, const QString &rt)
 {
