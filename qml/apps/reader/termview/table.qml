@@ -921,7 +921,9 @@ Item { id: root_
           function save() {
             if (editable) {
               var v = +Util.trim(text) || 0
-              if (v != itemValue.priority) {
+              // Fuzzy comparison
+              // https://forum.qt.io/topic/10718/javascript-math-rounding-in-qml/4
+              if (Math.abs(v - itemValue.priority) > 0.00001) {
                 itemValue.priority = v
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
