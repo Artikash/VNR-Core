@@ -766,7 +766,7 @@ namespace Private {
  *  00416C4C  ^7C F2             JL SHORT lcsebody.00416C40
  *  00416C4E   EB 1B             JMP SHORT lcsebody.00416C6B
  *  00416C50   B8 50F14800       MOV EAX,lcsebody.0048F150
- *  00416C55   3B38              CMP EDI,DWORD PTR DS:[EAX]	; jichi: compare current wide charcter with a threshold (0x8169 = "（")
+ *  00416C55   3B38              CMP EDI,DWORD PTR DS:[EAX]	; jichi: compare current wide character with a threshold (0x8169 = "（")
  *  00416C57   74 0C             JE SHORT lcsebody.00416C65
  *  00416C59   83C0 04           ADD EAX,0x4
  *  00416C5C   3D 70F14800       CMP EAX,lcsebody.0048F170

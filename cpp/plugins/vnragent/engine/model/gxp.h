@@ -9,6 +9,8 @@ class GXPEngine : public EngineModel
 {
   SK_EXTEND_CLASS(GXPEngine, EngineModel)
   static bool attach();
+  static QString rubyCreate(const QString &rb, const QString &rt);
+  static QString rubyRemove(const QString &text);
 
 public:
   GXPEngine()
@@ -21,6 +23,8 @@ public:
     newLineString = "%r";
     textSeparators << "||"; // for other text in verethragna
     attachFunction = &Self::attach;
+    //rubyCreateFunction = &Self::rubyCreate;
+    //rubyRemoveFunction = &Self::rubyRemove;
   }
 };
 

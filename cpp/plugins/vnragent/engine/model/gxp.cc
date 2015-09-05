@@ -8,6 +8,7 @@
 #include "memdbg/memsearch.h"
 #include "winhook/hookcode.h"
 #include <qt_windows.h>
+#include <QtCore/QRegExp>
 #include <cstdint>
 
 #define DEBUG "model/gxp"
@@ -22,7 +23,7 @@ ulong moduleBaseAddress_;
 bool isBadText(LPCWSTR text)
 {
   return text[0] <= 127 || text[::wcslen(text) - 1] <= 127 // skip ascii text
-      || ::wcschr(text, 0xff3f); // Skip system text contaning: ＿
+      || ::wcschr(text, 0xff3f); // Skip system text containing: ＿
 }
 
 namespace ScenarioHook1 { // for old GXP1
@@ -188,11 +189,11 @@ namespace Private {
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
     if (newText == oldText)
       return true;
-    text_ = newText;
 
     arg_ = arg;
     argValue_ = *arg;
 
+    text_ = newText;
     arg->setText(text_);
 
     //if (arg->size)
@@ -1494,6 +1495,28 @@ bool GXPEngine::attach()
     DOUT("other text NOT FOUND");
   //HijackManager::instance()->attachFunction((ulong)::GetGlyphOutlineW);
   return true;
+}
+
+/**
+ *  FIXME: Figure out ruby syntax
+ *  Guessed ruby syntax: ≪rb／rt≫
+ *  The above syntax might also work for YU-RIS engine.
+ */
+QString GXPEngine::rubyCreate(const QString &rb, const QString &rt)
+{
+  static QString fmt = QString::fromWCharArray(L"\x226a%1\xff0f%2\x226b");
+  return fmt.arg(rb, rt);
+}
+
+// Remove furigana in scenario thread.
+QString GXPEngine::rubyRemove(const QString &text)
+{
+  if (!text.contains((wchar_t)0x226a))
+    return text;
+  static QRegExp rx(QString::fromWCharArray(L"\x226a(.+)\xff0f.+\x226b"));
+  if (!rx.isMinimal())
+    rx.setMinimal(true);
+  return QString(text).replace(rx, "\\1");
 }
 
 // EOF
