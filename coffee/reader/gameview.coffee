@@ -435,7 +435,7 @@ renderNewAnnot = ->
 
 ## Render ##
 
-createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
+createTwitterTimeline = ({id:id, el:el, callback:callback, options:options}) ->
   twttr.widgets.createTimeline id, el, callback, options #if window.twttr
 
 _renderSampleImage = (url) ->
