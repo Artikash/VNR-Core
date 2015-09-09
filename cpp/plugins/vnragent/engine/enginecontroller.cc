@@ -621,21 +621,18 @@ QByteArray EngineController::dispatchTextA(const QByteArray &data, int role, lon
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
-      if (d_->settings.scenarioTextVisible) {
-        if (d_->model->newLineString)
-          repl.append(d_->model->newLineString);
-        else
-          repl.push_back(' ');
-        repl.append(trimmedText);
-      } break;
+      if (d_->settings.scenarioTextVisible)
+        repl.append(d_->model->newLineString ? d_->model->newLineString : " ")
+            .append(trimmedText);
+      break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
-        repl.append(" / ")
+        repl.append(d_->model->separatorString ? d_->model->separatorString : " ")
             .append(trimmedText);
       break;
     case Engine::OtherRole:
       if (d_->settings.otherTextVisible)
-        repl.append(" / ")
+        repl.append(d_->model->separatorString ? d_->model->separatorString : " ")
             .append(trimmedText);
       break;
     }
@@ -783,21 +780,18 @@ QString EngineController::dispatchTextW(const QString &text, int role, long sign
     repl = d_->filterTranslation(repl, role);
     switch (role) {
     case Engine::ScenarioRole:
-      if (d_->settings.scenarioTextVisible) {
-        if (d_->model->newLineString)
-          repl.append(d_->model->newLineString);
-        else
-          repl.push_back(' ');
-        repl.append(trimmedText);
-      } break;
+      if (d_->settings.scenarioTextVisible)
+        repl.append(d_->model->newLineString ? d_->model->newLineString : " ")
+            .append(trimmedText);
+      break;
     case Engine::NameRole:
       if (d_->settings.nameTextVisible)
-        repl.append(" / ")
+        repl.append(d_->model->separatorString ? d_->model->separatorString : " ")
             .append(trimmedText);
       break;
     case Engine::OtherRole:
       if (d_->settings.otherTextVisible)
-        repl.append(" / ")
+        repl.append(d_->model->separatorString ? d_->model->separatorString : " ")
             .append(trimmedText);
         //repl = QString("%1 / %2").arg(repl, trimmedText);
       break;

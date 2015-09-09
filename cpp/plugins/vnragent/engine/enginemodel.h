@@ -30,6 +30,7 @@ public:
     , scenarioLineCapacity(0)       // estimated maximum number of thin characters for scenario text per line, 0 to disable it
     , otherLineCapacity(0)          // estimated maximum number of thin characters for other text per line, 0 to disable it
     , newLineString("\n")           // new line deliminator, nullptr if does not work
+    , separatorString(" / ")        // text separator
 
     //, matchFunction(nullptr)      // determine whether apply engine
     //, attachFunction(nullptr)     // apply the engine
@@ -52,7 +53,8 @@ public:
   int scenarioLineCapacity,
       otherLineCapacity;
 
-  const char *newLineString;
+  const char *newLineString,
+             *separatorString;
 
   QStringList matchFiles; // files existing in the game directory
 
