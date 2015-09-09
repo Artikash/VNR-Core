@@ -101,7 +101,7 @@
     <message>
         <location filename="mytr.py" line="264"/>
         <source>Sync with Running Game</source>
-        <translation>與運行中的遊戲同步</translation>
+        <translation>與執行中的遊戲同步</translation>
     </message>
     <message>
         <location filename="mytr.py" line="192"/>
@@ -251,7 +251,7 @@
     <message>
         <location filename="mytr.py" line="25"/>
         <source>Subtitle Maker</source>
-        <translation>創建字幕</translation>
+        <translation>建立字幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="26"/>
@@ -301,7 +301,7 @@
     <message>
         <location filename="mytr.py" line="25"/>
         <source>Subtitle maker</source>
-        <translation>創建字幕</translation>
+        <translation>建立字幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="26"/>

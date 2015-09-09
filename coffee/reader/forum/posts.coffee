@@ -103,13 +103,13 @@ replyPost = (topicId, postId) -> postInputBean.replyPost topicId, postId # long,
 # Classes
 class PostList
 
-  constructor: (
+  constructor: ({
       $container: @$postContainer       # $  container of posts
       $topicContainer: @$topicContainer # $  container of topics
       $more: @$more         # $ more button
       topicId: @topicId     # long  topicId
       search: @search       # dict
-    ) ->
+    }) ->
     @$sel = @$postContainer
     @$sel = @$sel.add @$topicContainer if @$topicContainer?
 

@@ -131,7 +131,7 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 # Classes
 class Topic
 
-  constructor: (@id, $container: @$sel) ->
+  constructor: (@id, {$container:@$sel}) ->
     @topic = {}
 
   # Helper functions
@@ -236,7 +236,7 @@ class Topic
     @_highlightTopic() if highlight
     @_bindTopic()
 
-  show: (success:success) =>
+  show: ({success:success}) =>
     self = @
     spin true
     rest.forum.query 'topic',

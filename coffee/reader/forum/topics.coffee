@@ -133,14 +133,14 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 # Classes
 class TopicList
 
-  constructor: (
+  constructor: ({
       $container: @$container   # $  container of topics
       $more: @$more             # $ or null  more button
       $newReview: @$newReview   # $ or null  new review button
       $userReview: @$userReview # $ or null  user review
       complete: @complete       # bool  whether show all contents
       search: search            # dict or null
-    ) ->
+  }) ->
     @$sel = @$container
     @$sel = @$sel.add @$userReview if @$userReview?
 

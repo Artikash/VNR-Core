@@ -7,7 +7,7 @@
     <message>
         <location filename="../kagami/ajaxindicator.qml" line="61"/>
         <source>{0} background threads are running</source>
-        <translation>{0}個執行緒正在後臺運行</translation>
+        <translation>{0}個執行緒正在後臺執行</translation>
     </message>
 </context>
 <context>
@@ -439,7 +439,7 @@
     <message>
         <location filename="../springboard/dockmodel.qml" line="30"/>
         <source>Sync with current running game by searching the online database</source>
-        <translation>根據網路上的遊戲資訊，尋找運行中的遊戲並同步</translation>
+        <translation>根據網路上的遊戲資訊，尋找執行中的遊戲並同步</translation>
     </message>
     <message>
         <location filename="../springboard/dockmodel.qml" line="36"/>
@@ -579,13 +579,13 @@
         <location filename="../submaker/graffiti.qml" line="503"/>
         <location filename="../submaker/graffiti.qml" line="504"/>
         <source>Creation user and time</source>
-        <translation>創建的使用者和時間</translation>
+        <translation>建立的使用者和時間</translation>
     </message>
     <message>
         <location filename="../submaker/graffiti.qml" line="557"/>
         <location filename="../submaker/graffiti.qml" line="572"/>
         <source>Create a new {0}</source>
-        <translation>創建新的{0}</translation>
+        <translation>建立新的{0}</translation>
     </message>
     <message>
         <location filename="../submaker/graffiti.qml" line="600"/>
@@ -631,7 +631,7 @@
     <message>
         <location filename="../submaker/graffiti.qml" line="894"/>
         <source>Cannot create new comment here</source>
-        <translation>不可以在這裡創建字幕</translation>
+        <translation>不可以在這裡建立字幕</translation>
     </message>
     <message>
         <location filename="../submaker/graffiti.qml" line="906"/>
@@ -755,7 +755,7 @@
     <message>
         <location filename="../springboard/inspector.qml" line="163"/>
         <source>Launch the game, or attach to the running game</source>
-        <translation>啟動遊戲，或者與正在運行中的遊戲同步</translation>
+        <translation>啟動遊戲，或者與正在執行中的遊戲同步</translation>
     </message>
     <message>
         <location filename="../springboard/inspector.qml" line="197"/>
@@ -1265,7 +1265,7 @@
     <message>
         <location filename="../refview.qml" line="130"/>
         <source>Type part of the title, user, etc.</source>
-        <translation>輸入需要查詢的文字、使用者名等。</translation>
+        <translation>輸入需要查詢的文字、使用者名稱等。</translation>
     </message>
 </context>
 <context>
@@ -1391,7 +1391,7 @@
     <message>
         <location filename="../submaker.qml" line="161"/>
         <source>Type part of text, user, language, date, etc.</source>
-        <translation>輸入需要查詢的文字，翻譯，使用者名，語言等。</translation>
+        <translation>輸入需要查詢的文字，翻譯，使用者名稱，語言等。</translation>
     </message>
 </context>
 <context>
@@ -1399,7 +1399,7 @@
     <message>
         <location filename="../subview.qml" line="178"/>
         <source>Type part of the text, context, user, language, etc, and press Enter to search</source>
-        <translation>輸入需要查詢的文字，語境，使用者名，語言等，然後按下回車搜尋</translation>
+        <translation>輸入需要查詢的文字，語境，使用者名稱，語言等，然後按下回車搜尋</translation>
     </message>
 </context>
 <context>
@@ -1451,7 +1451,7 @@
     <message>
         <location filename="../termview.qml" line="339"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
-        <translation>輸入需要查詢的文字，翻譯，使用者名，語言等，然後按下回車搜尋</translation>
+        <translation>輸入需要查詢的文字，翻譯，使用者名稱，語言等，然後按下回車搜尋</translation>
     </message>
 </context>
 <context>

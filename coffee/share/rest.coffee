@@ -11,7 +11,7 @@ This file is stand-alone
 VERSION = 1404193846
 AGENT = 'vnr'
 
-postJSON = (data:data, url:url, success:success, error:error) ->
+postJSON = ({data:data, url:url, success:success, error:error}) ->
   data.version = VERSION
   data.agent = AGENT
   console.log url
@@ -42,7 +42,7 @@ defs =
 
 @rest = # export
   forum: # ajax/forum.coffee
-    list: (type, data:data, success:success, error:error) ->
+    list: (type, {data:data, success:success, error:error}) ->
       postJSON
         url: "#{HOST}/api/json/#{type}/list"
         data: data
@@ -60,7 +60,7 @@ defs =
           growl.showInternetError type
           error?()
 
-    query: (type, data:data, success:success, error:error) ->
+    query: (type, {data:data, success:success, error:error}) ->
       postJSON
         url: "#{HOST}/api/json/#{type}/query"
         data: data
@@ -77,7 +77,7 @@ defs =
           growl.showInternetError type
           error?()
 
-    create: (type, data:data, success:success, error:error) ->
+    create: (type, {data:data, success:success, error:error}) ->
       postJSON
         url: "#{HOST}/api/json/#{type}/create"
         data: data
@@ -97,7 +97,7 @@ defs =
           growl.showInternetError type
           error?()
 
-    update: (type, data:data, success:success, error:error) ->
+    update: (type, {data:data, success:success, error:error}) ->
       postJSON
         url: "#{HOST}/api/json/#{type}/update"
         data: data
@@ -118,7 +118,7 @@ defs =
           error?()
 
 @ticket =
-  update: (data:data, success:success, error:error) ->
+  update: ({data:data, success:success, error:error}) ->
     ID = 'ticket'
     #if LOCKED
     #  growl.showInternetBusy data.type
@@ -144,7 +144,7 @@ defs =
         growl.showInternetError data.type
         error?()
 
-  list: (data:data, success:success, error:error) ->
+  list: ({data:data, success:success, error:error}) ->
     ID = 'ticket'
     postJSON
       url: "#{HOST}/api/json/#{ID}/list"
