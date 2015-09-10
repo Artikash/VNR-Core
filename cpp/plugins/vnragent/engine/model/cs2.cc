@@ -553,6 +553,20 @@ QString CatSystemEngine::rubyRemove(const QString &text)
   return QString(text).replace(rx, "\\1");
 }
 
+QString CatSystemEngine::translationFilter(const QString &text, int role)
+{
+  // http://sakuradite.com/topic/1100
+  // Replace certain thin characters to wide ones for choice texts
+  if (role != Engine::ChoiceRole)
+    return text;
+  QString ret = text;
+  if (ret.contains('/'))
+    ret.replace(" / ", "/")
+       .replace('/', L'\xff0f');
+  ret.replace(' ', L'\u3000');
+  return ret;
+}
+
 // EOF
 
 #if 0
@@ -1170,9 +1184,9 @@ bool attach(ulong startAddress, ulong stopAddress)
   return winhook::hook_before(addr, Private::hookBefore);
 }
 
+
 } // namespace HistoryHook
 } // unnamed namespace
-
 
 namespace HistoryHook {
 namespace Private {
