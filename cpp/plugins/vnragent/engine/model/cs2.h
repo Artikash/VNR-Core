@@ -11,6 +11,7 @@ class CatSystemEngine : public EngineModel
   bool attach();
   static QString rubyCreate(const QString &rb, const QString &rt);
   static QString rubyRemove(const QString &text);
+  static QString translationFilter(const QString &text, int role);
 public:
   CatSystemEngine()
   {
@@ -23,6 +24,7 @@ public:
     attachFunction = std::bind(&Self::attach, this);
     rubyCreateFunction = &Self::rubyCreate;
     rubyRemoveFunction = &Self::rubyRemove;
+    translationFilterFunction = &Self::translationFilter;
   }
 };
 
