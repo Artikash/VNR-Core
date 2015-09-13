@@ -12,6 +12,7 @@
 # define BOOST_UTF8_END_NAMESPACE
 # define BOOST_UTF8_DECL
 # include <boost/detail/utf8_codecvt_facet.hpp>
+# include <boost/detail/utf8_codecvt_facet.ipp> // WARNING: This implementation should only be included ONCE
 # define CPPLOCALE_NEW_FACET_UTF8(charT)    (new utf8_codecvt_facet) // charT is ignored and assumed to be wchar_t
 //# include <boost/detail/serialization/utf8_codecvt_facet.hpp>
 //# define CPPLOCALE_NEW_FACET_UTF8(charT)  (new utf8_codecvt_facet<charT>)
@@ -28,7 +29,7 @@
 // - 0x10ffff is the default maximum value.
 // - std::consume_header will skip the leading encoding byte from the input.
 template <class charT>
-inline std::locale cpp_utf8_locale(std::locale init = std::locale())
+inline std::locale cpp_utf8_locale(std::locale init = std::locale()) //::empty())
 { return std::locale(init, CPPLOCALE_NEW_FACET_UTF8(charT)); }
 
 #endif // CPPLOCALE_H

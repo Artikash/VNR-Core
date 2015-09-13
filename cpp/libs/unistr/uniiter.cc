@@ -11,8 +11,8 @@ void uniiter::iter_words(const wchar_t *text, size_t size,
     wchar_t ch = text[i];
     if (::iswspace(ch) || ::iswpunct(ch)) {
       if (pos < i)
-        fun(pos, i - pos, false); // isword = false
-      fun(i, 1, true); // isword = true
+        fun(pos, i - pos, true); // isword = true
+      fun(i, 1, false); // isword = false
       pos = i + 1;
     }
   }
