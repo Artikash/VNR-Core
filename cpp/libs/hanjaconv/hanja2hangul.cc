@@ -45,6 +45,13 @@ void HanjaHangulConverter::replace(wchar_t *text) const
   d_->charConverter.replace(text);
 }
 
+std::wstring HanjaHangulConverter::convert(const wchar_t *text) const
+{
+  std::wstring ret = text;
+  replace(&ret[0]);
+  return ret;
+}
+
 wchar_t HanjaHangulConverter::lookupCharacter(wchar_t ch) const
 { return d_->charConverter.lookup(ch); }
 

@@ -9,7 +9,7 @@
 namespace uniiter {
 
 void iter_words(const wchar_t *text, size_t size,
-                const std::function<void (size_t start, size_t length)> &fun);
+                const std::function<void (size_t start, size_t length, bool isword)> &fun);
 
 } // namespace uniiter
 

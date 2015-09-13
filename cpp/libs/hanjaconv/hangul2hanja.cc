@@ -97,10 +97,10 @@ HangulHanjaConverter::parseToList(const std::wstring &text) const
   if (text.empty() || !d_->entries) // at least two elements
     return ret;
   const wchar_t *sentence = text.c_str();
-  uniiter::iter_words(sentence, text.size(), [&ret, sentence, this](size_t start, size_t length) {
+  uniiter::iter_words(sentence, text.size(), [&ret, sentence, this](size_t start, size_t length, bool isword) {
     //std::wstring word = sentence.substr(start, length);
     const wchar_t *word = sentence + start;
-    if (length < HANJA_MIN_SIZE) // for better performance
+    if (!isword || length < HANJA_MIN_SIZE) // for better performance
       ret.push_back(std::make_pair(std::wstring(word, length), std::wstring()));
     else
       this->collect(word, length, [&ret, word](size_t start, size_t length, const wchar_t *hanja) {
