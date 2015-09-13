@@ -1,7 +1,7 @@
 // uniiter.cc
 // 9/12/2015 jichi
 #include "unistr/uniiter.h"
-#include <string>
+#include <cwctype> // for iswxxx
 
 void uniiter::iter_words(const wchar_t *text, size_t size,
                        const std::function<void (size_t start, size_t length, bool isword)> &fun)

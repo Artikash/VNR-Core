@@ -49,7 +49,7 @@ bool HanjaHangulCharacterConverter::addDictionary(const wchar_t *path)
 #endif // _MSC_VER
   if (!fin.is_open())
     return false;
-  fin.imbue(UTF8_LOCALE);
+  fin.imbue(HANJA_UTF8_LOCALE);
 
   for (std::wstring line; std::getline(fin, line);)
     if (line.size() >= 3 && line[0] != CH_COMMENT && line[1] == CH_DELIM)
