@@ -56,7 +56,7 @@ public:
   // Replace hangul with hanja in text
   void replace(std::wstring &text) const;
   // Detect (hangul, hanja) pairs and pass to fun
-  void collect(const std::wstring &text, const Q::collect_fun_t &fun) const;
+  void collect(const wchar_t *text, size_t size, const Q::collect_fun_t &fun) const;
 
   // Helpers
 private:
@@ -67,12 +67,14 @@ private:
   size_t replace_first(std::wstring &text, size_t start) const;
 
   /** Collect only at text[start].
-   *  @param  text  target text to replace
+   *  @param  text  target text to parse
+   *  @param  size  target text size
    *  @param  start  offset of the text to look at
    *  @param  last  where last collect happens
    *  @param  fun
    */
-  size_t collect_first(const std::wstring &text, size_t start, size_t last,
+  size_t collect_first(const wchar_t *text, size_t size,
+                       size_t start, size_t last,
                        const Q::collect_fun_t &fun) const;
 };
 

@@ -7,6 +7,10 @@ DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/unichar.h \
+  $$PWD/uniiter.h \
   $$PWD/unistr.h
+
+SOURCES += \
+  $$PWD/uniiter.cc
 
 # EOF

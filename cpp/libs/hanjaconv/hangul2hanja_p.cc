@@ -25,21 +25,21 @@ void HangulHanjaConverterPrivate::replace(std::wstring &text) const // beginning
       pos++;
 }
 
-void HangulHanjaConverterPrivate::collect(const std::wstring &text, const Q::collect_fun_t &fun) const
+void HangulHanjaConverterPrivate::collect(const wchar_t *text, size_t size, const Q::collect_fun_t &fun) const
 {
-  if (text.size() < HANJA_MIN_SIZE)
+  if (size < HANJA_MIN_SIZE)
     return;
   size_t pos = 0,
          lastpos = 0,
          len;
-  while (pos <= text.size() - HANJA_MIN_SIZE)
-    if (len = collect_first(text, pos, lastpos, fun)) {
+  while (pos <= size - HANJA_MIN_SIZE)
+    if (len = collect_first(text, size, pos, lastpos, fun)) {
       pos += len;
       lastpos = pos;
     } else
       pos++;
-  if (lastpos < text.size())
-    fun(lastpos, text.size() - lastpos, nullptr);
+  if (lastpos < size)
+    fun(lastpos, size - lastpos, nullptr);
     //collect_hangul(text, lastpos, text.size() - lastpos, fun);
 }
 
@@ -64,14 +64,15 @@ size_t HangulHanjaConverterPrivate::replace_first(std::wstring &text, size_t sta
   return 0;
 }
 
-size_t HangulHanjaConverterPrivate::collect_first(const std::wstring &text, size_t start, size_t last, const Q::collect_fun_t &fun) const
+size_t HangulHanjaConverterPrivate::collect_first(const wchar_t *text, size_t size,
+                                                  size_t start, size_t last, const Q::collect_fun_t &fun) const
 {
-  if (text.size() < HANJA_MIN_SIZE || start > text.size() - HANJA_MIN_SIZE ||
+  if (size < HANJA_MIN_SIZE || start > size - HANJA_MIN_SIZE ||
       !unistr::ishangul(text[start]) || !unistr::ishangul(text[start + 1]))
     return 0;
   for (size_t ei = 0; ei < entry_count; ei++) {
     const auto &e = entries[ei];
-    if (boost::starts_with(text.c_str() + start, e.hangul)) {
+    if (boost::starts_with(text + start, e.hangul)) {
       if (last < start)
         fun(last, start - last, nullptr);
         //collect_hangul(text, last, start - last, fun);

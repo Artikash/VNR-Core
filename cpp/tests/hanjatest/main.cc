@@ -49,12 +49,12 @@ void test_hangul2hanja()
   conv.loadFile(path);
   qDebug() << conv.size();
 
-  std::wstring t = conv.convert(s);
+  std::wstring t = conv.convert(s.c_str());
   qDebug() << QString::fromStdWString(t);
 
   std::list<std::pair<std::wstring, std::wstring> > l;
   std::wstring text = s;
-  conv.collect(text, [&l, &text](size_t start, size_t length, const wchar_t *hanja) {
+  conv.collect(text.c_str(), text.size(), [&l, &text](size_t start, size_t length, const wchar_t *hanja) {
     l.push_back(std::make_pair(
       text.substr(start, length)
       , hanja ? std::wstring(hanja) : std::wstring()

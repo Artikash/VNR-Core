@@ -6,7 +6,6 @@
 #include "hanjaconv/hanjadef_p.h"
 #include <boost/foreach.hpp>
 #include <fstream>
-#include <list>
 #include <utility> // for pair
 //#include <iostream>
 //#include <QDebug>
@@ -66,9 +65,9 @@ bool HangulHanjaConverter::loadFile(const wchar_t *path)
 
 // Conversion
 
-std::wstring HangulHanjaConverter::convert(const std::wstring &text) const
+std::wstring HangulHanjaConverter::convert(const wchar_t *text) const
 {
-  if (text.size() < HANJA_MIN_SIZE || !d_->entries) // at least two elements
+  if (::wcslen(text) < HANJA_MIN_SIZE || !d_->entries) // at least two elements
     return text;
 
   std::wstring ret = text;
@@ -76,13 +75,44 @@ std::wstring HangulHanjaConverter::convert(const std::wstring &text) const
   return ret;
 }
 
-void HangulHanjaConverter::collect(const std::wstring &text, const collect_fun_t &fun) const
+void HangulHanjaConverter::collect(const wchar_t *text, size_t size, const collect_fun_t &fun) const
 {
-  if (text.empty() || !d_->entries) // at least two elements
+  if (!text[0] || !d_->entries) // at least two elements
     return;
-  if (text.size() < HANJA_MIN_SIZE)
-    fun(0, text.size(), nullptr);
-  d_->collect(text, fun);
+  //if (!size)
+  //  size = ::wcslen(text);
+  if (size < HANJA_MIN_SIZE)
+    fun(0, size, nullptr);
+  else
+    d_->collect(text, size, fun);
 }
+
+#ifdef WITH_LIB_UNISTR
+#include "unistr/uniiter.h"
+
+std::list<std::pair<std::wstring, std::wstring> >
+HangulHanjaConverter::parseToList(const std::wstring &text) const
+{
+  std::list<std::pair<std::wstring, std::wstring> > ret;
+  if (text.empty() || !d_->entries) // at least two elements
+    return ret;
+  const wchar_t *sentence = text.c_str();
+  uniiter::iter_words(sentence, text.size(), [&ret, sentence, this](size_t start, size_t length) {
+    //std::wstring word = sentence.substr(start, length);
+    const wchar_t *word = sentence + start;
+    if (length < HANJA_MIN_SIZE) // for better performance
+      ret.push_back(std::make_pair(std::wstring(word, length), std::wstring()));
+    else
+      this->collect(word, length, [&ret, word](size_t start, size_t length, const wchar_t *hanja) {
+        ret.push_back(std::make_pair(
+          std::wstring(word + start, length)
+          , hanja ? std::wstring(hanja) : std::wstring()
+        ));
+      });
+  });
+  return ret;
+}
+
+#endif // WITH_LIB_UNISTR
 
 // EOF
