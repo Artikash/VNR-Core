@@ -16,6 +16,8 @@ include($$LIBDIR/hanjaconv/hanjaconv.pri)
 QT += core
 QT -= gui
 
+#DEFINES += WITHOUT_CXX_CODECVT
+
 INCLUDEPATH += $$PYSIDE_HOME/include/PySide/QtCore
 
 ## Sources
