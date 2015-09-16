@@ -36,6 +36,7 @@ void test_hangul2hanja()
   // Ambiguity: 이용이
   // Supposed to be 利用이 instead of 이容易
   std::wstring s = L"자유 콘텐츠는 저작권이 소멸된 퍼블릭 도메인은 물론, 저작권이 있지만 위 기준에 따라 자유롭게 이용이 허락된 콘텐츠도 포함한다.";
+  //s = L"감사합니다";
   //std::wstring s = L"容易이용이";
   //std::wstring s = L"【오쿠라 리소나】「미나톤이 우리 집을 나온 후의 이야기군요. 외동딸(이었)였으므로, 그렇다면 집에서 인귀로라고 해도 좋다고 하는 것이 된 것 같아」";
   //std::wstring s = L"【오쿠라 리소나】「미나톤이";
