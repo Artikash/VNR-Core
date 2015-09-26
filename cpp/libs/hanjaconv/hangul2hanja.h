@@ -35,8 +35,11 @@ public:
   ///  Clear the loaded script
   void clear();
 
-  ///  Add script from file, reverse to determine the direction
+  ///  Set dictionary file.
   bool loadFile(const wchar_t *path);
+
+  ///  Set dictionary files.
+  bool loadFiles(const std::list<std::wstring> &paths);
 
   // Replacement
 

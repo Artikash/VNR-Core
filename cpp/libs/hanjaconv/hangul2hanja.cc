@@ -4,11 +4,44 @@
 #include "hanjaconv/hangul2hanja.h"
 #include "hanjaconv/hangul2hanja_p.h"
 #include "hanjaconv/hanjadef_p.h"
-#include <boost/foreach.hpp>
 #include <fstream>
 #include <utility> // for pair
 //#include <iostream>
 //#include <QDebug>
+
+/** Helper functions */
+
+namespace { // unnamed
+
+typedef std::pair<std::wstring, std::wstring> string_pair; // hangul -> hanja
+typedef std::list<string_pair> string_pair_list;
+
+bool parse_file(const wchar_t *path, string_pair_list &lines)
+{
+#ifdef _MSC_VER
+  std::wifstream fin(path);
+#else
+  std::string spath(path, path + ::wcslen(path));
+  std::wifstream fin(spath.c_str());
+#endif // _MSC_VER
+  if (!fin.is_open())
+    return false;
+  fin.imbue(HANJA_UTF8_LOCALE);
+
+  for (std::wstring line; std::getline(fin, line);)
+    if (line.size() >= 3 && line[0] != CH_COMMENT) {
+      size_t pos = line.find(CH_DELIM);
+      if (pos != std::string::npos && 1 <= pos && pos < line.size() - 1)
+        lines.push_back(std::make_pair(
+            line.substr(0, pos),
+            line.substr(pos + 1)));
+    }
+
+  fin.close();
+  return true;
+}
+
+} // unnamed namespace
 
 /** Public class */
 
@@ -23,44 +56,23 @@ bool HangulHanjaConverter::isEmpty() const { return !d_->entry_count; }
 void HangulHanjaConverter::clear() { d_->clear(); }
 
 // Initialization
+
 bool HangulHanjaConverter::loadFile(const wchar_t *path)
 {
-#ifdef _MSC_VER
-  std::wifstream fin(path);
-#else
-  std::string spath(path, path + ::wcslen(path));
-  std::wifstream fin(spath.c_str());
-#endif // _MSC_VER
-  if (!fin.is_open())
+  string_pair_list lines;
+  if (!::parse_file(path, lines))
     return false;
-  fin.imbue(HANJA_UTF8_LOCALE);
+  d_->reset(lines);
+  return !lines.empty();
+}
 
-  std::list<std::pair<std::wstring, std::wstring> > lines; // hanja, hangul
-
-  for (std::wstring line; std::getline(fin, line);)
-    if (line.size() >= 3 && line[0] != CH_COMMENT) {
-      size_t pos = line.find(CH_DELIM);
-      if (pos != std::string::npos && 1 <= pos && pos < line.size() - 1)
-        lines.push_back(std::make_pair(
-            line.substr(0, pos),
-            line.substr(pos + 1)));
-    }
-
-  fin.close();
-
-  if (lines.empty()) {
-    d_->clear();
-    return false;
-  }
-
-  //QWriteLocker locker(&d_->lock);
-  d_->resize(lines.size());
-
-  size_t i = 0;
-  BOOST_FOREACH (const auto &it, lines)
-    d_->entries[i++].reset(it.first, it.second);
-
-  return true;
+bool HangulHanjaConverter::loadFiles(const std::list<std::wstring> &paths)
+{
+  string_pair_list lines;
+  BOOST_FOREACH (const std::wstring &path, paths)
+    ::parse_file(path.c_str(), lines);
+  d_->reset(lines);
+  return !lines.empty();
 }
 
 // Conversion

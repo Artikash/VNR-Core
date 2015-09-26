@@ -5,6 +5,7 @@
 // 1/6/2015 jichi
 
 #include "hanjaconv/hangul2hanja.h"
+#include <boost/foreach.hpp>
 
 /** Private class */
 
@@ -46,10 +47,23 @@ public:
     //Q_ASSERT(size > 0);
     if (entry_count != size) {
       clear(); // clear first for thread-safety
-      if (entries)
-        delete[] entries;
-      entries = new entry_type[size];
-      entry_count = size;
+      if (size) {
+        entries = new entry_type[size];
+        entry_count = size;
+      }
+    }
+  }
+
+  void reset(const std::list<std::pair<std::wstring, std::wstring> > &lines) // hanja, hangul
+  {
+    if (lines.empty())
+      clear();
+    else {
+      resize(lines.size());
+
+      size_t i = 0;
+      BOOST_FOREACH (const auto &it, lines)
+        entries[i++].reset(it.first, it.second);
     }
   }
 

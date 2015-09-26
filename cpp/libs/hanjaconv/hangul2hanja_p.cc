@@ -32,12 +32,13 @@ void HangulHanjaConverterPrivate::collect(const wchar_t *text, size_t size, cons
   size_t pos = 0,
          lastpos = 0,
          len;
-  while (pos <= size - HANJA_MIN_SIZE)
+  while (pos <= size - HANJA_MIN_SIZE) {
     if (len = collect_first(text, size, pos, lastpos, fun)) {
       pos += len;
       lastpos = pos;
     } else
       pos++;
+  }
   if (lastpos < size)
     fun(lastpos, size - lastpos, nullptr);
     //collect_hangul(text, lastpos, text.size() - lastpos, fun);
@@ -77,7 +78,7 @@ size_t HangulHanjaConverterPrivate::collect_first(const wchar_t *text, size_t si
         fun(last, start - last, nullptr);
         //collect_hangul(text, last, start - last, fun);
       fun(start, e.hangul.size(), e.hanja.c_str());
-      return e.hanja.size();
+      return e.hangul.size();
     }
   }
   return 0;
