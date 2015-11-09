@@ -19,7 +19,7 @@ session = requests # global session
 API = "http://tranzz.com/api/trans"
 
 APP_KEY = 'vnr' # str
-APP_VERSION = 1447039633 # int
+APP_VERSION = 0 # int
 
 LANG_MAP = {
   'zhs': 'zh-CN',
