@@ -12,6 +12,6 @@ enum : char {
   , CH_DELIM = '\t' // deliminator
 };
 
-extern const std::locale UTF8_LOCALE;
+extern const std::locale HANJA_UTF8_LOCALE;
 
 #endif // HANJADEF_P_H

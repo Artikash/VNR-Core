@@ -98,7 +98,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
-  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.3/jquery-ui.min.js
+  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js
 
   bootstrap.growl: $PWD/../AJAX/github/bootstrap-growl.min.js
 
@@ -111,16 +111,16 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   sprintf: $PWD/../AJAX/github/sprintf.min.js
 
-  masonry: http://cdn.jsdelivr.net/masonry/3.3.0/masonry.pkgd.min.js
+  masonry: http://cdn.jsdelivr.net/masonry/3.3.2/masonry.pkgd.min.js
 
-  moment: http://cdn.jsdelivr.net/momentjs/2.10.3/moment-with-locales.min.js
+  moment: http://cdn.jsdelivr.net/momentjs/2.10.6/moment-with-locales.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
   underscore: http://cdn.jsdelivr.net/lodash/3.10.1/lodash.min.js
   # Underscore.string has been outdated
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
 
-  spin: http://cdn.jsdelivr.net/spinjs/2.0.1/spin.min.js
-  jquery.spin: http://cdn.jsdelivr.net/spinjs/2.0.1/jquery.spin.min.js
+  spin: http://cdn.jsdelivr.net/spinjs/2.3.2/spin.min.js
+  jquery.spin: http://cdn.jsdelivr.net/spinjs/2.3.2/jquery.spin.min.js
 
   # CDNJS: http://cdnjs.com
 

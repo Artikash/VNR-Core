@@ -107,7 +107,7 @@ bool HanjaHangulWordConverter::addDictionary(const wchar_t *path)
 #endif // _MSC_VER
   if (!fin.is_open())
     return false;
-  fin.imbue(UTF8_LOCALE);
+  fin.imbue(HANJA_UTF8_LOCALE);
 
   std::list<std::pair<std::wstring, std::wstring> > lines; // hanja, hangul
 

@@ -18,7 +18,7 @@
 
 namespace { // unnamed
 
-ulong moduleBaseAddress_;
+ulong moduleBaseAddress_; // saved only for debugging purposes
 
 bool isBadText(LPCWSTR text)
 {
@@ -100,7 +100,6 @@ namespace Private {
  *  Debugging method: Find the fixed text address, and check when it is being modified
  *
  *  Scenario caller, text in the struct of arg1 + 0x4.
- *
  */
 bool attach(ulong startAddress, ulong stopAddress)
 {
@@ -761,7 +760,7 @@ namespace Private {
     enum { role = Engine::OtherRole };
     QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
-    if (newText.isEmpty() ||  oldText == newText)
+    if (newText.isEmpty() || oldText == newText)
       return true;
     newText.replace("%r", "\n");
     text_ = newText;
@@ -1499,7 +1498,7 @@ bool GXPEngine::attach()
 
 /**
  *  FIXME: Figure out ruby syntax
- *  Guessed ruby syntax: ≪rb／rt≫
+ *  Guessed ruby syntax: ≪rb／rt≫, which would however crash the game.
  *  The above syntax might also work for YU-RIS engine.
  */
 QString GXPEngine::rubyCreate(const QString &rb, const QString &rt)
@@ -1537,7 +1536,7 @@ namespace Private {
     auto role = Engine::OtherRole;
     QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
-    if (newText.isEmpty() ||  oldText == newText)
+    if (newText.isEmpty() || oldText == newText)
       return true;
     text_ = newText;
     s->stack[1] = (ulong)text_.utf16();
@@ -1667,7 +1666,7 @@ namespace Private {
     auto role = Engine::ChoiceRole;
     QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
-    if (newText.isEmpty() ||  oldText == newText)
+    if (newText.isEmpty() || oldText == newText)
       return true;
     //if (text[0] != 0x30d7)
     //  return true;
@@ -2251,7 +2250,7 @@ namespace Private {
     enum { role = Engine::ChoiceRole };
     QString oldText = QString::fromWCharArray(text),
             newText = EngineController::instance()->dispatchTextW(oldText, role, reladdr);
-    if (newText.isEmpty() ||  oldText == newText)
+    if (newText.isEmpty() || oldText == newText)
       return true;
     text_ = newText;
     s->stack[3] = (ulong)text_.utf16();
@@ -2405,6 +2404,5 @@ bool attach(ulong startAddress, ulong stopAddress)
   return winhook::hook_before(addr, Private::hookBefore);
 }
 } // namespace ChoiceHook
-
 
 #endif // 0

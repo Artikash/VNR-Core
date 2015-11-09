@@ -793,9 +793,9 @@ class OnlineMachineTranslator(MachineTranslator):
     @param  fr  str
     @return  (str to, str fr)
     """
-    if fr not in mtinfo.get_t_langs(self.key):
+    if fr not in mtinfo.get_s_langs(self.key):
       return None, None
-    if to not in mtinfo.get_s_langs(self.key):
+    if to not in mtinfo.get_t_langs(self.key):
       to = 'en'
     return to, fr
 
@@ -2010,7 +2010,7 @@ class TransruTranslator(OnlineMachineTranslator):
 class VTranslator(OnlineMachineTranslator):
   key = 'vtrans' # override
   asyncSupported = False # override  disable async
-  alignSupported = True # override
+  alignSupported = False # override
 
   MAX_FAILED_COUNT = 15
 
@@ -2019,7 +2019,7 @@ class VTranslator(OnlineMachineTranslator):
     self.failedCount = 0
 
     from vtrans import vtrans
-    vtrans.CLIENT_VERSION = config.VERSION_TIMESTAMP
+    vtrans.APP_VERSION = config.VERSION_TIMESTAMP
     vtrans.session = session or requests.Session()
     self.engine = vtrans
 
@@ -2028,10 +2028,9 @@ class VTranslator(OnlineMachineTranslator):
     if self.failedCount > self.MAX_FAILED_COUNT:
       dwarn("failed for too many times")
       return None, None, None
-    if fr != 'ja':
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
       return None, None, None
-    if not to.startswith('zh'):
-      to = 'zhs'
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -2048,18 +2047,22 @@ class VTranslator(OnlineMachineTranslator):
           to, fr, async, keepsNewLine)
       if repl:
         repl = self._decodeTranslation(repl, to=to, fr=fr, mark=mark, emit=emit, context=context, proxies=proxies)
-        if to == 'zht':
-          repl = zhs2zht(repl)
+        #if to == 'zht':
+        #  repl = zhs2zht(repl)
         self.cache.update(text, repl)
         if not keepsNewLine:
           repl = repl.strip()
-      else:
+      elif repl is None:
         self.failedCount += 1
     return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False, **kwargs):
     """@reimp"""
     #async = True # force enable async
+    to, fr = self._checkLanguages(to, fr)
+    if not to or not fr:
+      dwarn("unsupported languages: %s => %s" % (fr, to))
+      return None
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
     except Exception, e:

@@ -1,12 +1,12 @@
 #pragma once
 
-// textunion.h
-// 8/29/2015 jichi
-// No idea why these structures appear a lot.
+// textcache.h
+// 8/30/2015 jichi
 
 #include <cstdint>
 #include <list>
 
+// A simple but very inefficient implementation for LRU cache.
 class TextHashCache
 {
   int capacity_;

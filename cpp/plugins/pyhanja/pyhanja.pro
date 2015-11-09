@@ -7,6 +7,7 @@
 CONFIG += pysideplugin noqtgui
 include(../../../config.pri)
 include($$LIBDIR/hanjaconv/hanjaconv.pri)
+#include($$LIBDIR/unistr/unistr.pri)
 
 #INCLUDEPATH += $$LIBDIR/hanjaconv # needed by shiboken generated code
 
@@ -14,6 +15,8 @@ include($$LIBDIR/hanjaconv/hanjaconv.pri)
 
 QT += core
 QT -= gui
+
+#DEFINES += WITHOUT_CXX_CODECVT
 
 INCLUDEPATH += $$PYSIDE_HOME/include/PySide/QtCore
 

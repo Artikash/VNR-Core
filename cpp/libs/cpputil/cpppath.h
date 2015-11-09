@@ -22,13 +22,13 @@ inline const charT *cpp_basic_basename(const charT *s)
 }
 
 //if (const char *r = ::strrchr(s, pathsep))
-//  return r + 1; // skip the path separator
+//  return r + 1; // skip the path seperator
 //else
 //  return s;
 inline const char *cpp_basename(const char *s) { return cpp_basic_basename<char>(s); }
 
 //if (const wchar_t *r = ::wcsrchr(s, pathsep))
-//  return r + 1; // skip the path separator
+//  return r + 1; // skip the path seperator
 //else
 //  return s;
 inline const wchar_t *cpp_wbasename(const wchar_t *s) { return cpp_basic_basename<wchar_t>(s); }

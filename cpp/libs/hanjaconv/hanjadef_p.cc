@@ -4,6 +4,6 @@
 #include "hanjaconv/hanjadef_p.h"
 #include "cpputil/cpplocale.h"
 
-const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
+const std::locale HANJA_UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 // EOF

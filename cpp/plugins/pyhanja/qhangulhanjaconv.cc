@@ -32,7 +32,7 @@ bool QHangulHanjaConverter::loadFile(const QString &path)
 { return d_->conv.loadFile((const wchar_t *)path.utf16()); }
 
 QString QHangulHanjaConverter::convert(const QString &text) const
-{ return QString::fromStdWString(d_->conv.convert(text.toStdWString())); }
+{ return QString::fromStdWString(d_->conv.convert((const wchar_t *)text.utf16())); }
 
 QList<QList<QPair<QString, QString> > >
 QHangulHanjaConverter::parse(const QString &text) const
@@ -42,17 +42,16 @@ QHangulHanjaConverter::parse(const QString &text) const
   typedef QList<PairList> PairListList;
 
   PairListList ret;
-  std::wstring sentence = text.toStdWString();
-  ::hangul_iter_parse(sentence, [&ret, &sentence, this](size_t start, size_t stop) {
-
-    std::wstring word = sentence.substr(start, stop);
-
+  const wchar_t *sentence = (const wchar_t *)text.utf16();
+  ::hangul_iter_words(sentence, text.size(), [&ret, sentence, this](size_t start, size_t length) {
     ret.append(PairList());
     auto &l = ret.last();
 
-    this->d_->conv.collect(word, [&l, &word](size_t start, size_t length, const wchar_t *hanja) {
+    //std::wstring word = sentence.substr(start, length);
+    const wchar_t *word = sentence + start;
+    this->d_->conv.collect(word, length, [&l, word](size_t start, size_t length, const wchar_t *hanja) {
       l.append(qMakePair(
-        QString::fromWCharArray(word.c_str() + start, length)
+        QString::fromWCharArray(word + start, length)
         , hanja ? QString::fromWCharArray(hanja) : QString()
       ));
     });

@@ -4,6 +4,7 @@
 CONFIG += noqtgui
 include(../../../config.pri)
 include($$LIBDIR/hanjaconv/hanjaconv.pri)
+include($$LIBDIR/unistr/unistr.pri)
 
 # Source
 

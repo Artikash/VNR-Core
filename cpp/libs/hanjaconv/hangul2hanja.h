@@ -6,7 +6,9 @@
 
 #include "sakurakit/skglobal.h"
 #include <functional>
+#include <list>
 #include <string>
+#include <utility> // for pair
 
 class HangulHanjaConverterPrivate;
 class HangulHanjaConverter
@@ -33,16 +35,22 @@ public:
   ///  Clear the loaded script
   void clear();
 
-  ///  Add script from file, reverse to determine the direction
+  ///  Set dictionary file.
   bool loadFile(const wchar_t *path);
+
+  ///  Set dictionary files.
+  bool loadFiles(const std::list<std::wstring> &paths);
 
   // Replacement
 
   // Replace the characters according to the script, thread-safe
-  std::wstring convert(const std::wstring &text) const;
+  std::wstring convert(const wchar_t *text) const;
 
   // Collect list of replaced words.
-  void collect(const std::wstring &text, const collect_fun_t &fun) const;
+  void collect(const wchar_t *text, size_t size, const collect_fun_t &fun) const;
+
+  // Collect to list.
+  std::list<std::pair<std::wstring, std::wstring> > parseToList(const std::wstring &text) const;
 };
 
 #endif // HANGUL2HANJA_H
