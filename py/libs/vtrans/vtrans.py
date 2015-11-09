@@ -16,15 +16,17 @@ from sakurakit.skdebug import dwarn, derror
 
 session = requests # global session
 
-#HOST = "http://sakuradite.com"
-#HOST = "http://localhost:5000"
-HOST = "http://153.121.54.194"
-API = HOST + "/api/json/mt/tr"
+API = "http://tranzz.com/api/trans"
 
-CLIENT_KEY = 'vnr' # str
-CLIENT_VERSION = 0 # int
+APP_KEY = 'vnr' # str
+APP_VERSION = 1447039633 # int
 
-def translate(text, to='zhs', fr='ja', align=None):
+LANG_MAP = {
+  'zhs': 'zh-CN',
+  'zht': 'zh-TW',
+}
+
+def translate(text, to='zhs', fr='ja', domain='game'):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param* fr  unicode not None, must be valid language code
@@ -35,14 +37,16 @@ def translate(text, to='zhs', fr='ja', align=None):
   Returned text is not decoded, as its encoding can be guessed.
   """
   try:
+    fr = LANG_MAP.get(fr) or fr
+    to = LANG_MAP.get(to) or to
     r = session.post(API, # both post and get work
       data={
-        'hl': fr, # host language
-        's': to, # source languaeg
+        'fr': fr, # host language
+        'to': to, # source languaeg
         'q': text, # query
-        'client': CLIENT_KEY,
-        'version': CLIENT_VERSION,
-        #'align': 'true' if align is not None else '',
+        'domain': domain,
+        'app': APP_KEY,
+        'version': APP_VERSION,
       }
     )
 
@@ -54,9 +58,7 @@ def translate(text, to='zhs', fr='ja', align=None):
     if r.ok and ret:
       data = json.loads(ret)
       if data.get('status') == 0:
-        ret = data['result']['t']
-        #if align is not None:
-        #  align.extend(_iteralign(l[0], text)) # only do to the first list
+        ret = data['data']['t']
         return ret
 
   #except socket.error, e:
@@ -82,11 +84,13 @@ if __name__ == '__main__':
 
     #s = u"オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"
     #s = "test"
-    #s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
-    s = u"悠真くんを攻略すれば２１０円か。"
+    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    #s = u"悠真くんを攻略すれば２１０円か。"
     #s = u"なるほどなぁ…"
     fr = "ja"
-    to = "zhs"
+    #to = "zhs"
+    to = "ko"
+    #to = "en"
 
     #s = u"What are you doing?"
     #fr = "en"
@@ -101,13 +105,10 @@ if __name__ == '__main__':
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    m = []
-    #m = None
-
     session = requests.Session()
     with SkProfiler():
       for i in range(1):
-        t = translate(s, to=to, fr=fr, align=m)
+        t = translate(s, to=to, fr=fr)
     print t
     print type(t)
 
@@ -119,11 +120,12 @@ if __name__ == '__main__':
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    app.quit()
+    #app.quit()
 
-  from PySide.QtCore import QCoreApplication, QTimer
-  app = QCoreApplication(sys.argv)
-  QTimer.singleShot(0, test)
-  app.exec_()
+  test()
+  #from PySide.QtCore import QCoreApplication, QTimer
+  #app = QCoreApplication(sys.argv)
+  #QTimer.singleShot(0, test)
+  #app.exec_()
 
 # EOF
