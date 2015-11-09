@@ -793,9 +793,9 @@ class OnlineMachineTranslator(MachineTranslator):
     @param  fr  str
     @return  (str to, str fr)
     """
-    if fr not in mtinfo.get_t_langs(self.key):
+    if fr not in mtinfo.get_s_langs(self.key):
       return None, None
-    if to not in mtinfo.get_s_langs(self.key):
+    if to not in mtinfo.get_t_langs(self.key):
       to = 'en'
     return to, fr
 
