@@ -20,18 +20,19 @@ API = "http://tranzz.com/api/trans"
 
 APP_KEY = 'vnr' # str
 APP_VERSION = 0 # int
+APP_DOMAIN = 'game' # str
 
 LANG_MAP = {
   'zhs': 'zh-CN',
   'zht': 'zh-TW',
 }
 
-def translate(text, to='zhs', fr='ja', domain='game'):
+def translate(text, to='zhs', fr='ja', domain=APP_DOMAIN):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
   @param* fr  unicode not None, must be valid language code
   @param* to  unicode not None, must be valid language code
-  @param* align  None or list  insert [unicode surf, unicode trans] if not None
+  @param* domain  str
   @return  unicode or None
 
   Returned text is not decoded, as its encoding can be guessed.

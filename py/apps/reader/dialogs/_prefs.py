@@ -2731,7 +2731,7 @@ class _TextTab(object):
       ('lec',       None, None, 'en'),
       ('atlas',     None, None, 'en'),
       ('hanviet',  'HanViet',  'hanViet', 'vi'),
-      ('vtrans',   'VTrans', None, 'zh'),
+      ('vtrans',   'VTrans', None, None),
       ('romaji',    None, None,  None),
     )
     i = 0
@@ -3193,10 +3193,10 @@ class _MachineTranslationTab(object):
       #row = create_retrans_row('transru', self.transruButton)
       #grid.addLayout(row, r, 1, 1, 2)
 
-    if 'zh' not in blans:
-      r += 1
-      grid.addWidget(self._createBrowseButton("http://sakuradite.com/trans"), r, 0)
-      grid.addWidget(self.vtransButton, r, 1)
+    #if 'zh' not in blans:
+    r += 1
+    grid.addWidget(self._createBrowseButton("http://tranzz.com/translate"), r, 0)
+    grid.addWidget(self.vtransButton, r, 1)
 
     # Offline
     r += 1
@@ -3685,9 +3685,9 @@ class _MachineTranslationTab(object):
 
   @memoizedproperty
   def vtransButton(self):
-    ret = QtWidgets.QCheckBox(u"%s (α, %s, %s)" % (
+    ret = QtWidgets.QCheckBox(u"%s (α, %s)" % (
       my.tr("VNR's online translator trained by user-contributed subtitles for VNs"),
-      my.tr("Japanese-Chinese only"),
+      #my.tr("Japanese-Chinese only"),
       my.tr("experimental"),
     ))
     ret.setStyleSheet("QCheckBox{color:brown}")
