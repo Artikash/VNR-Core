@@ -16,7 +16,7 @@ from sakurakit.skdebug import dwarn, derror
 
 session = requests # global session
 
-API = "http://tranzz.com/api/trans"
+API = "http://tranzz.com/api/translate"
 
 APP_KEY = 'vnr' # str
 APP_VERSION = 0 # int
