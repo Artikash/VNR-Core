@@ -44,8 +44,9 @@ def _make_script_interpreter(type): # str -> Object
   else:
     from pytrscript import TranslationScriptPerformer
     ret = TranslationScriptPerformer()
+  # 11/15/2015: QMutex for script removed which might crash VNR
   #ret.rwlock = QReadWriteLock()
-  ret.mutex = QMutex()
+  #ret.mutex = QMutex()
   return ret
 
 DELEGATE_DISABLED_LANGUAGES = 'el', # languages where user-defined delegation is disabled
@@ -183,10 +184,10 @@ class _TermManager:
         #elif not man.isEmpty():
         #  man.clear()
         else:
-          man.mutex.lock()
+          #man.mutex.lock()
           if not man.isEmpty():
             man.clear()
-          man.mutex.unlock()
+          #man.mutex.unlock()
         try:
           if type == 'trans':
             proxies = self.proxies.get((to, fr))
@@ -194,9 +195,9 @@ class _TermManager:
               del proxies[:]
 
           if w.saveTerms(path, type, to, fr, macros):
-            man.mutex.lock()
+            #man.mutex.lock()
             ok = man.loadScript(path)
-            man.mutex.unlock()
+            #man.mutex.unlock()
             if ok and type == 'trans':
               self.proxies[(to, fr)] = w.queryProxies(to, fr)
             dprint("type = %s, to = %s, fr = %s, count = %s" % (type, to, fr, man.size()))
@@ -244,9 +245,9 @@ class _TermManager:
     if not man: #or man.isEmpty():
       return text
 
-    if not man.mutex.tryLock(TERM_TRYLOCK_INTERVAL):
-      dwarn("try lock timeout")
-      return text
+    #if not man.mutex.tryLock(TERM_TRYLOCK_INTERVAL):
+    #  dwarn("try lock timeout")
+    #  return text
 
     ret = text
     if not man.isEmpty():
@@ -257,7 +258,7 @@ class _TermManager:
         ret = man.decode(text, category, mark)
       else:
         ret = man.transform(text, category, mark)
-    man.mutex.unlock()
+    #man.mutex.unlock()
     return ret
 
   def warmupTerms(self, type, to, fr):
