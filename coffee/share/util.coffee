@@ -13,8 +13,8 @@ require:
 - libs/linkify
 ###
 
-#HOST = 'http://sakuradite.com'
-HOST = 'http://153.121.54.194'
+HOST = 'http://sakuradite.com'
+#HOST = 'http://153.121.54.194'
 
 @tr = (text) -> i18nBean.tr text # string -> string
 
