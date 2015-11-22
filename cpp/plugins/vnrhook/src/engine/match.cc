@@ -285,7 +285,7 @@ bool DetermineEngineByFile2()
     return true;
   }
   if (IthFindFile(L"*.npa")) {
-    InsertNitroPlusHook();
+    InsertNitroplusHook();
     return true;
   }
   return false;
@@ -668,6 +668,12 @@ bool DetermineNoEngine()
   // jichi 6/7/2015: RPGMaker v3
   if (IthFindFile(L"*.rgss3a")) {
     ConsoleOutput("vnreng: IGNORE RPGMaker RGSS3");
+    return true;
+  }
+
+  // jichi 11/22/2015: 凍京NECRO 体験版
+  if (IthFindFile(L"*.npk")) {
+    ConsoleOutput("vnreng: IGNORE new Nitroplus");
     return true;
   }
 

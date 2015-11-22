@@ -92,6 +92,9 @@ inline size_t measureTextSize(const wchar_t *begin, const wchar_t *end)
 inline size_t measureTextSize(const QString &text)
 { return measureTextSize(static_cast<const wchar_t *>(text.utf16())); }
 
+QString thin2wide(const QString &text);
+QString wide2thin(const QString &text);
+
 } // namespace Util
 
 // EOF

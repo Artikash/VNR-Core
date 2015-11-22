@@ -358,6 +358,8 @@ public:
       ret.replace("\n", model->newLineString);
     if (model->translationFilterFunction)
       ret = model->translationFilterFunction(ret, role);
+    if (model->enableThin2WideCharacters)
+      ret = Util::thin2wide(ret);
     return ret;
   }
 };

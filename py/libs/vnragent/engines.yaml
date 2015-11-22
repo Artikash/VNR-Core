@@ -89,6 +89,10 @@
   exist: aInfo.db
   #encoding: sjis
 
+- name: EmbedNitroplus  # 11/22/2015  Nitroplus2
+  exist: "*.npk"
+  #encoding: sjis
+
 - name: EmbedPal # 7/18/2015
   exist: dll/Pal.dll
   #encoding: sjis

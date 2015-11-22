@@ -123,7 +123,7 @@ bool InsertMinkHook();          // Mink: *.at2
 bool InsertNeXASHook();         // NeXAS: Thumbnail.pac
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNexton1Hook();
-bool InsertNitroPlusHook();     // NitroPlus: *.npa
+bool InsertNitroplusHook();     // Nitroplus: *.npa
 bool InsertPalHook();           // AMUSE CRAFT: *.pac
 bool InsertPensilHook();        // Pensil: PSetup.exe
 bool InsertQLIEHook();          // QLiE: GameData/*.pack

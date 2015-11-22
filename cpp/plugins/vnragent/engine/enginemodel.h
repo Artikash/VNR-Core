@@ -25,6 +25,7 @@ public:
     , enableDynamicFont(false)      // change GDI device context font
     , enableDynamicEncoding(false)  // whether use dynamic codec to fix ascii text
     , enableNonDecodableCharacters(false) // allow having non-encodable characters
+    , enableThin2WideCharacters(false)     // Force using wide character in the translation
     , dynamicEncodingMinimumByte(0) // minimum value for the dynamic sjis
 
     , scenarioLineCapacity(0)       // estimated maximum number of thin characters for scenario text per line, 0 to disable it
@@ -47,6 +48,8 @@ public:
        enableDynamicFont,
        enableDynamicEncoding,
        enableNonDecodableCharacters;
+
+  bool enableThin2WideCharacters;
 
   int dynamicEncodingMinimumByte;
 

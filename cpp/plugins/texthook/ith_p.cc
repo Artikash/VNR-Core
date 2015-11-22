@@ -109,6 +109,10 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
     offset++;
     hp.type |= FIXING_SPLIT;
   }
+  if (*offset == L'j' || *offset == 'J') { // 11/22/2015: J stands for Japanese only
+    offset++;
+    hp.type |= NO_ASCII;
+  }
   while (!accept) {
     t = Convert(offset, data, delim);
     if (t < 0)

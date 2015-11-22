@@ -24,6 +24,34 @@ bool Util::allHangul(const wchar_t *s)
   return true;
 }
 
+QString Util::thin2wide(const QString &s)
+{
+  QString r;
+  foreach (const QChar &it, s) {
+    wchar_t ch = it.unicode();
+    if (ch == ' ')
+      ch = 0x3000;
+    else
+      ch = unistr::thin2wide(ch);
+    r.push_back(ch);
+  }
+  return r;
+}
+
+QString Util::wide2thin(const QString &s)
+{
+  QString r;
+  foreach (const QChar &it, s) {
+    wchar_t ch = it.unicode();
+    if (ch == 0x3000)
+      ch = ' ';
+    else
+      ch = unistr::wide2thin(ch);
+    r.push_back(ch);
+  }
+  return r;
+}
+
 // EOF
 
 #if 0

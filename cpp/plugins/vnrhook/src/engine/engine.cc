@@ -6417,12 +6417,12 @@ bool InsertCatSystemHook()
   return true;
 }
 
-bool InsertNitroPlusHook()
+bool InsertNitroplusHook()
 {
   const BYTE bytes[] = {0xb0, 0x74, 0x53};
   DWORD addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
-    ConsoleOutput("vnreng:NitroPlus: pattern not exist");
+    ConsoleOutput("vnreng:Nitroplus: pattern not exist");
     return false;
   }
   enum : WORD { sub_esp = 0xec83 }; // caller pattern: sub esp = 0x83,0xec
@@ -6434,9 +6434,9 @@ bool InsertNitroPlusHook()
   hp.offset = -0x14+ (b << 2);
   hp.length_offset = 1;
   hp.type = BIG_ENDIAN;
-  ConsoleOutput("vnreng: INSERT NitroPlus");
-  NewHook(hp, "NitroPlus");
-  //RegisterEngineType(ENGINE_NITROPLUS);
+  ConsoleOutput("vnreng: INSERT Nitroplus");
+  NewHook(hp, "Nitroplus");
+  //RegisterEngineType(ENGINE_Nitroplus);
   return true;
 }
 
