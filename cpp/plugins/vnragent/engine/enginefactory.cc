@@ -26,6 +26,7 @@
 #include "engine/model/minori.h"
 #include "engine/model/mono.h"
 #include "engine/model/nexton.h"
+#include "engine/model/nitro.h"
 #include "engine/model/pal.h"
 #include "engine/model/pensil.h"
 #include "engine/model/qlie.h"
@@ -68,6 +69,7 @@ EngineController *EngineFactory::createEngine()
     , new QLiEEngine
     , new PensilEngine
     , new PalEngine
+    , new NitroplusEngine
     , new NextonEngine
     , new MonoEngine
     , new MinoriEngine

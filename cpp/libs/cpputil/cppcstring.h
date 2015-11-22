@@ -82,4 +82,31 @@ inline const char *cpp_strnstr(const char *s, const char *r, size_t n) { return 
 inline wchar_t *cpp_wcsnstr(wchar_t *s, const wchar_t *r, size_t n) { return cpp_basic_strnstr<wchar_t>(s, r, n); }
 inline const wchar_t *cpp_wcsnstr(const wchar_t *s, const wchar_t *r, size_t n) { return cpp_basic_strnstr<wchar_t>(s, r, n); }
 
+// strnpbrk
+
+// it might be faster to use strchr functions, which is not portable though
+#define cpp_basic_strnpbrk_(s, sep, n) \
+  { \
+    while (*s && n) { \
+      for (auto p = sep; *p; p++) \
+        if (*s == *p) \
+          return s; \
+      s++, n--; \
+    } \
+    return nullptr; \
+  }
+
+template <typename charT, typename char2T>
+inline charT *cpp_basic_strnpbrk(charT *dest, const char2T *breakset, size_t n)
+cpp_basic_strnpbrk_(dest, breakset, n)
+
+template <typename charT, typename char2T>
+inline const charT *cpp_basic_strnpbrk(const charT *dest, const char2T *breakset, size_t n)
+cpp_basic_strnpbrk_(dest, breakset, n)
+
+inline char *cpp_strnpbrk(char *dest, const char *breakset, size_t n) { return cpp_basic_strnpbrk(dest, breakset, n); }
+inline const char *cpp_strnpbrk(const char *dest, const char *breakset, size_t n) { return cpp_basic_strnpbrk(dest, breakset, n); }
+inline wchar_t *cpp_wcsnpbrk(wchar_t *dest, const wchar_t *breakset, size_t n) { return cpp_basic_strnpbrk(dest, breakset, n); }
+inline const wchar_t *cpp_wcsnpbrk(const wchar_t *dest, const wchar_t *breakset, size_t n) { return cpp_basic_strnpbrk(dest, breakset, n); }
+
 #endif // CPPCSTRING_H

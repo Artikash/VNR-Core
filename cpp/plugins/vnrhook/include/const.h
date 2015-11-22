@@ -99,18 +99,15 @@ enum HookParamType : unsigned long {
   , MODULE_OFFSET     = 0x40    // do hash module, and the address is relative to module
   , FUNCTION_OFFSET   = 0x80    // do hash function, and the address is relative to funccion
   //, PRINT_DWORD       = 0x100 // jichi 12/7/2014: Removed
+  , NO_ASCII          = 0x100   // jichi 1l/22/2015: Skip ascii characters
   , STRING_LAST_CHAR  = 0x200
   , NO_CONTEXT        = 0x400
-  //, EXTERN_HOOK       = 0x800   // jichi 10/24/2014: Removed
+  , HOOK_EMPTY        = 0x800
+  , FIXING_SPLIT      = 0x1000
   //, HOOK_AUXILIARY    = 0x2000  // jichi 12/13/2013: None of known hooks are auxiliary
+  , RELATIVE_SPLIT    = 0x2000 // jichi 10/24/2014: relative split return address
   , HOOK_ENGINE       = 0x4000
   , HOOK_ADDITIONAL   = 0x8000
-
-  // jichi 10/24/2014: Only trigger the dynamic function, do not return any data
-  , HOOK_EMPTY        = 0x800
-  // jichi 6/1/2014: fix the split value to 0x10001
-  , FIXING_SPLIT      = 0x1000
-  , RELATIVE_SPLIT    = 0x2000 // relative split return address
 };
 
 // 6/1/2014: Fixed split value for hok parameter

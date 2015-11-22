@@ -154,6 +154,7 @@ HEADERS += \
   engine/model/minori.h \
   engine/model/mono.h \
   engine/model/nexton.h \
+  engine/model/nitro.h \
   engine/model/pal.h \
   engine/model/pensil.h \
   engine/model/qlie.h \
@@ -197,6 +198,7 @@ SOURCES += \
   engine/model/minori.cc \
   engine/model/mono.cc \
   engine/model/nexton.cc \
+  engine/model/nitro.cc \
   engine/model/pal.cc \
   engine/model/pensil.cc \
   engine/model/qlie.cc \

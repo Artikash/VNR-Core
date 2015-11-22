@@ -12,6 +12,7 @@ rename:
   Eushully: ARCGameEngine
   Gesen18: Unicorn
   MAJIRO: Majiro
+  NitroPlus: Nitroplus
   Pencil: Pensil
   QLIE: QLiE
   QLIE2: QLiE2
@@ -79,6 +80,7 @@ embed:
   - Malie3
   - NEXTON
   #- NEXTON1
+  - Nitroplus2
   - Pensil
   - QLiE
   - QLiE2
@@ -110,6 +112,7 @@ embed_en:
   - Cotopha
   - Leaf
   - LunaSoft
+  - Nitroplus2
   - Pal
   - System43+
   - System44
@@ -120,6 +123,7 @@ embed_en:
   - EmbedCotopha
   - EmbedLeaf
   - EmbedLunaSoft
+  - EmbedNitroplus
   - EmbedPal
   - EmbedSystem4
   - EmbedSystem43
@@ -290,6 +294,7 @@ simple:
   - NeXAS
   - Nippon1 PSP
   - Nippon2 PSP
+  - Nitroplus2
   - Otomate PSP
   - Pal
   - Pencil # renamed
@@ -355,6 +360,7 @@ single: # single thread
   - GXP2
   - HorkEye
   - Malie3
+  #- Nitroplus2
   - Rejet
   - SiglusEngine2
   #- System43+
@@ -475,6 +481,7 @@ char:
   - EmbedLunaSoft
   - EmbedMinori
   - EmbedNexton
+  - EmbedNitroplus
   - EmbedPal
   - EmbedPensil
   - EmbedQLiE
@@ -561,7 +568,9 @@ char:
   - Mink
   - Nippon1 PSP
   - Nippon2 PSP
-  - NitroPlus
+  - NitroPlus # renamed
+  - Nitroplus
+  - Nitroplus2
   - Otomate PSP
   - Otomate PPSSPP
   - Pal
@@ -817,6 +826,7 @@ focus:
   #- Majiro
   #- Malie2
   #- Malie3
+  #- Nitroplus2
   #- Mink
   #- Mono
   #- NEXTON
