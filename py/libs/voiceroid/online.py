@@ -61,26 +61,38 @@ class Voice:
     self.url = url # str
 
 VOICES = ( # unicode key -> int id
-  Voice(994, 'zunko',  'f', u"東北ずん子", "http://www.ah-soft.com/voiceroid/zunko/"),
-  Voice(2,   'yukari', 'f', u"結月ゆかり", "http://www.ah-soft.com/voiceroid/yukari/"),
-  Voice(3,   'maki',   'f', u"民安ともえ", "http://www.ah-soft.com/voiceroid/maki/"),
-  Voice(992, 'aoi',    'f', u"琴葉 葵",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
-  Voice(999, 'akane',  'f', u"琴葉 茜",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
-  Voice(995, 'ai',     'f', u"月読アイ",   "http://www.ah-soft.com/voiceroid/ai/"),
-  Voice(996, 'shota',  'm', u"月読ショタ", "http://www.ah-soft.com/voiceroid/shota/"),
-  Voice(993, 'taka',  'm',  u"鷹の爪 吉田くん", "http://www.ah-soft.com/voiceroid/taka/"),
+  Voice(1202, 'zunko',  'f', u"東北ずん子", "http://www.ah-soft.com/voiceroid/zunko/"),
+  #Voice(994, 'zunko',  'f', u"東北ずん子", "http://www.ah-soft.com/voiceroid/zunko/"),
+  Voice(1206,   'yukari', 'f', u"結月ゆかり", "http://www.ah-soft.com/voiceroid/yukari/"),
+  #Voice(2,   'yukari', 'f', u"結月ゆかり", "http://www.ah-soft.com/voiceroid/yukari/"),
+  Voice(3,   'maki',    'f', u"民安ともえ", "http://www.ah-soft.com/voiceroid/maki/"),
+  Voice(1001, 'aoi',    'f', u"琴葉 葵",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
+  #Voice(992, 'aoi',    'f', u"琴葉 葵",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
+  Voice(203, 'akane',   'f', u"琴葉 茜",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
+  #Voice(999, 'akane',  'f', u"琴葉 茜",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
+  Voice(1203, 'ai',     'f', u"月読アイ",   "http://www.ah-soft.com/voiceroid/ai/"),
+  #Voice(995, 'ai',     'f', u"月読アイ",   "http://www.ah-soft.com/voiceroid/ai/"),
+  Voice(1204, 'shota',  'm', u"月読ショタ", "http://www.ah-soft.com/voiceroid/shota/"),
+  #Voice(996, 'shota',  'm', u"月読ショタ", "http://www.ah-soft.com/voiceroid/shota/"),
+  Voice(1207, 'kou',    'm', u"水無瀬コウ", "http://www.ah-soft.com/voiceroid/kou/"),
+  Voice(1201, 'taka',   'm', u"鷹の爪 吉田くん", "http://www.ah-soft.com/voiceroid/taka/"),
+  #Voice(993, 'taka',   'm', u"鷹の爪 吉田くん", "http://www.ah-soft.com/voiceroid/taka/"),
 )
 VOICES = OrderedDict(((it.key,it) for it in VOICES))
 
-API = "http://voice.ai-j.jp/aitalk_2webapi.php"
+API = "http://cloud.ai-j.jp/demo/aitalk2webapi.php"
 
 HEADERS = {
   'Content-Type':'application/x-www-form-urlencoded',
   'Referer': 'http://voice.ai-j.jp', # referrer is not needed, but used in case something is wrong
+  #'Referer': 'http://voice.ai-j.jp/voiceroid2demo_kou.swf',
 }
 
 def _urlencodefloat(v):
   return ("%s" % v).replace('.', '%2E') if isinstance(v, float) else "%s" % v
+
+# Example request:
+# Referer: http://voice.ai-j.jp/voiceroid2demo_kou.swf Content-type: application/x-www-form-urlencoded Content-length: 170 gain=&delay=&speaker%5Fpass=ai&speaker%5Fid=1207&pitch=1%2E0&speed=1%2E0&text=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF&password=aidemo&username=AIHPDemo&reqid=create
 
 # Pitch: [0.5, 2.0], default 1.0
 # Speed: [0.5, 2.0], default 1.0
@@ -100,7 +112,7 @@ def createdata(id, text, encoding='utf8', pitch=1, speed=1, gain=None, delay=Non
   if not text:
     return ''
   # %5F is '_', see: http://www.w3schools.com/tags/ref_urlencode.asp
-  ret = "password=aidemo&username=AIHPDemo&reqid=create&speaker%%5Fid=%s" % id
+  ret = "speaker%%5Fpass=ai&password=aidemo&username=AIHPDemo&reqid=create&speaker%%5Fid=%s" % id
   if pitch is not None:
     ret += "&pitch=" + _urlencodefloat(pitch)
   if speed is not None:
@@ -128,7 +140,8 @@ def resolveurl(data, session=requests):
 
 if __name__ == '__main__':
   text = u"こんにちは"
-  id = VOICES['yukari'].id
+  id = VOICES['aoi'].id
+  #id = VOICES['kou'].id
   data = createdata(id, text)
   print data
 
