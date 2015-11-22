@@ -211,21 +211,26 @@ qt:
 # urls
 
 apis:
-  host: http://153.121.54.194
+  host: http://sakuradite.com
+  #host: http://153.121.54.194
   #host: http://localhost:8080
   #
-  rest: http://153.121.54.194/api/xml
+  rest: http://sakuradite.com/api/xml
+  #rest: http://153.121.54.194/api/xml
   #rest: http://sakuradite.com/api/xml
   #rest: http://localhost:5000/api/xml
   #
-  cache: http://153.121.54.194/cache/api
+  cache: http://sakuradite.com/cache/api
+  #cache: http://153.121.54.194/cache/api
   #
-  ajax: http://153.121.54.194/api/json/ # must end with '/'
+  ajax: http://sakuradite.com/api/json/ # must end with '/'
+  #ajax: http://153.121.54.194/api/json/ # must end with '/'
   #ajax: http://localhost:8080/api/json/
   #ajax: http://localhost:8080/json/
   #ajax: http://localhost:5000/json/
   #
-  push: http://153.121.54.194/push/ # must end with '/'
+  push: http://sakuradite.com/push/ # must end with '/'
+  #push: http://153.121.54.194/push/ # must end with '/'
   #push: http://sakuradite.com/push/
   #push: http://localhost:8080/push/
 
@@ -283,7 +288,7 @@ proxies:
   kancolle:     http://203.104.209.7
 
   domains: # persistent DNS
-    sakuradite.com: 153.121.54.194
+    #sakuradite.com: 153.121.54.194
     sakuradite.org: 153.121.52.138
     getchu.com:     210.155.150.152
     erogamescape.dyndns.org: 122.219.66.141
