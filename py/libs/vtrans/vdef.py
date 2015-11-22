@@ -2,7 +2,7 @@
 # 2/9/2015 jichi
 
 MT_SOURCE_LANGUAGES = 'ja',
-MT_TARGET_LANGUAGES = 'zht', 'zhs', 'en', 'ko', 'vi', 'th', 'fr', 'es', 'ru'
+MT_TARGET_LANGUAGES = 'zht', 'zhs', 'en', 'ko' #, 'vi', 'th', 'fr', 'es', 'ru'
 
 def mt_s_langs(online=True): return MT_SOURCE_LANGUAGES
 def mt_t_langs(online=True): return MT_TARGET_LANGUAGES
