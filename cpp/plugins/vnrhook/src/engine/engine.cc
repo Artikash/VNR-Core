@@ -16034,7 +16034,7 @@ bool InsertMonoHooks()
   BOOST_FOREACH (const MonoFunction &it, funcs)
     if (FARPROC addr = ::GetProcAddress(h, it.functionName)) {
       hp.address = (DWORD)addr;
-      hp.type = it.hookType;
+      hp.type = it.hookType|NO_ASCII; // 11/27/2015: Disable ascii string
       hp.offset = it.textIndex * 4;
       hp.length_offset = it.lengthIndex * 4;
       hp.text_fun = (HookParam::text_fun_t)it.text_fun;

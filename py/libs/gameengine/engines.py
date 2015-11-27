@@ -202,7 +202,8 @@ class MonoEngine(Engine):
 
       addr = dbg.search_module_memory(pattern, "mono.dll")
       if addr > 0:
-        code = "/HWN-8*:3C@%x" % addr
+        # NO_ASCII(J)
+        code = "/HWNF-8*:3C@%x" % addr
         ret = self.addHook(code)
     dprint(ret)
     return ret
