@@ -1,25 +1,31 @@
 # coding: utf8
 # proxyconfig.py
 # 1/2/2015 jichi
+# See: http://www.pxaa.com
 # See: https://twitter.com/bypassproxy
 
-# Alternative proxies:
-# http://spy.pink
-# http://freeproxy.blue
-# http://netherlandsproxy.pw
 JPWEBPROXY_CONFIG = { # faster, but jittered
-  'host': 'http://netherlandsproxy.pw',
-  'referer': 'http://netherlandsproxy.pw',
-  'postkey': 'x',
+  'host': 'http://4freeproxy.com/includes/process.php?action=update',
+  'referer': 'http://4freeproxy.com',
+  'postkey': 'u',
   'region': 'ja',
 }
 
-USWEBPROXY_CONFIG = { # faster, but jittered
-  'host': 'http://japanwebproxy.com', # cannot access erogamescape
-  'referer': 'http://japanwebproxy.com',
-  'postkey': 'x',
-  'region': 'ja',
-}
+USWEBPROXY_CONFIG = JPWEBPROXY_CONFIG;
+
+#JPWEBPROXY_CONFIG = { # faster, but jittered
+#  'host': 'http://netherlandsproxy.pw',
+#  'referer': 'http://netherlandsproxy.pw',
+#  'postkey': 'x',
+#  'region': 'ja',
+#}
+
+#USWEBPROXY_CONFIG = { # faster, but jittered
+#  'host': 'http://japanwebproxy.com', # cannot access erogamescape
+#  'referer': 'http://japanwebproxy.com',
+#  'postkey': 'x',
+#  'region': 'ja',
+#}
 
 # Currently not supported yet
 #USWEBPROXY_CONFIG = {
