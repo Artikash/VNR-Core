@@ -124,6 +124,7 @@ processes:
   - JOCR.exe            # JOCR
   - JspVReader.exe      # 詠太2
   - jusched.exe         # Java
+  - Kakaotalk.exe       # Kakaotalk
   - KHALMNPR.exe        # Logitech
   - KuGou.exe           # Kugou
   - KMPlayer.exe        # KMPlayer
@@ -192,6 +193,7 @@ processes:
   - SpoilerAL.exe       # Game editor
   #- splayer.exe         # SPlayer
   #- Splayer.exe         # SPlayer # conflict with 真姫裸
+  - Steam.exe           # Steam
   - StormPlayer.exe     # Storm player
   - sttray.exe          # Dell
   - sublime_text.exe    # Sublime Text
