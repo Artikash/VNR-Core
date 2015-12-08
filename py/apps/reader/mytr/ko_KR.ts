@@ -90,12 +90,12 @@
     <message>
         <location filename="mytr.py" line="184"/>
         <source>Text thread</source>
-        <translation>텍스트 스레드</translation>
+        <translation>글타래</translation>
     </message>
     <message>
         <location filename="mytr.py" line="185"/>
         <source>Text threads</source>
-        <translation>텍스트 스레드</translation>
+        <translation>글타래</translation>
     </message>
     <message>
         <location filename="mytr.py" line="264"/>
@@ -145,7 +145,7 @@
     <message>
         <location filename="mytr.py" line="194"/>
         <source>Text color</source>
-        <translation>텍스트 색상</translation>
+        <translation>글자 색상</translation>
     </message>
     <message>
         <location filename="mytr.py" line="102"/>
@@ -315,7 +315,7 @@
     <message>
         <location filename="mytr.py" line="23"/>
         <source>Spring Board</source>
-        <translation>Spring Board</translation>
+        <translation>스프링보드</translation>
     </message>
     <message>
         <location filename="mytr.py" line="114"/>
@@ -445,7 +445,7 @@
     <message>
         <location filename="mytr.py" line="24"/>
         <source>Game Board</source>
-        <translation>Game Board</translation>
+        <translation>게임보드</translation>
     </message>
     <message>
         <location filename="mytr.py" line="147"/>
@@ -470,12 +470,12 @@
     <message>
         <location filename="mytr.py" line="81"/>
         <source>Matched text</source>
-        <translation>일치하는 텍스트</translation>
+        <translation>일치하는 글자</translation>
     </message>
     <message>
         <location filename="mytr.py" line="82"/>
         <source>Replaced text</source>
-        <translation>대체된 텍스트</translation>
+        <translation>대체된 글자</translation>
     </message>
     <message>
         <location filename="mytr.py" line="52"/>
@@ -695,7 +695,7 @@
     <message>
         <location filename="mytr.py" line="206"/>
         <source>Suffix</source>
-        <translation>호칭</translation>
+        <translation>접미어</translation>
     </message>
     <message>
         <location filename="mytr.py" line="210"/>
@@ -710,12 +710,12 @@
     <message>
         <location filename="mytr.py" line="214"/>
         <source>Input</source>
-        <translation>입력</translation>
+        <translation>전처리</translation>
     </message>
     <message>
         <location filename="mytr.py" line="215"/>
         <source>Output</source>
-        <translation>출력</translation>
+        <translation>후처리</translation>
     </message>
     <message>
         <location filename="mytr.py" line="202"/>
@@ -915,7 +915,7 @@
     <message>
         <location filename="mytr.py" line="129"/>
         <source>Hanazono font</source>
-        <translation>花園明朝글꼴</translation>
+        <translation>하나조노(花園明朝)글꼴</translation>
     </message>
     <message>
         <location filename="mytr.py" line="44"/>
@@ -940,7 +940,7 @@
     <message>
         <location filename="mytr.py" line="61"/>
         <source>Reset Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>설정 초기화</translation>
     </message>
 </context>
 </TS>

@@ -15,7 +15,7 @@
     <message>
         <location filename="dialogs/textprefs.py" line="329"/>
         <source>Apply text thread and encoding settings</source>
-        <translation>텍스트 스레드와 인코딩 설정 적용</translation>
+        <translation>글타래와 인코딩 설정 적용</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="533"/>
@@ -25,7 +25,7 @@
     <message>
         <location filename="dialogs/textprefs.py" line="536"/>
         <source>Missing major text thread</source>
-        <translation>텍스트 스레드를 찾을 수 없습니다</translation>
+        <translation>글타래를 찾을 수 없습니다</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="539"/>
@@ -45,7 +45,7 @@
     <message>
         <location filename="dialogs/gameedit.py" line="69"/>
         <source>Dashboard display name</source>
-        <translation>Dashboard 표시 이름</translation>
+        <translation>대시보드 표시 이름</translation>
     </message>
     <message>
         <location filename="dialogs/gameedit.py" line="281"/>
@@ -170,12 +170,12 @@ If the hook code appear here again, please delete it here again.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="630"/>
         <source>SpringBoard wallpaper location</source>
-        <translation>SpringBoard 배경화면 위치</translation>
+        <translation>스프링보드 배경화면 위치</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="607"/>
         <source>Just Drag-and-Drop your wallpaper file to the SpringBoard &gt;_&lt;</source>
-        <translation>배경화면 파일을 SpringBoard에 끌어놓아 보세요 &gt;_&lt;</translation>
+        <translation>배경화면 파일을 스프링보드에 끌어놓아 보세요 &gt;_&lt;</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="687"/>
@@ -343,7 +343,7 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="140"/>
         <source>By the way, you can also drag the game&apos;s exe/lnk to the SpringBoard, which is equivalent to #3 (select by file).</source>
-        <translation>덧붙여서, #3번(파일 선택)과 마찬가지로 직접 SpringBoard로 게임의 exe/lnk 파일을 드래그 할 수 있습니다.</translation>
+        <translation>덧붙여서, #3번(파일 선택)과 마찬가지로 직접 스프링보드로 게임의 exe/lnk 파일을 드래그 할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="177"/>
@@ -448,7 +448,7 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="690"/>
         <source>Analyzing the game threads</source>
-        <translation>게임 스레드 분석중</translation>
+        <translation>게임 글타래 분석중</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="695"/>
@@ -458,7 +458,7 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="744"/>
         <source>Successfully synchronized with text thread</source>
-        <translation>텍스트 스레드와 동기화 성공</translation>
+        <translation>글타래와 동기화 성공</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="747"/>
@@ -468,12 +468,12 @@ UAC가 켜진 Windows Vista나 Windows 7에선,
     <message>
         <location filename="dialogs/gamewiz.py" line="762"/>
         <source>Select the text thread</source>
-        <translation>텍스트 스레드 선택</translation>
+        <translation>글타래 선택</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="774"/>
         <source>Please play the game a little bit, and pick one text thread that has the same contents as the game text. If no text thread appears, please try editing the /H hook code for this game.</source>
-        <translation>게임을 약간 플레이하시고, 게임원문과 같은 내용이 있는 텍스트 스레드를 골라주세요. 텍스트 스레드가 보이지 않으면, 이 게임에 /H 후킹 코드를 수정해보세요.</translation>
+        <translation>게임을 약간 플레이하시고, 게임원문과 같은 내용이 있는 글타래를 골라주세요. 글타래가 보이지 않으면, 이 게임에 /H 후킹 코드를 수정해보세요.</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="821"/>
@@ -521,12 +521,12 @@ Especially if you would like to translate this game.</source>
 &lt;br/&gt;&lt;br/&gt;
 
 &lt;span style=&quot;color:green&quot;&gt;
-왼쪽 하단의&lt;span style=&quot;color:blue&quot;&gt;파랑색 버튼&lt;/span&gt;을 오른쪽 클릭하여 콘텍스트 메뉴에 접근할수 있습니다.
+왼쪽 하단의&lt;span style=&quot;color:blue&quot;&gt;파랑색 버튼&lt;/span&gt;을 오른쪽 클릭하여 컨텍스트 메뉴에 접근할수 있습니다.
 &lt;/span&gt;
 &lt;br/&gt;&lt;br/&gt;
 
 &lt;span style=&quot;color:brown&quot;&gt;
-&lt;b&gt;게임원문이 보이지 않으면&lt;/b&gt;, 이렇게&lt;a href=&quot;#&quot;&gt;텍스트 설정&lt;/a&gt;에서 텍스트 스레드를 조정하세요.
+&lt;b&gt;게임원문이 보이지 않으면&lt;/b&gt;, 이렇게&lt;a href=&quot;#&quot;&gt;텍스트 설정&lt;/a&gt;에서 글타래를 조정하세요.
 아니면 저에게 이메일을 보내주세요(&lt;a href=&quot;mailto:%s&quot;&gt;%s&lt;/a&gt;).
 &lt;/span&gt;
 &lt;br/&gt;&lt;br/&gt;
@@ -552,7 +552,7 @@ Especially if you would like to translate this game.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="842"/>
         <source>Automatically detect running game</source>
-        <translation>자동으로 실행중 게임 감지</translation>
+        <translation>자동으로 실행중 게임 인식</translation>
     </message>
     <message>
         <location filename="dialogs/prefs.py" line="249"/>
@@ -578,7 +578,7 @@ and then change the code to the correct one in Text Settings.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="767"/>
         <source>Enable hook code from other users to recognize text threads</source>
-        <translation>텍스트 스레드 인식을 위해 다른 사용자로부터 후킹코드 활성화</translation>
+        <translation>글타래 인식을 위해 다른 사용자로부터 후킹코드 활성화</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="833"/>
@@ -586,7 +586,7 @@ and then change the code to the correct one in Text Settings.</source>
 It is equivalent to clicking the Launch icon docked in Spring Board.
 But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>알고 있는 게임이 실행되면 VNR이 자동으로 동기화합니다.
-SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
+스프링보드에서 실행 아이콘을 클릭하는 것과 동일 합니다.
 느린 노트북일 경우, 이 기능은 윈도우를 느리게 할 수도 있습니다.</translation>
     </message>
     <message>
@@ -667,7 +667,7 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="managers/gameman.py" line="1187"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
-        <translation>게임 스레드를 찾을 수 없습니다. 게임 마법사를 사용해 설정을 해보세요.</translation>
+        <translation>게임 글타래를 찾을 수 없습니다. 게임 마법사를 사용해 설정을 해보세요.</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1203"/>
@@ -682,7 +682,7 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="dialogs/prompt.py" line="182"/>
         <source>Remove this game from the dashboard?</source>
-        <translation>Dashboard에서 게임을 제거하시겠습니까？</translation>
+        <translation>대시보드에서 게임을 제거하시겠습니까？</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1660"/>
@@ -752,7 +752,7 @@ SpringBoard에서 실행 아이콘을 클릭하는 것과 동일 합니다.
     <message>
         <location filename="dialogs/gameedit.py" line="78"/>
         <source>The game name displayed on the Spring Board</source>
-        <translation>SpringBoard에서 표시하는 게임 이름</translation>
+        <translation>스프링보드에서 표시할 이름</translation>
     </message>
     <message>
         <location filename="dialogs/gameedit.py" line="656"/>
@@ -1069,7 +1069,7 @@ It might take a couple of seconds to complete.</source>
     <message>
         <location filename="managers/dataman.py" line="10882"/>
         <source>Shared dictionary is empty</source>
-        <translation>공유 사전이 비어있습니다</translation>
+        <translation>공유사전이 비어있습니다</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="10879"/>
@@ -1381,7 +1381,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
     <message>
         <location filename="managers/dataman.py" line="6411"/>
         <source>No game references found</source>
-        <translation>게임 참조 찾을수 없음</translation>
+        <translation>게임 참조사이트를 찾을 수 없음</translation>
     </message>
     <message>
         <location filename="main.py" line="2087"/>
@@ -1391,7 +1391,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
     <message>
         <location filename="managers/dataman.py" line="10381"/>
         <source>Please sign in to submit reference</source>
-        <translation>참조를 등록하려면 로그인 해주세요.</translation>
+        <translation>참조사이트를 등록하려면 로그인 해주세요.</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="315"/>
@@ -1406,12 +1406,12 @@ For example, you can put in &quot;typo&quot;, &quot;inaccurate&quot;, or &quot;s
 </source>
         <translation>당신은 이 항목의 작성자가 아닙니다.
 다른 사람의 작품을 수정하는 이유를 적어주세요.
-예를 들어 &quot;부정확&quot;, &quot;광고&quot; 및 &quot;맞춤법 오류&quot;를 입력 할 수 있습니다.。</translation>
+예를 들어 &quot;부정확&quot;, &quot;광고&quot; 및 &quot;맞춤법 오류&quot;를 입력 할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="views/gameview.py" line="265"/>
         <source>The game title it not specified. You can click the Edit button to add one.</source>
-        <translation>게임 제목이 지정되지 않았습니다. 수정 버튼을 눌러 게임 제목을 추가할 수 있습니다.</translation>
+        <translation>게임 제목이 지정되지 않았습니다. 편집 버튼을 눌러 게임 제목을 추가할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/refinput.py" line="633"/>
@@ -1539,9 +1539,9 @@ User privilege describes what you can do to other users&apos; efforts (like subs
 &lt;h4&gt;성별에 대해서&lt;/h4&gt;
 TTS 음성합성 엔진에서, お兄ちゃん라 부를지 姉うえ라 부를지 결정합니다. &amp;gt; &amp;lt;
 
-&lt;h4&gt;특권에 대해서&lt;/h4&gt;
+&lt;h4&gt;특수권한에 대해서&lt;/h4&gt;
 VNR은 많은양의 사용자 기여를 받아왔습니다.
-사용자 특권은 자막과 같이 다른 사용자를 위한 노력을 나타냅니다.</translation>
+사용자 특수권한은 자막과 같이 다른 사용자를 위한 노력을 나타냅니다.</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="6685"/>
@@ -1561,12 +1561,12 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
     <message>
         <location filename="managers/textman.py" line="1017"/>
         <source>Keep all text threads generated from {0}</source>
-        <translation>{0}에서 생성된 모든 텍스트 스레드 보관</translation>
+        <translation>{0}에서 생성된 모든 글타래 보관</translation>
     </message>
     <message>
         <location filename="dialogs/textprefs.py" line="431"/>
         <source>Keep all threads from the selected dialog engine</source>
-        <translation>선택된 대화 엔진에서 모든 스레드 보관</translation>
+        <translation>선택된 대화 엔진에서 모든 글타래 보관</translation>
     </message>
     <message>
         <location filename="dialogs/hookprefs.py" line="100"/>
@@ -1612,7 +1612,7 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
 4. Add the game using Game Wizard</source>
         <translation>알 수 없는 게임을 실행하면, 다음을 순서대로 시도해 보세요:
 1. 게임 데이터베이스 업데이트
-2. Spring Board로 게임 Ink/exe를 끌어놓기
+2. 스프링보드로 게임 Ink/exe를 끌어놓기
 3. VNR을 관리자 권한으로 재실행
 4. 게임 마법사를 사용하여 게임 추가</translation>
     </message>
@@ -1654,22 +1654,22 @@ VNR은 많은양의 사용자 기여를 받아왔습니다.
     <message>
         <location filename="i18n.py" line="356"/>
         <source>Text thread from Windows Non-GUI function</source>
-        <translation>윈도우 비GUI환경으로부터 텍스트 스레드</translation>
+        <translation>윈도우 비GUI환경으로부터 글타래</translation>
     </message>
     <message>
         <location filename="i18n.py" line="357"/>
         <source>Text thread from Windows GUI function</source>
-        <translation>윈도우 GUI환경으로부터 텍스트 스레드</translation>
+        <translation>윈도우 GUI환경으로부터 글타래</translation>
     </message>
     <message>
         <location filename="i18n.py" line="358"/>
         <source>Text thread from game-specific engine</source>
-        <translation>게임 지정 엔진으로부터 게임 스레드</translation>
+        <translation>게임전용 엔진의 게임 글타래</translation>
     </message>
     <message>
         <location filename="i18n.py" line="355"/>
         <source>Text thread from user-defined H-code</source>
-        <translation>사용자 H코드로부터 텍스트 스레드</translation>
+        <translation>사용자 H코드로부터 글타래</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6273"/>
@@ -1737,7 +1737,7 @@ than turning on global repetition filters here.</source>
     <message>
         <location filename="dialogs/prompt.py" line="507"/>
         <source>Keep all text threads</source>
-        <translation>모든 텍스트 스레드 유지</translation>
+        <translation>모든 글타래 유지</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="516"/>
@@ -1749,14 +1749,14 @@ WARNING:
 For example, if there are several threads marked as KiriKiri,
 when you turn this option on, VNR will translate ALL KIRIKIRI TEXTS.
 This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source>
-        <translation>텍스트 스레드를 보관하기를 바라십니까?
+        <translation>글타래를 보관하기를 바라십니까?
 게임을 실행할 때마다 달라지는 텍스트 주소(회색 숫자)가 아니면,
 이 기능을 켜지 말아야합니다.
 
 경고:
-예를 들어서, 기리기리KiriKiri에는 여러 스레드가 있는데,
+예를 들어서, 기리기리KiriKiri에는 여러 글타래가 있는데,
 이 기능을 켜면, VNR이 모든 KIRIKIRI 텍스트를 번역합니다.
-그럴 경우 필요없는 텍스트 스레드로 가득차게 됩니다!</translation>
+그럴 경우 필요없는 글타래로 가득차게 됩니다!</translation>
     </message>
     <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="200"/>
@@ -1823,7 +1823,7 @@ VNR에서는, 사용자 자막과 시리즈 지정 사전 용어를 포함한 �
 &lt;span style=&quot;color:purple&quot;&gt;같은 참조로 게임을 공유하면, 시리즈 특정 번역이나 자막을 공유 할 수 있습니다.&lt;/span&gt;
 
 &lt;h3&gt;게임이름 수정&lt;/h3&gt;
-SpringBoard에서 게임을 선택하고 &lt;span style=&quot;color:green&quot;&gt;【수정】&lt;/span&gt;버튼을 눌러, 게임이름을 바꾼뒤 【추가】버튼을 누릅니다.
+스프링보드에서 게임을 선택하고 &lt;span style=&quot;color:green&quot;&gt;【수정】&lt;/span&gt;버튼을 눌러, 게임이름을 바꾼뒤 【추가】버튼을 누릅니다.
 &lt;br/&gt;&lt;br/&gt;
 그러면, 게임정보 창을 새로고침하면 게임을 찾을 수 있습니다.
 
@@ -2257,7 +2257,7 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
     <message>
         <location filename="managers/dataman.py" line="7592"/>
         <source>Do not keep all scenario threads in text settings</source>
-        <translation>텍스트 설정에서 모든 시나리오 스레드 유지불가 설정됨</translation>
+        <translation>텍스트 설정에서 모든 시나리오 글타래 유지불가 설정됨</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="7583"/>
@@ -2468,7 +2468,7 @@ it means the current hook code does not work for this game.
 Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook code.</source>
         <translation>&lt;h3&gt;소개&lt;/h3&gt;
 【문자설정】와 【게임안내】에서,
-VNR에서 번역하고 표기할 텍스트 스레드를 선택할 수 있습니다.
+VNR에서 번역하고 표기할 글타래를 선택할 수 있습니다.
 게임과 동기화한 후에 VNR에서 게임원문이 보이지 않으면,
 대게 게임의 문자설정이 잘못된 경우입니다.
 
@@ -2477,27 +2477,27 @@ VNR에서 번역하고 표기할 텍스트 스레드를 선택할 수 있습니�
 &lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Text_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Text_Settings&lt;/a&gt;
 &lt;/center&gt;
 
-&lt;h3&gt;텍스트 스레드&lt;/h3&gt;
-게임은 하나 이상의 텍스트 스레드를 가지고 있습니다.
+&lt;h3&gt;글타래&lt;/h3&gt;
+게임은 하나 이상의 글타래를 가지고 있습니다.
 게임원문과 같은 부분을 찾으셔야 합니다.
-VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습니다:
+VNR에서, 글타래를 세가지 방식으로 구분하실 수 있습니다:
 &lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;대화&lt;/span&gt; : 시나리오 스레드입니다.
+* &lt;span style=&quot;color:purple&quot;&gt;대화&lt;/span&gt; : 시나리오 글타래입니다.
 &lt;br/&gt;
 * &lt;span style=&quot;color:purple&quot;&gt;캐릭터&lt;/span&gt; : 게임 캐릭터의 이름입니다.
 &lt;br/&gt;
 * &lt;span style=&quot;color:purple&quot;&gt;기타&lt;/span&gt; : 대화나 캐릭터도 아니지만, 번역 할 필요가 있는 부분입니다.
 &lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;무시&lt;/span&gt; : 번역 할 필요가 없는 스레드입니다.
+* &lt;span style=&quot;color:purple&quot;&gt;무시&lt;/span&gt; : 번역 할 필요가 없는 글타래입니다.
 &lt;br/&gt;
-&lt;span style=&quot;color:green&quot;&gt;게임은 반드시 &lt;b&gt;하나&lt;/b&gt;는 【주요】텍스트 스레드가 존재합니다.&lt;/span&gt;
-덧붙여서, 대부분 게임은 하나의 캐릭터 스레드를 가지고 있습니다.
-그러나, 여러개의 텍스트 스레드를 지정해야 하는 경우도 있습니다.
+&lt;span style=&quot;color:green&quot;&gt;게임은 반드시 &lt;b&gt;하나&lt;/b&gt;는 【주요】글타래가 존재합니다.&lt;/span&gt;
+덧붙여서, 대부분 게임은 하나의 캐릭터 글타래를 가지고 있습니다.
+그러나, 여러개의 글타래를 지정해야 하는 경우도 있습니다.
 
 &lt;h3&gt;문자속도&lt;/h3&gt;
 &lt;span style=&quot;color:red&quot;&gt;게임 조정&lt;b&gt;을 통해 텍스트 속도를 최대값&lt;/b&gt;&lt;/span&gt;으로 조정하시는 것을 권장합니다.
 게임 텍스트 탐지의 속도와 정확성 모두를 향상시킵니다.
-&lt;span style=&quot;color:green&quot;&gt;인식된 텍스트 스레드가 &lt;b&gt;깨지거나&lt;/b&gt;, 단어사이에 &lt;b&gt;공백이 없다면&lt;/b&gt;(특히 영어권 galgame),
+&lt;span style=&quot;color:green&quot;&gt;인식된 글타래가 &lt;b&gt;깨지거나&lt;/b&gt;, 단어사이에 &lt;b&gt;공백이 없다면&lt;/b&gt;(특히 영어권 galgame),
 일반적으로 텍스트 속도가 느려서 발생한 것입니다.&lt;/span&gt;
 &lt;br/&gt;&lt;br/&gt;
 
@@ -2506,10 +2506,10 @@ VNR에서, 텍스트 스레드를 세가지 방식으로 구분하실 수 있습
 
 &lt;h3&gt;게임글꼴&lt;/h3&gt;
 게임 텍스트가 보이지 않으면, 게임 글꼴을 바꾸셔야합니다.
-예를 들어서, &lt;span style=&quot;color:purple&quot;&gt;「時計仕掛けのレイライン」(시계장치의 레이라인)&lt;/span&gt;의 글꼴을 MS Mincho(MS明朝)에서 &lt;span style=&quot;color:red&quot;&gt;MS Gothic(MSゴシック)&lt;/span&gt;로 바꾸셔야 VNR에서 텍스트 스레드를 찾을 수 있습니다.
+예를 들어서, &lt;span style=&quot;color:purple&quot;&gt;「時計仕掛けのレイライン」(시계장치의 레이라인)&lt;/span&gt;의 글꼴을 MS Mincho(MS明朝)에서 &lt;span style=&quot;color:red&quot;&gt;MS Gothic(MSゴシック)&lt;/span&gt;로 바꾸셔야 VNR에서 글타래를 찾을 수 있습니다.
 
 &lt;h3&gt;후킹코드&lt;/h3&gt;
-텍스트속도를 조정한 뒤에도, 일치하는 텍스트 스레드가 보이지 않으면,
+텍스트 속도를 조정한 뒤에도, 일치하는 글타래가 보이지 않으면,
 이 게임전용 후킹코드를 수정하셔야합니다.
 【후킹코드 수정】을 눌러서, 더 많은 정보를 찾아볼 수 있습니다.
 &lt;br/&gt;&lt;br/&gt;
@@ -2992,7 +2992,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="managers/textman.py" line="568"/>
         <source>Failed to encode text</source>
-        <translation>텍스트 인코딩 실패</translation>
+        <translation>글자 인코딩 실패</translation>
     </message>
     <message>
         <location filename="managers/textman.py" line="891"/>
@@ -3007,7 +3007,7 @@ VoiceText의 TTS 프로그램을 추천합니다. 일본어 뿐만아니라, 영
     <message>
         <location filename="managers/textman.py" line="914"/>
         <source>Not found machine translation</source>
-        <translation>기계 번역을 찾을 수 없음</translation>
+        <translation>기계번역을 찾을 수 없음</translation>
     </message>
     <message>
         <location filename="dialogs/info.py" line="96"/>
@@ -3209,17 +3209,17 @@ VNR의 텍스트 후킹은 게임에 내장번역을 적용할수는 있지만, 
 사용할 텍스트 후킹은 【환경설정/내장번역】에서 지정할 수 있습니다.
 텍스트 후킹 방식이 바뀐뒤 게임을 재실행해야합니다.
 
-&lt;h3&gt;텍스트 스레드&lt;/h3&gt;
-한 게임에 한개나 복수의 텍스트 스레드가 있을 수 있습니다.
-게임 원문에 해당하는 캐릭터와 대화 스레스를 찾아야합니다.
-현재 VNR에서는 두 종류의 텍스트 스레드만 지원합니다.
+&lt;h3&gt;글타래&lt;/h3&gt;
+한 게임에 한개나 복수의 글타래가 있을 수 있습니다.
+게임 원문에 해당하는 캐릭터와 글타래를 찾아야합니다.
+현재 VNR에서는 두 종류의 글타래만 지원합니다.
 &lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;대화&lt;/span&gt;:이 스레스는 게임의 시나리오 스레스입니다.
+* &lt;span style=&quot;color:purple&quot;&gt;대화&lt;/span&gt;:이 글타래는 게임의 시나리오 글타래입니다.
 &lt;br/&gt;
 * &lt;span style=&quot;color:purple&quot;&gt;캐릭터&lt;/span&gt;:게임 캐릭터의 이름을 포함합니다.
 &lt;br/&gt;
-&lt;span style=&quot;color:green&quot;&gt;게임에서는 &lt;b&gt;하나&lt;/b&gt;의 【주요】스레스를 가지고 있습니다.&lt;/span&gt;
-그리고 캐릭터 텍스트 스레드를 포함 할 수 있습니다.
+&lt;span style=&quot;color:green&quot;&gt;게임에서는 &lt;b&gt;하나&lt;/b&gt;의 【주요】글타래를 가지고 있습니다.&lt;/span&gt;
+그리고 캐릭터 글타래를 포함 할 수 있습니다.
 
 &lt;h3&gt;게임엔진&lt;/h3&gt;
 내장 번역이 일부 게임에는 작동하지 않을 수 있습니다.
@@ -3303,7 +3303,7 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
     <message>
         <location filename="dialogs/_prefs.py" line="5383"/>
         <source>Force enabling context menu in full screen</source>
-        <translation>전체화면 콘텍스트 메뉴 강제사용설정</translation>
+        <translation>전체화면 컨텍스트 메뉴 강제사용설정</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="539"/>
@@ -3395,14 +3395,14 @@ Ntleas은&lt;span style=&quot;color:purple&quot;&gt;무료&lt;/span&gt;이며 �
         <source>Do you want to clone other people&apos;s entry?
 The entry has already been enabled even without you cloning it.
 Instead, cloning will result in duplicate entries that makes it more difficult to manage.</source>
-        <translation>다른 사람의 항목을 복사하길 원하십니까?
-복제하지 않아도 이 항목을 이용할 수 있습니다.
-같은 항목을 복제하는 것은 관리가 힘들어 질 수 있습니다.</translation>
+        <translation>다른 사람의 항목을 복제하실껍니까?
+복제하지 않아도 이 항목을 사용할 수 있습니다.
+같은 항목을 복제하는 것은 관리가 힘들어지게 할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="627"/>
         <source>The pattern is the same as the translation that is useless.</source>
-        <translation>원문과 번역문이 일치하여 유용성이 없습니다.</translation>
+        <translation>원문과 번역문이 일치하여 쓸모없습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="647"/>
@@ -3412,7 +3412,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
     <message>
         <location filename="dialogs/terminput.py" line="650"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
-        <translation>원문이 너무 깁니다. 공유사전에 문장을 추가하지 말아주세요.</translation>
+        <translation>원문이 너무 깁니다. 자막을 공유사전에 추가하지 말아주세요.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5287"/>
@@ -3492,7 +3492,7 @@ Check this wiki for what to do if there is no correct text.
 &lt;br/&gt;&lt;br/&gt;
 
 현재 게임이 정확한 일본어를 볼 수 있을 경우, 다음 도움말을 무시하세요.
-만약 그렇지 않다면, 게임에 알맞는 후킹코드를 구글링해서 이곳에 입력하세요.
+만약 그렇지 않다면, 게임에 알맞는 후킹코드를 찾아서 이곳에 입력하세요.
 &lt;br/&gt;&lt;br/&gt;
 
 「恋と選挙とチョコレート」(사랑과 선거와 초콜렛) 후킹코드 예시:
@@ -3555,7 +3555,7 @@ VNR에서는 공백 뒤 내용은 무시됩니다.
     <message>
         <location filename="dialogs/_prefs.py" line="2134"/>
         <source>When enabled, you can press HotKey+Mouse to select the text to read.</source>
-        <translation>활성화하면, 텍스트를 단축키+마우스로 선택하면 읽습니다.</translation>
+        <translation>활성화하면, 단축키+마우스 선택으로 텍스트를 읽을수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3757"/>
@@ -3652,7 +3652,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
     <message>
         <location filename="dialogs/terminput.py" line="246"/>
         <source>transform text in input langauge before translation</source>
-        <translation>번역하기 전 입력 언어를 교정</translation>
+        <translation>번역하기 전 입력한 언어를 교정</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="262"/>
@@ -3672,7 +3672,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
     <message>
         <location filename="dialogs/mttest.py" line="674"/>
         <source>Apply output terms</source>
-        <translation type="obsolete">출력 용어 사용</translation>
+        <translation type="obsolete">후처리 용어 사용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="552"/>
@@ -3687,7 +3687,7 @@ Dr.eye은 &lt;span style=&quot;color:purple&quot;&gt;유료 소프트웨어&lt;/
     <message>
         <location filename="dialogs/_prefs.py" line="2370"/>
         <source>Underline the text modified by the Shared Dictionary if possible</source>
-        <translation>가능하면 공유 사전으로 수정된 텍스트 밑줄표시</translation>
+        <translation>가능하면 공유사전으로 수정된 텍스트 밑줄표시</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6116"/>
@@ -4017,7 +4017,7 @@ Enabling proxy might make it better.</source>
     <message>
         <location filename="dialogs/nameinput.py" line="332"/>
         <source>Add to Shared Dictionary</source>
-        <translation>공유 사전에 추가</translation>
+        <translation>공유사전에 추가</translation>
     </message>
     <message>
         <location filename="views/gameview.py" line="424"/>
@@ -4027,7 +4027,7 @@ Enabling proxy might make it better.</source>
     <message>
         <location filename="views/gameview.py" line="427"/>
         <source>Import Japanese names to Shared Dictionary</source>
-        <translation>공유 사전에 일본어 이름 가져오기</translation>
+        <translation>공유사전에 일본어 이름 가져오기</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="345"/>
@@ -4306,7 +4306,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/terminput.py" line="656"/>
         <source>Proxy term is private by default. Please debug it again and again before make it public.</source>
-        <translation>기본값으로 프록시 용어는 비공개 설정되었습니다. 부디 공개로 하기전에 여러번 오류를 검토해주세요.</translation>
+        <translation>기본값으로 대체어는 비공개 설정되었습니다. 부디 공개로 하기전에 여러번 오류를 검토해주세요.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="379"/>
@@ -4316,12 +4316,12 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="630"/>
         <source>Apply input terms</source>
-        <translation type="obsolete">입력용어 적용</translation>
+        <translation type="obsolete">전처리 용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="633"/>
         <source>Apply input terms in the Shared Dictionary to correct input text</source>
-        <translation type="obsolete">번역할 텍스트를 교정하기위해서 공유 사전에서 입력용어 적용</translation>
+        <translation>공유사전의 전처리 용어를 적용해서 번역할 텍스트를 교정</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="639"/>
@@ -4341,7 +4341,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="647"/>
         <source>Apply proxy terms in the Shared Dictionary to hide translation replacement</source>
-        <translation type="obsolete">공유사전의 프록시 용어는 번역문이 교체되는 것을 숨기는데 사용됩니다.</translation>
+        <translation>공유사전의 대체어는 번역문이 교체되는 것을 숨기는데 사용됩니다.</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="653"/>
@@ -4351,7 +4351,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="654"/>
         <source>Recover applied proxy terms in the Shared Dictionary</source>
-        <translation type="obsolete">공유사전에서 적용된 프록시 용어 복구</translation>
+        <translation type="obsolete">공유사전에서 적용된 대체어 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="660"/>
@@ -4366,7 +4366,7 @@ TransCAT은 &lt;span style=&quot;color:purple&quot;&gt;유료&lt;/span&gt;이며
     <message>
         <location filename="dialogs/mttest.py" line="656"/>
         <source>Apply output terms in the Shared Dictionary to correct output translations</source>
-        <translation type="obsolete">출력할 번역문에 출력용어를 적용해 교정합니다.</translation>
+        <translation type="obsolete">출력할 번역문에 후처리 용어를 적용해 교정합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="3660"/>
@@ -4403,7 +4403,7 @@ You can reinstall it later if you want.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="2815"/>
         <source>You can select your preferred machine translators and dictionaries here.</source>
-        <translation>여기서 사용하실 기계 번역기와 사전을 선택하실수 있습니다.</translation>
+        <translation>여기서 사용하실 기계번역기와 사전을 선택하실수 있습니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="4503"/>
@@ -4550,6 +4550,19 @@ The dictionary will be installed to {1}.</source>
         <translation>문법역할에 기반하여 일본어 구문 색칠하기</translation>
     </message>
     <message>
+        <location filename="dialogs/_prefs.py" line="5469"/>
+        <source>Using phrase dictionaries requires MeCab UniDic dictionary to be installed.</source>
+        <translation>구문 사전을 사용하려면 MeCab UniDic 사전이 설치되어야합니다.</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="2884"/>
+        <source>Machine translation options</source>
+        <translation>기계번역 옵션</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="2891"/>
+        <source>Convert translated Latin characters to the alphabet of user language</source>
+        <translation>번역된 라틴계 언어를 사용자의 언어로 컨버팅</translation>
         <location filename="dialogs/_prefs.py" line="4618"/>
         <source>Annotate Japanese phrases with their grammatic roles in footnote</source>
         <translation>일본어 구문 아래에 문법역할 표시하기</translation>
@@ -4616,12 +4629,12 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/mttest.py" line="379"/>
         <source>Current game for game-specific definitions in the Shared Dictionary</source>
-        <translation>공유사전에서 현재 게임으로 시리즈지정된 용어</translation>
+        <translation>공유사전에 현재 게임으로 시리즈지정된 용어</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="584"/>
         <source>Apply game rules</source>
-        <translation>게임 규칙 적용</translation>
+        <translation>게임용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="587"/>
@@ -4631,12 +4644,12 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/mttest.py" line="632"/>
         <source>Apply input rules</source>
-        <translation>입력 규칙 적용</translation>
+        <translation>전처리 규칙 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="635"/>
         <source>Apply input definitions in the Shared Dictionary to correct input text</source>
-        <translation>공유사전의 입력용어를 적용</translation>
+        <translation>공유사전 전처리 용어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="642"/>
@@ -4646,37 +4659,37 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/mttest.py" line="649"/>
         <source>Apply proxy definitions in the Shared Dictionary to hide translation replacement</source>
-        <translation>공유사전의 프록시로 정의된 용어로 바꾸어 적용</translation>
+        <translation>대체어로 정의된 용어로 바꾸어 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="656"/>
         <source>Recover applied proxy definitions in the Shared Dictionary</source>
-        <translation>프록시로 정의된 용어를 복구</translation>
+        <translation>대체어로 정의된 용어를 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="663"/>
         <source>Recover applied name and translation definitions in the Shared Dictionary</source>
-        <translation>공유사전에 이름과 번역으로 지정된 용어 복구</translation>
+        <translation>역할이 지정된 용어로 복구</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="668"/>
         <source>Apply output rules w/ grammar</source>
-        <translation>출력에 지정된 w/ 문법규칙 적용</translation>
+        <translation>후처리에 지정된 w/ 문법규칙 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="671"/>
         <source>Apply output definitions with grammatic roles in the Shared Dictionary to correct output translations</source>
-        <translation>출력 번역을 교정하기 위해서 공유사전에 지정된 문법규칙을 적용합니다.</translation>
+        <translation>출력될 번역을 교정하기 위해서 공유사전에 지정된 문법규칙을 적용합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="676"/>
         <source>Apply output rules w/o grammar</source>
-        <translation>출력 w/o 문법을 적용</translation>
+        <translation>후처리 w/o 문법을 적용</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="679"/>
         <source>Apply output definitions without grammatic roles in the Shared Dictionary to correct output translations</source>
-        <translation>번역문을 교정하기 문법규칙이 적용되지 않은 출력정의를 적용합니다.</translation>
+        <translation>번역문을 교정하기 문법규칙이 적용되지 않은 후처리 정의를 적용합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="129"/>
@@ -4816,7 +4829,7 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/terminput.py" line="75"/>
         <source>only enable under selected context</source>
-        <translation>선택된 문맥에만 활성화</translation>
+        <translation>선택된 영역에서만 활성화</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="82"/>
@@ -4871,32 +4884,32 @@ The font will be installed to {1}.</source>
     <message>
         <location filename="dialogs/gameedit.py" line="172"/>
         <source>Allow embedding translation when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>가능한 경우 내장번역 적용</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1114"/>
         <source>Disable embedding translation for this game as you wish</source>
-        <translation type="unfinished"></translation>
+        <translation>설정값에 따라 이 게임에 내장번역을 비활성화합니다.</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="353"/>
         <source>Estimated pattern size</source>
-        <translation type="unfinished"></translation>
+        <translation>측정된 원문 크기</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="354"/>
         <source>Estimated number of characters in pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>측정된 원문의 글자수</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="362"/>
         <source>Default number of characters in pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>원문의 기본 글자수</translation>
     </message>
     <message>
         <location filename="dialogs/terminput.py" line="621"/>
         <source>Specified priority is not a valid number.</source>
-        <translation type="unfinished"></translation>
+        <translation>설정한 우선도가 올바른 수치가 아닙니다.</translation>
     </message>
 </context>
 </TS>

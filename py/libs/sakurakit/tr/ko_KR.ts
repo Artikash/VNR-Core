@@ -281,7 +281,7 @@
     <message>
         <location filename="sktr.py" line="298"/>
         <source>Account</source>
-        <translation type="obsolete">ユーザー</translation>
+        <translation>계정</translation>
     </message>
     <message>
         <location filename="sktr.py" line="345"/>
@@ -331,12 +331,12 @@
     <message>
         <location filename="sktr.py" line="377"/>
         <source>Location</source>
-        <translation>위치</translation>
+        <translation>외부 프로그램</translation>
     </message>
     <message>
         <location filename="sktr.py" line="378"/>
         <source>Locations</source>
-        <translation>위치</translation>
+        <translation>외부 프로그램</translation>
     </message>
     <message>
         <location filename="sktr.py" line="384"/>
@@ -811,7 +811,7 @@
     <message>
         <location filename="sktr.py" line="434"/>
         <source>Text encoding</source>
-        <translation>텍스트 인코딩</translation>
+        <translation>글자 인코딩</translation>
     </message>
     <message>
         <location filename="sktr.py" line="458"/>
@@ -1016,7 +1016,7 @@
     <message>
         <location filename="sktr.py" line="176"/>
         <source>Escape</source>
-        <translation>탈출</translation>
+        <translation>나가기</translation>
     </message>
     <message>
         <location filename="sktr.py" line="242"/>
@@ -1121,7 +1121,7 @@
     <message>
         <location filename="sktr.py" line="336"/>
         <source>Context</source>
-        <translation>문맥</translation>
+        <translation>영역</translation>
     </message>
     <message>
         <location filename="sktr.py" line="196"/>
@@ -1291,7 +1291,7 @@
     <message>
         <location filename="sktr.py" line="448"/>
         <source>user</source>
-        <translation>계정</translation>
+        <translation>사용자</translation>
     </message>
     <message>
         <location filename="sktr.py" line="450"/>
@@ -1371,12 +1371,12 @@
     <message>
         <location filename="sktr.py" line="337"/>
         <source>Context menu</source>
-        <translation>콘텍스트 메뉴</translation>
+        <translation>컨텍스트 메뉴</translation>
     </message>
     <message>
         <location filename="sktr.py" line="337"/>
         <source>context menu</source>
-        <translation>콘텍스트 메뉴</translation>
+        <translation>컨텍스트 메뉴</translation>
     </message>
     <message>
         <location filename="sktr.py" line="380"/>
@@ -1836,72 +1836,72 @@
     <message>
         <location filename="sktr.py" line="79"/>
         <source>ja</source>
-        <translation>ja</translation>
+        <translation>일본어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="80"/>
         <source>en</source>
-        <translation>en</translation>
+        <translation>영어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="82"/>
         <source>zht</source>
-        <translation>zht</translation>
+        <translation>중국어 번체</translation>
     </message>
     <message>
         <location filename="sktr.py" line="83"/>
         <source>zhs</source>
-        <translation>zhs</translation>
+        <translation>중국어 간체</translation>
     </message>
     <message>
         <location filename="sktr.py" line="84"/>
         <source>ko</source>
-        <translation>ko</translation>
+        <translation>한국어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="85"/>
         <source>th</source>
-        <translation>th</translation>
+        <translation>태국어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="86"/>
         <source>vi</source>
-        <translation>vi</translation>
+        <translation>베트남어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="87"/>
         <source>id</source>
-        <translation>id</translation>
+        <translation>인도네시아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="99"/>
         <source>de</source>
-        <translation>de</translation>
+        <translation>독일어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="102"/>
         <source>fr</source>
-        <translation>fr</translation>
+        <translation>프랑스어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="104"/>
         <source>it</source>
-        <translation>it</translation>
+        <translation>이탈리아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="105"/>
         <source>es</source>
-        <translation>es</translation>
+        <translation>에스토니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="110"/>
         <source>pt</source>
-        <translation>pt</translation>
+        <translation>포르투갈어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="112"/>
         <source>ru</source>
-        <translation>ru</translation>
+        <translation>러시아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="168"/>
@@ -1931,7 +1931,7 @@
     <message>
         <location filename="sktr.py" line="81"/>
         <source>zh</source>
-        <translation>zh</translation>
+        <translation>중국어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="277"/>
@@ -1951,7 +1951,7 @@
     <message>
         <location filename="sktr.py" line="296"/>
         <source>Engine</source>
-        <translation type="obsolete">エンジン</translation>
+        <translation>엔진</translation>
     </message>
     <message>
         <location filename="sktr.py" line="327"/>
@@ -1976,7 +1976,7 @@
     <message>
         <location filename="sktr.py" line="109"/>
         <source>pl</source>
-        <translation>pl</translation>
+        <translation>폴란드어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="34"/>
@@ -2006,12 +2006,12 @@
     <message>
         <location filename="sktr.py" line="108"/>
         <source>nl</source>
-        <translation>nl</translation>
+        <translation>네덜란드어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="43"/>
         <source>Dutch</source>
-        <translation>네덜란드</translation>
+        <translation>네덜란드어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="209"/>
@@ -2031,12 +2031,12 @@
     <message>
         <location filename="sktr.py" line="47"/>
         <source>Malaysian</source>
-        <translation>말레이시아</translation>
+        <translation>말레이어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="92"/>
         <source>ms</source>
-        <translation>ms</translation>
+        <translation>말레이어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="140"/>
@@ -2141,7 +2141,7 @@
     <message>
         <location filename="sktr.py" line="269"/>
         <source>Comiket</source>
-        <translation>코믹마켓</translation>
+        <translation>코미케</translation>
     </message>
     <message>
         <location filename="sktr.py" line="460"/>
@@ -2221,7 +2221,7 @@
     <message>
         <location filename="sktr.py" line="94"/>
         <source>ar</source>
-        <translation>ar</translation>
+        <translation>아랍어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="195"/>
@@ -2396,7 +2396,7 @@
     <message>
         <location filename="sktr.py" line="404"/>
         <source>Proxy</source>
-        <translation>프록시</translation>
+        <translation>대체어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="175"/>
@@ -2446,7 +2446,7 @@
     <message>
         <location filename="sktr.py" line="401"/>
         <source>Privilege</source>
-        <translation>특권</translation>
+        <translation>특수권한</translation>
     </message>
     <message>
         <location filename="sktr.py" line="372"/>
@@ -2586,8 +2586,7 @@
     <message>
         <location filename="sktr.py" line="69"/>
         <source>Swedish</source>
-        <translation>
-スウェーデン語</translation>
+        <translation>스웨덴어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="61"/>
@@ -2602,47 +2601,47 @@
     <message>
         <location filename="sktr.py" line="95"/>
         <source>cs</source>
-        <translation>cs</translation>
+        <translation>체코어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="98"/>
         <source>da</source>
-        <translation>da</translation>
+        <translation>덴마크어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="100"/>
         <source>el</source>
-        <translation>el</translation>
+        <translation>그리스어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="101"/>
         <source>fi</source>
-        <translation>fi</translation>
+        <translation>핀란드어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="103"/>
         <source>hu</source>
-        <translation>hu</translation>
+        <translation>헝가리어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="107"/>
         <source>nb</source>
-        <translation>nb</translation>
+        <translation>노르웨이어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="113"/>
         <source>sk</source>
-        <translation>sk</translation>
+        <translation>슬로바키아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="115"/>
         <source>sv</source>
-        <translation>sv</translation>
+        <translation>스웨덴어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="116"/>
         <source>tr</source>
-        <translation>tr</translation>
+        <translation>터키어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="66"/>
@@ -2657,12 +2656,12 @@
     <message>
         <location filename="sktr.py" line="111"/>
         <source>ro</source>
-        <translation>ro</translation>
+        <translation>루마니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="117"/>
         <source>uk</source>
-        <translation>uk</translation>
+        <translation>우크라이나어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="318"/>
@@ -2687,7 +2686,7 @@
     <message>
         <location filename="sktr.py" line="119"/>
         <source>he</source>
-        <translation>he</translation>
+        <translation>히브리어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="506"/>
@@ -2742,27 +2741,27 @@
     <message>
         <location filename="sktr.py" line="88"/>
         <source>tl</source>
-        <translation>tl</translation>
+        <translation>타갈로그어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="96"/>
         <source>be</source>
-        <translation>be</translation>
+        <translation>벨라루스어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="89"/>
         <source>et</source>
-        <translation>et</translation>
+        <translation>에스토니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="90"/>
         <source>lt</source>
-        <translation>lt</translation>
+        <translation>리투아니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="91"/>
         <source>lv</source>
-        <translation>lv</translation>
+        <translation>라트비아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="57"/>
@@ -2772,18 +2771,17 @@
     <message>
         <location filename="sktr.py" line="68"/>
         <source>Slovenian</source>
-        <translation>
-スロベニア語</translation>
+        <translation>슬로베니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="97"/>
         <source>bg</source>
-        <translation>bg</translation>
+        <translation>불가리아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="114"/>
         <source>sl</source>
-        <translation>sl</translation>
+        <translation>슬로베니아어</translation>
     </message>
     <message>
         <location filename="sktr.py" line="218"/>
@@ -2793,7 +2791,7 @@
     <message>
         <location filename="sktr.py" line="400"/>
         <source>Priority</source>
-        <translation>우선순위</translation>
+        <translation>우선도</translation>
     </message>
 </context>
 </TS>
