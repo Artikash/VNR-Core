@@ -15,17 +15,17 @@
     <message>
         <location filename="../springboard/appmodel.qml" line="53"/>
         <source>Settings of language, translation, UI, etc</source>
-        <translation>언어, 번역, UI 등의 설정</translation>
+        <translation>언어, 번역, UI 등을 설정</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="60"/>
         <source>Add new game step by step</source>
-        <translation>순서대로 새로운 게임을 추가합니다</translation>
+        <translation>새로운 게임을 직접 추가합니다</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="67"/>
         <source>Shared dictionary for machine translation</source>
-        <translation>기계번역을 위한 공유사전</translation>
+        <translation>기계번역용 공유사전</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="81"/>
@@ -40,7 +40,7 @@
     <message>
         <location filename="../springboard/appmodel.qml" line="110"/>
         <source>Searching game information online</source>
-        <translation>게임 정보를 온라인에서 찾는 중</translation>
+        <translation>게임정보를 온라인에서 찾기</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="117"/>
@@ -50,7 +50,7 @@
     <message>
         <location filename="../springboard/appmodel.qml" line="146"/>
         <source>Real-time messages from other users</source>
-        <translation>다른 사용자로부터의 실시간 메세지</translation>
+        <translation>커뮤니티 실시간 메세지</translation>
     </message>
 </context>
 <context>
@@ -275,7 +275,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="706"/>
         <source>Toggle mouse and keyboard shortcuts</source>
-        <translation>마우스와 키보드 단축키 바꾸기</translation>
+        <translation>마우스/키보드 단축키 전환</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="736"/>
@@ -477,12 +477,12 @@
     <message>
         <location filename="../termview/filtertoolbar.qml" line="24"/>
         <source>Fix input text before translation</source>
-        <translation>번역하기 전에 입력할 원문 고치기</translation>
+        <translation>번역기에 입력될 원문 교정</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="23"/>
         <source>Fix output text after translation</source>
-        <translation>번역한 뒤에 출력할 번역문 고치기</translation>
+        <translation>번역기에서 나온 번역문 교정</translation>
     </message>
     <message>
         <location filename="../termview/filtertoolbar.qml" line="27"/>
@@ -804,7 +804,7 @@
     <message>
         <location filename="../springboard/inspector.qml" line="223"/>
         <source>Remove this game from the dashboard</source>
-        <translation>Dashboard에서 이 게임 제거</translation>
+        <translation>대시보드에서 이 게임 제거</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="335"/>
@@ -834,7 +834,7 @@
     <message>
         <location filename="../termview/inspector.qml" line="339"/>
         <source>Type should not translation instead of input</source>
-        <translation>입력 대신에 번역하지 말아야 형식</translation>
+        <translation>전처리 대신에 번역하지 말아야 형식</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="332"/>
@@ -874,12 +874,12 @@
     <message>
         <location filename="../termview/inspector.qml" line="345"/>
         <source>Rule type does not support ruby</source>
-        <translation type="unfinished"></translation>
+        <translation>해당종류에서 루비를 지원하지 않습니다</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="346"/>
         <source>Rule type does not support context</source>
-        <translation type="unfinished"></translation>
+        <translation>해당종류에서 영역을 지원하지 않습니다</translation>
     </message>
     <message>
         <source>Type does not support ruby</source>
@@ -887,7 +887,7 @@
     </message>
     <message>
         <source>Type does not support context</source>
-        <translation type="obsolete">위치를 고려하지 않는 종류</translation>
+        <translation>영역을 지원하지 않는 종류</translation>
     </message>
     <message>
         <location filename="../termview/inspector.qml" line="347"/>
@@ -1235,7 +1235,7 @@
     <message>
         <location filename="../postview/posteditor.qml" line="54"/>
         <source>Something might be wrong with the Internet connection</source>
-        <translation>인터넷 연결에 문제가 있는것 같습니다</translation>
+        <translation>인터넷 연결에 문제가 있습니다</translation>
     </message>
 </context>
 <context>
@@ -1248,7 +1248,7 @@
     <message>
         <location filename="../postview/postinput.qml" line="56"/>
         <source>Something might be wrong with the Internet connection</source>
-        <translation>인터넷 연결에 문제가 있는것 같습니다</translation>
+        <translation>인터넷 연결에 문제가 있습니다</translation>
     </message>
 </context>
 <context>
@@ -1261,7 +1261,7 @@
     <message>
         <location filename="../postview.qml" line="30"/>
         <source>Post edited from {0}</source>
-        <translation>{0}에서 수정표시</translation>
+        <translation>{0}님이 게시글 수정함</translation>
     </message>
 </context>
 <context>
@@ -1278,13 +1278,13 @@
         <location filename="../subview/searchtoolbar.qml" line="26"/>
         <location filename="../termview/searchtoolbar.qml" line="32"/>
         <source>Search your editing</source>
-        <translation>내 수정항목 찾기</translation>
+        <translation>내가 편집한 항목찾기</translation>
     </message>
     <message>
         <location filename="../subview/searchtoolbar.qml" line="54"/>
         <location filename="../termview/searchtoolbar.qml" line="60"/>
         <source>Search your language</source>
-        <translation>언어찾기</translation>
+        <translation>나의 언어찾기</translation>
     </message>
     <message>
         <location filename="../subview/searchtoolbar.qml" line="67"/>
@@ -1296,7 +1296,7 @@
         <location filename="../subview/searchtoolbar.qml" line="68"/>
         <location filename="../termview/searchtoolbar.qml" line="74"/>
         <source>Display duplicate rows which should be avoided</source>
-        <translation>반복하는 열을 표시합니다</translation>
+        <translation>중복된 열을 표시합니다</translation>
     </message>
     <message>
         <location filename="../termview/searchtoolbar.qml" line="46"/>
@@ -1377,17 +1377,17 @@
     <message>
         <location filename="../submaker/subedit.qml" line="166"/>
         <source>Enter to submit, or</source>
-        <translation>Enter를 눌러 등록하거나,</translation>
+        <translation>Enter를 눌러서 등록하거나,</translation>
     </message>
     <message>
         <location filename="../submaker/subedit.qml" line="168"/>
         <source>Shift+Enter to submit and forward game</source>
-        <translation>Shift+Enter를 눌러 등록하고 게임을 계속하기</translation>
+        <translation>Shift+Enter를 눌러서 등록하고 게임을 계속하기</translation>
     </message>
     <message>
         <location filename="../submaker/subedit.qml" line="170"/>
         <source>Shift+Enter to submit</source>
-        <translation>Shift+Enter를 눌러 등록</translation>
+        <translation>Shift+Enter를 눌러서 등록</translation>
     </message>
 </context>
 <context>
@@ -1403,7 +1403,7 @@
     <message>
         <location filename="../subview.qml" line="178"/>
         <source>Type part of the text, context, user, language, etc, and press Enter to search</source>
-        <translation>텍스트, 문맥, 사용자, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
+        <translation>텍스트, 영역, 사용자, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
     </message>
 </context>
 <context>
@@ -1479,7 +1479,7 @@
     <message>
         <location filename="../refview/toolbar.qml" line="151"/>
         <source>Update entries online</source>
-        <translation>항목 온라인 업데이트</translation>
+        <translation>온라인 항목 업데이트</translation>
     </message>
     <message>
         <location filename="../voiceview/toolbar.qml" line="68"/>
@@ -1492,7 +1492,7 @@
     <message>
         <location filename="../voiceview.qml" line="104"/>
         <source>Automatic TTS or dub voices is disabled by you</source>
-        <translation>자동 TTS음성합성/더빙음성을 비활성화되었습니다</translation>
+        <translation>자동 TTS음성합성/더빙음성이 비활성화되었습니다</translation>
     </message>
 </context>
 </TS>
