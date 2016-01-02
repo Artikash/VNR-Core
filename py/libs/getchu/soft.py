@@ -418,7 +418,7 @@ class SoftApi(object):
     """
     START = u'<div class="tabletitle">&nbsp;キャラクター</div>'
     STOP1 = '<a name="sample" id="sample">'
-    STOP2 = '<!-- ▼recommend▼ -->'
+    STOP2 = u'<!-- ▼recommend▼ -->'
     start = h.find(START)
     if start > 0:
       stop = h.find(STOP1, start)
