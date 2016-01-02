@@ -1871,6 +1871,114 @@ bool InsertBGI1Hook()
  *  01312ed3   . e8 e74c0600    call 蒼の彼方.01377bbf
  *  01312ed8   . 33f6           xor esi,esi
  *  01312eda   . 83c4 04        add esp,0x4
+ *
+ *  1/1/2016
+ *  コドモノアソビ trial
+ *
+ *  00A64259   CC               INT3
+ *  00A6425A   CC               INT3
+ *  00A6425B   CC               INT3
+ *  00A6425C   CC               INT3
+ *  00A6425D   CC               INT3
+ *  00A6425E   CC               INT3
+ *  00A6425F   CC               INT3
+ *  00A64260   55               PUSH EBP
+ *  00A64261   8BEC             MOV EBP,ESP
+ *  00A64263   83E4 F8          AND ESP,0xFFFFFFF8
+ *  00A64266   6A FF            PUSH -0x1
+ *  00A64268   68 D610B000      PUSH .00B010D6
+ *  00A6426D   64:A1 00000000   MOV EAX,DWORD PTR FS:[0]
+ *  00A64273   50               PUSH EAX
+ *  00A64274   81EC 40090000    SUB ESP,0x940
+ *  00A6427A   A1 2417B200      MOV EAX,DWORD PTR DS:[0xB21724]
+ *  00A6427F   33C4             XOR EAX,ESP
+ *  00A64281   898424 38090000  MOV DWORD PTR SS:[ESP+0x938],EAX
+ *  00A64288   53               PUSH EBX
+ *  00A64289   56               PUSH ESI
+ *  00A6428A   57               PUSH EDI
+ *  00A6428B   A1 2417B200      MOV EAX,DWORD PTR DS:[0xB21724]
+ *  00A64290   33C4             XOR EAX,ESP
+ *  00A64292   50               PUSH EAX
+ *  00A64293   8D8424 50090000  LEA EAX,DWORD PTR SS:[ESP+0x950]
+ *  00A6429A   64:A3 00000000   MOV DWORD PTR FS:[0],EAX
+ *  00A642A0   8B45 08          MOV EAX,DWORD PTR SS:[EBP+0x8]
+ *  00A642A3   8B7D 0C          MOV EDI,DWORD PTR SS:[EBP+0xC]
+ *  00A642A6   8B5D 30          MOV EBX,DWORD PTR SS:[EBP+0x30]
+ *  00A642A9   894424 50        MOV DWORD PTR SS:[ESP+0x50],EAX
+ *  00A642AD   8B45 14          MOV EAX,DWORD PTR SS:[EBP+0x14]
+ *  00A642B0   894C24 74        MOV DWORD PTR SS:[ESP+0x74],ECX
+ *  00A642B4   8B0D A024B800    MOV ECX,DWORD PTR DS:[0xB824A0]
+ *  00A642BA   894424 4C        MOV DWORD PTR SS:[ESP+0x4C],EAX
+ *  00A642BE   899424 B8000000  MOV DWORD PTR SS:[ESP+0xB8],EDX
+ *  00A642C5   8B55 20          MOV EDX,DWORD PTR SS:[EBP+0x20]
+ *  00A642C8   51               PUSH ECX
+ *  00A642C9   8D8424 14020000  LEA EAX,DWORD PTR SS:[ESP+0x214]
+ *  00A642D0   897C24 2C        MOV DWORD PTR SS:[ESP+0x2C],EDI
+ *  00A642D4   899C24 88000000  MOV DWORD PTR SS:[ESP+0x88],EBX
+ *  00A642DB   E8 504CFDFF      CALL .00A38F30
+ *  00A642E0   33C9             XOR ECX,ECX
+ *  00A642E2   898424 F8000000  MOV DWORD PTR SS:[ESP+0xF8],EAX
+ *  00A642E9   3BC1             CMP EAX,ECX
+ *  00A642EB   0F84 391C0000    JE .00A65F2A
+ *  00A642F1   E8 FA2A0000      CALL .00A66DF0
+ *  00A642F6   E8 252D0000      CALL .00A67020
+ *  00A642FB   898424 FC000000  MOV DWORD PTR SS:[ESP+0xFC],EAX
+ *  00A64302   8A07             MOV AL,BYTE PTR DS:[EDI]
+ *  00A64304   898C24 CC000000  MOV DWORD PTR SS:[ESP+0xCC],ECX
+ *  00A6430B   894C24 30        MOV DWORD PTR SS:[ESP+0x30],ECX
+ *  00A6430F   894C24 1C        MOV DWORD PTR SS:[ESP+0x1C],ECX
+ *  00A64313   B9 01000000      MOV ECX,0x1
+ *  00A64318   3C 20            CMP AL,0x20  ; jichi: pattern found here
+ *  00A6431A   7D 58            JGE SHORT .00A64374
+ *  00A6431C   0FBEC0           MOVSX EAX,AL
+ *  00A6431F   83C0 FE          ADD EAX,-0x2
+ *  00A64322   83F8 06          CMP EAX,0x6
+ *  00A64325   77 4D            JA SHORT .00A64374
+ *  00A64327   FF2485 505FA600  JMP DWORD PTR DS:[EAX*4+0xA65F50]
+ *  00A6432E   898C24 CC000000  MOV DWORD PTR SS:[ESP+0xCC],ECX
+ *  00A64335   03F9             ADD EDI,ECX
+ *  00A64337   EB 37            JMP SHORT .00A64370
+ *  00A64339   894C24 30        MOV DWORD PTR SS:[ESP+0x30],ECX
+ *  00A6433D   03F9             ADD EDI,ECX
+ *  00A6433F   EB 2F            JMP SHORT .00A64370
+ *  00A64341   BA E0C1B000      MOV EDX,.00B0C1E0
+ *  00A64346   EB 1A            JMP SHORT .00A64362
+ *  00A64348   BA E4C1B000      MOV EDX,.00B0C1E4
+ *  00A6434D   EB 13            JMP SHORT .00A64362
+ *  00A6434F   BA E8C1B000      MOV EDX,.00B0C1E8
+ *  00A64354   EB 0C            JMP SHORT .00A64362
+ *  00A64356   BA ECC1B000      MOV EDX,.00B0C1EC
+ *  00A6435B   EB 05            JMP SHORT .00A64362
+ *  00A6435D   BA F0C1B000      MOV EDX,.00B0C1F0
+ *  00A64362   8D7424 14        LEA ESI,DWORD PTR SS:[ESP+0x14]
+ *  00A64366   894C24 1C        MOV DWORD PTR SS:[ESP+0x1C],ECX
+ *  00A6436A   E8 A196FFFF      CALL .00A5DA10
+ *  00A6436F   47               INC EDI
+ *  00A64370   897C24 28        MOV DWORD PTR SS:[ESP+0x28],EDI
+ *  00A64374   8D8424 10020000  LEA EAX,DWORD PTR SS:[ESP+0x210]
+ *  00A6437B   E8 C01C0000      CALL .00A66040
+ *  00A64380   837D 10 00       CMP DWORD PTR SS:[EBP+0x10],0x0
+ *  00A64384   8BB424 30020000  MOV ESI,DWORD PTR SS:[ESP+0x230]
+ *  00A6438B   894424 60        MOV DWORD PTR SS:[ESP+0x60],EAX
+ *  00A6438F   74 12            JE SHORT .00A643A3
+ *  00A64391   56               PUSH ESI
+ *  00A64392   E8 C91C0000      CALL .00A66060
+ *  00A64397   83C4 04          ADD ESP,0x4
+ *  00A6439A   898424 C4000000  MOV DWORD PTR SS:[ESP+0xC4],EAX
+ *  00A643A1   EB 0B            JMP SHORT .00A643AE
+ *  00A643A3   C78424 C4000000 >MOV DWORD PTR SS:[ESP+0xC4],0x0
+ *  00A643AE   8B4B 04          MOV ECX,DWORD PTR DS:[EBX+0x4]
+ *  00A643B1   0FAFCE           IMUL ECX,ESI
+ *  00A643B4   B8 1F85EB51      MOV EAX,0x51EB851F
+ *  00A643B9   F7E9             IMUL ECX
+ *  00A643BB   C1FA 05          SAR EDX,0x5
+ *  00A643BE   8BCA             MOV ECX,EDX
+ *  00A643C0   C1E9 1F          SHR ECX,0x1F
+ *  00A643C3   03CA             ADD ECX,EDX
+ *  00A643C5   898C24 94000000  MOV DWORD PTR SS:[ESP+0x94],ECX
+ *  00A643CC   85C9             TEST ECX,ECX
+ *  00A643D0   B9 01000000      MOV ECX,0x1
+ *  ...
  */
 //static inline size_t _bgistrlen(LPCSTR text)
 //{
@@ -1900,10 +2008,6 @@ bool InsertBGI2Hook()
     // The following code does not exist in newer BGI games after 蒼の彼方
     //0x77, 0x6a     // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
   };
-  enum {  // distance to the beginning of the function
-    addr_offset_3 = 0x34c80 - 0x34d31 // for old BGI2 game, text is in arg2
-    , addr_offset_2 = 0x01312cd0 - 0x01312d8e // for new BGI2 game since 蒼の彼方 (2014/08), text is in arg3
-  };
 
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
@@ -1923,8 +2027,16 @@ bool InsertBGI2Hook()
 
   HookParam hp = {};
   switch (funaddr - addr) {
-  case addr_offset_3: hp.offset = 4 * 3; break; // arg3
-  case addr_offset_2: hp.offset = 4 * 2; break; // arg2
+  // for old BGI2 game, text is arg3
+  case 0x34c80 - 0x34d31:
+    hp.offset = 4 * 3;
+    break;
+  // for new BGI2 game since 蒼の彼方 (2014/08), text is in arg2
+  case 0x01312cd0 - 0x01312d8e:
+  // For newer BGI2 game since コドモノアソビ (2015/11)
+  case 0x00A64260 - 0x00A64318:
+    hp.offset = 4 * 2;
+    break;
   default:
     ConsoleOutput("vnreng:BGI2: function found bug unrecognized hook offset");
     return false;

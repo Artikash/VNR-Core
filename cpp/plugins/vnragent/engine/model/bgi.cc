@@ -690,17 +690,25 @@ namespace Private {
       0x83,0xf8, 0x06,  // 01312d98   83f8 06        cmp eax,0x6
       0x77, 0x4d        // 01312d9b   77 4d          ja short 蒼の彼方.01312dea
     };
-    enum { hook_offset = 0x01312cd0 - 0x01312d8e }; // distance to the beginning of the function
     ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
     if (!addr)
       return 0;
 
-    addr += hook_offset;
-    enum : uint8_t { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-    if (*(uint8_t *)addr != push_ebp)
-      return 0;
+    // distance to the beginning of the function
+    static const int hook_offsets[] = {
+      0x01312cd0 - 0x01312d8e    // for new BGI2 game since 蒼の彼方 (2014/08), text is in arg2
+      , 0x00a64260 - 0x00a64318  // For newer BGI2 game since コドモノアソビ (2015/11)
+    };
+    enum { hook_offset_count = sizeof(hook_offsets) / sizeof(*hook_offsets) };
 
-    return addr;
+    for (size_t i = 0; i < hook_offset_count; i++) {
+      int hook_offset = hook_offsets[i];
+
+      enum : uint8_t { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
+      if (*(uint8_t *)(addr + hook_offset) == push_ebp)
+        return addr + hook_offset;
+    }
+    return 0; // failed
   }
 
 } // namespace Private
@@ -752,9 +760,10 @@ QString BGIEngine::rubyCreate(const QString &rb, const QString &rt)
 // Remove furigana in scenario thread.
 QString BGIEngine::rubyRemove(const QString &text)
 {
-  if (!text.contains("</r>"))
+  // It could be either <R..> or <r..>
+  if (!text.contains("</r>", Qt::CaseInsensitive))
     return text;
-  static QRegExp rx("<r.+>(.+)</r>");
+  static QRegExp rx("<r.+>(.+)</r>", Qt::CaseInsensitive);
   if (!rx.isMinimal())
     rx.setMinimal(true);
   return QString(text).replace(rx, "\\1");

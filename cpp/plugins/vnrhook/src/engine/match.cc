@@ -357,6 +357,11 @@ bool DetermineEngineByFile4()
     return true;
   }
   if (IthCheckFile(L"bmp.pak") && IthCheckFile(L"dsetup.dll")) {
+    // 1/1/2016 jich: skip izumo4 from studio ego that is not supported by debonosu
+    if (IthFindFile(L"*izumo4*.exe")) {
+      PcHooks::hookLstrFunctions();
+      return true;
+    }
     InsertDebonosuHook();
     return true;
   }
