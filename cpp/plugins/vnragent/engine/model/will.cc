@@ -139,7 +139,7 @@ public:
  *  00452B02   83C0 20          ADD EAX,0x20    ; jichi: hook before here, text in ecx
  *  00452B05   33D2             XOR EDX,EDX
  *  00452B07   8BC1             MOV EAX,ECX
- *  00452B09   C78424 E0010000 07000000        MOV DWORD PTR SS:[ESP+0x1E0],0x7
+ *  00452B09   C78424 E0010000 07000000        MOV DWORD PTR SS:[ESP+0x1E0],0x7 ; jichi: key pattern is here, text in eax
  *  00452B14   C78424 DC010000 00000000        MOV DWORD PTR SS:[ESP+0x1DC],0x0
  *  00452B27   8D70 02          LEA ESI,DWORD PTR DS:[EAX+0x2]
  *  00452B2A   33DB             XOR EBX,EBX
@@ -173,7 +173,7 @@ public:
  *  00452BA5   0F84 BB020000    JE .00452E66
  *  00452BAB   81C7 14010000    ADD EDI,0x114
  */
-bool attachScenarioHookW(ulong startAddress, ulong stopAddress)
+bool attachScenarioHookW1(ulong startAddress, ulong stopAddress)
 {
   // ECX PTR: 83 C0 20 33 D2 8B C1 C7 84 24 E0 01 00 00 07 00 00 00
   const uint8_t bytes[] = {
@@ -188,6 +188,57 @@ bool attachScenarioHookW(ulong startAddress, ulong stopAddress)
   return h->attach(bytes, sizeof(bytes), startAddress, stopAddress);
 }
 
+/**
+ *  1/9/2016: 見上げてごらん、夜空の星を　体験版
+ *
+ *  0045580D   C68424 B8020000 08             MOV BYTE PTR SS:[ESP+0x2B8],0x8
+ *  00455815   8B47 10                        MOV EAX,DWORD PTR DS:[EDI+0x10]
+ *  00455818   2B47 0C                        SUB EAX,DWORD PTR DS:[EDI+0xC]
+ *  0045581B   C1F8 04                        SAR EAX,0x4
+ *  0045581E   83F8 02                        CMP EAX,0x2
+ *  00455821   77 05                          JA SHORT .00455828
+ *  00455823   E8 A0F70B00                    CALL .00514FC8                           ; JMP to msvcr90._invalid_parameter_noinfo
+ *  00455828   8B7F 0C                        MOV EDI,DWORD PTR DS:[EDI+0xC]
+ *  0045582B   83C7 20                        ADD EDI,0x20
+ *  0045582E   8B7F 08                        MOV EDI,DWORD PTR DS:[EDI+0x8]
+ *  00455831   33C9                           XOR ECX,ECX
+ *  00455833   8BC7                           MOV EAX,EDI ; jichi: hook befoe here, text in eax assigned from edi
+ *  00455835   C78424 E0010000 07000000       MOV DWORD PTR SS:[ESP+0x1E0],0x7 ; jichi: key pattern is here, text i eax
+ *  00455840   899C24 DC010000                MOV DWORD PTR SS:[ESP+0x1DC],EBX
+ *  00455847   66:898C24 CC010000             MOV WORD PTR SS:[ESP+0x1CC],CX
+ *  0045584F   8D50 02                        LEA EDX,DWORD PTR DS:[EAX+0x2]
+ *  00455852   66:8B08                        MOV CX,WORD PTR DS:[EAX]
+ *  00455855   83C0 02                        ADD EAX,0x2
+ *  00455858   66:3BCB                        CMP CX,BX
+ *  0045585B  ^75 F5                          JNZ SHORT .00455852
+ *  0045585D   2BC2                           SUB EAX,EDX
+ *  0045585F   D1F8                           SAR EAX,1
+ *  00455861   50                             PUSH EAX
+ *  00455862   57                             PUSH EDI
+ *  00455863   8DB424 D0010000                LEA ESI,DWORD PTR SS:[ESP+0x1D0]
+ *  0045586A   E8 2120FBFF                    CALL .00407890
+ *  0045586F   C68424 B8020000 09             MOV BYTE PTR SS:[ESP+0x2B8],0x9
+ *  00455877   895C24 30                      MOV DWORD PTR SS:[ESP+0x30],EBX
+ *  0045587B   395C24 18                      CMP DWORD PTR SS:[ESP+0x18],EBX
+ *  0045587F   0F84 D1080000                  JE .00456156
+ *  00455885   33D2                           XOR EDX,EDX
+ *  00455887   895C24 24                      MOV DWORD PTR SS:[ESP+0x24],EBX
+ *  0045588B   C78424 FC010000 07000000       MOV DWORD PTR SS:[ESP+0x1FC],0x7
+ *  00455896   899C24 F8010000                MOV DWORD PTR SS:[ESP+0x1F8],EBX
+ *  0045589D   66:899424 E8010000             MOV WORD PTR SS:[ESP+0x1E8],DX
+ *  004558A5   8D4424 3C                      LEA EAX,DWORD PTR SS:[ESP+0x3C]
+ */
+bool attachScenarioHookW2(ulong startAddress, ulong stopAddress)
+{
+  // key pattern: C78424 E0010000 07000000
+  const uint8_t bytes[] = {
+    0x8b,0xc7,                                               // 00455833   8bc7                           mov eax,edi ; jichi: text in eax assigned from edi
+    0xc7,0x84,0x24, 0xe0,0x01,0x00,0x00, 0x07,0x00,0x00,0x00 // 00455835   c78424 e0010000 07000000       mov dword ptr ss:[esp+0x1e0],0x7 ; jichi: key pattern is here, text i eax
+  };
+  int edi = winhook_stack_indexof(edi);
+  static auto h = new TextHookW(edi, Engine::ScenarioRole); // never deleted
+  return h->attach(bytes, sizeof(bytes), startAddress, stopAddress);
+}
 /**
  *  Sample game: なついろレシピ
  *  See: http://capita.tistory.com/m/post/251
@@ -719,7 +770,7 @@ bool WillPlusEngine::attach()
   if (!Engine::getProcessMemoryRange(&startAddress, &stopAddress))
     return false;
 
-  if (::attachScenarioHookW(startAddress, stopAddress)) {
+  if (::attachScenarioHookW1(startAddress, stopAddress) || ::attachScenarioHookW2(startAddress, stopAddress)) {
     DOUT("wide char supported");
     name = "EmbedWillPlusW";
     encoding = Utf16Encoding;
