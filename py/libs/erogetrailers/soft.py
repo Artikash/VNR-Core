@@ -101,9 +101,9 @@ class SoftApi(DataParser):
 
   _rx_videos = re.compile(r'.*?'.join((
     r'<section>',
-    ur'<a class="title" href="http://erogetrailers\.com/video/([0-9]+?)">(.*?)</a>',
-    ur'class="subttl">([0-9-].*?)</a>',
-    ur'"http://i2\.ytimg\.com/vi/([0-9a-zA-Z_-]+?)/[a-zA-Z0-9_-]+.jpg"',
+    r'<a class="title" href="http://erogetrailers\.com/video/([0-9]+?)">(.*?)</a>',
+    r'class="subttl">([0-9-].*?)</a>',
+    r'"http://i2\.ytimg\.com/vi/([0-9a-zA-Z_-]+?)/[a-zA-Z0-9_-]+.jpg"',
     r'</section>',
   )), re.IGNORECASE|re.DOTALL)
   def _iterparsevideos(self, h):
