@@ -738,14 +738,15 @@ bool QLiEEngine::attach()
  *  Sample tags: [f,5].
  *
  *  http://sakuradite.com/topic/969
+ *  http://sakuradite.com/topic/1242
  *  http://i.imgur.com/JOVbJnZ.png
  */
 QString QLiEEngine::textFilter(const QString &text, int role)
 {
   Q_UNUSED(role);
-  if (!text.contains("[f,"))
+  if (!text.contains('[') || !text.contains(','))
     return text;
-  static QRegExp rx("\\[f,.+\\]");
+  static QRegExp rx("\\[.+,.+\\]");
   if (!rx.isMinimal())
     rx.setMinimal(true);
   return QString(text).remove(rx);

@@ -125,6 +125,7 @@ processes:
   - JspVReader.exe      # 詠太2
   - jusched.exe         # Java
   - Kakaotalk.exe       # Kakaotalk
+  - KakaoTalk.exe       # Kakaotalk
   - KHALMNPR.exe        # Logitech
   - KuGou.exe           # Kugou
   - KMPlayer.exe        # KMPlayer
@@ -198,6 +199,7 @@ processes:
   - sttray.exe          # Dell
   - sublime_text.exe    # Sublime Text
   - TaoBrowser.exe      # TaoBao
+  - TeamViewer.exe      # TeamViewer
   - TextAloudMP3.exe    # TextAloud TTS
   - TheWorld.exe        # Browser
   - thunderbird.exe     # Mozilla
