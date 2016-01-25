@@ -33,7 +33,7 @@
 			<hentai>true</hentai>
 %		endif
 %		if it.icase
-			<icase>true</icase>>
+			<icase>true</icase>
 %		endif
 %		if it.special
 			<special>true</special>
