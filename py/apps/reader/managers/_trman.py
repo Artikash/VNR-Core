@@ -328,6 +328,8 @@ class MachineTranslator(Translator):
   #splitsNames = True # bool  split name out of a novel sentence
   #persistentCaching = False # bool  whether use sqlite to cache the translation
 
+  jitterEnabled = True # bool  handle Japanese jittering
+
   #_CACHE_LENGTH = 10 # length of the translation to cache
 
   #_DELIM_SET = _PARAGRAPH_SET # set of deliminators
@@ -651,7 +653,7 @@ class MachineTranslator(Translator):
     t = text
     #with SkProfiler(): # 9/26/2014: C++ 0.015 seconds, Python: 0.05 seconds
     #if self._needsJitter(to, fr):
-    if fr == 'ja':
+    if self.jitterEnabled and fr == 'ja':
       text = self._escapeJitter(text, to, fr)
     text = tm.encodeTranslation(text, to=to, fr=fr, context=context, host=self.key)
     if emit and text != t:
@@ -715,7 +717,7 @@ class MachineTranslator(Translator):
       text = text.replace(defs.TERM_ESCAPE_EOS, sep)
 
     #if self._needsJitter(to, fr):
-    if fr == 'ja':
+    if self.jitterEnabled and fr == 'ja':
       text = self._unescapeJitter(text, to, fr)
     if emit and text != t:
       self.emitOutputTranslation(text)
@@ -2011,6 +2013,7 @@ class VTranslator(OnlineMachineTranslator):
   key = 'vtrans' # override
   asyncSupported = False # override  disable async
   alignSupported = False # override
+  jitterEnabled = False # override
 
   MAX_FAILED_COUNT = 15
 
