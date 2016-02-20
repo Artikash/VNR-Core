@@ -2076,14 +2076,21 @@ class VTranslator(OnlineMachineTranslator):
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
   asyncSupported = False # override  disable async
-  alignSupported = True # override
+
+  #alignSupported = True # override
+  alignSupported = False # override
 
   def __init__(self, session=None, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
 
-    import googleman
-    googleman.setsession(session or requests.Session())
-    self.engine = googleman.manager()
+    if self.alignSupported:
+      import googleman
+      googleman.setsession(session or requests.Session())
+      self.engine = googleman.manager()
+    else:
+      from google.googletrans import GoogleHtmlTranslator as C
+      self.engine = C()
+      #self.engine.session = session or requests.Session() # this will cause the client be blocked
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
   #  '...': u'…',
@@ -2107,7 +2114,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     if repl:
       repl = self._translate(emit, repl,
           self.engine.translate,
-          to, fr, async, keepsNewLine, align=align)
+          to, fr, async, keepsNewLine) #align=align)
       if repl:
         #if self.languageNeedsEscape(to, fr):
         #repl = self.__re_term_fix.sub('', repl)

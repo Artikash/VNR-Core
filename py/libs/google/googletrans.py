@@ -337,7 +337,10 @@ class GoogleJsonTranslator(GoogleTranslator):
         'q': t,
         'dt': ('bd', 'ex', 'ld', 'md', 'qc', 'rw', 'rm', 'ss', 't', 'at'), # this list is indispensible
         'client': 't',
-        'tk':'259734.384347', # this is the app token ID
+
+        # this is translation hash: TODO: Get this session
+        'tk':'259734.384347',
+
         #'client': 'p', # this does not work
 
         # Following parameters are not needed
@@ -386,8 +389,8 @@ class GoogleJsonTranslator(GoogleTranslator):
     except: pass
 
 if __name__ == '__main__':
-  #gt = GoogleHtmlTranslator()
-  gt = GoogleJsonTranslator()
+  gt = GoogleHtmlTranslator()
+  #gt = GoogleJsonTranslator()
 
   def test():
     global session
@@ -445,7 +448,8 @@ if __name__ == '__main__':
     with SkProfiler():
       #for i in range(10):
       for i in range(1):
-        t = gt.translate(s, to=to, fr=fr, align=m)
+        t = gt.translate(s, to=to, fr=fr)
+        #t = gt.translate(s, to=to, fr=fr, align=m)
         #t = gt.analyze(s, to=to, fr=fr, align=m)
 
     print t
