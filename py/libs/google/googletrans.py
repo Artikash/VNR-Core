@@ -48,12 +48,13 @@ def eval_gson_list(data):
   """
   if data[0] == '[' and data[-1] == ']':
     try:
+      print 1111
       data = _re_gson_comma.sub('', data)
+      print 22222, data
       data = '{"r":%s}' % data
       return json.loads(data)['r']
     except Exception, e:
       dwarn(e)
-
 
 class GoogleTranslator(object): pass
 
@@ -121,9 +122,7 @@ class GoogleJsonTranslator(GoogleTranslator):
 
   session = requests
 
-  # 2/16/2016: The original user-agent is blocked by Google
-  #headers = sknetdef.USERAGENT_HEADERS
-  headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko)'}
+  headers = sknetdef.USERAGENT_HEADERS
 
   def translate(self, t, to='auto', fr='auto', align=None):
     """
@@ -134,7 +133,9 @@ class GoogleJsonTranslator(GoogleTranslator):
     @return  unicode or None
     """
     try:
-      client_json = align is None
+      #client_json = align is None
+      client_json = False # pure json format is no longer supported
+
       # http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
 
       r = self.session.post(self.api, headers=self.headers, data={
@@ -148,10 +149,35 @@ class GoogleJsonTranslator(GoogleTranslator):
         #'client': 't', # This will return a Javascript object that can be evaluated using new Function
         #'client': 'p', # return JSON
         'client': 'p' if client_json else 't',
+
+        # 2/28/2016
+        'tk':'259734.384347', # this is the app token ID
+        #'hl':'ja',
+        #'dt':'at',
+        #'dt':'bd',
+        #'dt':'ex',
+        #'dt':'ld',
+        #'dt':'md',
+        #'dt':'qca',
+        #'dt':'rw',
+        #'dt':'rm',
+        #'dt':'ss',
+        #'dt':'t',
+        #'ie':'UTF-8',
+        #'oe':'UTF-8',
+        #'pc':'1',
+        #'otf':'1',
+        #'ssel':'0',
+        #'tsel':'0',
+        #'kc':'1',
+        #'tco':'2',
       })
 
+      #url = 'https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&pc=1&otf=1&ssel=0&tsel=0&kc=1&tco=2&tk=259734.384347&q=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF'
+      #r = self.session.get(url)
+
       ret = r.content # unicode not used since json can do that
-      if r.ok and len(ret) > 20:
+      if r.ok and ret:
         if client_json:
           # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
           data = json.loads(ret)
@@ -165,6 +191,8 @@ class GoogleJsonTranslator(GoogleTranslator):
           return ret
 
         else:
+          if not ret.startswith('[['):
+            return ret.decode('utf8')
           data = eval_gson_list(ret)
           if data:
             #print json.dumps(data, indent=2, ensure_ascii=False)
@@ -306,6 +334,7 @@ class GoogleJsonTranslator(GoogleTranslator):
         'q': t,
         'dt': ('bd', 'ex', 'ld', 'md', 'qc', 'rw', 'rm', 'ss', 't', 'at'), # this list is indispensible
         'client': 't',
+        'tk':'259734.384347', # this is the app token ID
         #'client': 'p', # this does not work
 
         # Following parameters are not needed
@@ -370,8 +399,8 @@ if __name__ == '__main__':
     #s = u'「う、ひょおおおおお――っ」'
 
     fr = 'ja'
-    #to = 'zhs'
-    to = 'en'
+    to = 'zhs'
+    #to = 'en'
 
     #s = u"What are you doing?"
     #fr = "en"
