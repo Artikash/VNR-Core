@@ -192,7 +192,10 @@ class GoogleJsonTranslator(GoogleTranslator):
 
         else:
           if not ret.startswith('[['):
-            return ret.decode('utf8')
+            ret = ret.decode('utf8')
+            if len(ret) >= 2 and ret[0] == '"' and ret[-1] == '"':
+              ret = ret[1:-1]
+            return ret
           data = eval_gson_list(ret)
           if data:
             #print json.dumps(data, indent=2, ensure_ascii=False)
@@ -399,8 +402,8 @@ if __name__ == '__main__':
     #s = u'「う、ひょおおおおお――っ」'
 
     fr = 'ja'
-    to = 'zhs'
-    #to = 'en'
+    #to = 'zhs'
+    to = 'en'
 
     #s = u"What are you doing?"
     #fr = "en"
