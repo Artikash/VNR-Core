@@ -48,9 +48,7 @@ def eval_gson_list(data):
   """
   if data[0] == '[' and data[-1] == ']':
     try:
-      print 1111
       data = _re_gson_comma.sub('', data)
-      print 22222, data
       data = '{"r":%s}' % data
       return json.loads(data)['r']
     except Exception, e:
@@ -190,9 +188,14 @@ class GoogleJsonTranslator(GoogleTranslator):
           #ret = unescapehtml(ret)
           return ret
 
+        elif not ret.startswith('[['):
+          if len(ret) > 2 and ret[0] == '"' and ret[-1] == '"':
+            ret = ret.decode('utf8')
+            ret = ret[1:-1]
+            return ret
+          dwarn("response is invalid")
+          return
         else:
-          if not ret.startswith('[['):
-            return ret.decode('utf8')
           data = eval_gson_list(ret)
           if data:
             #print json.dumps(data, indent=2, ensure_ascii=False)
@@ -334,7 +337,10 @@ class GoogleJsonTranslator(GoogleTranslator):
         'q': t,
         'dt': ('bd', 'ex', 'ld', 'md', 'qc', 'rw', 'rm', 'ss', 't', 'at'), # this list is indispensible
         'client': 't',
-        'tk':'259734.384347', # this is the app token ID
+
+        # this is translation hash: TODO: Get this session
+        'tk':'259734.384347',
+
         #'client': 'p', # this does not work
 
         # Following parameters are not needed
@@ -383,8 +389,8 @@ class GoogleJsonTranslator(GoogleTranslator):
     except: pass
 
 if __name__ == '__main__':
-  #gt = GoogleHtmlTranslator()
-  gt = GoogleJsonTranslator()
+  gt = GoogleHtmlTranslator()
+  #gt = GoogleJsonTranslator()
 
   def test():
     global session
@@ -392,15 +398,15 @@ if __name__ == '__main__':
     #s = u"""オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"""
     #s = u"お花の匂い！"
     #s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
-    s = u"こんにちは"
+    s = u'こんにちは'
     #s = '"<html>&abcde"'
 
     #s = u'ドアノブに勢い良く手をかけ、開いたドアが路上のガードレールにぶつかるのもおかまいなしに、隙間から身を這い出した。'
     #s = u'「う、ひょおおおおお――っ」'
 
     fr = 'ja'
-    to = 'zhs'
-    #to = 'en'
+    #to = 'zhs'
+    to = 'en'
 
     #s = u"What are you doing?"
     #fr = "en"
@@ -442,7 +448,8 @@ if __name__ == '__main__':
     with SkProfiler():
       #for i in range(10):
       for i in range(1):
-        t = gt.translate(s, to=to, fr=fr, align=m)
+        t = gt.translate(s, to=to, fr=fr)
+        #t = gt.translate(s, to=to, fr=fr, align=m)
         #t = gt.analyze(s, to=to, fr=fr, align=m)
 
     print t

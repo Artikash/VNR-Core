@@ -3112,8 +3112,8 @@ class _MachineTranslationTab(object):
     r += 1
     grid.addWidget(self._createBrowseButton("http://translate.google.com"), r, 0)
     grid.addWidget(self.googleButton, r, 1)
-    r += 1
-    grid.addWidget(self.googleRubyButton, r, 1)
+    #r += 1
+    #grid.addWidget(self.googleRubyButton, r, 1) # 2/20/2016: Disable google alignment
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.googleScriptButton, r, 1)
