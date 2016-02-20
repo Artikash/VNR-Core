@@ -19,6 +19,9 @@
 #
 # Analysis API used by Google webpage
 # Request: https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=517378|356627&q=hello
+#
+# 2/20/2016 API change:
+# Request: https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&pc=1&otf=1&ssel=0&tsel=0&kc=1&tco=2&tk=259734.384347&q=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF
 
 if __name__ == '__main__':
   import sys
@@ -50,6 +53,7 @@ def eval_gson_list(data):
       return json.loads(data)['r']
     except Exception, e:
       dwarn(e)
+
 
 class GoogleTranslator(object): pass
 
@@ -117,7 +121,9 @@ class GoogleJsonTranslator(GoogleTranslator):
 
   session = requests
 
-  headers = sknetdef.USERAGENT_HEADERS
+  # 2/16/2016: The original user-agent is blocked by Google
+  #headers = sknetdef.USERAGENT_HEADERS
+  headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko)'}
 
   def translate(self, t, to='auto', fr='auto', align=None):
     """
@@ -130,6 +136,7 @@ class GoogleJsonTranslator(GoogleTranslator):
     try:
       client_json = align is None
       # http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
+
       r = self.session.post(self.api, headers=self.headers, data={
         'tl': googledef.lang2locale(to),
         'sl': googledef.lang2locale(fr),
@@ -142,7 +149,6 @@ class GoogleJsonTranslator(GoogleTranslator):
         #'client': 'p', # return JSON
         'client': 'p' if client_json else 't',
       })
-
 
       ret = r.content # unicode not used since json can do that
       if r.ok and len(ret) > 20:
@@ -356,7 +362,8 @@ if __name__ == '__main__':
 
     #s = u"""オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"""
     #s = u"お花の匂い！"
-    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    #s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    s = u"こんにちは"
     #s = '"<html>&abcde"'
 
     #s = u'ドアノブに勢い良く手をかけ、開いたドアが路上のガードレールにぶつかるのもおかまいなしに、隙間から身を這い出した。'
