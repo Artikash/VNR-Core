@@ -19,6 +19,9 @@
 #
 # Analysis API used by Google webpage
 # Request: https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=517378|356627&q=hello
+#
+# 2/20/2016 API change:
+# Request: https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&pc=1&otf=1&ssel=0&tsel=0&kc=1&tco=2&tk=259734.384347&q=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF
 
 if __name__ == '__main__':
   import sys
@@ -45,7 +48,9 @@ def eval_gson_list(data):
   """
   if data[0] == '[' and data[-1] == ']':
     try:
+      print 1111
       data = _re_gson_comma.sub('', data)
+      print 22222, data
       data = '{"r":%s}' % data
       return json.loads(data)['r']
     except Exception, e:
@@ -128,8 +133,11 @@ class GoogleJsonTranslator(GoogleTranslator):
     @return  unicode or None
     """
     try:
-      client_json = align is None
+      #client_json = align is None
+      client_json = False # pure json format is no longer supported
+
       # http://translate.google.com/translate_a/t?client=t&text=かわいい女の子&sl=ja&tl=en
+
       r = self.session.post(self.api, headers=self.headers, data={
         'tl': googledef.lang2locale(to),
         'sl': googledef.lang2locale(fr),
@@ -141,11 +149,35 @@ class GoogleJsonTranslator(GoogleTranslator):
         #'client': 't', # This will return a Javascript object that can be evaluated using new Function
         #'client': 'p', # return JSON
         'client': 'p' if client_json else 't',
+
+        # 2/28/2016
+        'tk':'259734.384347', # this is the app token ID
+        #'hl':'ja',
+        #'dt':'at',
+        #'dt':'bd',
+        #'dt':'ex',
+        #'dt':'ld',
+        #'dt':'md',
+        #'dt':'qca',
+        #'dt':'rw',
+        #'dt':'rm',
+        #'dt':'ss',
+        #'dt':'t',
+        #'ie':'UTF-8',
+        #'oe':'UTF-8',
+        #'pc':'1',
+        #'otf':'1',
+        #'ssel':'0',
+        #'tsel':'0',
+        #'kc':'1',
+        #'tco':'2',
       })
 
+      #url = 'https://translate.google.com/translate_a/single?client=t&sl=ja&tl=zh-CN&hl=ja&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&pc=1&otf=1&ssel=0&tsel=0&kc=1&tco=2&tk=259734.384347&q=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF'
+      #r = self.session.get(url)
 
       ret = r.content # unicode not used since json can do that
-      if r.ok and len(ret) > 20:
+      if r.ok and ret:
         if client_json:
           # Example: {"sentences":[{"trans":"闻花朵！","orig":"お花の匂い！","translit":"Wén huāduǒ!","src_translit":"O hananonioi!"}],"src":"ja","server_time":47}
           data = json.loads(ret)
@@ -159,6 +191,8 @@ class GoogleJsonTranslator(GoogleTranslator):
           return ret
 
         else:
+          if not ret.startswith('[['):
+            return ret.decode('utf8')
           data = eval_gson_list(ret)
           if data:
             #print json.dumps(data, indent=2, ensure_ascii=False)
@@ -300,6 +334,7 @@ class GoogleJsonTranslator(GoogleTranslator):
         'q': t,
         'dt': ('bd', 'ex', 'ld', 'md', 'qc', 'rw', 'rm', 'ss', 't', 'at'), # this list is indispensible
         'client': 't',
+        'tk':'259734.384347', # this is the app token ID
         #'client': 'p', # this does not work
 
         # Following parameters are not needed
@@ -356,15 +391,16 @@ if __name__ == '__main__':
 
     #s = u"""オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。"""
     #s = u"お花の匂い！"
-    s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    #s = u"悠真くんを攻略すれば２１０円か。なるほどなぁ…"
+    s = u"こんにちは"
     #s = '"<html>&abcde"'
 
     #s = u'ドアノブに勢い良く手をかけ、開いたドアが路上のガードレールにぶつかるのもおかまいなしに、隙間から身を這い出した。'
     #s = u'「う、ひょおおおおお――っ」'
 
     fr = 'ja'
-    #to = 'zhs'
-    to = 'en'
+    to = 'zhs'
+    #to = 'en'
 
     #s = u"What are you doing?"
     #fr = "en"
