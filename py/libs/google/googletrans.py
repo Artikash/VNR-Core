@@ -48,9 +48,7 @@ def eval_gson_list(data):
   """
   if data[0] == '[' and data[-1] == ']':
     try:
-      print 1111
       data = _re_gson_comma.sub('', data)
-      print 22222, data
       data = '{"r":%s}' % data
       return json.loads(data)['r']
     except Exception, e:
@@ -190,12 +188,12 @@ class GoogleJsonTranslator(GoogleTranslator):
           #ret = unescapehtml(ret)
           return ret
 
+        elif not ret.startswith('[['):
+          ret = ret.decode('utf8')
+          if len(ret) >= 2 and ret[0] == '"' and ret[-1] == '"':
+            ret = ret[1:-1]
+          return ret
         else:
-          if not ret.startswith('[['):
-            ret = ret.decode('utf8')
-            if len(ret) >= 2 and ret[0] == '"' and ret[-1] == '"':
-              ret = ret[1:-1]
-            return ret
           data = eval_gson_list(ret)
           if data:
             #print json.dumps(data, indent=2, ensure_ascii=False)

@@ -220,7 +220,7 @@ class _TranslatorManager(object):
   def googleTranslator(self):
     return self._newtr(_trman.GoogleTranslator(
         abortSignal=self.abortSignal,
-        session=self.session,
+        #session=self.session, # 2/20/2016: qt session does not work
         postprocess=self.postprocessCharacterset))
 
   @memoizedproperty
