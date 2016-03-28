@@ -44,7 +44,6 @@
 - name: EmbedEscude # 7/23/2015
   exist:
     - configure.cfg
-    - configure.exe
     - gfx.bin
   #encoding: sjis
 
