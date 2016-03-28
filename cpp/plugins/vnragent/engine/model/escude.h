@@ -18,7 +18,7 @@ public:
     enableDynamicEncoding = true;
     enableDynamicFont = true;
     newLineString = "<r>";
-    matchFiles << "configure.cfg" << "configure.exe" << "gfx.bin";
+    matchFiles << "configure.cfg" << "gfx.bin";
     attachFunction = &Self::attach;
     rubyCreateFunction = &Self::rubyCreate;
     rubyRemoveFunction = &Self::rubyRemove;

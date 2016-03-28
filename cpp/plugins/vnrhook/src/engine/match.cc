@@ -506,7 +506,7 @@ bool DetermineEngineByProcessName()
     return true;
 
   // jichi 7/23/2015  It also has gameexe.bin existed
-  if (IthCheckFile(L"configure.exe") && IthCheckFile(L"configure.cfg") && IthCheckFile(L"gfx.bin")) {
+  if (IthCheckFile(L"configure.cfg") && IthCheckFile(L"gfx.bin")) {
     InsertEscudeHook();
     return true;
   }
