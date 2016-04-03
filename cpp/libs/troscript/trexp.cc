@@ -2,7 +2,6 @@
 // 5/17/2015 jichi
 #include "troscript/trexp.h"
 #include "trsym/trsym.h"
-#include "cpputil/cppregex.h"
 #include <vector>
 #include <boost/algorithm/string.hpp>
 //#include <QDebug>
