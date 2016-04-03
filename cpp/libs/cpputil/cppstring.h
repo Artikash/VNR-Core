@@ -12,7 +12,8 @@ template <typename charT>
 inline std::basic_string<charT> cpp_basic_string_of(const std::string &s)
 { return std::basic_string<charT>(s.begin(), s.end()); }
 
-inline std::string cpp_string_of(const std::string &s)
+template <typename strT>
+inline std::string cpp_string_of(const strT &s)
 { return std::string(s.begin(), s.end()); }
 
 inline std::wstring cpp_wstring_of(const std::string &s)
